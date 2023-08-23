@@ -31,8 +31,8 @@
                            rendered="#{caseInterventionsTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
                            action="#{caseInterventionsTabBean.create}"
-                           process=":mainform:search_tabs:tabs"
-                           update=":mainform:search_tabs:case_interventions_dialog"
+                           process="@form:cnt:search_tabs:tabs"
+                           update="@form:cnt:search_tabs:case_interventions_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
@@ -62,13 +62,13 @@
                            rendered="#{row.values[0] != null}"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           process=":mainform:search_tabs:tabs"
-                           update=":mainform:search_tabs:case_interventions_dialog"
+                           process="@form:cnt:search_tabs:tabs"
+                           update="@form:cnt:search_tabs:case_interventions_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').show()" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
                            process="@this"
-                           update=":mainform:search_tabs:tabs"
+                           update="@form:cnt:search_tabs:tabs"
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

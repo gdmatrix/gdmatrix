@@ -37,7 +37,8 @@
           <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
                                 type="#{caseInterventionsTabBean.tabBaseTypeId != null ? caseInterventionsTabBean.tabBaseTypeId : 'Intervention'}"
                                 showNavigatorItems="#{caseInterventionsTabBean.tabBaseTypeId != 'Intervention' ? 'false' : 'true'}"
-                                showNonInstantiableItems="false"                                
+                                showNonInstantiableItems="false" 
+                                oncomplete="PF('caseInterventionsDialog').hide();"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
@@ -45,8 +46,8 @@
                                 required="#{not empty param['mainform:search_tabs:case_interventions_store']}"
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseInterventionsTabBean.formSelector}"
-                                process=":mainform:search_tabs:case_interventions_dialog"
-                                update=":mainform:search_tabs:case_interventions_dialog">
+                                process="@form:cnt:search_tabs:case_interventions_dialog"
+                                update="@form:cnt:search_tabs:case_interventions_dialog">
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -83,8 +84,9 @@
 
           <emcomp:objectReference value="#{caseInterventionsTabBean.personId}"
                                   type="Person"
-                                  process=":mainform:search_tabs:case_interventions_dialog"
+                                  process="@form:cnt:search_tabs:case_interventions_dialog"
                                   styleClass="w-full"
+                                  oncomplete="PF('caseInterventionsDialog').hide();"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3">
@@ -111,7 +113,7 @@
       <p:commandButton id="case_interventions_store" action="#{caseInterventionsTabBean.store}"
                        styleClass="m-1" value="#{objectBundle.store}"
                        process="case_interventions_dialog"
-                       update=":mainform:search_tabs:tabs case_interventions_panel"
+                       update="@form:cnt:search_tabs:tabs case_interventions_panel"
                        oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').hide()"/>
       <p:commandButton action="#{caseInterventionsTabBean.cancel}"
                        styleClass="m-1" value="#{objectBundle.cancel}"

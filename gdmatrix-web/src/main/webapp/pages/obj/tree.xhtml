@@ -26,41 +26,47 @@
         <p:commandLink value="#{data.description}"
                        action="#{contextTreeBean.view(node)}"
                        rendered="#{contextTreeBean.isCurrentBaseType(node)}"
-                       process=":mainform:context_panel"
                        resetValues="true"
-                       oncomplete="endPanel('rightPanel');"
-                       update=":mainform:central_column :mainform:context_panel" />
-        <p:commandLink value="#{data.description}" 
+                       process="@form:cnt:context_panel"
+                       update="@form:cnt:central_column @form:cnt:context_panel"
+                       oncomplete="endPanel('rightPanel');"/>
+        <p:commandLink value="#{data.description}"
                        action="#{contextTreeBean.show(node)}" 
-                       immediate="true"
                        rendered="#{not contextTreeBean.isCurrentBaseType(node)}"
-                       ajax="false" 
-                       onclick="showOverlay()" />
-        
+                       resetValues="true"
+                       process="@form:cnt:context_panel" 
+                       update="@form:cnt"
+                       oncomplete="endPanel('rightPanel');"/>
       </p:treeNode>
     </p:tree>
     
     <p:contextMenu for="context_tree" id="context_tree_menu" 
                    rendered="#{not empty contextTreeBean.contextActions}">
       <c:forEach items="#{contextTreeBean.contextActions}" var="contextAction" >
-        <c:if test="#{contextAction.type == 'ADD'}">
-          <p:menuitem value="#{contextAction.label}" 
-                      action="#{contextTreeBean.doContextAction(contextAction)}"
-                      immediate="true" ajax="false" />
-        </c:if>
-        <c:if test="#{contextAction.type != 'ADD'}">
-          <p:menuitem value="#{contextAction.label}" 
-                      action="#{contextTreeBean.doContextAction(contextAction)}" 
-                      update="context_tree" />
-        </c:if>
+        <p:menuitem value="#{contextAction.label}" 
+                    action="#{contextTreeBean.doContextAction(contextAction)}"
+                    update="@form:cnt">
+          <p:confirm type="popup" 
+                     disabled="#{contextAction.type != 'REMOVE'}"
+                     header="Confirmation" 
+                     message="#{objectBundle.confirm_remove}" 
+                     icon="pi pi-info-circle"/>
+        </p:menuitem>
       </c:forEach>
     </p:contextMenu>
+    
+    <p:confirmPopup global="true">
+      <p:commandButton value="#{objectBundle.cancel}" type="button" 
+                       styleClass="ui-confirm-popup-no ui-button-flat"/>
+      <p:commandButton value="#{objectBundle.accept}" type="button" 
+                       styleClass="ui-confirm-popup-yes" />
+    </p:confirmPopup>    
     
     <p:commandButton action="#{contextTreeBean.update}"
                      styleClass="mt-4"
                      value="Refresh"
                      process="@this"
-                     update=":mainform:context_panel" />
+                     update="@form:cnt:context_panel" />
   </p:tab>
 
 </ui:composition>

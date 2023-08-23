@@ -36,11 +36,12 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseEventsTabBean.eventId}"
-                                  process=":mainform:search_tabs:case_events_dialog"
+                                  process="@form:cnt:search_tabs:case_events_dialog"
                                   type="Event"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
+                                  oncomplete="PF('caseEventsDialog').hide();"
                                   required="#{not empty param['mainform:search_tabs:case_events_store']}"
                                   requiredMessage="#{messageBundle.EVENT_MUST_BE_SELECTED}"
                                   minQueryLength="3">
@@ -53,8 +54,9 @@
                          value="#{caseBundle.caseEvents_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseEventsTabBean.caseEventTypeId}"
-                                process=":mainform:search_tabs:case_events_dialog"
-                                update=":mainform:search_tabs:case_events_dialog"
+                                process="@form:cnt:search_tabs:case_events_dialog"
+                                update="@form:cnt:search_tabs:case_events_dialog"
+                                oncomplete="PF('caseEventsDialog').hide();"
                                 type="#{caseEventsTabBean.tabBaseTypeId != null ? caseEventsTabBean.tabBaseTypeId : 'CaseEvent'}"
                                 showNavigatorItems="#{caseEventsTabBean.tabBaseTypeId != 'CaseEvent' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                
@@ -89,7 +91,7 @@
         <p:commandButton id="case_events_store" action="#{caseEventsTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_events_dialog"
-                         update=":mainform:search_tabs:tabs case_events_panel"
+                         update="@form:cnt:search_tabs:tabs case_events_panel"
                          oncomplete="if (!isFacesError()) PF('caseEventsDialog').hide()"
                          />
         <p:commandButton action="#{caseEventsTabBean.cancel}"

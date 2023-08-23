@@ -24,9 +24,8 @@
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.themeId)}"
                        rendered="#{navigatorBean.selectionPending}"
-                       ajax="false"
-                       immediate="true"
-                       onclick="showOverlay()"
+                       process="@this"
+                       update="@form:cnt"
                        title="#{objectBundle.select}" alt="#{objectBundle.select}" />
       <p:commandButton icon="pi pi-external-link"
                        styleClass="rounded-button ui-button-flat"
@@ -35,7 +34,7 @@
                        resetValues="true"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}" />
     </p:column>
   </p:dataTable>

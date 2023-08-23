@@ -41,7 +41,7 @@
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" 
-                           immediate="true" ajax="false" onclick="showOverlay()"
+                           process="@this" update="@form:cnt"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"/>            
         </h:panelGroup>          

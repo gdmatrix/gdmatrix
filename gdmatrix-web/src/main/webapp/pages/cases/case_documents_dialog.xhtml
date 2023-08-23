@@ -36,12 +36,13 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseDocumentsTabBean.docId}"
-                                  process=":mainform:search_tabs:case_documents_dialog"
+                                  process="@form:cnt:search_tabs:case_documents_dialog"
                                   type="Document"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   renderCreateButton="true"
+                                  oncomplete="PF('caseDocumentsDialog').hide();"
                                   required="#{not empty param['mainform:search_tabs:case_documents_store']}"
                                   requiredMessage="#{messageBundle.DOCUMENT_MUST_BE_SELECTED}"
                                   minQueryLength="3">
@@ -54,8 +55,9 @@
                          value="#{caseBundle.caseDocuments_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseDocumentsTabBean.caseDocTypeId}"
-                                process=":mainform:search_tabs:case_documents_dialog"
-                                update=":mainform:search_tabs:case_documents_dialog"
+                                process="@form:cnt:search_tabs:case_documents_dialog"
+                                update="@form:cnt:search_tabs:case_documents_dialog"
+                                oncomplete="PF('caseDocumentsDialog').hide();"
                                 type="#{caseDocumentsTabBean.tabBaseTypeId != null ? caseDocumentsTabBean.tabBaseTypeId : 'CaseDocument'}"
                                 showNavigatorItems="#{caseDocumentsTabBean.tabBaseTypeId != 'CaseDocument' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                
@@ -96,7 +98,7 @@
                          action="#{caseDocumentsTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_documents_dialog"
-                         update=":mainform:search_tabs:tabs case_documents_panel"
+                         update="@form:cnt:search_tabs:tabs case_documents_panel"
                          oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').hide()"
                          />
         <p:commandButton action="#{caseDocumentsTabBean.cancel}"
@@ -172,7 +174,7 @@
                          action="#{caseDocumentsTabBean.remove}"
                          styleClass="m-1" value="#{objectBundle.delete}"
                          process="remove_document_dialog"
-                         update=":mainform:search_tabs:tabs :mainform:context_panel"
+                         update="@form:cnt:search_tabs:tabs @form:cnt:context_panel"
                          oncomplete="if (!isFacesError()) PF('removeDocumentDialog').hide()"
                          />
         <p:commandButton styleClass="m-1" value="#{objectBundle.cancel}"

@@ -35,10 +35,11 @@
                          value="#{caseBundle.caseAddresses_address}"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseAddressesTabBean.addressId}"
-                                  process=":mainform:search_tabs:case_addresses_dialog"
+                                  process="@form:cnt:search_tabs:case_addresses_dialog"
                                   type="Address"
                                   scrollHeight="200"
                                   queryDelay="1000"
+                                  oncomplete="PF('caseAddressesDialog').hide();"
                                   required="#{not empty param['mainform:search_tabs:case_addresses_store']}"
                                   requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
                                   minQueryLength="3">
@@ -51,8 +52,9 @@
                          value="#{caseBundle.caseAddresses_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseAddressesTabBean.caseAddressTypeId}"
-                                process=":mainform:search_tabs:case_addresses_dialog"
-                                update=":mainform:search_tabs:case_addresses_dialog"
+                                process="@form:cnt:search_tabs:case_addresses_dialog"
+                                update="@form:cnt:search_tabs:case_addresses_dialog"
+                                oncomplete="PF('caseAddressesDialog').hide();"
                                 type="#{caseAddressesTabBean.tabBaseTypeId != null ? caseAddressesTabBean.tabBaseTypeId : 'CaseAddress'}"
                                 showNavigatorItems="#{caseAddressesTabBean.tabBaseTypeId != 'CaseAddress' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                
@@ -110,7 +112,7 @@
         <p:commandButton id="case_addresses_store" action="#{caseAddressesTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_addresses_dialog"
-                         update=":mainform:search_tabs:tabs case_addresses_panel"
+                         update="@form:cnt:search_tabs:tabs case_addresses_panel"
                          oncomplete="if (!isFacesError()) PF('caseAddressesDialog').hide()"
                          />
         <p:commandButton action="#{caseAddressesTabBean.cancel}"

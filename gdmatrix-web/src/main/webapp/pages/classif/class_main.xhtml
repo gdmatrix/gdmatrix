@@ -14,7 +14,7 @@
                        process="@this"
                        rendered="#{not classObjectBean.isNew()}"
                        action="#{classObjectBean.showHistory}"
-                       update=":mainform:history_panel"
+                       update="@form:cnt:history_panel"
                        oncomplete="PF('historyPanel').show()"/>
       </div>
 
@@ -24,7 +24,7 @@
             <span class="pi pi-tag mr-2" />
             <p:commandLink action="#{navigatorBean.view(superClass.classId)}"
                            process="@this"
-                           update=":mainform:search_tabs:obj_tabs :mainform:context_panel">
+                           update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel">
               <h:outputText value="#{superClass.classId} : #{superClass.title}" />
             </p:commandLink>
           </h:panelGroup>
@@ -72,7 +72,7 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 renderShowButton="false"
-                                process=":mainform:search_tabs:tabs"/>
+                                process="@form:cnt:search_tabs:tabs"/>
       </div>
 
       <div class="field col-12 md:col-8">
@@ -88,8 +88,8 @@
                               showNavigatorItems="false"
                               required="#{not empty param['mainform:search_tabs:store']}"
                               formSelector="#{classObjectBean.formSelector}"
-                              process=":mainform:search_tabs:tabs"
-                              update=":mainform:search_tabs:tabs">
+                              process="@form:cnt:search_tabs:tabs"
+                              update="@form:cnt:search_tabs:tabs">
         </emcomp:typeReference>
       </div>
 
@@ -113,7 +113,7 @@
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                process=":mainform:search_tabs:tabs"/>
+                                process="@form:cnt:search_tabs:tabs"/>
       </div>
 
       <div class="field col-12 md:col-3">

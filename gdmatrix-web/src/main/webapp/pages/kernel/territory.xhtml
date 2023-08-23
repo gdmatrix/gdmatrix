@@ -13,7 +13,7 @@
                          styleClass="rounded-button ui-button-flat mr-2"
                          action="#{objectBean.finderBean.viewPrevious}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasPrevious()}"
                          title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
@@ -24,7 +24,7 @@
                          styleClass="rounded-button ui-button-flat ml-2 mr-2"
                          action="#{objectBean.finderBean.viewNext}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasNext()}"
                          title="#{objectBundle.next}" alt="#{objectBundle.next}"
@@ -39,16 +39,14 @@
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.select}"
                          rendered="#{navigatorBean.selectable}"
-                         ajax="false"
-                         immediate="true"
-                         onclick="showOverlay()"
+                         process="@this" update="@form:cnt"
                          title="#{objectBundle.select}" alt="#{objectBundle.select}"
                          />
         <p:commandButton icon="ui-icon pi pi-plus-circle"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.view('')}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
                          resetValues="true"
                          title="#{objectBundle.create}" alt="#{objectBundle.create}"
                          rendered="#{objectBean.rootTypeId != 'Country'}"
@@ -59,7 +57,7 @@
                          rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
                          process="@this"
                          partialSubmit="true"
-                         update="object_header :mainform:context_panel"
+                         update="object_header @form:cnt:context_panel"
                          title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
                          />
         <p:commandButton icon="ui-icon pi pi-star-fill"
@@ -68,7 +66,7 @@
                          rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
                          process="@this"
                          partialSubmit="true"
-                         update="object_header :mainform:context_panel"
+                         update="object_header @form:cnt:context_panel"
                          title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
                          />
         <p:commandButton icon="ui-icon pi pi-trash"
@@ -76,7 +74,7 @@
                          action="#{objectBean.remove}"
                          rendered="#{not objectBean.isNew()}"
                          process="@this"
-                         update=":mainform:search_tabs :mainform:context_panel"
+                         update="@form:cnt:search_tabs @form:cnt:context_panel"
                          resetValues="true"
                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
             <p:confirm header="#{objectBundle.confirm_remove_header}" 
@@ -85,9 +83,7 @@
         </p:commandButton>
         <p:commandButton icon="ui-icon pi pi-times"
                          action="#{navigatorBean.close}"
-                         ajax="false"
-                         immediate="true"
-                         onclick="showOverlay()"
+                         process="@this" update="@form:cnt"
                          styleClass="rounded-button ui-button-flat"
                          title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
@@ -120,7 +116,7 @@
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{navigatorBean.show('Country', objectBean.country.countryId)}" 
-                           ajax="false" onclick="showOverlay()"
+                           process="@this" update="@form:cnt"
                            />
         </div>     
       </p:outputPanel>
@@ -163,7 +159,7 @@
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{navigatorBean.show('Province', objectBean.province.provinceId)}" 
-                           ajax="false" onclick="showOverlay()"
+                           process="@this" update="@form:cnt"
                            />
         </div>
       </p:outputPanel> 
@@ -195,7 +191,7 @@
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{navigatorBean.show('City', objectBean.city.cityId)}" 
-                           ajax="false" onclick="showOverlay()"
+                           process="@this" update="@form:cnt"
                            />
         </div>
       </p:outputPanel>  
@@ -240,7 +236,7 @@
       <p:commandButton value="#{objectBundle.store}" 
                        icon="pi pi-save"
                        action="#{objectBean.store}"
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel" 
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel" 
                        process="@this territory_panel"
                        styleClass="m-1"
                        /> 

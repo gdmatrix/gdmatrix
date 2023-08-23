@@ -34,12 +34,13 @@
                          styleClass="w-full" indicateRequired="true" />
           <emcomp:objectReference value="#{eventPersonsTabBean.personId}"
                                   type="Person"
-                                  process=":mainform:search_tabs:event_persons_dialog"
-                                  update=":mainform:search_tabs:event_persons_dialog"
+                                  process="@form:cnt:search_tabs:event_persons_dialog"
+                                  update="@form:cnt:search_tabs:event_persons_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
+                                  oncomplete="PF('eventPersonsDialog').hide();"
                                   required="#{not empty param['mainform:search_tabs:event_persons_store']}"
                                   requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
                                   disabled="#{!eventObjectBean.editable}">
@@ -51,8 +52,9 @@
                          value="#{agendaBundle.attendants_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventPersonsTabBean.attendantTypeId}"
-                                process=":mainform:search_tabs:event_persons_dialog"
-                                update=":mainform:search_tabs:event_persons_dialog"
+                                process="@form:cnt:search_tabs:event_persons_dialog"
+                                update="@form:cnt:search_tabs:event_persons_dialog"
+                                oncomplete="PF('eventPersonsDialog').hide();"
                                 type="#{eventPersonsTabBean.tabBaseTypeId != null ? eventPersonsTabBean.tabBaseTypeId : 'Attendant'}"
                                 showNavigatorItems="#{eventPersonsTabBean.tabBaseTypeId != 'Attendant' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                
@@ -108,7 +110,7 @@
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_persons_dialog"
-                         update=":mainform:search_tabs:tabs event_persons_panel"
+                         update="@form:cnt:search_tabs:tabs event_persons_panel"
                          oncomplete="if (!isFacesError()) PF('eventPersonsDialog').hide()" />
         <p:commandButton action="#{eventPersonsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

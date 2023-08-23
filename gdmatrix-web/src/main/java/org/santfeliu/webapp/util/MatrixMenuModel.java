@@ -17,15 +17,15 @@ import org.santfeliu.web.UserSessionBean;
 public class MatrixMenuModel extends DefaultMenuModel implements Savable
 {
   public static final String GOMID_JS_FUNCTION = "goMid";
-  
-  private String currentMid; 
+
+  private String currentMid;
 
   public MatrixMenuModel(org.santfeliu.faces.menu.model.MenuModel mModel)
   {
     super();
     init(mModel);
   }
-  
+
   public final void init(org.santfeliu.faces.menu.model.MenuModel mModel)
   {
     if (mModel == null)
@@ -36,7 +36,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
         mModel = userSessionBean.getMenuModel();
       }
     }
-    
+
     MenuItemCursor mic = mModel.getSelectedMenuItem();
     if (mic != null)
     {
@@ -45,12 +45,12 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
 
       getElements().addAll(
         getElements(mic.hasChildren() ? mic.getFirstChild() : mic));
-    }  
+    }
   }
-  
+
   @Override
-  public void generateUniqueIds() {}  
-  
+  public void generateUniqueIds() {}
+
   private List<MenuElement> getElements(MenuItemCursor mic)
   {
     List<MenuElement> items = new ArrayList();
@@ -63,12 +63,12 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
     {
       DefaultSubMenu.Builder builder = DefaultSubMenu.builder()
         .label(label);
-      
+
       //Icon
       String icon = mic.getProperty("icon");
       if (!StringUtils.isBlank(icon))
         builder.icon(icon);
-      
+
       DefaultSubMenu submenu = builder.build();
 
       submenu.getElements().addAll(getElements(mic.getFirstChild()));
@@ -81,11 +81,20 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
       {
         MatrixMenuItem.Builder builder = MatrixMenuItem.builder(mic)
           .value(label);
-
+//        if ("#{navigatorBean.show}".equals(mic.getAction()))
+//        {
+//          String command = "#{navigatorBean.showMid('" + mic.getMid() + "')}";
+//          builder.command(command);
+//          builder.ajax(true);
+//          builder.onstart("PF('menu').hide();");
+//          builder.process("@this");
+//          builder.update("@form:cnt");
+//        }
+//        else
         if (mic.getAction() != null)
         {
           builder.url(mic.getActionURL());
-          builder.onclick(encodeGoFunction(mic.getMid()));     
+          builder.onclick(encodeGoFunction(mic.getMid()));
         }
         else if (mic.getAction() == null && mic.getURL() != null)
         {
@@ -94,12 +103,12 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
         }
         //Target
         builder.target(mic.getTarget());
-        
+
         //Icon
         String icon = mic.getProperty("icon");
         if (!StringUtils.isBlank(icon))
           builder.icon(icon);
-        
+
         //Current styleClass
         if (currentMid.equals(mic.getMid()))
           builder.styleClass("current");
@@ -109,16 +118,16 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
         items.add(item);
       }
     }
-    
+
     if (mic.moveNext())
     {
       List<MenuElement> elements = getElements(mic);
       items.addAll(elements);
-    }    
+    }
 
     return items;
   }
-  
+
   private String encodeGoFunction(String mid)
   {
     if (!StringUtils.isBlank(mid))
@@ -126,6 +135,6 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
     else
       return "#";
   }
-    
+
 
 }

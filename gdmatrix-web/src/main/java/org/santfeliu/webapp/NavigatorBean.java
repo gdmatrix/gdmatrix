@@ -152,11 +152,33 @@ public class NavigatorBean extends WebBean implements Serializable
       if (objectBean != null)
       {
         String page = objectBean.getTypeBean().getViewId();
-        return "<script>window.history.replaceState({},'','" + page +
+        return "<script>window.history.pushState({},'','" + page +
           "?xmid=" + baseTypeInfo.getMid() + "');</script>";
       }
     }
     return "";
+  }
+
+  public String getPage()
+  {
+    try
+    {
+      String viewId = getBaseTypeInfo().getObjectSetup().getViewId();
+      System.out.println("getPage: " + viewId);
+      return viewId;
+    }
+    catch (Exception ex)
+    {
+      return "/pages/obj/empty.xhtml";
+    }
+  }
+
+  public String showMid(String mid)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.getMenuModel().setSelectedMid(mid);
+
+    return show();
   }
 
   public String show()
@@ -326,38 +348,37 @@ public class NavigatorBean extends WebBean implements Serializable
   */
   public String execute(Leap leap, boolean saveHistory, String selectExpression)
   {
-    System.out.println(">>> EXECUTE " + leap);
-
     SelectLeap selectLeap = null;
 
     // save previous beans state
     if (lastBaseTypeId != null && WebUtils.isPostback())
     {
       BaseTypeInfo lastBaseTypeInfo = getBaseTypeInfo(lastBaseTypeId);
-      if (lastBaseTypeInfo == null) return null;
-
-      ObjectBean lastObjectBean = lastBaseTypeInfo.getObjectBean();
-      if (lastObjectBean == null) return null;
-
-      if (saveHistory && !lastObjectBean.isNew())
+      if (lastBaseTypeInfo != null)
       {
-        // save previous object in history
-        DirectLeap historyLeap = new DirectLeap(lastBaseTypeId);
-        historyLeap.setup(lastObjectBean);
-        history.push(historyLeap);
-      }
+        ObjectBean lastObjectBean = lastBaseTypeInfo.getObjectBean();
+        if (lastObjectBean == null) return null;
 
-      FinderBean finderBean = lastObjectBean.getFinderBean();
-      lastBaseTypeInfo.saveBeanState(finderBean);
+        if (saveHistory && !lastObjectBean.isNew())
+        {
+          // save previous object in history
+          DirectLeap historyLeap = new DirectLeap(lastBaseTypeId);
+          historyLeap.setup(lastObjectBean);
+          history.push(historyLeap);
+        }
 
-      if (selectExpression != null)
-      {
-        lastBaseTypeInfo.saveBeanState(lastObjectBean);
-        lastBaseTypeInfo.saveTabBeansState(lastObjectBean.getEditTabs());
+        FinderBean finderBean = lastObjectBean.getFinderBean();
+        lastBaseTypeInfo.saveBeanState(finderBean);
 
-        selectLeap =
-          new SelectLeap(lastBaseTypeInfo.getBaseTypeId(), selectExpression);
-        selectLeap.setup(lastObjectBean);
+        if (selectExpression != null)
+        {
+          lastBaseTypeInfo.saveBeanState(lastObjectBean);
+          lastBaseTypeInfo.saveTabBeansState(lastObjectBean.getEditTabs());
+
+          selectLeap =
+            new SelectLeap(lastBaseTypeInfo.getBaseTypeId(), selectExpression);
+          selectLeap.setup(lastObjectBean);
+        }
       }
     }
 
@@ -374,9 +395,8 @@ public class NavigatorBean extends WebBean implements Serializable
 
     inProgressLeap = leap;
 
-    TypeBean typeBean = TypeBean.getInstance(baseTypeId);
-
-    return typeBean.getViewId();
+    String template = userSessionBean.getTemplate();
+    return "/templates/" + template + "/spa.xhtml";
   }
 
   /**

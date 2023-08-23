@@ -21,7 +21,7 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventThemesTabBean.create}"
-                           process=":mainform:search_tabs:tabs"
+                           process="@form:cnt:search_tabs:tabs"
                            update="@root:@id(event_themes_dialog)"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('eventThemesDialog').show()"

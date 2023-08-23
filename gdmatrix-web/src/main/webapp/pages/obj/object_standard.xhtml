@@ -13,7 +13,7 @@
                          styleClass="rounded-button ui-button-flat mr-2"
                          action="#{objectBean.finderBean.viewPrevious}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasPrevious()}"
                          title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
@@ -24,7 +24,7 @@
                          styleClass="rounded-button ui-button-flat ml-2 mr-2"
                          action="#{objectBean.finderBean.viewNext}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasNext()}"
                          title="#{objectBundle.next}" alt="#{objectBundle.next}"
@@ -38,17 +38,16 @@
         <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.select}"
+                         process="@this"
+                         update="@form:cnt"
                          rendered="#{navigatorBean.selectable}"
-                         ajax="false"
-                         immediate="true"
-                         onclick="showOverlay()"
                          title="#{objectBundle.select}" alt="#{objectBundle.select}"
                          />
         <p:commandButton icon="ui-icon pi pi-plus-circle"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.view('')}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
                          resetValues="true"
                          title="#{objectBundle.create}" alt="#{objectBundle.create}"
                          disabled="#{!objectBean.editable}" />
@@ -57,8 +56,8 @@
                          action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
                          rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
                          process="@this"
+                         update="object_header @form:cnt:context_panel"
                          partialSubmit="true"
-                         update="object_header :mainform:context_panel"
                          title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
                          />
         <p:commandButton icon="ui-icon pi pi-star-fill"
@@ -66,8 +65,8 @@
                          action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
                          rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
                          process="@this"
+                         update="object_header @form:cnt:context_panel"
                          partialSubmit="true"
-                         update="object_header :mainform:context_panel"
                          title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
                          />
         <p:commandButton icon="ui-icon pi pi-trash"
@@ -75,7 +74,7 @@
                          action="#{objectBean.remove}"
                          rendered="#{not objectBean.isNew()}"
                          process="@this"
-                         update=":mainform:search_tabs :mainform:context_panel"
+                         update="@form:cnt:search_tabs @form:cnt:context_panel"
                          resetValues="true"
                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
                          disabled="#{!objectBean.editable}">
@@ -91,15 +90,13 @@
             <p:menuitem icon="#{action.icon}" 
                         value="#{action.label}" action="#{objectBean.callAction(action.name)}" 
                         rendered="#{not empty action.label}" process="@this"
-                        update=":mainform:search_tabs:tabs"/>
+                        update="@form:cnt:search_tabs:tabs"/>
           </c:forEach>
         </p:menuButton> 
         
         <p:commandButton icon="ui-icon pi pi-times"
                          action="#{navigatorBean.close}"
-                         ajax="false"
-                         immediate="true"
-                         onclick="showOverlay()"
+                         process="@this" update="@form:cnt"
                          styleClass="rounded-button ui-button-flat"
                          title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
@@ -139,8 +136,8 @@
                      action="#{objectBean.store}"
                      value="#{objectBundle.store}"
                      icon="pi pi-save"
-                     process=":mainform:search_tabs:obj_tabs"
-                     update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                     process="@form:cnt:search_tabs:obj_tabs"
+                     update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                      styleClass="m-1" 
                      disabled="#{!objectBean.editable}" />
     <p:commandButton action="#{objectBean.cancel}"
@@ -148,7 +145,7 @@
                      icon="pi pi-undo"
                      process="@this"
                      styleClass="m-1"
-                     update=":mainform:search_tabs:obj_tabs"
+                     update="@form:cnt:search_tabs:obj_tabs"
                      resetValues="true"
                      global="false" 
                      disabled="#{!objectBean.editable}" />

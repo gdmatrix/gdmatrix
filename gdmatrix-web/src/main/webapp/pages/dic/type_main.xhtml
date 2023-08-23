@@ -13,7 +13,7 @@
         <span class="#{favoriteObjectsBean.icon} mr-2" />
         <p:commandLink action="#{navigatorBean.view(type.getTypeId())}" 
                        process="@this" 
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel">
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel">
           <h:outputText value="#{type.typeId} : #{type.description}" />
         </p:commandLink>
       </h:panelGroup>

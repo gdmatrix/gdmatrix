@@ -18,7 +18,7 @@
                          process="@this"
                          resetValues="true"
                          oncomplete="endPanel('rightPanel');"
-                         update=":mainform:central_column :mainform:context_panel">
+                         update="@form:cnt:central_column @form:cnt:context_panel">
             <h:outputText value="#{favorite.description}"
                           styleClass="#{favoriteObjectsBean.isSelectedObject(favorite) ? 'current' : ''}"/>
           </p:commandLink>

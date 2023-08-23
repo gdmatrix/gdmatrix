@@ -29,9 +29,7 @@
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.rowId)}"
                        rendered="#{navigatorBean.selectionPending}"
-                       ajax="false"
-                       immediate="true"
-                       onclick="showOverlay()"
+                       process="@this" update="@form:cnt"
                        title="#{objectBundle.select}" alt="#{objectBundle.select}"
                        />
       <p:linkButton href="#{row.viewURL}" 
@@ -49,7 +47,7 @@
                        title="#{objectBundle.show}" alt="#{objectBundle.show}"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        />     
     </p:column>
   </p:dataTable>  

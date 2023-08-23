@@ -20,7 +20,7 @@
         <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                          action="#{addressPersonsTabBean.create}" 
                          process="@this"
-                         update=":mainform:search_tabs:tabs:address_persons_dialog"
+                         update="@form:cnt:search_tabs:tabs:address_persons_dialog"
                          resetValues="true"
                          oncomplete="PF('addressPersonsDialog').show()"                                 
                          alt="#{objectBundle.add}" title="#{objectBundle.add}" />                     
@@ -42,7 +42,7 @@
     <p:column styleClass="col-2 text-right white-space-nowrap">
       <p:commandButton icon="pi pi-external-link"  
                        action="#{navigatorBean.show('Person', row.person.personId)}" 
-                       immediate="true" ajax="false" onclick="showOverlay()"
+                       process="@this" update="@form:cnt"
                        styleClass="rounded-button ui-button-flat"
                        alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
       <p:commandButton action="#{addressPersonsTabBean.remove(row)}"
@@ -87,7 +87,8 @@
           
           <emcomp:objectReference value="#{addressPersonsTabBean.personId}"
                                   type="Person"
-                                  process=":mainform:search_tabs:tabs:address_persons_dialog"
+                                  oncomplete="PF('addressPersonsDialog').hide();"
+                                  process="@form:cnt:search_tabs:tabs:address_persons_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"

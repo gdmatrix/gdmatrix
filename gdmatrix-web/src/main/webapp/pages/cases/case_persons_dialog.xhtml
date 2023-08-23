@@ -39,12 +39,13 @@
                                styleClass="w-full" 
                                indicateRequired="true" />
                 <emcomp:objectReference value="#{casePersonsTabBean.personId}"
-                                        process=":mainform:search_tabs:case_persons_dialog"
-                                        update=":mainform:search_tabs:case_persons_dialog"
+                                        process="@form:cnt:search_tabs:case_persons_dialog"
+                                        update="@form:cnt"
                                         type="Person"
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"
+                                        oncomplete="PF('casePersonsDialog').hide();"
                                         required="#{not empty param['mainform:search_tabs:case_persons_store']}"
                                         requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
                                         minQueryLength="3">
@@ -57,8 +58,9 @@
                                value="#{caseBundle.casePersons_type}"
                                indicateRequired="true" />
                 <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
-                                      process=":mainform:search_tabs:case_persons_dialog"
-                                      update=":mainform:search_tabs:case_persons_dialog"
+                                      process="@form:cnt:search_tabs:case_persons_dialog"
+                                      update="@form:cnt:search_tabs:case_persons_dialog"
+                                      oncomplete="PF('casePersonsDialog').hide();"
                                       type="#{casePersonsTabBean.tabBaseTypeId != null ? casePersonsTabBean.tabBaseTypeId : 'CasePerson'}"
                                       showNavigatorItems="#{casePersonsTabBean.tabBaseTypeId != 'CasePerson' ? 'false' : 'true'}"
                                       showNonInstantiableItems="false"
@@ -99,9 +101,10 @@
                              rendered="#{casePersonsTabBean.editing.personId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
                 <emcomp:objectReference value="#{casePersonsTabBean.addressId}"
-                                        process=":mainform:search_tabs:case_persons_dialog"
+                                        process="@form:cnt:search_tabs:case_persons_dialog"
                                         type="Address"
                                         styleClass="w-full"
+                                        oncomplete="PF('casePersonsDialog').hide();"
                                         scrollHeight="200"
                                         queryDelay="1000"
                                         minQueryLength="3">
@@ -196,9 +199,10 @@
                                value="#{caseBundle.casePersons_representantPerson}"
                                styleClass="w-full" />
                 <emcomp:objectReference value="#{casePersonsTabBean.representantPersonId}"
-                                        process=":mainform:search_tabs:case_persons_dialog"
-                                        update=":mainform:search_tabs:case_persons_dialog"
+                                        process="@form:cnt:search_tabs:case_persons_dialog"
+                                        update="@form:cnt:search_tabs:case_persons_dialog"
                                         type="Person"
+                                        oncomplete="PF('casePersonsDialog').hide();"
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"
@@ -209,8 +213,9 @@
               <p:outputPanel id="representant_address" styleClass="field col-12" rendered="#{casePersonsTabBean.editing.representantPersonId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
                 <emcomp:objectReference value="#{casePersonsTabBean.representantAddressId}"
-                                        process=":mainform:search_tabs:case_persons_dialog"
+                                        process="@form:cnt:search_tabs:case_persons_dialog"
                                         type="Address"
+                                        oncomplete="PF('casePersonsDialog').hide();"
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"
@@ -322,7 +327,7 @@
         <p:commandButton id="case_persons_store" action="#{casePersonsTabBean.store}" 
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_persons_dialog"
-                         update=":mainform:search_tabs:tabs case_persons_panel"
+                         update="@form:cnt:search_tabs:tabs case_persons_panel"
                          oncomplete="if (!isFacesError()) PF('casePersonsDialog').hide()"
                          />
         <p:commandButton action="#{casePersonsTabBean.cancel}" 

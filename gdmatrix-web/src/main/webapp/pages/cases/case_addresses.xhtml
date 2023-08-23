@@ -31,8 +31,8 @@
                            rendered="#{caseAddressesTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{caseAddressesTabBean.create}"
-                           process=":mainform:search_tabs:tabs"
-                           update=":mainform:search_tabs:case_addresses_dialog"
+                           process="@form:cnt:search_tabs:tabs"
+                           update="@form:cnt:search_tabs:case_addresses_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('caseAddressesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
@@ -74,20 +74,20 @@
       <p:column styleClass="col-1 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
-                         ajax="false" onclick="showOverlay()"
+                         process="@this" update="@form:cnt" 
                          action="#{navigatorBean.show('Address', row.addressView.addressId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          action="#{caseAddressesTabBean.edit(row)}"
-                         process=":mainform:search_tabs:tabs"
-                         update=":mainform:search_tabs:case_addresses_dialog"
+                         process="@form:cnt:search_tabs:tabs"
+                         update="@form:cnt:search_tabs:case_addresses_dialog"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('caseAddressesDialog').show()" />
         <p:commandButton action="#{caseAddressesTabBean.remove(row)}"
                          process="@this"
-                         update=":mainform:search_tabs:tabs"
+                         update="@form:cnt:search_tabs:tabs"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"

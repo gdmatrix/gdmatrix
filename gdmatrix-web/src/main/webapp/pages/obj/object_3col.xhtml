@@ -4,15 +4,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="/templates/#{userSessionBean.template}/template.xhtml"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-  <ui:define name="body">
-
     <h:outputStylesheet library="css" name="object_3col.css" />
-
-    <h:outputScript name="locales/locale-#{userSessionBean.viewLanguage}.js"
-                    library="primefaces"/>
 
     <p:button onclick="return showPanel('leftPanel');"
               icon="pi pi-search"
@@ -113,8 +107,6 @@
       </script>
 
     </div>
-
-  </ui:define>
 
 </ui:composition>
 

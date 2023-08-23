@@ -22,7 +22,7 @@
       <composite:attribute name="scrollHeight" required="false" default="200" />
       <composite:attribute name="size" required="false" />
       <composite:attribute name="process" required="false" default="@form" />
-      <composite:attribute name="update" required="false" default="@none" />
+      <composite:attribute name="update" required="false" default="@form" />
       <composite:attribute name="required" required="false" default="false" />
       <composite:attribute name="requiredMessage" required="false" />
       <composite:attribute name="disabled" required="false" default="false" />
@@ -32,6 +32,7 @@
       <composite:attribute name="renderShowButton" required="false" default="true" />
       <composite:attribute name="renderCreateButton" required="false" default="false" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
+      <composite:attribute name="oncomplete" required="false" default="true" />
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />
@@ -78,37 +79,29 @@
         <p:commandButton id="show_button"
                          icon="pi pi-external-link"
                          styleClass="select-button"
-                         ajax="false"
-                         immediate="true"
+                         process="@this"
+                         update="@form:cnt"
                          action="#{objectReferenceBean.show}"
                          rendered="#{cc.attrs.renderShowButton}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                         oncomplete="if (!isFacesError()) #{cc.attrs.oncomplete}"
                          disabled="#{cc.attrs.disabled}" />
-        <h:commandButton style="display: none"
-                         action="#{objectReferenceBean.find}"
-                         immediate="true"
-                         disabled="#{cc.attrs.disabled}">
-        </h:commandButton>
         <p:commandButton icon="pi pi-search"
                          styleClass="select-button"
+                         action="#{objectReferenceBean.find}"
                          process="#{cc.attrs.process}"
-                         update="#{cc.attrs.update}"
-                         oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
+                         update="@form:cnt"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         oncomplete="if (!isFacesError()) #{cc.attrs.oncomplete}"
                          disabled="#{cc.attrs.disabled}" />
-        <h:commandButton style="display: none"
-                         action="#{objectReferenceBean.create}"
-                         immediate="true"
-                         rendered="#{cc.attrs.renderCreateButton}"
-                         disabled="#{cc.attrs.disabled}">
-        </h:commandButton>
         <p:commandButton icon="pi pi-plus-circle"
                          styleClass="select-button"
+                         action="#{objectReferenceBean.create}"
                          process="#{cc.attrs.process}"
-                         update="#{cc.attrs.update}"
+                         update="@form:cnt"
                          rendered="#{cc.attrs.renderCreateButton}"
-                         oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
+                         oncomplete="if (!isFacesError()) #{cc.attrs.oncomplete}"
                          disabled="#{cc.attrs.disabled}" />
       </div>
     </composite:implementation>

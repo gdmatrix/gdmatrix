@@ -49,7 +49,7 @@
         <p:commandButton icon="pi pi-external-link" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat" 
-                         ajax="false" onclick="showOverlay()"
+                         process="@this" update="@form:cnt"
                          rendered="#{typeACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
@@ -104,8 +104,9 @@
                          styleClass="w-full"
                          indicateRequired="true"/>
           <emcomp:objectReference value="#{typeACLTabBean.roleId}"
-                                  process=":mainform:search_tabs:tabs:type_acl_dialog"
+                                  process="@form:cnt:search_tabs:tabs:type_acl_dialog"
                                   type="Role"
+                                  oncomplete="PF('typeACLDialog').hide();"
                                   forceSelection="false"
                                   styleClass="w-full"
                                   scrollHeight="200"

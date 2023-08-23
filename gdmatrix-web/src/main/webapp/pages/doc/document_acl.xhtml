@@ -17,7 +17,7 @@
       <p:commandLink value="#{documentObjectBean.versionLabel}" 
                      process="@this"
                      action="#{documentObjectBean.showVersions}"
-                     update=":mainform:versions_panel"
+                     update="@form:cnt:versions_panel"
                      oncomplete="PF('versionsPanel').show()"/>
     </div>    
 
@@ -41,9 +41,7 @@
       <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
-                         ajax="false"
-                         immediate="true"
-                         onclick="showOverlay()"
+                         process="@this" update="@form:cnt"
                          rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
       </p:column>
@@ -64,7 +62,7 @@
         <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{documentACLTabBean.create}"
-                           process=":mainform:search_tabs:tabs"
+                           process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:document_acl_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('documentACLDialog').show()"                                 
@@ -84,16 +82,14 @@
         <p:commandButton icon="pi pi-external-link" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat" 
-                         ajax="false"
-                         immediate="true"
-                         onclick="showOverlay()"
+                         process="@this" update="@form:cnt"
                          rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          styleClass="rounded-button ui-button-flat" 
                          action="#{documentACLTabBean.edit(row)}" 
-                         process=":mainform:search_tabs:tabs" 
+                         process="@form:cnt:search_tabs:tabs" 
                          update="@parent:@parent:@parent:@parent:document_acl_dialog"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('documentACLDialog').show()"
@@ -141,8 +137,9 @@
                          indicateRequired="true"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{documentACLTabBean.roleId}"
-                                  process=":mainform:search_tabs:tabs:document_acl_dialog"
+                                  process="@form:cnt:search_tabs:tabs:document_acl_dialog"
                                   type="Role"
+                                  oncomplete="PF('documentACLDialog').hide();"
                                   forceSelection="false"
                                   styleClass="w-full"
                                   scrollHeight="200"

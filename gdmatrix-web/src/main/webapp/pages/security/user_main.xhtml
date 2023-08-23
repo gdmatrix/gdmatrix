@@ -37,7 +37,7 @@
       <div class="field col-12 md:col-8">
         <p:outputLabel for="@next" value="#{securityBundle.user_person}" />
         <emcomp:objectReference type="Person" 
-                                process=":mainform:search_tabs:tabs"
+                                process="@form:cnt:search_tabs:tabs"
                                 value="#{userObjectBean.user.personId}" />
       </div>
 

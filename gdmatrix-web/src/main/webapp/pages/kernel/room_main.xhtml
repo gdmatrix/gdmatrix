@@ -50,7 +50,7 @@
                               required="#{not empty param['mainform:search_tabs:store']}"
                               requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
                               disabled="#{!roomObjectBean.editable}"
-                              process=":mainform:search_tabs:tabs">
+                              process="@form:cnt:search_tabs:tabs">
       </emcomp:objectReference>
     </div>
 

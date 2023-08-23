@@ -27,7 +27,7 @@
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                            action="#{personAddressesTabBean.create}"   
                            process="@this"
-                           update=":mainform:search_tabs:tabs:person_addresses_dialog"
+                           update="@form:cnt:search_tabs:tabs:person_addresses_dialog"
                            resetValues="true"
                            oncomplete="PF('personAddressesDialog').show()"                                  
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
@@ -43,7 +43,7 @@
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
-                           immediate="true" ajax="false" onclick="showOverlay()"
+                           process="@this" update="@form:cnt"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
           <p:commandButton action="#{personAddressesTabBean.remove(row)}"
@@ -90,13 +90,14 @@
                          indicateRequired="true"/>
           <emcomp:objectReference value="#{personAddressesTabBean.addressId}"
                                   type="Address"
+                                  oncomplete="PF('personAddressesDialog').hide();"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   required="#{not empty param['mainform:search_tabs:tabs:person_addresses_store']}"
                                   requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
-                                  process=":mainform:search_tabs:tabs:person_addresses_dialog">
+                                  process="@form:cnt:search_tabs:tabs:person_addresses_dialog">
           </emcomp:objectReference>                        
         </p:outputPanel>      
 

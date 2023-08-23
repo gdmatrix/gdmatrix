@@ -34,15 +34,15 @@
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{eventFinderBean.clear}"
                              styleClass="m-1"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel @(.searchTabContent)"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @(.searchTabContent)"
                              resetValues="true"
                              oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(0);" />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
                              action="#{eventFinderBean.smartFind}"
-                             process=":mainform:find_selector"
-                             update=":mainform:search_tabs :mainform:context_panel :mainform:filter_panel"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
                              resetValues="true"
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"/>
@@ -82,8 +82,8 @@
                                     minQueryLength="3"
                                     renderShowButton="false"
                                     formSelector="#{eventFinderBean.formSelector}"
-                                    process=":mainform:find_selector"
-                                    update=":mainform:find_selector">
+                                    process="@form:cnt:find_selector"
+                                    update="@form:cnt:find_selector">
               </emcomp:typeReference>
             </p:outputPanel>
 
@@ -150,8 +150,8 @@
                                       queryDelay="1000"
                                       minQueryLength="3"
                                       renderShowButton="false"
-                                      process=":mainform:find_selector"
-                                      update=":mainform:find_selector">
+                                      process="@form:cnt:find_selector"
+                                      update="@form:cnt:find_selector">
               </emcomp:objectReference>
             </div>
 
@@ -164,8 +164,8 @@
                                       queryDelay="1000"
                                       minQueryLength="3"
                                       renderShowButton="false"
-                                      process=":mainform:find_selector"
-                                      update=":mainform:find_selector">
+                                      process="@form:cnt:find_selector"
+                                      update="@form:cnt:find_selector">
               </emcomp:objectReference>
             </div>
 
@@ -181,15 +181,15 @@
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{eventFinderBean.clear}"
                              styleClass="m-1"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel @(.searchTabContent)"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @(.searchTabContent)"
                              resetValues="true"
                              oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(0);" />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
                              action="#{eventFinderBean.find}"
-                             process=":mainform:find_selector"
-                             update=":mainform:search_tabs :mainform:context_panel :mainform:filter_panel"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
                              styleClass="m-1"
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"

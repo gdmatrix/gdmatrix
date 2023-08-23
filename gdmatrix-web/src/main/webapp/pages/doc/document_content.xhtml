@@ -20,7 +20,7 @@
         <p:commandLink value="#{documentObjectBean.versionLabel}" 
                        process="@this"
                        action="#{documentObjectBean.showVersions}"
-                       update=":mainform:versions_panel"
+                       update="@form:cnt:versions_panel"
                        oncomplete="PF('versionsPanel').show()"/>
       </div>
       
@@ -123,7 +123,7 @@
 
         <p:commandButton value="#{objectBundle.edit}"                         
            onclick="javascript:editDocument({docId:'#{documentObjectBean.document.docId}'});return false"
-           process="@this" update=":mainform:search_tabs"
+           process="@this" update="@form:cnt:search_tabs"
            icon="pi pi-pencil" style="width:auto"
            rendered="#{documentObjectBean.content.contentId != null}"
            alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />

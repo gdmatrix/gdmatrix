@@ -34,15 +34,15 @@
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{roleFinderBean.clear}"
                              styleClass="m-1"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
                              resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
                              action="#{roleFinderBean.smartFind}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
                              resetValues="true"
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"/>
@@ -105,16 +105,16 @@
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{roleFinderBean.clear}"
-                             process=":mainform:find_selector"
+                             process="@form:cnt:find_selector"
                              styleClass="m-1"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
                              action="#{roleFinderBean.find}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
                              resetValues="true"
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
@@ -141,7 +141,7 @@
     <p:remoteCommand name="updateResults"
                      action="#{roleFinderBean.update}"
                      process="@this"
-                     update=":mainform:search_tabs:result_list" />
+                     update="@form:cnt:search_tabs:result_list" />
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"

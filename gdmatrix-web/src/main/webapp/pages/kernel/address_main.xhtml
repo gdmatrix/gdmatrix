@@ -28,7 +28,7 @@
     <div class="field col-12 md:col-8">
       <p:outputLabel for="@next" value="#{kernelBundle.street}" indicateRequired="true" />
       <emcomp:objectReference value="#{addressObjectBean.address.streetId}"
-                              process=":mainform:search_tabs:tabs"
+                              process="@form:cnt:search_tabs:tabs"
                               type="Street"
                               styleClass="w-full"
                               scrollHeight="200"

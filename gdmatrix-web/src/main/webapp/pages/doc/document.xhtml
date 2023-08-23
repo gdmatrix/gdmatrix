@@ -37,15 +37,15 @@
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{documentFinderBean.clear}"
                              styleClass="m-1"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
                              resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
                              action="#{documentFinderBean.smartFind}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
                              resetValues="true"
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"/>
@@ -135,7 +135,7 @@
                                       queryDelay="1000"
                                       minQueryLength="3"
                                       renderShowButton="false"
-                                      process=":mainform:find_selector" />
+                                      process="@form:cnt:find_selector" />
             </div>
            
             <div class="field col-12">
@@ -147,8 +147,8 @@
                                     minQueryLength="3"
                                     renderShowButton="false"
                                     formSelector="#{documentFinderBean.formSelector}"
-                                    process=":mainform:find_selector"
-                                    update=":mainform:find_selector">
+                                    process="@form:cnt:find_selector"
+                                    update="@form:cnt:find_selector">
               </emcomp:typeReference>
             </div>
 
@@ -163,16 +163,16 @@
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{documentFinderBean.clear}"
-                             process=":mainform:find_selector"
+                             process="@form:cnt:find_selector"
                              styleClass="m-1"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
                              action="#{documentFinderBean.find}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
                              resetValues="true"
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
@@ -199,7 +199,7 @@
     <p:remoteCommand name="updateResults"
                      action="#{documentFinderBean.update}"
                      process="@this"
-                     update=":mainform:search_tabs:result_list" />
+                     update="@form:cnt:search_tabs:result_list" />
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
@@ -251,7 +251,7 @@
           <p:commandLink value="#{docVersion.title}"
                          action="#{documentObjectBean.loadVersion(docVersion.version)}"
                          process="@this"
-                         update=":mainform:search_tabs"
+                         update="@form:cnt:search_tabs"
                          style="#{documentObjectBean.isVersionDeleted(docVersion) ? 'text-decoration:line-through' : ''}"
                          oncomplete="PF('versionsPanel').hide()"
                          />
@@ -267,7 +267,7 @@
                            styleClass="rounded-button ui-button-flat m-0"
                            action="#{documentObjectBean.removeVersion(docVersion.version)}"
                            process="@this"
-                           update=":mainform:search_tabs"
+                           update="@form:cnt:search_tabs"
                            rendered="#{rowIndex gt 0 and not documentObjectBean.isVersionDeleted(docVersion)}"
                            oncomplete="PF('versionsPanel').hide()"
                            title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
@@ -281,14 +281,14 @@
         <p:commandButton value="#{documentBundle.document_newVersion}"
                          action="#{documentObjectBean.newVersion}"
                          process="@this"
-                         update=":mainform:search_tabs"
+                         update="@form:cnt:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
                          oncomplete="PF('versionsPanel').hide()"
                          />
         <p:commandButton value="#{documentBundle.purge}"
                          action="#{documentObjectBean.purgeVersions}"
                          process="@this"
-                         update=":mainform:search_tabs"
+                         update="@form:cnt:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
                          oncomplete="PF('versionsPanel').hide()">
           <p:confirm header="#{objectBundle.confirm_remove_header}"

@@ -27,8 +27,8 @@
                               required="#{not empty param['mainform:search_tabs:store']}"
                               requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{caseObjectBean.formSelector}"
-                              process=":mainform:search_tabs:tabs"
-                              update=":mainform:search_tabs:tabs">
+                              process="@form:cnt:search_tabs:tabs"
+                              update="@form:cnt:search_tabs:tabs">
         </emcomp:typeReference>
       </p:outputPanel>
 
@@ -49,7 +49,7 @@
                                        scrollHeight="200"
                                        queryDelay="1000"
                                        minQueryLength="3"
-                                       process=":mainform:search_tabs:tabs" />
+                                       process="@form:cnt:search_tabs:tabs" />
       </p:outputPanel>
 
       <div class="field col-12 md:col-3">

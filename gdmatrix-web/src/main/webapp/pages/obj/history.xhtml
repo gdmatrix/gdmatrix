@@ -9,11 +9,8 @@
                  var="leap">
         <div class="return_info">
           <p:commandLink action="#{historyBean.show(leap)}"
-                         process="@this"
                          rendered="#{not historyBean.isCurrentBaseType(leap)}"
-                         immediate="true"
-                         ajax="false"
-                         onclick="showOverlay()">
+                         process="@this" update="@form:cnt">
             <span class="#{historyBean.getIcon(leap)}" />
             <h:outputText value="#{historyBean.getDescription(leap)}" />
           </p:commandLink>
@@ -22,7 +19,7 @@
                          rendered="#{historyBean.isCurrentBaseType(leap)}"
                          resetValues="true"
                          oncomplete="endPanel('rightPanel');"
-                         update=":mainform:central_column :mainform:context_panel">
+                         update="@form:cnt:central_column @form:cnt:context_panel">
             <span class="#{historyBean.getIcon(leap)}" />
             <h:outputText value="#{historyBean.getDescription(leap)}" />
           </p:commandLink>

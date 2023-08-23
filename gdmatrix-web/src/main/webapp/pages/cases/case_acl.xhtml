@@ -34,8 +34,8 @@
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                         styleClass="rounded-button ui-button-flat" 
-                         ajax="false" onclick="showOverlay()" 
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this" update="@form:cnt"
                          rendered="#{caseACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
       </p:column>
@@ -76,7 +76,8 @@
         <p:commandButton icon="pi pi-external-link" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat" 
-                         ajax="false" onclick="showOverlay()"
+                         process="@this"
+                         update="@form:cnt"
                          rendered="#{caseACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
@@ -131,12 +132,13 @@
                          indicateRequired="true"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{caseACLTabBean.roleId}"
-                                  process=":mainform:search_tabs:tabs:case_acl_dialog"
+                                  process="@form:cnt:search_tabs:tabs:case_acl_dialog"
                                   type="Role"
                                   forceSelection="false"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
+                                  oncomplete="PF('caseACLDialog').hide();"
                                   required="#{not empty param['mainform:search_tabs:tabs:case_acl_store']}"
                                   renderShowButton="false"
                                   minQueryLength="3">

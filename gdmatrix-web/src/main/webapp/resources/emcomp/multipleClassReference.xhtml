@@ -28,6 +28,7 @@
       <composite:attribute name="disabled" required="false" default="false" />
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
+      <composite:attribute name="oncomplete" required="false" default="true" />      
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />
@@ -43,8 +44,8 @@
                         forceSelection="true"
                         dropdown="false" dropdownMode="blank" cache="true"
                         completeMethod="#{multipleClassReferenceBean.complete}"
-                        var="classId" 
-                        itemValue="#{classId}" 
+                        var="classId"
+                        itemValue="#{classId}"
                         itemLabel="#{classTypeBean.getDescription(classId)}"
                         minQueryLength="#{cc.attrs.minQueryLength}"
                         queryDelay="#{cc.attrs.queryDelay}"
@@ -73,26 +74,23 @@
             <h:outputText value="#{classTypeBean.getDescription(classId)}" />
           </p:column>
         </p:autoComplete>
-        <p:commandButton id="show_button"
+        <p:commandButton action="#{multipleClassReferenceBean.show}"
+                         id="show_button"
                          icon="pi pi-external-link"
                          styleClass="select-button"
                          style="height:29px"
-                         ajax="false"
-                         immediate="true"
-                         action="#{multipleClassReferenceBean.show}"
+                         process="#{cc.attrs.process}"
+                         update="@form:cnt"
+                         oncomplete="if (!isFacesError()) #{cc.attrs.oncomplete}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
-        <h:commandButton style="display: none"
-                         action="#{multipleClassReferenceBean.find}"
-                         immediate="true"
-                         disabled="#{cc.attrs.disabled}">
-        </h:commandButton>
-        <p:commandButton icon="pi pi-search"
+        <p:commandButton action="#{multipleClassReferenceBean.find}"
+                         icon="pi pi-search"
                          styleClass="select-button"
                          style="height:29px"
                          process="#{cc.attrs.process}"
-                         update="#{cc.attrs.update}"
-                         oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
-                         alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         update="@form:cnt"
+                         oncomplete="if (!isFacesError()) #{cc.attrs.oncomplete}"
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}"                         
                          disabled="#{cc.attrs.disabled}" />
       </div>
     </composite:implementation>

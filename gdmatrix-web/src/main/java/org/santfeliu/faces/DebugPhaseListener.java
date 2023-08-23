@@ -30,6 +30,7 @@
  */
 package org.santfeliu.faces;
 
+import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
@@ -46,14 +47,21 @@ public class DebugPhaseListener implements PhaseListener
   @Override
   public void beforePhase(PhaseEvent pe)
   {
+    Map<String, Object> map =
+      FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+
     PhaseId phaseId = pe.getPhaseId();
     if (phaseId.equals(PhaseId.RESTORE_VIEW))
     {
       System.out.println("\nBEGIN " + count + " =========================\n");
       count++;
+
+      map.put("startCycleMillis", System.currentTimeMillis());
     }
 
-    String locale = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("locale");
+    map.put("startPhaseMillis", System.currentTimeMillis());
+
+    String locale = (String)map.get("locale");
     if (locale == null) locale = "NULL";
     System.out.println(">>>> Before " + pe.getPhaseId() + " Locale: " + locale);
   }
@@ -61,13 +69,23 @@ public class DebugPhaseListener implements PhaseListener
   @Override
   public void afterPhase(PhaseEvent pe)
   {
-    String locale = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("locale");
+    Map<String, Object> map =
+      FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+
+    String locale = (String)map.get("locale");
     if (locale == null) locale = "NULL";
     System.out.println(">>>> After " + pe.getPhaseId() + " Locale: " + locale);
+
+    Long millis = (Long)map.get("startPhaseMillis");
+    long ellapsed = millis != null ? System.currentTimeMillis() - millis : 0;
+    System.out.println("* Ellapsed: " + (ellapsed) + " ms\n");
 
     PhaseId phaseId = pe.getPhaseId();
     if (phaseId.equals(PhaseId.RENDER_RESPONSE))
     {
+      millis = (Long)map.get("startCycleMillis");
+      ellapsed = millis != null ? System.currentTimeMillis() - millis : 0;
+      System.out.println("* TOTAL ELLAPSED: " + (ellapsed) + " ms\n");
       System.out.println("\nEND =========================\n");
     }
   }

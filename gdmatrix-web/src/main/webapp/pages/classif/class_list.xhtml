@@ -36,9 +36,7 @@
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.classId)}"
                        rendered="#{navigatorBean.selectionPending}"
-                       ajax="false"
-                       immediate="true"
-                       onclick="showOverlay()"
+                       process="@this" update="@form:cnt"
                        title="Select" alt="Select"
                        />
       <p:commandButton icon="pi pi-external-link" 
@@ -46,14 +44,14 @@
                        action="#{classFinderBean.view(rowIndex)}"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        />     
       <p:commandButton icon="ui-icon pi pi-sitemap"
                        styleClass="rounded-button ui-button-flat"
                        action="#{classFinderBean.viewNodeInTree(row.classId)}"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        title="Tree" alt="Tree"
                        />
     </p:column>

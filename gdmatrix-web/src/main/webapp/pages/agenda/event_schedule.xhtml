@@ -24,18 +24,18 @@
             delay="500" />
     <p:ajax event="dateDblSelect" listener="#{eventFinderBean.onDateDblSelect}" 
             process="@this" 
-            update=":mainform:search_tabs:obj_tabs :mainform:context_panel"            
+            update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"            
             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />        
     <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"            
             process="@this"
-            update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+            update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
     <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}"
             process="@this"
-            update=":mainform:search_tabs:obj_tabs" />
+            update="@form:cnt:search_tabs:obj_tabs" />
     <p:ajax event="eventResize" listener="#{eventFinderBean.onEventResize}"
             process="@this"
-            update=":mainform:search_tabs:obj_tabs" />
+            update="@form:cnt:search_tabs:obj_tabs" />
   </p:schedule>
   
   <h:outputText value="#{agendaBundle.insufficientFilter}"

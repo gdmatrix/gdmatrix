@@ -81,6 +81,11 @@ public class TemplateBean implements Serializable
     return highlightedItems;
   }
 
+  public boolean isNavigatorAction(String action)
+  {
+    return action != null && action.contains("navigatorBean");
+  }
+
   private List<MatrixMenuItem> getHighlightedItems(List<MenuElement> elements)
   {
     List<MatrixMenuItem> menuItems = new ArrayList<>();

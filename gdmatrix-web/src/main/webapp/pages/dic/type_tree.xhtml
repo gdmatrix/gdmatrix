@@ -17,7 +17,7 @@
     <p:treeNode id="tree_node">
       <span class="pi pi-book mr-2" />     
       <p:commandLink action="#{navigatorBean.view(data.typeId)}" 
-                     update=":mainform:central_column :mainform:context_panel">
+                     update="@form:cnt:central_column @form:cnt:context_panel">
         <h:outputText value="#{data.description}"
                       styleClass="#{data.typeId == typeObjectBean.objectId ? 'current' : ''}" />
       </p:commandLink>

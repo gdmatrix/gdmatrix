@@ -38,11 +38,12 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseCasesTabBean.refCaseId}"
-                                  process=":mainform:search_tabs:case_cases_dialog"
+                                  process="@form:cnt:search_tabs:case_cases_dialog"
                                   type="#{caseCasesTabBean.refCaseTypeId != null ? caseCasesTabBean.refCaseTypeId : 'Case'}"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
+                                  oncomplete="PF('caseCasesDialog').hide();"
                                   required="#{not empty param['mainform:search_tabs:case_cases_store']}"
                                   requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}">
           </emcomp:objectReference>
@@ -61,11 +62,12 @@
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
+                                oncomplete="PF('caseCasesDialog').hide();"
                                 required="#{not empty param['mainform:search_tabs:case_cases_store']}"
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
-                                process=":mainform:search_tabs:case_cases_dialog"
-                                update=":mainform:search_tabs:case_cases_dialog">
+                                process="@form:cnt:search_tabs:case_cases_dialog"
+                                update="@form:cnt:search_tabs:case_cases_dialog">
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -110,7 +112,7 @@
       <p:commandButton id="case_cases_store" action="#{caseCasesTabBean.store}"
                        styleClass="m-1" value="#{objectBundle.store}"
                        process="case_cases_dialog"
-                       update=":mainform:search_tabs:tabs case_cases_panel"
+                       update="@form:cnt:search_tabs:tabs case_cases_panel"
                        oncomplete="if (!isFacesError()) PF('caseCasesDialog').hide()"/>
       <p:commandButton action="#{caseCasesTabBean.cancel}"
                        styleClass="m-1" value="#{objectBundle.cancel}"

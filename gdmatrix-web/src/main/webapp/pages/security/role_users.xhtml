@@ -22,7 +22,7 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{roleUsersTabBean.create}"
-                           process=":mainform:search_tabs:tabs"
+                           process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:role_users_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('roleUsersDialog').show()"
@@ -41,15 +41,13 @@
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
-                         ajax="false"
-                         immediate="true"
+                         process="@this" update="@form:cnt"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                         onclick="showOverlay()"
                          action="#{navigatorBean.show('User', row.user.userId)}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          action="#{roleUsersTabBean.edit(row)}"
-                         process=":mainform:search_tabs:tabs"
+                         process="@form:cnt:search_tabs:tabs"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          update="@parent:@parent:@parent:@parent:role_users_dialog"
                          resetValues="true"
@@ -97,8 +95,9 @@
                          value="#{securityBundle.user_user}"
                          styleClass="w-full" indicateRequired="true" />
           <emcomp:objectReference value="#{roleUsersTabBean.userId}"
-                                  process=":mainform:search_tabs:tabs:role_users_dialog"
+                                  process="@form:cnt:search_tabs:tabs:role_users_dialog"
                                   type="User"
+                                  oncomplete="PF('roleUsersDialog').hide();"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"

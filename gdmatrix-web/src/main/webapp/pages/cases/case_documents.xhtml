@@ -40,8 +40,8 @@
                            rendered="#{caseDocumentsTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                         action="#{caseDocumentsTabBean.create}" 
-                        process=":mainform:search_tabs:tabs"
-                           update=":mainform:search_tabs:case_documents_dialog"
+                        process="@form:cnt:search_tabs:tabs"
+                           update="@form:cnt:search_tabs:case_documents_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
@@ -80,21 +80,21 @@
                       target="_blank" />
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
-                         ajax="false" onclick="showOverlay()"
+                         process="@this" update="@form:cnt"
                          action="#{navigatorBean.show('Document', row.document.docId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          action="#{caseDocumentsTabBean.edit(row)}"
-                         process=":mainform:search_tabs:tabs"
-                         update=":mainform:search_tabs:case_documents_dialog"
+                         process="@form:cnt:search_tabs:tabs"
+                         update="@form:cnt:search_tabs:case_documents_dialog"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}" /> 
         <p:commandButton icon="pi pi-trash"
                          action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"
-                         process=":mainform:search_tabs:tabs"
-                         update=":mainform:search_tabs:remove_document_dialog"
+                         process="@form:cnt:search_tabs:tabs"
+                         update="@form:cnt:search_tabs:remove_document_dialog"
                          oncomplete="PF('removeDocumentDialog').show()"
                          styleClass="rounded-button ui-button-flat" />
       </p:column>

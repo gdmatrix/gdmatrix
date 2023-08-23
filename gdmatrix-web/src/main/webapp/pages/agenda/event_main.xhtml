@@ -25,8 +25,8 @@
                               required="#{not empty param['mainform:search_tabs:store']}"
                               requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{eventObjectBean.formSelector}"
-                              process=":mainform:search_tabs:tabs"
-                              update=":mainform:search_tabs:tabs"
+                              process="@form:cnt:search_tabs:tabs"
+                              update="@form:cnt:search_tabs:tabs"
                               disabled="#{!eventObjectBean.editable}">
         </emcomp:typeReference>
       </div>

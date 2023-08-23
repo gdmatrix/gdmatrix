@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -63,11 +62,13 @@ public class ContextTreeBean implements Serializable
 
   public void clear()
   {
+    selectedNode = null;
     rootNodes.clear();
   }
 
   public void update()
   {
+    selectedNode = null;
     String scriptName = getScriptName();
     if (scriptName != null)
     {
@@ -161,7 +162,7 @@ public class ContextTreeBean implements Serializable
     Map requestMap = FacesContext.getCurrentInstance()
       .getExternalContext().getRequestMap();
     List actions = (List)requestMap.get("contextActions");
-    if (actions == null)
+    if (actions == null && selectedNode != null)
     {
       try
       {

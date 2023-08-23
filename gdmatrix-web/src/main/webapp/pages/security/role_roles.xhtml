@@ -22,7 +22,7 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{roleRolesTabBean.create}"
-                           process=":mainform:search_tabs:tabs"
+                           process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:role_roles_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('roleRolesDialog').show()"
@@ -41,10 +41,8 @@
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
-                         ajax="false"
-                         immediate="true"
+                         process="@this" update="@form:cnt"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                         onclick="showOverlay()"
                          action="#{navigatorBean.show('Role', row.includedRole.roleId)}" />
         <p:commandButton action="#{roleRolesTabBean.remove(row)}"
                          process="@this"
@@ -89,8 +87,9 @@
                          indicateRequired="true"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{roleRolesTabBean.includedRoleId}"
-                                  process=":mainform:search_tabs:tabs:role_roles_dialog"
+                                  process="@form:cnt:search_tabs:tabs:role_roles_dialog"
                                   type="Role"
+                                  oncomplete="PF('roleRolesDialog').hide();"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"

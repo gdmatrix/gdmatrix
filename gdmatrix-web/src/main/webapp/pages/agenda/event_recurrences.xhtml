@@ -23,7 +23,7 @@
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            disabled="#{eventObjectBean.isNew() or !eventObjectBean.editable}"
                            action="#{eventCopyTabBean.reset}"
-                           process=":mainform:search_tabs:tabs"
+                           process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:@parent:event_copy_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('eventCopyDialog').show()"
@@ -63,7 +63,7 @@
                          resetValues="true"
                          process="@this"
                          oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
-                         update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                         update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                          title="#{objectBundle.show}" alt="#{objectBundle.show}" />
       </p:column>
 
