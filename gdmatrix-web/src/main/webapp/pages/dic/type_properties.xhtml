@@ -204,8 +204,11 @@
             
             <div class="field col-12">
               <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_description}"/>
-              <p:inputText value="#{typePropertiesTabBean.editing.description}" />
+                             value="#{dicBundle.typeProperties_description}"
+                             indicateRequired="true"/>
+              <p:inputText value="#{typePropertiesTabBean.editing.description}" 
+                           required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
+                           requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}"/>
             </div>    
 
             <div class="field col-12">
