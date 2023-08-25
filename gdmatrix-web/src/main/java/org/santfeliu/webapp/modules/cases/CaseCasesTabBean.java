@@ -33,12 +33,9 @@ package org.santfeliu.webapp.modules.cases;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,14 +43,11 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseCase;
 import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
-import org.matrix.cases.CasePersonFilter;
-import org.matrix.cases.CasePersonView;
 import org.matrix.dic.PropertyDefinition;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
-import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -495,25 +489,8 @@ public class CaseCasesTabBean extends TabBean
   private List<CaseCasesDataTableRow> getResultsByPersons(String cpTypeId1,
     String cpTypeId2) throws Exception
   {
-    CasePersonFilter filter = new CasePersonFilter();
-    filter.setCaseId(getObjectId());
-    filter.setCasePersonTypeId(cpTypeId1);
-    List<CasePersonView> casePersons
-      = CasesModuleBean.getPort(false).findCasePersonViews(filter);
-
-    Case mainCase = caseObjectBean.getCase();
-    CaseMatcher matcher = new CaseMatcher(mainCase, casePersons);
-
-    for (String personId : matcher.getPersonIds())
-    {
-      filter = new CasePersonFilter();
-      filter.setPersonId(personId);
-      filter.setCasePersonTypeId(cpTypeId2);
-      casePersons = CasesModuleBean.getPort(false).findCasePersonViews(filter);
-      matcher.compare(casePersons);
-    }
-
-    return toDataTableRows(matcher.getResults());
+    CaseCaseMatcher matcher = new CaseCaseMatcher(caseObjectBean.getCase());
+    return toDataTableRows(matcher.matchByPersons(cpTypeId1, cpTypeId2));
   }
 
   private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView>
@@ -659,180 +636,4 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
-  private class CaseMatcher
-  {
-    private Case mainCase;
-    private final Map<String, List<Period>> personsPeriods = new HashMap<>();
-    private TreeMap<String, CaseCaseView> results = new TreeMap<>();
-
-    public CaseMatcher(Case mainCase, List<CasePersonView> casePersons)
-    {
-      this.mainCase = mainCase;
-      for (CasePersonView casePerson : casePersons)
-      {
-        storePeriods(casePerson);
-      }
-    }
-
-    public Set<String> getPersonIds()
-    {
-      return personsPeriods.keySet();
-    }
-
-    public List<CaseCaseView> getResults()
-    {
-      List<CaseCaseView> list = new ArrayList<>();
-      list.addAll(results.values());
-      return list;
-    }
-
-    public void compare(List<CasePersonView> casePersons)
-    {
-      for (CasePersonView casePerson : casePersons)
-      {
-        addMatch(casePerson);
-      }
-    }
-
-    private void addMatch(CasePersonView casePerson)
-    {
-      String personId = casePerson.getPersonView().getPersonId();
-      String casePersonId = casePerson.getCasePersonId();
-      CaseCaseView item = results.get(casePersonId);
-      Period p = isWithinRange(casePerson);
-      if (item == null && p != null)
-      {
-        CaseCaseView caseCaseView = new CaseCaseView();
-        Case relCase = casePerson.getCaseObject();
-        caseCaseView.setCaseCaseTypeId(relCase.getCaseTypeId());
-        caseCaseView.setMainCase(mainCase);
-        caseCaseView.setRelCase(relCase);
-        caseCaseView.setStartDate(p.getFormattedStartDate());
-        caseCaseView.setEndDate(p.getFormattedEndDate());
-        DictionaryUtils.setProperty(caseCaseView, "personId", personId);
-        results.put(casePersonId, caseCaseView);
-      }
-    }
-
-    private Period isWithinRange(CasePersonView casePerson)
-    {
-      String personId = casePerson.getPersonView().getPersonId();
-      List<Period> list = personsPeriods.get(personId);
-      if (list != null && !list.isEmpty())
-      {
-        for (Period period : list)
-        {
-          Period p = period.isWithinRange(casePerson);
-          if (p != null)
-          {
-            return p;
-          }
-        }
-      }
-      return null;
-    }
-
-    private void storePeriods(CasePersonView casePerson)
-    {
-      String personId = casePerson.getPersonView().getPersonId();
-      Period period = new Period(casePerson);
-      List<Period> list = personsPeriods.get(personId);
-      if (list == null)
-      {
-        list = new ArrayList<>();
-      }
-      list.add(period);
-      personsPeriods.put(personId, list);
-    }
-
-    private class Period
-    {
-      private Date startDate;
-      private Date endDate;
-
-      public Period(String startDate, String endDate)
-      {
-        if (startDate != null)
-        {
-          this.startDate = TextUtils.parseInternalDate(startDate);
-        }
-        if (endDate != null)
-        {
-          this.endDate = TextUtils.parseInternalDate(endDate);
-        }
-      }
-
-      public Period(CasePersonView casePerson)
-      {
-        this(casePerson.getStartDate(), casePerson.getEndDate());
-      }
-
-      public Date getStartDate()
-      {
-        return startDate;
-      }
-
-      public void setStartDate(Date startDate)
-      {
-        this.startDate = startDate;
-      }
-
-      public Date getEndDate()
-      {
-        return endDate;
-      }
-
-      public void setEndDate(Date endDate)
-      {
-        this.endDate = endDate;
-      }
-
-      public String getFormattedStartDate()
-      {
-        return TextUtils.formatDate(startDate, "yyyyMMdd");
-      }
-
-      public String getFormattedEndDate()
-      {
-        return TextUtils.formatDate(endDate, "yyyyMMdd");
-      }
-
-      public Period isWithinRange(CasePersonView casePerson)
-      {
-        Date cpStart = TextUtils.parseInternalDate(casePerson.getStartDate());
-        Date cpEnd = TextUtils.parseInternalDate(casePerson.getEndDate());
-        if ((startDate == null || cpEnd == null || startDate.getTime() <= cpEnd.getTime())
-          && (endDate == null || cpStart == null || endDate.getTime() >= cpStart.getTime()))
-        {
-          return getMergedPeriod(casePerson.getStartDate(), casePerson.getEndDate());
-        }
-        else return null;
-      }
-
-      private Period getMergedPeriod(String startDate, String endDate)
-      {
-        Period result = new Period(startDate, endDate);
-
-        if (this.startDate != null)
-        {
-          if (result.getStartDate() == null ||
-            result.getStartDate().getTime() <= this.startDate.getTime())
-          {
-            result.setStartDate(this.startDate);
-          }
-        }
-
-        if (this.endDate != null)
-        {
-          if (result.getEndDate() == null ||
-            result.getEndDate().getTime() > this.endDate.getTime())
-          {
-            result.setEndDate(this.endDate);
-          }
-        }
-
-        return result;
-      }
-    }
-  }
 }
