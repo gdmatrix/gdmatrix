@@ -34,6 +34,7 @@ import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class NavigatorBean extends WebBean implements Serializable
   private Leap inProgressLeap;
 
   private static final List<String> DEFAULT_CONTEXT_PANELS =
-    List.of("recents", "history", "favorites");
+    Arrays.asList("recents", "history", "favorites");
 
   public BaseTypeInfo getBaseTypeInfo()
   {
