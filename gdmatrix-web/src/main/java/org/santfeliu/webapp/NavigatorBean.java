@@ -317,6 +317,25 @@ public class NavigatorBean extends WebBean implements Serializable
     objectBean.setObjectId(NEW_OBJECT_ID);
     objectBean.load();
   }
+  
+  public void remove(String objectTypeId, String objectId)
+  {
+    if (objectTypeId != null && objectId != null)
+    {
+      BaseTypeInfo baseTypeInfo = getBaseTypeInfo(objectTypeId);    
+      if (baseTypeInfo == null) return;
+
+      baseTypeInfo.remove(objectId);
+      updateCount++;
+
+      ObjectBean objectBean = baseTypeInfo.getObjectBean();
+      if (objectBean.getObjectId().equals(objectId))
+      {
+        objectBean.setObjectId(NEW_OBJECT_ID);
+        objectBean.load();    
+      }
+    }
+  }  
 
   public String close()
   {

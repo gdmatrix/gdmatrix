@@ -214,7 +214,7 @@ public class ContextTreeBean implements Serializable
 
           selectedNode.getChildren().add(newNode);
           this.selectedNode = newNode;
-
+          
           return navigatorBean.show(newData.typeId, newData.objectId);
         }
         else
@@ -230,6 +230,7 @@ public class ContextTreeBean implements Serializable
       {
         if (selectedNode.getParent() instanceof ObjectTreeNode)
         {
+          navigatorBean.remove(data.typeId, data.objectId);
           ((ObjectTreeNode)objectTreeNode.getParent()).update();
         }
         else
