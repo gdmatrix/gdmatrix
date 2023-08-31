@@ -54,7 +54,7 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseAddressesTabBean.caseAddressTypeId}"
                                 process="@form:cnt:search_tabs:case_addresses_dialog"
-                                update="@form:cnt:search_tabs:case_addresses_dialog"
+                                update="@form:cnt:search_tabs:case_addresses_panel"
                                 oncomplete="PF('caseAddressesDialog').hide();"
                                 onselect="PF('caseAddressesDialog').show();"
                                 type="#{caseAddressesTabBean.tabBaseTypeId != null ? caseAddressesTabBean.tabBaseTypeId : 'CaseAddress'}"
