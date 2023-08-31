@@ -61,12 +61,6 @@ public class CaseACLTabBean extends ACLTabBean
   }
 
   @Override
-  protected String getDialogWidgetVar()
-  {
-    return "caseACLDialog";
-  }
-
-  @Override
   public ObjectBean getObjectBean()
   {
     return caseObjectBean;

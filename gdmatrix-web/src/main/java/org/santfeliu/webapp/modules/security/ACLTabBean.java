@@ -93,7 +93,6 @@ public abstract class ACLTabBean extends TabBean
     if (editing != null)
     {
       editing.setRoleId(roleId);
-      showDialog();
     }
   }
 
@@ -240,19 +239,6 @@ public abstract class ACLTabBean extends TabBean
     return -1;
   }
 
-  protected void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('" + getDialogWidgetVar() + "').show();");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
   protected void createAccessControlEdits(List<AccessControl> accessControlList,
     List<AccessControlEdit> edits)
   {
@@ -271,8 +257,6 @@ public abstract class ACLTabBean extends TabBean
       edit.actions.add(accessControl.getAction());
     }
   }
-
-  protected abstract String getDialogWidgetVar();
 
   public class AccessControlEdit implements Serializable
   {

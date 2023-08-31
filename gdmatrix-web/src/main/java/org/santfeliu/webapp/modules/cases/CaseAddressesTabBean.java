@@ -73,7 +73,7 @@ public class CaseAddressesTabBean extends TabBean
   private CaseAddress editing;
   Map<String, TabInstance> tabInstances = new HashMap();
   private boolean importPersons;
-  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
   public class TabInstance
   {
@@ -102,7 +102,7 @@ public class CaseAddressesTabBean extends TabBean
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
     if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
-    {    
+    {
       TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
       if (tabInstance == null)
       {
@@ -159,23 +159,10 @@ public class CaseAddressesTabBean extends TabBean
     this.importPersons = importPersons;
   }
 
-  public void setAddressId(String addressId)
-  {
-    editing.setAddressId(addressId);
-    showDialog();
-  }
-
-  public String getAddressId()
-  {
-    return editing.getAddressId();
-  }
-
   public void setCaseAddressTypeId(String caseAddressTypeId)
   {
     if (editing != null)
       editing.setCaseAddressTypeId(caseAddressTypeId);
-
-    showDialog();
   }
 
   public String getCaseAddressTypeId()
@@ -262,10 +249,10 @@ public class CaseAddressesTabBean extends TabBean
       {
         CaseAddressFilter filter = new CaseAddressFilter();
         filter.setCaseId(caseObjectBean.getObjectId());
-                
+
         getCurrentTabInstance().rows =
           CasesModuleBean.getPort(false).findCaseAddressViews(filter);
-        
+
         String typeId = getTabBaseTypeId();
         if (typeId != null)
         {
@@ -275,8 +262,8 @@ public class CaseAddressesTabBean extends TabBean
             String caseAddressTypeId = item.getCaseAddressTypeId();
             if (caseAddressTypeId == null)
               caseAddressTypeId = DictionaryConstants.CASE_ADDRESS_TYPE;
-              
-            Type caseAddressType = 
+
+            Type caseAddressType =
               TypeCache.getInstance().getType(caseAddressTypeId);
             if (caseAddressType.isDerivedFrom(typeId))
             {
@@ -284,7 +271,7 @@ public class CaseAddressesTabBean extends TabBean
             }
           }
           getCurrentTabInstance().rows = result;
-        }            
+        }
       }
       catch (Exception ex)
       {
@@ -326,7 +313,7 @@ public class CaseAddressesTabBean extends TabBean
           importPersonsFromEditingAddress();
           refreshCasePersonsTabInstances();
           importPersons = false;
-        }         
+        }
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -363,7 +350,7 @@ public class CaseAddressesTabBean extends TabBean
   {
     editing = null;
   }
-  
+
   @Override
   public void clear()
   {
@@ -418,19 +405,19 @@ public class CaseAddressesTabBean extends TabBean
       }
     }
   }
-  
+
   private void refreshCasePersonsTabInstances()
   {
-    CasePersonsTabBean casePersonsTabBean = 
+    CasePersonsTabBean casePersonsTabBean =
       WebUtils.getBean("casePersonsTabBean");
-    Collection<CasePersonsTabBean.TabInstance> cpTabInstances = 
+    Collection<CasePersonsTabBean.TabInstance> cpTabInstances =
       casePersonsTabBean.getTabInstances().values();
     for (CasePersonsTabBean.TabInstance tabInstance : cpTabInstances)
     {
       tabInstance.objectId = NEW_OBJECT_ID;
     }
   }
-  
+
   private void importPersonsFromEditingAddress() throws Exception
   {
     if (editing != null)
@@ -455,32 +442,32 @@ public class CaseAddressesTabBean extends TabBean
         }
       }
     }
-  } 
-  
+  }
+
   private List<String> getCurrentPersons(String caseId)
     throws Exception
   {
     List<String> results = new ArrayList();
-    
+
     CasePersonFilter filter = new CasePersonFilter();
     filter.setCaseId(caseId);
-    List<CasePersonView> casePersonViews = 
+    List<CasePersonView> casePersonViews =
       CasesModuleBean.getPort(true).findCasePersonViews(filter);
 
     for(CasePersonView casePersonView : casePersonViews)
     {
       results.add(casePersonView.getPersonView().getPersonId());
     }
-    
+
     return results;
-  }  
-  
+  }
+
   private List<PersonAddressView> getPersonAddresses(String addressId)
     throws Exception
   {
     PersonAddressFilter filter = new PersonAddressFilter();
     filter.setAddressId(addressId);
     return KernelModuleBean.getPort(true).findPersonAddressViews(filter);
-  }  
+  }
 
 }

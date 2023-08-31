@@ -200,7 +200,6 @@ public class CaseDocumentsTabBean extends TabBean
     if (editing != null)
     {
       editing.setDocId(docId);
-      showDialog();
     }
   }
 
@@ -208,8 +207,6 @@ public class CaseDocumentsTabBean extends TabBean
   {
     if (editing != null)
       editing.setCaseDocTypeId(caseDocTypeId);
-
-    showDialog();
   }
 
   public String getCaseDocTypeId()
@@ -550,19 +547,6 @@ public class CaseDocumentsTabBean extends TabBean
       editing = (CaseDocument)stateArray[0];
 
       load();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  private void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('caseDocumentsDialog').show();");
     }
     catch (Exception ex)
     {

@@ -144,14 +144,14 @@ public class ObjectReferenceBean
     String typeId = getTypeId();
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
     return navigatorBean.find(typeId,
-      getValueExpression().getExpressionString());
+      getValueExpression().getExpressionString(), getOnSelect());
   }
 
   public String create()
   {
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
     return navigatorBean.execute(new CreateObjectLeap(getTypeId()), true,
-      getValueExpression().getExpressionString());
+      getValueExpression().getExpressionString(), getOnSelect());
   }
 
   public String getTypeId()
@@ -172,6 +172,11 @@ public class ObjectReferenceBean
       (CompositeComponentExpressionHolder)WebUtils.getValue("#{cc.attrs}");
 
     return exprHolder.getExpression("value");
+  }
+
+  public String getOnSelect()
+  {
+    return WebUtils.getValue("#{cc.attrs.onselect}");
   }
 
   public class CreateObjectLeap extends NavigatorBean.Leap

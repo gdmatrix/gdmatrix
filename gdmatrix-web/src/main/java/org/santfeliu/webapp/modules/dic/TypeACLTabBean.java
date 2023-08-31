@@ -56,12 +56,6 @@ public class TypeACLTabBean extends ACLTabBean
   }
 
   @Override
-  protected String getDialogWidgetVar()
-  {
-    return "typeACLDialog";
-  }
-
-  @Override
   public ObjectBean getObjectBean()
   {
     return typeObjectBean;

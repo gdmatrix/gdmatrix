@@ -50,7 +50,9 @@ import javax.enterprise.inject.spi.CDI;
 import javax.faces.view.ViewScoped;
 import org.santfeliu.webapp.util.MenuTypesCache;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.PropertyDefinition;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
@@ -184,21 +186,21 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public String show()
   {
-    return show(null, null, 0, null);
+    return show(null, null, 0, null, null);
   }
 
   public String show(String objectTypeId, String objectId)
   {
-    return show(objectTypeId, objectId, 0, null);
+    return show(objectTypeId, objectId, 0, null, null);
   }
 
   public String show(String objectTypeId, String objectId, int editTabSelector)
   {
-    return show(objectTypeId, objectId, editTabSelector, null);
+    return show(objectTypeId, objectId, editTabSelector, null, null);
   }
 
   public String show(String objectTypeId, String objectId,
-    int editTabSelector, String selectExpression)
+    int editTabSelector, String selectExpression, String jsAction)
   {
     BaseTypeInfo baseTypeInfo = objectTypeId == null ?
       getBaseTypeInfo() : getBaseTypeInfo(objectTypeId);
@@ -219,12 +221,17 @@ public class NavigatorBean extends WebBean implements Serializable
     }
     leap.setEditTabSelector(editTabSelector);
 
-    return execute(leap, true, selectExpression);
+    return execute(leap, true, selectExpression, jsAction);
   }
 
   public String find(String baseTypeId, String selectExpression)
   {
-    return show(baseTypeId, null, 0, selectExpression);
+    return show(baseTypeId, null, 0, selectExpression, null);
+  }
+
+  public String find(String baseTypeId, String selectExpression, String jsAction)
+  {
+    return show(baseTypeId, null, 0, selectExpression, jsAction);
   }
 
   public String select()
@@ -330,12 +337,18 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public String execute(Leap leap)
   {
-    return execute(leap, true, null);
+    return execute(leap, true, null, null);
   }
 
   public String execute(Leap leap, boolean saveHistory)
   {
-    return execute(leap, saveHistory, null);
+    return execute(leap, saveHistory, null, null);
+  }
+
+  public String execute(Leap leap, boolean saveHistory,
+    String selectExpression)
+  {
+    return execute(leap, saveHistory, selectExpression, null);
   }
 
   /**
@@ -345,9 +358,11 @@ public class NavigatorBean extends WebBean implements Serializable
    * @param saveHistory saves previous object in history.
    * @param selectExpression the expression to select a leap destination
    *   objectId.
+   * @param jsAction the javascript action to execute when selecting an object.
    * @return the target outcome.
   */
-  public String execute(Leap leap, boolean saveHistory, String selectExpression)
+  public String execute(Leap leap, boolean saveHistory,
+    String selectExpression, String jsAction)
   {
     SelectLeap selectLeap = null;
 
@@ -377,7 +392,8 @@ public class NavigatorBean extends WebBean implements Serializable
           lastBaseTypeInfo.saveTabBeansState(lastObjectBean.getEditTabs());
 
           selectLeap =
-            new SelectLeap(lastBaseTypeInfo.getBaseTypeId(), selectExpression);
+            new SelectLeap(lastBaseTypeInfo.getBaseTypeId(),
+              selectExpression, jsAction);
           selectLeap.setup(lastObjectBean);
         }
       }
@@ -963,13 +979,15 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public static class SelectLeap extends DirectLeap
   {
-    String selectExpression;
+    final String selectExpression;
+    final String jsAction;
     String selectedObjectId;
 
-    public SelectLeap(String baseTypeId, String selectExpression)
+    public SelectLeap(String baseTypeId, String selectExpression, String jsAction)
     {
       super(baseTypeId);
       this.selectExpression = selectExpression;
+      this.jsAction = jsAction;
     }
 
     public String getSelectedObjectId()
@@ -1012,6 +1030,12 @@ public class NavigatorBean extends WebBean implements Serializable
       System.out.println("selectedObjectId: " + selectedObjectId);
 
       WebUtils.setValue(selectExpression, String.class, selectedObjectId);
+
+      if (!StringUtils.isBlank(jsAction))
+      {
+        PrimeFaces current = PrimeFaces.current();
+        current.executeScript(jsAction);
+      }
     }
   }
 

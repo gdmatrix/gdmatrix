@@ -145,7 +145,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
     resetFormSelector();
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
     return navigatorBean.execute(new SelectTypeLeap(getTypeId()), true,
-      getValueExpression().getExpressionString());
+      getValueExpression().getExpressionString(), getOnSelect());
   }
 
   @Override

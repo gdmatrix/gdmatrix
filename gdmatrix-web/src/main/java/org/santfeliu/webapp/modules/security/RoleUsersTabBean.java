@@ -103,7 +103,6 @@ public class RoleUsersTabBean extends TabBean
     if (editing != null)
     {
       editing.setUserId(userId);
-      showDialog();
     }
   }
 
@@ -214,19 +213,6 @@ public class RoleUsersTabBean extends TabBean
       editing = (UserInRole)stateArray[0];
 
       load();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  private void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('roleUsersDialog').show();");
     }
     catch (Exception ex)
     {

@@ -43,6 +43,7 @@
                                   queryDelay="1000"
                                   renderCreateButton="true"
                                   oncomplete="PF('caseDocumentsDialog').hide();"
+                                  onselect="PF('caseDocumentsDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_documents_store']}"
                                   requiredMessage="#{messageBundle.DOCUMENT_MUST_BE_SELECTED}"
                                   minQueryLength="3">
@@ -58,6 +59,7 @@
                                 process="@form:cnt:search_tabs:case_documents_dialog"
                                 update="@form:cnt:search_tabs:case_documents_dialog"
                                 oncomplete="PF('caseDocumentsDialog').hide();"
+                                onselect="PF('caseDocumentsDialog').show();"
                                 type="#{caseDocumentsTabBean.tabBaseTypeId != null ? caseDocumentsTabBean.tabBaseTypeId : 'CaseDocument'}"
                                 showNavigatorItems="#{caseDocumentsTabBean.tabBaseTypeId != 'CaseDocument' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                

@@ -22,7 +22,7 @@
       <composite:attribute name="scrollHeight" required="false" default="200" />
       <composite:attribute name="size" required="false" />
       <composite:attribute name="process" required="false" default="@form:cnt" />
-      <composite:attribute name="update" required="false" default="@form:cnt" />
+      <composite:attribute name="update" required="false" default="@none" />
       <composite:attribute name="required" required="false" default="false" />
       <composite:attribute name="requiredMessage" required="false" />
       <composite:attribute name="disabled" required="false" default="false" />
@@ -33,6 +33,7 @@
       <composite:attribute name="renderCreateButton" required="false" default="false" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
       <composite:attribute name="oncomplete" required="false" default="true" />
+      <composite:attribute name="onselect" required="false" default="" />
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />

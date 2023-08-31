@@ -34,12 +34,13 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseAddresses_address}"
                          indicateRequired="true" />
-          <emcomp:objectReference value="#{caseAddressesTabBean.addressId}"
+          <emcomp:objectReference value="#{caseAddressesTabBean.editing.addressId}"
                                   process="@form:cnt:search_tabs:case_addresses_dialog"
                                   type="Address"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   oncomplete="PF('caseAddressesDialog').hide();"
+                                  onselect="PF('caseAddressesDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_addresses_store']}"
                                   requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
                                   minQueryLength="3">
@@ -55,6 +56,7 @@
                                 process="@form:cnt:search_tabs:case_addresses_dialog"
                                 update="@form:cnt:search_tabs:case_addresses_dialog"
                                 oncomplete="PF('caseAddressesDialog').hide();"
+                                onselect="PF('caseAddressesDialog').show();"
                                 type="#{caseAddressesTabBean.tabBaseTypeId != null ? caseAddressesTabBean.tabBaseTypeId : 'CaseAddress'}"
                                 showNavigatorItems="#{caseAddressesTabBean.tabBaseTypeId != 'CaseAddress' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                

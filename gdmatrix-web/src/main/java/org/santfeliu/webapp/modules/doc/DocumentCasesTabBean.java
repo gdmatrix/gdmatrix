@@ -104,7 +104,6 @@ public class DocumentCasesTabBean extends TabBean
     if (editing != null)
     {
       editing.setCaseId(caseId);
-      showDialog();
     }
   }
 
@@ -232,19 +231,6 @@ public class DocumentCasesTabBean extends TabBean
   public void onTypeSelect(FacesEvent event)
   {
     System.out.println("onTypeSelect");
-  }
-
-  private void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('documentCasesDialog').show();");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
   }
 
 }

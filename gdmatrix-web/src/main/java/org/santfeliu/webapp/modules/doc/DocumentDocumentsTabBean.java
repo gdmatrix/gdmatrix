@@ -106,7 +106,6 @@ public class DocumentDocumentsTabBean extends TabBean
     if (editing != null)
     {
       editing.relatedDocument.setDocId(docId);
-      showDialog();
     }
   }
 
@@ -256,19 +255,6 @@ public class DocumentDocumentsTabBean extends TabBean
       {
         relatedDocuments.add(edit.getRelatedDocument());
       }
-    }
-  }
-
-  protected void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('documentDocumentsDialog').show();");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
     }
   }
 
