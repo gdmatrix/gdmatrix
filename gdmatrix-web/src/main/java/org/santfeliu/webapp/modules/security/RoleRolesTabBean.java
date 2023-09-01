@@ -40,7 +40,6 @@ import javax.inject.Named;
 import org.matrix.security.RoleInRole;
 import org.matrix.security.RoleInRoleFilter;
 import org.matrix.security.RoleInRoleView;
-import org.primefaces.PrimeFaces;
 import static org.santfeliu.security.web.SecurityConfigBean.getPort;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;

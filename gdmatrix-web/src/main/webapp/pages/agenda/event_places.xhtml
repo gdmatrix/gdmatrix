@@ -120,6 +120,7 @@
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   oncomplete="PF('eventPlacesDialog').hide();"
+                                  onselect="PF('eventPlacesDialog').show();"                                  
                                   required="#{not empty param['mainform:search_tabs:tabs:event_places_store']}"
                                   requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
                                   widgetVar="objRefAddressAutocomplete"
@@ -145,6 +146,8 @@
                                   minQueryLength="3"
                                   widgetVar="objRefRoomAutocomplete"
                                   autoUpdate="false"
+                                  oncomplete="PF('eventPlacesDialog').hide();"                                  
+                                  onselect="PF('eventPlacesDialog').show();"
                                   disabled="#{!eventObjectBean.editable}">
             <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefAddress):autocomplete" />
             <p:ajax event="clear" process="@none" oncomplete="PF('objRefAddressAutocomplete').clear()" />

@@ -46,6 +46,7 @@
                                         scrollHeight="200"
                                         queryDelay="1000"
                                         oncomplete="PF('casePersonsDialog').hide();"
+                                        onselect="PF('casePersonsDialog').show();"
                                         required="#{not empty param['mainform:search_tabs:case_persons_store']}"
                                         requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
                                         minQueryLength="3">
@@ -59,8 +60,9 @@
                                indicateRequired="true" />
                 <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
                                       process="@form:cnt:search_tabs:case_persons_dialog"
-                                      update="@form:cnt:search_tabs:case_persons_dialog"
+                                      update="@form:cnt:search_tabs:case_persons_panel"
                                       oncomplete="PF('casePersonsDialog').hide();"
+                                      onselect="PF('casePersonsDialog').show();"
                                       type="#{casePersonsTabBean.tabBaseTypeId != null ? casePersonsTabBean.tabBaseTypeId : 'CasePerson'}"
                                       showNavigatorItems="#{casePersonsTabBean.tabBaseTypeId != 'CasePerson' ? 'false' : 'true'}"
                                       showNonInstantiableItems="false"
@@ -100,11 +102,12 @@
               <p:outputPanel styleClass="field col-12" 
                              rendered="#{casePersonsTabBean.editing.personId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
-                <emcomp:objectReference value="#{casePersonsTabBean.addressId}"
+                <emcomp:objectReference value="#{casePersonsTabBean.editing.addressId}"
                                         process="@form:cnt:search_tabs:case_persons_dialog"
                                         type="Address"
                                         styleClass="w-full"
                                         oncomplete="PF('casePersonsDialog').hide();"
+                                        onselect="PF('casePersonsDialog').show();"                                        
                                         scrollHeight="200"
                                         queryDelay="1000"
                                         minQueryLength="3">
@@ -203,6 +206,7 @@
                                         update="@form:cnt:search_tabs:case_persons_dialog"
                                         type="Person"
                                         oncomplete="PF('casePersonsDialog').hide();"
+                                        onselect="PF('casePersonsDialog').show();"                                        
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"
@@ -212,10 +216,11 @@
 
               <p:outputPanel id="representant_address" styleClass="field col-12" rendered="#{casePersonsTabBean.editing.representantPersonId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
-                <emcomp:objectReference value="#{casePersonsTabBean.representantAddressId}"
+                <emcomp:objectReference value="#{casePersonsTabBean.editing.representantAddressId}"
                                         process="@form:cnt:search_tabs:case_persons_dialog"
                                         type="Address"
                                         oncomplete="PF('casePersonsDialog').hide();"
+                                        onselect="PF('casePersonsDialog').show();"                                        
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"

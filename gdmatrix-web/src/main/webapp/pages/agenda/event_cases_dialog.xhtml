@@ -33,7 +33,7 @@
                          value="#{agendaBundle.eventCases_case}"
                          styleClass="w-full"
                          indicateRequired="true" />
-          <emcomp:objectReference value="#{eventCasesTabBean.caseId}"
+          <emcomp:objectReference value="#{eventCasesTabBean.editing.caseId}"
                                   process="@form:cnt:search_tabs:event_cases_dialog"
                                   type="Case"
                                   styleClass="w-full"
@@ -43,6 +43,7 @@
                                   requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}"
                                   minQueryLength="3"
                                   oncomplete="PF('eventCasesDialog').hide();"
+                                  onselect="PF('eventCasesDialog').show();"
                                   disabled="#{!eventObjectBean.editable}">
           </emcomp:objectReference>
         </div>
@@ -56,8 +57,9 @@
           <emcomp:typeReference value="#{eventCasesTabBean.caseEventTypeId}"
                                 formSelector="#{eventCasesTabBean.formSelector}"
                                 process="@form:cnt:search_tabs:event_cases_dialog"
-                                update="@form:cnt:search_tabs:event_cases_dialog"
+                                update="@form:cnt:search_tabs:event_cases_panel"
                                 oncomplete="PF('eventCasesDialog').hide();"
+                                onselect="PF('eventCasesDialog').show();"
                                 type="#{eventCasesTabBean.tabBaseTypeId != null ? eventCasesTabBean.tabBaseTypeId : 'CaseEvent'}"
                                 showNavigatorItems="#{eventCasesTabBean.tabBaseTypeId != 'CaseEvent' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                

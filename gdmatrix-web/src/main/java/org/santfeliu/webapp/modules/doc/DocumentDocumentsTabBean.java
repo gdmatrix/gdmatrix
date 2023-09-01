@@ -41,7 +41,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.RelatedDocument;
 import org.matrix.doc.RelationType;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.faces.FacesUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;

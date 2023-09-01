@@ -39,6 +39,7 @@
                                 showNavigatorItems="#{caseInterventionsTabBean.tabBaseTypeId != 'Intervention' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false" 
                                 oncomplete="PF('caseInterventionsDialog').hide();"
+                                onselect="PF('caseInterventionsDialog').show();"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
@@ -47,7 +48,7 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseInterventionsTabBean.formSelector}"
                                 process="@form:cnt:search_tabs:case_interventions_dialog"
-                                update="@form:cnt:search_tabs:case_interventions_dialog">
+                                update="@form:cnt:search_tabs:case_interventions_panel">
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -87,6 +88,7 @@
                                   process="@form:cnt:search_tabs:case_interventions_dialog"
                                   styleClass="w-full"
                                   oncomplete="PF('caseInterventionsDialog').hide();"
+                                  onselect="PF('caseInterventionsDialog').show();"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3">

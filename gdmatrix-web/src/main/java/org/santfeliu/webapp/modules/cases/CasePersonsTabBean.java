@@ -55,7 +55,6 @@ import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
-import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -269,15 +268,12 @@ public class CasePersonsTabBean extends TabBean
       onPersonSelect(personId);
     }    
     editing.setPersonId(personId);
-    showDialog();
   }
     
   public void setCasePersonTypeId(String casePersonTypeId)
   {
     if (editing != null)
       editing.setCasePersonTypeId(casePersonTypeId);
-
-    showDialog();
   }
 
   public String getCasePersonTypeId()
@@ -298,7 +294,6 @@ public class CasePersonsTabBean extends TabBean
       onRepresentantSelect(personId);
     }    
     editing.setRepresentantPersonId(personId);
-    showDialog();
   }  
   
   public void onPersonSelect()
@@ -310,28 +305,6 @@ public class CasePersonsTabBean extends TabBean
   {
     onRepresentantSelect(editing.getRepresentantPersonId());
   }  
-  
-  public String getAddressId()
-  {
-    return editing.getAddressId();
-  }
-  
-  public void setAddressId(String personId)
-  {
-    editing.setAddressId(personId);
-    showDialog();
-  }  
-  
-  public String getRepresentantAddressId()
-  {
-    return editing.getRepresentantAddressId();
-  }
-  
-  public void setRepresentantAddressId(String personId)
-  {
-    editing.setRepresentantAddressId(personId);
-    showDialog();
-  }    
 
   public List<ContactView> getPersonContacts()
   {
@@ -676,19 +649,6 @@ public class CasePersonsTabBean extends TabBean
   {
     return (casePerson != null && casePerson.getCasePersonId() == null);
   }
-
-  private void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('casePersonsDialog').show();");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }  
   
   private void onPersonSelect(String personId) 
   {

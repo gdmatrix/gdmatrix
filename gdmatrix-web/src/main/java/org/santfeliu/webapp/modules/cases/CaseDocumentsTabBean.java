@@ -50,7 +50,6 @@ import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.doc.Document;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.NavigatorBean;

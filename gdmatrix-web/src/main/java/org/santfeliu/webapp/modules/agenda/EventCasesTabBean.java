@@ -42,7 +42,6 @@ import javax.inject.Named;
 import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
-import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -139,23 +138,10 @@ public class EventCasesTabBean extends TabBean
     this.editing = editing;
   }
 
-  public void setCaseId(String caseId)
-  {
-    editing.setCaseId(caseId);
-    showDialog();
-  }
-
-  public String getCaseId()
-  {
-    return editing.getCaseId();
-  }
-
   public void setCaseEventTypeId(String caseEventTypeId)
   {
     if (editing != null)
       editing.setCaseEventTypeId(caseEventTypeId);
-
-    showDialog();
   }
 
   public String getCaseEventTypeId()
@@ -308,13 +294,11 @@ public class EventCasesTabBean extends TabBean
         load();
         editing = null;
         info("STORE_OBJECT");
-        hideDialog();
       }
     }
     catch (Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -372,18 +356,6 @@ public class EventCasesTabBean extends TabBean
   private boolean isNew(CaseEvent attendant)
   {
     return (attendant != null && attendant.getCaseEventId() == null);
-  }
-
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventCasesDialog').show();");
-  }
-
-  private void hideDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventCasesDialog').hide();");
   }
 
   private void refreshHiddenTabInstances()

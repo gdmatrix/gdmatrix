@@ -41,7 +41,6 @@ import javax.inject.Named;
 import org.matrix.agenda.EventTheme;
 import org.matrix.agenda.EventThemeFilter;
 import org.matrix.agenda.EventThemeView;
-import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -170,7 +169,6 @@ public class EventThemesTabBean extends TabBean
         editing.setEventId(eventId);
         AgendaModuleBean.getClient(false).storeEventTheme(editing);
         editing = null;
-        hideDialog();
         load();
         info("STORE_OBJECT");
       }
@@ -178,7 +176,6 @@ public class EventThemesTabBean extends TabBean
     catch (Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -235,18 +232,6 @@ public class EventThemesTabBean extends TabBean
   private boolean isNew(EventTheme eventTheme)
   {
     return (eventTheme != null && eventTheme.getEventThemeId() == null);
-  }
-
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventThemesDialog').show();");
-  }
-
-  private void hideDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventThemesDialog').hide();");
   }
 
 }

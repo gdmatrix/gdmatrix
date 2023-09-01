@@ -45,7 +45,6 @@ import javax.inject.Named;
 import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
 import org.matrix.agenda.AttendantView;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -142,23 +141,10 @@ public class EventPersonsTabBean extends TabBean
     this.editing = editing;
   }
 
-  public void setPersonId(String personId)
-  {
-    editing.setPersonId(personId);
-    showDialog();
-  }
-
-  public String getPersonId()
-  {
-    return editing.getPersonId();
-  }
-
   public void setAttendantTypeId(String attendantTypeId)
   {
     if (editing != null)
       editing.setAttendantTypeId(attendantTypeId);
-
-    showDialog();
   }
 
   public String getAttendantTypeId()
@@ -359,13 +345,11 @@ public class EventPersonsTabBean extends TabBean
         load();
         editing = null;
         info("STORE_OBJECT");
-        hideDialog();
       }
     }
     catch (Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -422,18 +406,6 @@ public class EventPersonsTabBean extends TabBean
   private boolean isNew(Attendant attendant)
   {
     return (attendant != null && attendant.getAttendantId() == null);
-  }
-
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventPersonsDialog').show();");
-  }
-
-  private void hideDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventPersonsDialog').hide();");
   }
 
   private void refreshHiddenTabInstances()

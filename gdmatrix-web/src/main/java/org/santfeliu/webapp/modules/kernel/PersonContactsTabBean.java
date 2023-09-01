@@ -39,7 +39,6 @@ import javax.inject.Named;
 import org.matrix.kernel.Contact;
 import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
-import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -111,7 +110,6 @@ public class PersonContactsTabBean extends TabBean
     if (editing != null)
     {
       editing.setContactTypeId(contactTypeId);
-      showDialog();
     }
   }
 
@@ -183,7 +181,6 @@ public class PersonContactsTabBean extends TabBean
     catch(Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -231,12 +228,6 @@ public class PersonContactsTabBean extends TabBean
     {
       error(ex);
     }
-  }
-  
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('personContactsDialog').show();");
   }
 
 }

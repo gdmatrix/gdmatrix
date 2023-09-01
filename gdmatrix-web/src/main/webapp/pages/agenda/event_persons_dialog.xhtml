@@ -32,15 +32,15 @@
           <p:outputLabel for="@next"
                          value="#{agendaBundle.attendants_person}"
                          styleClass="w-full" indicateRequired="true" />
-          <emcomp:objectReference value="#{eventPersonsTabBean.personId}"
+          <emcomp:objectReference value="#{eventPersonsTabBean.editing.personId}"
                                   type="Person"
                                   process="@form:cnt:search_tabs:event_persons_dialog"
-                                  update="@form:cnt:search_tabs:event_persons_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   oncomplete="PF('eventPersonsDialog').hide();"
+                                  onselect="PF('eventPersonsDialog').show();"                                  
                                   required="#{not empty param['mainform:search_tabs:event_persons_store']}"
                                   requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
                                   disabled="#{!eventObjectBean.editable}">
@@ -53,8 +53,9 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventPersonsTabBean.attendantTypeId}"
                                 process="@form:cnt:search_tabs:event_persons_dialog"
-                                update="@form:cnt:search_tabs:event_persons_dialog"
+                                update="@form:cnt:search_tabs:event_persons_panel"
                                 oncomplete="PF('eventPersonsDialog').hide();"
+                                onselect="PF('eventPersonsDialog').show();"
                                 type="#{eventPersonsTabBean.tabBaseTypeId != null ? eventPersonsTabBean.tabBaseTypeId : 'Attendant'}"
                                 showNavigatorItems="#{eventPersonsTabBean.tabBaseTypeId != 'Attendant' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                

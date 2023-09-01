@@ -42,7 +42,6 @@ import org.matrix.agenda.EventPlace;
 import org.matrix.agenda.EventPlaceFilter;
 import org.matrix.agenda.EventPlaceView;
 import org.matrix.kernel.Room;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.kernel.AddressObjectBean;
@@ -107,7 +106,6 @@ public class EventPlacesTabBean extends TabBean
   {
     editing.setAddressId(addressId);
     editing.setRoomId(null);
-    showDialog();
   }
 
   public String getAddressId()
@@ -126,7 +124,6 @@ public class EventPlacesTabBean extends TabBean
         String addressId = room.getAddressId();
         editing.setAddressId(addressId);
       }
-      showDialog();
     }
     catch (Exception ex)
     {
@@ -216,7 +213,6 @@ public class EventPlacesTabBean extends TabBean
         editing.setEventId(eventId);
         AgendaModuleBean.getClient(false).storeEventPlace(editing);
         editing = null;
-        hideDialog();
         load();
         info("STORE_OBJECT");
       }
@@ -224,7 +220,6 @@ public class EventPlacesTabBean extends TabBean
     catch (Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -304,18 +299,6 @@ public class EventPlacesTabBean extends TabBean
       error(ex);
     }
     return null;
-  }
-
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventPlacesDialog').show();");
-  }
-
-  private void hideDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventPlacesDialog').hide();");
   }
 
   private boolean isEditing(String pageObjectId)

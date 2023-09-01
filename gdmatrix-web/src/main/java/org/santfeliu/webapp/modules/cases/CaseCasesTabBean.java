@@ -44,7 +44,6 @@ import org.matrix.cases.CaseCase;
 import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
 import org.matrix.dic.PropertyDefinition;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
@@ -202,8 +201,6 @@ public class CaseCasesTabBean extends TabBean
   {
     if (editing != null)
       editing.setCaseCaseTypeId(caseCaseTypeId);
-
-    showDialog();
   }
 
   public String getCaseCaseTypeId()
@@ -220,7 +217,6 @@ public class CaseCasesTabBean extends TabBean
       else
         editing.setCaseId(caseId);
     }
-    showDialog();
   }
 
   public String getRefCaseId()
@@ -382,7 +378,6 @@ public class CaseCasesTabBean extends TabBean
     catch(Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -431,19 +426,6 @@ public class CaseCasesTabBean extends TabBean
       formSelector = (String)stateArray[1];
 
       load();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  private void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('caseCasesDialog').show();");
     }
     catch (Exception ex)
     {

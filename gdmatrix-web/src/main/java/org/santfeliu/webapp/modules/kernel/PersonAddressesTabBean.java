@@ -39,7 +39,6 @@ import javax.inject.Named;
 import org.matrix.kernel.PersonAddress;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
-import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -116,7 +115,6 @@ public class PersonAddressesTabBean extends TabBean
     if (editing != null)
     {
       editing.setAddressId(addressId);
-      showDialog();
     }
   }
 
@@ -160,13 +158,11 @@ public class PersonAddressesTabBean extends TabBean
   {
     storeAddress();
     load();
-    info("STORE_OBJECT");
   }
 
   public void remove(PersonAddressView row)
   {
     removeAddress(row);
-    info("REMOVE_OBJECT");
     load();
   }
 
@@ -225,7 +221,6 @@ public class PersonAddressesTabBean extends TabBean
     catch (Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -252,12 +247,6 @@ public class PersonAddressesTabBean extends TabBean
       error(ex);
     }
     return null;
-  }
-
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('personAddressesDialog').show();");
   }
 
 }

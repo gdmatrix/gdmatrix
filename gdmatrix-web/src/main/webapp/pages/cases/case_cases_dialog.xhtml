@@ -44,6 +44,7 @@
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   oncomplete="PF('caseCasesDialog').hide();"
+                                  onselect="PF('caseCasesDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_cases_store']}"
                                   requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}">
           </emcomp:objectReference>
@@ -63,11 +64,12 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 oncomplete="PF('caseCasesDialog').hide();"
+                                onselect="PF('caseCasesDialog').show();"
                                 required="#{not empty param['mainform:search_tabs:case_cases_store']}"
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 process="@form:cnt:search_tabs:case_cases_dialog"
-                                update="@form:cnt:search_tabs:case_cases_dialog">
+                                update="@form:cnt:search_tabs:case_cases_panel">
           </emcomp:typeReference>
         </p:outputPanel>
 

@@ -43,7 +43,6 @@ import javax.inject.Named;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
 import org.matrix.dic.Type;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -108,8 +107,6 @@ public class TypePropertiesTabBean extends TabBean
   {
     if (editing != null)
       editing.setEnumTypeId(enumTypeId);
-    
-    showDialog();
   }
   
   public String getEnumTypeId()
@@ -282,12 +279,6 @@ public class TypePropertiesTabBean extends TabBean
     } 
     return results;
   }
-  
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('typePropertiesDialog').show();");
-  }  
   
   @Override
   public Serializable saveState()

@@ -42,7 +42,6 @@ import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
-import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -167,7 +166,6 @@ public class CaseInterventionsTabBean extends TabBean
       editing = new Intervention();
 
     editing.setPersonId(personId);
-    showDialog();
   }
 
   public List<DataTableRow> getRows()
@@ -265,8 +263,6 @@ public class CaseInterventionsTabBean extends TabBean
   {
     if (editing != null)
       editing.setIntTypeId(intTypeId);
-
-    showDialog();
   }
 
   public String getIntTypeId()
@@ -407,19 +403,6 @@ public class CaseInterventionsTabBean extends TabBean
       formSelector = (String)stateArray[1];
 
       load();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  private void showDialog()
-  {
-    try
-    {
-      PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('caseInterventionsDialog').show();");
     }
     catch (Exception ex)
     {

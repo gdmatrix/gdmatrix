@@ -35,13 +35,14 @@
                          value="#{caseBundle.caseEvents_event}"
                          styleClass="w-full"
                          indicateRequired="true" />
-          <emcomp:objectReference value="#{caseEventsTabBean.eventId}"
+          <emcomp:objectReference value="#{caseEventsTabBean.editing.eventId}"
                                   process="@form:cnt:search_tabs:case_events_dialog"
                                   type="Event"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   oncomplete="PF('caseEventsDialog').hide();"
+                                  onselect="PF('caseEventsDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_events_store']}"
                                   requiredMessage="#{messageBundle.EVENT_MUST_BE_SELECTED}"
                                   minQueryLength="3">
@@ -55,8 +56,9 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseEventsTabBean.caseEventTypeId}"
                                 process="@form:cnt:search_tabs:case_events_dialog"
-                                update="@form:cnt:search_tabs:case_events_dialog"
+                                update="@form:cnt:search_tabs:case_events_panel"
                                 oncomplete="PF('caseEventsDialog').hide();"
+                                onselect="PF('caseEventsDialog').show();"
                                 type="#{caseEventsTabBean.tabBaseTypeId != null ? caseEventsTabBean.tabBaseTypeId : 'CaseEvent'}"
                                 showNavigatorItems="#{caseEventsTabBean.tabBaseTypeId != 'CaseEvent' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                

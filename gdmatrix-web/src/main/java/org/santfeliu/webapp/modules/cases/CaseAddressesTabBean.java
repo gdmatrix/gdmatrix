@@ -50,7 +50,6 @@ import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -318,13 +317,11 @@ public class CaseAddressesTabBean extends TabBean
         load();
         editing = null;
         info("STORE_OBJECT");
-        hideDialog();
       }
     }
     catch (Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -381,18 +378,6 @@ public class CaseAddressesTabBean extends TabBean
   private boolean isNew(CaseAddress caseAddress)
   {
     return (caseAddress != null && caseAddress.getCaseAddressId() == null);
-  }
-
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('caseAddressesDialog').show();");
-  }
-
-  private void hideDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('caseAddressesDialog').hide();");
   }
 
   private void refreshHiddenTabInstances()

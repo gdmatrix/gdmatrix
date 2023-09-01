@@ -38,7 +38,6 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
-import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.dic.DicModuleBean;

@@ -43,7 +43,6 @@ import javax.inject.Named;
 import org.matrix.agenda.EventDocument;
 import org.matrix.agenda.EventDocumentFilter;
 import org.matrix.agenda.EventDocumentView;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -139,23 +138,10 @@ public class EventDocumentsTabBean extends TabBean
     this.editing = editing;
   }
 
-  public void setDocId(String docId)
-  {
-    editing.setDocId(docId);
-    showDialog();
-  }
-
-  public String getDocId()
-  {
-    return editing.getDocId();
-  }
-
   public void setEventDocTypeId(String eventDocTypeId)
   {
     if (editing != null)
       editing.setEventDocTypeId(eventDocTypeId);
-
-    showDialog();
   }
 
   public String getEventDocTypeId()
@@ -313,13 +299,11 @@ public class EventDocumentsTabBean extends TabBean
         load();
         editing = null;
         info("STORE_OBJECT");
-        hideDialog();
       }
     }
     catch (Exception ex)
     {
       error(ex);
-      showDialog();
     }
   }
 
@@ -377,18 +361,6 @@ public class EventDocumentsTabBean extends TabBean
   private boolean isNew(EventDocument eventDocument)
   {
     return (eventDocument != null && eventDocument.getEventDocId() == null);
-  }
-
-  private void showDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventDocumentsDialog').show();");
-  }
-
-  private void hideDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventDocumentsDialog').hide();");
   }
 
   private void refreshHiddenTabInstances()

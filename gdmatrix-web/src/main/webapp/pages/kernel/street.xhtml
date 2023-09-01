@@ -64,6 +64,7 @@
               <emcomp:objectReference type="City" value="#{streetFinderBean.filter.cityId}"
                                       queryDelay="1000"
                                       minQueryLength="3"
+                                      onselect="showPanel('leftPanel')"                                      
                                       process="@form:cnt:filter_panel">
               </emcomp:objectReference>
             </div>            

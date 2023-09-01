@@ -88,6 +88,7 @@
           <emcomp:objectReference value="#{addressPersonsTabBean.personId}"
                                   type="Person"
                                   oncomplete="PF('addressPersonsDialog').hide();"
+                                  onselect="PF('addressPersonsDialog').show();"                                  
                                   process="@form:cnt:search_tabs:tabs:address_persons_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
