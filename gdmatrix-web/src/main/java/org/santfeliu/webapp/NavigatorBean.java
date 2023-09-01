@@ -47,9 +47,11 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import org.santfeliu.webapp.util.MenuTypesCache;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.PropertyDefinition;
 import org.primefaces.PrimeFaces;
@@ -78,6 +80,7 @@ public class NavigatorBean extends WebBean implements Serializable
   public static final String DEFAULT_SEARCH_TAB_SELECTOR_PROPERTY =
     "defaultSearchTabSelector";
   public static final String FIND_ON_FIRST_LOAD_PROPERTY = "findOnFirstLoad";
+  public static final String OBJECTID_PARAMETER = "oid";
 
   public static final String NEW_OBJECT_ID = "";
   public static final int DEFAULT_RECENT_LIST_SIZE = 5;
@@ -155,8 +158,13 @@ public class NavigatorBean extends WebBean implements Serializable
       if (objectBean != null)
       {
         String page = objectBean.getTypeBean().getViewId();
-        return "<script>window.history.pushState({},'','" + page +
-          "?xmid=" + baseTypeInfo.getMid() + "');</script>";
+        String url = page + "?xmid=" + baseTypeInfo.getMid();
+        if (!objectBean.isNew())
+        {
+          url += "&" + OBJECTID_PARAMETER + "=" + objectBean.getObjectId();
+        }
+        return "<script>window.history.pushState({},'','" + url +
+          "');</script>";
       }
     }
     return "";
@@ -208,8 +216,25 @@ public class NavigatorBean extends WebBean implements Serializable
     if (baseTypeInfo == null) return null;
 
     DirectLeap leap = new DirectLeap(baseTypeInfo.getBaseTypeId());
-    leap.setObjectId(objectId == null ?
-      baseTypeInfo.getObjectId() : objectId);
+    if (objectId == null)
+    {
+      HttpServletRequest request = (HttpServletRequest)FacesContext.
+        getCurrentInstance().getExternalContext().getRequest();
+      if ("GET".equals(request.getMethod()))
+      {
+        objectId = request.getParameter(OBJECTID_PARAMETER);
+        if (objectId == null)
+        {
+          objectId = NavigatorBean.NEW_OBJECT_ID;
+        }
+      }
+      else
+      {
+        objectId = baseTypeInfo.getObjectId();
+      }
+    }
+
+    leap.setObjectId(objectId);
     if (selectExpression != null)
     {
       leap.setSearchTabSelector(0);
@@ -283,13 +308,11 @@ public class NavigatorBean extends WebBean implements Serializable
     String baseTypeId = baseTypeInfo.getBaseTypeId();
 
     ObjectBean objectBean = baseTypeInfo.getObjectBean();
-    if (!objectBean.isNew())
-    {
-      // save previous object in history
-      DirectLeap historyLeap = new DirectLeap(baseTypeId);
-      historyLeap.setup(objectBean);
-      history.push(historyLeap);
-    }
+
+    // save previous object in history
+    DirectLeap historyLeap = new DirectLeap(baseTypeId);
+    historyLeap.setup(objectBean);
+    history.push(historyLeap);
 
     objectBean.setObjectId(objectId);
     objectBean.setSearchTabSelector(objectBean.getEditModeSelector());
@@ -317,12 +340,12 @@ public class NavigatorBean extends WebBean implements Serializable
     objectBean.setObjectId(NEW_OBJECT_ID);
     objectBean.load();
   }
-  
+
   public void remove(String objectTypeId, String objectId)
   {
     if (objectTypeId != null && objectId != null)
     {
-      BaseTypeInfo baseTypeInfo = getBaseTypeInfo(objectTypeId);    
+      BaseTypeInfo baseTypeInfo = getBaseTypeInfo(objectTypeId);
       if (baseTypeInfo == null) return;
 
       baseTypeInfo.remove(objectId);
@@ -332,10 +355,10 @@ public class NavigatorBean extends WebBean implements Serializable
       if (objectBean.getObjectId().equals(objectId))
       {
         objectBean.setObjectId(NEW_OBJECT_ID);
-        objectBean.load();    
+        objectBean.load();
       }
     }
-  }  
+  }
 
   public String close()
   {
@@ -394,7 +417,7 @@ public class NavigatorBean extends WebBean implements Serializable
         ObjectBean lastObjectBean = lastBaseTypeInfo.getObjectBean();
         if (lastObjectBean == null) return null;
 
-        if (saveHistory && !lastObjectBean.isNew())
+        if (saveHistory)
         {
           // save previous object in history
           DirectLeap historyLeap = new DirectLeap(lastBaseTypeId);

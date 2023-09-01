@@ -36,6 +36,7 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.webapp.NavigatorBean.DirectLeap;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -72,9 +73,20 @@ public class HistoryBean implements Serializable
   public String getDescription(DirectLeap leap)
   {
     String baseTypeId = leap.getBaseTypeId();
-    TypeBean typeBean = TypeBean.getInstance(baseTypeId);
-    if (typeBean == null) return baseTypeId + " " + leap.getObjectId();
-    return typeBean.getDescription(leap.getObjectId());
+    if (StringUtils.isBlank(leap.getObjectId()))
+    {
+      NavigatorBean.BaseTypeInfo baseTypeInfo =
+        navigatorBean.getBaseTypeInfo(baseTypeId);
+      return baseTypeInfo == null ? baseTypeId : baseTypeInfo.getLabel();
+    }
+    else
+    {
+      TypeBean typeBean = TypeBean.getInstance(baseTypeId);
+      if (typeBean == null)
+        return baseTypeId + " " + leap.getObjectId();
+      else
+        return typeBean.getDescription(leap.getObjectId());
+    }
   }
 
   public boolean isCurrentBaseType(DirectLeap leap)

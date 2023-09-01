@@ -93,8 +93,6 @@
           <ui:include src="#{navigatorBean.page}"></ui:include>
         </div>
       </div>
-
-      <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
     </p:outputPanel>
 
     <p:ajaxStatus onstart="showOverlay()" onsuccess="hideOverlay()" delay="2000" />
@@ -119,6 +117,9 @@
         <p:commandButton value="#{webBundle.buttonAccept}" type="button" styleClass="ui-confirmdialog-yes" />
         <p:commandButton value="#{webBundle.buttonCancel}" type="button" styleClass="ui-confirmdialog-no"/>
     </p:confirmDialog>
+    
+    <p:commandButton action="#{navigatorBean.close()}" widgetVar="backButton" 
+                     style="display:none" process="@this" update="@form:cnt" />
 
     <script>
       document.body.addEventListener("pointerdown",
@@ -136,7 +137,11 @@
       }
       onResize();
       window.addEventListener("resize", onResize);
-      window.addEventListener("popstate", () => window.location.reload());
+      window.addEventListener("popstate", () => {
+        var id = PF("backButton").id;
+        var button = document.getElementById(id);
+        button.click();
+      });
     </script>
 
   </ui:define>
