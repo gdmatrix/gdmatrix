@@ -40,7 +40,7 @@
                                indicateRequired="true" />
                 <emcomp:objectReference value="#{casePersonsTabBean.personId}"
                                         process="@form:cnt:search_tabs:case_persons_dialog"
-                                        update="@form:cnt"
+                                        update="@form:cnt:search_tabs:case_persons_panel"
                                         type="Person"
                                         styleClass="w-full"
                                         scrollHeight="200"
@@ -203,7 +203,7 @@
                                styleClass="w-full" />
                 <emcomp:objectReference value="#{casePersonsTabBean.representantPersonId}"
                                         process="@form:cnt:search_tabs:case_persons_dialog"
-                                        update="@form:cnt:search_tabs:case_persons_dialog"
+                                        update="@form:cnt:search_tabs:case_persons_panel"
                                         type="Person"
                                         oncomplete="PF('casePersonsDialog').hide();"
                                         onselect="PF('casePersonsDialog').show();"                                        

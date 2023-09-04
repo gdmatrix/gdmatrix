@@ -430,6 +430,7 @@ public class CasePersonsTabBean extends TabBean
   {
     editing = new CasePerson(); 
     editing.setCasePersonTypeId(getCreationTypeId());
+    tabIndex = 0;    
   }
   
   @Override
@@ -476,6 +477,7 @@ public class CasePersonsTabBean extends TabBean
           getPersonContacts(editing.getPersonId());
         representantContacts = 
           getPersonContacts(editing.getRepresentantPersonId());
+        tabIndex = 0;        
       }
       catch (Exception ex)
       {
