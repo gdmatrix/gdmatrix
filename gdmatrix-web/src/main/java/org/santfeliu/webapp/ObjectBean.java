@@ -178,7 +178,7 @@ public abstract class ObjectBean extends BaseBean
   }
 
   public abstract Object getObject();
-  
+
   public BaseTypeInfo getBaseTypeInfo()
   {
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
@@ -204,7 +204,7 @@ public abstract class ObjectBean extends BaseBean
     }
     catch (Exception ex)
     {
-      if (!NEW_OBJECT_ID.endsWith(objectId))
+      if (!NEW_OBJECT_ID.equals(objectId))
       {
         // show error
         error(ex);
@@ -226,17 +226,17 @@ public abstract class ObjectBean extends BaseBean
     if (setupName == null)
     {
       // look in dictionary
-      String typeId = isNew() ? getBaseTypeInfo().getBaseTypeId() : 
+      String typeId = isNew() ? getBaseTypeInfo().getBaseTypeId() :
         getTypeBean().getTypeId(getObject());
-  
+
       if (typeId != null)
       {
-        Type type = TypeCache.getInstance().getType(typeId);            
+        Type type = TypeCache.getInstance().getType(typeId);
         PropertyDefinition propdef = type.getPropertyDefinition("objectSetup");
         if (propdef != null && !propdef.getValue().isEmpty())
         {
           setupName = propdef.getValue().get(0);
-        }      
+        }
       }
     }
 
@@ -270,42 +270,42 @@ public abstract class ObjectBean extends BaseBean
       }
     }
   }
-  
+
   public void loadActionsClient()
   {
-    String actionsScriptName = 
+    String actionsScriptName =
       (String) getObjectSetup().getScriptActions().getScriptName();
-    
+
     if (actionsScriptName != null)
     {
-      try 
+      try
       {
         actionsClient = new ScriptClient();
         actionsClient.executeScript(actionsScriptName);
       }
-      catch (Exception ex) 
+      catch (Exception ex)
       {
         error(ex);
         actionsClient = null;
       }
-    }     
+    }
   }
-  
+
   public void callAction(String actionName)
   {
     Action action = getObjectSetup().getScriptActions().getAction(actionName);
     if (action != null)
       executeAction(action.getName());
   }
-  
+
   protected ActionObject executeAction(String actionName)
   {
     ActionObject actionObject = new ActionObject(getObject());
     if (actionsClient != null)
-    {    
+    {
       Object callable = actionsClient.get(actionName);
       if (callable instanceof Callable)
-      {     
+      {
         actionsClient.put("actionObject", actionObject);
         actionsClient.execute((Callable)callable);
         actionObject = (ActionObject) actionsClient.get("actionObject");
@@ -315,12 +315,12 @@ public abstract class ObjectBean extends BaseBean
           if (actionObject.isRefresh())
             load();
           addFacesMessages(actionObject.getMessages());
-        }           
+        }
       }
     }
     return actionObject;
-  }    
-  
+  }
+
   protected void addFacesMessages(List<Message> messages)
   {
     for (Message message : messages)
@@ -330,23 +330,23 @@ public abstract class ObjectBean extends BaseBean
       Severity severity = message.getSeverity();
       switch(severity)
       {
-        case ERROR: 
+        case ERROR:
           FacesUtils.addMessage(text, params, FacesMessage.SEVERITY_ERROR);
           break;
         case WARN:
           FacesUtils.addMessage(text, params, FacesMessage.SEVERITY_WARN);
-          break;          
+          break;
         default:
-          FacesUtils.addMessage(text, params, FacesMessage.SEVERITY_INFO);                    
+          FacesUtils.addMessage(text, params, FacesMessage.SEVERITY_INFO);
       }
     }
     messages.clear();
   }
-  
+
   protected void setActionResult(ActionObject scriptObject)
-  {    
-  }    
-  
+  {
+  }
+
   public boolean isDisabledEditTab(EditTab tab)
   {
     return tab.getBeanName() != null && NEW_OBJECT_ID.equals(objectId);
@@ -447,7 +447,7 @@ public abstract class ObjectBean extends BaseBean
   {
     ComponentUtils.selectTabWithErrors("mainform:search_tabs:tabs");
   }
-  
+
   public boolean isRenderProperty(String propName)
   {
     propName = "render" + StringUtils.capitalize(propName);
@@ -456,7 +456,7 @@ public abstract class ObjectBean extends BaseBean
       return true;
     else
       return Boolean.parseBoolean(value.toString());
-  }  
+  }
 
   private void clear()
   {
