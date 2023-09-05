@@ -170,26 +170,16 @@ public class NavigatorBean extends WebBean implements Serializable
     return "";
   }
 
-  public String getPage()
+  public String getContent()
   {
     try
     {
-      String viewId = getBaseTypeInfo().getObjectSetup().getViewId();
-      System.out.println("getPage: " + viewId);
-      return viewId;
+      return getBaseTypeInfo().getObjectSetup().getViewId();
     }
     catch (Exception ex)
     {
       return "/pages/obj/empty.xhtml";
     }
-  }
-
-  public String showMid(String mid)
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    userSessionBean.getMenuModel().setSelectedMid(mid);
-
-    return show();
   }
 
   public String show()

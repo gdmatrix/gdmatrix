@@ -74,23 +74,23 @@
         <p:toolbar class="app_toolbar">
           <p:toolbarGroup>
             <ui:repeat value="#{templateBean.highlightedItems}" var="item">
-              <p:commandButton action="#{navigatorBean.showMid(item.menuItem.mid)}"
+              <p:commandButton action="#{userSessionBean.executeMenuItem(item.menuItem)}"
                                icon="#{item.getIcon()}"
                                styleClass="#{item.isSelected() ? 'current' : ''}"
                                process="@this" update="@form:cnt"
                                title="#{item.getProperty('label')}" 
-                               rendered="#{templateBean.isNavigatorAction(item.menuItem.action)}" />
+                               rendered="#{templateBean.isSpaAction(item.menuItem)}" />
               <p:commandButton action="#{item.getUrl()}" icon="#{item.getIcon()}" 
                                styleClass="#{item.isSelected() ? 'current' : ''}" ajax="false"
                                title="#{item.getProperty('label')}" 
                                onclick="#{item.getOnclick()}" 
-                               rendered="#{not templateBean.isNavigatorAction(item.menuItem.action)}"/>
+                               rendered="#{not templateBean.isSpaAction(item.menuItem)}"/>
             </ui:repeat>
           </p:toolbarGroup>
         </p:toolbar>
 
         <div class="app_body">
-          <ui:include src="#{navigatorBean.page}"></ui:include>
+          <ui:include src="#{templateBean.content}"></ui:include>
         </div>
       </div>
     </p:outputPanel>

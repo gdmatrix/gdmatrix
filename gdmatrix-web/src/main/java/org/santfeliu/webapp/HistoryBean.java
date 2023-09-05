@@ -111,6 +111,6 @@ public class HistoryBean implements Serializable
     String baseTypeId = leap.getBaseTypeId();
     NavigatorBean.BaseTypeInfo baseTypeInfo =
       navigatorBean.getBaseTypeInfo(baseTypeId);
-    return baseTypeInfo.getIcon();
+    return baseTypeInfo == null ? null : baseTypeInfo.getIcon();
   }
 }

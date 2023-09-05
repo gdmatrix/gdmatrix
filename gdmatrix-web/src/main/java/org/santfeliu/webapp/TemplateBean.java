@@ -38,12 +38,15 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuElement;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.util.MatrixMenuItem;
 import org.santfeliu.webapp.util.MatrixMenuModel;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -81,9 +84,25 @@ public class TemplateBean implements Serializable
     return highlightedItems;
   }
 
-  public boolean isNavigatorAction(String action)
+  public String getContent()
   {
-    return action != null && action.contains("navigatorBean");
+    MenuItemCursor cursor =
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem();
+
+    String contentExpression = cursor.getProperty("content");
+    if (!StringUtils.isBlank(contentExpression) &&
+        !"none".equals(contentExpression))
+    {
+      return WebUtils.evaluateExpression(contentExpression);
+    }
+    return "/pages/obj/empty.xhtml";
+  }
+
+  public boolean isSpaAction(MenuItemCursor cursor)
+  {
+    String contentExpression = cursor.getProperty("content");
+    return !StringUtils.isBlank(contentExpression) &&
+           !"none".equals(contentExpression);
   }
 
   private List<MatrixMenuItem> getHighlightedItems(List<MenuElement> elements)
