@@ -2798,3 +2798,76 @@ div#not_carousel .widget_content
 {
   
 }
+
+/* LinksWidget default CSS */
+
+ul.linksWidget
+{
+  padding-left: 0;
+}
+
+ul.linksWidget a .linkLabel
+{
+  font-size: 16px;
+  line-height: 18px;
+}
+
+ul.linksWidget a .linkLabel:hover
+{
+  text-decoration:underline;
+  color: #005196;
+}
+
+ul.linksWidget .linkImage
+{
+  width: 85px;
+  height: 60px;
+}
+
+ul.linksWidget .rightColumn
+{
+  margin-bottom: 0px;  
+  margin-left: 0px;
+  float: right;
+  height: auto;
+  width: 205px;  
+}
+
+ul.linksWidget .linkLabel
+{
+  margin-top: 0px;
+}
+
+ul.linksWidget .linkDescription 
+{
+  width: 205px;
+  margin-top: 4px;
+  overflow: hidden;
+  margin: 0;  
+}
+
+ul.linksWidget .link1, 
+ul.linksWidget .link2 
+{
+  border-bottom: 1px solid gray;
+  border-top: 0px none white;
+  display: inline-block;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  width: 100%;
+  overflow: hidden;
+}
+
+ul.linksWidget .link1:first-child 
+{
+  border-top: none;
+  display: inline-block;
+  width: 100%;
+}
+
+ul.linksWidget .link1 .leftColumn, 
+ul.linksWidget .link2 .leftColumn 
+{
+  width: 87px;
+  padding-left: 0px;
+}
