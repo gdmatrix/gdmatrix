@@ -8,7 +8,8 @@
   <p:dialog id="event_persons_dialog" widgetVar="eventPersonsDialog"
             styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
-            appendTo="@(form)" position="center center" resizable="false">
+            appendTo="@(form)" position="center center" resizable="false"
+            onShow="PF('eventPersonsDialog').resetPosition();">
 
     <f:facet name="header">
 
@@ -35,6 +36,7 @@
           <emcomp:objectReference value="#{eventPersonsTabBean.editing.personId}"
                                   type="Person"
                                   process="@form:cnt:search_tabs:event_persons_dialog"
+                                  update="@form:cnt:search_tabs:event_persons_panel"                                  
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
@@ -43,7 +45,16 @@
                                   onselect="PF('eventPersonsDialog').show();"                                  
                                   required="#{not empty param['mainform:search_tabs:event_persons_store']}"
                                   requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
-                                  disabled="#{!eventObjectBean.editable}">
+                                  disabled="#{!eventObjectBean.editable}"
+                                  autoUpdate="false">
+            <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
+                    process="@form:cnt:search_tabs:event_persons_dialog" 
+                    update="@form:cnt:search_tabs:event_persons_panel" 
+                    oncomplete="PF('eventPersonsDialog').resetPosition();" />
+            <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
+                    process="@form:cnt:search_tabs:event_persons_dialog" 
+                    update="@form:cnt:search_tabs:event_persons_panel"
+                    oncomplete="PF('eventPersonsDialog').resetPosition();" />            
           </emcomp:objectReference>
         </div>
 
