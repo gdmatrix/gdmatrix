@@ -283,7 +283,7 @@ public class DocumentFinderBean extends FinderBean
     smartFilter = documentTypeBean.filterToQuery(filter);
     formSelector = (String)stateArray[5];
     rows = (List<DocumentDataTableRow>)stateArray[6];
-    outdated = (Boolean)stateArray[7];    
+    outdated = (Boolean)stateArray[7];
     setObjectPosition((Integer)stateArray[4]);
   }
 
@@ -417,8 +417,11 @@ public class DocumentFinderBean extends FinderBean
       super.setValues(baseBean, row, columns);
       Document document = (Document)row;
       Content content = document.getContent();
-      contentId = content.getContentId();
-      contentType = content.getContentType();
+      if (content != null)
+      {
+        contentId = content.getContentId();
+        contentType = content.getContentType();
+      }
     }
 
     public String getContentId()
@@ -433,6 +436,8 @@ public class DocumentFinderBean extends FinderBean
 
     public String getViewURL()
     {
+      if (contentType == null) return null;
+
       String extension =
         MimeTypeMap.getMimeTypeMap().getExtension(contentType);
 
@@ -441,6 +446,8 @@ public class DocumentFinderBean extends FinderBean
 
     public String getDownloadURL()
     {
+      if (contentType == null) return null;
+
       String extension =
         MimeTypeMap.getMimeTypeMap().getExtension(contentType);
 

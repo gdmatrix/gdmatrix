@@ -35,11 +35,13 @@
       <p:linkButton href="#{row.viewURL}" 
                     icon="pi pi-eye" 
                     title="#{objectBundle.view}"
+                    rendered="#{row.contentType != null}"
                     styleClass="rounded-button ui-button-flat"
                     target="_blank" />
       <p:linkButton href="#{row.downloadURL}" 
                     icon="pi pi-download"
                     title="#{objectBundle.download}"
+                    rendered="#{row.contentType != null}"
                     styleClass="rounded-button ui-button-flat" />
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat"  

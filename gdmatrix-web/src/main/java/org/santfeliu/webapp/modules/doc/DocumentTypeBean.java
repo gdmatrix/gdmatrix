@@ -46,7 +46,6 @@ import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.SearchTab;
-import org.santfeliu.webapp.util.DataTableRow;
 
 /**
  *
@@ -198,8 +197,11 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
   public static String getContentIcon(Document document)
   {
     Content content = document.getContent();
+
     if (content == null) return "fa-regular fa-file";
     String contentType = content.getContentType();
+
+    if (contentType == null) return "fa-regular fa-file";
 
     switch (contentType)
     {
