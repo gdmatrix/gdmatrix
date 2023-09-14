@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
+
+    <h:panelGroup layout="block" class="final_form" 
+                  rendered="#{workflowInstanceBean.finalFormSelector == null}">
+      <h:graphicImage url="#{workflowInstanceBean.finalIcon}" style="vertical-align:middle" alt="" />
+      <sf:outputText value="#{workflowInstanceBean.finalMessage}" 
+                     translator="#{workflowInstanceBean.translationEnabled ? applicationBean.translator : null}" 
+                     translationGroup="#{workflowInstanceBean.workflowName}"
+                     styleClass="workflowMessage" escape="false" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" class="final_form" 
+                  rendered="#{workflowInstanceBean.finalFormSelector != null}">
+      <sf:dynamicForm form="#{workflowInstanceBean.finalForm}"
+                      rendererTypes="#{workflowInstanceBean.formRenderers}"
+                      value="#{workflowInstanceBean.variables}"
+                      translator="#{workflowInstanceBean.translationEnabled ? applicationBean.translator : null}" 
+                      translationGroup="#{workflowInstanceBean.workflowName}" />
+    </h:panelGroup>
+
+  </ui:define>
+
+</ui:composition>

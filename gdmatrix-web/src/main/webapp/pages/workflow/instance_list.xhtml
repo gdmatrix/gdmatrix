@@ -1,0 +1,235 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
+
+  <h:outputStylesheet library="css" name="workflow.css" />
+  
+  <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
+              showSummary="true"
+              warnClass="warnMessage"
+              errorClass="errorMessage"
+              fatalClass="fatalMessage" />
+
+  <h:panelGroup layout="block" rendered="#{userSessionBean.anonymousUser}"
+                styleClass="workflow_body m-2 ml-auto mr-auto">
+    <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties.loginDocId}"
+                rendered="#{userSessionBean.selectedMenuItem.properties.loginDocId != null}"
+                translator="#{applicationBean.translator}"
+                translationGroup="workflow" />
+
+    <h:outputText value="#{workflowBundle.anonymousProcList}"
+                  rendered="#{userSessionBean.selectedMenuItem.properties.loginDocId == null}"
+                  styleClass="workflowMessage" />
+  </h:panelGroup>
+
+  <h:panelGroup layout="block"
+                styleClass="workflow_body m-2 ml-auto mr-auto"
+                rendered="#{not userSessionBean.anonymousUser}">
+
+    <div class="ui-fluid formgrid grid m-2">
+
+      <div class="field col-12">
+        <h:outputText value="#{workflowBundle.searchTitle}"
+                      styleClass="searchTitle"/>
+      </div>
+      
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="#{workflowBundle.show}:" />
+        <p:selectOneMenu value="#{workflowInstanceListBean.state}" 
+                         styleClass="stateSelector"
+                         autoWidth="false">
+          <f:selectItem itemLabel="#{workflowBundle.userStartedProceduresState}" itemValue="S" />
+          <f:selectItem itemLabel="#{workflowBundle.userPendentProceduresState}" itemValue="P" />
+          <f:selectItems value="#{workflowInstanceListBean.allSelectItems}" />
+        </p:selectOneMenu>
+      </div>
+
+      <div class="field col-12 md:col-6">    
+        <p:outputLabel for="@next" value="#{workflowBundle.startedAfter}:" />
+        <p:datePicker value="#{workflowInstanceListBean.startDate}"
+                      autocomplete="off" placeholder="dd/MM/yyyy"
+                      locale="ca"
+                      showOnFocus="false"
+                      converter="datePickerConverter" pattern="dd/MM/yyyy"
+                      showIcon="true" showTime="false"
+                      monthNavigator="true" yearNavigator="true" />
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="@next" value="#{workflowBundle.startedBefore}:" />
+        <p:datePicker value="#{workflowInstanceListBean.endDate}"
+                      autocomplete="off" placeholder="dd/MM/yyyy"
+                      locale="ca"
+                      showOnFocus="false"
+                      converter="datePickerConverter" pattern="dd/MM/yyyy"
+                      showIcon="true" showTime="false"
+                      monthNavigator="true" yearNavigator="true" />
+      </div>
+      
+      <p:fieldset legend="Filtre per variables"
+                  rendered="#{workflowInstanceListBean.workflowAdmin}"
+                  toggleable="true" collapsed="true" styleClass="m-2 w-full"> 
+        
+        <div class="ui-fluid formgrid grid">        
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="#{workflowBundle.withVariableName}:" />
+            <p:inputText value="#{workflowInstanceListBean.variables[0].name}" styleClass="variableBox" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="#{workflowBundle.andVariableValue}:" />
+            <p:inputText value="#{workflowInstanceListBean.variables[0].value}" styleClass="variableBox" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="#{workflowBundle.withVariableName}:" />
+            <p:inputText value="#{workflowInstanceListBean.variables[1].name}" styleClass="variableBox" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="#{workflowBundle.andVariableValue}:" />
+            <p:inputText value="#{workflowInstanceListBean.variables[1].value}" styleClass="variableBox" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="#{workflowBundle.withVariableName}:" />
+            <p:inputText value="#{workflowInstanceListBean.variables[2].name}" styleClass="variableBox" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="#{workflowBundle.andVariableValue}:" />
+            <p:inputText value="#{workflowInstanceListBean.variables[2].value}" styleClass="variableBox" />
+          </div>
+        </div>
+      </p:fieldset>      
+      
+      <div class="field col-12 text-right">
+        <p:commandButton value="#{workflowBundle.search}"
+                         action="#{workflowInstanceListBean.findInstances}"
+                         process="@form:cnt" update="@form:cnt"
+                         icon="pi pi-search"
+                         styleClass="w-auto"  />
+      </div>
+    </div>
+
+    <p:dataTable
+      value="#{workflowInstanceListBean.instanceList}" 
+      var="instance"
+      styleClass="m-2"
+      first="#{workflowInstanceListBean.firstRow}"
+      paginator="true" pageLinks="5"
+      paginatorPosition="bottom" size="small"
+      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
+      rows="10">
+      <p:column style="width:4%">
+        <f:facet name="header">
+          <h:outputText value="#{workflowBundle.shortNumber}" />
+        </f:facet>
+        <h:outputText value="#{instance.instanceId}" />
+      </p:column>
+      <p:column style="width:1%">
+        <h:graphicImage 
+          url="#{instance.simulation ? '/common/workflow/images/simulation.gif' : '/common/workflow/images/real.gif'}" 
+          alt="#{instance.simulation ? '#{workflowBundle.simulation}' : '#{workflowBundle.realProcessing}'}" />
+      </p:column>
+      <p:column style="width:70%">
+        <f:facet name="header">
+          <h:outputText value="#{workflowBundle.descriptionState}" />
+        </f:facet>
+        <sf:outputText value="#{instance.description}"
+                       translator="#{applicationBean.translator}" 
+                       translationGroup="wf:instanceList"
+                       styleClass="instanceUserState" />
+        <h:outputText value=": "
+                      styleClass="instanceUserState"
+                      rendered="#{instance.state != null}" />
+        <sf:outputText value="#{instance.state}"
+                       translator="#{applicationBean.translator}" 
+                       translationGroup="wf:instanceList"
+                       styleClass="instanceUserState"
+                       rendered="#{instance.state != null}" />
+        <h:outputText value="(#{workflowInstanceListBean.instanceStartDate})"
+                      styleClass="instanceStartDate"
+                      rendered="#{instance.startDateTime != null}" />
+        <h:outputText value=" #{workflowInstanceListBean.instanceInternalState}" 
+                      styleClass="instanceInternalState"
+                      rendered="#{workflowInstanceListBean.workflowAdmin}" />
+      </p:column>
+      <p:column style="width:25%" styleClass="white-space-nowrap text-right">
+        <h:panelGroup>
+          <p:commandButton 
+            value="#{instance.activeNodes == null ?
+                     workflowBundle.show : workflowBundle['continue']}"
+            action="#{workflowInstanceListBean.forward}"
+            styleClass='m-1'
+            process="@this" update="@form:cnt" 
+            icon="pi #{instance.activeNodes == null ? 'pi-eye' : 'pi-arrow-right'}" 
+            iconPos="#{instance.activeNodes == null ? 'left' : 'right'}" />
+          <p:commandButton value="#{objectBundle.delete}" 
+                           action="#{workflowInstanceListBean.destroyInstance}" 
+                           process="@this" update="@form:cnt"
+                           icon="pi pi-trash" styleClass="ui-button-danger"
+                           rendered="#{workflowInstanceListBean.workflowAdmin ||
+                                       instance.destroyButtonEnabled}" 
+                           onclick="return confirm('#{workflowBundle.confirm_workflow_destroy}');" />
+        </h:panelGroup>
+      </p:column>
+
+      <f:facet name="footer">
+        <h:graphicImage url="/common/workflow/images/simulation.gif" 
+                        style="vertical-align:middle" alt=""/>
+        <h:outputText value="#{workflowBundle.upperSimulation}" styleClass="mr-2" />
+
+        <h:graphicImage url="/common/workflow/images/real.gif" 
+                        style="vertical-align:middle" alt=""/>
+        <h:outputText value="#{workflowBundle.upperRealProcessing}" />
+      </f:facet>      
+    </p:dataTable>
+
+    <h:panelGrid columns="1" styleClass="adminPanel"
+                 rendered="#{workflowInstanceListBean.workflowAdmin}">
+      <h:panelGroup>
+        <p:outputLabel for="@next" value="#{workflowBundle.newInstance}:" 
+                       styleClass="mr-2" />
+        <p:inputText value="#{workflowInstanceListBean.workflowName}"
+                     styleClass="mr-2" />
+        <p:commandButton value="#{workflowBundle.simulate}"
+                         styleClass="mr-2"
+                         icon="pi pi-arrow-right" iconPos="right"
+                         process="@form:cnt" update="@form:cnt"
+                         action="#{workflowInstanceListBean.simulate}" />
+        <p:commandButton value="#{workflowBundle.process}"
+                         styleClass="mr-2"
+                         icon="pi pi-arrow-right" iconPos="right"
+                         process="@form:cnt" update="@form:cnt"
+                         action="#{workflowInstanceListBean.transact}" />
+        <p:linkButton value="Matrix IDE"
+                      icon="pi pi-pencil"
+                      href="/apps/GDMatrixIDEJavaInstall.zip">
+        </p:linkButton>
+      </h:panelGroup>
+
+      <h:panelGroup>
+        <p:outputLabel for="@next" value="#{workflowBundle.showInstance}:" 
+                       styleClass="mr-2" />
+        <p:inputText value="#{workflowInstanceListBean.instanceId}"
+                     styleClass="mr-2" />
+        <p:commandButton value="#{workflowBundle.show}"
+                         styleClass="mr-2"
+                         icon="pi pi-eye"
+                         process="@form:cnt" update="@form:cnt"
+                         action="#{workflowInstanceListBean.showInstanceById}" />
+        <p:commandButton value="#{workflowBundle.debug}"
+                         styleClass="mr-2"
+                         icon="pi pi-cog"
+                         process="@form:cnt" update="@form:cnt"
+                         action="#{workflowInstanceListBean.debugInstanceById}" />
+      </h:panelGroup>
+    </h:panelGrid>
+  </h:panelGroup>
+  
+  <gdm:saveBean value="workflowInstanceListBean" />
+  
+</ui:composition>

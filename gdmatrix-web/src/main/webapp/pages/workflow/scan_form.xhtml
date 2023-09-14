@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />  
+
+    <sf:outputText value="#{scanDocumentWorkflowBean.message}"
+                   translator="#{workflowInstanceBean.translationEnabled ? 
+                                 applicationBean.translator : null}" 
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <t:div styleClass="buttonBar">
+      <h:commandButton value="#{workflowBundle.scan}"
+                       alt="#{workflowBundle.scan}" title="#{workflowBundle.scan}"
+                       styleClass="workflowButton"
+                       onclick="javascript:scanDocument();return false"
+                       rendered="#{userSessionBean.matrixClientEnabled}" />   
+
+      <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.ScanDocumentCommand"
+                       action="#{scanDocumentWorkflowBean.documentScanned}"
+                       model="#{scanDocumentWorkflowBean.model}"
+                       function="scanDocument"
+                       rendered="#{userSessionBean.matrixClientEnabled}"
+                       helpUrl="#{matrixClientBean.helpUrl}"/>
+    </t:div>
+
+    <gdm:saveBean value="scanWorkflowBean" />    
+    
+  </ui:define>
+
+</ui:composition>

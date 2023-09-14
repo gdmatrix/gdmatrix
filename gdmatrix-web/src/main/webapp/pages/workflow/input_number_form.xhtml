@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <div class="ui-fluid formgrid grid ml-auto mr-auto">
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="@next" value="#{inputNumberWorkflowBean.message}" />
+        <p:inputNumber value="#{inputNumberWorkflowBean.number}" 
+                       required="true" />
+      </div>
+    </div>
+
+    <gdm:saveBean value="inputNumberWorkflowBean" />  
+    
+  </ui:define>
+
+</ui:composition>

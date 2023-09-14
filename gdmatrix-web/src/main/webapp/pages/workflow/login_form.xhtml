@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">  
+
+    <sf:outputText value="#{loginWorkflowBean.message}"
+                   translator="#{workflowInstanceBean.translationEnabled ?
+                                 applicationBean.translator : null}"
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <h:panelGroup layout="block" styleClass="mt-4 mb-4"
+           rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true'}">
+      <p:commandButton value="#{userSessionBean.selectedMenuItem.properties.login_valid == null ? 
+                                'VALid' : userSessionBean.selectedMenuItem.properties.login_valid}"
+                       action="#{loginWorkflowBean.loginValid}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="mt-4 mb-4"
+           rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true'}">
+      <sf:secureCommandLink action="#{loginWorkflowBean.loginCertificate}"
+                            scheme="https" port="#{applicationBean.clientSecurePort}"
+                            styleClass="workflowCommandLink" style="min-width:200px">
+        <sf:outputText value="#{webBundle.certificateAuthentication}"
+                       styleClass="workflowMessage" />
+      </sf:secureCommandLink>
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" rendered="#{loginWorkflowBean.loginByPassword}" 
+                  styleClass="ui-fluid formgrid grid">
+      
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="@next" value="#{webBundle.outputUsername}:"  />
+        <p:inputText value="#{loginWorkflowBean.userId}" />
+      </div>      
+
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="@next" value="#{webBundle.outputPassword}:" />
+        <p:password value="#{loginWorkflowBean.password}"
+                    toggleMask="true" styleClass="w-full" />
+      </div>
+      
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{loginWorkflowBean.login}"
+                         value="#{webBundle.loginByPassword}" 
+                         styleClass="w-auto"
+                         process="@form:cnt"
+                         update="@form:cnt" />
+      </div>
+      
+    </h:panelGroup>
+
+    <gdm:saveBean value="loginWorkflowBean" />  
+
+  </ui:define>
+
+</ui:composition>

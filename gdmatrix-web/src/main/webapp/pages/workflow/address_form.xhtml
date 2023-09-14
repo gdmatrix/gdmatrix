@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <sf:outputText value="#{addressWorkflowBean.message}"
+                   translator="#{workflowInstanceBean.translationEnabled ?
+                                 applicationBean.translator : null}"
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <t:div>
+      <h:outputText value="Carrer*:" style="display:inline-block;width:20%" />
+      <t:selectOneMenu value="#{addressWorkflowBean.streetType}">
+        <f:selectItem itemLabel="C." itemValue="C." />
+        <f:selectItem itemLabel="Pl." itemValue="Pl." />
+        <f:selectItem itemLabel="Av." itemValue="Av." />
+        <f:selectItem itemLabel="Ptge." itemValue="Ptge." />
+      </t:selectOneMenu>
+      <h:inputText id="street" value="#{addressWorkflowBean.street}" required="true"
+                   style="display:inline-block;width:40%;text-transform:uppercase;margin-left:4px" />
+      warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+      <h:outputText value="No cal posar accents" 
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="street"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Numero:" style="display:inline-block;width:20%" />
+      <h:inputText id="number" value="#{addressWorkflowBean.number}" maxlength="4" 
+                   style="width:6%" />
+      <h:selectBooleanCheckbox value="#{addressWorkflowBean.bis}" />
+      <h:outputText value="Bis" />
+      <h:selectBooleanCheckbox value="#{addressWorkflowBean.noNumber}" />
+      <h:outputText value="Sense número" />
+      <h:message for="number"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Kilometre:" style="display:inline-block;width:20%" />
+      <h:inputText  id="km" value="#{addressWorkflowBean.km}" maxlength="8" style="width:10%" >
+      </h:inputText>
+      <h:outputText value="Només necessari si no hi ha número. Per exemple: 16.6"
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="km"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Bloc:" style="display:inline-block;width:20%" />
+      <h:inputText  id="block" value="#{addressWorkflowBean.block}" maxlength="4" style="width:6%" />
+      <h:outputText value="Omplir només si correspon"
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="block"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Portal:" style="display:inline-block;width:20%" />
+      <h:inputText id="entranceHall" value="#{addressWorkflowBean.entranceHall}" maxlength="4" style="width:6%" />
+      <h:outputText value="Omplir només si correspon"
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="entranceHall"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Escala:" style="display:inline-block;width:20%" />
+      <h:inputText  id="stair" value="#{addressWorkflowBean.stair}" maxlength="4" style="width:6%" />
+      <h:outputText value="Omplir només si correspon"
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="stair"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Pis:" style="display:inline-block;width:20%" />
+      <h:inputText id="floor" value="#{addressWorkflowBean.floor}" maxlength="4" style="width:6%" />
+      <h:outputText value="Omplir només si correspon"
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="floor"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Porta:" style="display:inline-block;width:20%" />
+      <h:inputText id="door" value="#{addressWorkflowBean.door}" maxlength="4" style="width:6%" />
+      <h:outputText value="Omplir només si correspon"
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="door"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Codi Postal:" style="display:inline-block;width:20%" />
+      <h:inputText id="postalCode" value="#{addressWorkflowBean.postalCode}" maxlength="8" style="width:10%" />
+      <h:outputText value="Per exemple: 08980"
+                    style="font-style:italic;margin-left:4px;color:gray" />
+      <h:message for="postalCode"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="Apartat de correus:" style="display:inline-block;width:20%" />
+      <h:inputText id="postOfficeBox" value="#{addressWorkflowBean.postOfficeBox}"
+                   maxlength="8" style="width:10%" />
+      <h:message for="postOfficeBox"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div>
+      <t:div rendered="#{addressWorkflowBean.forcedCity == null}">
+        <h:outputText value="Població*:" style="display:inline-block;width:20%"/>
+        <h:inputText id="city" value="#{addressWorkflowBean.city}" required="true"
+                     style="display:inline-block;width:30%;text-transform:uppercase"/>
+      </t:div>
+      <t:div  rendered="#{addressWorkflowBean.forcedCity != null}">
+        <h:outputText value="Població:" style="display:inline-block;width:20%"/>
+        <h:outputText value="#{addressWorkflowBean.forcedCity}"
+                      style="display:inline-block;width:30%;text-transform:uppercase"/>
+      </t:div>
+      <h:message for="city"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div rendered="#{addressWorkflowBean.forcedCity == null}">
+      <h:outputText value="Provincia:" style="display:inline-block;width:20%" />
+      <h:inputText id="province" value="#{addressWorkflowBean.province}"
+                   style="display:inline-block;width:30%;text-transform:uppercase" />
+      <h:message for="province"
+                 warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
+    </t:div>
+
+    <t:div rendered="#{addressWorkflowBean.forcedCity == null}">
+      <h:outputText value="Pais*:" style="display:inline-block;width:20%" />
+      <t:selectOneMenu value="#{addressWorkflowBean.countryId}">
+        <f:selectItems value="#{addressWorkflowBean.countrySelectItems}" />
+      </t:selectOneMenu>
+    </t:div>
+
+    <h:outputText styleClass="annotation" value="#{workflowBundle.requiredFields}" />
+
+    <t:div style="display:block;text-align:right">
+      <h:commandButton value="#{webBundle.buttonFind}" action="#{addressWorkflowBean.searchAddress}" />
+    </t:div>
+
+    <h:selectOneRadio id="options"
+                      layout="pageDirection" styleClass="resultList"
+                      enabledClass="#{addressWorkflowBean.selectItemClass}"
+                      value="#{addressWorkflowBean.addressId}" 
+                      rendered="#{addressWorkflowBean.addressSelectItems != null}">
+      <f:selectItems value="#{addressWorkflowBean.addressSelectItems}" />
+    </h:selectOneRadio>    
+    
+    <gdm:saveBean value="addressWorkflowBean" />  
+    
+  </ui:define>
+
+</ui:composition>

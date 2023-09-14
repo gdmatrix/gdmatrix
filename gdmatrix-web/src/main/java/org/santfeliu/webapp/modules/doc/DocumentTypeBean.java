@@ -201,6 +201,11 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     if (content == null) return "fa-regular fa-file";
     String contentType = content.getContentType();
 
+    return getContentIcon(contentType);
+  }
+
+  public static String getContentIcon(String contentType)
+  {
     if (contentType == null) return "fa-regular fa-file";
 
     switch (contentType)

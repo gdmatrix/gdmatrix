@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
+
+    <sf:outputText value="#{signatureWorkflowBean.message}"
+                   translator="#{workflowInstanceBean.translationEnabled ?
+                                 applicationBean.translator : null}"
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <sf:browser binding="#{signatureWorkflowBean.browser}"
+                port="#{applicationBean.defaultPort}"
+                translator="#{workflowInstanceBean.translationEnabled ?
+                              applicationBean.translator : null}"
+                translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                iframe="#{signatureWorkflowBean.IFrame}"
+                width="100%" height="400px" />
+
+    <!-- signature with VALid -->
+    <h:panelGroup layout="block" rendered="#{userSessionBean.loginMethod == 'VALID'}" styleClass="buttonBar">
+      <h:outputText value="#{workflowBundle.signingWithVALID}" />
+      <div style="text-align: center">
+        <h:graphicImage url="/common/workflow/images/valid.png" alt="VALID" title="VALID" />
+      </div>
+      <div>
+        <p:commandButton value="#{workflowBundle.sign}"
+                         action="#{signatureWorkflowBean.signValid}"
+                         alt="#{workflowBundle.sign}" title="#{workflowBundle.sign}"
+                         styleClass="mr-2"
+                         icon="pi pi-pencil"
+                         process="@this" update="@form:cnt" />
+        <p:commandButton value="#{workflowBundle.cancel}"
+                         action="#{signatureWorkflowBean.cancelSignature}"
+                         icon="pi pi-times"
+                         alt="#{workflowBundle.cancel}" title="#{workflowBundle.cancel}"
+                         process="@this" update="@form:cnt" /> 
+      </div>
+    </h:panelGroup>
+
+    <!-- signature with certificate -->  
+    <h:panelGroup layout="block" rendered="#{userSessionBean.loginMethod != 'VALID'}" styleClass="buttonBar">
+      <h:outputText value="#{workflowBundle.signingWithGDMatrix}" />
+      <div style="text-">
+        <h:graphicImage url="/common/workflow/images/gdmatrix_client.png" alt="GDMatrix" title="GDMatrix" />
+      </div>
+
+      <!-- signature with matrix client -->
+      <div>
+        <p:linkButton value="#{workflowBundle.sign}"
+                         title="#{workflowBundle.sign}"
+                         icon="pi pi-pencil"
+                         styleClass="mr-2"
+                         onclick="javascript:signDocument({sigId: '#{signatureWorkflowBean.document}'});return false" />
+        <p:commandButton value="#{workflowBundle.cancel}"
+                         action="#{signatureWorkflowBean.cancelSignature}"
+                         icon="pi pi-times"
+                         title="#{workflowBundle.cancel}"
+                         process="@this" update="@form:cnt" />
+        <sf:matrixclient command="org.santfeliu.matrix.client.cmd.SignDocumentCommand"
+                         action="#{signatureWorkflowBean.documentSigned}"
+                         model="#{signatureWorkflowBean.model}"
+                         function="signDocument"
+                         helpUrl="#{matrixClientBean.helpUrl}"/>
+      </div>
+    </h:panelGroup>
+
+    <gdm:saveBean value="signatureWorkflowBean" />        
+    
+  </ui:define>
+
+</ui:composition>

@@ -1,0 +1,276 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
+
+  <h:outputStylesheet library="css" name="workflow.css" />
+
+  <div class="workflow_body m-4 ml-auto mr-auto">
+
+    <p:panel class="ml-2 mr-2">
+      <f:facet name="header">
+        <h:outputText value="#{workflowBundle.instance} #{workflowInstanceBean.instanceId}: "
+                      styleClass="instanceNumber"/>
+        <sf:outputText value="#{workflowInstanceBean.instanceDescription}"
+                       translator="#{applicationBean.translator}"
+                       translationGroup="wf:instanceList"
+                       styleClass="instanceUserState" />
+        <h:outputText value=": " styleClass="instanceUserState"
+                      rendered="#{workflowInstanceBean.instanceUserState != null}" />
+        <sf:outputText value="#{workflowInstanceBean.instanceUserState}"
+                       translator="#{applicationBean.translator}"
+                       translationGroup="wf:instanceList"
+                       styleClass="instanceUserState"
+                       rendered="#{workflowInstanceBean.instanceUserState != null}" />
+        <h:outputText value="(#{workflowInstanceBean.instanceStartDate})"
+                      styleClass="instanceStartDate"
+                      rendered="#{workflowInstanceBean.instanceStartDate != null}" />
+      </f:facet>
+
+      <f:facet name="actions">
+        <p:commandButton value="#{workflowBundle.exit}"
+                         rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.exitEnabled}"
+                         action="#{workflowInstanceBean.exitInstance}" immediate="true"
+                         process="@this" update="@form:cnt"
+                         icon="pi pi-times-circle"
+                         title="#{workflowBundle.exitLong}"
+                         ariaLabel="#{workflowBundle.exit}: #{workflowBundle.exitLong}" />      
+      </f:facet>
+
+      <h:panelGroup layout="block" 
+                    rendered="#{workflowInstanceBean.errorDetected and not workflowInstanceBean.terminated}"
+                    styleClass="workflowError">
+        <h:graphicImage url="/common/workflow/images/warning.gif" alt="warning" title="warning" />
+        <h:outputText value="#{workflowBundle.errorDetected}" />
+      </h:panelGroup>
+
+      <h:messages showSummary="true" styleClass="messages"
+                  layout="list"
+                  warnClass="warnMessage"
+                  errorClass="errorMessage"
+                  fatalClass="fatalMessage" />
+
+      <h:panelGroup layout="block" 
+                    styleClass="form" rendered="#{workflowInstanceBean.headerFormEnabled}">
+        <sf:dynamicForm
+          form="#{workflowInstanceBean.headerForm}"
+          rendererTypes="HtmlFormRenderer,GenericFormRenderer"
+          value="#{workflowInstanceBean.variablesUnmodificable}"
+          translator="#{applicationBean.translator}"
+          translationGroup="wf:instanceList" />
+      </h:panelGroup>
+
+      <h:panelGroup layout="block" 
+                    styleClass="workflowForms" rendered="#{workflowInstanceBean.showPendentForms}">
+        <h:outputText value="#{workflowBundle.actions}:" />
+        <p:dataList itemStyleClass="#{workflowInstanceBean.formSelected ? 'selected' : ''}"
+                    value="#{workflowInstanceBean.pendentForms}" var="form">
+          <h:commandLink action="#{workflowInstanceBean.selectForm}" immediate="true">
+            <h:outputText value="#{form.description}" />
+          </h:commandLink>
+        </p:dataList>
+      </h:panelGroup>
+
+      <div class="body">
+        <ui:insert name="form"></ui:insert>
+        <h:panelGroup layout="block" styleClass="curtain" rendered="#{not workflowInstanceBean.formEnabled}" />
+      </div>
+
+      <f:facet name="footer">
+        <h:panelGroup styleClass="col1">
+          <p:linkButton value="#{workflowBundle.help}"
+                        href="#{workflowInstanceBean.helpUrl}"
+                        rendered="#{workflowInstanceBean.helpEnabled}"
+                        icon="pi pi-question-circle"
+                        target="_blank"
+                        styleClass="mr-2">
+          </p:linkButton>
+          <p:commandButton value="#{workflowBundle.destroy}"
+                           rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.destroyEnabled}"
+                           action="#{workflowInstanceBean.destroyInstance}" immediate="true"
+                           styleClass="ui-button-danger mr-2"
+                           process="@this" update="@form:cnt"
+                           icon="pi pi-trash"
+                           onclick="return confirm('#{workflowBundle.confirm_workflow_destroy}');" />
+        </h:panelGroup>
+        <h:panelGroup style="float:right">
+          <p:commandButton value="#{workflowBundle.previous}" id="backward"
+                           rendered="#{workflowInstanceBean.formEnabled and workflowInstanceBean.backwardEnabled}"
+                           styleClass="mr-2"
+                           action="#{workflowInstanceBean.backward}"
+                           process="@this" update="@form:cnt"
+                           icon="pi pi-arrow-left"
+                           title="#{workflowBundle.previousLong}"
+                           ariaLabel="#{workflowBundle.previous}: #{workflowBundle.previousLong}" />
+          <p:commandButton value="#{workflowBundle.next}" id="forward"
+                           rendered="#{workflowInstanceBean.formEnabled and workflowInstanceBean.forwardEnabled}"
+                           process="@form:cnt" update="@form:cnt"
+                           icon="pi pi-arrow-right" iconPos="right"
+                           action="#{workflowInstanceBean.forward}"
+                           title="#{workflowBundle.nextLong}"
+                           ariaLabel="#{workflowBundle.next}: #{workflowBundle.nextLong}" />
+        </h:panelGroup>
+      </f:facet>
+    </p:panel>
+    
+    <p:panel id="debug" class="ml-2 mr-2 mt-4"
+             toggleable="true" toggleSpeed="500" 
+             collapsed="#{not workflowInstanceBean.debugModeEnabled}"
+             rendered="#{workflowInstanceBean.workflowAdmin}">
+
+      <p:ajax event="toggle" 
+              listener="#{workflowInstanceBean.onToogleDebug}"
+              process="@parent:debug" 
+              update="@parent:debug" />
+
+      <f:facet name="header">
+        <span class="pi pi-cog mr-2" />
+        <h:outputText value="Debug" />
+      </f:facet>      
+      
+      <div class="debugToolbar">
+        <p:commandButton value="#{workflowBundle.recover}" id="recover"
+                         rendered="#{workflowInstanceBean.recoverEnabled}"
+                         styleClass="mr-2"
+                         action="#{workflowInstanceBean.recover}"
+                         process="@this" update="@form:cnt"
+                         title="#{workflowBundle.recover}" />
+        <p:commandButton value="#{workflowBundle.undoStep}" 
+                         styleClass="mr-2"
+                         icon="pi pi-arrow-left" iconPos="left"
+                         action="#{workflowInstanceBean.undoStep}"
+                         process="@this" update="@form:cnt" />
+        <p:commandButton value="#{workflowBundle.doStep}" 
+                         styleClass="mr-2"
+                         icon="pi pi-arrow-right" iconPos="right"
+                         action="#{workflowInstanceBean.doStep}" 
+                         process="@this" update="@form:cnt" />
+        <p:commandButton value="#{workflowBundle.updateInstance}" 
+                         styleClass="mr-2"
+                         icon="pi pi-refresh"
+                         action="#{workflowInstanceBean.updateInstance}"
+                         process="@this" update="@form:cnt" />
+      </div>
+
+      <p:tabView id="debug_tabs" 
+                 styleClass="debugTabs" dynamic="true"
+                 activeIndex="#{workflowInstanceBean.activeDebugTab}">
+        <p:tab title="Variables">
+          <h:dataTable var="instanceVar" value="#{workflowInstanceBean.variablesArray}"
+                       styleClass="varTable" columnClasses="col1,col2">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{workflowBundle.variable}" />
+              </f:facet>
+              <h:outputText value="#{instanceVar.key}"
+                            styleClass="#{workflowInstanceBean.variableStyleClass}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{workflowBundle.value}" />
+              </f:facet>
+              <h:outputText value="#{instanceVar.value}" />
+            </h:column>
+          </h:dataTable>
+
+          <div class="set_variables">
+            <p:outputLabel for="@next" value="#{workflowBundle.setList}" styleClass="mr-2" />
+            <p:inputText value="#{workflowInstanceBean.variableAssignment}" styleClass="mr-2" />
+            <p:commandButton value="#{workflowBundle.set}"
+                             action="#{workflowInstanceBean.setVariables}" 
+                             icon="pi pi-play" iconPos="right"
+                             process="@parent:debug_tabs" update="@form:cnt" />
+          </div>
+        </p:tab>
+
+        <p:tab title="Stack">
+          <p:dataList value="#{workflowInstanceBean.stackItems}" var="stackItem"
+                      styleClass="stackItems">
+            <ul class="stackItem">
+              <li class="instanceId">INSTANCE_ID: 
+                <p:commandLink
+                  action="#{workflowInstanceBean.showInstance(stackItem.instanceId)}"
+                  process="@this" update="@form:cnt"
+                  value="#{stackItem.instanceId}" />
+              </li>
+              <li>WORKFLOW_NAME: <h:outputText value="#{stackItem.workflowName}" styleClass="value" /></li>
+              <li>DESCRIPTION: <h:outputText value="#{stackItem.description}" styleClass="value" /></li>
+              <li>ACTIVE_NODES: <h:outputText value="#{stackItem.activeNodes}" styleClass="value" /></li>
+              <h:panelGroup rendered="#{stackItem.invokerNodeId != null}">
+                <li>INVOKER_NODE_ID: <h:outputText value="#{stackItem.invokerNodeId}" styleClass="value" /></li>
+              </h:panelGroup>
+              <h:panelGroup rendered="#{stackItem.errors != null}">
+                <li>ERRORS: <h:outputText value="#{stackItem.errors}" styleClass="value" /></li>
+              </h:panelGroup>
+            </ul>
+          </p:dataList>
+        </p:tab>
+
+        <p:tab title="Events">
+          <p:dataList value="#{workflowInstanceBean.instanceEvents}" var="instanceEvent"
+                      styleClass="instanceEvents">
+            <ul class="instanceEvent">
+              <li><strong>EVENTNUM: <h:outputText value="#{instanceEvent.eventNum}" styleClass="value" /></strong></li>
+              <li>DATETIME: <h:outputText value="#{instanceEvent.dateTime}" styleClass="value">
+                  <f:converter converterId="DateTimeConverter" />
+                  <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                </h:outputText>
+              </li>
+              <li>ACTOR: <h:outputText value="#{instanceEvent.actorName}" styleClass="value" /></li>
+
+              <h:dataTable value="#{instanceEvent.variableChange}" 
+                           var="variableChange" columnClasses="col1,col2,col3"
+                           styleClass="variableChanges">
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="#{workflowBundle.variable}" />                        
+                  </f:facet>
+                  <h:outputText value="#{variableChange.name}" 
+                                styleClass="#{workflowInstanceBean.eventVariableStyleClass}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="#{workflowBundle.oldValue}" />                        
+                  </f:facet>
+                  <h:outputText value="#{variableChange.oldValue}" styleClass="value" 
+                                rendered="#{not workflowInstanceBean.isInstanceIdVariable(variableChange.name)}" />
+                  <p:commandLink
+                    action="#{workflowInstanceBean.showInstance(variableChange.oldValue)}"
+                    value="#{variableChange.oldValue}"
+                    process="@this" update="@form:cnt"
+                    rendered="#{workflowInstanceBean.isInstanceIdVariable(variableChange.name)
+                                and variableChange.oldValue != null}" /> 
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText value="#{workflowBundle.newValue}" />                        
+                  </f:facet>
+                  <h:outputText value="#{variableChange.newValue}" styleClass="value" 
+                                rendered="#{not workflowInstanceBean.isInstanceIdVariable(variableChange.name)}" />
+                  <p:commandLink
+                    action="#{workflowInstanceBean.showInstance(variableChange.newValue)}"
+                    value="#{variableChange.newValue}" 
+                    process="@this" update="@form:cnt"
+                    rendered="#{workflowInstanceBean.isInstanceIdVariable(variableChange.name) 
+                                and variableChange.newValue != null}" />                                    
+                </h:column>
+              </h:dataTable>
+            </ul>
+          </p:dataList>
+        </p:tab>
+
+      </p:tabView>
+
+    </p:panel>
+
+  </div>
+
+  <gdm:saveBean value="workflowInstanceBean" />
+  <gdm:saveBean value="workflowInstanceListBean" />
+    
+</ui:composition>

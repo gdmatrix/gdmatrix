@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <sf:customForm url="#{customWorkflowBean.url}"
+                   values="#{workflowInstanceBean.variables}"
+                   newValues="#{customWorkflowBean.newValues}"
+                   translator="#{workflowInstanceBean.translationEnabled and 
+                                 customWorkflowBean.translationEnabled ? applicationBean.translator : null}"
+                   translationGroup="wf:#{customWorkflowBean.translationGroup}" />
+
+    <gdm:saveBean value="customWorkflowBean" />  
+
+  </ui:define>
+
+</ui:composition>

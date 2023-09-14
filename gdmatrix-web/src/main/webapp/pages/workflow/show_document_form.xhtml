@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle"
+                  var="workflowBundle" />
+
+    <sf:outputText value="#{showDocumentWorkflowBean.message}" 
+                   translator="#{workflowInstanceBean.translationEnabled ? 
+                                 applicationBean.translator : null}" 
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <sf:printableGroup name="printDocument">
+      <sf:browser binding="#{showDocumentWorkflowBean.browser}"
+                  port="#{applicationBean.defaultPort}"
+                  iframe="#{showDocumentWorkflowBean.IFrame}"
+                  translator="#{workflowInstanceBean.translationEnabled ? 
+                                applicationBean.translator : null}" 
+                  translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                  width="100%" height="400px"/>
+    </sf:printableGroup>
+
+    <h:panelGrid columns="1" width="100%" summary=""
+                 columnClasses="workflowPrintFooter" 
+                 style="margin-top:8px;margin-bottom:8px;"
+                 rendered="#{showDocumentWorkflowBean.showPrintButton and
+                             not showDocumentWorkflowBean.IFrame}">
+      <h:outputLink value="javascript:printGroup('printDocument');"
+                    styleClass="docPrintButton">
+        <h:graphicImage url="/common/workflow/images/print.gif" alt="" 
+                        style="vertical-align:middle;margin-right:6px;" /> 
+        <h:outputText value="#{workflowBundle.printDocument}" />
+      </h:outputLink>
+    </h:panelGrid>
+
+    <gdm:saveBean value="showDocumentWorkflowBean" />     
+    
+  </ui:define>
+
+</ui:composition>
+

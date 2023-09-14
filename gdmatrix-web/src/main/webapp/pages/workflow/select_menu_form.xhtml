@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <c:if test="${selectMenuWorkflowBean.cssFileUrl != null}">
+      <link rel="stylesheet" type="text/css" 
+            href="${selectMenuWorkflowBean.cssFileUrl.startsWith('http') ? '' : pageContext.request.contextPath}${selectMenuWorkflowBean.cssFileUrl}" />       
+    </c:if>
+
+    <c:if test="${selectMenuWorkflowBean.layout == 'assistant'}">
+      <div class="bot">          
+      </div>        
+    </c:if>     
+
+    <sf:outputText value="#{selectMenuWorkflowBean.message}" 
+                   translator="#{workflowInstanceBean.translationEnabled ? 
+                                 applicationBean.translator : null}" 
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <c:if test="${selectMenuWorkflowBean.cssCustom != null}">
+      <style>
+        ${selectMenuWorkflowBean.cssCustom}
+      </style>        
+    </c:if>
+
+    <h:dataTable value="#{selectMenuWorkflowBean.options}" 
+                 var="option" width="100%"              
+                 styleClass="#{selectMenuWorkflowBean.layout} mt-2">
+      <h:column>
+        <p:commandLink action="#{selectMenuWorkflowBean.selectOption}" 
+                       styleClass="selectMenuLink"
+                       process="@this" update="@form:cnt">
+          <h:graphicImage alt="" url="/common/workflow/images/redbutton.gif" 
+                          style="vertical-align:middle; border-style:none; margin-right:6px"/>
+          <sf:outputText value="#{option.label}"
+                         translator="#{workflowInstanceBean.translationEnabled ?
+                                       applicationBean.translator : null}"
+                         translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+        </p:commandLink>
+      </h:column>
+    </h:dataTable>      
+
+    <gdm:saveBean value="selectMenuWorkflowBean" />        
+    
+  </ui:define>
+
+</ui:composition>

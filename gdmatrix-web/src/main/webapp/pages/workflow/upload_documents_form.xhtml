@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle"
+                  var="workflowBundle" />
+
+    <sf:outputText value="#{uploadDocumentsWorkflowBean.message}" 
+                   translator="#{workflowInstanceBean.translationEnabled ? 
+                                 applicationBean.translator : null}" 
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <p:dataTable value="#{uploadDocumentsWorkflowBean.documents}" 
+                 var="document">
+
+      <p:column width="70%">
+        <f:facet name="header">
+          <h:outputText value="#{workflowBundle.description}" />
+        </f:facet>
+        <h:outputLink value="#{uploadDocumentsWorkflowBean.documentURL}" 
+                      target="_blank" rendered="#{document.uuid != null}">
+          <i class="#{document.icon} mr-2" />
+          <h:outputText value="#{document.title}" />
+        </h:outputLink>
+      </p:column>
+
+      <p:column width="15%" styleClass="text-right">
+        <f:facet name="header">
+          <h:outputText value="#{workflowBundle.size}" />
+        </f:facet>
+        <h:outputText value="#{document.size}" />
+      </p:column>
+
+      <p:column width="15%" styleClass="text-right">
+        <f:facet name="header">
+          <h:outputText value="" />
+        </f:facet>
+
+        <p:commandButton value="#{workflowBundle.delete}"
+                         rendered="#{document.uuid != null}"          
+                         action="#{uploadDocumentsWorkflowBean.deleteDocument}" 
+                         icon="pi pi-trash" styleClass="ui-button-danger"
+                         process="@this" update="@form:cnt" />
+      </p:column>
+    </p:dataTable>
+
+    <p:fileUpload id="file_upload"
+                  rendered="#{uploadDocumentsWorkflowBean.fileToStore == null}"
+                  listener="#{uploadDocumentsWorkflowBean.handleFileUpload}"
+                  mode="simple"
+                  label="#{documentBundle.chooseFile}"
+                  chooseButtonTitle="#{documentBundle.chooseFile}"
+                  widgetVar="uploadDnd"
+                  fileLimit="1"                    
+                  update="@form:cnt"
+                  sizeLimit="200000000"
+                  global="false"
+                  dropZone="file_upload">
+    </p:fileUpload>
+
+    <h:panelGroup layout="block" styleClass="ui-fluid formgrid grid"
+                  rendered="#{document.uuid == null and uploadDocumentsWorkflowBean.fileToStore != null}">
+
+      <div class="field col-12">
+        <div class="mt-2">
+          <h:outputText value="#{workflowBundle.attachMessage1} " />
+          <h:outputText value="#{uploadDocumentsWorkflowBean.title}" />
+        </div>
+        <div class="mt-2">
+          <h:outputText value="#{workflowBundle.attachMessage2} :" />
+        </div>
+      </div>
+
+      <div class="field col-12 md:col-9">
+        <p:outputLabel for="@next" 
+                       value="#{workflowBundle.documentTitle}: " />
+        <p:inputText value="#{uploadDocumentsWorkflowBean.title}" required="true" />
+      </div>
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" 
+                       value="#{workflowBundle.documentLanguage}: " />
+        <p:selectOneMenu value="#{uploadDocumentsWorkflowBean.language}">
+          <f:selectItem itemValue="ca" itemLabel="#{documentBundle.selectItemCA}"/>
+          <f:selectItem itemValue="es" itemLabel="#{documentBundle.selectItemES}"/>
+          <f:selectItem itemValue="en" itemLabel="#{documentBundle.selectItemEN}"/>
+          <f:selectItem itemValue="fr" itemLabel="#{documentBundle.selectItemFR}"/>
+          <f:selectItem itemValue="it" itemLabel="#{documentBundle.selectItemIT}"/>
+          <f:selectItem itemValue="de" itemLabel="#{documentBundle.selectItemDE}"/>
+          <f:selectItem itemValue="%%" itemLabel="universal"/>
+        </p:selectOneMenu>
+      </div>
+
+      <div class="field col-12 text-right">
+
+        <p:commandButton value="#{objectBundle.store}"
+                         action="#{uploadDocumentsWorkflowBean.storeFile}"   
+                         alt="#{objectBundle.store}" title="#{objectBundle.store}"
+                         icon="pi pi-save" styleClass="w-auto mr-2"
+                         process="@parent" update="@form:cnt"
+                         />
+        <p:commandButton value="#{objectBundle.cancel}"
+                         action="#{uploadDocumentsWorkflowBean.cancelFile}"              
+                         alt="#{objectBundle.cancel}" title="#{objectBundle.cancel}"
+                         icon="pi pi-times" styleClass="w-auto"
+                         process="@this" update="@form:cnt"
+                         />
+      </div>
+
+    </h:panelGroup>
+
+    <gdm:saveBean value="uploadDocumentsWorkflowBean" />    
+    
+  </ui:define>
+
+</ui:composition>

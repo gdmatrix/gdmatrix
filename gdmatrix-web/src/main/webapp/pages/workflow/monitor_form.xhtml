@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+                  var="objectBundle" />
+
+    <f:verbatim>
+      <script src="${pageContext.request.contextPath}/plugins/working/work.js"
+      type="text/javascript">a = 0</script>
+    </f:verbatim>
+
+    <t:div style="text-align:center">
+      <sf:outputText value="#{monitorWorkflowBean.message}"
+                     translator="#{workflowInstanceBean.translationEnabled ?
+                                   applicationBean.translator : null}"
+                     translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                     styleClass="workflowMessage" />
+    </t:div>
+
+    <t:div style="text-align:center;height:30px">
+      <h:outputText value="#{monitorWorkflowBean.progress}"
+                    styleClass="workflowMessage" />
+    </t:div>
+
+    <t:div forceId="true" id="workWheel" style="text-align:center;height:100px">
+    </t:div>
+
+    <t:div style="text-align:center"
+           rendered="#{monitorWorkflowBean.cancelButtonRendered}">
+      <t:commandButton value="#{objectBundle.cancel}" action="#{monitorWorkflowBean.cancel}" />
+    </t:div>
+
+    <t:commandButton forceId="true" id="monitorRefresh"
+                     value="Refresh" action="#{monitorWorkflowBean.refresh}" style="display:none" />
+
+    <script type="text/javascript">
+      function updateMonitor()
+      {
+        elem = document.getElementById("monitorRefresh");
+        elem.click();
+      }
+      showWork(document.getElementById("workWheel"), '${pageContext.request.contextPath}');
+      setTimeout(updateMonitor, ${monitorWorkflowBean.refreshTime});
+    </script>
+
+    <gdm:saveBean value="monitorWorkflowBean" />      
+
+  </ui:define>
+
+</ui:composition>

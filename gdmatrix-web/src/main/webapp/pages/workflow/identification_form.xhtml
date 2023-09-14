@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags"
+                template="/pages/workflow/instance.xhtml">
+
+  <ui:define name="form">
+
+    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" 
+                  var="workflowBundle" />
+
+    <f:loadBundle basename="org.santfeliu.web.resources.MessageBundle" 
+                  var="messageBundle" />
+    <sf:outputText value="#{identificationWorkflowBean.message}" 
+                   translator="#{workflowInstanceBean.translationEnabled ? 
+                                 applicationBean.translator : null}" 
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
+                   styleClass="workflowMessage" />
+
+    <h:panelGrid columns="1" headerClass="formSection" width="100%" >
+      <f:facet name="header">
+        <h:outputText value="#{workflowBundle.personalData}" styleClass="sectionHeader"/>      
+      </f:facet>
+      <h:panelGrid columns="3">
+        <h:outputText value="#{workflowBundle.name} *" />
+        <h:outputText value="#{workflowBundle.surname1} *" />
+        <h:outputText value="#{workflowBundle.surname2}" />
+        <h:inputText id="name" value="#{identificationWorkflowBean.name}"
+                     size="20" required="true" />
+        <h:inputText id="surname1" value="#{identificationWorkflowBean.surname1}" 
+                     size="20" required="true"/>
+        <h:inputText id="surname2" value="#{identificationWorkflowBean.surname2}" 
+                     size="20" />
+        <h:message for="name" warnClass="warnMessage" errorClass="errorMessage" 
+                   fatalClass="fatalMessage" />          
+        <h:message for="surname1" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage" />            
+        <h:message for="surname2" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage" />            
+      </h:panelGrid>
+      <h:panelGrid columns="2">
+        <h:outputText value="#{workflowBundle.documentType}" />
+        <h:outputText value="#{workflowBundle.number} *" />
+        <h:selectOneListbox id="documentType"
+                            value="#{identificationWorkflowBean.documentType}"
+                            size="1" required="true" binding="#{identificationWorkflowBean.documentTypeComponent}">
+          <f:selectItem itemLabel="#{workflowBundle.idDoc}" itemValue="NIF"/>
+          <f:selectItem itemLabel="#{workflowBundle.passport}" itemValue="PASSPORT"/>
+          <f:selectItem itemLabel="#{workflowBundle.residenceCard}" itemValue="NIE"/>
+        </h:selectOneListbox>
+        <h:inputText id="documentNumber" size="20" required="true"
+                     value="#{identificationWorkflowBean.documentNumber}" 
+                     validator="#{identificationWorkflowBean.validateDocumentNumber}"/>
+        <h:message for="documentType" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage" />          
+        <h:message for="documentNumber" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage" />
+      </h:panelGrid>
+    </h:panelGrid>
+
+    <h:panelGrid columns="1" headerClass="formSection" width="100%">
+      <f:facet name="header">
+        <h:outputText value="#{workflowBundle.addressData}" styleClass="sectionHeader"/>      
+      </f:facet>
+      <h:panelGrid columns="2">
+        <h:outputText value="#{workflowBundle.wayType} *" />
+        <h:outputText value="#{workflowBundle.wayName} *" />
+        <h:inputText id="wayType" value="#{identificationWorkflowBean.wayType}" size="10" 
+                     required="true"/>
+        <h:inputText id="adressName" value="#{identificationWorkflowBean.addressName}" 
+                     size="50" required="true"/>
+        <h:message for="wayType" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage"/>
+        <h:message for="adressName" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage"/>
+      </h:panelGrid>
+      <h:panelGrid columns="5">
+        <h:outputText value="#{workflowBundle.number}" />
+        <h:outputText value="#{workflowBundle.block}" />
+        <h:outputText value="#{workflowBundle.staircase}" />
+        <h:outputText value="#{workflowBundle.floor}" />
+        <h:outputText value="#{workflowBundle.door}" />
+        <h:inputText id="adressNumber" 
+                     value="#{identificationWorkflowBean.addressNumber}" size="15"
+                     required="true"/>          
+        <h:inputText value="#{identificationWorkflowBean.addressBlock}" size="4" />          
+        <h:inputText value="#{identificationWorkflowBean.addressStair}"  size="4"/>          
+        <h:inputText value="#{identificationWorkflowBean.addressFloor}"  size="4" />          
+        <h:inputText value="#{identificationWorkflowBean.addressDoor}"  size="4" />
+        <h:message for="adressNumber" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage" />
+      </h:panelGrid>
+      <h:panelGrid columns="3">
+        <h:outputText value="#{workflowBundle.postalCode}" />          
+        <h:outputText value="#{workflowBundle.town}" />
+        <h:outputText value="#{workflowBundle.province}" />
+        <h:inputText id="zipCode" value="#{identificationWorkflowBean.zipCode}" 
+                     size="10" maxlength="5">       
+          <t:validateRegExpr pattern='\d{5}' 
+                             message="#{messageBundle.INVALID_ZIP_CODE}"/>
+        </h:inputText>
+        <h:inputText value="#{identificationWorkflowBean.city}" size="30" />
+        <h:inputText value="#{identificationWorkflowBean.province}" size="20"/>
+        <h:message for="zipCode" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage" />                  
+      </h:panelGrid>
+    </h:panelGrid>
+
+    <h:panelGrid columns="1" headerClass="formSection" width="100%">
+      <f:facet name="header">
+        <h:outputText value="#{workflowBundle.contactData}" styleClass="sectionHeader"/>      
+      </f:facet>
+      <h:panelGrid columns="2">
+        <h:outputText value="#{workflowBundle.telephone}" />
+        <h:outputText value="#{workflowBundle.eMail}" />          
+        <h:inputText id="telefon" value="#{identificationWorkflowBean.phone}" 
+                     size="10" maxlength="9">
+          <t:validateRegExpr pattern='\d{9}' message="#{messageBundle.INVALID_PHONE}"/>
+        </h:inputText>
+        <h:inputText id="email" value="#{identificationWorkflowBean.email}" size="40">
+          <t:validateEmail />
+        </h:inputText>
+        <h:message for="telefon" warnClass="warnMessage" 
+                   errorClass="errorMessage" fatalClass="fatalMessage" showDetail="true"/>        
+        <h:message for="email" warnClass="warnMessage" errorClass="errorMessage" 
+                   fatalClass="fatalMessage"/>
+      </h:panelGrid>
+    </h:panelGrid>
+
+    <h:outputText styleClass="annotation" value="#{workflowBundle.requiredFields}" />
+
+    <gdm:saveBean value="identificationWorkflowBean" />  
+
+  </ui:define>  
+
+</ui:composition>
