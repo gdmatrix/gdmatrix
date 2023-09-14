@@ -247,6 +247,7 @@ public class HtmlFormImporter
           view.setChecked(element.getAttribute("checked").length() > 0);
           view.setTabindex(getInteger(element.getAttribute("tabindex")));
           view.setOnChange(element.getAttribute("onchange"));
+          view.setDisabled(element.getAttribute("disabled"));
           componentView = view;
         }
         else if ("submit".equalsIgnoreCase(type))

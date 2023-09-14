@@ -46,6 +46,7 @@ public class CheckBoxView extends ComponentView
   private static ImageIcon unselectedIcon;
   private Integer tabindex;
   private String onChange;
+  private String disabled;
 
   public CheckBoxView()
   {
@@ -116,6 +117,16 @@ public class CheckBoxView extends ComponentView
     this.onChange = onChange;
   }
 
+  public String getDisabled()
+  {
+    return disabled;
+  }
+
+  public void setDisabled(String disabled)
+  {
+    this.disabled = disabled;
+  }
+
   @Override
   public void paintView(Graphics g)
   {
@@ -145,6 +156,7 @@ public class CheckBoxView extends ComponentView
     clone.variable = variable;
     clone.checked = checked;
     clone.tabindex = tabindex;
+    clone.disabled = disabled;
     return clone;
   }
 }

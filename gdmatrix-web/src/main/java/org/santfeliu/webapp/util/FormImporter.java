@@ -241,6 +241,7 @@ public class FormImporter
       datePicker.setPlaceholder(pattern);
       datePicker.setShowIcon(true);
       datePicker.setShowOnFocus(false);
+      datePicker.setReadonly(field.isReadOnly());
       component = datePicker;
     }
     else if (Field.NUMBER.equals(fieldType))
@@ -259,6 +260,7 @@ public class FormImporter
           (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
         selectOneMenu.setTouchable(true);
         selectOneMenu.setAutoWidth(false);
+        selectOneMenu.setReadonly(field.isReadOnly());
 
         UISelectItem selectItem = new UISelectItem();
         selectItem.setItemValue(null);
@@ -281,6 +283,7 @@ public class FormImporter
         ToggleSwitch toogleSwitch =
           (ToggleSwitch)application.createComponent(ToggleSwitch.COMPONENT_TYPE);
         toogleSwitch.setStyleClass("block");
+        toogleSwitch.setDisabled(field.isReadOnly());
         component = toogleSwitch;
       }
     }

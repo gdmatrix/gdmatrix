@@ -312,6 +312,10 @@ public class HtmlFormExporter
       {
         writer.write(" onchange=\"" + view.getOnChange() + "\"");
       }
+      if (view.getDisabled() != null && view.getDisabled().trim().length() > 0)
+      {
+        writer.write(" disabled=\"" + view.getDisabled() + "\"");
+      }      
       writer.write(">\n");
     }
     else if (componentView instanceof ButtonView)
