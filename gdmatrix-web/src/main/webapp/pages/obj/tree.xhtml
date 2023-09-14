@@ -46,10 +46,9 @@
         <p:menuitem value="#{contextAction.label}" 
                     action="#{contextTreeBean.doContextAction(contextAction)}"
                     update="@form:cnt">
-          <p:confirm type="popup" 
-                     disabled="#{contextAction.type != 'REMOVE'}"
-                     header="Confirmation" 
-                     message="#{objectBundle.confirm_remove}" 
+          <p:confirm disabled="#{contextAction.type != 'REMOVE'}"
+                     header="#{objectBundle.confirm_remove_header}" 
+                     message="#{objectBundle.confirm_remove_message}"  
                      icon="pi pi-info-circle"/>
         </p:menuitem>
       </c:forEach>
