@@ -51,6 +51,7 @@ import java.util.logging.Logger;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
+import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
 import org.matrix.cms.CMSManagerPort;
@@ -173,6 +174,18 @@ public class ApplicationBean
         return auxNodeId;
       }
     }
+  }
+
+  public String getItemLabel(List<SelectItem> selectItems, Object value)
+  {
+    if (value != null)
+    {
+      for (SelectItem selectItem : selectItems)
+      {
+        if (value.equals(selectItem.getValue())) return selectItem.getLabel();
+      }
+    }
+    return "";
   }
 
   public String getResourcesVersion()
