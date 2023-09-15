@@ -163,8 +163,17 @@ public class NavigatorBean extends WebBean implements Serializable
         {
           url += "&" + OBJECTID_PARAMETER + "=" + objectBean.getObjectId();
         }
+        
+        String prefix = getProperty("pageTitlePrefix");
+        String title = prefix != null ? prefix + " " : "";
+        String pageTitle = getProperty("pageTitle");
+        if (pageTitle == null)
+          title = title + getSelectedMenuItem().getLabel();
+        else
+          title = title + pageTitle;
+                
         return "<script>window.history.pushState({},'','" + url +
-          "');</script>";
+          "');document.title='" + title + "';</script>";
       }
     }
     return "";
