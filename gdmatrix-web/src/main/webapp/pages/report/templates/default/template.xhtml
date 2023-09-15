@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:p="http://primefaces.org/ui">
+
+    <sf:browser url="#{reportViewerBean.headerURL}"
+      port="#{applicationBean.defaultPort}"
+      rendered="#{reportViewerBean.headerURL != null}"
+      translator="#{userSessionBean.translator}"
+      translationGroup="#{userSessionBean.translationGroup}" />
+
+    <p:outputPanel rendered="#{reportViewerBean.formRendered}" styleClass="filterPanel">
+      <sf:customForm url="#{reportViewerBean.formURL}"
+        values="#{reportViewerBean.parameters}"
+        newValues="#{reportViewerBean.formValues}"
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}" />
+      <p:outputPanel styleClass="footer" rendered="#{reportViewerBean.executeButtonRendered}">
+        <h:commandButton id="default_button" value="#{reportViewerBean.executeButtonLabel == null ?
+          webBundle.buttonExecute : reportViewerBean.executeButtonLabel}"
+          action="#{reportViewerBean.executeReport}" styleClass="executeButton" />
+      </p:outputPanel>
+    </p:outputPanel>
+
+    <p:outputPanel rendered="#{reportViewerBean.reportRendered and reportViewerBean.printButtonRendered}">
+      <h:outputLink value="#{reportViewerBean.printURL}" target="blank" styleClass="printButton">
+        <h:graphicImage url="/common/report/images/print.gif" alt="" />
+        <sf:outputText value="#{reportViewerBean.printButtonLabel}"
+          rendered="#{reportViewerBean.printButtonLabel != null}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}" />
+      </h:outputLink>
+    </p:outputPanel>
+
+    <p:outputPanel styleClass="body">
+      <sf:browser url="#{reportViewerBean.reportURL}"
+        port="#{applicationBean.defaultPort}"
+        iframe="#{reportViewerBean.showInIFrame}" width="100%" height="500px"
+        translator="#{not reportViewerBean.showInIFrame ? userSessionBean.translator : null}"
+        translationGroup="#{userSessionBean.translationGroup}" 
+        allowedHtmlTags="#{reportViewerBean.allowedHtmlTags}"
+        readTimeout="#{reportViewerBean.readTimeout}"/>
+    </p:outputPanel>
+
+    <sf:browser url="#{reportViewerBean.footerURL}"
+      port="#{applicationBean.defaultPort}"
+      rendered="#{reportViewerBean.footerURL != null}"
+      translator="#{userSessionBean.translator}"
+      translationGroup="#{userSessionBean.translationGroup}" />
+    
+</ui:composition>
