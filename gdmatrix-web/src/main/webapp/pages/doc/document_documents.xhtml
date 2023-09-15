@@ -104,11 +104,14 @@
           <p:outputLabel for="@next"
                          value="#{documentBundle.relation}" />
           <p:selectOneMenu value="#{documentDocumentsTabBean.editing.relatedDocument.relationType}"
-                           touchable="true"
+                           touchable="true" var="itemValue"
                            required="true">
             <f:selectItems value="#{documentDocumentsTabBean.relationTypeSelectItems}" />
             <f:converter converterId="EnumConverter" />
             <f:attribute name="enum" value="org.matrix.doc.RelationType" />
+            <p:column>
+              <h:outputText value="#{itemValue}" />
+            </p:column>
           </p:selectOneMenu>
         </div>
 
