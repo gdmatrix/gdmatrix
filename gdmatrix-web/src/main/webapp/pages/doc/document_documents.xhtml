@@ -37,7 +37,7 @@
       </f:facet>
 
       <p:column headerText="#{documentBundle.relation}" styleClass="col-3">
-        <h:outputText value="#{row.relatedDocument.relationType}"/>
+        <h:outputText value="#{documentBundle['org.matrix.doc.RelationType.' += row.relatedDocument.relationType]}"/>
       </p:column>
 
       <p:column headerText="#{documentBundle.name}" styleClass="col-2">
@@ -106,11 +106,12 @@
           <p:selectOneMenu value="#{documentDocumentsTabBean.editing.relatedDocument.relationType}"
                            touchable="true" var="itemValue"
                            required="true">
-            <f:selectItems value="#{documentDocumentsTabBean.relationTypeSelectItems}" />
-            <f:converter converterId="EnumConverter" />
-            <f:attribute name="enum" value="org.matrix.doc.RelationType" />
+            <f:selectItems value="#{documentDocumentsTabBean.relationTypes}"
+                           var="item"
+                           itemValue="#{item}"
+                           itemLabel="#{documentBundle['org.matrix.doc.RelationType.' += item.name()]}" />
             <p:column>
-              <h:outputText value="#{itemValue}" />
+              <h:outputText value="#{documentBundle['org.matrix.doc.RelationType.' += itemValue.name()]}" />
             </p:column>
           </p:selectOneMenu>
         </div>

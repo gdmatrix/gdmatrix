@@ -33,15 +33,12 @@ package org.santfeliu.webapp.modules.doc;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.RelatedDocument;
 import org.matrix.doc.RelationType;
-import org.santfeliu.faces.FacesUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -201,11 +198,9 @@ public class DocumentDocumentsTabBean extends TabBean
     }
   }
 
-  public SelectItem[] getRelationTypeSelectItems()
+  public RelationType[] getRelationTypes()
   {
-    ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.doc.web.resources.DocumentBundle", getLocale());
-    return FacesUtils.getEnumSelectItems(RelationType.class, bundle);
+    return RelationType.class.getEnumConstants();
   }
 
   @Override
