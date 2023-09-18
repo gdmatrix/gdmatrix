@@ -176,9 +176,11 @@
                              rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
                 <p:selectOneMenu id="new_contact_type_id" value="#{casePersonsTabBean.contactTypeId}"
-                                 autoWidth="false" touchable="true">
-                  <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
-                                 var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
+                                 autoWidth="false" touchable="true" var="itemValue">
+                  <f:selectItems value="#{casePersonsTabBean.contactTypeSelectItems}" />
+                  <p:column>
+                    <h:outputText value="#{applicationBean.getItemLabel(casePersonsTabBean.contactTypeSelectItems, itemValue)}"/>
+                  </p:column>                  
                 </p:selectOneMenu>
 
               </p:outputPanel>
@@ -290,9 +292,11 @@
                              rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
                 <p:selectOneMenu id="new_representant_contact_type_id" value="#{casePersonsTabBean.representantContactTypeId}"
-                                 autoWidth="false" touchable="true">
-                  <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
-                                 var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
+                                 autoWidth="false" touchable="true" var="itemValue">
+                  <f:selectItems value="#{casePersonsTabBean.contactTypeSelectItems}" />
+                  <p:column>
+                    <h:outputText value="#{applicationBean.getItemLabel(casePersonsTabBean.contactTypeSelectItems, itemValue)}"/>
+                  </p:column>                                    
                 </p:selectOneMenu>
 
               </p:outputPanel>

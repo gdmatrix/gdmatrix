@@ -212,17 +212,6 @@ public class EventPersonsTabBean extends TabBean
     return typeId;
   }
 
-  public List<SelectItem> getAttendedSelectItems()
-  {
-    ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.agenda.web.resources.AgendaBundle", getLocale());
-    List<SelectItem> result = new ArrayList();
-    result.add(new SelectItem("S", bundle.getString("attendants_yes")));
-    result.add(new SelectItem("N", bundle.getString("attendants_no")));
-    result.add(new SelectItem("J", bundle.getString("attendants_ea")));
-    return result;
-  }
-
   public String getAttendedLabel()
   {
     ResourceBundle bundle = ResourceBundle.getBundle(

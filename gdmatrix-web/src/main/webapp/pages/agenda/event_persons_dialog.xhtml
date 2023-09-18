@@ -36,25 +36,25 @@
           <emcomp:objectReference value="#{eventPersonsTabBean.editing.personId}"
                                   type="Person"
                                   process="@form:cnt:search_tabs:event_persons_dialog"
-                                  update="@form:cnt:search_tabs:event_persons_panel"                                  
+                                  update="@form:cnt:search_tabs:event_persons_panel"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   oncomplete="PF('eventPersonsDialog').hide();"
-                                  onselect="PF('eventPersonsDialog').show();"                                  
+                                  onselect="PF('eventPersonsDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:event_persons_store']}"
                                   requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
                                   disabled="#{!eventObjectBean.editable}"
                                   autoUpdate="false">
             <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
-                    process="@form:cnt:search_tabs:event_persons_dialog" 
-                    update="@form:cnt:search_tabs:event_persons_panel" 
+                    process="@form:cnt:search_tabs:event_persons_dialog"
+                    update="@form:cnt:search_tabs:event_persons_panel"
                     oncomplete="PF('eventPersonsDialog').resetPosition();" />
             <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
-                    process="@form:cnt:search_tabs:event_persons_dialog" 
+                    process="@form:cnt:search_tabs:event_persons_dialog"
                     update="@form:cnt:search_tabs:event_persons_panel"
-                    oncomplete="PF('eventPersonsDialog').resetPosition();" />            
+                    oncomplete="PF('eventPersonsDialog').resetPosition();" />
           </emcomp:objectReference>
         </div>
 
@@ -69,7 +69,7 @@
                                 onselect="PF('eventPersonsDialog').show();"
                                 type="#{eventPersonsTabBean.tabBaseTypeId != null ? eventPersonsTabBean.tabBaseTypeId : 'Attendant'}"
                                 showNavigatorItems="#{eventPersonsTabBean.tabBaseTypeId != 'Attendant' ? 'false' : 'true'}"
-                                showNonInstantiableItems="false"                                
+                                showNonInstantiableItems="false"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
@@ -92,10 +92,16 @@
                          value="#{agendaBundle.attendants_attended}" />
           <p:selectOneMenu id="attended"
                            value="#{eventPersonsTabBean.editing.attended}"
-                           disabled="#{!eventObjectBean.editable}" autoWidth="false" 
-                           touchable="true">
+                           disabled="#{!eventObjectBean.editable}" autoWidth="false"
+                           touchable="true" var="itemValue">
             <f:selectItem itemLabel=" " itemValue="" />
-            <f:selectItems value="#{eventPersonsTabBean.attendedSelectItems}" />
+            <f:selectItems value="#{['S','N','J']}"
+                           var="item"
+                           itemValue="#{item}"
+                           itemLabel="#{agendaBundle['attendants_' += item]}" />
+            <p:column>
+              <h:outputText value="#{itemValue != '' ? agendaBundle['attendants_' += itemValue] : ' '}" />
+            </p:column>
           </p:selectOneMenu>
         </div>
 
