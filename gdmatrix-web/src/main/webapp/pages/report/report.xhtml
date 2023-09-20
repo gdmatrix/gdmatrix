@@ -10,5 +10,7 @@
   <div class="reportPanel">
     <ui:include src="/pages/report/templates/#{userSessionBean.selectedMenuItem.properties.reportTemplate != null ? userSessionBean.selectedMenuItem.properties.reportTemplate : 'default'}/template.xhtml" /> 
   </div>
-
+  
+  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
+  
 </ui:composition>

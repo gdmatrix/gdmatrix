@@ -2,7 +2,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:gdm="http://gdmatrix.org/tags">
 
     <sf:browser url="#{reportViewerBean.headerURL}"
       port="#{applicationBean.defaultPort}"
@@ -26,10 +27,8 @@
     <p:outputPanel rendered="#{reportViewerBean.reportRendered and reportViewerBean.printButtonRendered}">
       <h:outputLink value="#{reportViewerBean.printURL}" target="blank" styleClass="printButton">
         <h:graphicImage url="/common/report/images/print.gif" alt="" />
-        <sf:outputText value="#{reportViewerBean.printButtonLabel}"
-          rendered="#{reportViewerBean.printButtonLabel != null}"
-          translator="#{userSessionBean.translator}"
-          translationGroup="#{userSessionBean.translationGroup}" />
+        <h:outputText value="#{applicationBean.translate(reportViewerBean.printButtonLabel, userSessionBean.translationGroup)}"
+          rendered="#{reportViewerBean.printButtonLabel != null}" />
       </h:outputLink>
     </p:outputPanel>
 

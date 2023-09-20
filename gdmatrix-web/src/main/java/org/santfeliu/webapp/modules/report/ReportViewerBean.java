@@ -114,20 +114,13 @@ public class ReportViewerBean extends WebBean implements Serializable
   private Map parameters;
   private Map formValues;
   
-  private String content;  
-
   public ReportViewerBean()
   {
   }
 
   public String getContent()
   {
-    return content;
-  }
-
-  public void setContent(String content)
-  {
-    this.content = content;
+    return "/pages/report/report.xhtml";
   }
   
   /* bean properties */
@@ -539,7 +532,6 @@ public class ReportViewerBean extends WebBean implements Serializable
 
   public String show() {
     reportRendered = true;
-    setContent("/pages/report/report.xhtml");
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/spa.xhtml";
   }
