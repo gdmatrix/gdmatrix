@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/tags">
+
+
+  <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                var="documentBundle"/>
+
+  <p:outputPanel id="header"
+                 rendered="#{documentViewerBean.headerBrowserUrl!=null}"
+                 styleClass="headerDocument">
+    <sf:browser url="#{documentViewerBean.headerBrowserUrl}"
+                port="#{applicationBean.defaultPort}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}" />
+  </p:outputPanel>
+
+  <p:outputPanel id="document-panel" styleClass="w-full">  
+    <div class="actions p-2 text-right">
+      <p:commandButton action="#{documentViewerBean.editDocument}"
+                       styleClass="m-1"
+                       process="@this" update="document-panel"
+                       icon="pi pi-file-edit" 
+                       rendered="#{documentViewerBean.renderEditButton and userSessionBean.menuModel.browserType == 'desktop'}"
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"/>
+      
+      <p:commandButton styleClass="m-1" type="button"
+                       icon="pi pi-print" 
+                       rendered="#{documentViewerBean.printEnabled and not documentViewerBean.editing and not documentViewerBean.iframe and userSessionBean.menuModel.browserType == 'desktop'}"
+                       alt="#{documentBundle.print_new_window}">
+        <p:printer target="pnlPrint"/>        
+      </p:commandButton>
+       
+      <p:commandButton action="#{documentViewerBean.saveDocument}" value="#{webBundle.buttonSave}"
+                       icon="pi pi-save" styleClass="m-1" 
+                       process="document-panel" update="document-panel"
+                       rendered="#{documentViewerBean.editing}"/>
+
+      <p:commandButton action="#{documentViewerBean.closeDocument}" value="#{webBundle.buttonCancel}"
+                       icon="pi pi-undo" styleClass="m-1"
+                       process="@this" update="document-panel"
+                       rendered="#{documentViewerBean.editing}" />
+    </div>
+
+    <p:outputPanel rendered="#{documentViewerBean.editing}">
+
+        <h:outputText styleClass="font-bold m-2" value="#{documentViewerBean.document.docId} (#{documentViewerBean.document.language})" />
+        <i class="pi pi-lock" />
+        <h:outputText styleClass="font-bold m-2" value="#{documentBundle.lockedBy} #{documentViewerBean.lockUserId}" />
+              
+        <h:selectBooleanCheckbox value="#{documentViewerBean.keepLocking}" 
+                                 rendered="#{documentViewerBean.editing}"
+                                 style="vertical-align:middle;"/>
+        <h:outputText value="#{documentBundle.keepLocked}"
+                      rendered="#{documentViewerBean.editing}" 
+                      style="editingMessage"/>
+
+    </p:outputPanel>
+
+    <pe:ckEditor value="#{documentViewerBean.editor.documentData}"
+                 enterMode="CKEDITOR.ENTER_BR"
+                 skin="office2013"
+                 rendered="#{documentViewerBean.editing}" 
+                 width="100%" height="600px"/>  
+    <p:outputPanel id="pnlPrint">
+      <sf:browser url="#{documentViewerBean.url}"
+                  port="#{applicationBean.defaultPort}"
+                  rendered="#{!documentViewerBean.editing}" 
+                  iframe="#{documentViewerBean.iframe}" 
+                  width="#{documentViewerBean.iframeWidth}" 
+                  height="#{documentViewerBean.iframeHeight}"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{documentViewerBean.translationGroup}" />
+    </p:outputPanel>
+  </p:outputPanel>
+
+  <p:outputPanel id="footer"
+                 rendered="#{documentViewerBean.footerBrowserUrl!=null}"
+                 styleClass="footerDocument">
+    <sf:browser url="#{documentViewerBean.footerBrowserUrl}"
+                port="#{applicationBean.defaultPort}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}" />
+  </p:outputPanel>
+
+  <gdm:saveBean value="documentViewerBean" /> 
+
+</ui:composition>
