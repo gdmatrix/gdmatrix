@@ -228,6 +228,11 @@ body .ui-menu .ui-menu-list .ui-submenu-child .ui-menuitem-link
   margin-left: -0.6rem;
 }
 
+.ui-button a
+{
+  text-decoration: none;
+}
+
 .ui-menuitem-link .ui-icon.mi
 {
   position: absolute;

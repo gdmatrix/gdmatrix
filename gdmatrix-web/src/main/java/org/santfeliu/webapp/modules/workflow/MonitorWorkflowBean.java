@@ -46,7 +46,7 @@ import org.santfeliu.workflow.form.Form;
 @RequestScoped
 public class MonitorWorkflowBean extends WorkflowBean
 {
-  private static int MIN_REFRESH_TIME = 2; // in seconds
+  private static final int MIN_REFRESH_TIME = 2; // in seconds
   private String message;
   private int refreshTime = MIN_REFRESH_TIME;
   private String progressVarName;
@@ -73,9 +73,9 @@ public class MonitorWorkflowBean extends WorkflowBean
     return cancelVarName != null && endVarName != null;
   }
 
-  public int getRefreshTime() // in millis
+  public int getRefreshTime() // in seconds
   {
-    return refreshTime * 1000;
+    return refreshTime;
   }
 
   public void refresh()
@@ -154,7 +154,7 @@ public class MonitorWorkflowBean extends WorkflowBean
     HashMap variables = new HashMap();
     if (cancelVarName != null)
     {
-      variables.put(cancelVarName, Boolean.valueOf(cancelled));
+      variables.put(cancelVarName, cancelled);
     }
     return variables;
   }

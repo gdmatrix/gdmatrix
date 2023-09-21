@@ -33,12 +33,11 @@
                  style="margin-top:8px;margin-bottom:8px;"
                  rendered="#{showDocumentWorkflowBean.showPrintButton and
                              not showDocumentWorkflowBean.IFrame}">
-      <h:outputLink value="javascript:printGroup('printDocument');"
-                    styleClass="docPrintButton">
-        <h:graphicImage url="/common/workflow/images/print.gif" alt="" 
-                        style="vertical-align:middle;margin-right:6px;" /> 
-        <h:outputText value="#{workflowBundle.printDocument}" />
-      </h:outputLink>
+      <p:linkButton href="#"
+        value="#{workflowBundle.printDocument}"
+        icon="pi pi-print"
+        onclick="javascript:printGroup('printDocument');">
+      </p:linkButton>
     </h:panelGrid>
 
     <gdm:saveBean value="showDocumentWorkflowBean" />     

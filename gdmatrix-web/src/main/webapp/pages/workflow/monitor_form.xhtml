@@ -10,47 +10,31 @@
 
   <ui:define name="form">
 
-    <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
-                  var="objectBundle" />
-
-    <f:verbatim>
-      <script src="${pageContext.request.contextPath}/plugins/working/work.js"
-      type="text/javascript">a = 0</script>
-    </f:verbatim>
-
-    <t:div style="text-align:center">
+    <div style="text-align:center" class="m-2">
       <sf:outputText value="#{monitorWorkflowBean.message}"
                      translator="#{workflowInstanceBean.translationEnabled ?
                                    applicationBean.translator : null}"
-                     translationGroup="wf:#{workflowInstanceBean.workflowName}"
-                     styleClass="workflowMessage" />
-    </t:div>
+                     translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+    </div>
 
-    <t:div style="text-align:center;height:30px">
-      <h:outputText value="#{monitorWorkflowBean.progress}"
-                    styleClass="workflowMessage" />
-    </t:div>
+    <p:outputPanel id="monitor_progress" style="text-align:center;" styleClass="m-2">
+      <div class="m-1"><h:outputText value="#{monitorWorkflowBean.progress}" /></div>
+      <i class="pi pi-spin pi-spinner m-1" style="font-size: 2rem"></i>
+    </p:outputPanel>
 
-    <t:div forceId="true" id="workWheel" style="text-align:center;height:100px">
-    </t:div>
-
-    <t:div style="text-align:center"
-           rendered="#{monitorWorkflowBean.cancelButtonRendered}">
-      <t:commandButton value="#{objectBundle.cancel}" action="#{monitorWorkflowBean.cancel}" />
-    </t:div>
-
-    <t:commandButton forceId="true" id="monitorRefresh"
-                     value="Refresh" action="#{monitorWorkflowBean.refresh}" style="display:none" />
-
-    <script type="text/javascript">
-      function updateMonitor()
-      {
-        elem = document.getElementById("monitorRefresh");
-        elem.click();
-      }
-      showWork(document.getElementById("workWheel"), '${pageContext.request.contextPath}');
-      setTimeout(updateMonitor, ${monitorWorkflowBean.refreshTime});
-    </script>
+    <h:panelGroup layout="block" style="text-align:center"
+         rendered="#{monitorWorkflowBean.cancelButtonRendered}">
+      <p:commandButton value="#{objectBundle.cancel}" 
+                       icon="pi pi-times"
+                       process="@this"
+                       update="@form:cnt"
+                       action="#{monitorWorkflowBean.cancel}" />
+    </h:panelGroup>
+    
+    <p:poll interval="#{monitorWorkflowBean.refreshTime}" 
+            listener="#{monitorWorkflowBean.refresh}" 
+            global="false"
+            update="@parent:monitor_progress"/>
 
     <gdm:saveBean value="monitorWorkflowBean" />      
 
