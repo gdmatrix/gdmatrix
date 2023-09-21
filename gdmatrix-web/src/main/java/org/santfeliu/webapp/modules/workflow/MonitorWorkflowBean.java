@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.PF;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.form.Form;
 
@@ -78,28 +79,35 @@ public class MonitorWorkflowBean extends WorkflowBean
     return refreshTime;
   }
 
+  public boolean isEnd()
+  {
+    Object value = instanceBean.getVariables().get(endVarName);
+    boolean end = false;
+    if (value instanceof Boolean)
+    {
+      end = ((Boolean)value);
+    }
+    else if (value instanceof String)
+    {
+      end = "true".equalsIgnoreCase(value.toString());
+    }
+    return end;
+  }
+
   public void refresh()
   {
     if (endVarName == null)
     {
       instanceBean.forward();
+      PF.current().ajax().update(":mainform:cnt");
     }
     else
     {
       instanceBean.updateInstance();
-      Object value = instanceBean.getVariables().get(endVarName);
-      boolean end = false;
-      if (value instanceof Boolean)
-      {
-        end = ((Boolean)value);
-      }
-      else if (value instanceof String)
-      {
-        end = "true".equalsIgnoreCase(value.toString());
-      }
-      if (end)
+      if (isEnd())
       {
         instanceBean.forward();
+        PF.current().ajax().update(":mainform:cnt");
       }
     }
   }

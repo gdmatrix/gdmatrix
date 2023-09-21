@@ -10,20 +10,29 @@
 
   <ui:define name="form">
 
-    <div style="text-align:center" class="m-2">
-      <sf:outputText value="#{monitorWorkflowBean.message}"
-                     translator="#{workflowInstanceBean.translationEnabled ?
-                                   applicationBean.translator : null}"
-                     translationGroup="wf:#{workflowInstanceBean.workflowName}" />
-    </div>
+    <h:panelGroup id="monitor_progress"  
+                  layout="block"
+                  style="text-align:center;" 
+                  styleClass="m-2">
 
-    <p:outputPanel id="monitor_progress" style="text-align:center;" styleClass="m-2">
-      <div class="m-1"><h:outputText value="#{monitorWorkflowBean.progress}" /></div>
-      <i class="pi pi-spin pi-spinner m-1" style="font-size: 2rem"></i>
-    </p:outputPanel>
+      <div class="m-2">
+        <sf:outputText value="#{monitorWorkflowBean.message}"
+                       translator="#{workflowInstanceBean.translationEnabled ?
+                                     applicationBean.translator : null}"
+                       translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+      </div>
 
-    <h:panelGroup layout="block" style="text-align:center"
-         rendered="#{monitorWorkflowBean.cancelButtonRendered}">
+      <div class="mt-2">
+        <h:outputText value="#{monitorWorkflowBean.progress}" />
+      </div>
+      
+      <i class="pi pi-spin pi-spinner m-4" style="font-size: 2rem"></i>
+        
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" 
+                  style="text-align:center"
+                  rendered="#{monitorWorkflowBean.cancelButtonRendered}">
       <p:commandButton value="#{objectBundle.cancel}" 
                        icon="pi pi-times"
                        process="@this"
@@ -33,10 +42,10 @@
     
     <p:poll interval="#{monitorWorkflowBean.refreshTime}" 
             listener="#{monitorWorkflowBean.refresh}" 
-            global="false"
-            update="@parent:monitor_progress"/>
-
-    <gdm:saveBean value="monitorWorkflowBean" />      
+            global="false" 
+            update="@parent:monitor_progress" />    
+    
+    <gdm:saveBean value="monitorWorkflowBean" />
 
   </ui:define>
 
