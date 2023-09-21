@@ -307,15 +307,13 @@ public class WorkflowEngine
     }
 
     // phase 1: setVariables / doStep
-    boolean wakeUpAgent = maxSteps <= 1;
-    WorkflowEvent event = doStep(instanceId, actor, wakeUpAgent);
+    WorkflowEvent event = doStep(instanceId, actor, true);
 
     // phase 2: do steps
     int numSteps = 1;
     while (event != null && numSteps < maxSteps)
     {
-      wakeUpAgent = numSteps + 1 >= maxSteps;
-      event = doStep(instanceId, actor, wakeUpAgent);
+      event = doStep(instanceId, actor, true);
       numSteps++;
     }
     if (event != null) // infinite loop detected
@@ -368,7 +366,7 @@ public class WorkflowEngine
         conn.commit();
 
         // wakeUp agent
-        if (wakeUpAgent && processable)
+        if (wakeUpAgent && pendentNodes)
           wakeUpAgent(instance.getAgentName());
       }
       catch (Exception ex)
