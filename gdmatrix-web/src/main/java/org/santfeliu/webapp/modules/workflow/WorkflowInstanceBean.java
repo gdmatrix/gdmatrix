@@ -351,7 +351,7 @@ public class WorkflowInstanceBean extends FacesBean implements Serializable
         return (String)value;
       }
     }
-    return "HtmlFormRenderer,GenericFormRenderer";
+    return "Html5FormRenderer,GenericFormRenderer";
   }
 
   public boolean isHelpEnabled()

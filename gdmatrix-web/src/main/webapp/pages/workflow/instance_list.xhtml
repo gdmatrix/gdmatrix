@@ -10,12 +10,6 @@
 
   <h:outputStylesheet library="css" name="workflow.css" />
   
-  <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
-              showSummary="true"
-              warnClass="warnMessage"
-              errorClass="errorMessage"
-              fatalClass="fatalMessage" />
-
   <h:panelGroup layout="block" rendered="#{userSessionBean.anonymousUser}"
                 styleClass="workflow_body m-2 ml-auto mr-auto">
     <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties.loginDocId}"
@@ -31,7 +25,13 @@
   <h:panelGroup layout="block"
                 styleClass="workflow_body m-2 ml-auto mr-auto"
                 rendered="#{not userSessionBean.anonymousUser}">
-
+    
+    <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
+                showSummary="true"
+                warnClass="warnMessage"
+                errorClass="errorMessage"
+                fatalClass="fatalMessage" />
+    
     <div class="ui-fluid formgrid grid m-2">
 
       <div class="field col-12">

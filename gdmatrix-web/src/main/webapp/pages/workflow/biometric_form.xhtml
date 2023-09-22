@@ -3,26 +3,28 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:gdm="http://gdmatrix.org/tags"
                 template="/pages/workflow/instance.xhtml">
 
   <ui:define name="form">
 
-    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />  
-
     <sf:outputText value="#{biometricWorkflowBean.message}"
                    translator="#{workflowInstanceBean.translationEnabled ? 
                                  applicationBean.translator : null}" 
                    translationGroup="wf:#{workflowInstanceBean.workflowName}"
                    styleClass="workflowMessage" />
-    <h:commandButton value="#{workflowBundle.continue}"
-                     alt="#{workflowBundle.continue}" title="#{workflowBundle.continue}"
-                     action="#{biometricWorkflowBean.check}"
-                     styleClass="workflowButton"          
-                     style="display:block;text-align:right"/>   
 
+    <div class="text-right">
+      <p:commandButton value="#{workflowBundle.continue}"
+                       alt="#{workflowBundle.continue}"
+                       title="#{workflowBundle.continue}"
+                       action="#{biometricWorkflowBean.check}"
+                       icon="pi pi-arrow-right" iconPos="right"
+                       process="@this"
+                       update="@form:cnt"
+                       styleClass="m-4"/>
+    </div>
 
     <gdm:saveBean value="biometricWorkflowBean" />  
 

@@ -9,17 +9,14 @@
 
   <ui:define name="form">
 
-    <sf:dynamicForm
-      form="#{dynamicWorkflowBean.form}"
-      rendererTypes="#{workflowInstanceBean.formRenderers}"
-      value="#{dynamicWorkflowBean.data}"
-      action="#{dynamicWorkflowBean.buttonPressed}" 
-      translator="#{workflowInstanceBean.translationEnabled ? 
-                    applicationBean.translator : null}"
-      translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+    <h:panelGroup id="dyn_form" 
+                  styleClass="ui-fluid formgrid grid" layout="block">
+      <f:event type="postAddToView"
+               listener="#{flexWorkflowBean.loadDynamicComponents}" />
+    </h:panelGroup>
 
-    <gdm:saveBean value="dynamicWorkflowBean" />      
-    
+    <gdm:saveBean value="flexWorkflowBean" />  
+
   </ui:define>
 
 </ui:composition>

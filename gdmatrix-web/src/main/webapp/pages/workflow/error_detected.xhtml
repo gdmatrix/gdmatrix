@@ -3,14 +3,11 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:sf="http://faces.santfeliu.org"
                 template="/pages/workflow/instance.xhtml">
 
   <ui:define name="form">  
   
-  <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
-
   <h:panelGrid columns="2" styleClass="workflowErrorDialog"
                headerClass="header" footerClass="footer" columnClasses="col1, col2">
     <f:facet name="header">
@@ -19,7 +16,7 @@
 
     <h:graphicImage alt="" url="/common/workflow/images/warning.gif" />
 
-    <t:messages showSummary="true"
+    <h:messages showSummary="true"
                 globalOnly="true"
                 layout="table"
                 warnClass="warnMessage"

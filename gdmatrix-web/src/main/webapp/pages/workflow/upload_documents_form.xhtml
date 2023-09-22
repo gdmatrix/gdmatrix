@@ -9,9 +9,6 @@
 
   <ui:define name="form">
 
-    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle"
-                  var="workflowBundle" />
-
     <sf:outputText value="#{uploadDocumentsWorkflowBean.message}" 
                    translator="#{workflowInstanceBean.translationEnabled ? 
                                  applicationBean.translator : null}" 

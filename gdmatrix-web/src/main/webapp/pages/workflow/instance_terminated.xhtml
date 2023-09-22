@@ -8,8 +8,6 @@
 
   <ui:define name="form">
 
-    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
-
     <h:panelGroup layout="block" class="final_form" 
                   rendered="#{workflowInstanceBean.finalFormSelector == null}">
       <h:graphicImage url="#{workflowInstanceBean.finalIcon}" style="vertical-align:middle" alt="" />

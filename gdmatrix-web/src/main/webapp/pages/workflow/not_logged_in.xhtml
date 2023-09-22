@@ -3,13 +3,10 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:sf="http://faces.santfeliu.org"
                 template="/pages/workflow/instance.xhtml">
 
   <ui:define name="form">
-
-    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
 
     <h:outputText value="#{workflowBundle.mustLogIn}" />
 

@@ -3,21 +3,20 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:sf="http://faces.santfeliu.org"
                 template="/pages/workflow/instance.xhtml">
 
   <ui:define name="form">
 
-    <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
-
-    <t:div styleClass="paragraph">
+    <div styleClass="paragraph">
       <h:outputText value="#{workflowBundle.nothingToDo}" />
-    </t:div>
+    </div>
 
-    <t:div rendered="#{workflowInstanceBean.instanceUserState != null}" styleClass="paragraph">
+    <h:panelGroup layout="block"
+                  rendered="#{workflowInstanceBean.instanceUserState != null}" 
+                  styleClass="paragraph">
       <h:outputText value="#{workflowBundle.currentState}: #{workflowInstanceBean.instanceUserState}" />
-    </t:div>
+    </h:panelGroup>
 
   </ui:define>
 

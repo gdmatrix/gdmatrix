@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.santfeliu.faces.matrixclient.model.ScanMatrixClientModel;
@@ -58,13 +59,15 @@ import org.santfeliu.workflow.form.Form;
 public class ScanDocumentWorkflowBean extends WorkflowBean
 {
   public static final String ERROR_PREFIX = "ERROR: ";
-  private static final String BEAN_NAME = "instanceBean";
 
   private String message;
   private String result;
   private String resultVar;
   private ScanMatrixClientModel model;
   private String token;
+
+  @Inject
+  WorkflowInstanceBean instanceBean;
 
   public ScanDocumentWorkflowBean()
   {
@@ -107,7 +110,6 @@ public class ScanDocumentWorkflowBean extends WorkflowBean
   {
     Properties parameters = form.getParameters();
 
-    WorkflowInstanceBean instanceBean = (WorkflowInstanceBean)getBean(BEAN_NAME);
     instanceBean.setForwardEnabled(false);
     instanceBean.setBackwardEnabled(false);
 
@@ -159,14 +161,12 @@ public class ScanDocumentWorkflowBean extends WorkflowBean
       result = (String)model.parseResult();
       if (result != null)
       {
-        WorkflowInstanceBean instanceBean = (WorkflowInstanceBean)getBean(BEAN_NAME);
         instanceBean.forward();
       }
     }
     catch (Exception ex)
     {
       renderErrorMessage(ex.getMessage());
-      WorkflowInstanceBean instanceBean = (WorkflowInstanceBean)getBean(BEAN_NAME);
       instanceBean.updateForm();
     }
   }
