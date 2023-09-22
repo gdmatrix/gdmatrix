@@ -163,7 +163,7 @@ public class NavigatorBean extends WebBean implements Serializable
         {
           url += "&" + OBJECTID_PARAMETER + "=" + objectBean.getObjectId();
         }
-        
+
         String prefix = getProperty("pageTitlePrefix");
         String title = prefix != null ? prefix + " " : "";
         String pageTitle = getProperty("pageTitle");
@@ -171,7 +171,7 @@ public class NavigatorBean extends WebBean implements Serializable
           title = title + getSelectedMenuItem().getLabel();
         else
           title = title + pageTitle;
-                
+
         return "<script>window.history.pushState({},'','" + url +
           "');document.title='" + title + "';</script>";
       }
@@ -214,6 +214,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     if (baseTypeInfo == null) return null;
 
+    String requestedObjectId = objectId;
     DirectLeap leap = new DirectLeap(baseTypeInfo.getBaseTypeId());
     if (objectId == null)
     {
@@ -226,6 +227,10 @@ public class NavigatorBean extends WebBean implements Serializable
         {
           objectId = NavigatorBean.NEW_OBJECT_ID;
         }
+        else
+        {
+          requestedObjectId = objectId;
+        }
       }
       else
       {
@@ -236,11 +241,13 @@ public class NavigatorBean extends WebBean implements Serializable
     leap.setObjectId(objectId);
     if (selectExpression != null)
     {
-      leap.setSearchTabSelector(0);
+      int searchTabSelector = baseTypeInfo.getDefaultSearchTabSelector();
+      if (searchTabSelector == -1) searchTabSelector = 0;
+      leap.setSearchTabSelector(searchTabSelector);
     }
     else
     {
-      leap.setSearchTabSelector(objectId == null ?
+      leap.setSearchTabSelector(requestedObjectId == null ?
         baseTypeInfo.getDefaultSearchTabSelector() : -1);
     }
     leap.setEditTabSelector(editTabSelector);

@@ -406,7 +406,7 @@ public class EventFinderBean extends FinderBean
     doFind(true);
     firstRow = 0;
   }
-  
+
   @Override
   public void find()
   {
@@ -601,7 +601,7 @@ public class EventFinderBean extends FinderBean
       rows = (List<EventDataTableRow>)stateArray[9];
       searchEventTypeId = (String)stateArray[10];
       outdated = (Boolean)stateArray[11];
-      scheduleEdit = (Boolean)stateArray[12];      
+      scheduleEdit = (Boolean)stateArray[12];
       if (outdated || scheduleEdit)
       {
         doFind(false);
@@ -685,7 +685,10 @@ public class EventFinderBean extends FinderBean
             if (eventObjectBean.getSearchTabSelector() ==
               eventObjectBean.getEditModeSelector())
             {
-              eventObjectBean.setSearchTabSelector(0);
+              int searchTabSelector =
+                navigatorBean.getBaseTypeInfo().getDefaultSearchTabSelector();
+              if (searchTabSelector == -1) searchTabSelector = 0;
+              eventObjectBean.setSearchTabSelector(searchTabSelector);
             }
           }
         }

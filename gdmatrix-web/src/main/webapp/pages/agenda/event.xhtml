@@ -3,7 +3,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="/pages/obj/object_3col.xhtml"                
+                template="/pages/obj/object_3col.xhtml"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
@@ -82,7 +82,7 @@
                                     minQueryLength="3"
                                     renderShowButton="false"
                                     formSelector="#{eventFinderBean.formSelector}"
-                                    onselect="showPanel('leftPanel')"                                    
+                                    onselect="showPanel('leftPanel')"
                                     process="@form:cnt:find_selector"
                                     update="@form:cnt:find_selector">
               </emcomp:typeReference>
@@ -227,6 +227,8 @@
                activeIndex="#{eventObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
+
+      <p:ajax event="tabChange" />
 
       <c:forEach items="#{eventObjectBean.searchTabs}" var="tab" varStatus="loop">
         <p:tab>
