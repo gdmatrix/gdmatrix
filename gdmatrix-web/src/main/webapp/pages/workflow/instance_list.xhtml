@@ -169,8 +169,11 @@
                            process="@this" update="@form:cnt"
                            icon="pi pi-trash" styleClass="ui-button-danger"
                            rendered="#{workflowInstanceListBean.workflowAdmin ||
-                                       instance.destroyButtonEnabled}" 
-                           onclick="return confirm('#{workflowBundle.confirm_workflow_destroy}');" />
+                                       instance.destroyButtonEnabled}">
+            <p:confirm header="#{workflowBundle.destroy}" 
+                       message="#{workflowBundle.confirm_workflow_destroy} #{instance.instanceId}: #{instance.description}"                         
+                       icon="pi pi-info-circle" />
+          </p:commandButton>
         </h:panelGroup>
       </p:column>
 

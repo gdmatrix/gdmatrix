@@ -114,8 +114,12 @@
     </p:growl>
 
     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" >
-        <p:commandButton value="#{webBundle.buttonAccept}" type="button" styleClass="ui-confirmdialog-yes" />
-        <p:commandButton value="#{webBundle.buttonCancel}" type="button" styleClass="ui-confirmdialog-no"/>
+      <p:commandButton value="#{objectBundle.cancel}" 
+                       icon="pi pi-times"
+                       type="button" styleClass="ui-confirmdialog-no"/>
+      <p:commandButton value="#{objectBundle.delete}" 
+                       icon="pi pi-trash"
+                       type="button" styleClass="ui-button-danger" />
     </p:confirmDialog>
     
     <p:commandButton action="#{navigatorBean.close()}" widgetVar="backButton" 

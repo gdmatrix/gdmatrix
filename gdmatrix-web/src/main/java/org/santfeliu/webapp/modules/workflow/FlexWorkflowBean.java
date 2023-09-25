@@ -80,7 +80,10 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
     UIComponent panel = event.getComponent();
-    updateComponents(panel);
+    if (panel.getChildren().isEmpty())
+    {
+      updateComponents(panel);
+    }
   }
 
   @Override

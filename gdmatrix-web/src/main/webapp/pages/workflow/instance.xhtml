@@ -14,32 +14,35 @@
 
     <p:panel id="workflow_instance" class="ml-2 mr-2">
       <f:facet name="header">
-        <h:outputText value="#{workflowBundle.instance} #{workflowInstanceBean.instanceId}: "
-                      styleClass="instanceNumber"/>
-        <sf:outputText value="#{workflowInstanceBean.instanceDescription}"
-                       translator="#{applicationBean.translator}"
-                       translationGroup="wf:instanceList"
-                       styleClass="instanceUserState" />
-        <h:outputText value=": " styleClass="instanceUserState"
-                      rendered="#{workflowInstanceBean.instanceUserState != null}" />
-        <sf:outputText value="#{workflowInstanceBean.instanceUserState}"
-                       translator="#{applicationBean.translator}"
-                       translationGroup="wf:instanceList"
-                       styleClass="instanceUserState"
-                       rendered="#{workflowInstanceBean.instanceUserState != null}" />
-        <h:outputText value="(#{workflowInstanceBean.instanceStartDate})"
-                      styleClass="instanceStartDate"
-                      rendered="#{workflowInstanceBean.instanceStartDate != null}" />
-      </f:facet>
-
-      <f:facet name="actions">
-        <p:commandButton value="#{workflowBundle.exit}"
-                         rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.exitEnabled}"
-                         action="#{workflowInstanceBean.exitInstance}" immediate="true"
-                         process="@this" update="@form:cnt"
-                         icon="pi pi-times-circle"
-                         title="#{workflowBundle.exitLong}"
-                         ariaLabel="#{workflowBundle.exit}: #{workflowBundle.exitLong}" />      
+        <div style="display:flex; flex-direction: row; align-items: center">
+          <div style="flex-grow:1">
+            <h:outputText value="#{workflowBundle.instance} #{workflowInstanceBean.instanceId}: "
+                          styleClass="instanceNumber"/>
+            <sf:outputText value="#{workflowInstanceBean.instanceDescription}"
+                           translator="#{applicationBean.translator}"
+                           translationGroup="wf:instanceList"
+                           styleClass="instanceUserState" />
+            <h:outputText value=": " styleClass="instanceUserState"
+                          rendered="#{workflowInstanceBean.instanceUserState != null}" />
+            <sf:outputText value="#{workflowInstanceBean.instanceUserState}"
+                           translator="#{applicationBean.translator}"
+                           translationGroup="wf:instanceList"
+                           styleClass="instanceUserState"
+                           rendered="#{workflowInstanceBean.instanceUserState != null}" />
+            <h:outputText value="(#{workflowInstanceBean.instanceStartDate})"
+                          styleClass="instanceStartDate"
+                          rendered="#{workflowInstanceBean.instanceStartDate != null}" />
+          </div>
+          <div style="flex-grow: 0">
+            <p:commandButton value="#{workflowBundle.exit}"
+                             rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.exitEnabled}"
+                             action="#{workflowInstanceBean.exitInstance}"
+                             process="@this" update="@form:cnt"
+                             icon="pi pi-times-circle"
+                             title="#{workflowBundle.exitLong}"
+                             ariaLabel="#{workflowBundle.exit}: #{workflowBundle.exitLong}" />
+          </div>
+        </div>
       </f:facet>
 
       <h:panelGroup layout="block" 
@@ -92,8 +95,11 @@
                            action="#{workflowInstanceBean.destroyInstance}" immediate="true"
                            styleClass="ui-button-danger mr-2"
                            process="@this" update="@form:cnt"
-                           icon="pi pi-trash"
-                           onclick="return confirm('#{workflowBundle.confirm_workflow_destroy}');" />
+                           icon="pi pi-trash">
+            <p:confirm header="#{workflowBundle.destroy}" 
+                       message="#{workflowBundle.confirm_workflow_destroy} #{workflowInstanceBean.instanceId}: #{workflowInstanceBean.instanceDescription}"                        
+                       icon="pi pi-info-circle" />
+          </p:commandButton>
         </h:panelGroup>
         <h:panelGroup style="float:right">
           <p:commandButton value="#{workflowBundle.previous}" id="backward"
