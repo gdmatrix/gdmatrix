@@ -8,8 +8,9 @@
 
   <ui:define name="form">
 
-    <h:outputText value="#{workflowBundle.mustLogIn}" />
-
+    <p:staticMessage severity="warn" detail="#{workflowBundle.mustLogIn}"
+                     styleClass="block mt-4 mb-4"  />
+    
   </ui:define>
 
 </ui:composition>

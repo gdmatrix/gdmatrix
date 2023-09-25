@@ -45,13 +45,10 @@
         </div>
       </f:facet>
 
-      <h:panelGroup layout="block" 
-                    rendered="#{workflowInstanceBean.errorDetected and not workflowInstanceBean.terminated}"
-                    styleClass="workflowError">
-        <h:graphicImage url="/common/workflow/images/warning.gif" alt="warning" title="warning" />
-        <h:outputText value="#{workflowBundle.errorDetected}" />
-      </h:panelGroup>
-
+      <p:staticMessage severity="warn" detail="#{workflowBundle.errorDetected}"
+                       styleClass="block"
+                       rendered="#{workflowInstanceBean.errorDetected and not workflowInstanceBean.terminated}" />
+      
       <p:messages showSummary="true" styleClass="messages" 
                   showIcon="true" closable="true" />
 
@@ -82,42 +79,44 @@
       </div>
 
       <f:facet name="footer">
-        <h:panelGroup styleClass="col1">
-          <p:linkButton value="#{workflowBundle.help}"
-                        href="#{workflowInstanceBean.helpUrl}"
-                        rendered="#{workflowInstanceBean.helpEnabled}"
-                        icon="pi pi-question-circle"
-                        target="_blank"
-                        styleClass="mr-2">
-          </p:linkButton>
-          <p:commandButton value="#{workflowBundle.destroy}"
-                           rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.destroyEnabled}"
-                           action="#{workflowInstanceBean.destroyInstance}" immediate="true"
-                           styleClass="ui-button-danger mr-2"
-                           process="@this" update="@form:cnt"
-                           icon="pi pi-trash">
-            <p:confirm header="#{workflowBundle.destroy}" 
-                       message="#{workflowBundle.confirm_workflow_destroy} #{workflowInstanceBean.instanceId}: #{workflowInstanceBean.instanceDescription}"                        
-                       icon="pi pi-info-circle" />
-          </p:commandButton>
-        </h:panelGroup>
-        <h:panelGroup style="float:right">
-          <p:commandButton value="#{workflowBundle.previous}" id="backward"
-                           rendered="#{workflowInstanceBean.formEnabled and workflowInstanceBean.backwardEnabled}"
-                           styleClass="mr-2"
-                           action="#{workflowInstanceBean.backward}"
-                           process="@this" update="@form:cnt"
-                           icon="pi pi-arrow-left"
-                           title="#{workflowBundle.previousLong}"
-                           ariaLabel="#{workflowBundle.previous}: #{workflowBundle.previousLong}" />
-          <p:commandButton value="#{workflowBundle.next}" id="forward"
-                           rendered="#{workflowInstanceBean.formEnabled and workflowInstanceBean.forwardEnabled}"
-                           process="@form:cnt" update="@form:cnt"
-                           icon="pi pi-arrow-right" iconPos="right"
-                           action="#{workflowInstanceBean.forward}"
-                           title="#{workflowBundle.nextLong}"
-                           ariaLabel="#{workflowBundle.next}: #{workflowBundle.nextLong}" />
-        </h:panelGroup>
+        <div style="display:flex; flex-direction: row">
+          <span style="flex-grow:1">
+            <p:linkButton value="#{workflowBundle.help}"
+                          href="#{workflowInstanceBean.helpUrl}"
+                          rendered="#{workflowInstanceBean.helpEnabled}"
+                          icon="pi pi-question-circle"
+                          target="_blank"
+                          styleClass="mr-2">
+            </p:linkButton>
+            <p:commandButton value="#{workflowBundle.destroy}"
+                             rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.destroyEnabled}"
+                             action="#{workflowInstanceBean.destroyInstance}" immediate="true"
+                             styleClass="ui-button-danger mr-2"
+                             process="@this" update="@form:cnt"
+                             icon="pi pi-trash">
+              <p:confirm header="#{workflowBundle.destroy}" 
+                         message="#{workflowBundle.confirm_workflow_destroy} #{workflowInstanceBean.instanceId}: #{workflowInstanceBean.instanceDescription}"                        
+                         icon="pi pi-info-circle" />
+            </p:commandButton>
+          </span>
+          <span style="flex-grow:1" class="text-right">
+            <p:commandButton value="#{workflowBundle.previous}" id="backward"
+                             rendered="#{workflowInstanceBean.formEnabled and workflowInstanceBean.backwardEnabled}"
+                             styleClass="mr-2"
+                             action="#{workflowInstanceBean.backward}"
+                             process="@this" update="@form:cnt"
+                             icon="pi pi-arrow-left"
+                             title="#{workflowBundle.previousLong}"
+                             ariaLabel="#{workflowBundle.previous}: #{workflowBundle.previousLong}" />
+            <p:commandButton value="#{workflowBundle.next}" id="forward"
+                             rendered="#{workflowInstanceBean.formEnabled and workflowInstanceBean.forwardEnabled}"
+                             process="@form:cnt" update="@form:cnt"
+                             icon="pi pi-arrow-right" iconPos="right"
+                             action="#{workflowInstanceBean.forward}"
+                             title="#{workflowBundle.nextLong}"
+                             ariaLabel="#{workflowBundle.next}: #{workflowBundle.nextLong}" />
+          </span>
+        </div>
       </f:facet>
     </p:panel>
     

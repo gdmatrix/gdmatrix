@@ -1105,7 +1105,7 @@ public class WorkflowInstanceBean extends FacesBean implements Serializable
     if (ex.getMessage().contains("Can't set variable"))
     {
       error("SET_VARIABLES_FAILED", new Object[]{ex.toString()});
-      instanceListBean.setContent("/pages/worlflow/error_detected.xhtml");
+      instanceListBean.setContent("/pages/workflow/error_detected.xhtml");
     }
     else
     {

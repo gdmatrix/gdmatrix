@@ -3,33 +3,30 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
-                template="/pages/workflow/instance.xhtml">
+                xmlns:gdm="http://gdmatrix.org/tags"
+                xmlns:sf="http://faces.santfeliu.org">
 
-  <ui:define name="form">  
+  <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
+
+  <div class="workflow_body m-4 ml-auto mr-auto">
   
-  <h:panelGrid columns="2" styleClass="workflowErrorDialog"
-               headerClass="header" footerClass="footer" columnClasses="col1, col2">
-    <f:facet name="header">
-      <h:outputText value="#{workflowBundle.processingErrorDetected}" />
-    </f:facet>
+    <div class="m-2">
+      <p:messages showSummary="true"
+                  showDetail="false"
+                  globalOnly="true"
+                  closable="false" />    
 
-    <h:graphicImage alt="" url="/common/workflow/images/warning.gif" />
-
-    <h:messages showSummary="true"
-                globalOnly="true"
-                layout="table"
-                warnClass="warnMessage"
-                errorClass="errorMessage" 
-                fatalClass="fatalMessage" />
-
-    <f:facet name="footer">
-      <h:commandLink action="#{workflowInstanceBean.updateInstance}" 
-                     value="#{workflowBundle.continue}" 
-                     styleClass="workflowCommandLink" />
-    </f:facet>
-  </h:panelGrid>
-
-  </ui:define>
+      <div style="text-align: center">
+        <p:commandButton action="#{workflowInstanceBean.updateInstance}" 
+                         value="#{workflowBundle.continue}" 
+                         icon="pi pi-arrow-right" iconPos="right"
+                         process="@this" update="@form:cnt" />
+      </div>
+    </div>
+ 
+  </div>
+ 
+  <gdm:saveBean value="workflowInstanceBean" />
+  <gdm:saveBean value="workflowInstanceListBean" />  
   
 </ui:composition>

@@ -8,13 +8,12 @@
 
   <ui:define name="form">
 
-    <div styleClass="paragraph">
-      <h:outputText value="#{workflowBundle.nothingToDo}" />
-    </div>
+    <p:staticMessage severity="info" detail="#{workflowBundle.nothingToDo}"
+                     styleClass="block mt-4 mb-4"  />
 
     <h:panelGroup layout="block"
                   rendered="#{workflowInstanceBean.instanceUserState != null}" 
-                  styleClass="paragraph">
+                  styleClass="mt-0 mb-4 ml-2 mr-2">
       <h:outputText value="#{workflowBundle.currentState}: #{workflowInstanceBean.instanceUserState}" />
     </h:panelGroup>
 
