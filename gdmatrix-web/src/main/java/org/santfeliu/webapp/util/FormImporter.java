@@ -30,8 +30,10 @@
  */
 package org.santfeliu.webapp.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -241,7 +243,18 @@ public class FormImporter
       datePicker.setPlaceholder(pattern);
       datePicker.setShowIcon(true);
       datePicker.setShowOnFocus(false);
+      datePicker.setYearNavigator(true);
+      datePicker.setMonthNavigator(true);
+      SimpleDateFormat df = new SimpleDateFormat("yyyy");
+      long nowMillis = System.currentTimeMillis();
+      long millisPerYear = 365 * 24 * 60 * 60 * 1000L;
+      Date minDate = new Date(nowMillis - 100 * millisPerYear);
+      Date maxDate = new Date(nowMillis + 20 * millisPerYear);
+      String minYear = df.format(minDate);
+      String maxYear = df.format(maxDate);
+      datePicker.setYearRange(minYear + ":" + maxYear);
       datePicker.setReadonly(field.isReadOnly());
+      datePicker.setRequired(field.getMinOccurs() > 0);
       component = datePicker;
     }
     else if (Field.NUMBER.equals(fieldType))
@@ -376,6 +389,7 @@ public class FormImporter
               (TextEditor)application.createComponent(TextEditor.COMPONENT_TYPE);
             textEditor.setReadonly(field.isReadOnly());
             textEditor.setSecure(false);
+            textEditor.setRequired(field.getMinOccurs() > 0);
             component = textEditor;
           }
           else
@@ -383,6 +397,7 @@ public class FormImporter
             InputTextarea inputTextarea =
               (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
             inputTextarea.setReadonly(field.isReadOnly());
+            inputTextarea.setRequired(field.getMinOccurs() > 0);
             component = inputTextarea;
           }
         }
@@ -397,6 +412,7 @@ public class FormImporter
               InputText inputText =
                (InputText)application.createComponent(InputText.COMPONENT_TYPE);
               inputText.setReadonly(field.isReadOnly());
+              inputText.setRequired(field.getMinOccurs() > 0);
               component = inputText;
             }
             else
