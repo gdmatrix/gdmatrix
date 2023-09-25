@@ -105,6 +105,14 @@ public class TemplateBean implements Serializable
            !"none".equals(contentExpression);
   }
 
+  public boolean isGrowlEnabled()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    String value = cursor.getProperty("growlEnabled");
+    return value == null || "true".equals(value);
+  }
+
   private List<MatrixMenuItem> getHighlightedItems(List<MenuElement> elements)
   {
     List<MatrixMenuItem> menuItems = new ArrayList<>();

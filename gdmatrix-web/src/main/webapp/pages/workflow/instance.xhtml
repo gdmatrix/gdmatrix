@@ -49,11 +49,8 @@
         <h:outputText value="#{workflowBundle.errorDetected}" />
       </h:panelGroup>
 
-      <h:messages showSummary="true" styleClass="messages"
-                  layout="list"
-                  warnClass="warnMessage"
-                  errorClass="errorMessage"
-                  fatalClass="fatalMessage" />
+      <p:messages showSummary="true" styleClass="messages" 
+                  showIcon="true" closable="true" />
 
       <h:panelGroup layout="block" 
                     styleClass="form" rendered="#{workflowInstanceBean.headerFormEnabled}">

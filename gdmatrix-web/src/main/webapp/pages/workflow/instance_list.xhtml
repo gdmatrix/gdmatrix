@@ -26,11 +26,8 @@
                 styleClass="workflow_body m-2 ml-auto mr-auto"
                 rendered="#{not userSessionBean.anonymousUser}">
     
-    <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
-                showSummary="true"
-                warnClass="warnMessage"
-                errorClass="errorMessage"
-                fatalClass="fatalMessage" />
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="true" />
     
     <div class="ui-fluid formgrid grid m-2">
 
@@ -188,46 +185,58 @@
       </f:facet>      
     </p:dataTable>
 
-    <h:panelGrid columns="1" styleClass="adminPanel"
-                 rendered="#{workflowInstanceListBean.workflowAdmin}">
-      <h:panelGroup>
-        <p:outputLabel for="@next" value="#{workflowBundle.newInstance}:" 
-                       styleClass="mr-2" />
-        <p:inputText value="#{workflowInstanceListBean.workflowName}"
-                     styleClass="mr-2" />
-        <p:commandButton value="#{workflowBundle.simulate}"
-                         styleClass="mr-2"
-                         icon="pi pi-arrow-right" iconPos="right"
-                         process="@form:cnt" update="@form:cnt"
-                         action="#{workflowInstanceListBean.simulate}" />
-        <p:commandButton value="#{workflowBundle.process}"
-                         styleClass="mr-2"
-                         icon="pi pi-arrow-right" iconPos="right"
-                         process="@form:cnt" update="@form:cnt"
-                         action="#{workflowInstanceListBean.transact}" />
-        <p:linkButton value="Matrix IDE"
-                      icon="pi pi-pencil"
-                      href="/apps/GDMatrixIDEJavaInstall.zip">
-        </p:linkButton>
-      </h:panelGroup>
+    <p:panel class="m-2" 
+             rendered="#{workflowInstanceListBean.workflowAdmin}">
 
-      <h:panelGroup>
-        <p:outputLabel for="@next" value="#{workflowBundle.showInstance}:" 
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="#{workflowBundle.newInstance}:" 
+                         styleClass="mr-2" />
+          <p:inputText value="#{workflowInstanceListBean.workflowName}"
                        styleClass="mr-2" />
-        <p:inputText value="#{workflowInstanceListBean.instanceId}"
-                     styleClass="mr-2" />
-        <p:commandButton value="#{workflowBundle.show}"
-                         styleClass="mr-2"
-                         icon="pi pi-eye"
-                         process="@form:cnt" update="@form:cnt"
-                         action="#{workflowInstanceListBean.showInstanceById}" />
-        <p:commandButton value="#{workflowBundle.debug}"
-                         styleClass="mr-2"
-                         icon="pi pi-cog"
-                         process="@form:cnt" update="@form:cnt"
-                         action="#{workflowInstanceListBean.debugInstanceById}" />
-      </h:panelGroup>
-    </h:panelGrid>
+          <div class="text-right mt-2">
+            <p:commandButton value="#{workflowBundle.simulate}"
+                             styleClass="w-auto mr-2"
+                             icon="pi pi-arrow-right" iconPos="right"
+                             process="@form:cnt" update="@form:cnt"
+                             action="#{workflowInstanceListBean.simulate}" />
+            <p:commandButton value="#{workflowBundle.process}"
+                             styleClass="w-auto mr-2"
+                             icon="pi pi-arrow-right" iconPos="right"
+                             process="@form:cnt" update="@form:cnt"
+                             action="#{workflowInstanceListBean.transact}" />
+            <p:linkButton value="Matrix IDE"
+                          styleClass="w-auto"
+                          icon="pi pi-pencil"
+                          rendered="#{workflowInstanceListBean.workflowAdmin}"
+                          href="/apps/GDMatrixIDEJavaInstall.zip">
+            </p:linkButton>        
+          </div>
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="#{workflowBundle.showInstance}:" 
+                         styleClass="mr-2" />
+          <p:inputText value="#{workflowInstanceListBean.instanceId}"
+                       styleClass="mr-2" />
+          <div class="text-right mt-2">
+            <p:commandButton value="#{workflowBundle.show}"
+                             styleClass="w-auto mr-2"
+                             icon="pi pi-eye"
+                             process="@form:cnt" update="@form:cnt"
+                             action="#{workflowInstanceListBean.showInstanceById}" />
+            <p:commandButton value="#{workflowBundle.debug}"
+                             styleClass="w-auto"
+                             icon="pi pi-cog"
+                             process="@form:cnt" update="@form:cnt"
+                             action="#{workflowInstanceListBean.debugInstanceById}" />
+          </div>
+        </div>
+      </div>
+
+    </p:panel>
+
   </h:panelGroup>
   
   <gdm:saveBean value="workflowInstanceListBean" />
