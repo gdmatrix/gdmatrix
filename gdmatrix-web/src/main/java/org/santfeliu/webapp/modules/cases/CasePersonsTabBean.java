@@ -56,6 +56,7 @@ import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -166,6 +167,27 @@ public class CasePersonsTabBean extends TabBean
   {
     return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
       getProperties().getString("groupedViewEnabled"));
+  }
+  
+  public boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
   }
 
   @Override

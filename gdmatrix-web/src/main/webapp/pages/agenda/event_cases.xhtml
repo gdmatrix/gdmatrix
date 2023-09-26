@@ -40,7 +40,7 @@
       <p:headerRow field="caseEventTypeId" expandable="true"
                    expanded="true" rendered="#{eventCasesTabBean.groupedView}">
         <p:column colspan="6">
-          <h:outputText styleClass="ml-2" value="#{eventCasesTabBean.caseEventTypeDescription}"/>
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseEventTypeId)}"/>
         </p:column>
       </p:headerRow>
 
@@ -53,8 +53,10 @@
       </p:column>
 
       <p:column headerText="#{agendaBundle.eventCases_type}" styleClass="col-2"
-                rendered="#{!eventCasesTabBean.groupedView}">
-        <h:outputText value="#{eventCasesTabBean.caseEventTypeDescription}"/>
+                rendered="#{eventCasesTabBean.renderTypeColumn}"
+                sortBy="#{typeTypeBean.getDescription(row.caseEventTypeId)}"
+                sortOrder="asc" sortPriority="1">
+        <h:outputText value="#{typeTypeBean.getDescription(row.caseEventTypeId)}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right white-space-nowrap">

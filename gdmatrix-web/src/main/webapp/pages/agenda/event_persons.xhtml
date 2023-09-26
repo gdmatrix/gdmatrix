@@ -42,7 +42,7 @@
       <p:headerRow field="attendantTypeId" expandable="true"
                    expanded="true" rendered="#{eventPersonsTabBean.groupedView}">
         <p:column colspan="6">
-          <h:outputText styleClass="ml-2" value="#{eventPersonsTabBean.attendantTypeDescription}"/>
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.attendantTypeId)}"/>
         </p:column>
       </p:headerRow>
 
@@ -55,8 +55,10 @@
       </p:column>
 
       <p:column headerText="#{agendaBundle.attendants_type}" styleClass="col-4"
-                rendered="#{!eventPersonsTabBean.groupedView}">
-        <h:outputText value="#{eventPersonsTabBean.attendantTypeDescription}"/>
+                rendered="#{eventPersonsTabBean.renderTypeColumn}"
+                sortBy="#{typeTypeBean.getDescription(row.attendantTypeId)}"
+                sortOrder="asc" sortPriority="1">
+        <h:outputText value="#{typeTypeBean.getDescription(row.attendantTypeId)}"/>
       </p:column>
 
       <p:column headerText="#{agendaBundle.attendants_attended}" styleClass="col-1">

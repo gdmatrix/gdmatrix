@@ -42,6 +42,7 @@ import javax.inject.Named;
 import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -194,6 +195,27 @@ public class CaseEventsTabBean extends TabBean
       .getBoolean("groupedViewEnabled");
   }
 
+  public boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }  
+  
   public String getEventDescription()
   {
     if (editing != null && !isNew(editing))
@@ -201,21 +223,6 @@ public class CaseEventsTabBean extends TabBean
       return eventTypeBean.getDescription(editing.getEventId());
     }
     return "";
-  }
-
-  public String getCaseEventTypeDescription()
-  {
-    String typeId = null;
-    CaseEventView row = (CaseEventView)getValue("#{row}");
-    if (row != null)
-    {
-      typeId = row.getCaseEventTypeId();
-      if (typeId != null)
-      {
-        return typeTypeBean.getDescription(typeId);
-      }
-    }
-    return typeId;
   }
 
   public void edit(CaseEventView row)

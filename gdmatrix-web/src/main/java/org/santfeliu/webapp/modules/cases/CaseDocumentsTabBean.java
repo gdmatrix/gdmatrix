@@ -239,6 +239,27 @@ public class CaseDocumentsTabBean extends TabBean
       getProperties().getBoolean("groupedViewEnabled");
   }
 
+  public boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }  
+  
   public String getDocumentDescription()
   {
     if (editing != null && !isNew(editing))
@@ -246,21 +267,6 @@ public class CaseDocumentsTabBean extends TabBean
       return documentTypeBean.getDescription(editing.getDocId());
     }
     return "";
-  }
-
-  public String getCaseDocumentTypeDescription()
-  {
-    String typeId = null;
-    CaseDocumentView row = (CaseDocumentView)getValue("#{row}");
-    if (row != null)
-    {
-      typeId = row.getCaseDocTypeId();
-      if (typeId != null)
-      {
-        return typeTypeBean.getDescription(typeId);
-      }
-    }
-    return typeId;
   }
 
   @Override

@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -188,6 +187,27 @@ public class EventPersonsTabBean extends TabBean
       getProperties().getString("groupedViewEnabled"));
   }
 
+  public boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = eventObjectBean.getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }  
+  
   public String getPersonDescription()
   {
     if (editing != null && !isNew(editing))
@@ -195,21 +215,6 @@ public class EventPersonsTabBean extends TabBean
       return personTypeBean.getDescription(editing.getPersonId());
     }
     return "";
-  }
-
-  public String getAttendantTypeDescription()
-  {
-    String typeId = null;
-    AttendantView row = (AttendantView)getValue("#{row}");
-    if (row != null)
-    {
-      typeId = row.getAttendantTypeId();
-      if (typeId != null)
-      {
-        return typeTypeBean.getDescription(typeId);
-      }
-    }
-    return typeId;
   }
 
   public String getAttendedLabel()

@@ -40,7 +40,7 @@
       <p:headerRow field="eventDocTypeId" expandable="true"
                    expanded="true" rendered="#{eventDocumentsTabBean.groupedView}">
         <p:column colspan="6">
-          <h:outputText styleClass="ml-2" value="#{eventDocumentsTabBean.eventDocumentTypeDescription}"/>
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.eventDocTypeId)}"/>
         </p:column>
       </p:headerRow>
 
@@ -53,8 +53,10 @@
       </p:column>
 
       <p:column headerText="#{agendaBundle.eventDocuments_type}" styleClass="col-2"
-                rendered="#{!eventDocumentsTabBean.groupedView}">
-        <h:outputText value="#{eventDocumentsTabBean.eventDocumentTypeDescription}"/>
+                rendered="#{eventDocumentsTabBean.renderTypeColumn}"
+                sortBy="#{typeTypeBean.getDescription(row.eventDocTypeId)}"
+                sortOrder="asc" sortPriority="1">
+        <h:outputText value="#{typeTypeBean.getDescription(row.eventDocTypeId)}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right white-space-nowrap">

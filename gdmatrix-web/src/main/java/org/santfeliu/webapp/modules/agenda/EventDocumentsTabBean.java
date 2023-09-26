@@ -185,6 +185,27 @@ public class EventDocumentsTabBean extends TabBean
       getProperties().getString("groupedViewEnabled"));
   }
 
+  public boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = eventObjectBean.getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }  
+
   public String getDocumentDescription()
   {
     if (editing != null && !isNew(editing))
@@ -192,21 +213,6 @@ public class EventDocumentsTabBean extends TabBean
       return documentTypeBean.getDescription(editing.getDocId());
     }
     return "";
-  }
-
-  public String getEventDocumentTypeDescription()
-  {
-    String typeId = null;
-    EventDocumentView row = (EventDocumentView)getValue("#{row}");
-    if (row != null)
-    {
-      typeId = row.getEventDocTypeId();
-      if (typeId != null)
-      {
-        return typeTypeBean.getDescription(typeId);
-      }
-    }
-    return typeId;
   }
 
   public void edit(EventDocumentView row)

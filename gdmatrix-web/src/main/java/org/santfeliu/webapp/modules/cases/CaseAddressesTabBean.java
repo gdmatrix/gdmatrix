@@ -205,6 +205,27 @@ public class CaseAddressesTabBean extends TabBean
       .getBoolean("groupedViewEnabled");
   }
 
+  public boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }  
+  
   public String getAddressDescription()
   {
     if (editing != null && !isNew(editing))
