@@ -72,9 +72,9 @@
     -->
     <!-- CDI Reference Implementation -->    
     <dependency>
-        <groupId>org.jboss.weld.servlet</groupId>
-        <artifactId>weld-servlet-shaded</artifactId>
-        <version>3.1.6.Final</version>
+      <groupId>org.jboss.weld.servlet</groupId>
+      <artifactId>weld-servlet-shaded</artifactId>
+      <version>3.1.6.Final</version>
     </dependency>        
     
     <!-- Faces implementation and related libraries -->
@@ -110,9 +110,9 @@
     </dependency>
     <!-- primfeaces-extension pe:layout component dependency --> 
     <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>2.9.1</version>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.9.1</version>
     </dependency>         
     <dependency>
       <groupId>org.apache.myfaces.tomahawk</groupId>
@@ -158,15 +158,20 @@
       <version>3.0.1-b11</version>
     </dependency>
     <dependency>
-        <groupId>org.webjars.npm</groupId>
-        <artifactId>primeflex</artifactId>
-        <version>3.3.0</version>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>primeflex</artifactId>
+      <version>3.3.0</version>
     </dependency>    
     <dependency>
-       <groupId>org.webjars</groupId>
-       <artifactId>font-awesome</artifactId>
-       <version>6.4.0</version>
-    </dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>font-awesome</artifactId>
+      <version>6.4.0</version>
+    </dependency>  
+    <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>material-icons</artifactId>
+        <version>1.13.11</version>
+    </dependency>          
     
     <!-- PDF libraries -->
     <dependency>
