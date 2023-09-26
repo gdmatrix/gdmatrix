@@ -77,8 +77,11 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_volume}" />
           <p:selectOneMenu value="#{caseDocumentsTabBean.editing.volume}" 
-                           editable="true">
+                           editable="true" var="itemValue">
             <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
+            <p:column>
+              <h:outputText value="#{itemValue}" />
+            </p:column>            
           </p:selectOneMenu>
         </div>
 

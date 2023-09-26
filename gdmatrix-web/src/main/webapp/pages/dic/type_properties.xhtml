@@ -20,27 +20,27 @@
     }
   </style>
 
-  <h:panelGroup>  
+  <h:panelGroup>
 
     <div class="font-bold p-1 pt-3">
-      <h:outputText value="#{dicBundle.typeProperties_inheritedProperties}" rendered="#{not empty typePropertiesTabBean.supertypes}"/>     
-    </div>    
-    
-    <p:accordionPanel value="#{typePropertiesTabBean.supertypes}" var="supertype" activeIndex="null">    
+      <h:outputText value="#{dicBundle.typeProperties_inheritedProperties}" rendered="#{not empty typePropertiesTabBean.supertypes}"/>
+    </div>
+
+    <p:accordionPanel value="#{typePropertiesTabBean.supertypes}" var="supertype" activeIndex="null">
       <p:tab title="#{supertype.description}">
         <f:facet name="actions">
-          <p:commandLink  action="#{navigatorBean.show('Type', supertype.typeId)}" 
+          <p:commandLink  action="#{navigatorBean.show('Type', supertype.typeId)}"
                           process="@this" update="@form:cnt"
                           styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default"
-                          title="#{objectBundle.show}">  
+                          title="#{objectBundle.show}">
             <h:outputText styleClass="ui-icon pi pi-external-link" />
           </p:commandLink>
-        </f:facet>          
-        <p:dataTable value="#{typePropertiesTabBean.getTypePropertyDefinitions(supertype)}" 
+        </f:facet>
+        <p:dataTable value="#{typePropertiesTabBean.getTypePropertyDefinitions(supertype)}"
                      var="srow" stripedRows="true" paginator="true" pageLinks="5"
-                     resizableColumns="false" showGridlines="true" rows="10" 
-                     size="small" paginatorPosition="bottom" 
-                     rowStyleClass="#{srow.removed ? 'removed' : (srow.modified ? 'modified' : '')}"  
+                     resizableColumns="false" showGridlines="true" rows="10"
+                     size="small" paginatorPosition="bottom"
+                     rowStyleClass="#{srow.removed ? 'removed' : (srow.modified ? 'modified' : '')}"
                      rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
@@ -50,15 +50,15 @@
           <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2">
             <i class="mr-2 #{srow.type == 'TEXT' ? 'fa fa-font' : (srow.type == 'DATE' ? 'pi pi-calendar' : (srow.type == 'NUMERIC' ? 'fa fa-hashtag' : (srow.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
             <h:outputText value="#{srow.name}" style="#{srow.hidden ? 'color: blue' : ''}" />
-          </p:column>      
+          </p:column>
 
           <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3">
             <h:outputText value="#{srow.description}"/>
           </p:column>
-          
+
           <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-1">
             <h:outputText value="#{srow.enumTypeId}"/>
-          </p:column>            
+          </p:column>
 
           <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center">
             <h:outputText value="#{srow.size}"/>
@@ -68,36 +68,36 @@
             <h:outputText value="#{srow.minOccurs == srow.maxOccurs ? '' : srow.minOccurs}
                           #{srow.minOccurs == srow.maxOccurs ? '' : '..'}
                           #{srow.maxOccurs == '0' ? '*' : srow.maxOccurs}" />
-          </p:column>          
+          </p:column>
 
           <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center">
             <h:outputText value="#{srow.stringValue}"/>
-          </p:column>      
+          </p:column>
 
           <p:column styleClass="col-1 text-right white-space-nowrap">
-            <p:commandButton icon="pi pi-cog" 
-                             styleClass="rounded-button ui-button-flat" 
-                             action="#{typePropertiesTabBean.create(srow)}" 
-                             process="@this" 
+            <p:commandButton icon="pi pi-cog"
+                             styleClass="rounded-button ui-button-flat"
+                             action="#{typePropertiesTabBean.create(srow)}"
+                             process="@this"
                              update="@form:cnt:search_tabs:tabs:type_properties_dialog"
                              resetValues="true"
                              oncomplete="PF('typePropertiesDialog').show()"
                              />
           </p:column>
-        </p:dataTable> 
+        </p:dataTable>
       </p:tab>
     </p:accordionPanel>
 
 
     <!-- Results table -->
     <div class="font-bold p-1 pt-3">
-      <h:outputText value="#{dicBundle.typeProperties_ownProperties}" />     
+      <h:outputText value="#{dicBundle.typeProperties_ownProperties}" />
     </div>
-    <p:dataTable id="type_properties_table" value="#{typePropertiesTabBean.rows}" 
+    <p:dataTable id="type_properties_table" value="#{typePropertiesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" rows="10" 
-                 size="small" paginatorPosition="bottom" 
-                 rowStyleClass="#{row.removed ? 'removed' : (row.modified ? 'modified' : '')}"                 
+                 resizableColumns="false" showGridlines="true" rows="10"
+                 size="small" paginatorPosition="bottom"
+                 rowStyleClass="#{row.removed ? 'removed' : (row.modified ? 'modified' : '')}"
                  rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
@@ -108,28 +108,28 @@
         <div class="flex justify-content-end w-12">
           <p:inputText id="globalFilter" onkeyup="PF('typePropertiesTable').filter()" style="width:10rem"
                        placeholder="#{dicBundle.typeProperties_name} | #{dicBundle.typeProperties_description}"/>
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{typePropertiesTabBean.create}"
                            process="@this"
                            update="@form:cnt:search_tabs:tabs:type_properties_dialog"
                            resetValues="true"
-                           oncomplete="PF('typePropertiesDialog').show()"                                 
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+                           oncomplete="PF('typePropertiesDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
-      </f:facet>    
+      </f:facet>
 
       <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2" filterBy="#{row.name}" filterMatchMode="contains">
         <i class="mr-2 #{row.type == 'TEXT' ? 'fa fa-font' : (row.type == 'DATE' ? 'pi pi-calendar' : (row.type == 'NUMERIC' ? 'fa fa-hashtag' : (row.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
         <h:outputText value="#{row.name}" style="#{row.hidden ? 'color: blue' : ''}"/>
-      </p:column>      
+      </p:column>
 
       <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3" filterBy="#{row.description}" filterMatchMode="contains">
         <h:outputText value="#{row.description}"/>
       </p:column>
-      
+
       <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-1">
         <h:outputText value="#{row.enumTypeId}"/>
-      </p:column>      
+      </p:column>
 
       <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center">
         <h:outputText value="#{row.size}"/>
@@ -138,86 +138,89 @@
       <p:column headerText="#{dicBundle.typeProperties_occurs}" styleClass="col-1 text-center">
         <h:outputText value="#{row.minOccurs == row.maxOccurs ? '' : row.minOccurs}
                       #{row.minOccurs == row.maxOccurs ? '' : '..'}
-                      #{row.maxOccurs == '0' ? '*' : row.maxOccurs}"/>   
-      </p:column>        
+                      #{row.maxOccurs == '0' ? '*' : row.maxOccurs}"/>
+      </p:column>
 
       <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center">
         <h:outputText value="#{row.stringValue}"/>
-      </p:column>      
+      </p:column>
 
       <p:column styleClass="col-1 text-right white-space-nowrap">
-        <p:commandButton icon="pi pi-pencil" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{typePropertiesTabBean.edit(row)}" 
-                         process="@this" 
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{typePropertiesTabBean.edit(row)}"
+                         process="@this"
                          update="@form:cnt:search_tabs:tabs:type_properties_dialog"
                          resetValues="true"
                          oncomplete="PF('typePropertiesDialog').show()"
                          />
         <p:commandButton action="#{typePropertiesTabBean.remove(row)}"
-                         process="@this" 
+                         process="@this"
                          update="@form:cnt:search_tabs:tabs:type_properties_dialog type_properties_table"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
+                         styleClass="rounded-button ui-button-flat">
           <p:confirm header="#{objectBundle.confirm_remove_header}"
                      message="#{objectBundle.confirm_remove_message}"
                      icon="pi pi-info-circle" />
         </p:commandButton>
       </p:column>
-    </p:dataTable>   
+    </p:dataTable>
 
   </h:panelGroup>
 
-  <!-- Only works appendTo="@(form)" with one single form -->    
+  <!-- Only works appendTo="@(form)" with one single form -->
 
-  <p:dialog id="type_properties_dialog" widgetVar="typePropertiesDialog" 
-            styleClass="edit_data_dialog" style="max-width:600px" 
+  <p:dialog id="type_properties_dialog" widgetVar="typePropertiesDialog"
+            styleClass="edit_data_dialog" style="max-width:600px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
         <f:facet name="header">
           <p:outputPanel>
-            <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+            <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
             <h:outputText value="#{typeObjectBean.description}" />
             <i class="pi pi-angle-right mx-2"></i>
-            <h:outputText value="#{applicationBean.translate(typeObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />   
-            <i class="pi pi-angle-right mx-2"></i> 
+            <h:outputText value="#{applicationBean.translate(typeObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+            <i class="pi pi-angle-right mx-2"></i>
             <h:outputText value="#{typePropertiesTabBean.editing.name}" />
           </p:outputPanel>
         </f:facet>
-    
+
         <h:panelGroup styleClass="mt-2" id="type_properties_panel" layout="block"
                       rendered="#{typePropertiesTabBean.editing != null}">
-    
+
           <div class="ui-fluid formgrid grid" >
-    
+
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.typeProperties_name}"
                              indicateRequired="true"/>
-              <p:inputText value="#{typePropertiesTabBean.editing.name}"                                   
+              <p:inputText value="#{typePropertiesTabBean.editing.name}"
                            required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
                            requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
-            </div>         
-            
+            </div>
+
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.typeProperties_description}"
                              indicateRequired="true"/>
-              <p:inputText value="#{typePropertiesTabBean.editing.description}" 
+              <p:inputText value="#{typePropertiesTabBean.editing.description}"
                            required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
                            requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}"/>
-            </div>    
+            </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.typeProperties_type}" />
-              <p:selectOneMenu value="#{typePropertiesTabBean.editing.type}" touchable="true">
+              <p:selectOneMenu value="#{typePropertiesTabBean.editing.type}" touchable="true" var="itemValue">
                 <f:selectItems value="#{typePropertiesTabBean.propertyTypes}"  />
+                <p:column>
+                  <h:outputText value="#{itemValue}"/>
+                </p:column>
               </p:selectOneMenu>
-            </div>    
+            </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next"
@@ -231,64 +234,64 @@
                                     scrollHeight="200"
                                     queryDelay="1000"
                                     minQueryLength="3">
-              </emcomp:objectReference>              
-            </div>    
+              </emcomp:objectReference>
+            </div>
 
             <div class="field col-12 md:col-4">
               <p:outputLabel for="@next"
                              value="#{dicBundle.typeProperties_size}" />
               <p:spinner value="#{typePropertiesTabBean.editing.size}" min="0" />
-            </div>    
+            </div>
 
             <div class="field col-12 md:col-4">
               <p:outputLabel for="@next"
                              value="#{dicBundle.typeProperties_minOccurs}"/>
               <p:spinner value="#{typePropertiesTabBean.editing.minOccurs}" min="0"/>
-            </div>    
+            </div>
 
             <div class="field col-12 md:col-4">
               <p:outputLabel for="@next"
                              value="#{dicBundle.typeProperties_maxOccurs}"/>
               <p:spinner value="#{typePropertiesTabBean.editing.maxOccurs}" min="0" />
-            </div>    
+            </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.typeProperties_value}" />
               <p:inputTextarea value="#{typePropertiesTabBean.editing.stringValue}" />
-            </div>    
+            </div>
 
             <div class="field col-12">
               <p:selectBooleanCheckbox value="#{typePropertiesTabBean.editing.hidden}" styleClass="mr-2" />
               <p:outputLabel for="@previous" value="#{dicBundle.typeProperties_hidden}" />
-            </div>  
+            </div>
 
             <div class="field col-12">
               <p:selectBooleanCheckbox value="#{typePropertiesTabBean.editing.readOnly}" styleClass="mr-2" />
               <p:outputLabel for="@previous" value="#{dicBundle.typeProperties_readOnly}" />
-            </div>              
-                                
+            </div>
+
           </div>
-    
-        </h:panelGroup>     
-    
+
+        </h:panelGroup>
+
         <f:facet name="footer">
-    
+
           <div class="field col-12 text-right">
             <p:commandButton id="type_properties_store"
-                             action="#{typePropertiesTabBean.accept}" 
+                             action="#{typePropertiesTabBean.accept}"
                              styleClass="m-1" value="#{objectBundle.accept}"
                              process="type_properties_dialog"
                              update="type_properties_table type_properties_panel"
                              oncomplete="if (!isFacesError()) PF('typePropertiesDialog').hide()" />
-            <p:commandButton action="#{typePropertiesTabBean.cancel}" 
+            <p:commandButton action="#{typePropertiesTabBean.cancel}"
                              styleClass="m-1" value="#{objectBundle.cancel}"
                              process="@this"
-                             update="type_properties_dialog" global="false" 
+                             update="type_properties_dialog" global="false"
                              onclick="PF('typePropertiesDialog').hide()" />
-          </div>      
+          </div>
         </f:facet>
- 
-  </p:dialog>  
+
+  </p:dialog>
 
 </ui:composition>
