@@ -95,6 +95,7 @@
         </p:menuButton> 
         
         <p:commandButton icon="ui-icon pi pi-times"
+                         widgetVar="backButton"
                          action="#{navigatorBean.close}"
                          process="@this" update="@form:cnt"
                          styleClass="rounded-button ui-button-flat"
@@ -152,6 +153,14 @@
   </div>
 
   <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
+
+  <script>
+    window.addEventListener("popstate", () => {
+      var id = PF("backButton").id;
+      var button = document.getElementById(id);
+      button.click();
+    });
+  </script>
   
 </ui:composition>
 

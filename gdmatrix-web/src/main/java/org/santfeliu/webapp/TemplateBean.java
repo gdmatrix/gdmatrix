@@ -98,11 +98,11 @@ public class TemplateBean implements Serializable
     return "/pages/obj/empty.xhtml";
   }
 
-  public boolean isSpaAction(MenuItemCursor cursor)
+  public void show(String mid)
   {
-    String contentExpression = cursor.getProperty("content");
-    return !StringUtils.isBlank(contentExpression) &&
-           !"none".equals(contentExpression);
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.setSelectedMid(mid);
+    userSessionBean.executeSelectedMenuItem();
   }
 
   public boolean isGrowlEnabled()

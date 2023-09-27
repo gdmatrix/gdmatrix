@@ -66,7 +66,6 @@ import org.santfeliu.workflow.VariableListConverter;
 import org.santfeliu.workflow.form.Form;
 import org.santfeliu.workflow.form.FormFactory;
 import static org.matrix.workflow.WorkflowConstants.*;
-import org.primefaces.PF;
 import org.primefaces.event.ToggleEvent;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.santfeliu.workflow.web.InstanceListBean.FAIL_FORM_PROPERTY;

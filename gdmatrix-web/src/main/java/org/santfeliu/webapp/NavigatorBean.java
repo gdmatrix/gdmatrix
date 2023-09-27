@@ -461,7 +461,7 @@ public class NavigatorBean extends WebBean implements Serializable
     inProgressLeap = leap;
 
     String template = userSessionBean.getTemplate();
-    return "/templates/" + template + "/spa.xhtml";
+    return "/templates/" + template + "/template.xhtml";
   }
 
   /**

@@ -81,25 +81,19 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
       {
         MatrixMenuItem.Builder builder = MatrixMenuItem.builder(mic)
           .value(label);
-//        if ("#{navigatorBean.show}".equals(mic.getAction()))
-//        {
-//          String command = "#{navigatorBean.showMid('" + mic.getMid() + "')}";
-//          builder.command(command);
-//          builder.ajax(true);
-//          builder.onstart("PF('menu').hide();");
-//          builder.process("@this");
-//          builder.update("@form:cnt");
-//        }
-//        else
-        if (mic.getAction() != null)
+        if (mic.getProperty("content") != null)
         {
-          builder.url(mic.getActionURL());
-          builder.onclick(encodeGoFunction(mic.getMid()));
+          String command = "#{templateBean.show('" + mic.getMid() + "')}";
+          builder.command(command);
+          builder.ajax(true);
+          builder.onstart("PF('menu').hide();");
+          builder.process("@this");
+          builder.update("@form:cnt");
         }
         else if (mic.getAction() == null && mic.getURL() != null)
         {
           builder.url(mic.getURL());
-          builder.ajax(true);
+          builder.ajax(false);
         }
         //Target
         builder.target(mic.getTarget());
