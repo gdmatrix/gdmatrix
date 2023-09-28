@@ -28,7 +28,8 @@
     </div>
 
     <div class="field col-12">
-      <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
+      <p:outputLabel for="@next" value="#{kernelBundle.room_name}" 
+                     indicateRequired="true"/>
       <p:inputText id="name" value="#{roomObjectBean.room.name}"
                    styleClass="inputfield w-full"
                    required="#{not empty param['mainform:search_tabs:store']}"

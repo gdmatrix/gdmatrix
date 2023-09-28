@@ -26,7 +26,8 @@
       </div>
 
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_name}" />
+        <p:outputLabel for="@next" value="#{kernelBundle.person_name}" 
+                       indicateRequired="true"/>
         <p:inputText value="#{personObjectBean.person.name}" 
                      required="#{not empty param['mainform:search_tabs:store']}"
                      requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
