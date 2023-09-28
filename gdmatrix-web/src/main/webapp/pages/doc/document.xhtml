@@ -80,6 +80,11 @@
               <p:outputLabel for="@next" value="#{documentBundle.outputSearchExpression}" />
               <p:inputText value="#{documentFinderBean.filter.metadataSearchExpression}" />
             </div>
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="ContentId" />
+              <p:inputText value="#{documentFinderBean.filter.contentId}" />
+            </div>
             
             <p:fieldset legend="#{documentBundle.documentSearch_date}"
                         toggleable="true" collapsed="true" styleClass="mb-2 w-full">
