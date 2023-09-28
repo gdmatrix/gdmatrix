@@ -533,7 +533,7 @@ public class ReportViewerBean extends WebBean implements Serializable
   public String show() {
     reportRendered = true;
     String template = UserSessionBean.getCurrentInstance().getTemplate();
-    return "/templates/" + template + "/spa.xhtml";
+    return "/templates/" + template + "/template.xhtml";
   }
 
   public String getObjectTypeId() {

@@ -313,7 +313,7 @@ public class WorkflowInstanceListBean extends WebBean implements Serializable
     }
 
     String template = UserSessionBean.getCurrentInstance().getTemplate();
-    return "/templates/" + template + "/spa.xhtml";
+    return "/templates/" + template + "/template.xhtml";
   }
 
   @CMSAction

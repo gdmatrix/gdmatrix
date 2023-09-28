@@ -228,7 +228,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     {
       editor = null;
       String template = UserSessionBean.getCurrentInstance().getTemplate();
-      return "/templates/" + template + "/spa.xhtml";      
+      return "/templates/" + template + "/template.xhtml";      
     }
     catch (Exception ex)
     {
