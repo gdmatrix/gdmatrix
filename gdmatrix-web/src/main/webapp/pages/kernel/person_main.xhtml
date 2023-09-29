@@ -89,11 +89,7 @@
 
       <div class="field col-12 md:col-2 xl:col-1">
         <p:outputLabel for="@next" value="#{kernelBundle.person_age}" />
-        <p:inputText value="#{personObjectBean.age}" readonly="true">
-          <f:convertNumber type="number"
-                           maxIntegerDigits="3"
-                           maxFractionDigits="1" />
-        </p:inputText>
+        <p:inputText value="#{personObjectBean.age}" readonly="true" />
       </div>
 
       <div class="field col-12 md:col-6">

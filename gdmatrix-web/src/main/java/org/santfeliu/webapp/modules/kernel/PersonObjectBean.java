@@ -115,7 +115,7 @@ public class PersonObjectBean extends ObjectBean
     return getTypeBean().getDescription(personId);
   }
 
-  public Double getAge()
+  public String getAge()
   {
     String birthDate = person.getBirthDate();
     if (birthDate == null) return null;
@@ -124,7 +124,12 @@ public class PersonObjectBean extends ObjectBean
     Date now = new Date();
     long ellapsed = now.getTime() - date.getTime();
 
-    return (double)ellapsed / (1000 * 60 * 60 * 24 * 365.25);
+    double age = (double)ellapsed / (1000 * 60 * 60 * 24 * 365.25);
+
+    int years = (int)Math.floor(age);
+    int months = (int)Math.floor(12 * (age - years));
+
+    return (months == 0) ? String.valueOf(years) : years + " + " + months + "M";
   }
 
   @Override
