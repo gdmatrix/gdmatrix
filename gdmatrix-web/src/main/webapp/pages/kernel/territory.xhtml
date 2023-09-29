@@ -18,8 +18,16 @@
                          disabled="#{not objectBean.finderBean.hasPrevious()}"
                          title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
                          />
-        <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}"
-                      styleClass="align-self-center" />
+        <span class="align-self-center">
+          <h:outputText value="#{objectBean.finderBean.objectPosition + 1}">
+            <f:convertNumber type="number"
+                             groupingUsed="true" />            
+          </h:outputText> /
+          <h:outputText value="#{objectBean.finderBean.objectCount}">
+            <f:convertNumber type="number"
+                             groupingUsed="true" />
+          </h:outputText>
+        </span>
         <p:commandButton icon="ui-icon pi pi-step-forward"
                          styleClass="rounded-button ui-button-flat ml-2 mr-2"
                          action="#{objectBean.finderBean.viewNext}"
@@ -85,6 +93,7 @@
                          action="#{navigatorBean.close}"
                          process="@this" update="@form:cnt"
                          styleClass="rounded-button ui-button-flat"
+                         widgetVar="backButton"
                          title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
   </p:outputPanel>  
@@ -255,4 +264,14 @@
 
   </p:outputPanel> 
 
+  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
+
+  <script>
+    window.addEventListener("popstate", () => {
+      var id = PF("backButton").id;
+      var button = document.getElementById(id);
+      button.click();
+    });
+  </script>  
+  
 </ui:composition>
