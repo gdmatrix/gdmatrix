@@ -81,7 +81,7 @@
                          style="height:29px"
                          process="#{cc.attrs.process}"
                          update="@form:cnt"
-                         oncomplete="if (!isFacesError()) #{cc.attrs.oncomplete}"
+                         oncomplete="#{cc.attrs.oncomplete}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton action="#{multipleClassReferenceBean.find}"
                          icon="pi pi-search"
@@ -89,7 +89,7 @@
                          style="height:29px"
                          process="#{cc.attrs.process}"
                          update="@form:cnt"
-                         oncomplete="if (!isFacesError()) #{cc.attrs.oncomplete}"
+                         oncomplete="#{cc.attrs.oncomplete}"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"                         
                          disabled="#{cc.attrs.disabled}" />
       </div>
