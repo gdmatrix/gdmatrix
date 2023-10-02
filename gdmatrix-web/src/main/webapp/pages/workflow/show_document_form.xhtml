@@ -12,8 +12,7 @@
     <sf:outputText value="#{showDocumentWorkflowBean.message}" 
                    translator="#{workflowInstanceBean.translationEnabled ? 
                                  applicationBean.translator : null}" 
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
-                   styleClass="workflowMessage" />
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}" />
 
     <sf:printableGroup name="printDocument">
       <sf:browser binding="#{showDocumentWorkflowBean.browser}"
@@ -25,17 +24,16 @@
                   width="100%" height="400px"/>
     </sf:printableGroup>
 
-    <h:panelGrid columns="1" width="100%" summary=""
-                 columnClasses="workflowPrintFooter" 
-                 style="margin-top:8px;margin-bottom:8px;"
-                 rendered="#{showDocumentWorkflowBean.showPrintButton and
+    <h:panelGroup layout="block" 
+                  styleClass="text-center m-4"
+                  rendered="#{showDocumentWorkflowBean.showPrintButton and
                              not showDocumentWorkflowBean.IFrame}">
       <p:linkButton href="#"
         value="#{workflowBundle.printDocument}"
         icon="pi pi-print"
-        onclick="javascript:printGroup('printDocument');">
+        onclick="javascript:printGroup('printDocument'); return false;">
       </p:linkButton>
-    </h:panelGrid>
+    </h:panelGroup>
 
     <gdm:saveBean value="showDocumentWorkflowBean" />     
     

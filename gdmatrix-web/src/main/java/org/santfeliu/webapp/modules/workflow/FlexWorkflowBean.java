@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.workflow;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
@@ -41,6 +40,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.santfeliu.util.Properties;
 import org.santfeliu.webapp.util.ComponentUtils;
+import static org.santfeliu.webapp.util.FormImporter.ACTION_METHOD_OPTION;
+import static org.santfeliu.webapp.util.FormImporter.ACTION_UPDATE_OPTION;
 import org.santfeliu.workflow.form.Form;
 
 /**
@@ -86,6 +87,12 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
     }
   }
 
+  public void doAction(String name, String value)
+  {
+    data.put(name, value);
+    instanceBean.forward();
+  }
+
   @Override
   public Map submit()
   {
@@ -111,8 +118,12 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
 
       System.out.println(">>>> importing form: " + selector);
 
+      Map<String, Object> options = new HashMap<>();
+      options.put(ACTION_METHOD_OPTION, "flexWorkflowBean.doAction");
+      options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
+
       ComponentUtils.includeFormComponents(panel, selector,
-         "flexWorkflowBean.data", data, Collections.EMPTY_MAP);
+         "flexWorkflowBean.data", data, options);
     }
     catch (Exception ex)
     {

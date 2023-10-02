@@ -38,6 +38,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
@@ -52,6 +55,7 @@ import org.primefaces.component.chips.Chips;
 import org.primefaces.component.datepicker.DatePicker;
 import org.primefaces.component.inputnumber.InputNumber;
 import org.primefaces.component.inputtext.InputText;
+import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.password.Password;
@@ -76,6 +80,10 @@ import org.santfeliu.form.type.html.HtmlView;
 
 public class FormImporter
 {
+  public static final String STACKED_OPTION = "stacked";
+  public static final String ACTION_METHOD_OPTION = "actionMethod";
+  public static final String ACTION_UPDATE_OPTION = "actionUpdate";
+
   protected Map<String, Object> options = new HashMap<>();
   protected Form form;
   protected UIComponent formRoot;
@@ -115,8 +123,21 @@ public class FormImporter
     {
       // discard, paint labels with fields
     }
-    else if (tag.equals("input") ||
-             tag.equals("textarea") ||
+    if (tag.equals("input"))
+    {
+      String type = view.getProperty("type");
+      if ("submit".equals(type))
+      {
+        importSubmit(view, parent);
+      }
+      else
+      {
+        String reference = view.getReference();
+        Field field = form.getField(reference);
+        importField(field, parent);
+      }
+    }
+    else if (tag.equals("textarea") ||
              tag.equals("select") ||
              tag.equals("checkbox"))
     {
@@ -169,6 +190,63 @@ public class FormImporter
     parent.getChildren().add(outputText);
   }
 
+  protected void importSubmit(HtmlView view, UIComponent parent)
+  {
+    FacesContext facesContext = FacesContext.getCurrentInstance();
+    Application application = facesContext.getApplication();
+
+    HtmlPanelGroup group =
+      (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+    group.setLayout("block");
+
+    Object styleClassValue = view.getProperty("class");
+    String styleClass = styleClassValue instanceof String ?
+      (String)styleClassValue : "";
+
+    if (!styleClass.contains("field"))
+    {
+      styleClass += " field";
+    }
+    if (!styleClass.contains("col-"))
+    {
+      styleClass += " col-12";
+    }
+    if (!styleClass.contains("m-"))
+    {
+      styleClass += " m-1";
+    }
+    group.setStyleClass(styleClass.trim());
+
+    CommandButton commandButton =
+      (CommandButton)application.createComponent(CommandButton.COMPONENT_TYPE);
+
+    String name = view.getProperty("name");
+    String value = view.getProperty("value");
+
+    commandButton.setValue(value);
+    group.getChildren().add(commandButton);
+
+    String actionMethod = (String)options.get(ACTION_METHOD_OPTION);
+    if (actionMethod != null && name != null && value != null)
+    {
+      ExpressionFactory expressionFactory = application.getExpressionFactory();
+      ELContext elContext = facesContext.getELContext();
+
+      String expression = "#{" + actionMethod + "('" + name + "', '" + value + "')}";
+
+      MethodExpression expr = expressionFactory.createMethodExpression(
+        elContext, expression, Void.class,
+        new Class[]{ String.class, String.class });
+      commandButton.setActionExpression(expr);
+      String actionUpdate = (String)options.get(ACTION_UPDATE_OPTION);
+      if (actionUpdate != null)
+      {
+        commandButton.setUpdate(actionUpdate);
+      }
+    }
+    parent.getChildren().add(group);
+  }
+
   protected void importLink(HtmlView view, UIComponent parent)
   {
     String url = view.getProperty("href");
@@ -213,7 +291,7 @@ public class FormImporter
 
   protected void importField(Field field, UIComponent parent)
   {
-    boolean isStacked = "true".equals(options.get("stacked"));
+    boolean isStacked = "true".equals(options.get(STACKED_OPTION));
 
     FacesContext facesContext = FacesContext.getCurrentInstance();
     Application application = facesContext.getApplication();

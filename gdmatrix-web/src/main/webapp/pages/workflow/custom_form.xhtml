@@ -9,13 +9,15 @@
 
   <ui:define name="form">
 
-    <sf:customForm url="#{customWorkflowBean.url}"
-                   values="#{workflowInstanceBean.variables}"
-                   newValues="#{customWorkflowBean.newValues}"
-                   translator="#{workflowInstanceBean.translationEnabled and 
-                                 customWorkflowBean.translationEnabled ? applicationBean.translator : null}"
-                   translationGroup="wf:#{customWorkflowBean.translationGroup}" />
-
+    <div class="custom_form">
+      <sf:customForm url="#{customWorkflowBean.url}"
+                     values="#{workflowInstanceBean.variables}"
+                     newValues="#{customWorkflowBean.newValues}"
+                     translator="#{workflowInstanceBean.translationEnabled and 
+                                   customWorkflowBean.translationEnabled ? applicationBean.translator : null}"
+                     translationGroup="wf:#{customWorkflowBean.translationGroup}" />
+    </div>
+    
     <gdm:saveBean value="customWorkflowBean" />  
 
   </ui:define>

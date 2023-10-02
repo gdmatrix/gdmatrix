@@ -9,14 +9,16 @@
 
   <ui:define name="form">
 
-    <sf:dynamicForm
-      form="#{dynamicWorkflowBean.form}"
-      rendererTypes="#{workflowInstanceBean.formRenderers}"
-      value="#{dynamicWorkflowBean.data}"
-      action="#{dynamicWorkflowBean.buttonPressed}" 
-      translator="#{workflowInstanceBean.translationEnabled ? 
-                    applicationBean.translator : null}"
-      translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+    <div class="dynamic_form">
+      <sf:dynamicForm
+        form="#{dynamicWorkflowBean.form}"
+        rendererTypes="#{workflowInstanceBean.formRenderers}"
+        value="#{dynamicWorkflowBean.data}"
+        action="#{dynamicWorkflowBean.buttonPressed}" 
+        translator="#{workflowInstanceBean.translationEnabled ? 
+                      applicationBean.translator : null}"
+        translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+    </div>
 
     <gdm:saveBean value="dynamicWorkflowBean" />      
     

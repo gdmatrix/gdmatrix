@@ -161,7 +161,7 @@
       </div>
 
       <p:tabView id="debug_tabs" 
-                 styleClass="debugTabs" dynamic="true"
+                 styleClass="debugTabs mt-2" dynamic="true"
                  activeIndex="#{workflowInstanceBean.activeDebugTab}">
         <p:tab title="Variables">
           <h:dataTable var="instanceVar" value="#{workflowInstanceBean.variablesArray}"
@@ -181,13 +181,19 @@
             </h:column>
           </h:dataTable>
 
-          <div class="set_variables">
-            <p:outputLabel for="@next" value="#{workflowBundle.setList}" styleClass="mr-2" />
-            <p:inputText value="#{workflowInstanceBean.variableAssignment}" styleClass="mr-2" />
-            <p:commandButton value="#{workflowBundle.set}"
-                             action="#{workflowInstanceBean.setVariables}" 
-                             icon="pi pi-play" iconPos="right"
-                             process="@parent:debug_tabs" update="@form:cnt" />
+          <div class="ui-fluid formgrid grid mt-2">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{workflowBundle.setList}" />
+              <p:inputTextarea value="#{workflowInstanceBean.variableAssignment}"
+                               style="font-family: monospace" />
+            </div>
+            <div class="field col-12 text-right">
+              <p:commandButton value="#{workflowBundle.set}"
+                              action="#{workflowInstanceBean.setVariables}" 
+                              icon="pi pi-play" iconPos="right"
+                              styleClass="w-auto"
+                              process="@parent:debug_tabs" update="@form:cnt" />
+            </div>
           </div>
         </p:tab>
 
