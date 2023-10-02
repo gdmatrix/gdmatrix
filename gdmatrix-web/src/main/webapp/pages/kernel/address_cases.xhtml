@@ -6,8 +6,13 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
+  <p:messages showSummary="true" styleClass="messages" 
+              showIcon="true" closable="false" severity="error,fatal">
+    <p:autoUpdate />
+  </p:messages>    
+  
   <h:panelGroup>
-
+    
     <!-- Results table -->
     <p:dataTable id="case_results_table" value="#{addressCasesTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"

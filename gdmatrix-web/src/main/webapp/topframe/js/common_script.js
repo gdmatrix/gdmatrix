@@ -513,7 +513,8 @@ function checkFirefoxFontSizeChange()
 
 function isFacesError()
 {
-  return document.getElementsByClassName('ui-growl-image-error').length > 0; 
+  return ((document.getElementsByClassName('ui-growl-image-error').length > 0) 
+    || (document.getElementsByClassName('ui-messages-error').length > 0));
 }
 
 initKeyCapture();

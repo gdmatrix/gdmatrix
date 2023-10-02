@@ -191,6 +191,11 @@
         <h:panelGroup styleClass="mt-2" id="type_properties_panel" layout="block"
                       rendered="#{typePropertiesTabBean.editing != null}">
 
+          <p:messages showSummary="true" styleClass="messages" 
+                      showIcon="true" closable="false" severity="error,fatal">
+            <p:autoUpdate />
+          </p:messages>  
+          
           <div class="ui-fluid formgrid grid" >
 
             <div class="field col-12">

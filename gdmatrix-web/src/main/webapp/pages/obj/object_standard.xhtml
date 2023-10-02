@@ -148,7 +148,8 @@
                      process="@form:cnt:search_tabs:obj_tabs"
                      update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                      styleClass="m-1" 
-                     disabled="#{!objectBean.editable}" />
+                     disabled="#{!objectBean.editable}" 
+                     oncomplete="if (isFacesError()) objectScrollUp()" />
     <p:commandButton action="#{objectBean.cancel}"
                      value="#{objectBundle.cancel}"
                      icon="pi pi-undo"
@@ -163,6 +164,12 @@
   <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
 
   <script>
+    function objectScrollUp()
+    {
+      document.getElementById("mainform:central_column").scrollTop = 0;
+      document.getElementsByClassName("app_body")[0].scrollTop = 0;
+    }
+
     window.addEventListener("popstate", () => {
       var id = PF("backButton").id;
       var button = document.getElementById(id);

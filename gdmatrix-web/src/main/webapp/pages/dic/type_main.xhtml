@@ -8,6 +8,11 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" severity="error,fatal">
+      <p:autoUpdate />
+    </p:messages>
+  
     <ui:repeat value="#{typeObjectBean.superTypes}" var="type">      
       <h:panelGroup class="" style="display:block">
         <span class="#{favoriteObjectsBean.icon} mr-2" />

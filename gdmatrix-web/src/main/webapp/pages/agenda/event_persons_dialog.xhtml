@@ -27,6 +27,11 @@
     <h:panelGroup styleClass="mt-2" id="event_persons_panel" layout="block"
                   rendered="#{eventPersonsTabBean.editing != null}">
 
+      <p:messages showSummary="true" styleClass="messages" 
+                  showIcon="true" closable="false" severity="error,fatal">
+        <p:autoUpdate />
+      </p:messages>      
+      
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12">

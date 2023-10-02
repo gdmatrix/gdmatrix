@@ -82,6 +82,11 @@
                   rendered="#{personAddressesTabBean.editing != null}"
                   styleClass="mt-2">
 
+      <p:messages showSummary="true" styleClass="messages" 
+                  showIcon="true" closable="false" severity="error,fatal">
+        <p:autoUpdate />
+      </p:messages>      
+      
       <div class="ui-fluid formgrid grid" >
       
         <p:outputPanel styleClass="field col-12">  
