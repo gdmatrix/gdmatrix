@@ -61,7 +61,7 @@
                        rendered="#{enumTypeItemsTabBean.sortedEnumType and row.enumTypeItemId != null}"
                        styleClass="rounded-button ui-button-flat"
                        resetValues="true"
-                       oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').show()" />
+                       oncomplete="PF('enumTypeItemsDialog').show()" />
 
 
       <p:commandButton action="#{enumTypeItemsTabBean.edit(row)}"
@@ -71,7 +71,7 @@
                        process="@form:cnt:search_tabs:tabs"
                        update="@form:cnt:search_tabs:tabs:enum_type_items_dialog"
                        resetValues="true"
-                       oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').show()" />
+                       oncomplete="PF('enumTypeItemsDialog').show()" />
       <p:commandButton action="#{enumTypeItemsTabBean.remove(row)}"
                        update="enum_type_items_table"
                        icon="pi pi-trash"

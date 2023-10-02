@@ -32,7 +32,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@form:cnt:search_tabs:event_persons_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('eventPersonsDialog').show()"
+                           oncomplete="PF('eventPersonsDialog').show()"
                            disabled="#{!eventObjectBean.editable}"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
@@ -79,7 +79,7 @@
                          process="@form:cnt:search_tabs:tabs"
                          update="@form:cnt:search_tabs:event_persons_dialog"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('eventPersonsDialog').show()" />
+                         oncomplete="PF('eventPersonsDialog').show()" />
         <p:commandButton action="#{eventPersonsTabBean.remove(row)}"
                          process="@this"
                          update="@form:cnt:search_tabs:tabs"

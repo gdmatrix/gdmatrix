@@ -65,7 +65,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:document_acl_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('documentACLDialog').show()"                                 
+                           oncomplete="PF('documentACLDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
       </f:facet>      
@@ -92,7 +92,7 @@
                          process="@form:cnt:search_tabs:tabs" 
                          update="@parent:@parent:@parent:@parent:document_acl_dialog"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('documentACLDialog').show()"
+                         oncomplete="PF('documentACLDialog').show()"
                          />
         <p:commandButton action="#{documentACLTabBean.remove(row)}"
                          process="@this" 

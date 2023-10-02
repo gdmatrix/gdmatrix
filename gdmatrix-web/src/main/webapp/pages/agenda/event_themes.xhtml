@@ -24,7 +24,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@root:@id(event_themes_dialog)"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('eventThemesDialog').show()"
+                           oncomplete="PF('eventThemesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}"
                            disabled="#{!eventObjectBean.editable}" />
         </div>

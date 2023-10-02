@@ -25,7 +25,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:document_cases_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('documentCasesDialog').show()"                                 
+                           oncomplete="PF('documentCasesDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
       </f:facet>      
@@ -58,7 +58,7 @@
                          process="@form:cnt:search_tabs:tabs" 
                          update="@parent:@parent:@parent:@parent:document_cases_dialog"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('documentCasesDialog').show()"
+                         oncomplete="PF('documentCasesDialog').show()"
                          />
         <p:commandButton action="#{documentCasesTabBean.remove(row)}"
                          process="@this" 

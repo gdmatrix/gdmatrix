@@ -37,7 +37,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@form:cnt:search_tabs:case_cases_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('caseCasesDialog').show()"
+                           oncomplete="PF('caseCasesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}"
                            rendered="#{not caseCasesTabBean.relatedByPerson}" />
         </div>
@@ -79,7 +79,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@form:cnt:search_tabs:case_cases_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('caseCasesDialog').show()" />
+                           oncomplete="PF('caseCasesDialog').show()" />
           <p:commandButton action="#{caseCasesTabBean.remove(row)}"
                            process="@this"
                            update="@form:cnt:search_tabs:tabs"

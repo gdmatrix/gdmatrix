@@ -25,7 +25,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:user_roles_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('userRolesDialog').show()"
+                           oncomplete="PF('userRolesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
@@ -51,7 +51,7 @@
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          update="@parent:@parent:@parent:@parent:user_roles_dialog"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('userRolesDialog').show()"
+                         oncomplete="PF('userRolesDialog').show()"
                          />
         <p:commandButton action="#{userRolesTabBean.remove(row)}"
                          process="@this"

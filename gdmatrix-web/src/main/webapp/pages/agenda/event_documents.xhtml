@@ -31,7 +31,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@form:cnt:search_tabs:event_documents_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').show()"
+                           oncomplete="PF('eventDocumentsDialog').show()"
                            disabled="#{!eventObjectBean.editable}"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
@@ -73,7 +73,7 @@
                          update="@form:cnt:search_tabs:event_documents_dialog"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').show()" />
+                         oncomplete="PF('eventDocumentsDialog').show()" />
         <p:commandButton action="#{eventDocumentsTabBean.remove(row)}"
                          process="@this"
                          update="@form:cnt:search_tabs:tabs"

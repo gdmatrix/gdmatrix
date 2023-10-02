@@ -43,7 +43,7 @@
                         process="@form:cnt:search_tabs:tabs"
                            update="@form:cnt:search_tabs:case_documents_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
+                           oncomplete="PF('caseDocumentsDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
@@ -90,7 +90,7 @@
                          process="@form:cnt:search_tabs:tabs"
                          update="@form:cnt:search_tabs:case_documents_dialog"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
+                         oncomplete="PF('caseDocumentsDialog').show()"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}" /> 
         <p:commandButton icon="pi pi-trash"
                          action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"

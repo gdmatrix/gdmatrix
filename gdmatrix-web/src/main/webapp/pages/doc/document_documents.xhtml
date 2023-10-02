@@ -31,7 +31,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:document_documents_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').show()"
+                           oncomplete="PF('documentDocumentsDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
@@ -61,7 +61,7 @@
                          process="@form:cnt:search_tabs:tabs"
                          update="@parent:@parent:@parent:@parent:document_documents_dialog"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').show()"
+                         oncomplete="PF('documentDocumentsDialog').show()"
                          />
         <p:commandButton action="#{documentDocumentsTabBean.remove(row)}"
                          process="@this"
