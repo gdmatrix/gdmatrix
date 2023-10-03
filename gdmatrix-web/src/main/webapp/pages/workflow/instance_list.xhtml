@@ -165,9 +165,10 @@
             icon="pi #{instance.activeNodes == null ? 'pi-eye' : 'pi-arrow-right'}" 
             iconPos="#{instance.activeNodes == null ? 'left' : 'right'}" />
           <p:commandButton value="#{objectBundle.delete}" 
+                           title="#{objectBundle.delete}"
                            action="#{workflowInstanceListBean.destroyInstance}" 
                            process="@this" update="@form:cnt"
-                           icon="pi pi-trash" styleClass="ui-button-danger"
+                           icon="pi pi-trash" styleClass="ui-button-danger mini"
                            rendered="#{workflowInstanceListBean.workflowAdmin ||
                                        instance.destroyButtonEnabled}">
             <p:confirm header="#{workflowBundle.destroy}" 

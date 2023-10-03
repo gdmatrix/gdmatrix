@@ -89,9 +89,10 @@
                           styleClass="mr-2">
             </p:linkButton>
             <p:commandButton value="#{workflowBundle.destroy}"
+                             title="#{workflowBundle.destroy}"
                              rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.destroyEnabled}"
                              action="#{workflowInstanceBean.destroyInstance}" immediate="true"
-                             styleClass="ui-button-danger mr-2"
+                             styleClass="ui-button-danger mr-2 mini"
                              process="@this" update="@form:cnt"
                              icon="pi pi-trash">
               <p:confirm header="#{workflowBundle.destroy}" 

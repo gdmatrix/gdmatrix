@@ -407,6 +407,14 @@ body .ui-messages-error ul
   {
     display:none;
   }
+  
+  body .ui-button.ui-button-text-icon-left.mini > .ui-button-text
+  {
+    visibility: hidden;
+    width: 0;
+    padding-right: 0;
+    white-space:nowrap;
+  }
 }
 
 .tipInputText
