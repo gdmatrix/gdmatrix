@@ -69,26 +69,41 @@
     <h:outputScript name="locales/locale-#{userSessionBean.viewLanguage}.js"
                     library="primefaces"/>
     
-    <p:outputPanel id="cnt">
-      <div class="app_content">
-        <p:toolbar class="app_toolbar">
-          <p:toolbarGroup>
-            <ui:repeat value="#{templateBean.highlightedItems}" var="item">
-              <p:commandButton action="#{templateBean.show(item.menuItem.mid)}"
-                               icon="#{item.getIcon()}"
-                               styleClass="#{item.isSelected() ? 'current' : ''}"
-                               process="@this" update="@form:cnt"
-                               title="#{item.getProperty('label')}" 
-                               rendered="#{true or templateBean.isSpaAction(item.menuItem)}" />
-            </ui:repeat>
-          </p:toolbarGroup>
-        </p:toolbar>
-
-        <div class="app_body">
-          <ui:include src="#{templateBean.content}"></ui:include>
+    <div class="app_content">
+      <div class="app_toolbar">
+        <div class="scroll">
+          <ui:repeat value="#{templateBean.highlightedItems}" var="item">
+            <p:commandButton action="#{templateBean.show(item.menuItem.mid)}"
+                             icon="#{item.getIcon()}"
+                             styleClass="btn-#{item.menuItem.mid}"
+                             process="@this" update="@form:cnt"
+                             title="#{item.getProperty('label')}" 
+                             rendered="#{true or templateBean.isSpaAction(item.menuItem)}" />
+          </ui:repeat>
         </div>
       </div>
-    </p:outputPanel>
+
+      <p:outputPanel id="cnt" styleClass="app_body">
+        <ui:include src="#{templateBean.content}"></ui:include>
+
+        <script>
+          var elems = document.getElementsByClassName("ui-button current");
+          if (elems.length > 0)
+          {
+            elems[0].classList.remove("current");
+          }
+
+          var mid = "#{userSessionBean.selectedMenuItem.mid}";
+          elems = document.getElementsByClassName("btn-" + mid);
+          if (elems.length > 0)
+          {
+            var elem = elems[0];
+            elem.classList.add("current");
+            elem.scrollIntoView();
+          }
+        </script>      
+      </p:outputPanel>
+    </div>
 
     <p:ajaxStatus onstart="showOverlay()" onsuccess="hideOverlay()" delay="2000" />
 

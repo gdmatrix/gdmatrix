@@ -323,6 +323,7 @@ body .ui-messages-error ul
 
 .app_content > .app_toolbar
 {
+  display: flex;
   padding: 0;
   border: none;
   background-color: #303030;
@@ -330,11 +331,23 @@ body .ui-messages-error ul
   z-index:10;
   border-radius: 0;
   align-items: flex-start;
+  flex-direction: column;
+  height: 100%;
 }
 
-.app_content > .app_toolbar .ui-toolbar-group-left
+.app_content > .app_toolbar > .scroll
 {
-  flex-direction: column;
+  height: 100%;
+  width: 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.app_content > .app_toolbar > .scroll::-webkit-scrollbar
+{
+  display: none;
 }
 
 .app_content > .app_toolbar .ui-button
@@ -345,6 +358,7 @@ body .ui-messages-error ul
   color: #d0d0d0;
   width: 32px;
   height: 32px;
+  flex-shrink: 0;
 }
 
 .app_content > .app_toolbar .ui-button:hover
@@ -363,6 +377,36 @@ body .ui-messages-error ul
 {
   flex-grow: 1;
   overflow: auto;
+}
+
+@media only screen and (max-width: 700px) 
+{
+  .app_content
+  {
+    flex-direction: column;
+  }  
+  
+  .app_content > .app_toolbar
+  {
+    box-shadow: 0px 5px 3px -3px rgb(50 50 50 / 30%);
+    flex-direction: row;
+    width:100%;
+    height: 32px;
+  }  
+  
+  .app_content > .app_toolbar > .scroll
+  {
+    width: 100%;
+    height: 32px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+  
+  .display_name
+  {
+    display:none;
+  }
 }
 
 .tipInputText
@@ -424,27 +468,4 @@ body .ui-messages-error ul
 .tipInputText .tipDialog .tipContent ul li
 {
   margin-top: 4px;
-}
-
-@media only screen and (max-width: 700px) 
-{
-  .app_content
-  {
-    flex-direction: column;
-  }  
-  
-  .app_content > .app_toolbar
-  {
-    box-shadow: 0px 5px 3px -3px rgb(50 50 50 / 30%);
-  }
-      
-  .app_content > .app_toolbar .ui-toolbar-group-left
-  {
-    flex-direction: row;
-  }  
-
-  .display_name
-  {
-    display:none;
-  }
 }
