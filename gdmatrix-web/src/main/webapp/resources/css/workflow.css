@@ -25,7 +25,44 @@
 {
   font-family: var(--font-family);
   font-size: 12px;
-  padding: 2px !important;
+  padding: 0.3rem 0.3rem !important;
+  color: var(--text-color);
+  background-color: var(--surface-ground);
+  outline: 0 none;
+  border-color: var(--surface-border);
+  border-radius: var(--border-radius);
+  border-style: solid;
+  border-width: 1px;
+  box-sizing: border-box;
+  transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+}
+
+.workflow_body .dynamic_form input[type=submit],
+.workflow_body .custom_form input[type=submit]
+{
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
+}
+
+.workflow_body .dynamic_form input:hover,
+.workflow_body .dynamic_form textarea:hover,
+.workflow_body .dynamic_form select:hover,
+.workflow_body .custom_form input:hover,
+.workflow_body .custom_form textarea:hover,
+.workflow_body .custom_form select:hover
+{
+  border-color: var(--primary-color);
+}
+
+.workflow_body .dynamic_form input:focus,
+.workflow_body .dynamic_form textarea:focus,
+.workflow_body .dynamic_form select:focus,
+.workflow_body .custom_form input:focus,
+.workflow_body .custom_form textarea:focus,
+.workflow_body .custom_form select:focus
+{
+  border-color: var(--primary-color);
+  box-shadow: var(--focus-ring);
 }
 
 .normalVar
