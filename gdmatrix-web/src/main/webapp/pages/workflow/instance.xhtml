@@ -92,7 +92,7 @@
             <p:commandButton value="#{workflowBundle.destroy}"
                              title="#{workflowBundle.destroy}"
                              rendered="#{workflowInstanceBean.workflowAdmin or workflowInstanceBean.destroyEnabled}"
-                             action="#{workflowInstanceBean.destroyInstance}" immediate="true"
+                             action="#{workflowInstanceBean.destroyInstance}"
                              styleClass="ui-button-danger mr-2 mini"
                              process="@this" update="@form:cnt"
                              icon="pi pi-trash">

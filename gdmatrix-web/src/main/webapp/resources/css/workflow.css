@@ -37,6 +37,12 @@
   transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
 }
 
+.workflow_body .dynamic_form select,
+.workflow_body .custom_form select
+{
+  padding: 0 !important;  
+}
+
 .workflow_body .dynamic_form input[type=submit],
 .workflow_body .custom_form input[type=submit]
 {

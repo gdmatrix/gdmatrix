@@ -116,8 +116,6 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
     {
       panel.getChildren().clear();
 
-      System.out.println(">>>> importing form: " + selector);
-
       Map<String, Object> options = new HashMap<>();
       options.put(ACTION_METHOD_OPTION, "flexWorkflowBean.doAction");
       options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");

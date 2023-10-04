@@ -408,7 +408,8 @@ body .ui-messages-error ul
     display:none;
   }
   
-  body .ui-button.ui-button-text-icon-left.mini > .ui-button-text
+  body .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
+  body .ui-button.ui-button-text-icon-right.mini > .ui-button-text
   {
     visibility: hidden;
     width: 0;
