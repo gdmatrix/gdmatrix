@@ -386,6 +386,8 @@ public abstract class ObjectBean extends BaseBean
         typeBean.updateDescription(objectId, object);
       }
 
+      loadObjectSetup();
+
       info("STORE_OBJECT");
     }
     catch (Exception ex)
