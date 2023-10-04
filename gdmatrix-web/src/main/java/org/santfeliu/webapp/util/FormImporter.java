@@ -123,7 +123,7 @@ public class FormImporter
     {
       // discard, paint labels with fields
     }
-    if (tag.equals("input"))
+    else if (tag.equals("input"))
     {
       String type = view.getProperty("type");
       if ("submit".equals(type))
