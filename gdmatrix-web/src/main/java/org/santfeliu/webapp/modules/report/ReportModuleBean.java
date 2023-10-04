@@ -78,13 +78,12 @@ public class ReportModuleBean implements Serializable
     return port;
   }
   
-  public static Credentials getExecutionCredentials()
+  public static Credentials getExecutionCredentials(boolean runAsAdmin)
   {
     Credentials credentials;
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = 
-      userSessionBean.getMenuModel().getSelectedMenuItem();
-    if ("true".equals(cursor.getProperty(ReportViewerBean.RUN_AS_ADMIN_PROPERTY)))
+
+    if (runAsAdmin)
     {
       credentials = ReportModuleBean.getReportAdminCredentials();
     }

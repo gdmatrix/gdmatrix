@@ -1,7 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:gdm="http://gdmatrix.org/tags">
 
 
   <f:loadBundle basename="org.santfeliu.report.web.resources.ReportBundle" 
@@ -12,5 +13,7 @@
   </div>
   
   <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
+ 
+  <gdm:saveBean value="reportViewerBean" /> 
   
 </ui:composition>

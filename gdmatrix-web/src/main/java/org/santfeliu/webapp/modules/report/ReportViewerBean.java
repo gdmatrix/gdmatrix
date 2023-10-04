@@ -33,16 +33,17 @@ package org.santfeliu.webapp.modules.report;
 
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Named;
-import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.dic.Property;
-import org.matrix.doc.Content;
 import org.matrix.doc.State;
 import org.matrix.report.ParameterDefinition;
 import org.matrix.report.Report;
@@ -50,6 +51,9 @@ import org.matrix.report.ReportManagerPort;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
+import org.santfeliu.form.Form;
+import org.santfeliu.form.FormFactory;
+import org.santfeliu.form.builder.DocumentFormBuilder;
 import org.santfeliu.report.web.ReportServlet;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
@@ -60,6 +64,7 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.webapp.util.ComponentUtils;
 
 /**
  *
@@ -76,20 +81,26 @@ public class ReportViewerBean extends WebBean implements Serializable
   public static final String FORM_NAME_PROPERTY = "formName";
   @CMSProperty
   public static final String FORM_TYPE_PROPERTY = "formType";
-  @CMSProperty
-  public static final String CONNECTION_NAME_PROPERTY = "connectionName";
+  public static final String FORM_TYPE_FLEX = "flex";
+  public static final String FORM_TYPE_DYNAMIC = "dynamic";
+  public static final String FORM_TYPE_HTML = "html";
+  public static final String DEFAULT_FORM_NAME_PROPERTY = "workflow.form";
+  public static final String HTML_FORM_NAME_PROPERTY = "workflow.html";
+  
   @CMSProperty
   public static final String OUTPUT_FORMAT_PROPERTY = "outputFormat";
+  public static final String HTML_OUTPUT_FORMAT = "html";
+  
   @CMSProperty
   public static final String EXECUTE_BUTTON_LABEL_PROPERTY =
     "executeButtonLabel";
+  
   @CMSProperty
   public static final String PRINT_REPORT_NAME_PROPERTY = "printReportName";
   @CMSProperty
-  public static final String PRINT_BUTTON_LABEL_PROPERTY = "printButtonLabel";
-  @CMSProperty
   public static final String PRINT_BUTTON_RENDERED_PROPERTY =
-    "printButtonRendered";
+    "printButtonRendered";  
+  
   @CMSProperty
   public static final String RUN_AS_ADMIN_PROPERTY = "runAsAdmin";
   @CMSProperty
@@ -106,13 +117,14 @@ public class ReportViewerBean extends WebBean implements Serializable
   @CMSProperty
   public static final String ALLOWED_TAGS_PROPERTY = "allowedHtmlTags";    
   @CMSProperty
-  public static final String READ_TIMEOUT_PROPERTY = "readTimeout";   
-
+  public static final String READ_TIMEOUT_PROPERTY = "readTimeout";  
+  
   private static final String STORED_PARAMS = "storedParams";
   
-  private boolean reportRendered = false;
-  private Map parameters;
-  private Map formValues;
+  private Map parameters = new HashMap<>();
+  
+  private Map formValues = new HashMap<>();
+  private String formSelector;  
   
   public ReportViewerBean()
   {
@@ -123,67 +135,78 @@ public class ReportViewerBean extends WebBean implements Serializable
     return "/pages/report/report.xhtml";
   }
   
-  /* bean properties */
-
-  public String getReportName()
-  {    
-    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
-    return cursor.getBrowserSensitiveProperty(REPORT_NAME_PROPERTY);
-  }
-
-  public boolean isReportRendered()
+  //Accessors
+  public void setFormValues(Map formValues)
   {
-    return reportRendered;
+    this.formValues = formValues;
   }
 
-  public boolean isFormRendered()
+  public Map getFormValues()
   {
-    return getFormName() != null;
+    return formValues;
   }
+  
+  public Map getParameters()
+  {
+    return parameters;
+  }
+  
+  public void setParameters(Map parameters)
+  {
+    this.parameters = parameters;
+  }  
+  
+  //Report methods
+  public String getReportURL()
+  {
+    String url = null;
+    String reportName = getReportName();
+    if (reportName != null)
+    {
+      url = getContextURL() + "/reports/" + reportName + "." +
+        getOutputFormat() + getParametersString();
+      String runAsAdmin = 
+        getSelectedMenuItem().getProperty(RUN_AS_ADMIN_PROPERTY);    
+      Credentials credentials = 
+        ReportModuleBean.getExecutionCredentials("true".equals(runAsAdmin));
+      URLCredentialsCipher cipher = SecurityUtils.getURLCredentialsCipher();
+      url = cipher.putCredentials(url, credentials);
+    }
+    return url;
+  }  
+  
+  public String getAllowedHtmlTags()
+  {  
+    return getProperty(ALLOWED_TAGS_PROPERTY);
+  }
+  
+  public Integer getReadTimeout()
+  {
+    String readTimeout = getProperty(READ_TIMEOUT_PROPERTY);
+    return readTimeout != null ? Integer.valueOf(readTimeout) : null;  
+  }   
+  
+  public boolean isShowInIFrame()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
+    return "true".equals(cursor.getProperty(SHOW_IN_IFRAME_PROPERTY));
+  }  
   
   public boolean isExecuteButtonRendered()
   {
     return (getProperty(RENDER_BUTTON_PROPERTY) == null || 
       "true".equalsIgnoreCase(getProperty(RENDER_BUTTON_PROPERTY)));
   }
-
-  public String getFormURL()
+  
+  public String getExecuteButtonLabel()
   {
-    String url = null;
-    String formName = getFormName();
-    if (formName != null)
-    {
-      try
-      {
-        String formType = getFormType();
-        if (formType == null) formType = "workflow.form";
-        DocumentManagerClient client = getDocumentManagerClient();
-        DocumentFilter documentFilter = new DocumentFilter();
-        documentFilter.setDocTypeId("FORM");
-        Property property = new Property();
-        property.setName(formType);
-        property.getValue().add(formName);
-        documentFilter.getProperty().add(property);
-        documentFilter.getStates().add(State.DRAFT);
-        documentFilter.getStates().add(State.COMPLETE);
-        documentFilter.getStates().add(State.RECORD);
-        List<Document> documents = client.findDocuments(documentFilter);
-        if (documents.size() > 0)
-        {
-          Content content = documents.get(0).getContent();
-          if (content != null)
-            url = getConnectionBase() + "/documents/" + content.getContentId();
-        }
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-    return url;
-  }
-
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    return userSessionBean.translateProperty(EXECUTE_BUTTON_LABEL_PROPERTY);
+  }  
+  
+  //Header & footer methods
   public String getHeaderURL()
   {
     String url = null;
@@ -211,45 +234,51 @@ public class ReportViewerBean extends WebBean implements Serializable
     }
     return url;
   }
-
-  public String getReportURL()
+  
+  //Form methods
+  public boolean isFormRendered()
   {
-    String url = null;
-    String reportName = getReportName();
-    if (reportName != null)
+    return getFormName() != null;
+  }  
+  
+  public Form getForm()
+  {
+    try
     {
-      url = getContextURL() + "/reports/" + reportName + "." +
-        getOutputFormat() + getParametersString();
-      Credentials credentials = ReportModuleBean.getExecutionCredentials();
-      URLCredentialsCipher cipher = SecurityUtils.getURLCredentialsCipher();
-      url = cipher.putCredentials(url, credentials);
+      if (formSelector != null)
+      {
+        FormFactory formFactory = FormFactory.getInstance();
+        // update form only in render phase
+        boolean updated = getFacesContext().getRenderResponse();
+        return formFactory.getForm(formSelector, getFormValues(), updated);
+      }
     }
-    return url;
-  }
-
-  public String getExecuteButtonLabel()
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
+  }  
+  
+  public void loadDynamicComponents(ComponentSystemEvent event)
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    return userSessionBean.translateProperty(EXECUTE_BUTTON_LABEL_PROPERTY);
+    if (isFormRendered())
+    {
+      UIComponent panel = event.getComponent();
+      if (panel.getChildren().isEmpty())
+      {
+        updateComponents(panel);
+      }
+    }
   }
-
-  public String getOutputFormat()
+  
+  public boolean isRenderFlexForm()
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = 
-      userSessionBean.getMenuModel().getSelectedMenuItem();
-    String outputFormat = cursor.getProperty(OUTPUT_FORMAT_PROPERTY);
-    return outputFormat == null ? "html" : outputFormat;
-  }
+    String formType = getFormType();
+    return formType == null || formType.equals(FORM_TYPE_FLEX);
+  }  
 
-  public boolean isShowInIFrame()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = 
-      userSessionBean.getMenuModel().getSelectedMenuItem();
-    return "true".equals(cursor.getProperty(SHOW_IN_IFRAME_PROPERTY));
-  }
-
+  //Print report methods
   public String getPrintReportName()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -271,19 +300,15 @@ public class ReportViewerBean extends WebBean implements Serializable
     {
       url = getContextURL() + "/reports/" + printReportName + ".pdf" +
         getParametersString();
-      Credentials credentials = ReportModuleBean.getExecutionCredentials();
+  
+      String runAsAdmin = 
+        getSelectedMenuItem().getProperty(RUN_AS_ADMIN_PROPERTY);    
+      Credentials credentials = 
+        ReportModuleBean.getExecutionCredentials("true".equals(runAsAdmin));
       URLCredentialsCipher cipher = SecurityUtils.getURLCredentialsCipher();
       url = cipher.putCredentials(url, credentials);
     }
     return url;
-  }
-
-  public String getPrintButtonLabel()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = 
-      userSessionBean.getMenuModel().getSelectedMenuItem();
-    return cursor.getProperty(PRINT_BUTTON_LABEL_PROPERTY);
   }
   
   public boolean isPrintButtonRendered()
@@ -294,71 +319,8 @@ public class ReportViewerBean extends WebBean implements Serializable
     return "true".equals(cursor.getProperty(PRINT_BUTTON_RENDERED_PROPERTY));
   }
   
-  public String getAllowedHtmlTags()
-  {  
-    return getProperty(ALLOWED_TAGS_PROPERTY);
-  }
-  
-  public Integer getReadTimeout()
-  {
-    String readTimeout = getProperty(READ_TIMEOUT_PROPERTY);
-    return readTimeout != null ? Integer.valueOf(readTimeout) : null;  
-  }
 
-  public Map getFormValues()
-  {
-    if (formValues == null)
-    {
-      formValues = new HashMap();
-      formValues = parameters;
-      putRequestParameters(formValues); //Set fresh request parameters
-      putUserParameters(formValues); //Put user related parameters
-    }
-
-    return formValues;
-  }
-
-  public Map getParameters()
-  {
-    return parameters;
-  }
-  
-  public void setParameters(Map parameters)
-  {
-    this.parameters = parameters;
-  }
-  
-  public void setParameters() throws Exception
-  {
-    String reportName = getReportName();
-    if (reportName == null) throw new Exception("UNDEFINED_REPORT_NAME");
-    parameters = getReportDefaultParameters(reportName);       
-    putRequestParameters(parameters);
-    putFormValues(parameters);
-    putUserParameters(parameters);
-  }    
-  
-  /* actions */
-  
-  /** Report loading action.
-   * 
-   * @return outcome
-   */
-  @CMSAction
-  public String showForm()
-  {
-    reportRendered = false;
-    return "report";
-  }
-
-  /** Report execution action. 
-   *  If current node configures oc properties (oc.pageBean and oc.objectBean) 
-   *  then calls ControllerBean.showObject to benefit from pageHistory and be 
-   *  able to navigate through objects, otherwise self show() method is called
-   *  directly for compatibility reasons. 
-   * 
-   *  @return outcome
-   */
+  //Actions
   @CMSAction
   public String executeReport()
   {
@@ -366,8 +328,16 @@ public class ReportViewerBean extends WebBean implements Serializable
     
     try    
     {     
-      setParameters();
-      //TODO: Report as an Object (execution with NavigatorBean)
+      String reportName = getReportName();
+      if (reportName == null) 
+        throw new Exception("UNDEFINED_REPORT_NAME");
+      
+      parameters = getReportDefaultParameters(reportName);       
+      mergeRequestParameters(parameters);
+      mergeFormValues(parameters);
+      mergeUserParameters(parameters);
+      
+      formSelector = getFormSelector();
       outcome = show();
     }
     catch (Exception ex)
@@ -377,8 +347,93 @@ public class ReportViewerBean extends WebBean implements Serializable
     
     return outcome;
   }
+  
 
   /* private methods */
+  private String show() 
+  {
+    String template = UserSessionBean.getCurrentInstance().getTemplate();
+    return "/templates/" + template + "/template.xhtml";
+  }
+    
+  private String getReportName()
+  {    
+    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
+    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
+    return cursor.getBrowserSensitiveProperty(REPORT_NAME_PROPERTY);
+  }    
+  
+  private String getOutputFormat()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
+    String outputFormat = cursor.getProperty(OUTPUT_FORMAT_PROPERTY);
+    return outputFormat == null ? HTML_OUTPUT_FORMAT : outputFormat;
+  }  
+  
+  private void updateComponents(UIComponent panel)
+  {
+    try
+    {
+      panel.getChildren().clear();
+      if (formSelector != null)
+      {
+        ComponentUtils.includeFormComponents(panel, formSelector,
+           "reportViewerBean.formValues", formValues, Collections.EMPTY_MAP);
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+  
+  private String getFormSelector()
+  {
+    String selector = null;
+    String formName = getFormName();
+    if (formName == null)
+      return selector;
+    
+    try
+    {
+      Document formDocument = getFormDocument(formName);
+      if (formDocument != null)
+      {
+        selector = DocumentFormBuilder.PREFIX + ":" + formDocument.getDocId();
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return selector;
+  }  
+  
+  private Document getFormDocument(String formName) throws Exception
+  {
+    Document form = null;
+    String formNameProp = DEFAULT_FORM_NAME_PROPERTY;
+    String formType = getFormType();  
+    if (formType != null && formType.equals(FORM_TYPE_HTML)) 
+      formNameProp = HTML_FORM_NAME_PROPERTY;
+    DocumentManagerClient client = getDocumentManagerClient();
+    DocumentFilter documentFilter = new DocumentFilter();
+    documentFilter.setDocTypeId("FORM");
+    Property property = new Property();
+    property.setName(formNameProp);
+    property.getValue().add(formName);
+    documentFilter.getProperty().add(property);
+    documentFilter.getStates().add(State.DRAFT);
+    documentFilter.getStates().add(State.COMPLETE);
+    documentFilter.getStates().add(State.RECORD);
+    List<Document> documents = client.findDocuments(documentFilter);
+    if (!documents.isEmpty())
+      form = documents.get(0);
+
+    return form;
+  }  
 
   private String getConnectionBase()
   {
@@ -429,7 +484,30 @@ public class ReportViewerBean extends WebBean implements Serializable
     return defaultParams;
   }
   
-  private void putUserParameters(Map parameters) 
+  private String getFormName()
+  {
+    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
+    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
+    return cursor.getBrowserSensitiveProperty(FORM_NAME_PROPERTY);
+  }
+
+  private String getFormType()
+  {
+    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
+    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
+    return cursor.getBrowserSensitiveProperty(FORM_TYPE_PROPERTY);
+  }  
+
+  private DocumentManagerClient getDocumentManagerClient() throws Exception
+  {
+    Credentials credentials = ReportModuleBean.getReportAdminCredentials();
+    String userId = credentials.getUserId();
+    String password = credentials.getPassword();
+    DocumentManagerClient client = new DocumentManagerClient(userId, password);
+    return client;
+  }  
+  
+  private void mergeUserParameters(Map parameters) 
   {
     //Injected from UserSessionBean 
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -456,7 +534,7 @@ public class ReportViewerBean extends WebBean implements Serializable
       parameters.put(ReportServlet.CONNECTION_NAME_PARAMETER , connectionName);          
   }
   
-  private void putRequestParameters(Map parameters)
+  private void mergeRequestParameters(Map parameters)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     MenuItemCursor cursor = 
@@ -473,7 +551,7 @@ public class ReportViewerBean extends WebBean implements Serializable
         (Map<String, String>)userSessionBean.getAttribute(STORED_PARAMS);
       if (storedParams == null)
       {
-        storedParams = new HashMap<String, String>();
+        storedParams = new HashMap<>();
         userSessionBean.setAttribute(STORED_PARAMS, storedParams);
       }
 
@@ -498,45 +576,12 @@ public class ReportViewerBean extends WebBean implements Serializable
     }
   } 
   
-  private void putFormValues(Map parameters)
+  private void mergeFormValues(Map parameters)
   {
     if (formValues != null)
     {
       parameters.putAll(formValues); 
-      formValues = null; //Reset form values to force refresh
     }      
   }
     
-  private String getFormName()
-  {
-    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
-    return cursor.getBrowserSensitiveProperty(FORM_NAME_PROPERTY);
-  }
-
-  private String getFormType()
-  {
-    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
-    return cursor.getBrowserSensitiveProperty(FORM_TYPE_PROPERTY);
-  }  
-
-  private DocumentManagerClient getDocumentManagerClient() throws Exception
-  {
-    Credentials credentials = ReportModuleBean.getReportAdminCredentials();
-    String userId = credentials.getUserId();
-    String password = credentials.getPassword();
-    DocumentManagerClient client = new DocumentManagerClient(userId, password);
-    return client;
-  }
-
-  public String show() {
-    reportRendered = true;
-    String template = UserSessionBean.getCurrentInstance().getTemplate();
-    return "/templates/" + template + "/template.xhtml";
-  }
-
-  public String getObjectTypeId() {
-    return DictionaryConstants.REPORT_TYPE;
-  }
 }
