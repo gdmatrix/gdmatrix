@@ -46,6 +46,70 @@ import org.santfeliu.form.type.html.HtmlView;
 public class Html5FormRenderer extends HtmlFormRenderer
 {
   @Override
+  protected void encodeInput(HtmlView view, HtmlForm form,
+    DynamicForm component, String clientId, ResponseWriter writer)
+    throws IOException
+  {
+    String tag = view.getNativeViewType();
+    String type = view.getProperty("type");
+    String format = view.getProperty("format");
+
+    boolean isDate = format != null &&
+      (format.equals(HtmlForm.DATE_FORMAT) ||
+       format.equals(HtmlForm.DATE_FORMAT + ":dd/MM/yyyy"));
+
+    if (isDate && "input".equals(tag) && "text".equals(type))
+    {
+      String name = view.getProperty("name");
+      String value = getValueAsString(component, view);
+
+      writer.startElement("input", component);
+      writer.writeAttribute("name", getFieldId(clientId, name + "_dp"), null);
+      writer.writeAttribute("type", "date", null);
+      String isoValue = convertUserToISO(value);
+      if (isoValue != null)
+      {
+        writer.writeAttribute("value", isoValue, null);
+      }
+      // Convert ISO date to dd/MM/yyyy:
+      // idx  = 0123456789
+      // iso  = yyyy-MM-dd
+      // user = dd/MM/yyyy
+
+      writer.writeAttribute("onchange",
+        "var v=this.value;document.getElementById('h-" + clientId + "').value=" +
+        "(v.length==10)?v.substring(8,10)+'/'+v.substring(5,7)+'/'+v.substring(0,4):null;", null);
+
+      renderViewAttributes(view, writer, "name", "type", "value", "maxlength");
+      writer.endElement("input");
+
+      writer.startElement("input", component);
+      writer.writeAttribute("id", "h-" + clientId, null);
+      writer.writeAttribute("type", "hidden", null);
+      writer.writeAttribute("name", getFieldId(clientId, name), null);
+      writer.writeAttribute("value", value, null);
+      writer.endElement("input");
+    }
+    else
+    {
+      super.encodeInput(view, form, component, clientId, writer);
+    }
+  }
+
+  protected String convertUserToISO(String sdate)
+  {
+    if (sdate == null || sdate.length() != 10) return null;
+
+    // Convert dd/MM/yyyy to ISO date:
+    // idx  = 0123456789
+    // user = dd/MM/yyyy
+    // iso  = yyyy-MM-dd
+
+    return sdate.substring(6, 10) + "-" +
+      sdate.substring(3, 5) + "-" + sdate.substring(0, 2);
+  }
+
+  @Override
   protected void encodeDatePicker(HtmlView view, HtmlForm form,
     DynamicForm component, String clientId, ResponseWriter writer)
     throws IOException
