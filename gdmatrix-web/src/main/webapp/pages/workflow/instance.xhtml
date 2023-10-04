@@ -39,6 +39,7 @@
                              action="#{workflowInstanceBean.exitInstance}"
                              process="@this" update="@form:cnt"
                              icon="pi pi-times-circle"
+                             widgetVar="exitButton"
                              title="#{workflowBundle.exitLong}"
                              ariaLabel="#{workflowBundle.exit}: #{workflowBundle.exitLong}" />
           </div>
@@ -107,7 +108,6 @@
                              action="#{workflowInstanceBean.backward}"
                              process="@this" update="@form:cnt"
                              icon="pi pi-arrow-left"
-                             widgetVar="backwardButton"
                              title="#{workflowBundle.previousLong}"
                              ariaLabel="#{workflowBundle.previous}: #{workflowBundle.previousLong}" />
             <p:commandButton value="#{workflowBundle.next}" id="forward"
@@ -285,16 +285,23 @@
 
   <script>
     window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-    
-    window.addEventListener("popstate", () => {
-      var pfButton = PF("backwardButton");
+
+    if (window.popStateListener)
+    {
+      window.removeEventListener("popstate", window.popStateListener);
+    }
+
+    window.popStateListener = () => {
+      var pfButton = PF("exitButton");
       if (pfButton)
       {
         var id = pfButton.id;
         var button = document.getElementById(id);
         button.click();
-      }
-    });
+      };
+    };
+
+    window.addEventListener("popstate", window.popStateListener);
   </script>
   
   

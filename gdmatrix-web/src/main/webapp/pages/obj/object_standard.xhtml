@@ -170,11 +170,22 @@
       document.getElementsByClassName("app_body")[0].scrollTop = 0;
     }
 
-    window.addEventListener("popstate", () => {
-      var id = PF("backButton").id;
-      var button = document.getElementById(id);
-      button.click();
-    });
+    if (window.popStateListener)
+    {
+      window.removeEventListener("popstate", window.popStateListener);
+    }
+
+    window.popStateListener = () => {
+      var pfButton = PF("backButton");
+      if (pfButton)
+      {
+        var id = pfButton.id;
+        var button = document.getElementById(id);
+        button.click();
+      };
+    };
+
+    window.addEventListener("popstate", window.popStateListener);
   </script>
   
 </ui:composition>
