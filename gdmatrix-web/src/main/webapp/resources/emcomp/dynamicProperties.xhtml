@@ -15,6 +15,7 @@
       <composite:attribute name="formSelector" required="true" />
       <composite:attribute name="formBuilderPrefix" required="false" default="type" />
       <composite:attribute name="options" required="false" type="java.util.Map" />
+      <composite:attribute name="oncomplete" required="false" />
     </composite:interface>
     <composite:implementation>
       <div class="ui-fluid formgrid grid">
@@ -22,7 +23,8 @@
           <p:outputLabel for="@next" value="#{objectBundle.forms}:" />
           <p:selectOneMenu value="#{cc.attrs.formSelector}" autoWidth="false" touchable="true">
             <p:ajax event="itemSelect" listener="#{dynamicPropertiesBean.onItemSelect}"
-                    process="@this dyn_form" update="dyn_form" />
+                    process="@this dyn_form" update="dyn_form"
+                    oncomplete="#{cc.attrs.oncomplete}" />
             <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
           </p:selectOneMenu>
         </div>
