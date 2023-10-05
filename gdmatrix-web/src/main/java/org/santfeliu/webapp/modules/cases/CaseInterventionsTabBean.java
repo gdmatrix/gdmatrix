@@ -279,6 +279,7 @@ public class CaseInterventionsTabBean extends TabBean
   {
     editing = new Intervention();
     editing.setIntTypeId(getCreationTypeId());
+    formSelector = null;
   }
 
   public void switchView()

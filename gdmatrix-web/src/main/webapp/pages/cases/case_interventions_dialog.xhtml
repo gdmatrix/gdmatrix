@@ -10,7 +10,8 @@
   <p:dialog id="case_interventions_dialog" widgetVar="caseInterventionsDialog"
             styleClass="edit_data_dialog mw_800"
             modal="true" responsive="true" closable="false"
-            appendTo="@(form)" position="center center" resizable="false">
+            appendTo="@(form)" position="center center" resizable="false"
+            onShow="PF('caseInterventionsDialog').resetPosition();">
 
     <f:facet name="header">
       <p:outputPanel>
@@ -112,7 +113,8 @@
        <!-- Dynamic form -->
       <emcomp:dynamicProperties typeId="#{caseInterventionsTabBean.editing.intTypeId}"
                                 formSelector="#{caseInterventionsTabBean.formSelector}"
-                                properties="#{caseInterventionsTabBean.editing.property}" />         
+                                properties="#{caseInterventionsTabBean.editing.property}"
+                                oncomplete="PF('caseInterventionsDialog').resetPosition();" />         
 
     </h:panelGroup>
     

@@ -10,7 +10,8 @@
   <p:dialog id="case_events_dialog" widgetVar="caseEventsDialog"
             styleClass="edit_data_dialog mw_800"
             modal="true" responsive="true" closable="false"
-            appendTo="@(form)" position="center center" resizable="false">
+            appendTo="@(form)" position="center center" resizable="false"
+            onShow="PF('caseEventsDialog').resetPosition();">
 
     <f:facet name="header">
       <p:outputPanel>
@@ -88,7 +89,8 @@
 
       <emcomp:dynamicProperties typeId="#{caseEventsTabBean.editing.caseEventTypeId}"
                                 formSelector="#{caseEventsTabBean.formSelector}"
-                                properties="#{caseEventsTabBean.editing.property}" />
+                                properties="#{caseEventsTabBean.editing.property}"
+                                oncomplete="PF('caseEventsDialog').resetPosition();" />
     
     </h:panelGroup>
 

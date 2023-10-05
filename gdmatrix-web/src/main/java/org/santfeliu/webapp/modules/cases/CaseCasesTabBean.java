@@ -249,6 +249,7 @@ public class CaseCasesTabBean extends TabBean
     {
       editing.setRelCaseId(getObjectId());
     }
+    formSelector = null;    
   }
 
   public void switchView()

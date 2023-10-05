@@ -279,6 +279,7 @@ public class CaseEventsTabBean extends TabBean
   {
     editing = new CaseEvent();
     editing.setCaseEventTypeId(getCreationTypeId());
+    formSelector = null;    
   }
 
   public void switchView()
