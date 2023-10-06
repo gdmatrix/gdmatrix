@@ -102,18 +102,19 @@
       </p:fieldset>      
       
       <div class="field col-12 text-right">
-        <p:commandButton value="#{workflowBundle.search}"
+        <p:commandButton id="search" 
+                         value="#{workflowBundle.search}"
                          action="#{workflowInstanceListBean.findInstances}"
                          process="@form:cnt" update="@form:cnt"
                          icon="pi pi-search"
                          styleClass="w-auto"  />
       </div>
     </div>
-
+    
     <p:dataTable
       value="#{workflowInstanceListBean.instanceList}" 
       var="instance"
-      styleClass="m-2"
+      styleClass="workflow_list m-2"
       first="#{workflowInstanceListBean.firstRow}"
       paginator="true" pageLinks="5"
       paginatorPosition="bottom" size="small"
@@ -131,28 +132,26 @@
           url="#{instance.simulation ? '/common/workflow/images/simulation.gif' : '/common/workflow/images/real.gif'}" 
           alt="#{instance.simulation ? '#{workflowBundle.simulation}' : '#{workflowBundle.realProcessing}'}" />
       </p:column>
-      <p:column style="width:70%">
+      <p:column style="width:70%" 
+                styleClass="#{instance.activeNodes == null ? 'terminated' : 'active'}">
         <f:facet name="header">
           <h:outputText value="#{workflowBundle.descriptionState}" />
         </f:facet>
         <sf:outputText value="#{instance.description}"
                        translator="#{applicationBean.translator}" 
-                       translationGroup="wf:instanceList"
-                       styleClass="instanceUserState" />
+                       translationGroup="wf:instanceList" />
         <h:outputText value=": "
-                      styleClass="instanceUserState"
                       rendered="#{instance.state != null}" />
         <sf:outputText value="#{instance.state}"
                        translator="#{applicationBean.translator}" 
                        translationGroup="wf:instanceList"
-                       styleClass="instanceUserState"
                        rendered="#{instance.state != null}" />
         <h:outputText value="(#{workflowInstanceListBean.instanceStartDate})"
-                      styleClass="instanceStartDate"
-                      rendered="#{instance.startDateTime != null}" />
-        <h:outputText value=" #{workflowInstanceListBean.instanceInternalState}" 
-                      styleClass="instanceInternalState"
-                      rendered="#{workflowInstanceListBean.workflowAdmin}" />
+                      rendered="#{instance.startDateTime != null}" 
+                      styleClass="ml-2"/>
+        <h:outputText value="#{workflowInstanceListBean.instanceInternalState}" 
+                      rendered="#{workflowInstanceListBean.workflowAdmin}" 
+                      styleClass="ml-2 code" />
       </p:column>
       <p:column style="width:25%" styleClass="white-space-nowrap text-right">
         <h:panelGroup>
@@ -194,7 +193,8 @@
 
       <div class="ui-fluid formgrid grid">
 
-        <div class="field col-12 md:col-6">
+        <h:panelGroup id="create_instance_panel" 
+                      styleClass="field col-12 md:col-6">
           <p:outputLabel for="@next" value="#{workflowBundle.newInstance}:" 
                          styleClass="mr-2" />
           <p:inputText value="#{workflowInstanceListBean.workflowName}"
@@ -205,7 +205,7 @@
                              icon="pi pi-arrow-right" iconPos="right"
                              process="@form:cnt" update="@form:cnt"
                              action="#{workflowInstanceListBean.simulate}" />
-            <p:commandButton value="#{workflowBundle.process}"
+            <p:commandButton id="process_button" value="#{workflowBundle.process}"
                              styleClass="w-auto mr-2"
                              icon="pi pi-arrow-right" iconPos="right"
                              process="@form:cnt" update="@form:cnt"
@@ -217,15 +217,18 @@
                           href="/apps/GDMatrixIDEJavaInstall.zip">
             </p:linkButton>        
           </div>
-        </div>
+          <p:defaultCommand target="process_button" scope="create_instance_panel" />
+        </h:panelGroup>
 
-        <div class="field col-12 md:col-6">
+        <h:panelGroup id="show_instance_panel" 
+                      styleClass="field col-12 md:col-6">
           <p:outputLabel for="@next" value="#{workflowBundle.showInstance}:" 
                          styleClass="mr-2" />
           <p:inputText value="#{workflowInstanceListBean.instanceId}"
                        styleClass="mr-2" />
           <div class="text-right mt-2">
-            <p:commandButton value="#{workflowBundle.show}"
+            <p:commandButton id="show_button"
+                             value="#{workflowBundle.show}"
                              styleClass="w-auto mr-2"
                              icon="pi pi-eye"
                              process="@form:cnt" update="@form:cnt"
@@ -236,7 +239,8 @@
                              process="@form:cnt" update="@form:cnt"
                              action="#{workflowInstanceListBean.debugInstanceById}" />
           </div>
-        </div>
+          <p:defaultCommand target="show_button" scope="show_instance_panel" />
+        </h:panelGroup>
       </div>
 
     </p:panel>
@@ -244,5 +248,9 @@
   </h:panelGroup>
   
   <gdm:saveBean value="workflowInstanceListBean" />
+  
+  <script>
+    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>
   
 </ui:composition>

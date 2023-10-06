@@ -4,7 +4,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/tags"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
 
@@ -20,17 +21,15 @@
                           styleClass="instanceNumber"/>
             <sf:outputText value="#{workflowInstanceBean.instanceDescription}"
                            translator="#{applicationBean.translator}"
-                           translationGroup="wf:instanceList"
-                           styleClass="instanceUserState" />
+                           translationGroup="wf:instanceList" />
             <h:outputText value=": " styleClass="instanceUserState"
                           rendered="#{workflowInstanceBean.instanceUserState != null}" />
             <sf:outputText value="#{workflowInstanceBean.instanceUserState}"
                            translator="#{applicationBean.translator}"
                            translationGroup="wf:instanceList"
-                           styleClass="instanceUserState"
                            rendered="#{workflowInstanceBean.instanceUserState != null}" />
             <h:outputText value="(#{workflowInstanceBean.instanceStartDate})"
-                          styleClass="instanceStartDate"
+                          styleClass="ml-2"
                           rendered="#{workflowInstanceBean.instanceStartDate != null}" />
           </div>
           <div style="flex-grow: 0">
@@ -54,24 +53,37 @@
                   showIcon="true" closable="true" />
 
       <h:panelGroup layout="block" 
-                    styleClass="form" rendered="#{workflowInstanceBean.headerFormEnabled}">
+                    style="overflow:auto" 
+                    rendered="#{workflowInstanceBean.headerFormEnabled}">
         <sf:dynamicForm
           form="#{workflowInstanceBean.headerForm}"
-          rendererTypes="HtmlFormRenderer,GenericFormRenderer"
+          rendererTypes="Html5FormRenderer,GenericFormRenderer"
           value="#{workflowInstanceBean.variablesUnmodificable}"
           translator="#{applicationBean.translator}"
           translationGroup="wf:instanceList" />
       </h:panelGroup>
 
-      <h:panelGroup layout="block" 
-                    styleClass="workflowForms" rendered="#{workflowInstanceBean.showPendentForms}">
-        <h:outputText value="#{workflowBundle.actions}:" />
-        <p:dataList itemStyleClass="#{workflowInstanceBean.formSelected ? 'selected' : ''}"
-                    value="#{workflowInstanceBean.pendentForms}" var="form">
-          <h:commandLink action="#{workflowInstanceBean.selectForm}" immediate="true">
-            <h:outputText value="#{form.description}" />
-          </h:commandLink>
-        </p:dataList>
+      <h:panelGroup layout="block" styleClass="m-2" 
+                    rendered="#{workflowInstanceBean.showPendentForms}">
+        <p:outputLabel for="@next" value="#{workflowBundle.actions}:" />         
+        <p:selectOneListbox value="#{workflowInstanceBean.selectedFormIndex}" 
+                            var="formIndex" styleClass="form_selector mt-2 mb-4" >
+          <p:ajax event="valueChange"
+                  listener="#{workflowInstanceBean.updateForm}" 
+                  process="@this" update="@form:cnt" />
+          <c:forEach var="form" 
+                     varStatus="formStatus" 
+                     items="#{workflowInstanceBean.pendentForms}">
+            <f:selectItem itemLabel="#{form.description}" 
+                          itemValue="#{formStatus.index}"/>
+          </c:forEach>
+          <p:column>
+            <span class="pi pi-arrow-right mr-2" />
+          </p:column>
+          <p:column>
+            <h:outputText value="#{workflowInstanceBean.pendentForms[formIndex].description}" />
+          </p:column>
+        </p:selectOneListbox>        
       </h:panelGroup>
 
       <div class="body">

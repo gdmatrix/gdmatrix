@@ -211,10 +211,6 @@ public class FormImporter
     {
       styleClass += " col-12";
     }
-    if (!styleClass.contains("m-"))
-    {
-      styleClass += " m-1";
-    }
     group.setStyleClass(styleClass.trim());
 
     CommandButton commandButton =

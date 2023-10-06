@@ -65,14 +65,10 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.workflow.VariableListConverter;
 import org.santfeliu.workflow.form.Form;
 import org.santfeliu.workflow.form.FormFactory;
-import static org.matrix.workflow.WorkflowConstants.*;
 import org.primefaces.event.ToggleEvent;
 import org.santfeliu.webapp.util.WebUtils;
-import static org.santfeliu.workflow.web.InstanceListBean.FAIL_FORM_PROPERTY;
-import static org.santfeliu.workflow.web.InstanceListBean.FAIL_MESSAGE_PROPERTY;
-import static org.santfeliu.workflow.web.InstanceListBean.TERMINATION_FORM_PROPERTY;
-import static org.santfeliu.workflow.web.InstanceListBean.TERMINATION_MESSAGE_PROPERTY;
-import static org.santfeliu.workflow.web.InstanceListBean.HELP_BUTTON_URL_PROPERTY;
+import static org.matrix.workflow.WorkflowConstants.*;
+import static org.santfeliu.workflow.web.InstanceListBean.*;
 
 /**
  *
@@ -148,6 +144,16 @@ public class WorkflowInstanceBean extends FacesBean implements Serializable
   public Form getSelectedForm()
   {
     return selectedForm;
+  }
+
+  public int getSelectedFormIndex()
+  {
+    return pendentForms.indexOf(selectedForm);
+  }
+
+  public void setSelectedFormIndex(int index)
+  {
+    selectedForm = pendentForms.get(index);
   }
 
   public boolean isFormSelected()
@@ -711,12 +717,6 @@ public class WorkflowInstanceBean extends FacesBean implements Serializable
     {
       processException(ex);
     }
-  }
-
-  public void selectForm()
-  {
-    selectedForm = (Form)getRequestMap().get("form");
-    updateForm();
   }
 
   public void updateForm()

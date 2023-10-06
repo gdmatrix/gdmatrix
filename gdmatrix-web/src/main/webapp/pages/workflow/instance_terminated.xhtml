@@ -8,23 +8,25 @@
 
   <ui:define name="form">
 
-    <h:panelGroup layout="block" class="final_form" 
-                  rendered="#{workflowInstanceBean.finalFormSelector == null}">
-      <h:graphicImage url="#{workflowInstanceBean.finalIcon}" style="vertical-align:middle" alt="" />
-      <sf:outputText value="#{workflowInstanceBean.finalMessage}" 
-                     translator="#{workflowInstanceBean.translationEnabled ? applicationBean.translator : null}" 
-                     translationGroup="#{workflowInstanceBean.workflowName}"
-                     styleClass="workflowMessage" escape="false" />
-    </h:panelGroup>
+    <div class="workflow_body" style="overflow-x:auto">
+      <h:panelGroup layout="block"
+                    rendered="#{workflowInstanceBean.finalFormSelector == null}">
+        <h:graphicImage url="#{workflowInstanceBean.finalIcon}" style="vertical-align:middle" alt="" />
+        <sf:outputText value="#{workflowInstanceBean.finalMessage}" 
+                       translator="#{workflowInstanceBean.translationEnabled ? applicationBean.translator : null}" 
+                       translationGroup="#{workflowInstanceBean.workflowName}"
+                       styleClass="workflowMessage" escape="false" />
+      </h:panelGroup>
 
-    <h:panelGroup layout="block" class="final_form" 
-                  rendered="#{workflowInstanceBean.finalFormSelector != null}">
-      <sf:dynamicForm form="#{workflowInstanceBean.finalForm}"
-                      rendererTypes="#{workflowInstanceBean.formRenderers}"
-                      value="#{workflowInstanceBean.variables}"
-                      translator="#{workflowInstanceBean.translationEnabled ? applicationBean.translator : null}" 
-                      translationGroup="#{workflowInstanceBean.workflowName}" />
-    </h:panelGroup>
+      <h:panelGroup layout="block" styleClass="dynamic_form" 
+                    rendered="#{workflowInstanceBean.finalFormSelector != null}">
+        <sf:dynamicForm form="#{workflowInstanceBean.finalForm}"
+                        rendererTypes="#{workflowInstanceBean.formRenderers}"
+                        value="#{workflowInstanceBean.variables}"
+                        translator="#{workflowInstanceBean.translationEnabled ? applicationBean.translator : null}" 
+                        translationGroup="#{workflowInstanceBean.workflowName}" />
+      </h:panelGroup>
+    </div>
 
   </ui:define>
 

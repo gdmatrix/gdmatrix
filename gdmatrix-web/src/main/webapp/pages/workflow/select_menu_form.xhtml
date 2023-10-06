@@ -23,8 +23,7 @@
     <sf:outputText value="#{selectMenuWorkflowBean.message}" 
                    translator="#{workflowInstanceBean.translationEnabled ? 
                                  applicationBean.translator : null}" 
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
-                   styleClass="workflowMessage" />
+                   translationGroup="wf:#{workflowInstanceBean.workflowName}" />
 
     <c:if test="${selectMenuWorkflowBean.cssCustom != null}">
       <style>
@@ -32,22 +31,18 @@
       </style>        
     </c:if>
 
-    <h:dataTable value="#{selectMenuWorkflowBean.options}" 
-                 var="option" width="100%"              
-                 styleClass="#{selectMenuWorkflowBean.layout} mt-2">
-      <h:column>
-        <p:commandLink action="#{selectMenuWorkflowBean.selectOption}" 
-                       styleClass="selectMenuLink"
-                       process="@this" update="@form:cnt">
-          <h:graphicImage alt="" url="/common/workflow/images/redbutton.gif" 
-                          style="vertical-align:middle; border-style:none; margin-right:6px"/>
-          <sf:outputText value="#{option.label}"
-                         translator="#{workflowInstanceBean.translationEnabled ?
+    <p:dataList value="#{selectMenuWorkflowBean.options}"
+                var="option"
+                styleClass="#{selectMenuWorkflowBean.layout} select_menu mt-2">
+      <p:commandLink action="#{selectMenuWorkflowBean.selectOption}" 
+                     process="@this" update="@form:cnt">
+        <span class="pi pi-circle mr-2" />
+        <sf:outputText value="#{option.label}"
+                       translator="#{workflowInstanceBean.translationEnabled ?
                                        applicationBean.translator : null}"
-                         translationGroup="wf:#{workflowInstanceBean.workflowName}" />
-        </p:commandLink>
-      </h:column>
-    </h:dataTable>      
+                       translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+      </p:commandLink>
+    </p:dataList>      
 
     <gdm:saveBean value="selectMenuWorkflowBean" />        
     
