@@ -18,7 +18,6 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   .central_column
   {
     padding: 4px;
-    overflow: auto;
   }
   
   .central_column.m-1
@@ -81,7 +80,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
 
   .side_button.first_time
   {
-    display: block;
+    display: inline;
   }  
 }
 
@@ -107,33 +106,44 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
 .central_column
 {
   width: 56%;
+  display: flex;
+  flex-direction: column;
+}
+
+.central_column .object_header
+{
+  display: flex;
+  flex-direction: row;
+  flex-grow: 0;
+  border-bottom: 1px solid;
+  border-color: var(--surface-border);
+}
+
+.central_column .object_data
+{
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.central_column .object_header .object_label
+{
+  font-size: 14px;
+  font-weight: normal;
+  color:var(--text-color);
+  flex-grow: 1;
+}
+
+.central_column .object_header .header_buttons
+{
+  flex-grow: 0;
+  display:flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .side_button
 {
   display: none;
-  position:fixed; 
-  z-index:9;
-  top:50%; 
-}
-
-.side_button.left
-{
-  left: 0; 
-  border-radius:0 8px 8px 0 !important; 
-}
-
-.side_button.right
-{
-  right: 0; 
-  border-radius:8px 0 0 8px !important; 
-}
-
-h1.object_label
-{
-  font-size: 14px;
-  margin: 2px 0 6px 6px;
-  font-weight: normal;
 }
 
 body .ui-tabs.context_tabs .ui-tabs-panels .ui-tabs-panel

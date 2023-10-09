@@ -14,6 +14,8 @@
 {
   font-size:12px;
   --font-family:Montserrat;
+  --toolbar-button-size: 3rem;
+  --toolbar-icon-size: 1rem;
 }
 
 body
@@ -348,7 +350,7 @@ body .ui-messages-error ul
 .app_content > .app_toolbar > .scroll
 {
   height: 100%;
-  width: 32px;
+  width: var(--toolbar-button-size);
   overflow-y: auto;
   overflow-x: hidden;
   -ms-overflow-style: none;  /* IE and Edge */
@@ -366,9 +368,16 @@ body .ui-messages-error ul
   border-radius: 0;
   background-color: transparent;
   color: #d0d0d0;
-  width: 32px;
-  height: 32px;
+  width: var(--toolbar-button-size);
+  height: var(--toolbar-button-size);
   flex-shrink: 0;
+}
+
+.app_content > .app_toolbar .ui-button.ui-button-icon-only .ui-icon
+{
+  font-size: var(--toolbar-icon-size);  
+  margin-top: calc(var(--toolbar-icon-size) * -0.5);
+  margin-left: calc(var(--toolbar-icon-size) * -0.5);
 }
 
 .app_content > .app_toolbar .ui-button:hover
@@ -401,13 +410,13 @@ body .ui-messages-error ul
     box-shadow: 0px 5px 3px -3px rgb(50 50 50 / 30%);
     flex-direction: row;
     width:100%;
-    height: 32px;
+    height: var(--toolbar-button-size);
   }  
   
   .app_content > .app_toolbar > .scroll
   {
     width: 100%;
-    height: 32px;
+    height: var(--toolbar-button-size);
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;

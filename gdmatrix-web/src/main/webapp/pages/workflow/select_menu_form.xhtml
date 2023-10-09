@@ -36,7 +36,7 @@
                 styleClass="#{selectMenuWorkflowBean.layout} select_menu mt-2">
       <p:commandLink action="#{selectMenuWorkflowBean.selectOption}" 
                      process="@this" update="@form:cnt">
-        <span class="pi pi-circle mr-2" />
+        <span class="pi pi-circle-fill mr-2" style="color:var(--primary-color)"/>
         <sf:outputText value="#{option.label}"
                        translator="#{workflowInstanceBean.translationEnabled ?
                                        applicationBean.translator : null}"

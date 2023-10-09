@@ -6,6 +6,8 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
                 template="/pages/obj/object_3col.xhtml">
 
+  <ui:param name="objectBean" value="#{roomObjectBean}" />
+  
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -179,7 +181,6 @@
           <h:outputText value="#{objectBundle.edition}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
-          <ui:param name="objectBean" value="#{roomObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
         </h:panelGroup>
       </p:tab>

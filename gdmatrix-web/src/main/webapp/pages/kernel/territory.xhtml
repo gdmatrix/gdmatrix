@@ -50,15 +50,6 @@
                          process="@this" update="@form:cnt"
                          title="#{objectBundle.select}" alt="#{objectBundle.select}"
                          />
-        <p:commandButton icon="ui-icon pi pi-plus-circle"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.view('')}"
-                         process="@this"
-                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
-                         resetValues="true"
-                         title="#{objectBundle.create}" alt="#{objectBundle.create}"
-                         rendered="#{objectBean.rootTypeId != 'Country'}"
-                         />
         <p:commandButton icon="ui-icon pi pi-star"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
@@ -89,12 +80,6 @@
                        message="#{objectBundle.confirm_remove_message}" 
                        icon="pi pi-info-circle" />
         </p:commandButton>
-        <p:commandButton icon="ui-icon pi pi-times"
-                         action="#{navigatorBean.close}"
-                         process="@this" update="@form:cnt"
-                         styleClass="rounded-button ui-button-flat"
-                         widgetVar="backButton"
-                         title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
   </p:outputPanel>  
 

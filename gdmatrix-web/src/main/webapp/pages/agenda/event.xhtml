@@ -3,10 +3,12 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="/pages/obj/object_3col.xhtml"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="/pages/obj/object_3col.xhtml">
 
+  <ui:param name="objectBean" value="#{eventObjectBean}" />
+  
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -248,7 +250,6 @@
           <h:outputText value="#{objectBundle.edition}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
-          <ui:param name="objectBean" value="#{eventObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
         </h:panelGroup>
       </p:tab>

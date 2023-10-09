@@ -21,7 +21,7 @@
         <span class="align-self-center">
           <h:outputText value="#{objectBean.finderBean.objectPosition + 1}">
             <f:convertNumber type="number"
-                             groupingUsed="true" />            
+                             groupingUsed="true" />
           </h:outputText> /
           <h:outputText value="#{objectBean.finderBean.objectCount}">
             <f:convertNumber type="number"
@@ -51,14 +51,6 @@
                          rendered="#{navigatorBean.selectable}"
                          title="#{objectBundle.select}" alt="#{objectBundle.select}"
                          />
-        <p:commandButton icon="ui-icon pi pi-plus-circle"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.view('')}"
-                         process="@this"
-                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
-                         resetValues="true"
-                         title="#{objectBundle.create}" alt="#{objectBundle.create}"
-                         disabled="#{!objectBean.editable}" />
         <p:commandButton icon="ui-icon pi pi-star"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
@@ -86,28 +78,20 @@
                          resetValues="true"
                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
                          disabled="#{!objectBean.editable}">
-            <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                       message="#{objectBundle.confirm_remove_message}" 
+            <p:confirm header="#{objectBundle.confirm_remove_header}"
+                       message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />
         </p:commandButton>
-
         <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
-                      title="#{objectBundle.actions}" 
-                      rendered="#{not empty objectBean.objectSetup.scriptActions.actions}">
+                      title="#{objectBundle.actions}"
+                      rendered="#{not objectBean.isNew() and not empty objectBean.objectSetup.scriptActions.actions}">
           <c:forEach items="#{objectBean.objectSetup.scriptActions.actions}" var="action" >
-            <p:menuitem icon="#{action.icon}" 
-                        value="#{action.label}" action="#{objectBean.callAction(action.name)}" 
+            <p:menuitem icon="#{action.icon}"
+                        value="#{action.label}" action="#{objectBean.callAction(action.name)}"
                         rendered="#{not empty action.label}" process="@this"
                         update="@form:cnt:search_tabs:tabs"/>
           </c:forEach>
-        </p:menuButton> 
-        
-        <p:commandButton icon="ui-icon pi pi-times"
-                         widgetVar="backButton"
-                         action="#{navigatorBean.close}"
-                         process="@this" update="@form:cnt"
-                         styleClass="rounded-button ui-button-flat"
-                         title="#{objectBundle.close}" alt="#{objectBundle.close}" />
+        </p:menuButton>
     </div>
   </p:outputPanel>
 
@@ -137,9 +121,9 @@
   </p:tabView>
 
   <c:forEach items="#{objectBean.dialogViewIds}" var="dialogViewId" >
-    <ui:include src="#{dialogViewId}" />    
+    <ui:include src="#{dialogViewId}" />
   </c:forEach>
-  
+
   <div class="tab_footer text-right pt-3">
     <p:commandButton id="store"
                      action="#{objectBean.store}"
@@ -147,8 +131,8 @@
                      icon="pi pi-save"
                      process="@form:cnt:search_tabs:obj_tabs"
                      update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                     styleClass="m-1" 
-                     disabled="#{!objectBean.editable}" 
+                     styleClass="m-1"
+                     disabled="#{!objectBean.editable}"
                      oncomplete="if (isFacesError()) objectScrollUp()" />
     <p:commandButton action="#{objectBean.cancel}"
                      value="#{objectBundle.cancel}"
@@ -157,7 +141,7 @@
                      styleClass="m-1"
                      update="@form:cnt:search_tabs:obj_tabs"
                      resetValues="true"
-                     global="false" 
+                     global="false"
                      disabled="#{!objectBean.editable}" />
   </div>
 
@@ -187,6 +171,6 @@
 
     window.addEventListener("popstate", window.popStateListener);
   </script>
-  
+
 </ui:composition>
 
