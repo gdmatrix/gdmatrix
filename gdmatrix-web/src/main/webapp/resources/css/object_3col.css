@@ -75,7 +75,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
 
   .side_panel.first_time
   {
-    visibility: hidden;
+    display: none;
+    opacity: 1;
   }        
 
   .side_button.first_time
@@ -117,6 +118,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   flex-grow: 0;
   border-bottom: 1px solid;
   border-color: var(--surface-border);
+  padding-bottom: 5px;
 }
 
 .central_column .object_data

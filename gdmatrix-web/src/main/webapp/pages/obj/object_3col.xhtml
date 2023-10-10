@@ -49,10 +49,12 @@
                                disabled="#{!objectBean.editable}" />
               <p:button onclick="return showPanel('leftPanel');"
                         icon="pi pi-search"
+                        title="#{objectBundle.search}"
                         widgetVar="leftPanelButton"
                         class="rounded-button ui-button-flat first_time side_button"  />
               <p:button onclick="return showPanel('rightPanel')"
                         icon="pi pi-sitemap"
+                        title="#{objectBundle.context}"
                         widgetVar="rightPanelButton"
                         class="rounded-button ui-button-flat first_time side_button" />
               <p:commandButton icon="ui-icon pi pi-times"
@@ -102,6 +104,7 @@
         {
           var panel = PF(panelVar);
           panel.show();
+          panel.getJQ().css("display", "flex");
           var panelButton = PF(panelVar + "Button");
           panel.getJQ().removeClass("first_time");
           panelButton.getJQ().removeClass("first_time");
