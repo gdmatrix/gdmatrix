@@ -50,7 +50,6 @@ import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
-import static org.matrix.doc.DocumentConstants.DELETE_OLD_VERSIONS;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
 import org.matrix.doc.OrderByProperty;
@@ -58,7 +57,6 @@ import org.matrix.doc.State;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.doc.util.DocumentUtils;
-import static org.santfeliu.doc.web.DocumentUrlBuilder.DOC_SERVLET_URL;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
 import org.santfeliu.util.FileDataSource;
@@ -66,9 +64,11 @@ import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.HttpUtils;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
+import static org.santfeliu.doc.web.DocumentUrlBuilder.DOC_SERVLET_URL;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import static org.matrix.doc.DocumentConstants.DELETE_OLD_VERSIONS;
 
 /**
  *
@@ -375,7 +375,6 @@ public class DocumentObjectBean extends ObjectBean
     }
     else if (!StringUtils.isBlank(urlToStore))
     {
-      System.out.println("urlToStore: " + urlToStore);
       Content content = new Content();
       content.setUrl(urlToStore.trim());
       document.setContent(content);
@@ -383,7 +382,6 @@ public class DocumentObjectBean extends ObjectBean
     }
     else if (!StringUtils.isBlank(contentIdToStore))
     {
-      System.out.println("contentId: " + contentIdToStore);
       Content content = new Content();
       content.setContentId(contentIdToStore.trim());
       document.setContent(content);
@@ -451,7 +449,13 @@ public class DocumentObjectBean extends ObjectBean
     {
       UploadedFile uploadedFile = event.getFile();
       fileNameToStore = uploadedFile.getFileName();
-      fileToStore = File.createTempFile("upload", ".bin");
+      int index = fileNameToStore.lastIndexOf(".");
+      String extension = ".bin";
+      if (index != -1)
+      {
+        extension = fileNameToStore.substring(index);
+      }
+      fileToStore = File.createTempFile("upload", extension);
       try (InputStream is = uploadedFile.getInputStream())
       {
         IOUtils.writeToFile(is, fileToStore);
