@@ -138,12 +138,6 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     {
       filter.getDocId().add(query);
     }
-    else
-    {
-      if (!query.startsWith("%")) query = "%" + query;
-      if (!query.endsWith("%")) query += "%";
-      filter.setTitle(query);
-    }
     if (typeId != null)
     {
       filter.setDocTypeId(typeId);
@@ -160,14 +154,7 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     {
       return filter.getDocId().get(0);
     }
-    else if (filter.getTitle() != null)
-    {
-      String query = filter.getTitle();
-      if (query.startsWith("%")) query = query.substring(1);
-      if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
-      return query;
-    }
-    return "";
+   return "";
   }
 
   @Override

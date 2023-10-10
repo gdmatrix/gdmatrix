@@ -317,8 +317,13 @@ public class DocumentFinderBean extends FinderBean
                 filter.getClassId().clear();
                 filter.getClassId().addAll(classIds);
               }
+              addFilterWildcards(filter);
+
               int count = DocModuleBean.getPort(false).countDocuments(filter);
               DocumentFinderBean.this.setClassId(classId);
+
+              removeFilterWildcards(filter);
+
               return count;
             }
             catch (Exception ex)
@@ -333,6 +338,8 @@ public class DocumentFinderBean extends FinderBean
           {
             try
             {
+              addFilterWildcards(filter);
+
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               String classId = DocumentFinderBean.this.getClassId();
@@ -353,12 +360,36 @@ public class DocumentFinderBean extends FinderBean
                 DocModuleBean.getPort(false).findDocuments(filter);
               DocumentFinderBean.this.setClassId(classId);
 
+              removeFilterWildcards(filter);
+
               return toDataTableRows(documents);
             }
             catch (Exception ex)
             {
               error(ex);
               return null;
+            }
+          }
+
+          private void addFilterWildcards(DocumentFilter filter)
+          {
+            String title = filter.getTitle();
+            if (!StringUtils.isBlank(title))
+            {
+              if (!title.startsWith("%")) title = "%" + title;
+              if (!title.endsWith("%")) title = title + "%";
+              filter.setTitle(title);
+            }
+          }
+
+          private void removeFilterWildcards(DocumentFilter filter)
+          {
+            String title = filter.getTitle();
+            if (!StringUtils.isBlank(title))
+            {
+              if (title.startsWith("%")) title = title.substring(1);
+              if (title.endsWith("%")) title = title.substring(0, title.length() - 1);
+              filter.setTitle(title);
             }
           }
         };
