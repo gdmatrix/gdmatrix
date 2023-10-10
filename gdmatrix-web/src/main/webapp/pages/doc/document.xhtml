@@ -88,47 +88,49 @@
               <p:inputText value="#{documentFinderBean.filter.contentId}" />
             </div>
             
-            <p:fieldset legend="#{documentBundle.documentSearch_date}"
-                        toggleable="true" collapsed="true" styleClass="mb-2 w-full">
+            <div class="field col-12">
+              <p:fieldset legend="#{documentBundle.documentSearch_date}"
+                          toggleable="true" collapsed="true">
 
-              <div class="field col-12">
-                <p:selectOneMenu id="dateComparator"
-                                 value="#{documentFinderBean.filter.dateComparator}"
-                                 styleClass="inputfield w-full" style="vertical-align:middle"
-                                 touchable="true">
-                  <f:selectItem itemLabel="#{documentBundle.documentSearch_changeDateTime}" itemValue="1" />
-                  <f:selectItem itemLabel="#{documentBundle.documentSearch_captureDateTime}" itemValue="2" />
-                  <f:selectItem itemLabel="#{documentBundle.documentSearch_creationDate}" itemValue="3" />
-                </p:selectOneMenu>
-              </div>
+                <div class="field col-12">
+                  <p:selectOneMenu id="dateComparator"
+                                   value="#{documentFinderBean.filter.dateComparator}"
+                                   styleClass="inputfield w-full" style="vertical-align:middle"
+                                   touchable="true">
+                    <f:selectItem itemLabel="#{documentBundle.documentSearch_changeDateTime}" itemValue="1" />
+                    <f:selectItem itemLabel="#{documentBundle.documentSearch_captureDateTime}" itemValue="2" />
+                    <f:selectItem itemLabel="#{documentBundle.documentSearch_creationDate}" itemValue="3" />
+                  </p:selectOneMenu>
+                </div>
 
-              <div class="field col-12">
-                <p:outputLabel for="@next" value="#{documentBundle.outputStartDate}" />
-                <p:datePicker value="#{documentFinderBean.filter.startDate}"
-                              autocomplete="off"
-                              placeholder="dd/MM/yyyy"
-                              locale="#{documentFinderBean.language}"
-                              showOnFocus="false"
-                              converter="datePickerConverter" pattern="dd/MM/yyyy"
-                              showIcon="true" showTime="false"
-                              monthNavigator="true" yearNavigator="true" />
-              </div>
-              <div class="field col-12">
-                <p:outputLabel for="@next" value="#{documentBundle.outputEndDate}" />
-                <p:datePicker value="#{documentFinderBean.filter.endDate}"
-                              autocomplete="off"
-                              placeholder="dd/MM/yyyy"
-                              locale="#{documentFinderBean.language}"
-                              showOnFocus="false"
-                              converter="datePickerConverter" pattern="dd/MM/yyyy"
-                              showIcon="true" showTime="false"
-                              monthNavigator="true" yearNavigator="true" />
-              </div>
-            </p:fieldset>
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{documentBundle.outputStartDate}" />
+                  <p:datePicker value="#{documentFinderBean.filter.startDate}"
+                                autocomplete="off"
+                                placeholder="dd/MM/yyyy"
+                                locale="#{documentFinderBean.language}"
+                                showOnFocus="false"
+                                converter="datePickerConverter" pattern="dd/MM/yyyy"
+                                showIcon="true" showTime="false"
+                                monthNavigator="true" yearNavigator="true" />
+                </div>
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{documentBundle.outputEndDate}" />
+                  <p:datePicker value="#{documentFinderBean.filter.endDate}"
+                                autocomplete="off"
+                                placeholder="dd/MM/yyyy"
+                                locale="#{documentFinderBean.language}"
+                                showOnFocus="false"
+                                converter="datePickerConverter" pattern="dd/MM/yyyy"
+                                showIcon="true" showTime="false"
+                                monthNavigator="true" yearNavigator="true" />
+                </div>
+              </p:fieldset>
+            </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{documentBundle.outputLanguage}" />
-              <p:selectOneMenu value="#{documentFinderBean.filter.language}">
+              <p:selectOneMenu value="#{documentFinderBean.filter.language}" touchable="true">
                 <f:selectItem itemValue="" itemLabel=" "/>
                 <f:selectItems value="#{documentFinderBean.languageValues}" />
               </p:selectOneMenu>
