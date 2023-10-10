@@ -44,6 +44,7 @@ import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.ValueHolder;
 import javax.faces.component.html.HtmlOutputLink;
@@ -81,6 +82,7 @@ import org.santfeliu.form.type.html.HtmlView;
 public class FormImporter
 {
   public static final String STACKED_OPTION = "stacked";
+  public static final String SUBMIT_BUTTON_OPTION = "checkExpression";
   public static final String ACTION_METHOD_OPTION = "actionMethod";
   public static final String ACTION_UPDATE_OPTION = "actionUpdate";
 
@@ -328,7 +330,7 @@ public class FormImporter
       String maxYear = df.format(maxDate);
       datePicker.setYearRange(minYear + ":" + maxYear);
       datePicker.setReadonly(field.isReadOnly());
-      datePicker.setRequired(field.getMinOccurs() > 0);
+      if (field.getMinOccurs() > 0) setRequired(datePicker);
       component = datePicker;
     }
     else if (Field.NUMBER.equals(fieldType))
@@ -337,6 +339,7 @@ public class FormImporter
         (InputNumber)application.createComponent(InputNumber.COMPONENT_TYPE);
       inputNumber.setReadonly(field.isReadOnly());
       inputNumber.setPadControl(false);
+      if (field.getMinOccurs() > 0) setRequired(inputNumber);
       component = inputNumber;
     }
     else if (Field.BOOLEAN.equals(fieldType))
@@ -463,7 +466,7 @@ public class FormImporter
               (TextEditor)application.createComponent(TextEditor.COMPONENT_TYPE);
             textEditor.setReadonly(field.isReadOnly());
             textEditor.setSecure(false);
-            textEditor.setRequired(field.getMinOccurs() > 0);
+            if (field.getMinOccurs() > 0) setRequired(textEditor);
             component = textEditor;
           }
           else
@@ -471,7 +474,7 @@ public class FormImporter
             InputTextarea inputTextarea =
               (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
             inputTextarea.setReadonly(field.isReadOnly());
-            inputTextarea.setRequired(field.getMinOccurs() > 0);
+            if (field.getMinOccurs() > 0) setRequired(inputTextarea);
             component = inputTextarea;
           }
         }
@@ -486,7 +489,7 @@ public class FormImporter
               InputText inputText =
                (InputText)application.createComponent(InputText.COMPONENT_TYPE);
               inputText.setReadonly(field.isReadOnly());
-              inputText.setRequired(field.getMinOccurs() > 0);
+              if (field.getMinOccurs() > 0) setRequired(inputText);
               component = inputText;
             }
             else
@@ -547,6 +550,8 @@ public class FormImporter
 
         label.setValue(labelText);
         label.setFor("@next");
+        if (field.getMinOccurs() > 1) label.setIndicateRequired("true");
+
         group.getChildren().add(label);
       }
 
@@ -589,5 +594,19 @@ public class FormImporter
       if (view != null) return view;
     }
     return null;
+  }
+
+  protected void setRequired(UIInput input)
+  {
+    String submitButton = (String)options.get(SUBMIT_BUTTON_OPTION);
+    if (submitButton == null)
+    {
+      input.setRequired(true);
+    }
+    else
+    {
+      input.setValueExpression("required", WebUtils.createValueExpression(
+        "#{not empty param['" + submitButton + "']}", Boolean.class));
+    }
   }
 }

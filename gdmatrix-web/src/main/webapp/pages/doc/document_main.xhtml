@@ -136,5 +136,6 @@
 
     <emcomp:dynamicProperties typeId="#{documentObjectBean.document.docTypeId}"
                               formSelector="#{documentObjectBean.formSelector}"
-                              properties="#{documentObjectBean.document.property}" />
+                              properties="#{documentObjectBean.document.property}" 
+                              options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}" />
 </ui:composition>

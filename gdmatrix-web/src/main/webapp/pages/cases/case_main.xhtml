@@ -113,6 +113,7 @@
 
     <emcomp:dynamicProperties typeId="#{caseObjectBean.case.caseTypeId}"
                               formSelector="#{caseObjectBean.formSelector}"
-                              properties="#{caseObjectBean.case.property}" />
+                              properties="#{caseObjectBean.case.property}" 
+                              options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}"/>
 
 </ui:composition>

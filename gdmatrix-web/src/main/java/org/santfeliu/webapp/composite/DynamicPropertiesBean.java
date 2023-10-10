@@ -35,6 +35,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ import org.santfeliu.form.builder.TypeFormBuilder;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.util.ComponentUtils;
+import org.santfeliu.webapp.util.FormImporter;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -80,7 +82,7 @@ public class DynamicPropertiesBean implements Serializable
   static final Map<String, Object> FILTER_OPTIONS = new HashMap();
   static
   {
-    FILTER_OPTIONS.put("stacked", "true");
+    FILTER_OPTIONS.put(FormImporter.STACKED_OPTION, "true");
   }
   static final JsonValidator JSON_VALIDATOR = new JsonValidator();
 
@@ -222,6 +224,12 @@ public class DynamicPropertiesBean implements Serializable
   public Map<String, Object> getFilterOptions()
   {
     return FILTER_OPTIONS;
+  }
+
+  public Map<String, Object> getEditOptions(String submitButton)
+  {
+    return Collections.singletonMap(FormImporter.SUBMIT_BUTTON_OPTION,
+      submitButton);
   }
 
   private void updateComponents(UIComponent panel)
