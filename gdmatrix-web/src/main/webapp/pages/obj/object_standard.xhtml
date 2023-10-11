@@ -150,8 +150,8 @@
   <script>
     function objectScrollUp()
     {
-      document.getElementById("mainform:central_column").scrollTop = 0;
-      document.getElementsByClassName("app_body")[0].scrollTop = 0;
+      var elems = document.getElementsByClassName("object_data");
+      if (elems.length > 0) elems[0].scrollTop = 0;
     }
 
     if (window.popStateListener)
