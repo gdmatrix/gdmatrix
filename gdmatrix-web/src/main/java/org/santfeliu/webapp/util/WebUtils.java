@@ -30,20 +30,20 @@
  */
 package org.santfeliu.webapp.util;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
+import javax.faces.application.Resource;
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
+import javax.faces.component.UIPanel;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
+import javax.faces.view.facelets.FaceletContext;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
@@ -150,48 +150,40 @@ public class WebUtils
     return FacesContext.getCurrentInstance().isPostback();
   }
 
-  @Deprecated
-  public static <T> T getBacking(MenuItemCursor mic)
-  {
-    String backingName = mic.getProperty(OBJECT_BACKING);
-    if (backingName != null)
-      return getBean(backingName);
-    else
-      return getBackingFromAction(mic.getAction());
-  }
-
-  @Deprecated
-  public static <T> T getBackingFromAction(String actionExpression)
-  {
-    String backingName = getBackingName(actionExpression);
-    if (backingName != null)
-      return getBean(backingName);
-    else
-      return null;
-  }
-
-  @Deprecated
-  public static <T> T getBackingIfExists(String name)
+  // Usage: includeCompositeComponent(column, "comp", "test.xhtml", "someUniqueId");
+  public static void includeCompositeComponent(UIComponent parent,
+    String libraryName, String resourceName, String id)
   {
     FacesContext context = FacesContext.getCurrentInstance();
-    ExternalContext extContext = context.getExternalContext();
-    Map requestMap = extContext.getRequestMap();
-    return (T)requestMap.get(name);
-  }
+    Application application = context.getApplication();
+    FaceletContext faceletContext = (FaceletContext)context.getAttributes()
+      .get(FaceletContext.FACELET_CONTEXT_KEY);
 
-  @Deprecated
-  private static String getBackingName(String action)
-  {
-    if (action != null)
+    // This basically creates <ui:component> based on <composite:interface>.
+    Resource resource = application.getResourceHandler().createResource(resourceName, libraryName);
+    UIComponent composite = application.createComponent(context, resource);
+    composite.setId(id); // Mandatory for the case composite is part of UIForm! Otherwise JSF can't find inputs.
+
+    // This basically creates <composite:implementation>.
+    UIComponent implementation = application.createComponent(UIPanel.COMPONENT_TYPE);
+    implementation.setRendererType("javax.faces.Group");
+    composite.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, implementation);
+
+    // Now include the composite component file in the given parent.
+    parent.getChildren().add(composite);
+    parent.pushComponentToEL(context, composite); // This makes #{cc} available.
+    try
     {
-      Pattern pattern = Pattern.compile("#\\{(\\w*)\\..*\\}");
-      Matcher matcher = pattern.matcher(action);
-      if (matcher.find())
-      {
-        return matcher.group(1);
-      }
+      faceletContext.includeFacelet(implementation, resource.getURL());
     }
-    return null;
+    catch (IOException e)
+    {
+      throw new FacesException(e);
+    }
+    finally
+    {
+      parent.popComponentFromEL(context);
+    }
   }
 
   public static <T> T evaluateExpression(String expr)
@@ -252,15 +244,4 @@ public class WebUtils
     String value = getMenuItemProperty("render" + StringUtils.capitalize(name));
     return Boolean.parseBoolean(value);
   }
-
-  @Deprecated
-  public static boolean clearBacking(String backingName)
-  {
-    FacesContext context = FacesContext.getCurrentInstance();
-    ExternalContext extContext = context.getExternalContext();
-    Map requestMap = extContext.getRequestMap();
-    Object backing = requestMap.remove(backingName);
-    return backing != null;
-  }
-
 }
