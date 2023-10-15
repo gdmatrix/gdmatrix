@@ -5,7 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:gdm="http://gdmatrix.org/tags">
+                xmlns:gdm="http://gdmatrix.org/faces">
 
 
   <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
@@ -87,7 +87,7 @@
                 translator="#{userSessionBean.translator}"
                 translationGroup="#{userSessionBean.translationGroup}" />
   </p:outputPanel>
-
+  
   <gdm:saveBean value="documentViewerBean" /> 
 
 </ui:composition>

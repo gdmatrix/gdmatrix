@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<facelet-taglib xmlns="http://java.sun.com/xml/ns/javaee"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
+                version="2.0">
+  
+  <namespace>http://gdmatrix.org/faces</namespace>
+
+  <tag>
+    <tag-name>saveBean</tag-name>
+    <component>
+      <component-type>org.gdmatrix.faces.SaveBean</component-type>
+    </component>
+    <attribute>
+      <name>value</name>
+      <type>java.lang.String</type>
+      <description>The name of the bean to save</description>
+      <required>true</required>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>saveState</tag-name>
+    <component>
+      <component-type>org.gdmatrix.faces.SaveState</component-type>
+    </component>
+    <attribute>
+      <name>value</name>
+      <type>java.lang.Object</type>
+      <description>The object to save</description>
+      <required>true</required>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>quill</tag-name>
+    <component>
+      <component-type>org.gdmatrix.faces.Quill</component-type>
+    </component>
+    <attribute>
+      <name>value</name>
+      <type>java.lang.String</type>
+      <description>The html text to edit</description>
+    </attribute>
+    <attribute>
+      <name>style</name>
+      <type>java.lang.String</type>
+      <description>The component CSS style</description>
+    </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <type>java.lang.String</type>
+      <description>The component CSS class name</description>
+    </attribute>
+    <attribute>
+      <name>readonly</name>
+      <type>java.lang.Boolean</type>
+      <description>The flag to disable edition</description>
+    </attribute>
+  </tag>
+                        
+</facelet-taglib>

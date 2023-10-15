@@ -39,7 +39,7 @@ import javax.faces.context.FacesContext;
  *
  * @author realor
  */
-@FacesComponent(createTag = true, tagName = "saveState", namespace = "http://gdmatrix.org/tags")
+@FacesComponent(value = "org.gdmatrix.faces.SaveState")
 public class SaveState extends UIParameter
 {
   public SaveState()

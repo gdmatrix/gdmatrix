@@ -65,6 +65,7 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.selectoneradio.SelectOneRadio;
 import org.primefaces.component.texteditor.TextEditor;
 import org.primefaces.component.toggleswitch.ToggleSwitch;
+import org.santfeliu.faces.quill.Quill;
 import org.santfeliu.form.Field;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.View;
@@ -462,12 +463,11 @@ public class FormImporter
           String renderer = (String)view.getProperty("renderer");
           if ("htmlEditor".equalsIgnoreCase(renderer))
           {
-            TextEditor textEditor =
-              (TextEditor)application.createComponent(TextEditor.COMPONENT_TYPE);
-            textEditor.setReadonly(field.isReadOnly());
-            textEditor.setSecure(false);
-            if (field.getMinOccurs() > 0) setRequired(textEditor);
-            component = textEditor;
+            Quill quill =
+              (Quill)application.createComponent(Quill.COMPONENT_TYPE);
+            quill.setReadonly(field.isReadOnly());
+            if (field.getMinOccurs() > 0) setRequired(quill);
+            component = quill;
           }
           else
           {
@@ -528,7 +528,7 @@ public class FormImporter
       HtmlPanelGroup group =
         (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
       if (isStacked || component instanceof InputTextarea ||
-          component instanceof TextEditor)
+          component instanceof Quill)
       {
         styleClass = "col-12";
       }

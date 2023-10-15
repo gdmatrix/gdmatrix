@@ -44,7 +44,7 @@ import javax.faces.context.FacesContext;
  *
  * @author realor
  */
-@FacesComponent(createTag = true, tagName = "saveBean", namespace = "http://gdmatrix.org/tags")
+@FacesComponent(value = "org.gdmatrix.faces.SaveBean")
 public class SaveBean extends UIParameter
 {
   public SaveBean()
