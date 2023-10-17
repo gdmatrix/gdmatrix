@@ -222,7 +222,11 @@ public class AddressFinderBean extends FinderBean
           {
             try
             {
-              return KernelModuleBean.getPort(false).countAddresses(filter);
+              String streetName = filter.getStreetName();
+              filter.setStreetName(setWildcards(streetName));
+              int count = KernelModuleBean.getPort(false).countAddresses(filter);
+              resetWildcards(filter);
+              return count;
             }
             catch (Exception ex)
             {
@@ -236,9 +240,15 @@ public class AddressFinderBean extends FinderBean
           {
             try
             {
+              String streetName = filter.getStreetName();
+              filter.setStreetName(setWildcards(streetName));        
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              return KernelModuleBean.getPort(false).findAddressViews(filter);
+              List results = 
+                KernelModuleBean.getPort(false).findAddressViews(filter);
+              resetWildcards(filter);
+              return results;
+              
             }
             catch (Exception ex)
             {
@@ -270,5 +280,25 @@ public class AddressFinderBean extends FinderBean
       error(ex);
     }
   }
+  
+  private String setWildcards(String text)
+  {
+    if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
+      text = "%" + text.replaceAll("^%|%$", "") + "%" ;
+    else if (text != null && text.startsWith("\"") && text.endsWith("\""))
+      text = text.replaceAll("^\"|\"$", "");
+    return text;
+  } 
+  
+  private void resetWildcards(AddressFilter filter)
+  {
+    String streetName = filter.getStreetName();
+    if (streetName != null && !streetName.startsWith("\"") 
+      && !streetName.endsWith("\""))
+    {
+      streetName = streetName.replaceAll("^%+|%+$", "");
+      filter.setStreetName(streetName);
+    }
+  }  
 
 }

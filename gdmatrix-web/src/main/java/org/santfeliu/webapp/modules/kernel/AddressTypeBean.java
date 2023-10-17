@@ -164,7 +164,7 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
           String streetNumber = query.substring(index + 1).trim();
           filter.setNumber(streetNumber);          
           query = query.substring(0, index).trim();
-        }        
+        }  
         filter.setStreetName(query);
       } 
     }
@@ -197,6 +197,7 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
   {
     try
     {
+      filter.setStreetName(setWildcards(filter.getStreetName()));
       return KernelModuleBean.getPort(true).findAddresses(filter);
     }
     catch (Exception ex)
@@ -204,5 +205,14 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
       return Collections.EMPTY_LIST;
     }
   }
-
+  
+  private String setWildcards(String text)
+  {
+    if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
+      text = "%" + text.replaceAll("^%|%$", "") + "%" ;
+    else if (text != null && text.startsWith("\"") && text.endsWith("\""))
+      text = text.replaceAll("^\"|\"$", "");
+    return text;
+  } 
+    
 }
