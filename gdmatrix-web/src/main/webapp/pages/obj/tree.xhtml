@@ -2,9 +2,14 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     
-  <p:tab title="Tree">
+  <p:tab>
+    <f:facet name="title">
+      <span class="material-icons material-icons-round mi-account-tree mr-2 relative" style="top:1px" />
+      <h:outputText value="#{objectBundle.tree}" />
+    </f:facet>     
     <p:tree value="#{contextTreeBean.treeNode}" id="context_tree"
             var="data" nodeVar="node" dynamic="true" cache="false"
             animate="true" styleClass="mt-4 context_tree"

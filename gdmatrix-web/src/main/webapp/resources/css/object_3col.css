@@ -153,6 +153,11 @@ body .ui-tabs.context_tabs .ui-tabs-panels .ui-tabs-panel
   padding: 0;
 }
 
+body .ui-tabs.context_tabs .ui-tabs-nav li.ui-tabs-header
+{
+  padding: 0.8rem;
+}
+
 body .ui-tabs.context_tabs .ui-tree
 {
   padding: 0;
@@ -212,7 +217,7 @@ body .ui-tabs.context_tabs .ui-tree
   padding: 5px;
 }
 
-.history .return_info .pi
+.history .return_info span
 {
   margin-right: 6px;
   color: var(--text-color);
@@ -233,7 +238,7 @@ body .ui-tabs.context_tabs .ui-tree
   font-weight: bold;
 }
 
-.favorites .favorite .pi
+.favorites .favorite span
 {
   margin-right: 6px;
-}      
+} 

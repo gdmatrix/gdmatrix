@@ -217,14 +217,14 @@ body .ui-menu .ui-menu-list .ui-submenu-child .ui-menuitem-link
   padding-left: 2rem;
 }
 
-/* External image icons */
-.mi
+/* Raster image icons */
+.mtx
 {
   width: 1.5rem;
   height: 1.5rem;
 }
 
-.ui-button.ui-button-icon-only .ui-icon.mi
+.ui-button.ui-button-icon-only .ui-icon.mtx
 {
   margin-top: -0.6rem;
   margin-left: -0.6rem;
@@ -235,30 +235,31 @@ body .ui-menu .ui-menu-list .ui-submenu-child .ui-menuitem-link
   text-decoration: none;
 }
 
-.ui-menuitem-link .ui-icon.mi
+.ui-menuitem-link .ui-icon.mtx
 {
   position: absolute;
 }
 
-.ui-menuitem-link .ui-menuitem-icon.ui-icon.mi+.ui-menuitem-text
+.ui-menuitem-link .ui-menuitem-icon.ui-icon.mtx+.ui-menuitem-text
 {
   margin-left: 1.5rem;
 }
 
-.mi.mi-invert-color
+.mtx.mtx-invert-color
 {
   filter: invert(1);  
 }
 
-.mi-icon-show
+.mtx-icon-show
 { 
   background: url('/themes/default/images/show.png') no-repeat !important;
 }
 
-.mi-icon-current 
+.mtx-icon-current 
 { 
   background: url('/themes/default/images/current.png') no-repeat !important;
 }
+
 .loading-icon-container
 {
   z-index: 200000 !important;
@@ -496,4 +497,11 @@ body .ui-messages-error ul
 .tipInputText .tipDialog .tipContent ul li
 {
   margin-top: 4px;
+}
+
+/* Material icons - avoid default 24px size */
+body .material-icons,
+body .mi
+{
+  font-size: inherit;
 }
