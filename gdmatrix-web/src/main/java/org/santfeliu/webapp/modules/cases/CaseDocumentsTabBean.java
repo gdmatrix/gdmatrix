@@ -376,6 +376,12 @@ public class CaseDocumentsTabBean extends TabBean
     editing = null;
   }
 
+  @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+
   public void create()
   {
     editing = new CaseDocument();

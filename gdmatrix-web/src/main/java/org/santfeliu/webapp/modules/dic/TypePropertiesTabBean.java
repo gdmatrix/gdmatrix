@@ -231,6 +231,12 @@ public class TypePropertiesTabBean extends TabBean
   }
   
   @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+  
+  @Override
   public void store()
   {
     load();

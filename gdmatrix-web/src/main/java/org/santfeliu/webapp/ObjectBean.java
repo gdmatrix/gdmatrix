@@ -177,6 +177,15 @@ public abstract class ObjectBean extends BaseBean
     return (TabBean)WebUtils.getBean(editTab.getBeanName());
   }
 
+  public TabBean getActiveTabBean()
+  {
+    EditTab tab = getActiveEditTab();
+    if (tab == null)
+      return null;
+    else
+      return getTabBean(tab);
+  }
+
   public abstract Object getObject();
 
   public BaseTypeInfo getBaseTypeInfo()

@@ -561,6 +561,12 @@ public class CasePersonsTabBean extends TabBean
     editing = null;
   }
 
+  @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+  
   public void remove(CasePersonView row)
   {
     try

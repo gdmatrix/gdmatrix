@@ -268,6 +268,12 @@ public class EnumTypeItemsTabBean extends TabBean
   }
 
   @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+  
+  @Override
   public Serializable saveState()
   {
     return new Object[]{ editing };

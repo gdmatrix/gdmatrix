@@ -157,6 +157,12 @@ public class RoleUsersTabBean extends TabBean
     editing = null;
   }
 
+  @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+  
   public void create()
   {
     editing = new UserInRole();

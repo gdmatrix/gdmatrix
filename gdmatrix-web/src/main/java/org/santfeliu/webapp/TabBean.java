@@ -73,6 +73,11 @@ public abstract class TabBean extends BaseBean
   {
   }
 
+  public boolean isDialogVisible()
+  {
+    return false;
+  }
+
   @Override
   public Serializable saveState()
   {

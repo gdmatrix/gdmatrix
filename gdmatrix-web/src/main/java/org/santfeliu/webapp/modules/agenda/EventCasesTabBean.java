@@ -334,6 +334,12 @@ public class EventCasesTabBean extends TabBean
   }
 
   @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+  
+  @Override
   public void clear()
   {
     tabInstances.clear();

@@ -189,6 +189,12 @@ public class PersonContactsTabBean extends TabBean
     editing = null;
   }
 
+  @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+  
   public void remove(ContactView contact)
   {
     try

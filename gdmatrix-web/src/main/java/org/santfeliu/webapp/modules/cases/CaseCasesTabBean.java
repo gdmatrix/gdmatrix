@@ -387,6 +387,12 @@ public class CaseCasesTabBean extends TabBean
     editing = null;
   }
 
+  @Override
+  public boolean isDialogVisible()
+  {
+    return (editing != null);
+  }  
+  
   public void remove(DataTableRow row)
   {
     try
