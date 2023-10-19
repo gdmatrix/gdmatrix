@@ -273,7 +273,7 @@ body .ui-datepicker .ui-datepicker-calendar td
 body .edit_data_dialog
 {
   max-height: 85%;
-  width: 90% !important;
+  width: calc(100% - 8px) !important;
   max-width: 1200px;  
 }
 
@@ -285,6 +285,11 @@ body .edit_data_dialog.mw_800
 body .edit_data_dialog.mw_600
 {
   max-width: 600px;
+}
+
+body .edit_data_dialog.mw_400
+{
+  max-width: 400px;
 }
 
 body .ui-messages-error ul 
