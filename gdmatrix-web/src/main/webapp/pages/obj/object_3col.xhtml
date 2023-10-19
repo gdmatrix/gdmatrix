@@ -17,7 +17,9 @@
                  class="side_panel left m-1 first_time">
           <f:facet name="header">
             <i class="pi pi-search m-1"></i>
-            <p:outputLabel value="#{objectBundle.search}" />
+            <p:outputLabel value="#{not empty userSessionBean.menuModel.selectedMenuItem.properties.searchLabel 
+                                  ? applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.searchLabel) 
+                                  : searchLabel}" />
             <p:commandLink onclick="return closePanel('leftPanel');"
                            class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
               <span class="ui-icon ui-icon-closethick"></span>
