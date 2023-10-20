@@ -63,9 +63,10 @@ import org.primefaces.component.password.Password;
 import org.primefaces.component.selectcheckboxmenu.SelectCheckboxMenu;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.selectoneradio.SelectOneRadio;
-import org.primefaces.component.texteditor.TextEditor;
 import org.primefaces.component.toggleswitch.ToggleSwitch;
+import org.santfeliu.faces.codemirror.CodeMirror;
 import org.santfeliu.faces.quill.Quill;
+import org.santfeliu.faces.tinymce.TinyMCE;
 import org.santfeliu.form.Field;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.View;
@@ -461,21 +462,49 @@ public class FormImporter
         if (view != null && "textarea".equalsIgnoreCase(view.getNativeViewType()))
         {
           String renderer = (String)view.getProperty("renderer");
-          if ("htmlEditor".equalsIgnoreCase(renderer))
+          if (renderer == null) renderer = "textarea";
+
+          switch (renderer)
           {
-            Quill quill =
-              (Quill)application.createComponent(Quill.COMPONENT_TYPE);
-            quill.setReadonly(field.isReadOnly());
-            if (field.getMinOccurs() > 0) setRequired(quill);
-            component = quill;
-          }
-          else
-          {
-            InputTextarea inputTextarea =
-              (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
-            inputTextarea.setReadonly(field.isReadOnly());
-            if (field.getMinOccurs() > 0) setRequired(inputTextarea);
-            component = inputTextarea;
+            case "htmlEditor":
+            case "quill":
+            {
+              Quill quill =
+                (Quill)application.createComponent(Quill.COMPONENT_TYPE);
+              quill.setReadonly(field.isReadOnly());
+              if (field.getMinOccurs() > 0) setRequired(quill);
+              component = quill;
+            }
+            break;
+
+            case "tinymce":
+            {
+              TinyMCE tinymce =
+                (TinyMCE)application.createComponent(TinyMCE.COMPONENT_TYPE);
+              tinymce.setReadonly(field.isReadOnly());
+              if (field.getMinOccurs() > 0) setRequired(tinymce);
+              component = tinymce;
+            }
+            break;
+
+            case "javascriptEditor":
+            case "codemirror":
+            {
+              CodeMirror codemirror =
+                (CodeMirror)application.createComponent(CodeMirror.COMPONENT_TYPE);
+              codemirror.setReadonly(field.isReadOnly());
+              component = codemirror;
+            }
+            break;
+
+            default:
+            {
+              InputTextarea inputTextarea =
+                (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
+              inputTextarea.setReadonly(field.isReadOnly());
+              if (field.getMinOccurs() > 0) setRequired(inputTextarea);
+              component = inputTextarea;
+            }
           }
         }
         else
@@ -527,8 +556,11 @@ public class FormImporter
 
       HtmlPanelGroup group =
         (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-      if (isStacked || component instanceof InputTextarea ||
-          component instanceof Quill)
+      if (isStacked ||
+          component instanceof InputTextarea ||
+          component instanceof Quill ||
+          component instanceof TinyMCE ||
+          component instanceof CodeMirror)
       {
         styleClass = "col-12";
       }

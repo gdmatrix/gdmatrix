@@ -58,5 +58,49 @@
       <description>The flag to disable edition</description>
     </attribute>
   </tag>
-                        
+
+  <tag>
+    <tag-name>tinyMCE</tag-name>
+    <component>
+      <component-type>org.gdmatrix.faces.TinyMCE</component-type>
+    </component>
+    <attribute>
+      <name>value</name>
+      <type>java.lang.String</type>
+      <description>The html text to edit</description>
+    </attribute>
+    <attribute>
+      <name>readonly</name>
+      <type>java.lang.Boolean</type>
+      <description>The flag to disable edition</description>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <tag-name>codemirror</tag-name>
+    <component>
+      <component-type>org.gdmatrix.faces.CodeMirror</component-type>
+    </component>
+    <attribute>
+      <name>value</name>
+      <type>java.lang.String</type>
+      <description>The code to edit</description>
+    </attribute>
+    <attribute>
+      <name>style</name>
+      <type>java.lang.String</type>
+      <description>The component CSS style</description>
+    </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <type>java.lang.String</type>
+      <description>The component CSS class name</description>
+    </attribute>
+    <attribute>
+      <name>readonly</name>
+      <type>java.lang.Boolean</type>
+      <description>The flag to disable edition</description>
+    </attribute>
+  </tag>  
+                                                                        
 </facelet-taglib>

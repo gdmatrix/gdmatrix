@@ -28,7 +28,7 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.faces.quill;
+package org.santfeliu.faces.tinymce;
 
 import java.io.IOException;
 import java.util.Map;
@@ -44,19 +44,14 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author realor
  */
-@FacesComponent(value="org.gdmatrix.faces.Quill")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill-stub.js")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill.js")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill.css")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill-theme.css")
-public class Quill extends UIInput
+@FacesComponent(value="org.gdmatrix.faces.TinyMCE")
+@ResourceDependency(library = "gdmatrixfaces", name = "tinymce/tinymce-stub.js")
+public class TinyMCE extends UIInput
 {
   public static final String COMPONENT_FAMILY = "org.gdmatrix.faces";
-  public static final String COMPONENT_TYPE = "org.gdmatrix.faces.Quill";
+  public static final String COMPONENT_TYPE = "org.gdmatrix.faces.TinyMCE";
 
   private Boolean _readonly;
-  private String _style;
-  private String _styleClass;
 
   @Override
   public String getFamily()
@@ -77,44 +72,14 @@ public class Quill extends UIInput
     this._readonly = readonly;
   }
 
-  public void setStyle(String style)
-  {
-    this._style = style;
-  }
-
-  public String getStyle()
-  {
-    if (_style != null) return _style;
-    ValueExpression ve = getValueExpression("style");
-    return ve != null ?
-      (String)ve.getValue(getFacesContext().getELContext()) : null;
-  }
-
-  public void setStyleClass(String styleClass)
-  {
-    this._styleClass = styleClass;
-  }
-
-  public String getStyleClass()
-  {
-    if (_styleClass != null) return _styleClass;
-    ValueExpression ve = getValueExpression("styleClass");
-    return ve != null ?
-      (String)ve.getValue(getFacesContext().getELContext()) : null;
-  }
-
   @Override
   public void decode(FacesContext context)
   {
-    String inputParam = getClientId(context) + "_input";
+    String textareaParam = getClientId(context) + "_textarea";
     Map<String, String> params =
       context.getExternalContext().getRequestParameterMap();
-    String value = params.get(inputParam);
+    String value = params.get(textareaParam);
 
-    if ("<br>".equals(value) || "<p><br></p>".equals(value))
-    {
-      value = "";
-    }
     setSubmittedValue(value);
   }
 
@@ -122,62 +87,55 @@ public class Quill extends UIInput
   public void encodeBegin(FacesContext context) throws IOException
   {
     String clientId = getClientId(context);
-    String inputId = clientId + "_input";
-    String editorId = clientId + "_editor";
+    String textareaId = clientId + "_textarea";
 
     ResponseWriter writer = context.getResponseWriter();
 
     writer.startElement("div", this);
     writer.writeAttribute("id", clientId, null);
 
-    String styleClass = getStyleClass();
-    if (StringUtils.isBlank(styleClass)) styleClass = "ui-texteditor";
-    else styleClass = "ui-texteditor " + styleClass;
-    writer.writeAttribute("class", styleClass, null);
-
-    String style = getStyle();
-    if (!StringUtils.isBlank(style))
-    {
-      writer.writeAttribute("style", style, null);
-    }
-
-    // encode editor
-    writer.startElement("div", this);
-    writer.writeAttribute("id", editorId, null);
+    // encode textarea
+    writer.startElement("textarea", this);
+    writer.writeAttribute("id", textareaId, null);
+    writer.writeAttribute("name", textareaId, null);
     String html = (String)getValue();
     if (!StringUtils.isBlank(html))
     {
       writer.write(html);
     }
-    writer.endElement("div");
-
-    // encode hidden
-    writer.startElement("input", this);
-    writer.writeAttribute("type", "hidden", null);
-    writer.writeAttribute("id", inputId, null);
-    writer.writeAttribute("name", inputId, null);
-    writer.writeAttribute("autocomplete", "off", null);
-    writer.endElement("input");
+    writer.endElement("textarea");
 
     writer.endElement("div");
+
+    // encode script
+    Object encoded = context.getExternalContext().getRequestMap().get("tinymce");
+    if (encoded == null)
+    {
+      context.getExternalContext().getRequestMap().put("tinymce", true);
+
+      writer.startElement("script", this);
+      writer.writeAttribute("src", "/resources/gdmatrixfaces/tinymce/tinymce.min.js", null);
+      writer.write(" ");
+      writer.endElement("script");
+    }
+
+    String language = context.getViewRoot().getLocale().getLanguage();
 
     Boolean readonly = isReadonly();
     if (readonly == null) readonly = false;
 
-    // encode script
     writer.startElement("script", this);
-    writer.writeText("quillInit('" + clientId + "', " + readonly + ");", null);
+    writer.writeText("tinymceInit('" + clientId + "'," + readonly
+      + ",'" + language + "');", null);
     writer.endElement("script");
   }
 
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[4];
+    Object values[] = new Object[2];
     values[0] = super.saveState(context);
     values[1] = _readonly;
-    values[2] = _style;
-    values[3] = _styleClass;
     return values;
   }
 
@@ -187,7 +145,5 @@ public class Quill extends UIInput
     Object[] values = (Object[])state;
     super.restoreState(context, values[0]);
     _readonly = (Boolean)values[1];
-    _style = (String)values[2];
-    _styleClass = (String)values[3];
   }
 }

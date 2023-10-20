@@ -28,7 +28,7 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.faces.quill;
+package org.santfeliu.faces.codemirror;
 
 import java.io.IOException;
 import java.util.Map;
@@ -44,15 +44,12 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author realor
  */
-@FacesComponent(value="org.gdmatrix.faces.Quill")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill-stub.js")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill.js")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill.css")
-@ResourceDependency(library = "gdmatrixfaces", name = "quill/quill-theme.css")
-public class Quill extends UIInput
+@FacesComponent(value="org.gdmatrix.faces.CodeMirror")
+@ResourceDependency(library = "gdmatrixfaces", name = "codemirror/codemirror.css")
+public class CodeMirror extends UIInput
 {
   public static final String COMPONENT_FAMILY = "org.gdmatrix.faces";
-  public static final String COMPONENT_TYPE = "org.gdmatrix.faces.Quill";
+  public static final String COMPONENT_TYPE = "org.gdmatrix.faces.CodeMirror";
 
   private Boolean _readonly;
   private String _style;
@@ -111,10 +108,6 @@ public class Quill extends UIInput
       context.getExternalContext().getRequestParameterMap();
     String value = params.get(inputParam);
 
-    if ("<br>".equals(value) || "<p><br></p>".equals(value))
-    {
-      value = "";
-    }
     setSubmittedValue(value);
   }
 
@@ -131,8 +124,8 @@ public class Quill extends UIInput
     writer.writeAttribute("id", clientId, null);
 
     String styleClass = getStyleClass();
-    if (StringUtils.isBlank(styleClass)) styleClass = "ui-texteditor";
-    else styleClass = "ui-texteditor " + styleClass;
+    if (StringUtils.isBlank(styleClass)) styleClass = "codemirror-container";
+    else styleClass = "codemirror-container " + styleClass;
     writer.writeAttribute("class", styleClass, null);
 
     String style = getStyle();
@@ -144,11 +137,6 @@ public class Quill extends UIInput
     // encode editor
     writer.startElement("div", this);
     writer.writeAttribute("id", editorId, null);
-    String html = (String)getValue();
-    if (!StringUtils.isBlank(html))
-    {
-      writer.write(html);
-    }
     writer.endElement("div");
 
     // encode hidden
@@ -156,6 +144,7 @@ public class Quill extends UIInput
     writer.writeAttribute("type", "hidden", null);
     writer.writeAttribute("id", inputId, null);
     writer.writeAttribute("name", inputId, null);
+    writer.writeAttribute("value", getValue(), null);
     writer.writeAttribute("autocomplete", "off", null);
     writer.endElement("input");
 
@@ -166,7 +155,9 @@ public class Quill extends UIInput
 
     // encode script
     writer.startElement("script", this);
-    writer.writeText("quillInit('" + clientId + "', " + readonly + ");", null);
+    writer.writeAttribute("type", "module", null);
+    writer.writeText("import '/resources/gdmatrixfaces/codemirror/codemirror-stub.js';\n", null);
+    writer.writeText("codemirrorInit('" + clientId + "', " + readonly + ");", null);
     writer.endElement("script");
   }
 
