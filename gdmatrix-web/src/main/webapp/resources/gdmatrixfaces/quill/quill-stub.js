@@ -61,6 +61,8 @@ function quillInit(clientId, readonly)
     }
     else if (ops.length > 1) return;
     
+    if (typeof width === 'undefined') width = "";
+    
     quill.setSelection(0, 0);
     
     let dialogElem = document.createElement("div");

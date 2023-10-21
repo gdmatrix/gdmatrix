@@ -148,6 +148,7 @@ public class DynamicPropertiesBean implements Serializable
     }
 
     PropertyConverter converter = new PropertyConverter(type);
+    converter.setHtmlFixing(false);
     List<Property> newProperties = converter.toPropertyList(map);
     List<Property> properties = propertyHelper.getProperties();
     if (properties != null)

@@ -54,6 +54,7 @@ import org.santfeliu.util.MatrixConfig;
 public class PropertyConverter
 {
   private final Type type;
+  private boolean htmlFixing = true;
 
   public static Object toObject(PropertyType type, String svalue)
   {
@@ -103,6 +104,16 @@ public class PropertyConverter
   public PropertyConverter(Type type)
   {
     this.type = type;
+  }
+
+  public boolean isHtmlFixing()
+  {
+    return htmlFixing;
+  }
+
+  public void setHtmlFixing(boolean htmlFixing)
+  {
+    this.htmlFixing = htmlFixing;
   }
 
   public Map toPropertyMap(List<Property> properties)
@@ -218,7 +229,7 @@ public class PropertyConverter
             if (v != null)
             {
               String svalue = toString(pt, v);
-              if (isHtml(svalue))
+              if (htmlFixing && isHtml(svalue))
                 svalue = fixHtml(svalue);
               property.getValue().add(svalue);
             }
@@ -227,7 +238,7 @@ public class PropertyConverter
         else if (value != null)
         {
           String svalue = toString(pt, value);
-          if (isHtml(svalue))
+          if (htmlFixing && isHtml(svalue))
             svalue = fixHtml(svalue);
           property.getValue().add(svalue);
         }
