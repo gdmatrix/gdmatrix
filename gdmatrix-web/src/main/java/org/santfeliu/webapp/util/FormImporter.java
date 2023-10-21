@@ -466,7 +466,7 @@ public class FormImporter
 
           switch (renderer)
           {
-            case "htmlEditor":
+            case "htmlEditor": // compatibility
             case "quill":
             {
               Quill quill =
@@ -487,12 +487,19 @@ public class FormImporter
             }
             break;
 
-            case "javascriptEditor":
             case "codemirror":
+            case "codemirror:javascript":
+            case "codemirror:sql":
+            case "codemirror:html":
+            case "codemirror:json":
             {
               CodeMirror codemirror =
                 (CodeMirror)application.createComponent(CodeMirror.COMPONENT_TYPE);
               codemirror.setReadonly(field.isReadOnly());
+              int index = renderer.lastIndexOf(":");
+              String language = index == -1 ?
+                "javascript" : renderer.substring(index + 1);
+              codemirror.setLanguage(language);
               component = codemirror;
             }
             break;

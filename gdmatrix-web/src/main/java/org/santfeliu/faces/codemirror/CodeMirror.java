@@ -51,6 +51,7 @@ public class CodeMirror extends UIInput
   public static final String COMPONENT_FAMILY = "org.gdmatrix.faces";
   public static final String COMPONENT_TYPE = "org.gdmatrix.faces.CodeMirror";
 
+  private String _language;
   private Boolean _readonly;
   private String _style;
   private String _styleClass;
@@ -61,17 +62,30 @@ public class CodeMirror extends UIInput
     return COMPONENT_FAMILY;
   }
 
+  public void setLanguage(String language)
+  {
+    this._language = language;
+  }
+
+  public String getLanguage()
+  {
+    if (_language != null) return _language;
+    ValueExpression ve = getValueExpression("language");
+    return ve != null ?
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setReadonly(Boolean readonly)
+  {
+    this._readonly = readonly;
+  }
+
   public Boolean isReadonly()
   {
     if (_readonly != null) return _readonly;
     ValueExpression ve = getValueExpression("readonly");
     return ve != null ?
       (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
-  }
-
-  public void setReadonly(Boolean readonly)
-  {
-    this._readonly = readonly;
   }
 
   public void setStyle(String style)
@@ -153,22 +167,26 @@ public class CodeMirror extends UIInput
     Boolean readonly = isReadonly();
     if (readonly == null) readonly = false;
 
+    String language = getLanguage();
+    if (language == null) language = "javascript";
+
     // encode script
     writer.startElement("script", this);
     writer.writeAttribute("type", "module", null);
     writer.writeText("import '/resources/gdmatrixfaces/codemirror/codemirror-stub.js';\n", null);
-    writer.writeText("codemirrorInit('" + clientId + "', " + readonly + ");", null);
+    writer.writeText("codemirrorInit('" + clientId + "'," + readonly + ",'" + language + "');", null);
     writer.endElement("script");
   }
 
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[4];
+    Object values[] = new Object[5];
     values[0] = super.saveState(context);
-    values[1] = _readonly;
-    values[2] = _style;
-    values[3] = _styleClass;
+    values[1] = _language;
+    values[2] = _readonly;
+    values[3] = _style;
+    values[4] = _styleClass;
     return values;
   }
 
@@ -177,8 +195,9 @@ public class CodeMirror extends UIInput
   {
     Object[] values = (Object[])state;
     super.restoreState(context, values[0]);
-    _readonly = (Boolean)values[1];
-    _style = (String)values[2];
-    _styleClass = (String)values[3];
+    _language = (String)values[1];
+    _readonly = (Boolean)values[2];
+    _style = (String)values[3];
+    _styleClass = (String)values[4];
   }
 }

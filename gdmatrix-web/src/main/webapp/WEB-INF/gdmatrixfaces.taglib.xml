@@ -87,6 +87,16 @@
       <description>The code to edit</description>
     </attribute>
     <attribute>
+      <name>language</name>
+      <type>java.lang.String</type>
+      <description>The programming language (javascript, sql, html, json)</description>
+    </attribute>
+    <attribute>
+      <name>readonly</name>
+      <type>java.lang.Boolean</type>
+      <description>The flag to disable edition</description>
+    </attribute>
+    <attribute>
       <name>style</name>
       <type>java.lang.String</type>
       <description>The component CSS style</description>
@@ -95,11 +105,6 @@
       <name>styleClass</name>
       <type>java.lang.String</type>
       <description>The component CSS class name</description>
-    </attribute>
-    <attribute>
-      <name>readonly</name>
-      <type>java.lang.Boolean</type>
-      <description>The flag to disable edition</description>
     </attribute>
   </tag>  
                                                                         

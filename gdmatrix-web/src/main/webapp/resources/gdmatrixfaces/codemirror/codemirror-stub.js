@@ -2,10 +2,8 @@
 
 import "./codemirror.js";
 
-function codemirrorInit(clientId, readonly)
+function codemirrorInit(clientId, readonly, language)
 {
-  console.info("INIT " + clientId);
-  
   const editorId = clientId + "_editor";
   const inputId = clientId + "_input";
 
@@ -24,6 +22,8 @@ function codemirrorInit(clientId, readonly)
   const { foldGutter, foldKeymap } = CM["@codemirror/fold"];
   const { javascript, javascriptLanguage } = CM["@codemirror/lang-javascript"];
   const { json, jsonLanguage } = CM["@codemirror/lang-json"];
+  const { sql, sqlLanguage } = CM["@codemirror/lang-sql"];
+  const { html, htmlLanguage } = CM["@codemirror/lang-html"];  
   const { defaultHighlightStyle } = CM["@codemirror/highlight"];
   const { searchKeymap, highlightSelectionMatches } = CM["@codemirror/search"];
   const { indentOnInput } = CM["@codemirror/language"];
@@ -31,15 +31,24 @@ function codemirrorInit(clientId, readonly)
 
   let theme = EditorView.theme({
     "&.cm-focused .cm-cursor" : {
-      borderLeftColor: "#000",
+      borderLeftColor: "var(--text-color)",
       borderLeftWidth: "2px"
     },
     "&.cm-focused .cm-matchingBracket" : {
-      "backgroundColor" : "yellow",
+      "backgroundColor" : "#C0C000",
       "color" : "black"
     },
+    "&.ͼ2 .cm-activeLine" : {
+      "backgroundColor" : "var(--surface-hover)"
+    },
+    "&.ͼ2 .cm-gutters" : {
+      "backgroundColor" : "transparent"      
+    },
+    "&.ͼ2 .cm-activeLineGutter" : {
+      "backgroundColor" : "var(--surface-hover)"      
+    },
     "& .ͼa" : {
-      "color" : "#444",
+      "color" : "#666",
       "fontWeight" : "bold"
     },
     "& .ͼl" : {
@@ -75,6 +84,12 @@ function codemirrorInit(clientId, readonly)
     }
   });
 
+  let langExtension;
+  if (language === "json") langExtension = json();
+  else if (language === "sql") langExtension = sql();
+  else if (language === "html") langExtension = html();
+  else langExtension = javascript();
+
   const extensions = [
     lineNumbers(),
     highlightActiveLineGutter(),
@@ -94,7 +109,7 @@ function codemirrorInit(clientId, readonly)
       ...historyKeymap,
       ...foldKeymap
     ]),
-    javascript(),
+    langExtension,
     updateListenerExtension,
     theme];
   
