@@ -20,8 +20,8 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">
-          <div>
+        <div class="flex w-12">
+          <div class="flex-grow-1">
             <p:outputLabel value="#{caseBundle.caseDocuments_volume}: " for="@next" />
             <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}" touchable="true">
               <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
@@ -60,7 +60,7 @@
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-6"
+      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-4"
                 sortBy="#{row.document.title}">
         <i class="#{caseDocumentsTabBean.getDocumentIcon(row.document)} text-xl mr-1" />
         <h:outputText value="#{row.document.title}"/>
@@ -73,6 +73,15 @@
         <h:outputText value="#{typeTypeBean.getDescription(row.caseDocTypeId)}"/>
       </p:column>
 
+      <p:column headerText="#{documentBundle.document_creationDate}" styleClass="col-2 text-center"
+                sortBy="#{row.document.creationDate}">
+        <h:outputText value="#{row.document.creationDate}">
+          <f:converter converterId="DateTimeConverter" />
+          <f:attribute name="internalFormat" value="yyyyMMdd" />
+          <f:attribute name="userFormat" value="dd/MM/yyyy" />
+        </h:outputText>
+      </p:column>      
+      
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:linkButton href="#{caseDocumentsTabBean.viewURL}" 
                       icon="pi pi-eye" 
