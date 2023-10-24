@@ -253,7 +253,8 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
     propertiesScrollPane.getViewport().add(propertiesTextArea, null);
     propertiesTextArea.setFont(Options.getEditorFont());
 
-    this.referenceTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
+    // Allow ${expressions}
+    //this.referenceTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
     referenceTextField.addKeyListener(new KeyAdapter()
     {
       @Override
