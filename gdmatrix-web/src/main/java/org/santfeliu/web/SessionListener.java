@@ -145,7 +145,8 @@ public class SessionListener implements HttpSessionListener
   private void purgeSessions()
   {
     long now = System.currentTimeMillis();
-    for (HttpSession session : SESSIONS)
+    List<HttpSession> sessions = new ArrayList<>(SESSIONS);
+    for (HttpSession session : sessions)
     {
       UserSessionBean userSessionBean = UserSessionBean.getInstance(session);
       String userId = userSessionBean == null ?
