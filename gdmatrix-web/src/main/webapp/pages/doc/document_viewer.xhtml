@@ -89,5 +89,9 @@
   </p:outputPanel>
   
   <gdm:saveBean value="documentViewerBean" /> 
+  
+  <script>
+    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>    
 
 </ui:composition>

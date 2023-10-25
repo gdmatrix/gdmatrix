@@ -14,6 +14,10 @@
   
   <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
  
-  <gdm:saveBean value="reportViewerBean" /> 
+  <gdm:saveBean value="reportViewerBean" />
+  
+  <script>
+    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>  
   
 </ui:composition>
