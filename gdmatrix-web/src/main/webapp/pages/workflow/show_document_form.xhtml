@@ -9,10 +9,7 @@
 
   <ui:define name="form">
 
-    <sf:outputText value="#{showDocumentWorkflowBean.message}" 
-                   translator="#{workflowInstanceBean.translationEnabled ? 
-                                 applicationBean.translator : null}" 
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+    <h:outputText value="#{workflowInstanceBean.translate(showDocumentWorkflowBean.message)}" />
 
     <sf:printableGroup name="printDocument">
       <sf:browser binding="#{showDocumentWorkflowBean.browser}"

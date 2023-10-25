@@ -11,7 +11,7 @@
 
     <div class="ui-fluid formgrid grid ml-auto mr-auto">
       <div class="field col-12 md:col-6">
-        <p:outputLabel for="@next" value="#{inputNumberWorkflowBean.message}" />
+        <p:outputLabel for="@next" value="#{workflowInstanceBean.translate(inputNumberWorkflowBean.message)}" />
         <p:inputNumber value="#{inputNumberWorkflowBean.number}" 
                        required="true" />
       </div>

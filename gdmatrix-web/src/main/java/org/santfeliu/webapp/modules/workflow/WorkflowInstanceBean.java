@@ -68,6 +68,7 @@ import org.santfeliu.workflow.form.FormFactory;
 import org.primefaces.event.ToggleEvent;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.matrix.workflow.WorkflowConstants.*;
+import org.santfeliu.web.ApplicationBean;
 import static org.santfeliu.workflow.web.InstanceListBean.*;
 
 /**
@@ -414,6 +415,19 @@ public class WorkflowInstanceBean extends FacesBean implements Serializable
       }
     }
     return null;
+  }
+
+  public String translate(String text)
+  {
+    return translate(text, "sf:" + getWorkflowName());
+  }
+
+  public String translate(String text, String group)
+  {
+    if (!isTranslationEnabled()) return text;
+
+    ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
+    return applicationBean.translate(text, group);
   }
 
   public boolean isTranslationEnabled()

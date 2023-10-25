@@ -9,11 +9,8 @@
 
   <ui:define name="form">
 
-    <sf:outputText value="#{biometricWorkflowBean.message}"
-                   translator="#{workflowInstanceBean.translationEnabled ? 
-                                 applicationBean.translator : null}" 
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
-                   styleClass="workflowMessage" />
+    <h:outputText value="#{workflowInstanceBean.translate(biometricWorkflowBean.message)}"
+                  styleClass="workflowMessage" />
 
     <div class="text-right">
       <p:commandButton value="#{workflowBundle.continue}"

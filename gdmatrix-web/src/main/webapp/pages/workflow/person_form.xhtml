@@ -10,11 +10,8 @@
 
   <ui:define name="form">
 
-    <sf:outputText value="#{personWorkflowBean.message}"
-                   translator="#{workflowInstanceBean.translationEnabled ?
-                                 applicationBean.translator : null}"
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
-                   styleClass="workflowMessage" />
+    <h:outputText value="#{workflowInstanceBean.translate(personWorkflowBean.message)}"
+                  styleClass="workflowMessage" />
 
     <t:subform id="subForm1">
       <t:div>

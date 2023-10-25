@@ -4,17 +4,13 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:t="http://myfaces.apache.org/tomahawk"
-                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 template="/pages/workflow/instance.xhtml">
 
   <ui:define name="form">
 
-    <sf:outputText value="#{addressWorkflowBean.message}"
-                   translator="#{workflowInstanceBean.translationEnabled ?
-                                 applicationBean.translator : null}"
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
-                   styleClass="workflowMessage" />
+    <h:outputText value="#{workflowInstanceBean.translate(addressWorkflowBean.message)}"
+                  styleClass="workflowMessage" />
 
     <t:div>
       <h:outputText value="Carrer*:" style="display:inline-block;width:20%" />

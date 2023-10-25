@@ -9,11 +9,8 @@
 
   <ui:define name="form">
 
-    <sf:outputText value="#{scanDocumentWorkflowBean.message}"
-                   translator="#{workflowInstanceBean.translationEnabled ? 
-                                 applicationBean.translator : null}" 
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}"
-                   styleClass="workflowMessage" />
+    <h:outputText value="#{workflowInstanceBean.translate(scanDocumentWorkflowBean.message)}"
+                  styleClass="workflowMessage" />
 
     <div style="text-align: center">
       <p:linkButton href="#"

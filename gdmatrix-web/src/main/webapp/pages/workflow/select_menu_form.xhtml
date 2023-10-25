@@ -20,10 +20,7 @@
       </div>        
     </c:if>     
 
-    <sf:outputText value="#{selectMenuWorkflowBean.message}" 
-                   translator="#{workflowInstanceBean.translationEnabled ? 
-                                 applicationBean.translator : null}" 
-                   translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+    <h:outputText value="#{workflowInstanceBean.translate(selectMenuWorkflowBean.message)}" />
 
     <c:if test="${selectMenuWorkflowBean.cssCustom != null}">
       <style>
@@ -37,10 +34,7 @@
       <p:commandLink action="#{selectMenuWorkflowBean.selectOption}" 
                      process="@this" update="@form:cnt">
         <span class="pi pi-circle-fill mr-2" style="color:var(--primary-color)"/>
-        <sf:outputText value="#{option.label}"
-                       translator="#{workflowInstanceBean.translationEnabled ?
-                                       applicationBean.translator : null}"
-                       translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+        <h:outputText value="#{workflowInstanceBean.translate(option.label)}" />
       </p:commandLink>
     </p:dataList>      
 

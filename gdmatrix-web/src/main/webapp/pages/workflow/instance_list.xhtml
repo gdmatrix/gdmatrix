@@ -128,23 +128,18 @@
         <h:outputText value="#{instance.instanceId}" />
       </p:column>
       <p:column style="width:1%">
-        <h:graphicImage 
-          url="#{instance.simulation ? '/common/workflow/images/simulation.gif' : '/common/workflow/images/real.gif'}" 
-          alt="#{instance.simulation ? '#{workflowBundle.simulation}' : '#{workflowBundle.realProcessing}'}" />
+        <span class="instanceType #{instance.simulation ? 'simulation' : 'real'} mr-2" 
+              title="#{instance.simulation ? workflowBundle.upperSimulation : workflowBundle.upperRealProcessing}" />
       </p:column>
       <p:column style="width:70%" 
                 styleClass="#{instance.activeNodes == null ? 'terminated' : 'active'}">
         <f:facet name="header">
           <h:outputText value="#{workflowBundle.descriptionState}" />
         </f:facet>
-        <sf:outputText value="#{instance.description}"
-                       translator="#{applicationBean.translator}" 
-                       translationGroup="wf:instanceList" />
+        <h:outputText value="#{workflowInstanceListBean.translate(instance.description)}" />
         <h:outputText value=": "
                       rendered="#{instance.state != null}" />
-        <sf:outputText value="#{instance.state}"
-                       translator="#{applicationBean.translator}" 
-                       translationGroup="wf:instanceList"
+        <h:outputText value="#{workflowInstanceListBean.translate(instance.state)}"
                        rendered="#{instance.state != null}" />
         <h:outputText value="(#{workflowInstanceListBean.instanceStartDate})"
                       rendered="#{instance.startDateTime != null}" 
@@ -178,13 +173,13 @@
       </p:column>
 
       <f:facet name="footer">
-        <h:graphicImage url="/common/workflow/images/simulation.gif" 
-                        style="vertical-align:middle" alt=""/>
-        <h:outputText value="#{workflowBundle.upperSimulation}" styleClass="mr-2" />
+        <span class="instanceType simulation mr-2" />
+        <h:outputText value="#{workflowBundle.upperSimulation}" 
+                      styleClass="mr-2" style="vertical-align: middle" />
 
-        <h:graphicImage url="/common/workflow/images/real.gif" 
-                        style="vertical-align:middle" alt=""/>
-        <h:outputText value="#{workflowBundle.upperRealProcessing}" />
+        <span class="instanceType real mr-2" />
+        <h:outputText value="#{workflowBundle.upperRealProcessing}" 
+                      style="vertical-align: middle" />
       </f:facet>      
     </p:dataTable>
 

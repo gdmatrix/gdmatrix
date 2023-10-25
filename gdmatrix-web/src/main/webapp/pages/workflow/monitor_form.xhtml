@@ -15,10 +15,7 @@
                   styleClass="m-2">
 
       <div class="m-2">
-        <sf:outputText value="#{monitorWorkflowBean.message}"
-                       translator="#{workflowInstanceBean.translationEnabled ?
-                                     applicationBean.translator : null}"
-                       translationGroup="wf:#{workflowInstanceBean.workflowName}" />
+        <h:outputText value="#{workflowInstanceBean.translate(monitorWorkflowBean.message)}" />
       </div>
 
       <div class="mt-2">

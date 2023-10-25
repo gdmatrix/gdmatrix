@@ -62,6 +62,7 @@ import static org.matrix.workflow.WorkflowConstants.TERMINATION_FORM;
 import static org.matrix.workflow.WorkflowConstants.TERMINATION_MESSAGE;
 import static org.matrix.workflow.WorkflowConstants.FAIL_FORM;
 import static org.matrix.workflow.WorkflowConstants.HELP_BUTTON_URL;
+import org.santfeliu.web.ApplicationBean;
 
 /**
  *
@@ -97,7 +98,7 @@ public class WorkflowInstanceListBean extends WebBean implements Serializable
     "workflow." + HELP_BUTTON_URL;
 
 
-  
+
   public static final String WORKFLOW_PARAM = "workflow";
   public static final String INSTANCEID_PARAM = "instanceid";
   public static final String ACCESS_TOKEN_PARAM = "access_token";
@@ -338,6 +339,12 @@ public class WorkflowInstanceListBean extends WebBean implements Serializable
   public void setContent(String content)
   {
     this.content = content;
+  }
+
+  public String translate(String text)
+  {
+    ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
+    return applicationBean.translate(text, "wf:instanceList");
   }
 
   public void simulate()

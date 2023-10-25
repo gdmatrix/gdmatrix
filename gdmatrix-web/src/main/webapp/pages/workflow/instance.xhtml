@@ -19,14 +19,10 @@
           <div style="flex-grow:1">
             <h:outputText value="#{workflowBundle.instance} #{workflowInstanceBean.instanceId}: "
                           styleClass="instanceNumber"/>
-            <sf:outputText value="#{workflowInstanceBean.instanceDescription}"
-                           translator="#{applicationBean.translator}"
-                           translationGroup="wf:instanceList" />
+            <h:outputText value="#{workflowInstanceBean.translate(workflowInstanceBean.instanceDescription)}" />
             <h:outputText value=": " styleClass="instanceUserState"
                           rendered="#{workflowInstanceBean.instanceUserState != null}" />
-            <sf:outputText value="#{workflowInstanceBean.instanceUserState}"
-                           translator="#{applicationBean.translator}"
-                           translationGroup="wf:instanceList"
+            <h:outputText value="#{workflowInstanceBean.translate(workflowInstanceBean.instanceUserState)}"
                            rendered="#{workflowInstanceBean.instanceUserState != null}" />
             <h:outputText value="(#{workflowInstanceBean.instanceStartDate})"
                           styleClass="ml-2"
@@ -183,8 +179,10 @@
               <f:facet name="header">
                 <h:outputText value="#{workflowBundle.variable}" />
               </f:facet>
-              <h:outputText value="#{instanceVar.key}"
-                            styleClass="#{workflowInstanceBean.variableStyleClass}" />
+              <div class="#{workflowInstanceBean.variableStyleClass}">
+                <div class="iconVar"></div>
+                #{instanceVar.key}
+              </div>
             </h:column>
             <h:column>
               <f:facet name="header">

@@ -133,7 +133,6 @@
 
 .normalVar
 {
-  color:black;
 }
 
 .formVar
@@ -148,34 +147,33 @@
   font-weight:bold;
 }
 
-.accessVar
+.iconVar
 {
-  color:#606060;
   font-weight:bold;
+  display:inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--surface-500);
+  text-align: center;
+  vertical-align: middle;
+  margin-left: 1px;
+  font-weight: bold;
 }
 
-.text_type,
-.number_type,
-.boolean_type
+.text_type .iconVar::before
 {
-  padding-left: 20px;
-  background-position: left center;
-  background-repeat: no-repeat;
+  content: 'T';
 }
 
-.text_type
+.number_type .iconVar::before
 {
-  background-image: url(/pages/workflow/images/text_type.gif);  
+  content: 'N';
 }
 
-.number_type
+.boolean_type .iconVar::before
 {
-  background-image: url(/pages/workflow/images/number_type.gif);  
-}
-
-.boolean_type
-{
-  background-image: url(/pages/workflow/images/boolean_type.gif);  
+  content: 'B';
 }
 
 .varTable
@@ -199,7 +197,7 @@
 
 .varTable tr:hover
 {
-  background: #FFFFD0;
+  background: var(--surface-hover);
 }
 
 .varTable td
@@ -361,4 +359,26 @@
 .instanceEvent > table.variableChanges td:first-child
 {
   border-left: none;  
+}
+
+.instanceType
+{
+  border: 1px solid var(--surface-500);
+  border-radius: 50%;
+  font-size: 10px;  
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+}
+
+.instanceType.simulation::before
+{
+  content: 'S';
+}
+
+.instanceType.real::before
+{
+  content: 'R';
 }
