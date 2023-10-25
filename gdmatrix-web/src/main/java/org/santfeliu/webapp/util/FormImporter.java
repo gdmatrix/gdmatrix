@@ -87,6 +87,7 @@ public class FormImporter
   public static final String SUBMIT_BUTTON_OPTION = "checkExpression";
   public static final String ACTION_METHOD_OPTION = "actionMethod";
   public static final String ACTION_UPDATE_OPTION = "actionUpdate";
+  public static final String SEARCH_FORM_OPTION = "searchForm";
 
   protected Map<String, Object> options = new HashMap<>();
   protected Form form;
@@ -404,8 +405,11 @@ public class FormImporter
           component = select;
         }
 
-        List<View> children = view.getChildren();
+        String searchForm = (String) options.get(SEARCH_FORM_OPTION); 
+        boolean addEmptyValue = searchForm != null && searchForm.equals("true");
 
+        List<View> children = view.getChildren(); 
+        
         for (View child : children)
         {
           if (View.ITEM.equals(child.getViewType()))
@@ -413,6 +417,12 @@ public class FormImporter
             String itemValue = (String)child.getProperty("value");
             if (!child.getChildren().isEmpty())
             {
+              if (addEmptyValue)
+              {
+                if (!StringUtils.isBlank(itemValue))
+                  component.getChildren().add(new UISelectItem());
+                addEmptyValue = false;
+              }
               String itemLabel =
                 (String)child.getChildren().get(0).getProperty("text");
               UISelectItem selectItem = new UISelectItem();

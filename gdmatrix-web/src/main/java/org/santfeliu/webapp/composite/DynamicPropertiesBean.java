@@ -83,6 +83,7 @@ public class DynamicPropertiesBean implements Serializable
   static
   {
     FILTER_OPTIONS.put(FormImporter.STACKED_OPTION, "true");
+    FILTER_OPTIONS.put(FormImporter.SEARCH_FORM_OPTION, "true");
   }
   static final JsonValidator JSON_VALIDATOR = new JsonValidator();
 
