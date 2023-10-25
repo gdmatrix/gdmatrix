@@ -62,11 +62,8 @@
 
     </p:outputPanel>
 
-    <pe:ckEditor value="#{documentViewerBean.editor.documentData}"
-                 enterMode="CKEDITOR.ENTER_BR"
-                 skin="office2013"
-                 rendered="#{documentViewerBean.editing}" 
-                 width="100%" height="600px"/>  
+    <gdm:tinyMCE value="#{documentViewerBean.editor.documentData}" 
+                 rendered="#{documentViewerBean.editing}" />
     <p:outputPanel id="pnlPrint">
       <sf:browser url="#{documentViewerBean.url}"
                   port="#{applicationBean.defaultPort}"
