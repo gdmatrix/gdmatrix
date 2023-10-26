@@ -32,10 +32,12 @@
             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
     <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}"
             process="@this"
-            update="@form:cnt:search_tabs:obj_tabs" />
+            update="@form:cnt:search_tabs:obj_tabs" 
+            oncomplete="if (updateScheduleEventStyles) updateScheduleEventStyles()" />
     <p:ajax event="eventResize" listener="#{eventFinderBean.onEventResize}"
             process="@this"
-            update="@form:cnt:search_tabs:obj_tabs" />
+            update="@form:cnt:search_tabs:obj_tabs" 
+            oncomplete="if (updateScheduleEventStyles) updateScheduleEventStyles()" />
   </p:schedule>
   
   <h:outputText value="#{agendaBundle.insufficientFilter}"

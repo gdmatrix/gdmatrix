@@ -2,7 +2,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:pe="http://primefaces.org/ui/extensions"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces">
 
     <div class="ui-fluid formgrid grid">
 
@@ -88,14 +89,8 @@
 
       <div class="field col-12">
         <p:outputLabel for="@next" value="#{agendaBundle.event_detail}"  />
-        <pe:ckEditor value="#{eventObjectBean.event.detail}"
-                     enterMode="CKEDITOR.ENTER_BR"
-                     font='Courier New'
-                     fontSize='11px'
-                     skin="office2013"
-                     readonly="#{!eventObjectBean.editable}"
-                     width="100%">
-        </pe:ckEditor>
+        <gdm:quill value="#{eventObjectBean.event.detail}"
+                   readonly="#{!eventObjectBean.editable}" />
       </div>
 
       <div class="field col-12">

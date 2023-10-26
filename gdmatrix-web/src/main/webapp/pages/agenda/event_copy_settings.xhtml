@@ -25,11 +25,11 @@
             <span class="field-radiobutton" role="radio">
               <p:radioButton for="daylyFrequency" itemIndex="0"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_every}" />
-              <p:inputText id="daylyFrequencyValue"
-                           value="#{eventCopyTabBean.daylyFrequencyValue}" converter="#{Integer}"
-                           styleClass="inputBox">
-                <f:validateLongRange minimum="0"/>
-              </p:inputText>
+              <p:inputNumber id="daylyFrequencyValue"
+                             value="#{eventCopyTabBean.daylyFrequencyValue}" 
+                             inputStyleClass="inputBox" 
+                             minValue="1">
+              </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_days}" />
             </span>
             <span class="field-radiobutton" role="radio">
@@ -49,10 +49,10 @@
       <div class="patternContainer">
         <p:outputPanel styleClass="field-radiobutton">
           <p:outputLabel value="#{agendaBundle.eventCopy_repeatsEvery}"/>
-          <p:inputText value="#{eventCopyTabBean.weeklyFrequencyValue}"
-                       styleClass="inputBox">
-            <f:validateLongRange minimum="0"/>
-          </p:inputText>
+          <p:inputNumber value="#{eventCopyTabBean.weeklyFrequencyValue}"
+                         inputStyleClass="inputBox" 
+                         minValue="1">
+          </p:inputNumber>
           <p:outputLabel value="#{agendaBundle.eventCopy_weeks} "/>
           <p:outputLabel value="#{agendaBundle.eventCopy_theDays}: "/>
         </p:outputPanel>
@@ -83,15 +83,15 @@
             <span class="field-radiobutton" role="radio">
               <p:radioButton for="monthlyFrequency" itemIndex="0"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_theDay}" />
-              <p:inputText value="#{eventCopyTabBean.monthlyDayOfMonth}" converter="#{Integer}"
-                           styleClass="inputBox">
-                <f:validateLongRange minimum="0"/>
-              </p:inputText>
+              <p:inputNumber value="#{eventCopyTabBean.monthlyDayOfMonth}" 
+                             inputStyleClass="inputBox" 
+                             minValue="1">
+              </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_ofEvery}" />
-              <p:inputText value="#{eventCopyTabBean.monthlyFrequencyValue0}" converter="#{Integer}"
-                           styleClass="inputBox">
-                <f:validateLongRange minimum="0"/>
-              </p:inputText>
+              <p:inputNumber value="#{eventCopyTabBean.monthlyFrequencyValue0}" 
+                             inputStyleClass="inputBox" 
+                             minValue="1">
+              </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_months}" />
             </span>
             <span class="field-radiobutton" role="radio">
@@ -119,10 +119,10 @@
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_sunday}" itemValue="1" />
               </p:selectOneMenu>
               <h:outputText value="#{agendaBundle.eventCopy_ofEvery}" />
-              <p:inputText value="#{eventCopyTabBean.monthlyFrequencyValue1}" converter="#{Integer}"
-                           styleClass="inputBox">
-                <f:validateLongRange minimum="0"/>
-              </p:inputText>
+              <p:inputNumber value="#{eventCopyTabBean.monthlyFrequencyValue1}" 
+                             inputStyleClass="inputBox" 
+                             minValue="1">
+              </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_months}" />
             </span>
           </f:facet>
@@ -144,10 +144,10 @@
             <span class="field-radiobutton" role="radio">
               <p:radioButton for="yearlyFrequency" itemIndex="0"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_every}" />
-              <p:inputText value="#{eventCopyTabBean.yearlyDayOfMonth}"
-                           styleClass="inputBox">
-                <f:validateLongRange minimum="0"/>
-              </p:inputText>
+              <p:inputNumber value="#{eventCopyTabBean.yearlyDayOfMonth}"
+                             inputStyleClass="inputBox" 
+                             minValue="1">
+              </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_of}" />
               <p:selectOneMenu value="#{eventCopyTabBean.month0}" 
                                styleClass="inputSelect" touchable="true">

@@ -105,15 +105,15 @@ public class EventCopyTabBean extends PageBean implements Serializable
   private int daylyFrequencyValue = 1;
 
   //Weekly
-  private int weeklyFrequencyValue;
+  private int weeklyFrequencyValue = 1;
   private List<String> daysOfWeek;
 
   //Monthly
   public static final String BY_SELECTED_DAY = "0";
   private String monthlyFrequencyMode = BY_SELECTED_DAY;
-  private int monthlyFrequencyValue0;
-  private int monthlyFrequencyValue1;
-  private int monthlyDayOfMonth;
+  private int monthlyFrequencyValue0 = 1;
+  private int monthlyFrequencyValue1 = 1;
+  private int monthlyDayOfMonth = 1;
   private String monthlyWeekPosition;
   private String monthlyDayOfWeekType;
 
@@ -121,7 +121,7 @@ public class EventCopyTabBean extends PageBean implements Serializable
   private String yearlyFrequencyMode = BY_SELECTED_DAY;
   private String month0;
   private String month1;
-  private int yearlyDayOfMonth;
+  private int yearlyDayOfMonth = 1;
   private String yearlyWeekPosition;
   private String yearlyDayOfWeekType;
 
@@ -132,7 +132,7 @@ public class EventCopyTabBean extends PageBean implements Serializable
   public static final String MAX_RECURRENCES_PROPERTY = "agenda.maxRecurrences";
 
   private String rangeStartDateTime;
-  private int numberOfIterations;
+  private int numberOfIterations = 1;
   private String endRangeMode = BY_MAX_DATE;
   private String rangeEndDateTime;
   private boolean checkAttendantsAvailability;

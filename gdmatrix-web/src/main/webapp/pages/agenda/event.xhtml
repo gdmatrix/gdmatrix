@@ -220,6 +220,20 @@
           updateResults();
         }
       }
+      
+      function updateScheduleEventStyles()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex == #{eventFinderBean.scheduleTabIndex})
+        {
+          $('.fc-event.current').removeClass("current");
+          var eventId = $('.main_object_id').text();
+          if (eventId != null)
+          {
+            $('.fc-event.event_' + eventId).addClass("current");
+          }
+        }
+      }      
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{eventFinderBean.update}"
@@ -231,7 +245,7 @@
                touchable="false"
                onTabShow="onTabShow()">
 
-      <p:ajax event="tabChange" />
+      <p:ajax event="tabChange" oncomplete="updateScheduleEventStyles()" />
 
       <c:forEach items="#{eventObjectBean.searchTabs}" var="tab" varStatus="loop">
         <p:tab>

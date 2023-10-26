@@ -1,5 +1,12 @@
 /***** AGENDA MODULE CSS *****/
 
+:root 
+{
+  --schedule-item-default-backgroundcolor: #F8F8F8;
+  --schedule-item-default-color: #333;
+  --schedule-item-default-border: 1px solid #DDD;  
+}
+
 /*** event_list_grouped.xhtml ***/
 
 .eventList
@@ -24,7 +31,9 @@
   flex-direction: row;
 }
 
-.eventList .eventRow.current
+.eventList .eventRow.current,
+.fc .current,
+.fc-daygrid-dot-event.current .fc-event-title
 {
   font-weight: bold;
 }
@@ -51,6 +60,11 @@
 .eventList .eventRow .eventDescription
 {
   flex-grow: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  min-height: 20px;
+  line-height: 20px;  
 }
 
 .eventList .eventRow .eventActions
@@ -85,7 +99,6 @@
   max-width: 850px;
   margin-left: auto;
   margin-right: auto;
-  z-index: 100001 !important;
 }
 
 .eventRecurrences .flex
@@ -318,6 +331,32 @@
 
 /***** event_schedule.xhtml *****/
 
+@media only screen and (max-width: 1400px) 
+{
+  .fc .fc-toolbar.fc-header-toolbar 
+  {
+    flex-direction: column-reverse;
+  }  
+}
+
+body .fc .fc-event /*, body .fc .fc-event .fc-event-main*/
+{
+  background: var(--schedule-item-default-backgroundcolor);
+  color: var(--schedule-item-default-color);
+  border: var(--schedule-item-default-border);
+}
+
+body .fc .fc-event .fc-event-main
+{
+  background: none;
+  color: var(--schedule-item-default-color);  
+}
+
+body .fc .fc-event.fc-timegrid-event
+{
+  background: var(--schedule-item-default-backgroundcolor);
+}
+
 .fc-daygrid-event-dot
 {
   display: none;
@@ -327,3 +366,14 @@
 {
   margin-left: 3px;
 }
+
+.fc-toolbar-chunk
+{
+  padding: 4px;
+}
+
+.fc-daygrid-dot-event .fc-event-title
+{
+  font-weight: normal;
+}
+

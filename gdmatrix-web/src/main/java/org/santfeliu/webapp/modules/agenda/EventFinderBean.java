@@ -445,7 +445,7 @@ public class EventFinderBean extends FinderBean
   {
     this.outdated = true;
   }
-
+  
   public void update()
   {
     dateDblClick = false;
@@ -491,15 +491,16 @@ public class EventFinderBean extends FinderBean
     return "";
   }
 
-  public String getEventTypeStyleClass(EventDataTableRow row)
+  public String getEventStyleClass(String eventId)
   {
-    if (row != null)
-    {
-      return getEventTypeStyleClass(row.getTypeId());
-    }
-    return "";
-  }
+    return "event_" + eventId;
+  }  
 
+  public String getEventTypeStyleClass(String eventTypeId)
+  {
+    return "et_" + eventTypeId.replace(':', '_').replace('.', '_');
+  }   
+  
   public boolean isDateChange(int rowIndex)
   {
     if (rowIndex == 0) return true;
@@ -573,6 +574,20 @@ public class EventFinderBean extends FinderBean
     );
   }
 
+  public int getScheduleTabIndex()
+  {
+    List<SearchTab> tabs = eventObjectBean.getSearchTabs();
+    for (int i = 0; i < tabs.size(); i++)
+    {
+      String viewId = tabs.get(i).getViewId();
+      if ("/pages/agenda/event_schedule.xhtml".equals(viewId))
+      {
+        return i;
+      }
+    }
+    return -1;
+  }  
+  
   @Override
   public Serializable saveState()
   {
@@ -741,6 +756,8 @@ public class EventFinderBean extends FinderBean
             if (mustIncludeEvent(row, filter.getStartDateTime(),
               filter.getEndDateTime()))
             {
+              boolean currentEvent = row.getEventId().equals(
+                eventObjectBean.getEvent().getEventId());
               DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
                 .id(row.getEventId())
                 .title(row.getSummary())
@@ -748,7 +765,9 @@ public class EventFinderBean extends FinderBean
                 .endDate(toLocalDateTime(row.getEndDateTime()))
                 .description(row.getSummary())
                 .overlapAllowed(true)
-                .styleClass(getEventTypeStyleClass(row.getEventTypeId()))
+                .styleClass(getEventStyleClass(row.getEventId()) + " " + 
+                  getEventTypeStyleClass(row.getEventTypeId()) + 
+                  (currentEvent ? " current" : ""))
                 .build();
               addEvent(event);
             }
@@ -877,28 +896,18 @@ public class EventFinderBean extends FinderBean
   private List<String> getClientIdList(boolean includeSchedule)
   {
     List<String> clientIdList = new ArrayList();
+    int scheduleTabIndex = getScheduleTabIndex();
     List<SearchTab> tabs = eventObjectBean.getSearchTabs();
     for (int i = 0; i < tabs.size(); i++)
     {
-      String viewId = tabs.get(i).getViewId();
-      if (includeSchedule || (!includeSchedule &&
-        !"/pages/agenda/event_schedule.xhtml".equals(viewId)))
+      if (includeSchedule || i != scheduleTabIndex)
       {
         clientIdList.add("mainform:search_tabs:result_list_" + i);
       }
     }
     return clientIdList;
   }
-
-  private String getEventTypeStyleClass(String eventTypeId)
-  {
-    if (eventTypeId != null)
-    {
-      return "et_" + eventTypeId.replace(':', '_').replace('.', '_');
-    }
-    return "";
-  }
-
+  
   public class EventDataTableRow extends DataTableRow
   {
     private String startDateTime;

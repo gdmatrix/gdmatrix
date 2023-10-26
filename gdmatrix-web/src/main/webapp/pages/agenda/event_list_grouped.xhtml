@@ -32,12 +32,12 @@
             <f:convertDateTime pattern="HH:mm" />
           </h:outputText>
         </div>
-        <div class="eventDescription #{eventFinderBean.getEventTypeStyleClass(row)}">
+        <div class="eventDescription #{eventFinderBean.getEventTypeStyleClass(row.typeId)}">
           <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" />
           <h:outputText value=": " />
           <h:outputText value="#{row.summary}" />
         </div>
-        <div class="eventActions col-2 text-right white-space-nowrap">
+        <div class="eventActions text-right white-space-nowrap">
           <h:outputText value="Ⓦ" styleClass="pi ui-icon publicIcon"
                         rendered="#{eventFinderBean.renderPublicIcon and row.publicRow}"
                         title="#{agendaBundle.event_public}" />

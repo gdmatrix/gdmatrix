@@ -50,11 +50,11 @@
           <span class="field-radiobutton" role="radio">
             <p:radioButton for="endRangeMode" itemIndex="1"/>
             <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_endsAfter}" />
-            <p:inputText id="numberOfIterations"
-                         value="#{eventCopyTabBean.numberOfIterations}" converter="#{Integer}"
-                         styleClass="inputBox">
-              <f:validateLongRange minimum="0"/>
-            </p:inputText>
+            <p:inputNumber id="numberOfIterations"
+                           value="#{eventCopyTabBean.numberOfIterations}" 
+                           inputStyleClass="inputBox" 
+                           minValue="1">
+            </p:inputNumber>
             <h:outputLabel value="#{agendaBundle.eventCopy_iterations} (#{agendaBundle.eventCopy_maxIterations} #{eventCopyTabBean.maxRecurrencesCount})" />
           </span>
         </f:facet>
@@ -80,8 +80,8 @@
     </div>
     <div class="hourPatternRow">
       <h:outputLabel value="#{agendaBundle.eventCopy_duration}: " />
-      <p:inputText value="#{eventCopyTabBean.duration}"  styleClass="inputBox">
-        <f:validateLongRange minimum="1" />
+      <p:inputText value="#{eventCopyTabBean.duration}" styleClass="inputBox">
+        <p:keyFilter mask="pint" />        
       </p:inputText>
       <p:selectOneMenu value="#{eventCopyTabBean.durationSelector}"
                        styleClass="inputSelect" touchable="true">
@@ -93,7 +93,7 @@
     <div class="hourPatternRow">
       <h:outputLabel value="#{agendaBundle.eventCopy_gap}: " />
       <p:inputText value="#{eventCopyTabBean.gap}" styleClass="inputBox">
-        <f:validateLongRange minimum="0"/>
+        <p:keyFilter mask="pint" />        
       </p:inputText>
       <p:selectOneMenu value="#{eventCopyTabBean.gapSelector}"
                        styleClass="inputSelect" touchable="true">
