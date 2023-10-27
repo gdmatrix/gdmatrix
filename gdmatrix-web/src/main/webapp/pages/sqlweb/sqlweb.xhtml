@@ -1,0 +1,148 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <div class="p-3">
+
+    <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                  var="objectBundle" />
+
+    <f:loadBundle basename="org.santfeliu.misc.sqlweb.web.resources.SqlWebBundle" 
+                  var="sqlWebBundle" />
+
+    <p:panel styleClass="mb-2">
+      <f:facet name="header">
+        <h:outputText value="#{sqlwebBean.title == null ? userSessionBean.menuModel.selectedMenuItem.label : sqlwebBean.title}" />
+        <h:outputLink value="javascript:showHideEditor()" styleClass="show_hide_button" 
+                      rendered="#{sqlwebBean.editMode}" 
+                      title="#{sqlWebBundle.change_view}" />        
+      </f:facet>
+      
+      <h:panelGroup rendered="#{sqlwebBean.editMode}" 
+                    styleClass="ui-fluid formgrid grid">
+        <div class="field col-12 md:col-6 xl:col-4">
+          <p:outputLabel value="#{sqlWebBundle.driver}:" for="@next" />
+          <p:inputText value="#{sqlwebBean.driver}"  />    
+        </div>
+        <div class="field col-12 md:col-6 xl:col-4">
+          <p:outputLabel value="#{sqlWebBundle.url}:" for="@next" />
+          <p:inputText value="#{sqlwebBean.url}" />    
+        </div>
+        <div class="field col-12 md:col-6 xl:col-2">
+          <p:outputLabel value="#{sqlWebBundle.username}:" for="@next" />
+          <p:inputText value="#{sqlwebBean.username}" />
+        </div>
+        <div class="field col-12 md:col-6 xl:col-2">
+          <p:outputLabel value="#{sqlWebBundle.password}:" for="@next" />
+          <p:password value="#{sqlwebBean.password}" redisplay="true" />    
+        </div>
+        <div class="field col-12">
+          <p:outputLabel value="#{sqlWebBundle.sql_statement}:" for="@next" />
+          <gdm:codemirror language="sql"
+                          style="font-size:14px"
+                          lineNumbers="false"
+                          value="#{sqlwebBean.sql}" />
+        </div>
+      </h:panelGroup>
+
+      <div class="ui-fluid formgrid grid">
+        <div class="field col-12 md:col-5">
+          <p:outputLabel value="#{sqlWebBundle.max_rows}:" for="@next" styleClass="mr-2" />
+          <p:spinner value="#{sqlwebBean.maxRows}" styleClass="mr-2 w-auto" size="5" />
+        </div>
+
+        <div class="field col-12 md:col-4">
+          <p:outputLabel value="#{sqlWebBundle.show_row_numbers}:" for="@next" styleClass="mr-2" />
+          <p:selectBooleanCheckbox value="#{sqlwebBean.showRowNumbers}" />
+        </div>
+
+        <div class="field col-12 md:col-3 text-right">
+          <p:commandButton id="execute_sql"
+                           value="#{sqlWebBundle.execute}"
+                           action="#{sqlwebBean.execute}"
+                           process="@form"
+                           icon="pi pi-play"
+                           update="result_container"
+                           widgetVar="executeButton" 
+                           styleClass="w-auto" />
+        </div>
+      </div>
+
+      <p:defaultCommand target="execute_sql" />
+
+    </p:panel>
+
+    <p:messages globalOnly="true">
+      <p:autoUpdate />
+    </p:messages>
+        
+    <h:panelGroup id="result_container">        
+      <p:dataTable id="result_table"
+                   rendered="#{sqlwebBean.rows != null}"
+                   value="#{sqlwebBean.rows}"
+                   touchable="false"
+                   paginatorPosition="bottom" size="small" pageLinks="10" stripedRows="true"
+                   paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                   paginator="true" rows="10" rowsPerPageTemplate="10, 50, 100"
+                   var="row" rowIndexVar="rowIndex">
+        <f:facet name="header">
+          <h:panelGroup rendered="#{sqlwebBean.exception == null}">
+            <h:outputText value="#{sqlWebBundle.rows_updated}: #{sqlwebBean.updateCount}." 
+                          rendered="#{sqlwebBean.updateCount != -1}" />
+            <h:outputText value="#{sqlWebBundle.rows_selected}: #{sqlwebBean.rowCount}." 
+                          rendered="#{sqlwebBean.rows != null}" 
+                          styleClass="message row_count"/>
+            <h:outputText value="#{sqlWebBundle.ellapsed_time}: #{sqlwebBean.duration} ms." 
+                          rendered="#{sqlwebBean.duration gt 0}" styleClass="ml-2"/>
+          </h:panelGroup>
+
+          <p:menuButton value="#{sqlWebBundle.export}" 
+                        styleClass="ml-3" icon="pi pi-download">
+            <p:menuitem value="CSV" icon="pi pi-file-excel">
+              <p:dataExporter type="csv" target="result_table" fileName="results_#{sqlwebBean.timeStamp}"
+                              options="#{sqlwebBean.csvOptions}" />
+            </p:menuitem>
+            <p:menuitem value="XML" icon="pi pi-file">
+              <p:dataExporter type="xml" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+            </p:menuitem>
+            <p:menuitem value="PDF" icon="pi pi-file-pdf">
+              <p:dataExporter type="pdf" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+            </p:menuitem>
+          </p:menuButton>
+        </f:facet>
+
+        <p:column rendered="#{sqlwebBean.showRowNumbers}">
+          <f:facet name="header">
+            <h:outputText value="#" />
+          </f:facet>
+          <h:outputText value="#{rowIndex + 1}" />
+        </p:column>
+        <p:columns value="#{sqlwebBean.columns}" var="column">
+          <f:facet name="header">
+            <h:outputText value="#{column.name}"
+                          title="#{column.description != null ? column.description : sqlwebBean.columnType}" />
+          </f:facet>
+          <h:outputLink value="#{sqlwebBean.columnValue}" 
+                        rendered="#{sqlwebBean.columnLinkRendered}" target="_blank">
+            <h:outputText value="#{sqlwebBean.columnValue}" />
+          </h:outputLink>
+          <h:outputText value="#{sqlwebBean.columnValue}" 
+                        rendered="#{not sqlwebBean.columnLinkRendered}" />
+        </p:columns>
+      </p:dataTable>
+
+    </h:panelGroup>
+  </div>  
+  
+  <gdm:saveBean value="sqlwebBean" />
+
+  <script>
+    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>
+  
+</ui:composition>
