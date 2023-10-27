@@ -2,7 +2,7 @@
 
 import "./codemirror.js";
 
-function codemirrorInit(clientId, readonly, language)
+function codemirrorInit(clientId, readonly, language, showLineNumbers)
 {
   const editorId = clientId + "_editor";
   const inputId = clientId + "_input";
@@ -91,11 +91,9 @@ function codemirrorInit(clientId, readonly, language)
   else langExtension = javascript();
 
   const extensions = [
-    lineNumbers(),
     highlightActiveLineGutter(),
     highlightSpecialChars(),
     history(),
-    foldGutter(),
     drawSelection(),
     EditorState.allowMultipleSelections.of(true),
     indentOnInput(),
@@ -112,6 +110,12 @@ function codemirrorInit(clientId, readonly, language)
     langExtension,
     updateListenerExtension,
     theme];
+
+  if (showLineNumbers)
+  { 
+    extensions.push(lineNumbers());
+    extensions.push(foldGutter());
+  }
   
   let editorState = EditorState.create(
   {

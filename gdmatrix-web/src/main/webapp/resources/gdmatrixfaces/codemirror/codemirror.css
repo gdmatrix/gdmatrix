@@ -3,4 +3,5 @@
   border: 1px solid var(--surface-border);
   border-radius: var(--border-radius);
   padding: var(--content-padding);
+  background-color: var(--surface-ground);
 }

@@ -55,6 +55,7 @@ public class CodeMirror extends UIInput
   private Boolean _readonly;
   private String _style;
   private String _styleClass;
+  private Boolean _lineNumbers;
 
   @Override
   public String getFamily()
@@ -84,6 +85,19 @@ public class CodeMirror extends UIInput
   {
     if (_readonly != null) return _readonly;
     ValueExpression ve = getValueExpression("readonly");
+    return ve != null ?
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setLineNumbers(Boolean lineNumbers)
+  {
+    this._lineNumbers = lineNumbers;
+  }
+
+  public Boolean isLineNumbers()
+  {
+    if (_lineNumbers != null) return _lineNumbers;
+    ValueExpression ve = getValueExpression("lineNumbers");
     return ve != null ?
       (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
   }
@@ -170,23 +184,28 @@ public class CodeMirror extends UIInput
     String language = getLanguage();
     if (language == null) language = "javascript";
 
+    Boolean lineNumbers = isLineNumbers();
+    if (lineNumbers == null) lineNumbers = false;
+
     // encode script
     writer.startElement("script", this);
     writer.writeAttribute("type", "module", null);
     writer.writeText("import '/resources/gdmatrixfaces/codemirror/codemirror-stub.js';\n", null);
-    writer.writeText("codemirrorInit('" + clientId + "'," + readonly + ",'" + language + "');", null);
+    writer.writeText("codemirrorInit('" + clientId + "'," + readonly +
+      ",'" + language + "', " + lineNumbers + ");", null);
     writer.endElement("script");
   }
 
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[5];
+    Object values[] = new Object[6];
     values[0] = super.saveState(context);
     values[1] = _language;
     values[2] = _readonly;
     values[3] = _style;
     values[4] = _styleClass;
+    values[5] = _lineNumbers;
     return values;
   }
 
@@ -199,5 +218,6 @@ public class CodeMirror extends UIInput
     _readonly = (Boolean)values[2];
     _style = (String)values[3];
     _styleClass = (String)values[4];
+    _lineNumbers = (Boolean)values[5];
   }
 }
