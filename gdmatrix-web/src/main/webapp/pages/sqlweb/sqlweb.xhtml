@@ -62,8 +62,7 @@
         </div>
 
         <div class="field col-12 md:col-3 text-right">
-          <p:commandButton id="execute_sql"
-                           value="#{sqlWebBundle.execute}"
+          <p:commandButton value="#{sqlWebBundle.execute}"
                            action="#{sqlwebBean.execute}"
                            process="@form"
                            icon="pi pi-play"
@@ -72,8 +71,6 @@
                            styleClass="w-auto" />
         </div>
       </div>
-
-      <p:defaultCommand target="execute_sql" />
 
     </p:panel>
 
