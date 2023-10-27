@@ -43,10 +43,17 @@ public class ActionObject
   private Object object;
   private boolean refresh = false;
   private final List<Message> messages = new ArrayList();
+  private String subviewId;
   
   public ActionObject(Object object)
   {
     this.object = object;
+  }
+  
+  public ActionObject(Object object, String subviewId)
+  {
+    this(object);
+    this.subviewId = subviewId;
   }
 
   public Object getObject()
@@ -67,6 +74,16 @@ public class ActionObject
   public void setRefresh(boolean refresh)
   {
     this.refresh = refresh;
+  }
+
+  public String getSubviewId()
+  {
+    return subviewId;
+  }
+
+  public void setSubviewId(String subviewId)
+  {
+    this.subviewId = subviewId;
   }
 
   public void addInfo(String message, String... params)

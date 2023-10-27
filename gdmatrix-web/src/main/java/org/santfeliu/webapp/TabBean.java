@@ -35,6 +35,7 @@ import java.io.Serializable;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -145,5 +146,12 @@ public abstract class TabBean extends BaseBean
     }
     return null;
   }
-
+  
+  protected Object executeTabAction(String actionName, Object object)
+  {
+    ActionObject actionObject = 
+      getObjectBean().executeTabAction(actionName, object);  
+    return actionObject.getObject();
+  }
+  
 }

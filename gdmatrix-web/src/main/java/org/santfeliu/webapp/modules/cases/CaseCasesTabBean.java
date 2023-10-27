@@ -293,6 +293,7 @@ public class CaseCasesTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
+    executeTabAction("preTabLoad", null);    
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -332,6 +333,7 @@ public class CaseCasesTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
+    executeTabAction("postTabLoad", null);     
   }
 
   public void edit(DataTableRow row)
@@ -368,8 +370,9 @@ public class CaseCasesTabBean extends TabBean
         String refCaseId = getRefCaseId();
         if (refCaseId == null || refCaseId.isEmpty())
           throw new Exception("CASE_MUST_BE_SELECTED");
-
-        CasesModuleBean.getPort(false).storeCaseCase(editing);
+        editing = (CaseCase) executeTabAction("preTabStore", editing);
+        editing = CasesModuleBean.getPort(false).storeCaseCase(editing);
+        executeTabAction("postTabStore", editing);        
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -399,8 +402,10 @@ public class CaseCasesTabBean extends TabBean
     {
       if (row != null)
       {
-        String caseCaseId = row.getRowId();
+        row = (DataTableRow) executeTabAction("preTabRemove", row);        
+        String caseCaseId = row.getRowId();      
         CasesModuleBean.getPort(false).removeCaseCase(caseCaseId);
+        executeTabAction("postTabRemove", row);        
         refreshHiddenTabInstances();
         load();
       }

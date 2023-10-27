@@ -249,6 +249,7 @@ public class CaseEventsTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
+    executeTabAction("preTabLoad", null);    
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -273,6 +274,7 @@ public class CaseEventsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
+    executeTabAction("postTabLoad", null);     
   }
 
   public void create()
@@ -296,7 +298,9 @@ public class CaseEventsTabBean extends TabBean
       {
         String caseId = caseObjectBean.getObjectId();
         editing.setCaseId(caseId);
-        CasesModuleBean.getPort(false).storeCaseEvent(editing);
+        editing = (CaseEvent) executeTabAction("preTabStore", editing);        
+        editing = CasesModuleBean.getPort(false).storeCaseEvent(editing);
+        executeTabAction("postTabStore", editing);        
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -308,14 +312,16 @@ public class CaseEventsTabBean extends TabBean
       error(ex);
     }
   }
-
+  
   public void remove(CaseEventView row)
   {
     if (row != null)
     {
       try
       {
+        row = (CaseEventView) executeTabAction("preTabRemove", row);        
         CasesModuleBean.getPort(false).removeCaseEvent(row.getCaseEventId());
+        executeTabAction("postTabRemove", row);        
         refreshHiddenTabInstances();
         load();
         info("REMOVE_OBJECT");

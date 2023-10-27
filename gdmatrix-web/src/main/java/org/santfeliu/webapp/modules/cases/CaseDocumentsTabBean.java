@@ -272,6 +272,7 @@ public class CaseDocumentsTabBean extends TabBean
   @Override
   public void load()
   {
+    executeTabAction("preTabLoad", null);    
     String objectId = getObjectId();
     if (!NEW_OBJECT_ID.equals(objectId))
     {
@@ -347,6 +348,7 @@ public class CaseDocumentsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
+    executeTabAction("postTabLoad", null);     
   }
 
   @Override
@@ -359,7 +361,9 @@ public class CaseDocumentsTabBean extends TabBean
       {
         editing.setCaseDocTypeId("CaseDocument");
       }
-      CasesModuleBean.getPort(false).storeCaseDocument(editing);
+      editing = (CaseDocument) executeTabAction("preTabStore", editing);      
+      editing = CasesModuleBean.getPort(false).storeCaseDocument(editing);
+      executeTabAction("postTabStore", editing);      
       refreshHiddenTabInstances();
       load();
       editing = null;
@@ -370,7 +374,7 @@ public class CaseDocumentsTabBean extends TabBean
       error(ex);
     }
   }
-
+  
   public void cancel()
   {
     editing = null;
@@ -442,6 +446,8 @@ public class CaseDocumentsTabBean extends TabBean
 
     try
     {
+      caseDocumentToRemove = 
+        (CaseDocumentView) executeTabAction("preTabRemove", caseDocumentToRemove);          
       switch (removeMode)
       {
         case UNLINK:
@@ -502,6 +508,7 @@ public class CaseDocumentsTabBean extends TabBean
         default:
           break;
       }
+      executeTabAction("postTabRemove", caseDocumentToRemove);      
       refreshHiddenTabInstances();
       load();
     }

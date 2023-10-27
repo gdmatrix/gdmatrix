@@ -473,7 +473,7 @@ public class CasePersonsTabBean extends TabBean
   @Override
   public void load()
   {
-    System.out.println("load casePersons:" + getObjectId());
+    executeTabAction("preTabLoad", null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -500,6 +500,7 @@ public class CasePersonsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
+    executeTabAction("postTabLoad", null);     
   }
 
   public void edit(CasePersonView casePersonView)
@@ -536,15 +537,15 @@ public class CasePersonsTabBean extends TabBean
 
       if (editing.getCasePersonTypeId() == null)
         editing.setCasePersonTypeId(DictionaryConstants.CASE_PERSON_TYPE);
-
-      CasesModuleBean.getPort(false).storeCasePerson(editing);
+      editing = (CasePerson) executeTabAction("preTabStore", editing);
+      editing = CasesModuleBean.getPort(false).storeCasePerson(editing);
       if (importAddresses)
       {
         importAddressesFromEditingPerson();
         refreshCaseAddressesTabInstances();
         importAddresses = false;
       }
-
+      executeTabAction("postTabStore", editing);
       refreshHiddenTabInstances();
       load();
       editing = null;
@@ -555,7 +556,7 @@ public class CasePersonsTabBean extends TabBean
       error(ex);
     }
   }
-
+  
   public void cancel()
   {
     editing = null;
@@ -573,8 +574,10 @@ public class CasePersonsTabBean extends TabBean
     {
       if (row != null)
       {
+        row = (CasePersonView) executeTabAction("preTabRemove", row);        
         String casePersonId = row.getCasePersonId();
         CasesModuleBean.getPort(false).removeCasePerson(casePersonId);
+        executeTabAction("postTabRemove", row);        
         refreshHiddenTabInstances();
         load();
       }

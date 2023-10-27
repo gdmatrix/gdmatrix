@@ -292,7 +292,7 @@ public class CaseInterventionsTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    System.out.println("load interventions:" + getObjectId());
+    executeTabAction("preTabLoad", null);    
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -321,6 +321,7 @@ public class CaseInterventionsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
+    executeTabAction("postTabLoad", null);     
   }
 
   public void edit(DataTableRow row)
@@ -352,7 +353,9 @@ public class CaseInterventionsTabBean extends TabBean
   {
     String caseId = getObjectId();
     editing.setCaseId(caseId);
-    CasesModuleBean.getPort(false).storeIntervention(editing);
+    editing = (Intervention) executeTabAction("preTabStore", editing);
+    editing = CasesModuleBean.getPort(false).storeIntervention(editing);
+    executeTabAction("postTabStore", editing);
     refreshHiddenTabInstances();
     load();
     editing = null;
@@ -376,8 +379,10 @@ public class CaseInterventionsTabBean extends TabBean
     {
       if (row != null)
       {
+        row = (DataTableRow) executeTabAction("preTabRemove", row);
         String intId = row.getRowId();
         CasesModuleBean.getPort(false).removeIntervention(intId);
+        executeTabAction("postTabRemove", row);        
         refreshHiddenTabInstances();
         load();
       }

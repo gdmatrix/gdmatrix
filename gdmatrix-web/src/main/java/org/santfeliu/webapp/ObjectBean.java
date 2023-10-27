@@ -329,6 +329,24 @@ public abstract class ObjectBean extends BaseBean
     }
     return actionObject;
   }
+  
+  public ActionObject executeTabAction(String actionName, Object object)
+  {
+    ActionObject actionObject = 
+      new ActionObject(object, getActiveEditTab().getSubviewId());
+    if (actionsClient != null)
+    {
+      Object callable = actionsClient.get(actionName);
+      if (callable instanceof Callable)
+      {
+        actionsClient.put("actionObject", actionObject);
+        actionsClient.execute((Callable)callable);
+        actionObject = (ActionObject) actionsClient.get("actionObject");
+        addFacesMessages(actionObject.getMessages());
+      }
+    }
+    return actionObject;
+  }
 
   protected void addFacesMessages(List<Message> messages)
   {
