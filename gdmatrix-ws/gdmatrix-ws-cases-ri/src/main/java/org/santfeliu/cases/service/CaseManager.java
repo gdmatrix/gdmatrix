@@ -929,7 +929,8 @@ public class CaseManager implements CaseManagerPort
           new String[]{caseAddress.getCaseId(),caseAddress.getAddressId()});
         if (dbCaseAddressId.equals(caseAddressId))
         {
-          em.merge(new DBCaseAddress(caseAddress));
+          dbCaseAddress = new DBCaseAddress(caseAddress);
+          em.merge(dbCaseAddress);
         }
         else
         {
