@@ -80,10 +80,13 @@
         <p:commandButton action="#{caseEventsTabBean.remove(row)}"
                          process="@this"
                          update="@form:cnt:search_tabs:tabs"
+                         resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat"
-                         onclick="return confirm('#{objectBundle.confirm_remove}');">
+                         styleClass="rounded-button ui-button-flat">
+            <p:confirm header="#{objectBundle.confirm_remove_header}"
+                       message="#{objectBundle.confirm_remove_message}"
+                       icon="pi pi-info-circle" />           
         </p:commandButton>
       </p:column>
     </p:dataTable>
