@@ -69,6 +69,7 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.util.ComponentUtils;
 import org.santfeliu.webapp.util.FormImporter;
 import org.santfeliu.webapp.util.WebUtils;
+import org.santfeliu.webapp.validators.JsonValidator;
 
 /**
  *
@@ -344,25 +345,5 @@ public class DynamicPropertiesBean implements Serializable
       if (formSelector.equals(selectItem.getValue())) return true;
     }
     return false;
-  }
-
-  public static class JsonValidator implements Validator<String>
-  {
-    @Override
-    public void validate (FacesContext facesContext, UIComponent component,
-      String json)
-    {
-      try
-      {
-        if (!StringUtils.isBlank(json))
-        {
-          JsonParser.parseString(json);
-        }
-      }
-      catch (Exception ex)
-      {
-        throw new ValidatorException(FacesUtils.getFacesMessage(ex));
-      }
-    }
   }
 }
