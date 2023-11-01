@@ -95,6 +95,8 @@ public class MatrixExceptionHandlerFactory extends ExceptionHandlerFactory
           Throwable throwable = context.getException();
           userSessionBean.setUnhandledError(throwable);
 
+          throwable.printStackTrace();
+
           facesContext.getExternalContext().redirect(UNHANDLED_ERROR_PAGE);
         }
         catch (Exception ex)
