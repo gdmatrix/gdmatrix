@@ -137,6 +137,7 @@ public class CodeMirror extends UIInput
     String value = params.get(inputParam);
 
     setSubmittedValue(value);
+    setValid(true);
   }
 
   @Override
@@ -167,12 +168,14 @@ public class CodeMirror extends UIInput
     writer.writeAttribute("id", editorId, null);
     writer.endElement("div");
 
+    Object value = isValid() ? getValue() : getSubmittedValue();
+
     // encode hidden
     writer.startElement("input", this);
     writer.writeAttribute("type", "hidden", null);
     writer.writeAttribute("id", inputId, null);
     writer.writeAttribute("name", inputId, null);
-    writer.writeAttribute("value", getValue(), null);
+    writer.writeAttribute("value", value, null);
     writer.writeAttribute("autocomplete", "off", null);
     writer.endElement("input");
 
