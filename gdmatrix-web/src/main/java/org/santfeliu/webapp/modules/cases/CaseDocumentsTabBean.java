@@ -307,8 +307,15 @@ public class CaseDocumentsTabBean extends TabBean
 
         filter.setVolume(getCurrentVolume());
         filter.setCaseId(objectId);
-        List<CaseDocumentView> auxList =
-          port.findCaseDocumentViews(filter);
+        List<CaseDocumentView> auxListPre = port.findCaseDocumentViews(filter);
+        
+        //Show only rows with document        
+        List<CaseDocumentView> auxList = new ArrayList();
+        for (CaseDocumentView cdv : auxListPre)
+        {
+          if (cdv.getDocument() != null) auxList.add(cdv);
+        }
+        
         String typeId = getTabBaseTypeId();
         if (typeId == null)
         {
@@ -334,7 +341,7 @@ public class CaseDocumentsTabBean extends TabBean
             }
           }
           getCurrentTabInstance().rows = result;
-        }
+        }        
       }
       catch (Exception ex)
       {
