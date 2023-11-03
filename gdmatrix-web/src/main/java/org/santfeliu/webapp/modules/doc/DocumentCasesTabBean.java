@@ -150,7 +150,7 @@ public class DocumentCasesTabBean extends TabBean
       CasesModuleBean.getPort(false).storeCaseDocument(editing);
       load();
       editing = null;
-      info("STORE_OBJECT");
+      growl("STORE_OBJECT");
     }
     catch (Exception ex)
     {

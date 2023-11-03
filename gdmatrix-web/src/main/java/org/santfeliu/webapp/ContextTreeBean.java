@@ -373,6 +373,7 @@ public class ContextTreeBean implements Serializable
 
     String type = NOP;
     String methodName;
+    String methodParams;
     String label;
 
     public ContextAction()
@@ -381,11 +382,18 @@ public class ContextTreeBean implements Serializable
 
     public ContextAction(String type, String methodName, String label)
     {
+      this(type, methodName, "", label);
+    }
+    
+    public ContextAction(String type, String methodName, String methodParams, 
+      String label)
+    {
       this.type = type;
       this.methodName = methodName;
+      this.methodParams = methodParams;
       this.label = label;
-    }
-
+    }    
+    
     public String getType()
     {
       return type;
@@ -404,6 +412,16 @@ public class ContextTreeBean implements Serializable
     public void setMethodName(String methodName)
     {
       this.methodName = methodName;
+    }
+
+    public String getMethodParams()
+    {
+      return methodParams;
+    }
+
+    public void setMethodParams(String methodParams)
+    {
+      this.methodParams = methodParams;
     }
 
     public String getLabel()

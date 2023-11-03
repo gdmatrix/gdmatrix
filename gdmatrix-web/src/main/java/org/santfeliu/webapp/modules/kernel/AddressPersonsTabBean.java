@@ -199,7 +199,7 @@ public class AddressPersonsTabBean extends TabBean
         editing.setAddressId(addressId);
         KernelModuleBean.getPort(false).storePersonAddress(editing);
         editing = null;
-        info("STORE_OBJECT");
+        growl("STORE_OBJECT");
       }
     }
     catch (Exception ex)
@@ -223,7 +223,7 @@ public class AddressPersonsTabBean extends TabBean
 
       KernelModuleBean.getPort(false).removePersonAddress(rowId);
 
-      info("REMOVE_OBJECT");
+      growl("REMOVE_OBJECT");
       return null;
     }
     catch (Exception ex)

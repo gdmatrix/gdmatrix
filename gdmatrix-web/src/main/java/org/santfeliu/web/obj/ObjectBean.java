@@ -337,7 +337,7 @@ public abstract class ObjectBean extends PageBean
           ((BasicSearchBean)bean).refresh();
         }
       }
-      info("STORE_OBJECT");
+      growl("STORE_OBJECT");
       
       return null;
     }
@@ -366,7 +366,7 @@ public abstract class ObjectBean extends PageBean
         // refresh description
         ObjectDescriptionCache.getInstance().clearDescription(this, objectId);
       }
-      info("CANCEL_OBJECT");
+      growl("CANCEL_OBJECT");
 
       return controllerBean.show();          
     }
@@ -693,7 +693,7 @@ public abstract class ObjectBean extends PageBean
     {
       ((BasicSearchBean)bean).refresh();
     }
-    info("REMOVE_OBJECT");
+    growl("REMOVE_OBJECT");
   }
 
   public void clearObject()

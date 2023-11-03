@@ -180,6 +180,15 @@ public class FacesUtils
     }
     return facesMessage;
   }
+  
+  public static void addMessage(String clientId, String summary, String detail, 
+    Object[] params, FacesMessage.Severity severity)
+  {
+    FacesMessage message = getFacesMessage(summary, params, severity);
+    message.setDetail(detail);
+    FacesContext context = FacesContext.getCurrentInstance();
+    context.addMessage(clientId, message);
+  }  
 
   public static void addMessage(String summary, String detail, Object[] params,
     FacesMessage.Severity severity)

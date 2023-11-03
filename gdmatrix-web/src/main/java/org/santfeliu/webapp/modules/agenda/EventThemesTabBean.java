@@ -170,7 +170,7 @@ public class EventThemesTabBean extends TabBean
         AgendaModuleBean.getClient(false).storeEventTheme(editing);
         editing = null;
         load();
-        info("STORE_OBJECT");
+        growl("STORE_OBJECT");
       }
     }
     catch (Exception ex)
@@ -194,7 +194,7 @@ public class EventThemesTabBean extends TabBean
 
       AgendaModuleBean.getClient(false).removeEventTheme(rowEventThemeId);
       load();
-      info("REMOVE_OBJECT");
+      growl("REMOVE_OBJECT");
     }
     catch (Exception ex)
     {

@@ -341,7 +341,7 @@ public class CaseAddressesTabBean extends TabBean
         refreshHiddenTabInstances();
         load();
         editing = null;
-        info("STORE_OBJECT");
+        growl("STORE_OBJECT");
       }
     }
     catch (Exception ex)
@@ -361,7 +361,7 @@ public class CaseAddressesTabBean extends TabBean
         executeTabAction("postTabRemove", row);
         refreshHiddenTabInstances();
         load();
-        info("REMOVE_OBJECT");
+        growl("REMOVE_OBJECT");
       }
       catch (Exception ex)
       {

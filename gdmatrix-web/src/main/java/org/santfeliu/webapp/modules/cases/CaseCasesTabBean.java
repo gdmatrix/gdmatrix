@@ -376,7 +376,7 @@ public class CaseCasesTabBean extends TabBean
         refreshHiddenTabInstances();
         load();
         editing = null;
-        info("STORE_OBJECT");
+        growl("STORE_OBJECT");
       }
     }
     catch(Exception ex)

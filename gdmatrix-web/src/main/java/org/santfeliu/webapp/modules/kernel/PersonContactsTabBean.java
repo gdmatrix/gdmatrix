@@ -174,7 +174,7 @@ public class PersonContactsTabBean extends TabBean
         editing.setPersonId(getObjectId());
         KernelModuleBean.getPort(false).storeContact(editing);
         editing = null;
-        info("STORE_OBJECT");        
+        growl("STORE_OBJECT");        
       }
       load();
     }

@@ -572,7 +572,7 @@ public class DocumentObjectBean extends ObjectBean
       getPort(false).removeDocument(objectId, version);
       versions = null;
       loadVersion(0);
-      info("REMOVE_OBJECT");
+      growl("REMOVE_OBJECT");
     }
     catch (Exception ex)
     {

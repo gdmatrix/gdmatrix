@@ -365,7 +365,7 @@ public class EventFinderBean extends FinderBean
       String endDateTime = toDateString(ldtEnd);
       updateEvent(eventId, startDateTime, endDateTime);
       scheduleEdit = true;
-      info("EVENT_MOVED");
+      growl("EVENT_MOVED");
     }
     catch (Exception ex)
     {
@@ -384,7 +384,7 @@ public class EventFinderBean extends FinderBean
       String endDateTime = toDateString(ldtEnd);
       updateEvent(eventId, null, endDateTime);
       scheduleEdit = true;
-      info("EVENT_RESIZED");
+      growl("EVENT_RESIZED");
     }
     catch (Exception ex)
     {

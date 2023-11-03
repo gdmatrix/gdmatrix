@@ -436,7 +436,7 @@ public abstract class ObjectBean extends BaseBean
 
       loadObjectSetup();
 
-      info("STORE_OBJECT");
+      growl("STORE_OBJECT");
     }
     catch (Exception ex)
     {
@@ -473,7 +473,7 @@ public abstract class ObjectBean extends BaseBean
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
       navigatorBean.remove();
 
-      info("REMOVE_OBJECT");
+      growl("REMOVE_OBJECT");
     }
     catch (Exception ex)
     {
@@ -490,7 +490,7 @@ public abstract class ObjectBean extends BaseBean
   {
     setEditTabSelector(0);
     load();
-    info("CANCEL_OBJECT");
+    growl("CANCEL_OBJECT");
   }
 
   public void selectTabWithErrors()

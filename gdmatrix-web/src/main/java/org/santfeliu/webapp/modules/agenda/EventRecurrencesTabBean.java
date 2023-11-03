@@ -179,10 +179,10 @@ public class EventRecurrencesTabBean extends TabBean
       if (deleteCount > 0)
       {
         eventFinderBean.outdate();
-        info("RECURRENCES_DELETED", new Object[]{deleteCount});
+        growl("RECURRENCES_DELETED", new Object[]{deleteCount});
       }
       else
-        info("RECURRENCES_NOT_DELETED");
+        growl("RECURRENCES_NOT_DELETED");
     }
     catch (Exception ex)
     {

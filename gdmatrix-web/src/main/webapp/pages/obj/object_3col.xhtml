@@ -69,7 +69,7 @@
           </div>
 
           <p:messages showSummary="true" styleClass="messages" 
-                      showIcon="true" closable="false" severity="error,fatal" 
+                      showIcon="true" closable="false" forIgnores="growl"
                       rendered="#{objectBean.activeTabBean == null or 
                                   !objectBean.activeTabBean.dialogVisible}">
             <p:autoUpdate />
@@ -141,7 +141,7 @@
 
     </div>
 
-    <p:growl id="growl" severity="info,warn" life="1500" >
+    <p:growl for="growl" life="1500" >
       <p:autoUpdate />
     </p:growl>          
     

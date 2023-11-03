@@ -338,7 +338,7 @@ public class EventPersonsTabBean extends TabBean
         refreshHiddenTabInstances();
         load();
         editing = null;
-        info("STORE_OBJECT");
+        growl("STORE_OBJECT");
       }
     }
     catch (Exception ex)
@@ -356,7 +356,7 @@ public class EventPersonsTabBean extends TabBean
         AgendaModuleBean.getClient(false).removeAttendant(row.getAttendantId());
         refreshHiddenTabInstances();
         load();
-        info("REMOVE_OBJECT");
+        growl("REMOVE_OBJECT");
       }
       catch (Exception ex)
       {

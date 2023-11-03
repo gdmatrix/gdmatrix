@@ -101,7 +101,7 @@ public abstract class TerritoryObjectBean extends ObjectBean
   public void cancel()
   {
     load();
-    info("CANCEL_OBJECT");    
+    growl("CANCEL_OBJECT");    
   }
       
   @Override
@@ -121,7 +121,7 @@ public abstract class TerritoryObjectBean extends ObjectBean
         typeBean.updateDescription(objectId, object);
       }
 
-      info("STORE_OBJECT");
+      growl("STORE_OBJECT");
     }
     catch (Exception ex)
     {

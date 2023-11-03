@@ -144,7 +144,7 @@ public class RoleUsersTabBean extends TabBean
       getPort(false).storeUserInRole(editing);
       load();
       editing = null;
-      info("STORE_OBJECT");
+      growl("STORE_OBJECT");
     }
     catch (Exception ex)
     {

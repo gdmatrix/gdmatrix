@@ -401,6 +401,17 @@ public abstract class FacesBean
                           null, FacesMessage.SEVERITY_FATAL);    
   }
   
+  public void growl(String messageId)
+  {
+    this.growl(messageId, null); 
+  }
+  
+  public void growl(String messageId, Object[] params)
+  {
+    FacesUtils.addMessage("growl", messageId, null, params, 
+      FacesMessage.SEVERITY_INFO);    
+  }  
+  
   protected Locale getLocale()
   {
     return getFacesContext().getViewRoot().getLocale();

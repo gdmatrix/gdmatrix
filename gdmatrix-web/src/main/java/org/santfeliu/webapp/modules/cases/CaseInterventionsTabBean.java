@@ -359,7 +359,7 @@ public class CaseInterventionsTabBean extends TabBean
     refreshHiddenTabInstances();
     load();
     editing = null;
-    info("STORE_OBJECT");
+    growl("STORE_OBJECT");
   }
 
   public void cancel()

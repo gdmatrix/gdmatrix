@@ -407,7 +407,7 @@ public class BiometricWorkflowBean extends WorkflowBean
       }
       else if ("Unsigned".equals(docStatus))
       {
-        info("El document encara no ha estat signat");
+        growl("El document encara no ha estat signat");
       }
     }
   }

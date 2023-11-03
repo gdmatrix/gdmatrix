@@ -230,7 +230,7 @@ public class EnumTypeItemsTabBean extends TabBean
       if (editing != null)
       {
         DicModuleBean.getPort(false).storeEnumTypeItem(editing);
-        info("STORE_OBJECT");        
+        growl("STORE_OBJECT");        
         load();        
         editing = null;
       }
@@ -252,7 +252,7 @@ public class EnumTypeItemsTabBean extends TabBean
         editing = null;
 
       DicModuleBean.getPort(false).removeEnumTypeItem(rowEnumTypeItemId);
-      info("REMOVE_OBJECT");
+      growl("REMOVE_OBJECT");
       load();      
     }
     catch (Exception ex)

@@ -43,6 +43,11 @@
   </ui:define>
 
   <ui:define name="object">
+  
+    <p:outputPanel id="search_tabs">
+      <p:outputPanel id="obj_tabs"></p:outputPanel>       
+    </p:outputPanel>
+       
 
     <sf:browser url="#{reportViewerBean.headerURL}"
                 port="#{applicationBean.defaultPort}"

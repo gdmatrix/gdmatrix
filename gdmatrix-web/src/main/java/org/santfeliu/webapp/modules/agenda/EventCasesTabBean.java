@@ -301,7 +301,7 @@ public class EventCasesTabBean extends TabBean
         refreshHiddenTabInstances();
         load();
         editing = null;
-        info("STORE_OBJECT");
+        growl("STORE_OBJECT");
       }
     }
     catch (Exception ex)
@@ -319,7 +319,7 @@ public class EventCasesTabBean extends TabBean
         CasesModuleBean.getPort(false).removeCaseEvent(row.getCaseEventId());
         refreshHiddenTabInstances();
         load();
-        info("REMOVE_OBJECT");
+        growl("REMOVE_OBJECT");
       }
       catch (Exception ex)
       {

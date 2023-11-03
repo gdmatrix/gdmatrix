@@ -214,7 +214,7 @@ public class EventPlacesTabBean extends TabBean
         AgendaModuleBean.getClient(false).storeEventPlace(editing);
         editing = null;
         load();
-        info("STORE_OBJECT");
+        growl("STORE_OBJECT");
       }
     }
     catch (Exception ex)
@@ -240,7 +240,7 @@ public class EventPlacesTabBean extends TabBean
 
       AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
       load();
-      info("REMOVE_OBJECT");
+      growl("REMOVE_OBJECT");
     }
     catch (Exception ex)
     {
