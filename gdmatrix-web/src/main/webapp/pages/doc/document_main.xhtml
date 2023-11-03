@@ -37,7 +37,8 @@
                               requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{documentObjectBean.formSelector}"
                               process="@form:cnt:search_tabs:tabs"
-                              update="@form:cnt:search_tabs:tabs">
+                              update="@form:cnt:search_tabs:tabs"
+                              disabled="#{!documentObjectBean.editable}">
         </emcomp:typeReference>
       </div>
 
@@ -47,7 +48,8 @@
         <p:inputTextarea value="#{documentObjectBean.document.title}"
                          required="#{not empty param['mainform:search_tabs:store']}"
                          requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}"
-                         styleClass="inputfield w-full"/>
+                         styleClass="inputfield w-full"
+                         readonly="#{!documentObjectBean.editable}"/>
       </div>
 
       <div class="field col-12">
@@ -57,7 +59,8 @@
                                        scrollHeight="200"
                                        queryDelay="1000"
                                        minQueryLength="3"
-                                       process="@form:cnt:search_tabs:tabs" />
+                                       process="@form:cnt:search_tabs:tabs" 
+                                       disabled="#{!documentObjectBean.editable}"/>
       </div>
 
       <div class="field col-12 md:col-6 xl:col-3">
@@ -65,7 +68,8 @@
         <p:selectOneMenu
           value="#{documentObjectBean.document.language}"
           touchable="true"
-          required="true">
+          required="true"
+          disabled="#{!documentObjectBean.editable}">
           <f:selectItem itemValue="%%" itemLabel="universal"/>
           <f:selectItem itemValue="ca" itemLabel="#{documentBundle.selectItemCA}"/>
           <f:selectItem itemValue="es" itemLabel="#{documentBundle.selectItemES}"/>
@@ -86,13 +90,15 @@
                       showOnFocus="false"
                       converter="datePickerConverter" pattern="dd/MM/yyyy"
                       showIcon="true" showTime="false"
-                      monthNavigator="true" yearNavigator="true" />
+                      monthNavigator="true" yearNavigator="true" 
+                      disabled="#{!documentObjectBean.editable}"/>
       </div>
 
       <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="@next" value="#{documentBundle.document_state}" />
         <p:selectOneMenu value="#{documentObjectBean.document.state}"
-                         required="true" touchable="true">
+                         required="true" touchable="true"
+                         disabled="#{!documentObjectBean.editable}">
           <f:selectItems value="#{documentObjectBean.documentStateSelectItems}" />
           <f:converter converterId="EnumConverter" />
           <f:attribute name="enum" value="org.matrix.doc.State" />
@@ -109,13 +115,13 @@
                            action="#{documentObjectBean.lock}"
                            process="@this"
                            update="@parent"
-                           disabled="#{documentObjectBean.isNew()}"
+                           disabled="#{!documentObjectBean.editable or documentObjectBean.isNew()}"
                            rendered="#{documentObjectBean.document.lockUserId == null}" />
           <p:commandButton icon="pi pi-unlock"
                            action="#{documentObjectBean.unlock}"
                            process="@this"
                            update="@parent"
-                           disabled="#{documentObjectBean.isNew()}"
+                           disabled="#{!documentObjectBean.editable or documentObjectBean.isNew()}"
                            rendered="#{documentObjectBean.document.lockUserId != null}" />
         </p:outputPanel>
       </div>

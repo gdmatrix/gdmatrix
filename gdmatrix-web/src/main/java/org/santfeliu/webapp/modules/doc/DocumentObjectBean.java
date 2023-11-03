@@ -34,8 +34,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
@@ -46,6 +48,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Type;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
@@ -69,6 +72,9 @@ import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
 import static org.santfeliu.doc.web.DocumentUrlBuilder.DOC_SERVLET_URL;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import static org.matrix.doc.DocumentConstants.DELETE_OLD_VERSIONS;
+import org.matrix.security.AccessControl;
+import org.santfeliu.dic.TypeCache;
+import org.santfeliu.web.UserSessionBean;
 
 /**
  *
@@ -586,6 +592,41 @@ public class DocumentObjectBean extends ObjectBean
     Object[] array = (Object[])state;
     this.document = (Document) array[0];
     this.formSelector = (String)array[1];
+  }
+  
+  @Override
+  public boolean isEditable()
+  {
+    if (UserSessionBean.getCurrentInstance().isUserInRole(
+      DocumentConstants.DOC_ADMIN_ROLE))
+      return true;
+    
+    if (!super.isEditable()) return false; //tab protection
+
+    if (document == null || document.getDocId() == null || 
+      document.getDocTypeId() == null)
+      return true;
+
+    if (isVersionDeleted(document)) return false;    
+        
+    Type currentType =
+      TypeCache.getInstance().getType(document.getDocTypeId());
+    if (currentType == null) return true;
+
+    Set<AccessControl> acls = new HashSet();
+    acls.addAll(currentType.getAccessControl());
+    acls.addAll(document.getAccessControl());
+    for (AccessControl acl : acls)
+    {
+      String action = acl.getAction();
+      if (DictionaryConstants.WRITE_ACTION.equals(action))
+      {
+        String roleId = acl.getRoleId();
+        if (UserSessionBean.getCurrentInstance().isUserInRole(roleId))
+          return true;
+      }
+    }
+    return false;
   }
 
 }

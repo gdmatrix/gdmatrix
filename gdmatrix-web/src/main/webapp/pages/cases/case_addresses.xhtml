@@ -35,7 +35,8 @@
                            update="@form:cnt:search_tabs:case_addresses_dialog"
                            resetValues="true"
                            oncomplete="PF('caseAddressesDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!caseObjectBean.editable}"/>
         </div>
       </f:facet>
 
@@ -98,7 +99,8 @@
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">
+                         styleClass="rounded-button ui-button-flat"
+                         disabled="#{!caseObjectBean.editable}">
             <p:confirm header="#{objectBundle.confirm_remove_header}"
                        message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />          

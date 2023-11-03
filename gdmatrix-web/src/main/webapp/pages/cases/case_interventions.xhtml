@@ -35,7 +35,8 @@
                            update="@form:cnt:search_tabs:case_interventions_dialog"
                            resetValues="true"
                            oncomplete="PF('caseInterventionsDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!caseObjectBean.editable}"/>
         </div>
       </f:facet>
 
@@ -65,7 +66,8 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@form:cnt:search_tabs:case_interventions_dialog"
                            resetValues="true"
-                           oncomplete="PF('caseInterventionsDialog').show()" />
+                           oncomplete="PF('caseInterventionsDialog').show()"
+                           disabled="#{!caseObjectBean.isRowEditable(row.typeId)}" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
                            process="@this"
                            update="@form:cnt:search_tabs:tabs"
@@ -73,7 +75,8 @@
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.values[0] != null}"
-                           styleClass="rounded-button ui-button-flat">
+                           styleClass="rounded-button ui-button-flat"
+                           disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.typeId)}">
             <p:confirm header="#{objectBundle.confirm_remove_header}"
                        message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />

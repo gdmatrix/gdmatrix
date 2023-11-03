@@ -32,16 +32,23 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
+import org.matrix.cases.CaseConstants;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
+import org.matrix.security.AccessControl;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.ActionObject;
@@ -266,5 +273,86 @@ public class CaseObjectBean extends ObjectBean
     this.cas = (Case) array[0];
     this.formSelector = (String)array[1];
   }
+  
+  @Override
+  public boolean isEditable()
+  {
+    if (UserSessionBean.getCurrentInstance().isUserInRole(
+      CaseConstants.CASE_ADMIN_ROLE))
+      return true;
+    
+    if (!super.isEditable()) return false; //tab protection
+
+    if (cas == null || cas.getCaseId() == null || cas.getCaseTypeId() == null)
+      return true;
+    
+    Type currentType =
+      TypeCache.getInstance().getType(cas.getCaseTypeId());
+    if (currentType == null) return true;
+
+    Set<AccessControl> acls = new HashSet();
+    acls.addAll(currentType.getAccessControl());
+    acls.addAll(cas.getAccessControl());
+    for (AccessControl acl : acls)
+    {
+      String action = acl.getAction();
+      if (DictionaryConstants.WRITE_ACTION.equals(action))
+      {
+        String roleId = acl.getRoleId();
+        if (UserSessionBean.getCurrentInstance().isUserInRole(roleId))
+          return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean isRowEditable(String rowTypeId)
+  {
+    return isRowActionEnabled(rowTypeId, DictionaryConstants.WRITE_ACTION);
+  }
+  
+  public boolean isRowRemovable(String rowTypeId)
+  {
+    return isRowActionEnabled(rowTypeId, DictionaryConstants.DELETE_ACTION);
+  }
+  
+  //Private methods
+
+  private boolean isRowActionEnabled(String rowTypeId, String actionName)
+  {
+    if (UserSessionBean.getCurrentInstance().isUserInRole(
+      CaseConstants.CASE_ADMIN_ROLE))
+      return true;    
+    
+    if (rowTypeId == null) return true;
+    
+    TypeCache typeCache =  TypeCache.getInstance();
+    
+    String auxTypeId = rowTypeId;     
+    org.matrix.dic.Type auxType = typeCache.getType(auxTypeId);
+    if (auxType == null)
+      return true;
+
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
+    boolean searchAscendants = true;
+    while (auxType != null && searchAscendants)
+    {
+      Set<AccessControl> acls = new HashSet();
+      acls.addAll(auxType.getAccessControl());    
+      for (AccessControl acl : acls)
+      {
+        String action = acl.getAction();
+        if (actionName.equals(action))
+        {
+          String roleId = acl.getRoleId();
+          if (userSessionBean.isUserInRole(roleId)) return true;
+          searchAscendants = false; 
+        }
+      }
+      String superTypeId = auxType.getSuperTypeId();
+      auxType = (superTypeId == null ? null : typeCache.getType(superTypeId));
+    }
+    return false;
+  }  
 
 }

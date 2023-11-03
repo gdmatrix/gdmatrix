@@ -126,7 +126,8 @@
            process="@this" update="@form:cnt:search_tabs"
            icon="pi pi-pencil" style="width:auto"
            rendered="#{documentObjectBean.content.contentId != null}"
-           alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
+           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+           disabled="#{!documentObjectBean.editable}" />
        
         <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
           action="#{documentObjectBean.documentEdited}"
@@ -147,7 +148,8 @@
                         update="@root:@id(content_properties)"
                         sizeLimit="200000000"
                         global="false"
-                        dropZone="file_upload">
+                        dropZone="file_upload"
+                        disabled="#{!documentObjectBean.editable}">
           </p:fileUpload>
         </p:tab>
 

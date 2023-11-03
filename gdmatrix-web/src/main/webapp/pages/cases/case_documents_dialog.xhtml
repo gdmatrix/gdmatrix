@@ -51,7 +51,8 @@
                                   onselect="PF('caseDocumentsDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_documents_store']}"
                                   requiredMessage="#{messageBundle.DOCUMENT_MUST_BE_SELECTED}"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!caseObjectBean.editable}">
           </emcomp:objectReference>
         </div>
 
@@ -72,7 +73,8 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_documents_store']}"
-                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                disabled="#{!caseObjectBean.editable}">
           </emcomp:typeReference>
         </div>
 
@@ -82,7 +84,8 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_volume}" />
           <p:selectOneMenu value="#{caseDocumentsTabBean.editing.volume}" 
-                           editable="true" var="itemValue">
+                           editable="true" var="itemValue"
+                           disabled="#{!caseObjectBean.editable}">
             <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
             <p:column>
               <h:outputText value="#{itemValue}" />
@@ -94,7 +97,8 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_comments}" />
-          <p:inputTextarea value="#{caseDocumentsTabBean.editing.comments}" />
+          <p:inputTextarea value="#{caseDocumentsTabBean.editing.comments}" 
+                           readonly="#{!caseObjectBean.editable}"/>
         </div>
 
       </div>
@@ -110,7 +114,7 @@
                          process="case_documents_dialog"
                          update="@form:cnt:search_tabs:tabs case_documents_panel"
                          oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').hide()"
-                         />
+                         disabled="#{!caseObjectBean.editable}" />
         <p:commandButton action="#{caseDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
@@ -151,7 +155,8 @@
 
       <div class="field col-12 mt-4">
         <p:selectOneRadio id="removeMode" 
-                          value="#{caseDocumentsTabBean.removeMode}">
+                          value="#{caseDocumentsTabBean.removeMode}"
+                          disabled="#{!caseObjectBean.editable}">
           <f:selectItem itemValue="unlink" />
           <f:selectItem itemValue="remove" />
           <f:selectItem itemValue="removeAll" />
@@ -186,7 +191,7 @@
                          process="remove_document_dialog"
                          update="@form:cnt:search_tabs:tabs @form:cnt:context_panel"
                          oncomplete="if (!isFacesError()) PF('removeDocumentDialog').hide()"
-                         />
+                         disabled="#{!caseObjectBean.editable}" />
         <p:commandButton styleClass="m-1" value="#{objectBundle.cancel}"
                          action="#{caseDocumentsTabBean.cancelRemove}"
                          process="@this"

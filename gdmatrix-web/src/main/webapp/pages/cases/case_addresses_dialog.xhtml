@@ -48,7 +48,8 @@
                                   onselect="PF('caseAddressesDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_addresses_store']}"
                                   requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!caseObjectBean.editable}">
           </emcomp:objectReference>
         </div>
 
@@ -69,7 +70,8 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_addresses_store']}"
-                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                disabled="#{!caseObjectBean.editable}">
           </emcomp:typeReference>
         </div>
 
@@ -82,7 +84,8 @@
                         pattern="dd/MM/yyyy"
                         placeholder="dd/MM/yyyy"
                         showOnFocus="false" showIcon="true"
-                        monthNavigator="true" yearNavigator="true"  />
+                        monthNavigator="true" yearNavigator="true"
+                        disabled="#{!caseObjectBean.editable}" />
         </p:outputPanel>
 
         <p:outputPanel class="field col-12 md:col-3">
@@ -93,20 +96,23 @@
                         pattern="dd/MM/yyyy"
                         placeholder="dd/MM/yyyy"
                         showOnFocus="false" showIcon="true"
-                        monthNavigator="true" yearNavigator="true"  />
+                        monthNavigator="true" yearNavigator="true"
+                        disabled="#{!caseObjectBean.editable}" />
         </p:outputPanel>
 
         <!-- Comments -->
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseAddresses_comments}" />
-          <p:inputTextarea value="#{caseAddressesTabBean.editing.comments}" />
+          <p:inputTextarea value="#{caseAddressesTabBean.editing.comments}" 
+                           readonly="#{!caseObjectBean.editable}"/>
         </div>
 
         <!-- Import persons -->
         <div class="field-checkbox col-12">
           <p:selectBooleanCheckbox value="#{caseAddressesTabBean.importPersons}"
-                                   itemLabel="#{caseBundle.caseAddresses_importPersons}" />
+                                   itemLabel="#{caseBundle.caseAddresses_importPersons}"
+                                   disabled="#{!caseObjectBean.editable}"/>
         </div>
 
       </div>
@@ -121,7 +127,7 @@
                          process="case_addresses_dialog"
                          update="@form:cnt:search_tabs:tabs case_addresses_panel"
                          oncomplete="if (!isFacesError()) PF('caseAddressesDialog').hide()"
-                         />
+                         disabled="#{!caseObjectBean.editable}"/>
         <p:commandButton action="#{caseAddressesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"

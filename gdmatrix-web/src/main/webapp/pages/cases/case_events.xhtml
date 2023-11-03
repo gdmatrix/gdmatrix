@@ -35,7 +35,8 @@
                            update="@form:cnt:search_tabs:case_events_dialog"
                            resetValues="true"
                            oncomplete="PF('caseEventsDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!caseObjectBean.editable}"/>
         </div>
       </f:facet>
 
@@ -76,14 +77,16 @@
                          update="@form:cnt:search_tabs:case_events_dialog"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"
-                         oncomplete="PF('caseEventsDialog').show()" />
+                         oncomplete="PF('caseEventsDialog').show()"
+                         disabled="#{!caseObjectBean.isRowEditable(row.caseEventTypeId)}" />
         <p:commandButton action="#{caseEventsTabBean.remove(row)}"
                          process="@this"
                          update="@form:cnt:search_tabs:tabs"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">
+                         styleClass="rounded-button ui-button-flat"
+                         disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.caseEventTypeId)}">
             <p:confirm header="#{objectBundle.confirm_remove_header}"
                        message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />           

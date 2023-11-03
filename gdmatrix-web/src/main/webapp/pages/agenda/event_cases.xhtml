@@ -73,14 +73,15 @@
                          update="@form:cnt:search_tabs:event_cases_dialog"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"
-                         oncomplete="PF('eventCasesDialog').show()" />
+                         oncomplete="PF('eventCasesDialog').show()"
+                         disabled="#{!caseObjectBean.isRowEditable(row.caseEventTypeId)}" />
         <p:commandButton action="#{eventCasesTabBean.remove(row)}"
                          process="@this"
                          update="@form:cnt:search_tabs:tabs"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
-                         disabled="#{!eventObjectBean.editable}">
+                         disabled="#{!eventObjectBean.editable or !caseObjectBean.isRowRemovable(row.caseEventTypeId)}">
           <p:confirm header="#{objectBundle.confirm_remove_header}"
                      message="#{objectBundle.confirm_remove_message}"
                      icon="pi pi-info-circle" />

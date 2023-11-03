@@ -26,7 +26,8 @@
                            update="@parent:@parent:@parent:document_cases_dialog"
                            resetValues="true"
                            oncomplete="PF('documentCasesDialog').show()"                                 
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!documentObjectBean.editable}"/>                 
         </div>
       </f:facet>      
 
@@ -66,7 +67,8 @@
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
+                         styleClass="rounded-button ui-button-flat"
+                         disabled="#{!documentObjectBean.editable}">            
           <p:confirm header="Desvincular expedient #{row.caseObject.caseId}" 
                      message="Segur que vols desvincular aquest expedient del document?" icon="pi pi-info-circle" />
         </p:commandButton>
@@ -116,7 +118,8 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   required="#{not empty param['mainform:search_tabs:tabs:document_cases_store']}"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!documentObjectBean.editable}">
           </emcomp:objectReference>
         </div>              
 
@@ -125,7 +128,8 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="Volume" />
-          <p:inputText value="#{documentCasesTabBean.editing.volume}" />
+          <p:inputText value="#{documentCasesTabBean.editing.volume}"
+                       readonly="#{!documentObjectBean.editable}"/>
         </div>
 
         <!-- Comments -->
@@ -133,7 +137,8 @@
           <p:outputLabel for="@next"
                          value="Comments" />
           <p:inputTextarea 
-            value="#{documentCasesTabBean.editing.comments}" />
+            value="#{documentCasesTabBean.editing.comments}"
+            readonly="#{!documentObjectBean.editable}"/>
         </div>
 
       </div>
@@ -149,7 +154,7 @@
                          process="document_cases_dialog"
                          update="document_cases_table document_cases_panel"
                          oncomplete="if (!isFacesError()) PF('documentCasesDialog').hide()"
-                         />
+                         disabled="#{!documentObjectBean.editable}" />
         <p:commandButton action="#{documentCasesTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"

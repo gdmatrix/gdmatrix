@@ -60,7 +60,8 @@
                            update="@parent:@parent:@parent:case_acl_dialog"
                            resetValues="true"
                            oncomplete="PF('caseACLDialog').show()"                                 
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!caseObjectBean.editable}"/>                 
         </div>
       </f:facet>      
 
@@ -95,7 +96,8 @@
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
+                         styleClass="rounded-button ui-button-flat"
+                         disabled="#{!caseObjectBean.editable}">            
           <p:confirm header="Esborrar rol #{row.roleId}" 
                      message="Segur que vols esorrar el rol?" icon="pi pi-info-circle" />
         </p:commandButton>
@@ -147,7 +149,8 @@
                                   onselect="PF('caseACLDialog').show();"                                  
                                   required="#{not empty param['mainform:search_tabs:tabs:case_acl_store']}"
                                   renderShowButton="false"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!caseObjectBean.editable}">
           </emcomp:objectReference>
         </div>              
 
@@ -155,7 +158,8 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseACL_actions}" />
           <p:selectManyCheckbox value="#{caseACLTabBean.editing.actions}" 
-                                layout="responsive" columns="3">
+                                layout="responsive" columns="3"
+                                disabled="#{!caseObjectBean.editable}">
             <f:selectItems value="#{caseACLTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
@@ -173,7 +177,7 @@
                          process="case_acl_dialog"
                          update="case_acl_table case_acl_panel"
                          oncomplete="if (!isFacesError()) PF('caseACLDialog').hide()"
-                         />
+                         disabled="#{!caseObjectBean.editable}"/>
         <p:commandButton action="#{caseACLTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"

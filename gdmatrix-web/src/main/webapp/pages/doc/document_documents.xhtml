@@ -32,7 +32,8 @@
                            update="@parent:@parent:@parent:document_documents_dialog"
                            resetValues="true"
                            oncomplete="PF('documentDocumentsDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!documentObjectBean.editable}"/>
         </div>
       </f:facet>
 
@@ -69,7 +70,8 @@
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">
+                         styleClass="rounded-button ui-button-flat"
+                         disabled="#{!documentObjectBean.editable}">
           <p:confirm header="Desvincular expedient #{row.relatedDocument.docId}"
                      message="Segur que vols esborrar aquest document?" icon="pi pi-info-circle" />
         </p:commandButton>
@@ -110,7 +112,8 @@
                          value="#{documentBundle.relation}" />
           <p:selectOneMenu value="#{documentDocumentsTabBean.editing.relatedDocument.relationType}"
                            touchable="true" var="itemValue"
-                           required="true">
+                           required="true"
+                           disabled="#{!documentObjectBean.editable}">
             <f:selectItems value="#{documentDocumentsTabBean.relationTypes}"
                            var="item"
                            itemValue="#{item}"
@@ -126,7 +129,8 @@
                          value="#{documentBundle.name}"
                          indicateRequired="true" />
           <p:inputText value="#{documentDocumentsTabBean.editing.relatedDocument.name}"
-                       required="#{not empty param['mainform:search_tabs:tabs:document_documents_store']}" />
+                       required="#{not empty param['mainform:search_tabs:tabs:document_documents_store']}"
+                       readonly="#{!documentObjectBean.editable}"/>
         </div>
 
         <div class="field col-12">
@@ -143,7 +147,8 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   required="#{not empty param['mainform:search_tabs:tabs:document_documents_store']}"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!documentObjectBean.editable}">
           </emcomp:objectReference>
         </div>
 
@@ -166,7 +171,7 @@
                          process="document_documents_dialog"
                          update="document_documents_table document_documents_panel"
                          oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').hide()"
-                         />
+                         disabled="#{!documentObjectBean.editable}"/>
         <p:commandButton action="#{documentDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"

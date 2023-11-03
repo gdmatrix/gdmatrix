@@ -52,7 +52,8 @@
                                   oncomplete="PF('caseCasesDialog').hide();"
                                   onselect="PF('caseCasesDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_cases_store']}"
-                                  requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}">
+                                  requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}"
+                                  disabled="#{!caseObjectBean.editable}">
           </emcomp:objectReference>
         </p:outputPanel>
 
@@ -75,7 +76,8 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 process="@form:cnt:search_tabs:case_cases_dialog"
-                                update="@form:cnt:search_tabs:case_cases_panel">
+                                update="@form:cnt:search_tabs:case_cases_panel"
+                                disabled="#{!caseObjectBean.editable}">
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -88,7 +90,8 @@
                         locale="#{caseCasesTabBean.language}" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
+                        monthNavigator="true" yearNavigator="true" 
+                        disabled="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
         <p:outputPanel class="field col-12 md:col-3">
@@ -99,14 +102,16 @@
                         locale="#{caseCasesTabBean.language}" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
+                        monthNavigator="true" yearNavigator="true" 
+                        disabled="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
         <!-- Comments -->
         <p:outputPanel class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_comments}" />
-          <p:inputTextarea value="#{caseCasesTabBean.editing.comments}" />
+          <p:inputTextarea value="#{caseCasesTabBean.editing.comments}" 
+                           readonly="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
       </div>
@@ -122,7 +127,8 @@
                        styleClass="m-1" value="#{objectBundle.store}"
                        process="case_cases_dialog"
                        update="@form:cnt:search_tabs:tabs case_cases_panel"
-                       oncomplete="if (!isFacesError()) PF('caseCasesDialog').hide()"/>
+                       oncomplete="if (!isFacesError()) PF('caseCasesDialog').hide()"
+                       disabled="#{!caseObjectBean.editable}"/>
       <p:commandButton action="#{caseCasesTabBean.cancel}"
                        styleClass="m-1" value="#{objectBundle.cancel}"
                        process="@this"

@@ -294,13 +294,14 @@
                          update="@form:cnt:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
                          oncomplete="PF('versionsPanel').hide()"
-                         />
+                         disabled="#{!documentObjectBean.editable}"/>
         <p:commandButton value="#{documentBundle.purge}"
                          action="#{documentObjectBean.purgeVersions}"
                          process="@this"
                          update="@form:cnt:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
-                         oncomplete="PF('versionsPanel').hide()">
+                         oncomplete="PF('versionsPanel').hide()"
+                         disabled="#{!documentObjectBean.editable}">
           <p:confirm header="#{objectBundle.confirm_remove_header}"
                      message="#{objectBundle.confirm_remove}"
                      icon="pi pi-info-circle" />

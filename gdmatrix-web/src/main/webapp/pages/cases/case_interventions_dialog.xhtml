@@ -54,7 +54,8 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseInterventionsTabBean.formSelector}"
                                 process="@form:cnt:search_tabs:case_interventions_dialog"
-                                update="@form:cnt:search_tabs:case_interventions_panel">
+                                update="@form:cnt:search_tabs:case_interventions_panel"
+                                disabled="#{!caseObjectBean.editable}">
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -69,7 +70,8 @@
                         locale="#{caseInterventionsTabBean.language}" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm"
                         showIcon="true" showTime="true"
-                        monthNavigator="true" yearNavigator="true" />
+                        monthNavigator="true" yearNavigator="true"
+                        disabled="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
         <p:outputPanel class="field col-12 md:col-3">
@@ -80,7 +82,8 @@
                         locale="#{caseInterventionsTabBean.language}" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm"
                         showIcon="true" showTime="true"
-                        monthNavigator="true" yearNavigator="true" />
+                        monthNavigator="true" yearNavigator="true"
+                        disabled="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
         <!-- Person -->
@@ -97,7 +100,8 @@
                                   onselect="PF('caseInterventionsDialog').show();"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!caseObjectBean.editable}">
           </emcomp:objectReference>
         </p:outputPanel>
 
@@ -105,7 +109,8 @@
         <p:outputPanel class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_comments}" />
-          <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}"/>
+          <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}"
+                           readonly="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
       </div>
@@ -123,7 +128,8 @@
                        styleClass="m-1" value="#{objectBundle.store}"
                        process="case_interventions_dialog"
                        update="@form:cnt:search_tabs:tabs case_interventions_panel"
-                       oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').hide()"/>
+                       oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').hide()"
+                       disabled="#{!caseObjectBean.editable}"/>
       <p:commandButton action="#{caseInterventionsTabBean.cancel}"
                        styleClass="m-1" value="#{objectBundle.cancel}"
                        process="@this"

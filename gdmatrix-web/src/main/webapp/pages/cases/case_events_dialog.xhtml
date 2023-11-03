@@ -51,7 +51,8 @@
                                   onselect="PF('caseEventsDialog').show();"
                                   required="#{not empty param['mainform:search_tabs:case_events_store']}"
                                   requiredMessage="#{messageBundle.EVENT_MUST_BE_SELECTED}"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!caseObjectBean.editable}">
           </emcomp:objectReference>
         </div>
 
@@ -74,7 +75,8 @@
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_events_store']}"
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
-                                formSelector="#{caseEventsTabBean.formSelector}">           
+                                formSelector="#{caseEventsTabBean.formSelector}"
+                                disabled="#{!caseObjectBean.editable}">           
           </emcomp:typeReference>
         </div>
 
@@ -82,7 +84,8 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseEvents_comments}" />
-          <p:inputTextarea value="#{caseEventsTabBean.editing.comments}" />
+          <p:inputTextarea value="#{caseEventsTabBean.editing.comments}"
+                           readonly="#{!caseObjectBean.editable}"/>
         </div>
 
       </div>
@@ -102,7 +105,7 @@
                          process="case_events_dialog"
                          update="@form:cnt:search_tabs:tabs case_events_panel"
                          oncomplete="if (!isFacesError()) PF('caseEventsDialog').hide()"
-                         />
+                         disabled="#{!caseObjectBean.editable}"/>
         <p:commandButton action="#{caseEventsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"

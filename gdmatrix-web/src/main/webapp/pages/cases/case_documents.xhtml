@@ -44,7 +44,8 @@
                            update="@form:cnt:search_tabs:case_documents_dialog"
                            resetValues="true"
                            oncomplete="PF('caseDocumentsDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!caseObjectBean.editable}"/>
         </div>
       </f:facet>
 
@@ -100,13 +101,15 @@
                          update="@form:cnt:search_tabs:case_documents_dialog"
                          resetValues="true"
                          oncomplete="PF('caseDocumentsDialog').show()"
-                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}" /> 
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         disabled="#{!caseObjectBean.isRowEditable(row.caseDocTypeId)}" /> 
         <p:commandButton icon="pi pi-trash"
                          action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"
                          process="@form:cnt:search_tabs:tabs"
                          update="@form:cnt:search_tabs:remove_document_dialog"
                          oncomplete="PF('removeDocumentDialog').show()"
-                         styleClass="rounded-button ui-button-flat" />
+                         styleClass="rounded-button ui-button-flat" 
+                         disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.caseDocTypeId)}" />
       </p:column>
     </p:dataTable>
     

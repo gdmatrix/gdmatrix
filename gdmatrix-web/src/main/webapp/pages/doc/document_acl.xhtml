@@ -66,7 +66,8 @@
                            update="@parent:@parent:@parent:document_acl_dialog"
                            resetValues="true"
                            oncomplete="PF('documentACLDialog').show()"                                 
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!documentObjectBean.editable}"/>                 
         </div>
       </f:facet>      
 
@@ -100,7 +101,8 @@
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
+                         styleClass="rounded-button ui-button-flat"
+                         disabled="#{!documentObjectBean.editable}">            
           <p:confirm header="Esborrar rol #{row.roleId}" 
                      message="Segur que vols esorrar el rol?" icon="pi pi-info-circle" />
         </p:commandButton>
@@ -152,7 +154,8 @@
                                   queryDelay="1000"
                                   required="#{not empty param['mainform:search_tabs:tabs:document_acl_store']}"
                                   renderShowButton="false"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  disabled="#{!documentObjectBean.editable}">
           </emcomp:objectReference>
         </div>              
 
@@ -160,7 +163,8 @@
           <p:outputLabel for="@next"
                          value="Actions:" />
           <p:selectManyCheckbox value="#{documentACLTabBean.editing.actions}" 
-                                layout="responsive" columns="3">
+                                layout="responsive" columns="3"
+                                disabled="#{!documentObjectBean.editable}">
             <f:selectItems value="#{documentACLTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
@@ -178,7 +182,7 @@
                          process="document_acl_dialog"
                          update="document_acl_table document_acl_panel"
                          oncomplete="if (!isFacesError()) PF('documentACLDialog').hide()"
-                         />
+                         disabled="#{!documentObjectBean.editable}"/>
         <p:commandButton action="#{documentACLTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
