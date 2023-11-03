@@ -49,10 +49,11 @@ import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
-import org.santfeliu.webapp.setup.ScriptActions.Action;
+import org.santfeliu.webapp.setup.Action;
 import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.ActionObject.Message;
 import org.santfeliu.webapp.setup.ActionObject.Message.Severity;
+import org.santfeliu.webapp.setup.ScriptActions;
 import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.ComponentUtils;
 
@@ -66,7 +67,8 @@ public abstract class ObjectBean extends BaseBean
   private int searchTabSelector;
   private int editTabSelector;
   private transient ObjectSetup objectSetup;
-  protected ScriptClient actionsClient;
+  private ScriptClient actionsClient;
+  private ScriptActions scriptActions;
 
   @Override
   public ObjectBean getObjectBean()
@@ -171,6 +173,11 @@ public abstract class ObjectBean extends BaseBean
   {
     return objectSetup;
   }
+  
+  public ScriptActions getScriptActions()
+  {
+    return scriptActions;
+  }  
 
   public TabBean getTabBean(EditTab editTab)
   {
@@ -202,7 +209,7 @@ public abstract class ObjectBean extends BaseBean
       loadObject();
       loadObjectSetup();
       loadActiveEditTab();
-      loadActionsClient();
+      loadActions();
 
       Object object = getObject();
       TypeBean typeBean = getTypeBean();
@@ -279,30 +286,44 @@ public abstract class ObjectBean extends BaseBean
       }
     }
   }
-
-  public void loadActionsClient()
+  
+  public void loadActions()
   {
     String actionsScriptName =
       (String) getObjectSetup().getScriptActions().getScriptName();
 
     if (actionsScriptName != null)
     {
+      scriptActions = new ScriptActions(actionsScriptName);
+      scriptActions.getActions().addAll(
+        getObjectSetup().getScriptActions().getActions());
       try
       {
         actionsClient = new ScriptClient();
         actionsClient.executeScript(actionsScriptName);
-      }
+        Object callable = actionsClient.get("getActions");
+        if (callable instanceof Callable)
+        {
+          List<Action> actionList = 
+            (List<Action>) actionsClient.execute((Callable)callable);
+          
+          if (actionList != null)
+            scriptActions.getActions().addAll(actionList);
+        }        
+      }                
       catch (Exception ex)
       {
         error(ex);
         actionsClient = null;
       }
     }
+    else
+      scriptActions = null;
   }
 
   public void callAction(String actionName)
   {
-    Action action = getObjectSetup().getScriptActions().getAction(actionName);
+    Action action = scriptActions.getAction(actionName);
     if (action != null)
       executeAction(action.getName());
   }

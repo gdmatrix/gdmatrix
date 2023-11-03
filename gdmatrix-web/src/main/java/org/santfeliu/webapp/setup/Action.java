@@ -30,56 +30,80 @@
  */
 package org.santfeliu.webapp.setup;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author blanquepa
  */
-public class ScriptActions implements Serializable
+public class Action
 {
-  private String scriptName;
-  private final List<Action> actions;
-  
-  public ScriptActions()
+  private String label;
+  private String name;
+  private String icon;
+
+  public Action(String label, String name)
   {
-    this.actions = new ArrayList();
-  }
-  
-  public ScriptActions(String scriptName)
-  {
-    this();
-    this.scriptName = scriptName;
-  }
-  
-  public String getScriptName()
-  {
-    return scriptName;
+    this.label = label;
+    this.name = name;
   }
 
-  public void setScriptName(String scriptName)
+  public Action(String label, String name, String icon)
   {
-    this.scriptName = scriptName;
+    this.label = label;
+    this.name = name;
+    this.icon = icon;
   }
 
-  public List<Action> getActions()
+  public String getLabel()
   {
-    return actions;
+    return label;
   }
-  
-  public Action getAction(String name)
+
+  public void setLabel(String label)
   {
-    Action action = null;
-    if (actions != null && name != null)
-    {
-      action = actions.stream()
-        .filter(a -> name.equals(a.getName()))
-        .findFirst()
-        .orElse(null);
-    }
-    return action;
-  } 
+    this.label = label;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+
+  public String getIcon()
+  {
+    return icon;
+  }
+
+  public void setIcon(String icon)
+  {
+    this.icon = icon;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 73 * hash + Objects.hashCode(this.name);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    final Action other = (Action) obj;
+    return Objects.equals(this.name, other.name);
+  }
 
 }

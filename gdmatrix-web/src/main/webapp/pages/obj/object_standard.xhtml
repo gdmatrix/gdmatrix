@@ -84,8 +84,8 @@
         </p:commandButton>
         <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
                       title="#{objectBundle.actions}"
-                      rendered="#{not objectBean.isNew() and not empty objectBean.objectSetup.scriptActions.actions}">
-          <c:forEach items="#{objectBean.objectSetup.scriptActions.actions}" var="action" >
+                      rendered="#{not objectBean.isNew() and not empty objectBean.scriptActions.actions}">
+          <c:forEach items="#{objectBean.scriptActions.actions}" var="action" >
             <p:menuitem icon="#{action.icon}"
                         value="#{action.label}" action="#{objectBean.callAction(action.name)}"
                         rendered="#{not empty action.label}" process="@this"
