@@ -38,6 +38,8 @@ import java.util.Objects;
  */
 public class Action
 {
+  private static final String URL_PREFIX = "url:";
+    
   private String label;
   private String name;
   private String icon;
@@ -84,6 +86,25 @@ public class Action
   {
     this.icon = icon;
   }
+  
+  public boolean isUrlAction()
+  {
+    return this.name != null && this.name.startsWith(URL_PREFIX);
+  }
+  
+  public String getUrl()
+  {
+    if (this.name != null && this.name.startsWith(URL_PREFIX))
+      return this.name.substring(URL_PREFIX.length());    
+    else
+      return this.name;
+  }
+  
+  public String getUrlTarget()
+  {   
+    String url = getUrl();
+    return url != null && url.matches("https?://.*") ? "_blank" : "_self";
+  }  
 
   @Override
   public int hashCode()

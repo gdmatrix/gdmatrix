@@ -304,6 +304,7 @@ public abstract class ObjectBean extends BaseBean
         Object callable = actionsClient.get("getActions");
         if (callable instanceof Callable)
         {
+          actionsClient.put("actionObject", new ActionObject(getObject()));          
           List<Action> actionList = 
             (List<Action>) actionsClient.execute((Callable)callable);
           
