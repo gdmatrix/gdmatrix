@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlOutputText;
 import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -81,10 +82,7 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
     UIComponent panel = event.getComponent();
-    if (panel.getChildren().isEmpty())
-    {
-      updateComponents(panel);
-    }
+    updateComponents(panel);
   }
 
   public void doAction(String name, String value)
@@ -114,14 +112,23 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
   {
     try
     {
-      panel.getChildren().clear();
+      HtmlOutputText hidden =
+        (HtmlOutputText)panel.findComponent("form_selector");
+      String actualFormSelector = (String)hidden.getStyleClass();
 
-      Map<String, Object> options = new HashMap<>();
-      options.put(ACTION_METHOD_OPTION, "flexWorkflowBean.doAction");
-      options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
+      if (!selector.equals(actualFormSelector))
+      {
+        hidden.setStyleClass(selector);
 
-      ComponentUtils.includeFormComponents(panel, selector,
-         "flexWorkflowBean.data", data, options);
+        panel.getChildren().clear();
+
+        Map<String, Object> options = new HashMap<>();
+        options.put(ACTION_METHOD_OPTION, "flexWorkflowBean.doAction");
+        options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
+
+        ComponentUtils.includeFormComponents(panel, selector,
+           "flexWorkflowBean.data", data, options);
+      }
     }
     catch (Exception ex)
     {
