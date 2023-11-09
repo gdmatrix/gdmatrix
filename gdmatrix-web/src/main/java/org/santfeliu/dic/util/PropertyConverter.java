@@ -254,7 +254,8 @@ public class PropertyConverter
 
   private boolean isHtml(String value)
   {
-    return value != null && value.startsWith("<") && value.endsWith(">");
+    return value != null && value.trim().startsWith("<") && 
+      value.trim().endsWith(">");
   }
 
   private String fixHtml(String svalue)
