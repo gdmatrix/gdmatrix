@@ -92,19 +92,22 @@ public class FormImporter
   protected Map<String, Object> options = new HashMap<>();
   protected Form form;
   protected UIComponent formRoot;
-  protected String propertyPath;
+  protected String propertyPathUni;
+  protected String propertyPathMulti;  
   protected HashSet<String> importedReferences = new HashSet<>();
 
   public Map<String, Object> getOptions()
   {
     return options;
   }
-
-  public void importForm(Form form, UIComponent formRoot, String propertyPath)
+  
+  public void importForm(Form form, UIComponent formRoot, 
+    String propertyPathUni, String propertyPathMulti)
   {
     this.form = form;
     this.formRoot = formRoot;
-    this.propertyPath = propertyPath;
+    this.propertyPathUni = propertyPathUni;
+    this.propertyPathMulti = propertyPathMulti;
 
     if (form instanceof HtmlForm)
     {
@@ -604,11 +607,13 @@ public class FormImporter
         group.getChildren().add(label);
       }
 
-      String expression = "#{" + propertyPath + (isMultiple ? "s" : "") +
-        "[\"" + reference + "\"]}";
+      String propertyPath = isMultiple ? propertyPathMulti : propertyPathUni;
+      
+      String expression = "#{" + propertyPath + "[\"" + reference + "\"]}";
 
-      ValueExpression valueExpression
-        = WebUtils.createValueExpression(expression, Object.class);
+      Class type = isMultiple ? Collection.class : Object.class;
+      ValueExpression valueExpression = 
+        WebUtils.createValueExpression(expression, type);
 
       component.setValueExpression("value", valueExpression);
       group.getChildren().add(component);

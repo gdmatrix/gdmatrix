@@ -30,34 +30,16 @@
  */
 package org.santfeliu.webapp.util;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import javax.el.ValueExpression;
-import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UISelectItem;
 import javax.faces.component.UIViewRoot;
-import javax.faces.component.ValueHolder;
-import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import org.mozilla.javascript.Callable;
-import org.primefaces.component.datepicker.DatePicker;
-import org.primefaces.component.inputtext.InputText;
-import org.primefaces.component.inputtextarea.InputTextarea;
-import org.primefaces.component.outputlabel.OutputLabel;
-import org.primefaces.component.selectcheckboxmenu.SelectCheckboxMenu;
-import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.tabview.TabView;
-import org.primefaces.component.toggleswitch.ToggleSwitch;
-import org.santfeliu.form.Field;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.FormFactory;
-import org.santfeliu.form.View;
 import org.santfeliu.util.script.ScriptClient;
-import org.santfeliu.form.type.html.HtmlSelectView;
 
 /**
  *
@@ -82,11 +64,13 @@ public class ComponentUtils
   public static void includeFormComponents(UIComponent parent, String selector,
     String propertyPath, Map context) throws Exception
   {
-    includeFormComponents(parent, selector, propertyPath, context, null);
+    includeFormComponents(parent, selector, propertyPath, propertyPath + "s", 
+      context, null);
   }
 
   public static void includeFormComponents(UIComponent parent, String selector,
-    String propertyPath, Map context, Map<String, Object> options) throws Exception
+    String propertyPathUni, String propertyPathMulti, 
+    Map context, Map<String, Object> options) throws Exception
   {
     FormFactory formFactory = FormFactory.getInstance();
     formFactory.clearForm(selector);
@@ -98,7 +82,7 @@ public class ComponentUtils
       formImporter.getOptions().putAll(options);
     }
 
-    formImporter.importForm(form, parent, propertyPath);
+    formImporter.importForm(form, parent, propertyPathUni, propertyPathMulti);
   }
 
   public static void includeScriptComponents(UIComponent parent,

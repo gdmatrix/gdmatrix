@@ -31,8 +31,14 @@
 package org.santfeliu.webapp.modules.workflow;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlOutputText;
@@ -54,7 +60,8 @@ import org.santfeliu.workflow.form.Form;
 public class FlexWorkflowBean extends WorkflowBean implements Serializable
 {
   private String selector;
-  private final Map<String, Object> data = new HashMap<>();
+  private final Map<String, Object> data = new LinkedHashMap<>();
+  private final MultivaluedMap values = new MultivaluedMap();
 
   @Inject
   WorkflowInstanceBean instanceBean;
@@ -62,12 +69,12 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
   public FlexWorkflowBean()
   {
   }
-
+  
   public Map<String, Object> getData()
   {
     return data;
   }
-
+  
   @Override
   public String show(Form form)
   {
@@ -127,12 +134,90 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
         options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
 
         ComponentUtils.includeFormComponents(panel, selector,
-           "flexWorkflowBean.data", data, options);
+           "flexWorkflowBean.value", "flexWorkflowBean.values", data, options);
       }
     }
     catch (Exception ex)
     {
       error(ex);
     }
+  }
+  
+  public Map<String, Object> getValue()
+  {
+    return data;
+  }
+  
+  public MultivaluedMap getValues()
+  {
+    return values;
+  }
+  
+  public class MultivaluedMap extends AbstractMap<String, Object>
+    implements Serializable
+  {
+    @Override
+    public Object put(String key, Object value)
+    {
+      if (value != null && value.getClass().isArray())
+      {  
+        for (String k : data.keySet())
+        {
+          if (k.equals(key) || k.startsWith(key + "_"))
+            data.put(k, null);
+        }
+        
+        int length = Array.getLength(value);
+        for (int i = 0; i < length; i++)
+        {
+          String name = key + "_" + i;
+          data.put(name, Array.get(value, i));
+        }        
+      }
+      return value;
+    }
+
+    @Override
+    public Object get(Object key)
+    {
+      String name = String.valueOf(key);
+      List<Object> list = data.keySet().stream()
+        .filter(k -> k.startsWith(name + "_"))
+        .map(k -> data.get(k))
+        .collect(Collectors.toList());
+      return list;
+    }
+    
+    @Override
+    public Set<Map.Entry<String, Object>> entrySet()
+    {
+      return data.entrySet();
+    }
+
+    @Override
+    public int size()
+    {
+      return data.size();
+    }
+  }
+  
+  public static void main(String[] args)
+  {
+    Map<String,Object> map = new LinkedHashMap();
+    map.put("a_0", "1");
+    map.put("a_1", "2");
+    map.put("b_1", "3");
+    List list = map.keySet().stream()
+      .filter(k -> k.startsWith("a_"))
+      .map(k -> map.get(k))
+      .collect(Collectors.toList());
+    System.out.println(list);
+    
+    map.entrySet().stream()
+          .forEach(e -> {if (e.getKey().equals("a_1")) 
+                      e.setValue(null);});
+    
+    System.out.println(map);
+    
   }
 }

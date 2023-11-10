@@ -380,7 +380,8 @@ public class ReportViewerBean extends WebBean implements Serializable
       if (formSelector != null)
       {
         ComponentUtils.includeFormComponents(panel, formSelector,
-           "reportViewerBean.formValues", formValues, Collections.EMPTY_MAP);
+           "reportViewerBean.formValues", "reportViewerBean.formValues", 
+           formValues, Collections.EMPTY_MAP);
       }
     }
     catch (Exception ex)

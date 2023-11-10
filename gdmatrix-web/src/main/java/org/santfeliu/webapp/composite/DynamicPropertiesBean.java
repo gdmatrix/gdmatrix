@@ -32,7 +32,6 @@ package org.santfeliu.webapp.composite;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,8 +48,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
 import javax.faces.model.SelectItem;
-import javax.faces.validator.Validator;
-import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +57,6 @@ import org.primefaces.component.outputlabel.OutputLabel;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.PropertyConverter;
-import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.form.FormDescriptor;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
@@ -295,6 +291,7 @@ public class DynamicPropertiesBean implements Serializable
 
           ComponentUtils.includeFormComponents(panel, formSelector,
              "dynamicPropertiesBean.propertyHelper.value",
+             "dynamicPropertiesBean.propertyHelper.values",             
             propertyHelper.getValue(), getOptions());
         }
       }
