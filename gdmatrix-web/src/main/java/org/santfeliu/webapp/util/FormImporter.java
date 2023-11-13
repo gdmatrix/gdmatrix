@@ -241,7 +241,8 @@ public class FormImporter
       ExpressionFactory expressionFactory = application.getExpressionFactory();
       ELContext elContext = facesContext.getELContext();
 
-      String expression = "#{" + actionMethod + "('" + name + "', '" + value + "')}";
+      String expression = 
+        "#{" + actionMethod + "('" + name + "', '" + value + "')}";
 
       MethodExpression expr = expressionFactory.createMethodExpression(
         elContext, expression, Void.class,
@@ -718,13 +719,5 @@ public class FormImporter
       input.setValueExpression("required", WebUtils.createValueExpression(
         "#{not empty param['" + submitButton + "']}", Boolean.class));
     }
-  }
-  
-  public static void main(String[] args)
-  {
-    String str = "position:aaaa;left:bbb;width:ccc";
-    System.out.println(str.replaceAll("left:.*;", ""));
-    System.out.println(str.replaceAll("width:.*;", ""));
-    System.out.println(str.replaceAll("position:.*;", ""));
   }
 }
