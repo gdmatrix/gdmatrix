@@ -871,7 +871,7 @@ public class KernelManager implements KernelManagerPort
 
       List<Object[]> resultList = findFotosAdreces(filter);
       for (Object[] row : resultList)
-      {        
+      {
         DBAddress dbAddress = (DBAddress)row[2];
         Address address = new Address();
         dbAddress.copyTo(endpoint, address);
@@ -1395,6 +1395,9 @@ public class KernelManager implements KernelManagerPort
   @Override
   public Room storeRoom(Room globalRoom)
   {
+    if (!isKernelAdmin() && !isUserInRole(writeRole))
+      throw new WebServiceException(NOT_AUTHORIZED);
+
     Room room = getEndpoint().toLocal(Room.class, globalRoom);
 
     validateRoom(room);
@@ -1872,7 +1875,7 @@ public class KernelManager implements KernelManagerPort
     if (maxResults > 0)
     {
       query.setMaxResults(maxResults);
-    }    
+    }
 
     List<DBCity> dbCities = query.getResultList();
     for (DBCity dbCity : dbCities)
