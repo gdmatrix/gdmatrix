@@ -40,11 +40,15 @@ import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.apache.myfaces.shared_tomahawk.renderkit.JSFAttr;
+import org.matrix.doc.Content;
+import org.matrix.doc.ContentInfo;
+import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.HTMLNormalizer;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.Utilities;
 import org.santfeliu.web.UserSessionBean;
@@ -57,6 +61,8 @@ import org.santfeliu.web.UserSessionBean;
 public class HtmlLinks extends UIComponentBase
 {
   private static final String IMAGE_SERVLET_PATH = "/imgscale/";
+  private static final String DEFAULT_SVG_IMAGE_WIDTH = "60";
+  private static final String DEFAULT_SVG_IMAGE_HEIGHT = "60";
 
   private String _nodeId;
   private Integer _rows;
@@ -522,43 +528,73 @@ public class HtmlLinks extends UIComponentBase
       if (imageStyleClass != null)
         writer.writeAttribute("class", imageStyleClass, null);
 
+      Content content = null;
       String imageId = null;
       try
       {
         imageId = String.valueOf(Integer.parseInt(imageUrl)); //docId
+        content = DocumentConfigBean.getClientAsAdmin().
+          loadDocument(imageId, 0, ContentInfo.METADATA).getContent();
       }
-      catch (NumberFormatException ex)
+      catch (Exception ex)
       {
         if (Utilities.isUUID(imageUrl))
         {
-          imageId = imageUrl;
+          try
+          {
+            content = DocumentConfigBean.getClientAsAdmin().
+              loadContent(imageUrl);
+            imageId = imageUrl;          
+          } catch (Exception ex2) { }
         }
       }
 
       if (imageId != null) //Image stored in database
       {
-        imageUrl = MatrixConfig.getProperty("contextPath") +
-          IMAGE_SERVLET_PATH + imageId;
+        String extension = null;
         String imageWidth = getImageWidth();
         String imageHeight = getImageHeight();
-        String imageCrop = getImageCrop();
-        if (imageWidth != null || imageHeight != null || imageCrop != null)
+        if (content != null)
         {
-          StringBuilder imgTransform = new StringBuilder();
-          if (imageWidth != null && imageHeight != null)
+          extension = MimeTypeMap.getMimeTypeMap().getExtension(
+            content.getContentType());
+        }
+        if ("svg".equals(extension))
+        {
+          StringBuilder sbStyle = new StringBuilder();
+          sbStyle.append("width:").
+            append(imageWidth != null ? imageWidth : DEFAULT_SVG_IMAGE_WIDTH).
+            append("px;");
+          sbStyle.append("height:").
+            append(imageHeight != null ? imageHeight : DEFAULT_SVG_IMAGE_HEIGHT).
+            append("px;");
+          writer.writeAttribute("style", sbStyle.toString(), null);
+          imageUrl = MatrixConfig.getProperty("contextPath") + 
+            "/documents/" + imageId;
+        }
+        else
+        {        
+          imageUrl = MatrixConfig.getProperty("contextPath") +
+            IMAGE_SERVLET_PATH + imageId;
+          String imageCrop = getImageCrop();
+          if (imageWidth != null || imageHeight != null || imageCrop != null)
           {
-            imgTransform.append("?width=");
-            imgTransform.append(String.valueOf(imageWidth));
-            imgTransform.append("&height=");
-            imgTransform.append(String.valueOf(imageHeight));
+            StringBuilder imgTransform = new StringBuilder();
+            if (imageWidth != null && imageHeight != null)
+            {
+              imgTransform.append("?width=");
+              imgTransform.append(String.valueOf(imageWidth));
+              imgTransform.append("&height=");
+              imgTransform.append(String.valueOf(imageHeight));
+            }
+            if (imageCrop != null)
+            {
+              imgTransform.append(imgTransform.length() == 0 ? "?": "&");
+              imgTransform.append("crop=");
+              imgTransform.append(imageCrop);
+            }
+            imageUrl += imgTransform.toString();
           }
-          if (imageCrop != null)
-          {
-            imgTransform.append(imgTransform.length() == 0 ? "?": "&");
-            imgTransform.append("crop=");
-            imgTransform.append(imageCrop);
-          }
-          imageUrl += imgTransform.toString();
         }
       }
 

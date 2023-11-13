@@ -42,13 +42,16 @@ import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.apache.myfaces.shared_tomahawk.renderkit.JSFAttr;
+import org.matrix.doc.Content;
 import org.matrix.news.NewView;
 import org.matrix.news.SectionFilter;
+import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
 import org.santfeliu.news.web.NewsConfigBean;
 import org.santfeliu.util.HTMLNormalizer;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.ApplicationBean;
 
@@ -59,7 +62,9 @@ import org.santfeliu.web.ApplicationBean;
 public class HtmlNewsCarousel2 extends UIComponentBase
 {
   public static final String IMAGE_SERVLET_PATH = "/imgscale/";
-
+  private static final String DEFAULT_SVG_IMAGE_WIDTH = "646";
+  private static final String DEFAULT_SVG_IMAGE_HEIGHT = "280";
+  
   private String _section;
   private Integer _rows;
   private Integer _transitionTime;
@@ -725,8 +730,8 @@ public class HtmlNewsCarousel2 extends UIComponentBase
         getFacesContext().getExternalContext().getRequestMap();
       requestMap.put(var, newView);
     }
-    String docURL = getNewViewImageURL(newView);
-    if (docURL != null && docURL.length() > 0)
+    String imageContentId = getNewViewContentId(newView);
+    if (imageContentId != null && imageContentId.length() > 0)
     {
       Translator translator = getTranslator();
       String trHeadline = "";
@@ -756,7 +761,41 @@ public class HtmlNewsCarousel2 extends UIComponentBase
       writer.startElement("img", this);
       writer.writeAttribute("id", "newsCarouselNewImage" + index, null);
       writer.writeAttribute("class", "image", null);
-      writer.writeAttribute("src", docURL, null);
+      String imageUrl = "";
+      String imageWidth = getImageWidth();
+      String imageHeight = getImageHeight();
+      String imageCrop = getImageCrop();
+      String extension = null;
+      try
+      {
+        Content content = 
+          DocumentConfigBean.getClientAsAdmin().loadContent(imageContentId);
+        extension =
+          MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());        
+      }
+      catch (Exception ex) { }
+      if ("svg".equals(extension))
+      {
+        StringBuilder sbStyle = new StringBuilder();
+        sbStyle.append("width:").
+          append(imageWidth != null ? imageWidth : DEFAULT_SVG_IMAGE_WIDTH).
+          append("px;");
+        sbStyle.append("height:").
+          append(imageHeight != null ? imageHeight : DEFAULT_SVG_IMAGE_HEIGHT).
+          append("px;");
+        writer.writeAttribute("style", sbStyle.toString(), null);
+        imageUrl = MatrixConfig.getProperty("contextPath") + 
+          "/documents/" + imageContentId;
+      }
+      else
+      {
+        imageUrl = MatrixConfig.getProperty("contextPath") +
+          IMAGE_SERVLET_PATH + imageContentId +
+          "?width=" + imageWidth + 
+          "&height=" + imageHeight +
+          (imageCrop != null ? "&crop=" + imageCrop : "");
+      }
+      writer.writeAttribute("src", imageUrl, null);
       writer.writeAttribute("alt", trHeadline, null);
       writer.endElement("img");
       if (newURL != null)
@@ -1076,7 +1115,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     }
   }
 
-  private String getNewViewImageURL(NewView newView)
+  private String getNewViewContentId(NewView newView)
   {
     String contentId = NewsConfigBean.getCarouselImageContentId(newView);
     if (contentId == null)
@@ -1087,15 +1126,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     {
       contentId = NewsConfigBean.getListImageContentId(newView);
     }
-    if ((contentId != null) && (contentId.length() != 0))      
-    {
-      return MatrixConfig.getProperty("contextPath") +
-        IMAGE_SERVLET_PATH + contentId +
-        "?width=" + getImageWidth() + 
-        "&height=" + getImageHeight() + 
-        "&crop=" + getImageCrop();      
-    }
-    return "";
+    return contentId;
   }
 
   private void renderPlainText(String text,
