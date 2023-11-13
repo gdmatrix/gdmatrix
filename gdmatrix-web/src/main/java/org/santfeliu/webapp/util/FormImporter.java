@@ -165,6 +165,11 @@ public class FormImporter
     {
       importText(view, parent);
     }
+    else if (tag.equals("div") && !
+      "body".equals(view.getParent().getNativeViewType()))
+    {
+      importOutputText(view, parent);
+    }    
     else
     {
       importChildren(view, parent);
@@ -197,7 +202,7 @@ public class FormImporter
     outputText.setStyleClass("field col-12 md:col-6");
     parent.getChildren().add(outputText);
   }
-
+  
   protected void importSubmit(HtmlView view, UIComponent parent)
   {
     FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -619,6 +624,57 @@ public class FormImporter
       group.getChildren().add(component);
     }
   }
+  
+  protected void importOutputText(HtmlView view, UIComponent parent)
+  {
+    String style = view.getProperty("style");
+    boolean isTextArea = style != null && !style.contains("line-height");
+    if (isTextArea)
+    {
+      List<View> children = view.getChildren();
+      if (!children.isEmpty())
+      {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        Application application = facesContext.getApplication();
+        HtmlOutputText outputText =
+          (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        outputText.setEscape(false);
+        String styleClass = view.getProperty("class");
+        outputText.setStyleClass(styleClass != null ? styleClass : "col-12");
+        outputText.setValue(encodeView(view, new StringBuilder()).toString());      
+        parent.getChildren().add(outputText);      
+      }
+    }
+  }  
+  
+  protected StringBuilder encodeView(HtmlView view, StringBuilder sb)
+  {
+    for (int i = 0; i < view.getChildren().size(); i++)
+    {
+      HtmlView childView = (HtmlView) view.getChildren().get(i);
+      if (View.TEXT.equals(childView.getViewType()))
+      {
+        sb.append(childView.getProperty("text"));
+      }
+      else
+      {
+        sb.append("<").append(childView.getNativeViewType());
+        for (String name : childView.getPropertyNames())
+        {
+          if (name.matches("id|style|class"))
+          {
+            sb.append(" ").append(name).append("='")
+              .append(childView.getProperty(name))
+              .append("'");
+          }
+        }
+        sb.append(" >");
+        sb = encodeView(childView, sb);
+        sb.append("</").append(childView.getNativeViewType()).append(">");
+      }      
+    }
+    return sb;
+  }
 
   protected void findViews(View base, String reference, List<View> views)
   {
@@ -662,5 +718,13 @@ public class FormImporter
       input.setValueExpression("required", WebUtils.createValueExpression(
         "#{not empty param['" + submitButton + "']}", Boolean.class));
     }
+  }
+  
+  public static void main(String[] args)
+  {
+    String str = "position:aaaa;left:bbb;width:ccc";
+    System.out.println(str.replaceAll("left:.*;", ""));
+    System.out.println(str.replaceAll("width:.*;", ""));
+    System.out.println(str.replaceAll("position:.*;", ""));
   }
 }
