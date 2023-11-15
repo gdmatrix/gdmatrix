@@ -93,15 +93,15 @@ public class FormImporter
   protected Form form;
   protected UIComponent formRoot;
   protected String propertyPathUni;
-  protected String propertyPathMulti;  
+  protected String propertyPathMulti;
   protected HashSet<String> importedReferences = new HashSet<>();
 
   public Map<String, Object> getOptions()
   {
     return options;
   }
-  
-  public void importForm(Form form, UIComponent formRoot, 
+
+  public void importForm(Form form, UIComponent formRoot,
     String propertyPathUni, String propertyPathMulti)
   {
     this.form = form;
@@ -169,7 +169,7 @@ public class FormImporter
       "body".equals(view.getParent().getNativeViewType()))
     {
       importOutputText(view, parent);
-    }    
+    }
     else
     {
       importChildren(view, parent);
@@ -202,7 +202,7 @@ public class FormImporter
     outputText.setStyleClass("field col-12 md:col-6");
     parent.getChildren().add(outputText);
   }
-  
+
   protected void importSubmit(HtmlView view, UIComponent parent)
   {
     FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -241,7 +241,7 @@ public class FormImporter
       ExpressionFactory expressionFactory = application.getExpressionFactory();
       ELContext elContext = facesContext.getELContext();
 
-      String expression = 
+      String expression =
         "#{" + actionMethod + "('" + name + "', '" + value + "')}";
 
       MethodExpression expr = expressionFactory.createMethodExpression(
@@ -361,7 +361,7 @@ public class FormImporter
         SelectOneMenu selectOneMenu =
           (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
         selectOneMenu.setTouchable(true);
-        selectOneMenu.setAutoWidth(false);
+        selectOneMenu.setAutoWidth("false");
         selectOneMenu.setReadonly(field.isReadOnly());
 
         UISelectItem selectItem = new UISelectItem();
@@ -409,16 +409,16 @@ public class FormImporter
           SelectOneMenu select =
             (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
           select.setReadonly(field.isReadOnly());
-          select.setAutoWidth(false);
+          select.setAutoWidth("false");
           select.setTouchable(true);
           component = select;
         }
 
-        String searchForm = (String) options.get(SEARCH_FORM_OPTION); 
+        String searchForm = (String) options.get(SEARCH_FORM_OPTION);
         boolean addEmptyValue = searchForm != null && searchForm.equals("true");
 
-        List<View> children = view.getChildren(); 
-        
+        List<View> children = view.getChildren();
+
         for (View child : children)
         {
           if (View.ITEM.equals(child.getViewType()))
@@ -460,7 +460,7 @@ public class FormImporter
             {
               View labelView =
                 findLabelViewForId(form.getRootView(), radioId);
-              if (labelView != null && labelView.getChildren().size() > 0)
+              if (labelView != null && !labelView.getChildren().isEmpty())
               {
                 View textView = labelView.getChildren().get(0);
                 itemLabel = String.valueOf(textView.getProperty("text"));
@@ -614,18 +614,18 @@ public class FormImporter
       }
 
       String propertyPath = isMultiple ? propertyPathMulti : propertyPathUni;
-      
+
       String expression = "#{" + propertyPath + "[\"" + reference + "\"]}";
 
       Class type = isMultiple ? Collection.class : Object.class;
-      ValueExpression valueExpression = 
+      ValueExpression valueExpression =
         WebUtils.createValueExpression(expression, type);
 
       component.setValueExpression("value", valueExpression);
       group.getChildren().add(component);
     }
   }
-  
+
   protected void importOutputText(HtmlView view, UIComponent parent)
   {
     String style = view.getProperty("style");
@@ -642,12 +642,12 @@ public class FormImporter
         outputText.setEscape(false);
         String styleClass = view.getProperty("class");
         outputText.setStyleClass(styleClass != null ? styleClass : "col-12");
-        outputText.setValue(encodeView(view, new StringBuilder()).toString());      
-        parent.getChildren().add(outputText);      
+        outputText.setValue(encodeView(view, new StringBuilder()).toString());
+        parent.getChildren().add(outputText);
       }
     }
-  }  
-  
+  }
+
   protected StringBuilder encodeView(HtmlView view, StringBuilder sb)
   {
     for (int i = 0; i < view.getChildren().size(); i++)
@@ -672,7 +672,7 @@ public class FormImporter
         sb.append(" >");
         sb = encodeView(childView, sb);
         sb.append("</").append(childView.getNativeViewType()).append(">");
-      }      
+      }
     }
     return sb;
   }
