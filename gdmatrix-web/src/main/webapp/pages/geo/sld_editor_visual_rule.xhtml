@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <h:panelGroup id="rule_panel" layout="block"
+                styleClass="sld_panel #{geoSldBean.isPanelExpanded(rule) ? 'expanded' :''}">
+
+    <div class="sld_header">
+      <p:commandButton action="#{geoSldBean.expandPanel(rule)}"
+                       process="@form:cnt" update="rule_panel"
+                       title="Expand" rendered="#{not geoSldBean.isPanelExpanded(rule)}"
+                       icon="pi pi-angle-right"
+                       styleClass="rounded-button ui-button-flat"/>
+      <p:commandButton action="#{geoSldBean.collapsePanel(rule)}"
+                       process="@form:cnt" update="rule_panel"
+                       title="Collapse" rendered="#{geoSldBean.isPanelExpanded(rule)}"
+                       icon="pi pi-angle-down"
+                       styleClass="rounded-button ui-button-flat" />
+      <span class="fa fa-code-branch" />
+      <p:outputLabel value="Rule:" for="@next" styleClass="ml-2 mr-2 font-bold" />
+      <p:inputText value="#{rule.title}" styleClass="code flex-grow-1" style="min-width:10px" />
+      <p:commandButton action="#{rule.remove}"
+                       process="@form:cnt" update="@parent:@parent:@parent"
+                       title="Remove Rule"
+                       icon="pi pi-trash"
+                       styleClass="rounded-button ui-button-flat"/>
+    </div>
+
+    <h:outputText value="#{geoSldBean.ruleSummary}" 
+                  styleClass="code" escape="false" 
+                  rendered="#{not geoSldBean.isPanelExpanded(rule)}" />
+    
+    <h:panelGroup rendered="#{geoSldBean.isPanelExpanded(rule)}">
+      <div class="sld_field">
+        <p:outputLabel value="MinScaleDenominator:" for="@next" />
+        <p:inputText value="#{rule.minScaleDenominator}" styleClass="code" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="MaxScaleDenominator:" for="@next" />
+        <p:inputText value="#{rule.maxScaleDenominator}" styleClass="code" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="Filter:" for="@next" />
+        <p:inputText value="#{rule.filterAsCql}" styleClass="code flex-grow-1 w-full" 
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+    </h:panelGroup>
+
+    <ui:repeat value="#{rule.symbolizers}" var="symbolizer">
+
+      <ui:include src="/pages/geo/sld_editor_visual_point.xhtml" />
+      <ui:include src="/pages/geo/sld_editor_visual_line.xhtml" />
+      <ui:include src="/pages/geo/sld_editor_visual_polygon.xhtml" />
+      <ui:include src="/pages/geo/sld_editor_visual_text.xhtml" />
+
+    </ui:repeat>
+
+    <p:menuButton value="Symbolizer" styleClass="mt-2" icon="pi pi-plus-circle" 
+                  menuStyleClass="white-space-nowrap"
+                  rendered="#{geoSldBean.isPanelExpanded(rule)}">
+      <p:menuitem value="PointSymbolizer" action="#{geoSldBean.addPointSymbolizer}"
+                  icon="fa fa-location-dot"
+                  process="@form:cnt" update="rule_panel" />
+      <p:menuitem value="LineSymbolizer" action="#{geoSldBean.addLineSymbolizer}"
+                  icon="fa fa-slash"
+                  process="@form:cnt" update="rule_panel" />
+      <p:menuitem value="PolygonSymbolizer" action="#{geoSldBean.addPolygonSymbolizer}"
+                  icon="fa fa-vector-square"
+                  process="@form:cnt" update="rule_panel" />
+      <p:menuitem value="TextSymbolizer" action="#{geoSldBean.addTextSymbolizer}"
+                  icon="fa fa-t"
+                  process="@form:cnt" update="rule_panel" />
+
+    </p:menuButton>
+
+  </h:panelGroup>
+
+</ui:composition>

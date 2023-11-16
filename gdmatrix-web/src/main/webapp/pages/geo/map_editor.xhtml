@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+                var="objectBundle" />
+
+  <h:outputStylesheet library="css" name="geo.css" />  
+  
+  <div class="flex flex-column h-full">
+    <div id="map_toolbar" class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         style="border-color:var(--surface-border)">
+      <div class="flex-grow-0 text-left align-items-center" style="color:var(--text-color)">
+        <span class="pi pi-map"/>
+        <strong>#{geoMapBean.map.title}</strong>
+        <h:outputText value="(#{geoMapBean.map.name})" styleClass="ml-2 code"
+                      rendered="#{geoMapBean.map.name != null}" />
+      </div>
+      <div class="buttons flex flex-grow-1 justify-content-end gap-2">
+        <div class="ui-inputgroup">
+          <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="Catalogue"
+                           icon="pi pi-th-large" title="Catalogue" styleClass="mini"
+                           process="@form:cnt" update="@form:cnt" />
+
+          <p:commandButton action="#{geoMapBean.setView('map_viewer')}" value="View"
+                           icon="pi pi-eye" title="View" styleClass="mini"
+                           process="@form:cnt" update="@form:cnt"
+                           oncomplete="if (isFacesError()) objectScrollUp()" />
+
+          <p:commandButton action="#{geoMapBean.setViewAndMode('sld_editor', 'visual')}" value="SLD"
+                           icon="pi pi-palette" title="SLD" styleClass="mini"
+                           process="@form:cnt" update="@form:cnt"
+                           oncomplete="if (isFacesError()) objectScrollUp()" />
+        </div>
+
+        <div class="ui-inputgroup">
+          <p:commandButton action="#{geoMapBean.setMode('visual')}" value="Visual"
+                           icon="pi pi-credit-card" title="Visual"
+                           styleClass="mini #{geoMapBean.mode == 'visual' ? 'ui-button-outlined' : ''}"
+                           process="@form:cnt" update="@form:cnt" />
+
+          <p:commandButton action="#{geoMapBean.setMode('code')}" value="Code"
+                           icon="pi pi-code" title="Code"
+                           process="@form:cnt" update="@form:cnt"
+                           styleClass="mini #{geoMapBean.mode == 'code' ? 'ui-button-outlined' : ''}"
+                           oncomplete="if (isFacesError()) objectScrollUp()" />
+        </div>
+        
+        <div class="ui-inputgroup">
+          <p:commandButton action="#{geoMapBean.newMap}" value="New"
+                           icon="pi pi-plus-circle" title="New" styleClass="mini"
+                           resetValues="true"
+                           process="@this" update="@form:cnt" />
+
+          <p:commandButton action="#{geoMapBean.reloadMap}" value="Reload"
+                           icon="pi pi-refresh" title="Reload" styleClass="mini"
+                           resetValues="true"
+                           process="@this" update="@form:cnt"
+                           oncomplete="if (isFacesError()) objectScrollUp()" />
+
+          <p:commandButton action="#{geoMapBean.saveMap}" value="Save"
+                           icon="pi pi-save" title="Save" styleClass="mini"
+                           process="@form:cnt" update="@none"
+                           oncomplete="if (isFacesError()) objectScrollUp()" />
+
+          <p:commandButton action="#{geoMapBean.removeMap}" value="Delete"
+                           icon="pi pi-trash" title="Delete" styleClass="mini"
+                           process="@form:cnt" update="@form:cnt"
+                           oncomplete="if (isFacesError()) objectScrollUp()">
+                          <p:confirm header="Remove"
+                            message="Remove map?"
+                            icon="pi pi-info-circle" />
+          </p:commandButton>
+        </div>
+      </div>
+    </div>
+    <div id="editor_body" class="p-2 flex-grow-1 overflow-auto">
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="false" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>
+
+      <ui:insert name="body"></ui:insert>
+    </div>
+  </div>
+
+  <gdm:saveBean value="geoMapBean" />
+
+  <p:growl for="growl" life="1000">
+    <p:autoUpdate />
+  </p:growl>
+
+  <script>
+    function objectScrollUp()
+    {
+      var elem = document.getElementById("editor_body");
+      elem.scrollTop = 0;
+    }
+    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>
+
+</ui:composition>

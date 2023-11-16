@@ -1,0 +1,156 @@
+{
+  "title": "Sample map",
+  "zoom": 12,
+  "center": [2.044758, 41.381366],
+  "pitch": 0,
+  "hash": true,
+  "services":
+  {
+    "santfeliu_wms":
+    {
+      "description": "Servidor WMS santfeliu",
+      "type" : "wms",
+      "url": "https://gis.santfeliu.cat/geoserver/wms",
+      "useProxy": true
+    },
+    "santfeliu_wfs":
+    {
+      "description": "Servidor WFS santfeliu",
+      "type": "wfs",
+      "url": "https://gis.santfeliu.cat/geoserver/wfs",
+      "useProxy": true
+    },
+    "icgc":
+    {
+      "description": "Servidor WFS ICC",
+      "type": "wms",
+      "url": "https://geoserveis.icgc.cat/icgc_mdt2m/wms",
+      "useProxy": false
+    }
+  },
+  "sources":
+  {
+    "osm":
+    {
+      "type": "raster",
+      "tiles": ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      "tileSize": 256,
+      "attribution": "&copy; OpenStreetMap Contributors",
+      "maxzoom": 19
+    },
+    "icc_dem": 
+    {
+		  "type": "raster-dem",
+		  "attribution": "ICC",
+		  "tiles": ["https://geoserveis.icgc.cat/icgc_mdt2m/wms/service?LAYERS=MET2m&FORMAT=image/png&TRANSPARENT=TRUE&TILES=true&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&srs=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256"],
+      "tileSize": 256,
+      "encoding": "custom",
+      "redFactor": 1,
+      "greenFactor": 1,
+      "blueFactor": 1                   
+	  },
+    "icc_wms_dem":
+    {
+		  "type": "raster-dem",
+		  "attribution": "ICC",
+      "serviceParameters": 
+      { 
+        "id": "icgc",
+        "layers": "MET2",
+        "tileSize": 256
+      },
+      "encoding": "custom",
+      "redFactor": 1,
+      "greenFactor": 1,
+      "blueFactor": 1                   
+	  },
+    "illes":
+    {
+      "type": "raster",
+      "serviceParameters": 
+      {
+        "service": "santfeliu_wms",
+        "layer": "ILLES",
+        "sld": "map_test",
+        "format": "image/png",
+        "transparent": true,
+        "cqlFilter": "TIPUS <> 0"
+      },
+      "tileSize": 256
+    },
+    "qis" : 
+    {
+      "type": "geojson",
+      "serviceParameters": 
+      {
+        "service": "santfeliu_wfs",
+        "layer": "QIS",
+        "cqlFilter" : "DIES > 10"        
+      }
+    }
+  },
+  "groups": [
+    { "id" : "group1", "label": "Group1" },
+    { "id" : "group2", "label": "Group2" }
+  ],
+  "layers" : [
+    {
+      "id": "osm",
+      "label": "OSM",
+      "type": "raster",
+      "source": "osm",
+      "locatable": false,
+      "visible": true,
+      "legend": false
+    },
+    {
+      "id": "illes",
+      "label": "Illes",
+      "type": "raster",
+      "source": "qis",
+      "locatable": false,
+      "visible": true,
+      "legend": true,
+      "paint": 
+      {
+        "raster-opacity" : 0.5 
+      }
+    },
+    {
+      "id": "qis",
+      "label": "Queixes",
+      "type": "geojson",
+      "source": "qis",
+      "locatable": true,
+      "visible": true,
+      "group" : "group1",
+      "form" : "QUEIXES"
+    },
+    {
+      "id": "qis_labels",
+      "label": "Etiquetes qis",
+      "type": "symbol",
+      "source": "qis",
+      "locatable": false,
+      "visible": true,
+      "group": "group2",
+      "paint": 
+      {
+        "text-color": "#f0f0f0", 
+        "text-halo-color": "#000000", 
+        "text-halo-width": 2
+      },
+      "layout": 
+      {
+        "text-anchor" : "bottom",
+        "text-offset": [0, -0.5],
+        "text-field" : ["format", ["get", "NOM"]]
+      }
+    }
+  ],
+  "terrain": 
+  {
+    "source": "icc_dem",
+    "exaggeration": 1
+  }
+}

@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+
+  <div class="ui-fluid formgrid grid">
+
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="Name" />
+      <p:inputText value="#{geoMapBean.map.name}" styleClass="code">
+        <p:ajax event="valueChange" listener="#{geoMapBean.onMapNameChanged}"
+                update="@none"/>
+      </p:inputText>
+    </div>
+
+    <div class="field col-12 md:col-9">
+      <p:outputLabel for="@next" value="Title" />
+      <p:inputText value="#{geoMapBean.map.title}" />
+    </div>
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="Description" />
+      <p:inputTextarea value="#{geoMapBean.map.description}" />
+    </div>
+    
+  </div>
+
+</ui:composition>

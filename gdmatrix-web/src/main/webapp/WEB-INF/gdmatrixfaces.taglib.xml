@@ -89,7 +89,7 @@
     <attribute>
       <name>language</name>
       <type>java.lang.String</type>
-      <description>The programming language (javascript, sql, html, json)</description>
+      <description>The programming language (javascript, sql, html, json, xml)</description>
     </attribute>
     <attribute>
       <name>readonly</name>
@@ -112,5 +112,27 @@
       <description>Show line numbers</description>
     </attribute>
   </tag>  
-                                                                        
+
+  <tag>
+    <tag-name>maplibre</tag-name>
+    <component>
+      <component-type>org.gdmatrix.faces.MapLibre</component-type>
+    </component>
+    <attribute>
+      <name>value</name>
+      <type>java.lang.Object</type>
+      <description>The map to visualize</description>
+    </attribute>
+    <attribute>
+      <name>style</name>
+      <type>java.lang.String</type>
+      <description>The component CSS style</description>
+    </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <type>java.lang.String</type>
+      <description>The component CSS class name</description>
+    </attribute>
+  </tag>                                                                
+                                                                                                                                                                                                                        
 </facelet-taglib>

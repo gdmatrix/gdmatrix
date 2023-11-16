@@ -1,0 +1,143 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <h:panelGroup id="text_panel" layout="block"
+                styleClass="sld_panel #{geoSldBean.isPanelExpanded(symbolizer) ? 'expanded' :''}" 
+                rendered="#{symbolizer.symbolizerType == 'Text'}">
+
+    <div class="sld_header">
+      <p:commandButton action="#{geoSldBean.expandPanel(symbolizer)}"
+                       process="@form:cnt" update="text_panel"
+                       title="Expand" rendered="#{not geoSldBean.isPanelExpanded(symbolizer)}"
+                       icon="pi pi-angle-right"
+                       styleClass="rounded-button ui-button-flat"/>
+      <p:commandButton action="#{geoSldBean.collapsePanel(symbolizer)}"
+                       process="@form:cnt" update="text_panel"
+                       title="Collapse" rendered="#{geoSldBean.isPanelExpanded(symbolizer)}"
+                       icon="pi pi-angle-down"
+                       styleClass="rounded-button ui-button-flat" />
+      <span class="fa fa-t" /><span class="ml-2 flex-grow-1 font-bold">TextSymbolizer</span>
+      <p:commandButton action="#{symbolizer.remove}"
+                       process="@form:cnt" update="@parent:@parent:@parent"
+                       title="Remove Symbolizer"
+                       icon="pi pi-trash"
+                       styleClass="rounded-button ui-button-flat"/>
+    </div>
+  
+    <h:outputText value="#{geoSldBean.textSymbolizerSummary}" 
+                  styleClass="code" escape="false" 
+                  rendered="#{not geoSldBean.isPanelExpanded(symbolizer)}" />    
+    
+    <h:panelGroup rendered="#{geoSldBean.isPanelExpanded(symbolizer)}">
+      <div class="sld_field">
+        <p:outputLabel value="Geometry:" for="@next" />
+        <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="Label:" for="@next" />
+        <p:inputText value="#{symbolizer.labelAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="FontFamily:" for="@next" />
+        <p:selectOneMenu value="#{symbolizer.font.fontFamily}" editable="true">
+          <f:selectItem itemLabel=" " itemValue="" />
+          <f:selectItem itemLabel="Arial" itemValue="Arial" />
+          <f:selectItem itemLabel="Monospace" itemValue="Monospace" />
+          <f:selectItem itemLabel="DejaVu Sans" itemValue="DejaVu Sans" />
+          <f:selectItem itemLabel="SansSerif" itemValue="SansSerif" />          
+          <f:selectItem itemLabel="FontAwesome Regular" itemValue="FontAwesome Regular" />
+        </p:selectOneMenu>
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="FontSize:" for="@next" />
+        <p:inputText value="#{symbolizer.font.fontSize}" styleClass="code" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="FontStyle:" for="@next" />
+        <p:selectOneMenu value="#{symbolizer.font.fontStyle}">
+          <f:selectItem itemLabel=" " itemValue="" />
+          <f:selectItem itemLabel="normal" itemValue="normal" />
+          <f:selectItem itemLabel="italic" itemValue="italic" />
+          <f:selectItem itemLabel="oblique" itemValue="oblique" />
+        </p:selectOneMenu>
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="FontWeight:" for="@next" />
+        <p:selectOneMenu value="#{symbolizer.font.fontWeight}">
+          <f:selectItem itemLabel=" " itemValue="" />
+          <f:selectItem itemLabel="normal" itemValue="normal" />
+          <f:selectItem itemLabel="bold" itemValue="bold" />
+        </p:selectOneMenu>
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="FillColor:" for="@next" />
+        <p:colorPicker value="#{symbolizer.fill.fillColor}" alpha="false" styleClass="code w-10rem" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="FillOpacity:" for="@next" />
+        <p:inputText value="#{symbolizer.fill.fillOpacity}" styleClass="code" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="AnchorPointX:" for="@next" />
+        <p:inputText value="#{symbolizer.pointPlacement.anchorPointXAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="AnchorPointY:" for="@next" />
+        <p:inputText value="#{symbolizer.pointPlacement.anchorPointYAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="DisplacementX:" for="@next" />
+        <p:inputText value="#{symbolizer.pointPlacement.displacementXAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="DisplacementY:" for="@next" />
+        <p:inputText value="#{symbolizer.pointPlacement.displacementYAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="Rotation:" for="@next" />
+        <p:inputText value="#{symbolizer.pointPlacement.rotationAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="PerpendicularOffset:" for="@next"/>
+        <p:inputText value="#{symbolizer.linePlacement.perpendicularOffsetAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="HaloRadius:" for="@next" />
+        <p:inputText value="#{symbolizer.halo.radiusAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="HaloFillColor:" for="@next" />
+        <p:colorPicker value="#{symbolizer.halo.fill.fillColor}" alpha="false" styleClass="code w-10rem" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="HaloFillOpacity:" for="@next" />
+        <p:inputText value="#{symbolizer.halo.fill.fillOpacity}" styleClass="code" />
+      </div>
+    </h:panelGroup>
+  </h:panelGroup>
+
+</ui:composition>

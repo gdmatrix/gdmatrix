@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+
+  <div class="field grid">
+    <p:outputLabel value="Longitud" for="@next" class="col-fixed" style="width:100px" />
+    <p:spinner value="#{geoMapBean.map.camera.center[0]}" decimalPlaces="5" min="-180" max="180" />
+  </div>
+  <div class="field grid">
+    <p:outputLabel value="Latitud" for="@next" class="col-fixed" style="width:100px" />
+    <p:spinner value="#{geoMapBean.map.camera.center[1]}" decimalPlaces="5" min="-180" max="180" />
+  </div>
+  <div class="field grid">
+    <p:outputLabel value="Zoom" for="@next" class="col-fixed" style="width:100px" />
+    <p:spinner value="#{geoMapBean.map.camera.zoom}" decimalPlaces="3" min="1" max="30" />
+  </div>
+  <div class="field grid">
+    <p:outputLabel value="Bearing" for="@next" class="col-fixed" style="width:100px" />
+    <p:spinner value="#{geoMapBean.map.camera.bearing}" decimalPlaces="3" min="-180" max="180" />
+  </div>
+  <div class="field grid">
+    <p:outputLabel value="Pitch" for="@next" class="col-fixed" style="width:100px" />
+    <p:spinner value="#{geoMapBean.map.camera.pitch}" decimalPlaces="3" min="0" max="90" />
+  </div>
+  <div class="field grid">
+    <p:outputLabel value="Max zoom" for="@next" class="col-fixed" style="width:100px" />
+    <p:spinner value="#{geoMapBean.map.camera.maxZoom}" decimalPlaces="3" min="0" max="30" />
+  </div>
+  <div class="field grid">
+    <p:outputLabel value="Max pitch" for="@next" class="col-fixed" style="width:100px" />
+    <p:spinner value="#{geoMapBean.map.camera.maxPitch}" decimalPlaces="3" min="0" max="90" />
+  </div>
+  <div class="field grid">
+    <p:outputLabel value="Hash" for="@next" class="col-fixed" style="width:100px" />
+    <p:toggleSwitch value="#{geoMapBean.map.camera.hash}" class="col-fixed" />
+  </div>
+
+
+
+</ui:composition>

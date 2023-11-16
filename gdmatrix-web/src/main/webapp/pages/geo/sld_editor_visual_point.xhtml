@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <h:panelGroup id="point_panel" layout="block"
+                styleClass="sld_panel #{geoSldBean.isPanelExpanded(symbolizer) ? 'expanded' :''}" 
+                rendered="#{symbolizer.symbolizerType == 'Point'}">
+
+    <div class="sld_header">
+      <p:commandButton action="#{geoSldBean.expandPanel(symbolizer)}"
+                       process="@form:cnt" update="point_panel"
+                       title="Expand" rendered="#{not geoSldBean.isPanelExpanded(symbolizer)}"
+                       icon="pi pi-angle-right"
+                       styleClass="rounded-button ui-button-flat"/>
+      <p:commandButton action="#{geoSldBean.collapsePanel(symbolizer)}"
+                       process="@form:cnt" update="point_panel"
+                       title="Collapse" rendered="#{geoSldBean.isPanelExpanded(symbolizer)}"
+                       icon="pi pi-angle-down"
+                       styleClass="rounded-button ui-button-flat" />
+      <span class="fa fa-location-dot" /><span class="ml-2 flex-grow-1 font-bold">PointSymbolizer</span>
+      <p:commandButton action="#{symbolizer.remove}"
+                       process="@form:cnt" update="@parent:@parent:@parent"
+                       title="Remove Symbolizer"
+                       icon="pi pi-trash"
+                       styleClass="rounded-button ui-button-flat"/>
+    </div>
+
+    <h:outputText value="#{geoSldBean.pointSymbolizerSummary}" 
+                  styleClass="code" escape="false" 
+                  rendered="#{not geoSldBean.isPanelExpanded(symbolizer)}" />
+
+    <h:panelGroup rendered="#{geoSldBean.isPanelExpanded(symbolizer)}">
+      <div class="sld_field">
+        <p:outputLabel value="Geometry:" for="@next" />
+        <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="ExternalGraphicURL:" for="@next" />
+        <p:inputText value="#{symbolizer.graphic.externalGraphic.onlineResource}"
+                     styleClass="code flex-grow-1 w-full" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="ExternalGraphicFormat:" for="@next" />
+        <p:selectOneMenu value="#{symbolizer.graphic.externalGraphic.format}">
+          <f:selectItem itemLabel=" " itemValue="" />
+          <f:selectItem itemLabel="image/png" itemValue="image/png" />
+          <f:selectItem itemLabel="image/jpeg" itemValue="image/jpeg" />
+          <f:selectItem itemLabel="image/gif" itemValue="image/gif" />
+          <f:selectItem itemLabel="image/svg+xml" itemValue="image/svg+xml" />
+          <f:selectItem itemLabel="application/chart" itemValue="application/chart" />
+        </p:selectOneMenu>
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="MarkSymbol:" for="@next" />
+        <div class="ui-inputgroup">
+          <h:panelGroup id="symbol" styleClass="ui-inputgroup-addon">
+            <span class="#{geoSldBean.getSymbolClass(symbolizer.graphic.mark.wellKnownName)}"/>
+          </h:panelGroup>
+          <p:selectOneMenu value="#{symbolizer.graphic.mark.wellKnownName}" 
+                           var="symbol" editable="true" styleClass="w-10rem">
+            <p:ajax update="@parent:@parent:symbol" />
+            <f:selectItem itemLabel=" " itemValue="" />
+            <f:selectItem itemLabel="circle" itemValue="circle" />
+            <f:selectItem itemLabel="cross" itemValue="cross" />
+            <f:selectItem itemLabel="square" itemValue="square" />
+            <f:selectItem itemLabel="star" itemValue="star" />
+            <f:selectItem itemLabel="triangle" itemValue="triangle" />
+            <f:selectItem itemLabel="x" itemValue="x" />
+            <f:selectItem itemLabel="shape://horline" itemValue="shape://horline" />
+            <f:selectItem itemLabel="shape://vertline" itemValue="shape://vertline" />
+            <f:selectItem itemLabel="shape://dot" itemValue="shape://dot" />
+            <f:selectItem itemLabel="shape://plus" itemValue="shape://plus" />
+            <f:selectItem itemLabel="shape://times" itemValue="shape://times" />
+            <f:selectItem itemLabel="shape://slash" itemValue="shape://slash" />
+            <p:column>
+              <span class="#{geoSldBean.getSymbolClass(symbol)}" />
+            </p:column>
+            <p:column>
+            #{symbol}
+            </p:column>
+          </p:selectOneMenu>
+        </div>
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="MarkStrokeColor:" for="@next" />
+        <p:colorPicker value="#{symbolizer.graphic.mark.stroke.strokeColor}" alpha="false" styleClass="code w-10rem" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="MarkStrokeWidth:" for="@next" />
+        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeWidth}" styleClass="code" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="MarkFillColor:" for="@next" />
+        <p:colorPicker value="#{symbolizer.graphic.mark.fill.fillColor}" alpha="false" styleClass="code w-10rem" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="Opacity:" for="@next" />
+        <p:inputText value="#{symbolizer.graphic.opacityAsCql}" styleClass="code flex-grow-1 w-full" 
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="Size:" for="@next" />
+        <p:inputText value="#{symbolizer.graphic.sizeAsCql}" styleClass="code flex-grow-1 w-full" 
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="Rotation:" for="@next" />
+        <p:inputText value="#{symbolizer.graphic.rotationAsCql}" styleClass="code flex-grow-1 w-full"
+                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                     onblur="hideCQLAssistant()" />
+      </div>
+    </h:panelGroup>
+  </h:panelGroup>
+
+</ui:composition>

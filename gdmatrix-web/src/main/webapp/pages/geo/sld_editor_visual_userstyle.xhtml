@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <h:panelGroup id="userstyle_panel" layout="block"
+                styleClass="sld_panel #{geoSldBean.isPanelExpanded(userStyle) ? 'expanded' :''}">
+
+    <div class="sld_header">
+      <p:commandButton action="#{geoSldBean.expandPanel(userStyle)}"
+                       process="@form:cnt" update="userstyle_panel"
+                       title="Expand" rendered="#{not geoSldBean.isPanelExpanded(userStyle)}"
+                       icon="pi pi-angle-right"
+                       styleClass="rounded-button ui-button-flat"/>
+      <p:commandButton action="#{geoSldBean.collapsePanel(userStyle)}"
+                       process="@form:cnt" update="userstyle_panel"
+                       title="Collapse" rendered="#{geoSldBean.isPanelExpanded(userStyle)}"
+                       icon="pi pi-angle-down"
+                       styleClass="rounded-button ui-button-flat" />
+      <span class="fa fa-paintbrush" />
+      <p:outputLabel value="UserStyle:" for="@next" styleClass="ml-2 mr-2 font-bold" />
+      <p:inputText value="#{userStyle.styleName}" styleClass="code flex-grow-1" style="min-width:10px" />
+      <p:commandButton action="#{userStyle.remove}"
+                       process="@form:cnt" update="@parent:@parent:@parent"
+                       title="Remove UserStyle"
+                       icon="pi pi-trash"
+                       styleClass="rounded-button ui-button-flat"/>
+    </div>
+
+    <h:panelGroup rendered="#{geoSldBean.isPanelExpanded(userStyle)}">
+      <div class="sld_field">
+        <p:outputLabel value="IsDefault:" for="@next" style="vertical-align:middle" />
+        <p:selectBooleanCheckbox value="#{userStyle.defaultStyle}" />
+      </div>
+    </h:panelGroup>
+
+    <ui:repeat value="#{userStyle.rules}" var="rule">
+      <ui:include src="/pages/geo/sld_editor_visual_rule.xhtml" />
+    </ui:repeat>
+    
+    <p:commandButton value="Rule" action="#{geoSldBean.addRule}"
+                     icon="pi pi-plus-circle" styleClass="mt-2"
+                     rendered="#{geoSldBean.isPanelExpanded(userStyle)}"
+                     process="@form:cnt" update="userstyle_panel" />
+
+  </h:panelGroup>
+
+
+</ui:composition>

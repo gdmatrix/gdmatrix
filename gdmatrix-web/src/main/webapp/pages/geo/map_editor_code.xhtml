@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                template="/pages/geo/map_editor.xhtml">
+
+  <ui:define name="body">
+
+    <gdm:codemirror value="#{geoMapBean.jsonMap}" language="json" lineNumbers="true">
+      <f:validator validatorId="JsonValidator" />
+    </gdm:codemirror>
+
+  </ui:define>
+
+</ui:composition>

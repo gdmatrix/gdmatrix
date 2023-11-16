@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                template="/pages/geo/map_editor.xhtml">
+
+  <ui:define name="body">
+    <p:tabView id="map_tabs" dynamic="true" activeIndex="#{geoMapBean.activeTabIndex}">
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-info-circle mr-2"/>Information
+        </f:facet>
+        <ui:include src="/pages/geo/map_editor_visual_info.xhtml" />
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-camera mr-2"/>Camera
+        </f:facet>
+        <ui:include src="/pages/geo/map_editor_visual_camera.xhtml" />
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-server mr-2"/>Services
+        </f:facet>
+        <ui:include src="/pages/geo/map_editor_visual_services.xhtml" />
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-database mr-2"/>Sources
+        </f:facet>
+        <ui:include src="/pages/geo/map_editor_visual_sources.xhtml" />
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="fa fa-mountain-sun mr-2"/>Terrain
+        </f:facet>
+        <ui:include src="/pages/geo/map_editor_visual_terrain.xhtml" />
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="fa fa-layer-group mr-2"/>Layers
+        </f:facet>
+        <ui:include src="/pages/geo/map_editor_visual_layers.xhtml" />
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-folder mr-2"/>Groups
+        </f:facet>
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="fa fa-rectangle-list mr-2"/>Forms
+        </f:facet>
+      </p:tab>
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-key mr-2"/>Security
+        </f:facet>
+      </p:tab>
+    </p:tabView>
+  </ui:define>
+
+</ui:composition>

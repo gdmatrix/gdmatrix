@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                template="/pages/geo/sld_editor.xhtml">
+
+  <ui:define name="body">
+    
+    <style>
+      .sld_panel
+      {
+        border-style: solid;
+        border-width: 1px;
+        border-radius: var(--border-radius);
+        border-color: var(--surface-border);
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .sld_panel.expanded
+      {
+        border-color: var(--primary-color);        
+      }
+      
+      .sld_panel .sld_header
+      {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }            
+      
+      .sld_field
+      {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;        
+      }
+      
+      @media (max-width: 400px)
+      {
+        .sld_field
+        {
+          flex-direction:column;
+          align-items: flex-start; 
+        }        
+      }
+    </style>
+
+    <div class="mb-2">
+      <p:outputLabel value="SLD Name:" for="@next" />
+      <p:inputText id="sld_name" value="#{geoSldBean.sldName}" styleClass="ml-2 code" />
+    </div>
+
+    <h:outputText value="Named layers: #{geoSldBean.namedLayerCount}" />
+
+    <div>
+      <p:commandButton value="Show all layers" styleClass="mt-2"
+                       icon="pi pi-eye"
+                       rendered="#{geoSldBean.focusingNamedLayer}"
+                       action="#{geoSldBean.showAllNamedLayers}" 
+                       process="@form:cnt" update="@form:cnt" />
+    </div>
+
+    <ui:repeat value="#{geoSldBean.sld.namedLayers}" var="namedLayer">
+      <ui:include src="/pages/geo/sld_editor_visual_namedlayer.xhtml" />
+    </ui:repeat>
+
+    <p:commandButton value="NamedLayer" action="#{geoSldBean.addNamedLayer}"
+                     icon="pi pi-plus-circle" styleClass="mt-2"
+                     rendered="#{not geoSldBean.focusingNamedLayer}"
+                     process="@form:cnt" update="@parent" />
+
+  </ui:define>
+
+</ui:composition>

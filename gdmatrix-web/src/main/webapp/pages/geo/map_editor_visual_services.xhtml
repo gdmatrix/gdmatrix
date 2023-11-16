@@ -1,0 +1,248 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <style type="text/css">
+    .code
+    {
+      font-family: monospace !important;
+    }
+  </style>
+
+  <p:dataTable id="map_services_table" size="small"
+               value="#{geoMapBean.serviceNames}" var="serviceName">
+    <p:column headerText="Name">
+      <span class="code">#{serviceName}</span>
+    </p:column>
+    <p:column headerText="Description">
+      #{geoMapBean.map.services[serviceName].description}
+    </p:column>
+    <p:column headerText="Type">
+      #{geoMapBean.map.services[serviceName].type}
+    </p:column>
+    <p:column headerText="Url">
+      <span class="code">#{geoMapBean.map.services[serviceName].url}</span>
+    </p:column>
+    <p:column headerText="Use proxy">
+      <span class="code">#{geoMapBean.map.services[serviceName].useProxy}</span>
+    </p:column>
+
+    <p:column styleClass="w-2 text-right white-space-nowrap">
+      <f:facet name="header">
+        <p:commandButton action="#{geoMapBean.addService}"
+                         icon="pi pi-plus-circle"
+                         alt="#{objectBundle.create}" title="#{objectBundle.create}"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@form:cnt:map_tabs"
+                         update="@form:cnt:map_tabs:map_services_dialog"
+                         resetValues="true"
+                         oncomplete="PF('mapServicesDialog').show()"
+                         />
+      </f:facet>
+      <p:commandButton action="#{geoMapBean.loadServiceCapabilities(serviceName)}"
+                       icon="pi pi-info-circle"
+                       alt="#{objectBundle.info}" title="#{objectBundle.info}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@form:cnt:map_tabs"
+                       update="@form:cnt:map_tabs:service_capabilities" />
+      <p:commandButton action="#{geoMapBean.editService(serviceName)}"
+                       icon="pi pi-pencil"
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@form:cnt:map_tabs"
+                       update="@form:cnt:map_tabs:map_services_dialog"
+                       resetValues="true"
+                       oncomplete="PF('mapServicesDialog').show()"
+                       />
+      <p:commandButton action="#{geoMapBean.removeService(serviceName)}"
+                       process="@this"
+                       update="@form:cnt:map_tabs"
+                       resetValues="true"
+                       icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       styleClass="rounded-button ui-button-flat"
+                       onclick="PF('mapServicesDialog').hide()"/>
+    </p:column>
+  </p:dataTable>
+
+  <p:panel id="service_capabilities" styleClass="mt-2"
+           visible="#{geoMapBean.serviceCapabilities != null}">
+    
+    <f:facet name="header">
+      <h:outputText value="Service capabilities: #{geoMapBean.capabilitiesServiceName}" />
+    </f:facet>
+    
+    <h:panelGroup layout="block" styleClass="field">
+      <h:outputText value="Version: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.version}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field" 
+                  rendered="#{geoMapBean.serviceCapabilities.name != null}">
+      <h:outputText value="Service name: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.name}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field" 
+                  rendered="#{geoMapBean.serviceCapabilities.title != null}">
+      <h:outputText value="Title: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.title}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field" 
+                  rendered="#{geoMapBean.serviceCapabilities.getAbstract() != null}">
+      <h:outputText value="Abstract: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.getAbstract()}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field"
+                  rendered="#{geoMapBean.serviceCapabilities.contactInformation.personPrimary.person != null}">
+      <h:outputText value="Contact person: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.contactInformation.personPrimary.person}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field" 
+                  rendered="#{geoMapBean.serviceCapabilities.contactInformation.personPrimary.organization != null}">
+      <h:outputText value="Organization: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.contactInformation.personPrimary.organization}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field"
+                  rendered="#{geoMapBean.serviceCapabilities.contactInformation.address.address != null}">
+      <h:outputText value="Address: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.contactInformation.address.address}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field"
+                  rendered="#{geoMapBean.serviceCapabilities.contactInformation.address.city != null}">
+      <h:outputText value="City: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.contactInformation.address.city}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field"
+                  rendered="#{geoMapBean.serviceCapabilities.contactInformation.address.country != null}">
+      <h:outputText value="Country: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.contactInformation.address.country}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field"
+                  rendered="#{geoMapBean.serviceCapabilities.contactInformation.voiceTelephon != null}">
+      <h:outputText value="Telephone: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.contactInformation.voiceTelephon}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field"
+                  rendered="#{geoMapBean.serviceCapabilities.contactInformation.electronicMailAddress != null}">
+      <h:outputText value="Email: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.contactInformation.electronicMailAddress}" />
+    </h:panelGroup>
+
+    <h:panelGroup layout="block" styleClass="field">
+      <h:outputText value="SRS: " />
+      <h:outputText value="#{geoMapBean.serviceCapabilities.srs}" style="max-height:60px;overflow: auto;display: block" />
+    </h:panelGroup>
+
+    <p:dataTable value="#{geoMapBean.serviceCapabilities.layers}" var="layer">
+      <p:column>
+        <f:facet name="header">
+          <h:outputText value="Layer name:" />
+        </f:facet>
+        <h:outputText value="#{layer.name}" />
+      </p:column>
+      <p:column>
+        <f:facet name="header">
+          <h:outputText value="Title:" />
+        </f:facet>
+        <h:outputText value="#{layer.title}" />
+      </p:column>
+      <p:column>
+        <f:facet name="header">
+          <h:outputText value="SRS:" />
+        </f:facet>
+        <h:outputText value="#{layer.srs}" />
+      </p:column>
+      <p:column>
+        <f:facet name="header">
+          <h:outputText value="Styles:" />
+        </f:facet>
+        <h:outputText value="#{layer.styles}" />
+      </p:column>
+    </p:dataTable>  
+  </p:panel>
+
+  <p:dialog id="map_services_dialog" widgetVar="mapServicesDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="pi pi-server mr-2"/><span>Service</span>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="map_services_panel" layout="block"
+                  rendered="#{geoMapBean.editingService != null}">
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="false">
+        <p:autoUpdate />
+      </p:messages>
+
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Name" />
+          <p:inputText value="#{geoMapBean.editingName}" styleClass="code" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Type" />
+          <p:selectOneMenu value="#{geoMapBean.editingService.type}">
+            <f:selectItem itemValue="" itemLabel="" />
+            <f:selectItem itemValue="wms" itemLabel="WMS" />
+            <f:selectItem itemValue="wfs" itemLabel="WFS" />
+          </p:selectOneMenu>
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Description" />
+          <p:inputText value="#{geoMapBean.editingService.description}" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Url" />
+          <p:inputText value="#{geoMapBean.editingService.url}" styleClass="code" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Use proxy" />
+          <p:toggleSwitch value="#{geoMapBean.editingService.useProxy}"
+                          styleClass="vertical-align-middle ml-2" />
+        </div>
+      </div>
+    </h:panelGroup>
+
+    <f:facet name="footer">
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{geoMapBean.acceptService}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
+                         process="@form:cnt:map_tabs:map_services_dialog"
+                         update="@form:cnt"
+                         oncomplete="if (!isFacesError()) PF('mapServicesDialog').hide()"
+                         />
+        <p:commandButton action="#{geoMapBean.cancelService}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="@form:cnt:map_tabs:map_services_dialog" global="false"
+                         onclick="PF('mapServicesDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+
+</ui:composition>

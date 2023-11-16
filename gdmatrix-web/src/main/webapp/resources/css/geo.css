@@ -1,0 +1,27 @@
+.code
+{
+  font-family: monospace !important;
+}
+
+div.ui-growl {
+  left: 50%;
+  top:40%;
+  right: 0;
+  margin-left:-150px;
+}
+
+@media (max-width: 1000px)
+{
+  #map_toolbar
+  {
+    flex-direction: column;
+    justify-content:center;
+  }
+
+  #map_toolbar .buttons
+  {
+    padding-top: 4px;
+  }
+}
+
+

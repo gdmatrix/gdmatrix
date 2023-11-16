@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                var="objectBundle" />
+
+  <div class="p-3">
+  <p:dataList value="#{geoCatalogueBean.mapItems}" var="mapItem" rows="6"
+              rowsPerPageTemplate="6" paginator="true" paginatorPosition="bottom" 
+              paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+    
+    <f:facet name="header">
+      Catalogue
+    </f:facet>
+    
+    <div class="product-grid-item card">
+      <p:commandLink action="#{geoMapBean.loadMap(mapItem.mapName, 'map_viewer')}"
+                     value="#{mapItem.title}" process="@this" update="@form:cnt" />
+    </div>
+        
+  </p:dataList>
+  </div>
+  
+  <gdm:saveBean value="geoCatalogueBean" />
+    
+  <p:growl id="growl" life="1000">
+    <p:autoUpdate />
+  </p:growl>
+  
+  <script>
+    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>
+  
+</ui:composition>

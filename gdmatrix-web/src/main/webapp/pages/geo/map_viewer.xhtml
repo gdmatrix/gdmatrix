@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+  
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                var="objectBundle" />
+
+  <h:outputStylesheet library="css" name="geo.css" />
+  
+  <div class="flex flex-column h-full">
+    <div class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         style="border-color:var(--surface-border)">
+      <div class="flex-grow-0 align-items-center" style="color:var(--text-color)">
+        <span class="pi pi-map"/>
+        <strong>#{geoMapBean.map.title}</strong>
+      </div>      
+      <div class="flex-grow-1 flex justify-content-end">
+        <div class="ui-inputgroup">
+          <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="Catalogue" 
+                           icon="pi pi-th-large"
+                           process="@this" update="@form:cnt" />
+
+          <p:commandButton action="#{geoMapBean.setView('map_editor')}" value="Edit" 
+                           icon="pi pi-pencil"
+                           process="@this" update="@form:cnt" />
+
+          <p:commandButton action="#{geoMapBean.setView('sld_editor')}" value="SLD" 
+                           icon="pi pi-palette"
+                           process="@this" update="@form:cnt" />
+        </div>
+      </div>      
+    </div>
+    <gdm:maplibre value="#{geoMapBean.map}" class="flex-grow-1" />  
+  </div>
+  
+  <gdm:saveBean value="geoMapBean" />
+  <gdm:saveBean value="geoSldBean" />
+
+  <p:growl id="growl" life="1000">
+    <p:autoUpdate />
+  </p:growl>
+  
+  <script>
+    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>
+  
+</ui:composition>

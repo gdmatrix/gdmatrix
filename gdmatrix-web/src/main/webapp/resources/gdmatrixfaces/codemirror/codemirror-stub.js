@@ -22,6 +22,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers)
   const { foldGutter, foldKeymap } = CM["@codemirror/fold"];
   const { javascript, javascriptLanguage } = CM["@codemirror/lang-javascript"];
   const { json, jsonLanguage } = CM["@codemirror/lang-json"];
+  const { xml, xmlLanguage } = CM["@codemirror/lang-xml"];
   const { sql, sqlLanguage } = CM["@codemirror/lang-sql"];
   const { html, htmlLanguage } = CM["@codemirror/lang-html"];  
   const { defaultHighlightStyle } = CM["@codemirror/highlight"];
@@ -88,6 +89,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers)
   if (language === "json") langExtension = json();
   else if (language === "sql") langExtension = sql();
   else if (language === "html") langExtension = html();
+  else if (language === "xml") langExtension = xml();
   else langExtension = javascript();
 
   const extensions = [

@@ -1,0 +1,195 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <style type="text/css">
+    .code
+    {
+      font-family: monospace !important;
+    }
+  </style>
+
+  <p:dataTable id="map_layers_table" size="small" draggableRows="true"
+               value="#{geoMapBean.map.layers}" var="layer">
+    <p:ajax event="rowReorder" listener="#{geoMapBean.onLayerReorder}" 
+            update="@form:cnt:map_tabs:map_layers_table"/>
+    
+    <p:column headerText="Id">
+      #{layer.id}
+    </p:column>
+    <p:column headerText="Label">
+      #{layer.label}
+    </p:column>
+    <p:column headerText="Source">
+      #{layer.source} (#{geoMapBean.map.sources[layer.source].type})
+    </p:column>
+    <p:column headerText="Type">
+      #{layer.type}
+    </p:column>
+    <p:column headerText="Visible">
+      <p:commandButton action="#{geoMapBean.setLayerVisible(layer, true)}"
+                       icon="pi pi-eye-slash" rendered="#{not layer.visible}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@this"
+                       update="@form:cnt:map_tabs:map_layers_table" />
+      <p:commandButton action="#{geoMapBean.setLayerVisible(layer, false)}"
+                       icon="pi pi-eye" rendered="#{layer.visible}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@this"
+                       update="@form:cnt:map_tabs:map_layers_table" />
+    </p:column>
+    <p:column headerText="Locatable">
+      <p:commandButton action="#{geoMapBean.setLayerLocatable(layer, true)}"
+                       icon="pi pi-times" rendered="#{not layer.locatable}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@this"
+                       update="@form:cnt:map_tabs:map_layers_table" />
+      <p:commandButton action="#{geoMapBean.setLayerLocatable(layer, false)}"
+                       icon="pi pi-arrow-up-right" rendered="#{layer.locatable}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@this"
+                       update="@form:cnt:map_tabs:map_layers_table" />
+    </p:column>
+
+    <p:column styleClass="w-2 text-right white-space-nowrap">
+      <f:facet name="header">
+        <p:commandButton action="#{geoMapBean.addLayer}"
+                         icon="pi pi-plus-circle"
+                         alt="#{objectBundle.create}" title="#{objectBundle.create}"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@form:cnt:map_tabs"
+                         update="@form:cnt:map_tabs:map_layers_dialog"
+                         resetValues="true"
+                         oncomplete="PF('mapLayersDialog').show()"
+                         />
+      </f:facet>
+      <p:commandButton action="#{geoMapBean.editLayer(layer)}"
+                       icon="pi pi-pencil"
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@form:cnt:map_tabs"
+                       update="@form:cnt:map_tabs:map_layers_dialog"
+                       resetValues="true"
+                       oncomplete="PF('mapLayersDialog').show()"
+                       />
+      <p:commandButton action="#{geoMapBean.removeLayer(layer)}"
+                       process="@this"
+                       update="@form:cnt:map_tabs"
+                       resetValues="true"
+                       icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       styleClass="rounded-button ui-button-flat"
+                       onclick="PF('mapLayersDialog').hide()"/>
+    </p:column>
+  </p:dataTable>
+
+
+  <p:dialog id="map_layers_dialog" widgetVar="mapLayersDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="fa fa-layer-group mr-2"/><span>Layer</span>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="map_layers_panel" layout="block"
+                  rendered="#{geoMapBean.editingLayer != null}">
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="false">
+        <p:autoUpdate />
+      </p:messages>
+
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Id" />
+          <p:inputText value="#{geoMapBean.editingLayer.id}" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Label" />
+          <p:inputText value="#{geoMapBean.editingLayer.label}" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Source" />
+          <p:selectOneMenu value="#{geoMapBean.editingLayer.source}">
+            <f:selectItems value="#{geoMapBean.sourceNames}" var="sourceName" 
+                           itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.map.sources[sourceName].type})" />
+          </p:selectOneMenu>
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Type" />
+          <p:selectOneMenu value="#{geoMapBean.editingLayer.type}">
+            <f:selectItem itemValue="raster" itemLabel="raster" />
+            <f:selectItem itemValue="circle" itemLabel="circle" />
+            <f:selectItem itemValue="symbol" itemLabel="symbol" />
+            <f:selectItem itemValue="line" itemLabel="line" />
+            <f:selectItem itemValue="fill" itemLabel="fill" />
+            <f:selectItem itemValue="fill-extrusion" itemLabel="fill-extrusion" />
+            <f:selectItem itemValue="heatmap" itemLabel="heatmap" />
+            <f:selectItem itemValue="hillshade" itemLabel="hillshade" />
+            <f:selectItem itemValue="background" itemLabel="background" />
+          </p:selectOneMenu>
+        </div>
+        
+        <div class="field col-12 md:col-6">
+          <p:outputLabel value="Visile" for="@next" />
+          <p:toggleSwitch value="#{geoMapBean.editingLayer.visible}" 
+                          styleClass="vertical-align-middle ml-2"/>
+        </div>
+        
+        <div class="field col-12 md:col-6">
+          <p:outputLabel value="Locatable" for="@next" />
+          <p:toggleSwitch value="#{geoMapBean.editingLayer.locatable}" 
+                          styleClass="vertical-align-middle ml-2" />
+        </div>
+        
+        <div class="field col-12">
+          <p:tabView>
+            <p:tab title="Paint">
+              <gdm:codemirror value="#{geoMapBean.jsonPaint}" language="json">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>
+            </p:tab>
+
+            <p:tab title="Layout">
+              <gdm:codemirror value="#{geoMapBean.jsonLayout}" language="json">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>            
+            </p:tab>
+
+          </p:tabView>
+        </div>
+        
+      </div>
+    </h:panelGroup>
+
+    <f:facet name="footer">
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{geoMapBean.acceptLayer}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
+                         process="@form:cnt:map_tabs:map_layers_dialog"
+                         update="@form:cnt"
+                         oncomplete="if (!isFacesError()) PF('mapLayersDialog').hide()"
+                         />
+        <p:commandButton action="#{geoMapBean.cancelLayer}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="@form:cnt:map_tabs:map_layers_dialog" global="false"
+                         onclick="PF('mapLayersDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+
+</ui:composition>
