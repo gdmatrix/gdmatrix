@@ -47,6 +47,7 @@
   
   <script>
     window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    document.title = "#{geoMapBean.map.title == null ? geoMapBean.map.name : geoMapBean.map.title}";
   </script>
   
 </ui:composition>

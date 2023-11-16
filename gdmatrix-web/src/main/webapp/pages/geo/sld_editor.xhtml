@@ -106,6 +106,7 @@
       elem.scrollTop = 0;
     }
     window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    document.title = "SLD #{geoSldBean.sldName}";
   </script>
 
 </ui:composition>

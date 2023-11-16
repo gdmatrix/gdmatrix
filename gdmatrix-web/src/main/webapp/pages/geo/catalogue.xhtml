@@ -35,6 +35,7 @@
   
   <script>
     window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    document.title = "#{userSessionBean.selectedMenuItem.label}";
   </script>
   
 </ui:composition>
