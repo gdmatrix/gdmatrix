@@ -149,5 +149,7 @@ public abstract class SldSymbolizer extends SldNode
   }
 
   public abstract String getSymbolizerType();
+
+  public abstract SldSymbolizer duplicate();
 }
 

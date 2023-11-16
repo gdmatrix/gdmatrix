@@ -99,4 +99,14 @@ public class SldTextSymbolizer extends SldSymbolizer
   {
     return "Text";
   }
+
+  @Override
+  public SldTextSymbolizer duplicate()
+  {
+    SldRule rule = (SldRule)getParent();
+    SldTextSymbolizer newNode = rule.addTextSymbolizer();
+    newNode.setInnerElements(getInnerElements());
+    newNode.setCustomData(getCustomData());
+    return newNode;
+  }
 }

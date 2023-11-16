@@ -60,4 +60,14 @@ public class SldPolygonSymbolizer extends SldSymbolizer
   {
     return "Polygon";
   }
+
+  @Override
+  public SldPolygonSymbolizer duplicate()
+  {
+    SldRule rule = (SldRule)getParent();
+    SldPolygonSymbolizer newNode = rule.addPolygonSymbolizer();
+    newNode.setInnerElements(getInnerElements());
+    newNode.setCustomData(getCustomData());
+    return newNode;
+  }
 }

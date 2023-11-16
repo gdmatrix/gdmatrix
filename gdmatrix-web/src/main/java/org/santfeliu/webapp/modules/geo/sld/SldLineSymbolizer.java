@@ -55,4 +55,14 @@ public class SldLineSymbolizer extends SldSymbolizer
   {
     return getNode("Stroke", SldStroke.class);
   }
+
+  @Override
+  public SldLineSymbolizer duplicate()
+  {
+    SldRule rule = (SldRule)getParent();
+    SldLineSymbolizer newNode = rule.addLineSymbolizer();
+    newNode.setInnerElements(getInnerElements());
+    newNode.setCustomData(getCustomData());
+    return newNode;
+  }
 }

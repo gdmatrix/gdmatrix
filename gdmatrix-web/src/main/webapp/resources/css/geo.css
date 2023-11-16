@@ -1,3 +1,63 @@
+.sld_panel
+{
+  border-style: solid;
+  border-width: 1px;
+  border-radius: var(--border-radius);
+  border-color: var(--surface-border);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.sld_panel.expanded
+{
+  border-color: var(--primary-color);
+}
+
+.sld_panel .sld_header
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.sld_field
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+}
+
+.sld_panel .box
+{
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.sld_panel .summary
+{
+  display: flex;
+  font-family: monospace;
+  align-items: center;
+  gap: 4px;
+  margin-left: 25px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+@media (max-width: 400px)
+{
+  .sld_field
+  {
+    flex-direction:column;
+    align-items: flex-start;
+  }
+}
+
 .code
 {
   font-family: monospace !important;

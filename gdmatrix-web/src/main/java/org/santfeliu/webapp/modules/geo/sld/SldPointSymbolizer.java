@@ -55,4 +55,14 @@ public class SldPointSymbolizer extends SldSymbolizer
   {
     return "Point";
   }
+
+  @Override
+  public SldPointSymbolizer duplicate()
+  {
+    SldRule rule = (SldRule)getParent();
+    SldPointSymbolizer newNode = rule.addPointSymbolizer();
+    newNode.setInnerElements(getInnerElements());
+    newNode.setCustomData(getCustomData());
+    return newNode;
+  }
 }

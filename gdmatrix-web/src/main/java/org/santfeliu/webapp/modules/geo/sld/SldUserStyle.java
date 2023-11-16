@@ -96,4 +96,13 @@ public class SldUserStyle extends SldNode
     node.addChild(rule);
     return rule;
   }
+
+  public SldUserStyle duplicate()
+  {
+    SldNamedLayer namedLayer = (SldNamedLayer)getParent();
+    SldUserStyle newNode = namedLayer.addUserStyle();
+    newNode.setInnerElements(getInnerElements());
+    newNode.setCustomData(getCustomData());
+    return newNode;
+  }
 }

@@ -148,4 +148,13 @@ public class SldRule extends SldNode
     addChild(symbolizer);
     return symbolizer;
   }
+
+  public SldRule duplicate()
+  {
+    SldUserStyle userStyle = (SldUserStyle)getParent().getParent();
+    SldRule newNode = userStyle.addRule();
+    newNode.setInnerElements(getInnerElements());
+    newNode.setCustomData(getCustomData());
+    return newNode;
+  }
 }

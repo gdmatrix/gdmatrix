@@ -151,7 +151,7 @@ public class GeoSldBean extends WebBean implements Serializable
     return !visibleLayers.isEmpty();
   }
 
-  public String getSymbolClass(String symbol)
+  public String getMarkerIcon(String symbol)
   {
     switch (symbol)
     {
@@ -200,6 +200,36 @@ public class GeoSldBean extends WebBean implements Serializable
     return buffer.toString();
   }
 
+  public String getSymbolizerIcon(SldSymbolizer symbolizer)
+  {
+    switch (symbolizer.getSymbolizerType())
+    {
+      case "Point" : return "fa fa-location-dot";
+      case "Line" : return "fa fa-slash";
+      case "Polygon" : return "fa fa-vector-square";
+      case "Text" : return "fa fa-t";
+    }
+    return null;
+  }
+
+  public String getSymbolizerSummary(SldSymbolizer symbolizer)
+  {
+    String className = getSymbolizerIcon(symbolizer);
+    if (className == null) return "";
+
+    StringBuilder buffer = new StringBuilder();
+    buffer.append("<span class=\"").append(className)
+      .append("\" style=\"width:16px\"></span> ");
+    switch (symbolizer.getSymbolizerType())
+    {
+      case "Point": buffer.append(getPointSymbolizerSummary()); break;
+      case "Line": buffer.append(getLineSymbolizerSummary()); break;
+      case "Polygon": buffer.append(getPolygonSymbolizerSummary()); break;
+      case "Text": buffer.append(getTextSymbolizerSummary()); break;
+    }
+    return buffer.toString();
+  }
+
   public String getPointSymbolizerSummary()
   {
     SldPointSymbolizer symbolizer =
@@ -208,29 +238,13 @@ public class GeoSldBean extends WebBean implements Serializable
     SldMark mark = graphic.getMark();
 
     StringBuilder buffer = new StringBuilder();
-    if (!StringUtils.isBlank(mark.getWellKnownName()))
-    {
-      buffer.append(mark.getWellKnownName());
-      buffer.append(" ");
-      if (!StringUtils.isBlank(graphic.getSizeAsXml()))
-      {
-        buffer.append(graphic.getSizeAsXml());
-      }
-      SldFill fill = mark.getFill();
-      SldStroke stroke = mark.getStroke();
-      buffer.append(getBox(fill, stroke));
-    }
     SldExternalGraphic externalGraphic = graphic.getExternalGraphic();
     String resource = externalGraphic.getOnlineResource();
+
     if (!StringUtils.isBlank(resource) &&
         !resource.contains("//chart?") &&
         !resource.contains("${"))
     {
-      if (!StringUtils.isBlank(graphic.getSizeAsXml()))
-      {
-        buffer.append(" ");
-        buffer.append(graphic.getSizeAsXml());
-      }
       // adapt icon url
       resource = resource.replaceAll("http://", "https://");
       if (resource.contains("/documents/"))
@@ -240,7 +254,27 @@ public class GeoSldBean extends WebBean implements Serializable
       }
       buffer.append("<img src=\"");
       buffer.append(resource);
-      buffer.append("\" alt=\"\" class=\"icon\">");
+      buffer.append("\" alt=\"\" class=\"icon\" style=\"width:16px\">");
+    }
+    if (!StringUtils.isBlank(mark.getWellKnownName()))
+    {
+      SldFill fill = mark.getFill();
+      SldStroke stroke = mark.getStroke();
+      buffer.append(getBox(fill, stroke));
+
+      String className = getMarkerIcon(mark.getWellKnownName());
+      if (!StringUtils.isBlank(className))
+      {
+        buffer.append("<span class=\"").append(className).append("\"></span> ");
+      }
+      buffer.append(mark.getWellKnownName());
+    }
+
+    String size = graphic.getSizeAsCql();
+    if (!StringUtils.isBlank(size))
+    {
+      buffer.append(" ");
+      buffer.append(size);
     }
     return buffer.toString();
   }
@@ -252,6 +286,10 @@ public class GeoSldBean extends WebBean implements Serializable
     SldStroke stroke = symbolizer.getStroke();
 
     StringBuilder buffer = new StringBuilder();
+    if (!StringUtils.isBlank(stroke.getStrokeColor()))
+    {
+      buffer.append(getBox(stroke.getStrokeColor()));
+    }
     if (!StringUtils.isBlank(stroke.getStrokeWidth()))
     {
       buffer.append(" ");
@@ -262,10 +300,6 @@ public class GeoSldBean extends WebBean implements Serializable
       buffer.append(" [");
       buffer.append(stroke.getStrokeDashArray());
       buffer.append("]");
-    }
-    if (!StringUtils.isBlank(stroke.getStrokeColor()))
-    {
-      buffer.append(getBox(stroke.getStrokeColor()));
     }
     return buffer.toString();
   }
@@ -279,6 +313,12 @@ public class GeoSldBean extends WebBean implements Serializable
 
     StringBuilder buffer = new StringBuilder();
     buffer.append(getBox(fill, stroke));
+
+    if (!StringUtils.isBlank(fill.getFillOpacity()))
+    {
+      buffer.append(" O:");
+      buffer.append(fill.getFillOpacity());
+    }
     return buffer.toString();
   }
 
@@ -289,6 +329,10 @@ public class GeoSldBean extends WebBean implements Serializable
     SldFill fill = symbolizer.getFill();
 
     StringBuilder buffer = new StringBuilder();
+    if (!StringUtils.isBlank(fill.getFillColor()))
+    {
+      buffer.append(getBox(fill.getFillColor()));
+    }
     String label = symbolizer.getLabelAsCql();
     if (!StringUtils.isBlank(label))
     {
@@ -316,10 +360,6 @@ public class GeoSldBean extends WebBean implements Serializable
     {
       buffer.append(" ");
       buffer.append(font.getFontWeight());
-    }
-    if (!StringUtils.isBlank(fill.getFillColor()))
-    {
-      buffer.append(getBox(fill.getFillColor()));
     }
     return buffer.toString();
   }
@@ -379,6 +419,23 @@ public class GeoSldBean extends WebBean implements Serializable
     SldNamedLayer namedLayer = (SldNamedLayer)getValue("#{namedLayer}");
     visibleLayers.add(namedLayer.getLayerName());
     namedLayer.setCustomData(true);
+  }
+
+  public void duplicateNamedLayer()
+  {
+    SldNamedLayer namedLayer = (SldNamedLayer)getValue("#{namedLayer}");
+    SldNamedLayer newNamedLayer = namedLayer.duplicate();
+    newNamedLayer.setLayerName(null);
+    visibleLayers.clear();
+    growl("NAMED_LAYER_DUPLICATED");
+  }
+
+  public void duplicateUserStyle()
+  {
+    SldUserStyle userStyle = (SldUserStyle)getValue("#{userStyle}");
+    SldUserStyle newUserStyle = userStyle.duplicate();
+    newUserStyle.setStyleName(null);
+    growl("USER_STYLE_DUPLICATED");
   }
 
   public void addNamedLayer()

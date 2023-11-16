@@ -22,16 +22,19 @@
                        title="Collapse" rendered="#{geoSldBean.isPanelExpanded(symbolizer)}"
                        icon="pi pi-angle-down"
                        styleClass="rounded-button ui-button-flat" />
-      <span class="fa fa-location-dot" /><span class="ml-2 flex-grow-1 font-bold">PointSymbolizer</span>
-      <p:commandButton action="#{symbolizer.remove}"
-                       process="@form:cnt" update="@parent:@parent:@parent"
-                       title="Remove Symbolizer"
-                       icon="pi pi-trash"
-                       styleClass="rounded-button ui-button-flat"/>
+      <span class="#{geoSldBean.getSymbolizerIcon(symbolizer)}" /><span class="ml-2 flex-grow-1 font-bold">PointSymbolizer</span>
+      <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat">
+        <p:menuitem value="Duplicate" action="#{symbolizer.duplicate}"
+                       process="@form:cnt" update="@parent:@parent:@parent:@parent:rule_panel"
+                       icon="pi pi-copy" />
+        <p:menuitem value="Remove" action="#{symbolizer.remove}"
+                       process="@form:cnt" update="@parent:@parent:@parent:@parent:rule_panel"
+                       icon="pi pi-trash" />
+      </p:menuButton>
     </div>
 
     <h:outputText value="#{geoSldBean.pointSymbolizerSummary}" 
-                  styleClass="code" escape="false" 
+                  styleClass="summary" escape="false" 
                   rendered="#{not geoSldBean.isPanelExpanded(symbolizer)}" />
 
     <h:panelGroup rendered="#{geoSldBean.isPanelExpanded(symbolizer)}">
@@ -61,7 +64,7 @@
         <p:outputLabel value="MarkSymbol:" for="@next" />
         <div class="ui-inputgroup">
           <h:panelGroup id="symbol" styleClass="ui-inputgroup-addon">
-            <span class="#{geoSldBean.getSymbolClass(symbolizer.graphic.mark.wellKnownName)}"/>
+            <span class="#{geoSldBean.getMarkerIcon(symbolizer.graphic.mark.wellKnownName)}"/>
           </h:panelGroup>
           <p:selectOneMenu value="#{symbolizer.graphic.mark.wellKnownName}" 
                            var="symbol" editable="true" styleClass="w-10rem">
@@ -80,10 +83,9 @@
             <f:selectItem itemLabel="shape://times" itemValue="shape://times" />
             <f:selectItem itemLabel="shape://slash" itemValue="shape://slash" />
             <p:column>
-              <span class="#{geoSldBean.getSymbolClass(symbol)}" />
-            </p:column>
-            <p:column>
-            #{symbol}
+              <div class="flex align-items-center">
+              <span class="#{geoSldBean.getMarkerIcon(symbol)} mr-2" /> #{symbol}
+              </div>
             </p:column>
           </p:selectOneMenu>
         </div>

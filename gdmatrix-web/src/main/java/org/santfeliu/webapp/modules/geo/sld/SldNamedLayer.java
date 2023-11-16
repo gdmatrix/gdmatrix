@@ -102,4 +102,13 @@ public class SldNamedLayer extends SldNode
     }
     return found ? userStyle : null;
   }
+
+  public SldNamedLayer duplicate()
+  {
+    SldRoot root = (SldRoot)getParent();
+    SldNamedLayer newNode = root.addNamedLayer();
+    newNode.setInnerElements(getInnerElements());
+    newNode.setCustomData(getCustomData());
+    return newNode;
+  }
 }
