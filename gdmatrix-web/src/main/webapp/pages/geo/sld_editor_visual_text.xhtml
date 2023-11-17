@@ -84,11 +84,15 @@
       </div>
       <div class="sld_field">
         <p:outputLabel value="FillColor:" for="@next" />
-        <p:colorPicker value="#{symbolizer.fill.fillColor}" alpha="false" styleClass="code w-10rem" />
+        <input type="color" value="#{symbolizer.fill.fillColor}"
+               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+        <p:inputText value="#{symbolizer.fill.fillColorAsCql}" 
+                     styleClass="code flex-grow-1 w-full" />
       </div>
       <div class="sld_field">
         <p:outputLabel value="FillOpacity:" for="@next" />
-        <p:inputText value="#{symbolizer.fill.fillOpacity}" styleClass="code" />
+        <p:inputText value="#{symbolizer.fill.fillOpacityAsCql}" 
+                     styleClass="code flex-grow-1 w-full" />
       </div>
       <div class="sld_field">
         <p:outputLabel value="AnchorPointX:" for="@next" />
@@ -134,11 +138,15 @@
       </div>
       <div class="sld_field">
         <p:outputLabel value="HaloFillColor:" for="@next" />
-        <p:colorPicker value="#{symbolizer.halo.fill.fillColor}" alpha="false" styleClass="code w-10rem" />
+        <input type="color" value="#{symbolizer.halo.fill.fillColor}"
+               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+        <p:inputText value="#{symbolizer.halo.fill.fillColorAsCql}" 
+                     styleClass="code flex-grow-1 w-full" />
       </div>
       <div class="sld_field">
         <p:outputLabel value="HaloFillOpacity:" for="@next" />
-        <p:inputText value="#{symbolizer.halo.fill.fillOpacity}" styleClass="code" />
+        <p:inputText value="#{symbolizer.halo.fill.fillOpacityAsCql}" 
+                     styleClass="code flex-grow-1 w-full" />
       </div>
     </h:panelGroup>
   </h:panelGroup>

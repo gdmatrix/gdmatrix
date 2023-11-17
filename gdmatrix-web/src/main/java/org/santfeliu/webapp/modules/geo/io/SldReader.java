@@ -104,7 +104,6 @@ public class SldReader
               if (child.getName() == null) // textNode
               {
                 currentNode.setTextValue(child.getTextValue());
-                currentNode.removeChild(0);
               }
             }
             currentNode = currentNode.getParent();

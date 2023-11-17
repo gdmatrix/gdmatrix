@@ -55,6 +55,16 @@ public class SldStroke extends SldCssNode
     setCssParameter("stroke", color);
   }
 
+  public String getStrokeColorAsCql()
+  {
+    return getCssParameterAsCql("stroke");
+  }
+
+  public void setStrokeColorAsCql(String cql)
+  {
+    setCssParameterAsCql("stroke", cql);
+  }
+
   public String getStrokeWidth()
   {
     return getCssParameter("stroke-width");
@@ -65,6 +75,16 @@ public class SldStroke extends SldCssNode
     setCssParameter("stroke-width", width);
   }
 
+  public String getStrokeWidthAsCql()
+  {
+    return getCssParameterAsCql("stroke-width");
+  }
+
+  public void setStrokeWidthAsCql(String width)
+  {
+    setCssParameterAsCql("stroke-width", width);
+  }
+
   public String getStrokeOpacity()
   {
     return getCssParameter("stroke-opacity");
@@ -73,6 +93,16 @@ public class SldStroke extends SldCssNode
   public void setStrokeOpacity(String opacity)
   {
     setCssParameter("stroke-opacity", opacity);
+  }
+
+  public String getStrokeOpacityAsCql()
+  {
+    return getCssParameterAsCql("stroke-opacity");
+  }
+
+  public void setStrokeOpacityAsCql(String opacity)
+  {
+    setCssParameterAsCql("stroke-opacity", opacity);
   }
 
   public String getStrokeLineJoin()

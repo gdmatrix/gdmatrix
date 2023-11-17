@@ -320,6 +320,20 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
+  public List<String> completeSldName(String text)
+  {
+    try
+    {
+      SldStore sldStore = getSldStore();
+      return sldStore.findSld(text);
+    }
+    catch (Exception ex)
+    {
+      // ignore;
+      return Collections.EMPTY_LIST;
+    }
+  }
+
   public void editSld()
   {
     try
@@ -332,6 +346,8 @@ public class GeoMapBean extends WebBean implements Serializable
         String styleNames = editingSource.getServiceParameters().getStyles();
         List<String> styles = StringUtils.isBlank(styleNames) ?
           Collections.EMPTY_LIST : Arrays.asList(styleNames.split(";"));
+
+        acceptSource();
 
         GeoSldBean geoSldBean = CDI.current().select(GeoSldBean.class).get();
         geoSldBean.editSld(sldName, layers, styles);

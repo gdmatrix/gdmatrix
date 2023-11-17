@@ -55,6 +55,16 @@ public class SldFill extends SldCssNode
     return getCssParameter("fill");
   }
 
+  public String getFillColorAsCql()
+  {
+    return getCssParameterAsCql("fill");
+  }
+
+  public void setFillColorAsCql(String cql)
+  {
+    setCssParameterAsCql("fill", cql);
+  }
+
   public void setFillOpacity(String opacity)
   {
     setCssParameter("fill-opacity", opacity);
@@ -63,5 +73,15 @@ public class SldFill extends SldCssNode
   public String getFillOpacity()
   {
     return getCssParameter("fill-opacity");
+  }
+
+  public void setFillOpacityAsCql(String opacity)
+  {
+    setCssParameterAsCql("fill-opacity", opacity);
+  }
+
+  public String getFillOpacityAsCql()
+  {
+    return getCssParameterAsCql("fill-opacity");
   }
 }

@@ -92,15 +92,27 @@
       </div>
       <div class="sld_field">
         <p:outputLabel value="MarkStrokeColor:" for="@next" />
-        <p:colorPicker value="#{symbolizer.graphic.mark.stroke.strokeColor}" alpha="false" styleClass="code w-10rem" />
+        <input type="color" value="#{symbolizer.graphic.mark.stroke.strokeColor}"
+               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeColorAsCql}" 
+                     styleClass="code flex-grow-1 w-full"  />
       </div>
       <div class="sld_field">
         <p:outputLabel value="MarkStrokeWidth:" for="@next" />
-        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeWidth}" styleClass="code" />
+        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeWidthAsCql}" 
+                     styleClass="code flex-grow-1 w-full" />
+      </div>
+      <div class="sld_field">
+        <p:outputLabel value="MarkStrokeOpacity:" for="@next" />
+        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeOpacityAsCql}" 
+                     styleClass="code flex-grow-1 w-full" />
       </div>
       <div class="sld_field">
         <p:outputLabel value="MarkFillColor:" for="@next" />
-        <p:colorPicker value="#{symbolizer.graphic.mark.fill.fillColor}" alpha="false" styleClass="code w-10rem" />
+        <input type="color" value="#{symbolizer.graphic.mark.fill.fillColor}"
+               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+        <p:inputText value="#{symbolizer.graphic.mark.fill.fillColorAsCql}" 
+                     styleClass="code flex-grow-1 w-full"  />
       </div>
       <div class="sld_field">
         <p:outputLabel value="Opacity:" for="@next" />
@@ -122,5 +134,5 @@
       </div>
     </h:panelGroup>
   </h:panelGroup>
-
+  
 </ui:composition>

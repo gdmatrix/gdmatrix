@@ -152,6 +152,7 @@ public class SldNode implements Serializable
   public void setTextValue(String textValue)
   {
     this.textValue = textValue;
+    children = null;
   }
 
   @Override
@@ -179,7 +180,7 @@ public class SldNode implements Serializable
 
   public String getInnerElements()
   {
-    if (getChildCount() == 0 && getTextValue() != null)
+    if (!StringUtils.isBlank(getTextValue()))
     {
       return StringEscapeUtils.escapeXml(getTextValue());
     }

@@ -37,6 +37,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -46,6 +47,7 @@ import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MemoryDataSource;
@@ -73,6 +75,23 @@ public class SldStore
   {
     this.userId = userId;
     this.password = password;
+  }
+
+  public List<String> findSld(String sldName)
+  {
+    DocumentManagerClient client =
+      new DocumentManagerClient(userId, password);
+    DocumentFilter filter = new DocumentFilter();
+    filter.setDocTypeId(SLD_TYPEID);
+    Property property = new Property();
+    property.setName(SLD_PROPERTY_NAME);
+    property.getValue().add("%" + sldName + "%");
+    filter.getProperty().add(property);
+    filter.getOutputProperty().add(SLD_PROPERTY_NAME);
+    List<Document> documents = client.findDocuments(filter);
+    return documents.stream()
+      .map(d -> DictionaryUtils.getPropertyValue(d.getProperty(), SLD_PROPERTY_NAME))
+      .collect(Collectors.toList());
   }
 
   public SldRoot createSld(List<String> layers, List<String> styles)

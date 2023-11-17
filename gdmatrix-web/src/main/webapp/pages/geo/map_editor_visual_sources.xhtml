@@ -171,7 +171,15 @@
                 <div class="field col-12 md:col-6">
                   <p:outputLabel for="@next" value="SLD" />
                   <div class="ui-inputgroup">
-                    <p:inputText value="#{geoMapBean.editingSource.serviceParameters.sldName}" />
+                    <p:autoComplete value="#{geoMapBean.editingSource.serviceParameters.sldName}"
+                                    maxResults="50" var="sldName" minQueryLength="2" 
+                                    itemLabel="#{sldName}" itemValue="#{sldName}"
+                                    scrollHeight="200"
+                                    completeMethod="#{geoMapBean.completeSldName}">                
+                      <p:column>
+                        #{sldName}
+                      </p:column>
+                    </p:autoComplete>
                     <p:commandButton icon="pi pi-palette" action="#{geoMapBean.editSld}" 
                                      process="@form:cnt:map_tabs:map_sources_panel" 
                                      update="@form:cnt" 

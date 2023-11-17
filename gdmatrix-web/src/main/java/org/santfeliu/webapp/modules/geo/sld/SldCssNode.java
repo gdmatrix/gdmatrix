@@ -30,7 +30,10 @@
  */
 package org.santfeliu.webapp.modules.geo.sld;
 
+import java.util.regex.Pattern;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.santfeliu.webapp.modules.geo.util.ConversionUtils;
 
 /**
  *
@@ -38,6 +41,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class SldCssNode extends SldNode
 {
+  public static final Pattern NUMBER_PATTERN = Pattern.compile("[\\-]?[0-9]*(['.'][0-9]*)?");
+  public static final Pattern STRING_PATTERN = Pattern.compile("\\'[^\\']*\\'");
+
   public SldCssNode()
   {
   }
@@ -49,27 +55,106 @@ public class SldCssNode extends SldNode
 
   public String getCssParameter(String parameter)
   {
-    String value = null;
-    boolean found = false;
-    int index = 0;
-    while (!found && index < getChildCount())
+    SldNode child = getCssParameterNode(parameter);
+    if (child == null) return null;
+
+    String value = child.getTextValue();
+    if (!StringUtils.isBlank(value)) return value;
+
+    String cql = ConversionUtils.xmlToCql(child.getInnerElements());
+    if (NUMBER_PATTERN.matcher(cql).matches())
     {
-      SldNode child = getChild(index);
-      String paramName = child.getAttributes().get("name");
-      if (parameter.equals(paramName))
-      {
-        found = true;
-        value = child.getTextValue();
-      }
-      else index++;
+      return cql;
     }
-    return found ? value : null;
+    else if (STRING_PATTERN.matcher(cql).matches())
+    {
+      return cql.substring(1, cql.length() - 1);
+    }
+    return null;
   }
 
   public void setCssParameter(String parameter, String value)
   {
     if (StringUtils.isBlank(value)) value = null;
 
+    SldNode child = getCssParameterNode(parameter);
+    if (value == null)
+    {
+      if (child != null)
+      {
+        removeChild(child);
+      }
+    }
+    else // value != null
+    {
+      if (child == null)
+      {
+        child = new SldNode(null, "CssParameter");
+        child.getAttributes().put("name", parameter);
+        addChild(child);
+      }
+      child.setTextValue(value);
+    }
+  }
+
+  public String getCssParameterAsCql(String parameter)
+  {
+    SldNode child = getCssParameterNode(parameter);
+    if (child == null) return null;
+
+    String value = child.getTextValue();
+    if (!StringUtils.isBlank(value))
+    {
+      if (NUMBER_PATTERN.matcher(value).matches())
+      {
+        return value;
+      }
+      else
+      {
+        return "'" + value + "'";
+      }
+    }
+    return ConversionUtils.xmlToCql(child.getInnerElements());
+  }
+
+  public void setCssParameterAsCql(String parameter, String cql)
+  {
+    if (StringUtils.isBlank(cql)) cql = null;
+
+    SldNode child = getCssParameterNode(parameter);
+    if (cql == null)
+    {
+      if (child != null)
+      {
+        removeChild(child);
+      }
+    }
+    else // value != null
+    {
+      if (child == null)
+      {
+        child = new SldNode(null, "CssParameter");
+        child.getAttributes().put("name", parameter);
+        addChild(child);
+      }
+
+      if (NUMBER_PATTERN.matcher(cql).matches())
+      {
+        child.setTextValue(cql);
+      }
+      else if (STRING_PATTERN.matcher(cql).matches())
+      {
+        child.setTextValue(cql.substring(1, cql.length() - 1));
+      }
+      else
+      {
+        child.setInnerElements(ConversionUtils.cqlToXml(cql));
+      }
+    }
+  }
+
+  private SldNode getCssParameterNode(String parameter)
+  {
     boolean found = false;
     int index = 0;
     SldNode child = null;
@@ -80,26 +165,13 @@ public class SldCssNode extends SldNode
       if (parameter.equals(paramName)) found = true;
       else index++;
     }
-    if (value == null)
-    {
-      if (found)
-      {
-        removeChild(index);
-      }
-    }
-    else // value != null
-    {
-      if (found)
-      {
-        child.setTextValue(value);
-      }
-      else
-      {
-        SldNode cssNode = new SldNode(null, "CssParameter");
-        cssNode.getAttributes().put("name", parameter);
-        cssNode.setTextValue(value);
-        addChild(cssNode);
-      }
-    }
+    return found ? child : null;
+  }
+
+  public static void main(String[] args)
+  {
+    System.out.println(NUMBER_PATTERN.matcher("-3434.897").matches());
+    System.out.println(STRING_PATTERN.matcher("'fsdf'").matches());
+
   }
 }

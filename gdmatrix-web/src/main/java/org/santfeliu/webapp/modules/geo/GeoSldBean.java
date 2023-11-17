@@ -319,6 +319,17 @@ public class GeoSldBean extends WebBean implements Serializable
       buffer.append(" O:");
       buffer.append(fill.getFillOpacity());
     }
+    if (!StringUtils.isBlank(stroke.getStrokeWidth()))
+    {
+      buffer.append(" ");
+      buffer.append(stroke.getStrokeWidth());
+    }
+    if (!StringUtils.isBlank(stroke.getStrokeDashArray()))
+    {
+      buffer.append(" [");
+      buffer.append(stroke.getStrokeDashArray());
+      buffer.append("]");
+    }
     return buffer.toString();
   }
 
@@ -573,6 +584,7 @@ public class GeoSldBean extends WebBean implements Serializable
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       error(ex);
     }
   }
