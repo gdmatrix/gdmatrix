@@ -154,6 +154,11 @@ public class MenuTypesCache
         return matchItem;
       else if (!matchItem.hasMatch()) //Spread the candidate
         matchItem = candidate;
+      else if (matchItem.isCandidate() && candidate != null &&
+        matchItem.getCandidate() < candidate.getCandidate())
+      {
+        matchItem = candidate; 
+      }
 
       //First child
       MenuItemCursor auxMenuItem = menuItem.getClone();
@@ -168,17 +173,22 @@ public class MenuTypesCache
       auxMenuItem = menuItem.getClone();
       if (auxMenuItem.moveNext())
         return getMenuItem(auxMenuItem, typeId, matchItem);
-      else if (matchItem != null && matchItem.hasMatch())
+      else if (matchItem != null && matchItem.hasExactMatch())
         return matchItem;
+      else if (matchItem != null && matchItem.isCandidate())
+      {
+        if (candidate == null)
+          return matchItem;
+        
+        return matchItem.getCandidate() > candidate.getCandidate() ? 
+          matchItem : candidate;
+      }
       else if (candidate != null && candidate.hasCandidateMatch())
         return candidate;
       else 
         return new MatchItem(auxMenuItem);
     }
 
-    /**
-     * @return 1: match equals, 0: match derived from, -1 not match
-     */
     private MatchItem matchTypeId(MenuItemCursor mic, String typeId)
     {    
       String nodeTypeId = mic.getProperty(NavigatorBean.BASE_TYPEID_PROPERTY);
@@ -189,7 +199,8 @@ public class MenuTypesCache
       Type type = TypeCache.getInstance().getType(typeId);      
       if (type != null && type.isDerivedFrom(nodeTypeId))
       { 
-        return new MatchItem(mic.getClone(), true);
+        return new MatchItem(mic.getClone(), 
+          type.getTypePath().indexOf("/" + nodeTypeId + "/"));
       }
 
       return new MatchItem();
@@ -197,13 +208,14 @@ public class MenuTypesCache
     
     /**
      * Represents an item that match with the typeId criteria. If candidate is 
-     * false is an equals match, else if candidate is true then is a derived 
-     * type.
+     * NO_CANDIDATE is an equals match, else if candidate is positive number 
+     * then is a derived type. When higher value, closer is the parent.
      */
     private class MatchItem
     {
+      static final int NO_CANDIDATE = -1;
       MenuItemCursor cursor;
-      boolean candidate = false;
+      int candidate = NO_CANDIDATE; //higher value --> nearer parent
       
       public MatchItem()
       {
@@ -212,10 +224,10 @@ public class MenuTypesCache
 
       public MatchItem(MenuItemCursor cursor)
       {
-        this(cursor, false);
+        this(cursor, NO_CANDIDATE);
       }
       
-      public MatchItem(MenuItemCursor cursor, boolean candidate)
+      public MatchItem(MenuItemCursor cursor, int candidate)
       {
         this.cursor = cursor;
         this.candidate = candidate;
@@ -233,10 +245,15 @@ public class MenuTypesCache
 
       public boolean isCandidate()
       {
+        return candidate > NO_CANDIDATE;
+      }
+
+      public int getCandidate()
+      {
         return candidate;
       }
 
-      public void setCandidate(boolean candidate)
+      public void setCandidate(int candidate)
       {
         this.candidate = candidate;
       }
