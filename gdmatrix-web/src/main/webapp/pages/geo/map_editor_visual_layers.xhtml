@@ -7,14 +7,8 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <style type="text/css">
-    .code
-    {
-      font-family: monospace !important;
-    }
-  </style>
-
-  <p:dataTable id="map_layers_table" size="small" draggableRows="true"
+  <p:dataTable id="map_layers_table" size="small" 
+               draggableRows="true" rowDragSelector=".drag"
                value="#{geoMapBean.map.layers}" var="layer">
     <p:ajax event="rowReorder" listener="#{geoMapBean.onLayerReorder}" 
             update="@form:cnt:map_tabs:map_layers_table"/>
@@ -68,6 +62,7 @@
                          oncomplete="PF('mapLayersDialog').show()"
                          />
       </f:facet>
+      <span class="drag pi pi-arrows-v p-2" />
       <p:commandButton action="#{geoMapBean.editLayer(layer)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"

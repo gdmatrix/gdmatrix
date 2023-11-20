@@ -433,6 +433,13 @@ body .ui-messages-error ul
     display:none;
   }
   
+  body .ui-button.ui-button-text-icon-left.mini,
+  body .ui-button.ui-button-text-icon-right.mini
+  {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  
   body .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
   body .ui-button.ui-button-text-icon-right.mini > .ui-button-text
   {
@@ -440,6 +447,12 @@ body .ui-messages-error ul
     width: 0;
     padding-right: 0;
     white-space:nowrap;
+  }
+
+  body .ui-button.ui-button-text-icon-left.mini > .ui-icon,
+  body .ui-button.ui-button-text-icon-right.mini > .ui-icon
+  {
+    left: 8px;
   }
 }
 

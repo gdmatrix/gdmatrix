@@ -40,64 +40,34 @@
     <h:panelGroup rendered="#{geoSldBean.isPanelExpanded(symbolizer)}">
       <div class="sld_field">
         <p:outputLabel value="Geometry:" for="@next" />
-        <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code flex-grow-1 w-full"
-                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                     onblur="hideCQLAssistant()" />
+        <div class="ui-inputgroup flex-grow-1">
+          <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code flex-grow-1 w-full"
+                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                       onblur="hideCQLAssistant()" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
-      <div class="sld_field">
-        <p:outputLabel value="StrokeColor:" for="@next" />
-        <input type="color" value="#{symbolizer.stroke.strokeColor}"
-               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
-        <p:inputText value="#{symbolizer.stroke.strokeColorAsCql}" 
-                     styleClass="code flex-grow-1 w-full" />
-      </div>
-      <div class="sld_field">
-        <p:outputLabel value="StrokeWidth:" for="@next" />
-        <p:inputText value="#{symbolizer.stroke.strokeWidthAsCql}"
-                     styleClass="code flex-grow-1 w-full" />
-      </div>
-      <div class="sld_field">
-        <p:outputLabel value="StrokeOpacity:" for="@next" />
-        <p:inputText value="#{symbolizer.stroke.strokeOpacityAsCql}" 
-                     styleClass="code flex-grow-1 w-full" />
-      </div>
-      <div class="sld_field">
-        <p:outputLabel value="StrokeLineJoin:" for="@next" />
-        <p:selectOneMenu value="#{symbolizer.stroke.strokeLineJoin}">
-          <f:selectItem itemLabel=" " itemValue="" />
-          <f:selectItem itemLabel="mitre" itemValue="mitre" />
-          <f:selectItem itemLabel="round" itemValue="round" />
-          <f:selectItem itemLabel="bevel" itemValue="bevel" />
-        </p:selectOneMenu>
-      </div>
-      <div class="sld_field">
-        <p:outputLabel value="StrokeLineCap:" for="@next" />
-        <p:selectOneMenu value="#{symbolizer.stroke.strokeLineCap}">
-          <f:selectItem itemLabel=" " itemValue="" />
-          <f:selectItem itemLabel="butt" itemValue="butt" />
-          <f:selectItem itemLabel="round" itemValue="round" />
-          <f:selectItem itemLabel="square" itemValue="square" />
-        </p:selectOneMenu>
-      </div>
-      <div class="sld_field">
-        <p:outputLabel value="StrokeDashArray:" for="@next" />
-        <p:inputText value="#{symbolizer.stroke.strokeDashArray}" styleClass="code" />
-      </div>
-      <div class="sld_field">
-        <p:outputLabel value="StrokeDashOffset:" for="@next" />
-        <p:inputText value="#{symbolizer.stroke.strokeDashOffset}" styleClass="code" />
-      </div>
+
+      <ui:include src="/pages/geo/sld_editor_visual_stroke.xhtml" />
+
       <div class="sld_field">
         <p:outputLabel value="FillColor:" for="@next" />
-        <input type="color" value="#{symbolizer.fill.fillColor}"
-               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
-        <p:inputText value="#{symbolizer.fill.fillColorAsCql}" 
-                     styleClass="code flex-grow-1 w-full" />
+        <div class="ui-inputgroup flex-grow-1">
+          <input type="color" value="#{symbolizer.fill.fillColor}"
+                 onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+          <p:inputText value="#{symbolizer.fill.fillColorAsCql}" 
+                       styleClass="code flex-grow-1 w-full" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="FillOpacity:" for="@next" />
-        <p:inputText value="#{symbolizer.fill.fillOpacityAsCql}" 
-                     styleClass="code flex-grow-1 w-full" />
+        <div class="ui-inputgroup flex-grow-1">
+          <div class="ui-inputgroup-addon code w-4rem">0&#8230;N</div>
+          <p:inputText value="#{symbolizer.fill.fillOpacityAsCql}" 
+                       styleClass="code flex-grow-1 w-full" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
     </h:panelGroup>
   </h:panelGroup>

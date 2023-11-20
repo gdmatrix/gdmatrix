@@ -47,17 +47,26 @@
 
       <div class="sld_field">
         <p:outputLabel value="MinScaleDenominator:" for="@next" />
-        <p:inputText value="#{rule.minScaleDenominator}" styleClass="code" />
+        <div class="ui-inputgroup flex-grow-1">
+          <div class="ui-inputgroup-addon code w-4rem">0&#8230;N</div>
+          <p:inputText value="#{rule.minScaleDenominator}" styleClass="code" />
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="MaxScaleDenominator:" for="@next" />
-        <p:inputText value="#{rule.maxScaleDenominator}" styleClass="code" />
+        <div class="ui-inputgroup flex-grow-1">
+          <div class="ui-inputgroup-addon code w-4rem">0&#8230;N</div>        
+          <p:inputText value="#{rule.maxScaleDenominator}" styleClass="code" />
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="Filter:" for="@next" />
-        <p:inputText value="#{rule.filterAsCql}" styleClass="code flex-grow-1 w-full" 
-                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                     onblur="hideCQLAssistant()" />
+        <div class="ui-inputgroup flex-grow-1">
+          <p:inputText value="#{rule.filterAsCql}" styleClass="code flex-grow-1 w-full" 
+                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                       onblur="hideCQLAssistant()" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
 
       <ui:repeat value="#{rule.symbolizers}" var="symbolizer">

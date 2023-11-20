@@ -8,7 +8,7 @@
                 xmlns:sf="http://faces.santfeliu.org">
 
   <h:panelGroup id="point_panel" layout="block"
-                styleClass="sld_panel #{geoSldBean.isPanelExpanded(symbolizer) ? 'expanded' :''}" 
+                styleClass="sld_panel #{geoSldBean.isPanelExpanded(symbolizer) ? 'expanded' :''}"
                 rendered="#{symbolizer.symbolizerType == 'Point'}">
 
     <div class="sld_header">
@@ -33,16 +33,19 @@
       </p:menuButton>
     </div>
 
-    <h:outputText value="#{geoSldBean.pointSymbolizerSummary}" 
-                  styleClass="summary" escape="false" 
+    <h:outputText value="#{geoSldBean.pointSymbolizerSummary}"
+                  styleClass="summary" escape="false"
                   rendered="#{not geoSldBean.isPanelExpanded(symbolizer)}" />
 
     <h:panelGroup rendered="#{geoSldBean.isPanelExpanded(symbolizer)}">
       <div class="sld_field">
         <p:outputLabel value="Geometry:" for="@next" />
-        <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code flex-grow-1 w-full"
-                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                     onblur="hideCQLAssistant()" />
+        <div class="ui-inputgroup flex-grow-1">
+          <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code flex-grow-1 w-full"
+                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                       onblur="hideCQLAssistant()" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="ExternalGraphicURL:" for="@next" />
@@ -66,7 +69,7 @@
           <h:panelGroup id="symbol" styleClass="ui-inputgroup-addon">
             <span class="#{geoSldBean.getMarkerIcon(symbolizer.graphic.mark.wellKnownName)}"/>
           </h:panelGroup>
-          <p:selectOneMenu value="#{symbolizer.graphic.mark.wellKnownName}" 
+          <p:selectOneMenu value="#{symbolizer.graphic.mark.wellKnownName}"
                            var="symbol" editable="true" styleClass="w-10rem">
             <p:ajax update="@parent:@parent:symbol" />
             <f:selectItem itemLabel=" " itemValue="" />
@@ -92,47 +95,71 @@
       </div>
       <div class="sld_field">
         <p:outputLabel value="MarkStrokeColor:" for="@next" />
-        <input type="color" value="#{symbolizer.graphic.mark.stroke.strokeColor}"
-               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
-        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeColorAsCql}" 
-                     styleClass="code flex-grow-1 w-full"  />
+        <div class="ui-inputgroup flex-grow-1">
+          <input type="color" value="#{symbolizer.graphic.mark.stroke.strokeColor}"
+                 onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+          <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeColorAsCql}"
+                       styleClass="code w-full"  />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="MarkStrokeWidth:" for="@next" />
-        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeWidthAsCql}" 
-                     styleClass="code flex-grow-1 w-full" />
+        <div class="ui-inputgroup flex-grow-1">
+          <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeWidthAsCql}"
+                       styleClass="code flex-grow-1 w-full" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="MarkStrokeOpacity:" for="@next" />
-        <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeOpacityAsCql}" 
-                     styleClass="code flex-grow-1 w-full" />
+        <div class="ui-inputgroup flex-grow-1">
+          <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeOpacityAsCql}"
+                       styleClass="code flex-grow-1 w-full" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="MarkFillColor:" for="@next" />
-        <input type="color" value="#{symbolizer.graphic.mark.fill.fillColor}"
-               onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
-        <p:inputText value="#{symbolizer.graphic.mark.fill.fillColorAsCql}" 
-                     styleClass="code flex-grow-1 w-full"  />
+        <div class="ui-inputgroup flex-grow-1">
+          <input type="color" value="#{symbolizer.graphic.mark.fill.fillColor}"
+                 onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+          <p:inputText value="#{symbolizer.graphic.mark.fill.fillColorAsCql}"
+                       styleClass="code flex-grow-1 w-full"  />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="Opacity:" for="@next" />
-        <p:inputText value="#{symbolizer.graphic.opacityAsCql}" styleClass="code flex-grow-1 w-full" 
-                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                     onblur="hideCQLAssistant()" />
+        <div class="ui-inputgroup flex-grow-1">
+          <div class="ui-inputgroup-addon code w-4rem">0&#8230;1</div>
+          <p:inputText value="#{symbolizer.graphic.opacityAsCql}" styleClass="code flex-grow-1 w-full"
+                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                       onblur="hideCQLAssistant()" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="Size:" for="@next" />
-        <p:inputText value="#{symbolizer.graphic.sizeAsCql}" styleClass="code flex-grow-1 w-full" 
-                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                     onblur="hideCQLAssistant()" />
+        <div class="ui-inputgroup flex-grow-1">
+          <div class="ui-inputgroup-addon code w-4rem">0&#8230;N</div>
+          <p:inputText value="#{symbolizer.graphic.sizeAsCql}" styleClass="code flex-grow-1 w-full"
+                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                       onblur="hideCQLAssistant()" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>          
+        </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="Rotation:" for="@next" />
-        <p:inputText value="#{symbolizer.graphic.rotationAsCql}" styleClass="code flex-grow-1 w-full"
-                     onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                     onblur="hideCQLAssistant()" />
+        <div class="ui-inputgroup flex-grow-1">
+          <div class="ui-inputgroup-addon code w-3rem">N</div>
+          <p:inputText value="#{symbolizer.graphic.rotationAsCql}" styleClass="code flex-grow-1 w-full"
+                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
+                       onblur="hideCQLAssistant()" />
+          <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+        </div>
       </div>
     </h:panelGroup>
   </h:panelGroup>
-  
+
 </ui:composition>

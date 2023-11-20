@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+
+  <div class="sld_field">
+    <p:outputLabel value="StrokeColor:" for="@next" />
+    <div class="ui-inputgroup flex-grow-1">
+      <input type="color" value="#{symbolizer.stroke.strokeColor}" class="br-1"
+             onchange="this.nextElementSibling.value = '\'' + this.value + '\''" />
+      <p:inputText value="#{symbolizer.stroke.strokeColorAsCql}" 
+                   styleClass="code w-full" />
+      <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+    </div>
+  </div>
+  <div class="sld_field">
+    <p:outputLabel value="StrokeWidth:" for="@next" />
+    <div class="ui-inputgroup flex-grow-1">
+      <div class="ui-inputgroup-addon code w-4rem">0&#8230;N</div>
+      <p:inputText value="#{symbolizer.stroke.strokeWidthAsCql}" 
+                   styleClass="code w-full" />
+      <div class="ui-inputgroup-addon code"><span class="fa fa-calculator"/></div>
+    </div>
+  </div>
+  <div class="sld_field">
+    <p:outputLabel value="StrokeOpacity:" for="@next" />
+    <div class="ui-inputgroup flex-grow-1">  
+      <div class="ui-inputgroup-addon code w-4rem">0&#8230;1</div>
+      <p:inputText value="#{symbolizer.stroke.strokeOpacityAsCql}" 
+                   styleClass="code w-full" />
+      <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+    </div>
+  </div>
+  <div class="sld_field">
+    <p:outputLabel value="StrokeLineJoin:" for="@next" />
+    <p:selectOneMenu value="#{symbolizer.stroke.strokeLineJoin}">
+      <f:selectItem itemLabel=" " itemValue="" />
+      <f:selectItem itemLabel="mitre" itemValue="mitre" />
+      <f:selectItem itemLabel="round" itemValue="round" />
+      <f:selectItem itemLabel="bevel" itemValue="bevel" />
+    </p:selectOneMenu>
+  </div>
+  <div class="sld_field">
+    <p:outputLabel value="StrokeLineCap:" for="@next" />
+    <p:selectOneMenu value="#{symbolizer.stroke.strokeLineCap}">
+      <f:selectItem itemLabel=" " itemValue="" />
+      <f:selectItem itemLabel="butt" itemValue="butt" />
+      <f:selectItem itemLabel="round" itemValue="round" />
+      <f:selectItem itemLabel="square" itemValue="square" />
+    </p:selectOneMenu>
+  </div>
+  <div class="sld_field">
+    <p:outputLabel value="StrokeDashArray:" for="@next" />
+    <div class="ui-inputgroup flex-grow-1">
+      <div class="ui-inputgroup-addon code w-3rem">N*</div>
+      <p:inputText value="#{symbolizer.stroke.strokeDashArray}" 
+                   styleClass="code w-full" />
+    </div>
+  </div>
+  <div class="sld_field">
+    <h:outputLabel value="StrokeDashOffset:" for="@next" />
+    <div class="ui-inputgroup flex-grow-1">
+      <div class="ui-inputgroup-addon code w-3rem">N</div>
+      <p:inputText value="#{symbolizer.stroke.strokeDashOffset}" styleClass="code" />
+    </div>
+  </div>
+
+</ui:composition>

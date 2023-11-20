@@ -65,6 +65,16 @@ public class SldFont extends SldCssNode
     setCssParameter("font-size", size);
   }
 
+  public String getFontSizeAsCql()
+  {
+    return getCssParameterAsCql("font-size");
+  }
+
+  public void setFontSizeAsCql(String cql)
+  {
+    setCssParameterAsCql("font-size", cql);
+  }
+
   public String getFontStyle()
   {
     return getCssParameter("font-style");

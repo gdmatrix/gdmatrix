@@ -52,7 +52,7 @@
 .sld_panel input[type=color]
 {
   border-width: 1px;
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
   border-color: var(--surface-border);
 }
 
@@ -63,11 +63,21 @@
     flex-direction:column;
     align-items: flex-start;
   }
+
+  .sld_field > .ui-inputgroup
+  {
+    width: 100%;
+  }
 }
 
 .code
 {
   font-family: monospace !important;
+}
+
+span.drag
+{
+  cursor: move;
 }
 
 div.ui-growl {

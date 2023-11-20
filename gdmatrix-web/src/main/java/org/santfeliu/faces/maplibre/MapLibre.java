@@ -47,6 +47,7 @@ import org.santfeliu.faces.maplibre.model.Map;
 @FacesComponent(value="org.gdmatrix.faces.MapLibre")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-stub.js")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-gl.js")
+@ResourceDependency(library = "gdmatrixfaces", name = "maplibre/ogc.js")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-default.css")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-gl.css")
 public class MapLibre extends UIOutput
