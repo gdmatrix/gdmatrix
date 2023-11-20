@@ -14,6 +14,8 @@
       <input type="color" value="#{symbolizer.stroke.strokeColor}" class="br-1"
              onchange="this.nextElementSibling.value = '\'' + this.value + '\''" />
       <p:inputText value="#{symbolizer.stroke.strokeColorAsCql}" 
+                   onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                   onblur="CQLAssistant.hide()"
                    styleClass="code w-full" />
       <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
     </div>
@@ -23,6 +25,8 @@
     <div class="ui-inputgroup flex-grow-1">
       <div class="ui-inputgroup-addon code w-4rem">0&#8230;N</div>
       <p:inputText value="#{symbolizer.stroke.strokeWidthAsCql}" 
+                   onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                   onblur="CQLAssistant.hide()"
                    styleClass="code w-full" />
       <div class="ui-inputgroup-addon code"><span class="fa fa-calculator"/></div>
     </div>
@@ -32,6 +36,8 @@
     <div class="ui-inputgroup flex-grow-1">  
       <div class="ui-inputgroup-addon code w-4rem">0&#8230;1</div>
       <p:inputText value="#{symbolizer.stroke.strokeOpacityAsCql}" 
+                   onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                   onblur="CQLAssistant.hide()"
                    styleClass="code w-full" />
       <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
     </div>

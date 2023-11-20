@@ -62,6 +62,7 @@ public class GeoSldBean extends WebBean implements Serializable
   SldRoot sld;
   boolean sldNameChanged;
   Set<String> visibleLayers = new HashSet<>();
+  String serviceUrl;
 
   @PostConstruct
   public void init()
@@ -82,6 +83,21 @@ public class GeoSldBean extends WebBean implements Serializable
   public SldRoot getSld()
   {
     return sld;
+  }
+
+  public String getServiceUrl()
+  {
+    return serviceUrl;
+  }
+
+  public void setServiceUrl(String serviceUrl)
+  {
+    this.serviceUrl = serviceUrl;
+  }
+
+  public String getServiceUrlString()
+  {
+    return StringUtils.isBlank(serviceUrl) ? "null" : "'" + serviceUrl + "'";
   }
 
   public String getXmlSld()
@@ -544,10 +560,13 @@ public class GeoSldBean extends WebBean implements Serializable
     }
   }
 
-  public void editSld(String sldName, List<String> layers, List<String> styles)
+  public void editSld(String sldName, List<String> layers, List<String> styles,
+    String serviceUrl)
   {
     try
     {
+      this.serviceUrl = serviceUrl;
+
       sld = getSldStore().loadSld(sldName);
       if (sld == null)
       {

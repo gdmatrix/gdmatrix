@@ -291,6 +291,13 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
+  public String getSourceServiceUrl()
+  {
+    String serviceName = editingSource.getServiceParameters().getService();
+    Service service = map.getServices().get(serviceName);
+    return service.getUrl();
+  }
+
   public List<String> completeLayer(String text)
   {
     try
@@ -338,19 +345,23 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     try
     {
-      String sldName = editingSource.getServiceParameters().getSldName();
-      String layer = editingSource.getServiceParameters().getLayer();
+      ServiceParameters serviceParameters = editingSource.getServiceParameters();
+      String sldName = serviceParameters.getSldName();
+      String layer = serviceParameters.getLayer();
+      Service service = map.getServices().get(serviceParameters.getService());
+      String serviceUrl = service == null ? null : service.getUrl();
+
       if (!StringUtils.isBlank(sldName) && !StringUtils.isBlank(layer))
       {
         List<String> layers = Arrays.asList(layer.split(";"));
-        String styleNames = editingSource.getServiceParameters().getStyles();
+        String styleNames = serviceParameters.getStyles();
         List<String> styles = StringUtils.isBlank(styleNames) ?
           Collections.EMPTY_LIST : Arrays.asList(styleNames.split(";"));
 
         acceptSource();
 
         GeoSldBean geoSldBean = CDI.current().select(GeoSldBean.class).get();
-        geoSldBean.editSld(sldName, layers, styles);
+        geoSldBean.editSld(sldName, layers, styles, serviceUrl);
 
         this.view = "sld_editor";
         this.mode = "visual";

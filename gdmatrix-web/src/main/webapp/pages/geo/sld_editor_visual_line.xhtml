@@ -41,9 +41,10 @@
       <div class="sld_field">
         <p:outputLabel value="Geometry:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
-          <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code flex-grow-1 w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+          <p:inputText value="#{symbolizer.geometryAsCql}"
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()" 
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>

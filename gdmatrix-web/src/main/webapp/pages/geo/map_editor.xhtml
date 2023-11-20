@@ -10,8 +10,9 @@
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
                 var="objectBundle" />
 
-  <h:outputStylesheet library="css" name="geo.css" />  
-  
+  <h:outputStylesheet library="css" name="geo.css" />
+  <h:outputScript library="gdmatrixfaces" name="maplibre/ogc.js" />
+
   <div class="flex flex-column h-full">
     <div id="map_toolbar" class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
@@ -50,7 +51,7 @@
                            styleClass="mini #{geoMapBean.mode == 'code' ? 'ui-button-outlined' : ''}"
                            oncomplete="if (isFacesError()) objectScrollUp()" />
         </div>
-        
+
         <div class="ui-inputgroup">
           <p:commandButton action="#{geoMapBean.newMap}" value="New"
                            icon="pi pi-plus-circle" title="New" styleClass="mini"

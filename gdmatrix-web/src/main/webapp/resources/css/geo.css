@@ -101,4 +101,32 @@ div.ui-growl {
   }
 }
 
+.cql_assistant
+{
+  color: var(--text-color);
+  background-color: var(--surface-ground);
+  border-color: var(--primary-color);
+  border-width: 1px;
+  border-style: solid;
+  font-family: var(--font-family);
+  font-size: 12px;
+  padding: 4px;
+}
+
+.cql_assistant .cql_header
+{
+  font-weight: bold;
+}
+
+.cql_assistant a
+{
+  font-family: monospace;
+  text-decoration: none;
+  color: #8080ff;
+}
+
+.cql_assistant a:hover
+{
+  text-decoration: underline;  
+}
 

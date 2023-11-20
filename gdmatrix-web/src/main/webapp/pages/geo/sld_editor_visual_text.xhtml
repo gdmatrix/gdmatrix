@@ -41,18 +41,20 @@
       <div class="sld_field">
         <p:outputLabel value="Geometry:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
-          <p:inputText value="#{symbolizer.geometryAsCql}" styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+          <p:inputText value="#{symbolizer.geometryAsCql}"
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()" 
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
       <div class="sld_field">
         <p:outputLabel value="Label:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
-          <p:inputText value="#{symbolizer.labelAsCql}" styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+          <p:inputText value="#{symbolizer.labelAsCql}"
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()" 
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -71,7 +73,10 @@
         <p:outputLabel value="FontSize:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-4rem">0&#8230;N</div>
-          <p:inputText value="#{symbolizer.font.fontSizeAsCql}" styleClass="code w-full" />
+          <p:inputText value="#{symbolizer.font.fontSizeAsCql}" 
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"                        
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -98,6 +103,8 @@
           <input type="color" value="#{symbolizer.fill.fillColor}"
                  onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
           <p:inputText value="#{symbolizer.fill.fillColorAsCql}" 
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
                        styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
@@ -107,6 +114,8 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-4rem">0&#8230;1</div>
           <p:inputText value="#{symbolizer.fill.fillOpacityAsCql}" 
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
                        styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
@@ -116,9 +125,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-3rem">N</div>
           <p:inputText value="#{symbolizer.pointPlacement.anchorPointXAsCql}" 
-                       styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -127,9 +136,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-3rem">N</div>
           <p:inputText value="#{symbolizer.pointPlacement.anchorPointYAsCql}" 
-                       styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -138,9 +147,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-3rem">N</div>
           <p:inputText value="#{symbolizer.pointPlacement.displacementXAsCql}" 
-                       styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -149,9 +158,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-3rem">N</div>
           <p:inputText value="#{symbolizer.pointPlacement.displacementYAsCql}" 
-                       styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -160,9 +169,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-3rem">N</div>
           <p:inputText value="#{symbolizer.pointPlacement.rotationAsCql}" 
-                       styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -171,9 +180,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-3rem">N</div>
           <p:inputText value="#{symbolizer.linePlacement.perpendicularOffsetAsCql}" 
-                       styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -182,9 +191,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-3rem">N</div>
           <p:inputText value="#{symbolizer.halo.radiusAsCql}" 
-                       styleClass="code w-full"
-                       onfocus="showCQLAssistant('namedLayer[#{geoSldBean.namedLayerIndex}]', this)"
-                       onblur="hideCQLAssistant()" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>
@@ -194,6 +203,8 @@
           <input type="color" value="#{symbolizer.halo.fill.fillColor}"
                  onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
           <p:inputText value="#{symbolizer.halo.fill.fillColorAsCql}" 
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
                        styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
@@ -203,7 +214,9 @@
         <div class="ui-inputgroup flex-grow-1">
           <div class="ui-inputgroup-addon code w-4rem">0&#8230;1</div>
           <p:inputText value="#{symbolizer.halo.fill.fillOpacityAsCql}" 
-                       styleClass="code flex-grow-1 w-full" />
+                       onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
+                       onblur="CQLAssistant.hide()"
+                       styleClass="code w-full" />
           <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
         </div>
       </div>

@@ -75,6 +75,12 @@
                   showIcon="true" closable="false">
         <p:autoUpdate />
       </p:messages>
+      
+      <h:panelGroup id="cql_assistant">
+        <script>
+          CQLAssistant.serviceUrl = '#{geoMapBean.sourceServiceUrl}';
+        </script>
+      </h:panelGroup>
 
       <div class="ui-fluid formgrid grid">
 
@@ -137,6 +143,7 @@
                     <f:selectItem itemValue="" itemLabel="" />
                     <f:selectItems value="#{geoMapBean.serviceNames}" var="svc" 
                                    itemValue="#{svc}" itemLabel="#{geoMapBean.map.services[svc].description}" />
+                    <p:ajax event="change" process="@this" update="@parent:@parent:@parent:cql_assistant" />
                   </p:selectOneMenu>
                 </div>
                 <div class="field col-12 md:col-6">
@@ -149,6 +156,7 @@
                                   oninput="acLayerOnInput()"
                                   onchange="acLayerOnChange()"
                                   completeMethod="#{geoMapBean.completeLayer}">
+                    <p:ajax event="change" process="@this" update="cql_filter" />
                     <p:column>
                       #{layerName}
                     </p:column>
@@ -192,8 +200,14 @@
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="CQL filter" />
-                  <p:inputText value="#{geoMapBean.editingSource.serviceParameters.cqlFilter}"
-                               styleClass="code" />
+                  <div class="ui-inputgroup">
+                    <p:inputText id="cql_filter"
+                                 value="#{geoMapBean.editingSource.serviceParameters.cqlFilter}"
+                                 onfocus="CQLAssistant.show('#{geoMapBean.editingSource.serviceParameters.layer}', this)"
+                                 onblur="CQLAssistant.hide()"
+                                 styleClass="code" />
+                    <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+                  </div>
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Transparent" />
