@@ -801,7 +801,7 @@ public class KernelManager implements KernelManagerPort
       return false;
     }
 
-    if (!isKernelAdmin() && !isUserInRole(writeRole))
+    if (!isKernelAdmin())
       throw new WebServiceException(NOT_AUTHORIZED);
 
     DBAddress dbAddress =
@@ -1077,7 +1077,7 @@ public class KernelManager implements KernelManagerPort
       return false;
     }
 
-    if (!isKernelAdmin() && !isUserInRole(writeRole))
+    if (!isKernelAdmin())
       throw new WebServiceException(NOT_AUTHORIZED);
 
     DBPersonAddressPK pk = new DBPersonAddressPK(vPersonAddressId.getId());
@@ -1395,7 +1395,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public Room storeRoom(Room globalRoom)
   {
-    if (!isKernelAdmin() && !isUserInRole(writeRole))
+    if (!isKernelAdmin())
       throw new WebServiceException(NOT_AUTHORIZED);
 
     Room room = getEndpoint().toLocal(Room.class, globalRoom);
@@ -1416,7 +1416,7 @@ public class KernelManager implements KernelManagerPort
       try
       {
         String maxRoomId  = (String)query.getSingleResult();
-        roomId = Integer.valueOf(maxRoomId) + 1;
+        roomId = Integer.parseInt(maxRoomId) + 1;
       }
       catch (Exception ex)
       {
@@ -1441,7 +1441,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public boolean removeRoom(String globalRoomId)
   {
-    if (!isKernelAdmin() && !isUserInRole(writeRole))
+    if (!isKernelAdmin())
       throw new WebServiceException(NOT_AUTHORIZED);
 
     String roomId = getEndpoint().toLocalId(Room.class, globalRoomId);
