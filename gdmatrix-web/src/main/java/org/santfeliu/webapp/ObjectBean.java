@@ -326,10 +326,15 @@ public abstract class ObjectBean extends BaseBean
   {
     Action action = scriptActions.getAction(actionName);
     if (action != null)
-      executeAction(action.getName());
+      executeAction(action.getName(), action.getParameters());
+  }
+  
+  protected ActionObject executeAction(String actionName)
+  {
+    return executeAction(actionName, null);
   }
 
-  protected ActionObject executeAction(String actionName)
+  protected ActionObject executeAction(String actionName, Object[] parameters)
   {
     ActionObject actionObject = new ActionObject(getObject());
     if (actionsClient != null)
@@ -338,7 +343,7 @@ public abstract class ObjectBean extends BaseBean
       if (callable instanceof Callable)
       {
         actionsClient.put("actionObject", actionObject);
-        actionsClient.execute((Callable)callable);
+        actionsClient.execute((Callable)callable, parameters);
         actionObject = (ActionObject) actionsClient.get("actionObject");
         if (actionObject != null)
         {

@@ -42,6 +42,7 @@ public class Action
     
   private String label;
   private String name;
+  private Object[] parameters;
   private String icon;
 
   public Action(String label, String name)
@@ -52,9 +53,14 @@ public class Action
 
   public Action(String label, String name, String icon)
   {
-    this.label = label;
-    this.name = name;
+    this(label, name);
     this.icon = icon;
+  }
+  
+  public Action(String label, String name, String[] parameters, String icon)
+  {
+    this(label, name, icon);
+    this.parameters = parameters;
   }
 
   public String getLabel()
@@ -85,6 +91,16 @@ public class Action
   public void setIcon(String icon)
   {
     this.icon = icon;
+  }
+
+  public Object[] getParameters()
+  {
+    return parameters;
+  }
+
+  public void setParameters(Object[] parameters)
+  {
+    this.parameters = parameters;
   }
   
   public boolean isUrlAction()

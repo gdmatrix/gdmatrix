@@ -39,6 +39,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.mozilla.javascript.Callable;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.santfeliu.util.script.ScriptClient;
@@ -196,8 +197,9 @@ public class ContextTreeBean implements Serializable
 
       ScriptClient client = new ScriptClient();
       client.put("data", data);
-      Object result = client.executeScript(getScriptName(),
-        action.getMethodName() + "()");
+      client.executeScript(getScriptName());
+      Callable callable = (Callable) client.get(action.getMethodName());
+      Object result = client.execute(callable, action.getMethodParams());
 
       System.out.println("Result: " + result);
 
@@ -373,7 +375,7 @@ public class ContextTreeBean implements Serializable
 
     String type = NOP;
     String methodName;
-    String methodParams;
+    Object[] methodParams;
     String label;
 
     public ContextAction()
@@ -382,10 +384,10 @@ public class ContextTreeBean implements Serializable
 
     public ContextAction(String type, String methodName, String label)
     {
-      this(type, methodName, "", label);
+      this(type, methodName, null, label);
     }
     
-    public ContextAction(String type, String methodName, String methodParams, 
+    public ContextAction(String type, String methodName, String[] methodParams, 
       String label)
     {
       this.type = type;
@@ -414,12 +416,12 @@ public class ContextTreeBean implements Serializable
       this.methodName = methodName;
     }
 
-    public String getMethodParams()
+    public Object[] getMethodParams()
     {
       return methodParams;
     }
 
-    public void setMethodParams(String methodParams)
+    public void setMethodParams(Object[] methodParams)
     {
       this.methodParams = methodParams;
     }
