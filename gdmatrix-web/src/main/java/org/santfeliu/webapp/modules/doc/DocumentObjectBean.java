@@ -33,12 +33,14 @@ package org.santfeliu.webapp.modules.doc;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import javax.activation.DataHandler;
+import javax.activation.URLDataSource;
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.model.SelectItem;
@@ -377,12 +379,18 @@ public class DocumentObjectBean extends ObjectBean
       DataHandler dh = new DataHandler(ds);
       Content content = new Content();
       content.setData(dh);
+      String contentType = dh.getContentType();
+      if ("application/octet-stream".equals(contentType))
+        contentType = null;
+      content.setContentType(contentType);      
       document.setContent(content);
     }
     else if (!StringUtils.isBlank(urlToStore))
     {
       Content content = new Content();
       content.setUrl(urlToStore.trim());
+      URLDataSource ds = new URLDataSource(new URL(urlToStore));
+      content.setContentType(ds.getContentType());      
       document.setContent(content);
       urlToStore = null;
     }
