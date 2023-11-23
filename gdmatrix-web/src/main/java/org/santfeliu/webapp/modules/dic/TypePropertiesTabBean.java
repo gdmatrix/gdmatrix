@@ -329,6 +329,7 @@ public class TypePropertiesTabBean extends TabBean
       PropertyDefinition propDef)
     {
       this.rowId = rowId;
+      this.maxOccurs = 1;
       if (propDef != null)
       {
         name = propDef.getName();
