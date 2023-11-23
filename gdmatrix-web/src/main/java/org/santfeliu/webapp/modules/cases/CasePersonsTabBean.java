@@ -752,7 +752,11 @@ public class CasePersonsTabBean extends TabBean
       if (personId != null)
       {
         String caseId = editing.getCaseId();
-        List<String> currentAddressIds = getCurrentAddresses(caseId);
+        String typeId = caseObjectBean.getActiveEditTab().getProperties()
+          .getString("importAddressesTypeId");
+        if (typeId == null)
+          typeId = DictionaryConstants.CASE_ADDRESS_TYPE;
+        List<String> currentAddressIds = getCurrentAddresses(caseId, typeId);
         List<PersonAddressView> personAddresses =
           getPersonAddresses(personId);
         for (PersonAddressView personAddressView : personAddresses)
@@ -763,8 +767,7 @@ public class CasePersonsTabBean extends TabBean
             CaseAddress caseAddress = new CaseAddress();
             caseAddress.setCaseId(caseId);
             caseAddress.setAddressId(addressId);
-            caseAddress.setCaseAddressTypeId(
-              DictionaryConstants.CASE_PERSON_TYPE);
+            caseAddress.setCaseAddressTypeId(typeId);
             CasesModuleBean.getPort(false).storeCaseAddress(caseAddress);
           }
         }
@@ -780,7 +783,7 @@ public class CasePersonsTabBean extends TabBean
     return KernelModuleBean.getPort(true).findPersonAddressViews(filter);
   }
 
-  private List<String> getCurrentAddresses(String caseId)
+  private List<String> getCurrentAddresses(String caseId, String importTypeId)
     throws Exception
   {
     List<String> results = new ArrayList();
@@ -792,7 +795,8 @@ public class CasePersonsTabBean extends TabBean
 
     for(CaseAddressView caseAddressView : caseAddresses)
     {
-      results.add(caseAddressView.getAddressView().getAddressId());
+      if (caseAddressView.getCaseAddressTypeId().equals(importTypeId))
+        results.add(caseAddressView.getAddressView().getAddressId());
     }
 
     return results;

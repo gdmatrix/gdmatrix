@@ -437,14 +437,17 @@ public class CaseAddressesTabBean extends TabBean
   }
 
   private void importPersonsFromEditingAddress() throws Exception
-  {
+  {    
     if (editing != null)
     {
       String addressId = editing.getAddressId();
       if (addressId != null)
       {
-
-        List<String> personIds = getCurrentPersons(editing.getCaseId());
+        String typeId = caseObjectBean.getActiveEditTab().getProperties()
+            .getString("importPersonsTypeId"); 
+        if (typeId == null)
+          typeId = DictionaryConstants.CASE_PERSON_TYPE;
+        List<String> personIds = getCurrentPersons(editing.getCaseId(), typeId);
         List<PersonAddressView> personAddresses = getPersonAddresses(addressId);
         for (PersonAddressView personAddress : personAddresses)
         {
@@ -452,7 +455,7 @@ public class CaseAddressesTabBean extends TabBean
           if (!personIds.contains(personId))
           {
             CasePerson casePerson = new CasePerson();
-            casePerson.setCasePersonTypeId(DictionaryConstants.CASE_PERSON_TYPE);
+            casePerson.setCasePersonTypeId(typeId);
             casePerson.setCaseId(editing.getCaseId());
             casePerson.setPersonId(personId);
             CasesModuleBean.getPort(false).storeCasePerson(casePerson);
@@ -461,8 +464,8 @@ public class CaseAddressesTabBean extends TabBean
       }
     }
   }
-
-  private List<String> getCurrentPersons(String caseId)
+  
+  private List<String> getCurrentPersons(String caseId, String importTypeId)
     throws Exception
   {
     List<String> results = new ArrayList();
@@ -474,7 +477,8 @@ public class CaseAddressesTabBean extends TabBean
 
     for(CasePersonView casePersonView : casePersonViews)
     {
-      results.add(casePersonView.getPersonView().getPersonId());
+      if (casePersonView.getCasePersonTypeId().equals(importTypeId))
+        results.add(casePersonView.getPersonView().getPersonId());
     }
 
     return results;
@@ -487,5 +491,5 @@ public class CaseAddressesTabBean extends TabBean
     filter.setAddressId(addressId);
     return KernelModuleBean.getPort(true).findPersonAddressViews(filter);
   }
-
+  
 }
