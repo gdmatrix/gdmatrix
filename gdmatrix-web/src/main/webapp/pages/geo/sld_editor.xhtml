@@ -25,6 +25,7 @@
         <div class="ui-inputgroup">
           <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="Catalogue"
                            icon="pi pi-th-large" title="Catalogue" styleClass="mini"
+                           widgetVar="showCatalogueButton"
                            process="@form:cnt" update="@form:cnt" />
 
           <p:commandButton action="#{geoMapBean.setView('map_viewer')}" value="View"
@@ -95,6 +96,7 @@
 
   <gdm:saveBean value="geoMapBean" />
   <gdm:saveBean value="geoSldBean" />
+  <gdm:saveState value="#{geoCatalogueBean.filter}" />
 
   <p:growl for="growl" life="1000">
     <p:autoUpdate />
@@ -106,10 +108,27 @@
       var elem = document.getElementById("editor_body");
       elem.scrollTop = 0;
     }
-    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-    document.title = "SLD #{geoSldBean.sldName}";
-    
     CQLAssistant.serviceUrl = #{geoSldBean.serviceUrlString};
+
+    window.history.pushState({}, '','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+
+    if (window.popStateListener)
+    {
+      window.removeEventListener("popstate", window.popStateListener);
+    }
+
+    window.popStateListener = () => {
+      var pfButton = PF("showCatalogueButton");
+      if (pfButton)
+      {
+        var id = pfButton.id;
+        var button = document.getElementById(id);
+        button.click();
+      };
+    };
+
+    window.addEventListener("popstate", window.popStateListener);
+    document.title = "SLD #{geoSldBean.sldName}"; 
   </script>
 
 </ui:composition>

@@ -24,6 +24,12 @@
                        styleClass="rounded-button ui-button-flat" />
       <span class="#{geoSldBean.getSymbolizerIcon(symbolizer)}" /><span class="ml-2 flex-grow-1 font-bold">PointSymbolizer</span>
       <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat">
+        <p:menuitem value="Move up" action="#{symbolizer.moveUp}"
+                    process="@form:cnt" update="@parent:@parent:@parent:@parent:rule_panel"
+                    icon="pi pi-arrow-up" />
+        <p:menuitem value="Move down" action="#{symbolizer.moveDown}"
+                    process="@form:cnt" update="@parent:@parent:@parent:@parent:rule_panel"
+                    icon="pi pi-arrow-down" />
         <p:menuitem value="Duplicate" action="#{symbolizer.duplicate}"
                        process="@form:cnt" update="@parent:@parent:@parent:@parent:rule_panel"
                        icon="pi pi-copy" />

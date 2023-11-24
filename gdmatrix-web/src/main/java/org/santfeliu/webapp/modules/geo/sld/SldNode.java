@@ -98,6 +98,11 @@ public class SldNode implements Serializable
     return children == null ? 0 : children.size();
   }
 
+  public int getChildIndex(SldNode child)
+  {
+    return children.indexOf(child);
+  }
+
   public SldNode getChild(int index)
   {
     if (children == null) return null;
@@ -141,6 +146,34 @@ public class SldNode implements Serializable
     if (parent != null)
     {
       parent.removeChild(this);
+    }
+  }
+
+  public void moveUp()
+  {
+    if (parent != null)
+    {
+      SldNode currentParent = parent;
+      int index = parent.getChildIndex(this);
+      if (index > 0)
+      {
+        remove();
+        currentParent.insertChild(this, index - 1);
+      }
+    }
+  }
+
+  public void moveDown()
+  {
+    if (parent != null)
+    {
+      SldNode currentParent = parent;
+      int index = parent.getChildIndex(this);
+      if (index >= 0 && index < parent.getChildCount() - 1)
+      {
+        remove();
+        currentParent.insertChild(this, index + 1);
+      }
     }
   }
 

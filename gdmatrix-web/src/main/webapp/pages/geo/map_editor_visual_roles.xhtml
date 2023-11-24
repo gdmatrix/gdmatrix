@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <p:dataTable id="map_roles_table" value="#{geoMapBean.mapDocument.accessControl}"
+               allowUnsorting="true" sortMode="single"
+               var="ac" stripedRows="true" size="small" 
+               resizableColumns="false" showGridlines="true">
+
+    <p:column headerText="#{securityBundle.role_role}" styleClass="col-5" 
+              sortable="true" sortBy="#{ac.roleId}">
+      <h:outputText value="#{ac.roleId}" />
+    </p:column>
+
+    <p:column headerText="Access" styleClass="col-5" 
+              sortable="true" sortBy="#{ac.action}">
+      <h:outputText value="#{geoBundle['acl_' += ac.action]}" />
+    </p:column>
+    
+    <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat">
+        <p:menuitem value="#{geoBundle.acl_Read}" action="#{geoMapBean.updateAccessControl(ac, 'Read')}"
+                       process="@this" update="@namingcontainer" />
+        <p:menuitem value="#{geoBundle.acl_Write}" action="#{geoMapBean.updateAccessControl(ac, 'Write')}"
+                       process="@this" update="@namingcontainer" />
+        <p:menuitem value="#{geoBundle.acl_Delete}" action="#{geoMapBean.updateAccessControl(ac, 'Delete')}"
+                       process="@this" update="@namingcontainer" />
+      </p:menuButton>
+
+      <p:commandButton action="#{geoMapBean.removeAccessControl(ac)}"
+                       process="@this" update="@namingcontainer"
+                       resetValues="true"
+                       icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       styleClass="rounded-button ui-button-flat">
+      </p:commandButton>
+    </p:column>
+    
+    <f:facet name="footer">
+      <div class="flex align-items-center">
+        <p:outputLabel value="RoleId:" for="@next" styleClass="m-2" />
+        <div class="ui-inputgroup">
+          <p:autoComplete value="#{geoMapBean.roleToAdd}" var="roleId"
+                          maxResults="20" minQueryLength="1" 
+                          itemLabel="#{roleId}" itemValue="#{roleId}" 
+                          scrollHeight="200"
+                          completeMethod="#{geoMapBean.findRoles}">
+            <p:column>
+              #{roleId}
+            </p:column>
+          </p:autoComplete>
+          <p:commandButton action="#{geoMapBean.addAccessControl()}"
+            process="@parent" update="@namingcontainer" icon="pi pi-plus-circle" />
+        </div>
+      </div>
+    </f:facet>
+    
+  </p:dataTable>
+
+</ui:composition>

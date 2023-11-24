@@ -47,10 +47,11 @@ import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
+import org.matrix.doc.DocumentManagerPort;
 import org.santfeliu.dic.util.DictionaryUtils;
-import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MemoryDataSource;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.geo.sld.SldRoot;
 
 
@@ -66,21 +67,17 @@ public class SldStore
   public static final String SLD_PROPERTY_NAME = "sld_name";
   public static final String SLD_ENCODING = "ISO-8859-1";
 
-  private String userId;
-  private String password;
+  private DocumentManagerPort documentManagerPort;
 
   final private Map<String, String> sldUrlCache = new HashMap<>();
 
   public void setCredentials(String userId, String password)
   {
-    this.userId = userId;
-    this.password = password;
+    this.documentManagerPort = DocModuleBean.getPort(userId, password);
   }
 
   public List<String> findSld(String sldName)
   {
-    DocumentManagerClient client =
-      new DocumentManagerClient(userId, password);
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(SLD_TYPEID);
     Property property = new Property();
@@ -88,7 +85,7 @@ public class SldStore
     property.getValue().add("%" + sldName + "%");
     filter.getProperty().add(property);
     filter.getOutputProperty().add(SLD_PROPERTY_NAME);
-    List<Document> documents = client.findDocuments(filter);
+    List<Document> documents = getPort().findDocuments(filter);
     return documents.stream()
       .map(d -> DictionaryUtils.getPropertyValue(d.getProperty(), SLD_PROPERTY_NAME))
       .collect(Collectors.toList());
@@ -140,9 +137,7 @@ public class SldStore
     Content content = new Content();
     content.setData(dh);
     document.setContent(content);
-    DocumentManagerClient client =
-      new DocumentManagerClient(userId, password);
-    client.storeDocument(document);
+    getPort().storeDocument(document);
 
     sldUrlCache.remove(sldName);
 
@@ -154,21 +149,19 @@ public class SldStore
     Document document = null;
     if (!StringUtils.isBlank(sldName))
     {
-      DocumentManagerClient client =
-        new DocumentManagerClient(userId, password);
       DocumentFilter filter = new DocumentFilter();
       filter.setDocTypeId(SLD_TYPEID);
       Property property = new Property();
       property.setName(SLD_PROPERTY_NAME);
       property.getValue().add(sldName);
       filter.getProperty().add(property);
-      List<Document> documents = client.findDocuments(filter);
+      List<Document> documents = getPort().findDocuments(filter);
       if (!documents.isEmpty())
       {
         document = documents.get(0);
         if (content)
         {
-          document = client.loadDocument(document.getDocId(), 0,
+          document = getPort().loadDocument(document.getDocId(), 0,
             ContentInfo.ALL);
         }
       }
@@ -185,6 +178,20 @@ public class SldStore
       sldUrlCache.put(sldName, sldUrl);
     }
     return sldUrl;
+  }
+
+  public void setPort(DocumentManagerPort port)
+  {
+    this.documentManagerPort = port;
+  }
+
+  public DocumentManagerPort getPort()
+  {
+    if (documentManagerPort == null)
+    {
+      documentManagerPort = DocModuleBean.getPort("anonymous", null);
+    }
+    return documentManagerPort;
   }
 
   private String buildSldUrl(String sldName)

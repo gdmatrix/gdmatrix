@@ -7,7 +7,8 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <p:dataTable id="map_services_table" size="small"
+  <p:dataTable id="map_services_table" size="small" 
+               showGridlines="true" stripedRows="true"
                value="#{geoMapBean.serviceNames}" var="serviceName">
     <p:column headerText="Name">
       <span class="code">#{serviceName}</span>

@@ -25,6 +25,12 @@
       <p:outputLabel value="Rule:" for="@next" styleClass="ml-2 mr-2 font-bold" />
       <p:inputText value="#{rule.title}" styleClass="code flex-grow-1" style="min-width:10px" />
       <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat ml-1">
+        <p:menuitem value="Move up" action="#{rule.moveUp}"
+                    process="@form:cnt" update="@parent:@parent:@parent:@parent:userstyle_panel"
+                    icon="pi pi-arrow-up" />
+        <p:menuitem value="Move down" action="#{rule.moveDown}"
+                    process="@form:cnt" update="@parent:@parent:@parent:@parent:userstyle_panel"
+                    icon="pi pi-arrow-down" />
         <p:menuitem value="Duplicate" action="#{rule.duplicate}"
                     process="@form:cnt" update="@parent:@parent:@parent:@parent:userstyle_panel"
                     icon="pi pi-copy" />

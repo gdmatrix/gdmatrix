@@ -8,18 +8,19 @@
                 xmlns:sf="http://faces.santfeliu.org">
 
   <p:dataTable id="map_layers_table" size="small" 
+               showGridlines="true" stripedRows="true"
                draggableRows="true" rowDragSelector=".drag"
                value="#{geoMapBean.map.layers}" var="layer">
     <p:ajax event="rowReorder" listener="#{geoMapBean.onLayerReorder}" 
             update="@form:cnt:map_tabs:map_layers_table"/>
     
-    <p:column headerText="Id">
+    <p:column headerText="Id" styleClass="code">
       #{layer.id}
     </p:column>
     <p:column headerText="Label">
       #{layer.label}
     </p:column>
-    <p:column headerText="Source">
+    <p:column headerText="Source" styleClass="code">
       #{layer.source} (#{geoMapBean.map.sources[layer.source].type})
     </p:column>
     <p:column headerText="Type">
@@ -137,7 +138,7 @@
         </div>
         
         <div class="field col-12 md:col-6">
-          <p:outputLabel value="Visile" for="@next" />
+          <p:outputLabel value="Visible" for="@next" />
           <p:toggleSwitch value="#{geoMapBean.editingLayer.visible}" 
                           styleClass="vertical-align-middle ml-2"/>
         </div>

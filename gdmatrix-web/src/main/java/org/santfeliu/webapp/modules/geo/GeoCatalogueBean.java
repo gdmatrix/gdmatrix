@@ -34,12 +34,12 @@ import java.io.Serializable;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
 import javax.inject.Named;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapItem;
+import org.santfeliu.webapp.modules.geo.io.MapStore.MapFilter;
+import org.santfeliu.webapp.modules.geo.io.MapStore.MapGroup;
 
 /**
  *
@@ -49,15 +49,38 @@ import org.santfeliu.webapp.modules.geo.io.MapStore.MapItem;
 @RequestScoped
 public class GeoCatalogueBean extends WebBean implements Serializable
 {
-  List<MapItem> mapItems;
+  List<MapGroup> mapGroups;
+  MapFilter filter = new MapFilter();
 
-  public List<MapItem> getMapItems()
+  public List<MapGroup> getMapGroups()
   {
-    if (mapItems == null)
+    if (mapGroups == null)
     {
-      mapItems = getMapStore().findMaps();
+      mapGroups = getMapStore().findMaps(filter);
     }
-    return mapItems;
+    return mapGroups;
+  }
+
+  public MapFilter getFilter()
+  {
+    return filter;
+  }
+
+  public void setFilter(MapFilter filter)
+  {
+    this.filter = filter;
+  }
+
+  public void findMaps()
+  {
+    try
+    {
+      mapGroups = getMapStore().findMaps(filter);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   private MapStore getMapStore()
@@ -67,5 +90,4 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     mapStore.setCredentials(userSessionBean.getUserId(), userSessionBean.getPassword());
     return mapStore;
   }
-
 }

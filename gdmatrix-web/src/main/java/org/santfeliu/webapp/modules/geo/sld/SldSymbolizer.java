@@ -148,6 +148,49 @@ public abstract class SldSymbolizer extends SldNode
     setCssParameter(tagNode, parameter, value);
   }
 
+  @Override
+  public void moveUp()
+  {
+    SldNode parent = getParent();
+    if (parent != null)
+    {
+      int index = parent.getChildIndex(this);
+      if (index == -1) return;
+
+      while (index > 0 && !(parent.getChild(index - 1) instanceof SldSymbolizer))
+      {
+        index--;
+      }
+      if (index > 0)
+      {
+        remove();
+        parent.insertChild(this, index - 1);
+      }
+    }
+  }
+
+  @Override
+  public void moveDown()
+  {
+    SldNode parent = getParent();
+    if (parent != null)
+    {
+      int index = parent.getChildIndex(this);
+      if (index == -1) return;
+
+      while (index < parent.getChildCount() - 1 &&
+          !(parent.getChild(index + 1) instanceof SldSymbolizer))
+      {
+        index++;
+      }
+      if (index < parent.getChildCount() - 1)
+      {
+        remove();
+        parent.insertChild(this, index + 1);
+      }
+    }
+  }
+
   public abstract String getSymbolizerType();
 
   public abstract SldSymbolizer duplicate();

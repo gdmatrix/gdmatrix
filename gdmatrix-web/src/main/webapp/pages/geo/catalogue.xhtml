@@ -10,32 +10,55 @@
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
                 var="objectBundle" />
 
-  <div class="p-3">
-  <p:dataList value="#{geoCatalogueBean.mapItems}" var="mapItem" rows="6"
-              rowsPerPageTemplate="6" paginator="true" paginatorPosition="bottom" 
-              paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
-    
+  <p:panel styleClass="p-3">
+
     <f:facet name="header">
-      Catalogue
+      <div class="flex align-items-center">
+        <div class="flex-grow-0">#{userSessionBean.selectedMenuItem.label}</div>
+        <div class="flex-grow-1">
+          <div class="ui-inputgroup justify-content-end">
+            <p:inputText value="#{geoCatalogueBean.filter.title}"
+                         autocomplete="off" placeholder="Map name" />
+            <p:commandButton id="find_maps" 
+                             action="#{geoCatalogueBean.findMaps}"
+                             icon="pi pi-search"
+                             process="@form:cnt" update="@form:cnt:maps" />
+            <p:defaultCommand target="find_maps" />
+          </div>
+        </div>
+      </div>
     </f:facet>
-    
-    <div class="product-grid-item card">
-      <p:commandLink action="#{geoMapBean.loadMap(mapItem.mapName, 'map_viewer')}"
-                     value="#{mapItem.title}" process="@this" update="@form:cnt" />
-    </div>
-        
-  </p:dataList>
-  </div>
+
+    <h:panelGroup id="maps">
+      <ul class="list-none pl-0">
+        <ui:repeat value="#{geoCatalogueBean.mapGroups}" var="mapGroup">    
+          <li>
+            <span><strong>#{mapGroup.category.title}</strong> (#{mapGroup.mapViews.size()} mapes)</span>
+            <ul class="list-none pl-4 pt-2 pb-4">
+              <ui:repeat value="#{mapGroup.mapViews}" var="mapView">    
+                <li class="pt-1 pb-1">
+                  <span class="pi pi-map mr-2" />
+                  <p:commandLink action="#{geoMapBean.loadMap(mapView.mapName, 'map_viewer')}"
+                                 value="#{mapView.title}" 
+                                 process="@this" update="@form:cnt" />
+                </li>
+              </ui:repeat>
+            </ul>
+          </li>
+        </ui:repeat>
+      </ul>
+    </h:panelGroup>
+  </p:panel>
   
   <gdm:saveBean value="geoCatalogueBean" />
-    
+
   <p:growl id="growl" life="1000">
     <p:autoUpdate />
   </p:growl>
-  
+
   <script>
-    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
     document.title = "#{userSessionBean.selectedMenuItem.label}";
   </script>
-  
+
 </ui:composition>

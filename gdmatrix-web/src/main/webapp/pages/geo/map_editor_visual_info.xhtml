@@ -5,7 +5,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <div class="ui-fluid formgrid grid">
 
@@ -23,10 +24,78 @@
     </div>
 
     <div class="field col-12">
-      <p:outputLabel for="@next" value="Description" />
-      <p:inputTextarea value="#{geoMapBean.map.description}" />
+      <p:tabView dynamic="true">
+        <p:tab title="Description">
+          <gdm:codemirror value="#{geoMapBean.map.description}"
+                          language="xml"
+                          styleClass="w-full" />
+        </p:tab>
+
+        <p:tab title="Metadata">
+          <emcomp:dynamicProperties typeId="GMAP"
+                              formSelector="#{geoMapBean.metadataFormSelector}"                              
+                              properties="#{geoMapBean.mapDocument.properties}" />
+        </p:tab>
+
+        <p:tab title="Auditory">
+          <div class="ui-fluid formgrid grid">
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="Creation date: " />
+              <div>
+                <p:datePicker value="#{geoMapBean.mapDocument.creationDate}"
+                              autocomplete="off"
+                              placeholder="dd/MM/yyyy"
+                              locale="ca"
+                              showOnFocus="false" styleClass="w-auto"
+                              converter="datePickerConverter" pattern="dd/MM/yyyy"
+                              showIcon="true" showTime="false"
+                              monthNavigator="true" yearNavigator="true" />
+              </div>
+            </div>
+
+            <div class="field col-12 md:col-3">
+              <p:outputLabel for="@next" value="#{geoBundle.captureUserId}: " />
+              <p:inputText value="#{geoMapBean.mapDocument.captureUserId}" readonly="true" />
+            </div>
+
+            <div class="field col-12 md:col-3">
+              <p:outputLabel for="@next" value="#{geoBundle.captureDateTime}: " />
+              <p:inputText value="#{geoMapBean.mapDocument.captureDateTime}" readonly="true">
+                <f:converter converterId="DateTimeConverter" />
+              </p:inputText>
+              <!--
+              <h:outputFormat value="#{mapViewerBundle.yearsFromCapture}"
+                 rendered="#{mapBean.map.captureDateTime != null}">
+                <f:param value="#{mapEditorBean.yearsFromCapture}" />
+              </h:outputFormat>
+              -->
+            </div>
+
+            <div class="field col-12 md:col-3">
+              <p:outputLabel for="@next" value="#{geoBundle.changeUserId}: " />
+              <p:inputText value="#{geoMapBean.mapDocument.changeUserId}" readonly="true" />
+              <!--
+                <h:outputText value="#{mapEditorBean.changeUserDisplayName}" />
+              -->
+            </div>
+
+            <div class="field col-12 md:col-3">
+              <p:outputLabel for="@next" value="#{geoBundle.changeDateTime}: " />
+              <p:inputText value="#{geoMapBean.mapDocument.changeDateTime}" readonly="true">
+                <f:converter converterId="DateTimeConverter" />
+              </p:inputText>
+              <!--
+              <h:outputFormat value="#{mapViewerBundle.daysFromLastChange}"
+                rendered="#{mapBean.map.changeDateTime != null}">
+                <f:param value="#{mapEditorBean.daysFromLastChange}" />
+              </h:outputFormat>
+              -->
+            </div>
+          </div>
+        </p:tab>
+      </p:tabView>
     </div>
-    
   </div>
 
 </ui:composition>

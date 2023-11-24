@@ -7,18 +7,72 @@ class HomeButton
     this.homePosition = homePosition;
   }
 
-  onAdd(map) 
+  onAdd(map)
   {
     const div = document.createElement("div");
     div.className = "maplibregl-ctrl maplibregl-ctrl-group";
     div.innerHTML = `<button><span class="fa fa-home"/></button>`;
     div.addEventListener("contextmenu", (e) => e.preventDefault());
-    div.addEventListener("click", (e) => 
+    div.addEventListener("click", (e) =>
     {
-      e.preventDefault();      
+      e.preventDefault();
       map.flyTo(this.homePosition);
     });
 
+    return div;
+  }
+}
+
+class LoadingIndicator
+{
+  constructor()
+  {
+    this.pendingCount = 0;
+  }
+
+  loadingStarted(event)
+  {
+    if (event?.tile?.tileID?.canonical?.key)
+    {
+      this.pendingCount++;
+      this.updateProgress();
+    }
+  }
+
+  loadingCompleted(event)
+  {
+    if (event?.tile?.tileID?.canonical?.key)
+    {
+      this.pendingCount--;
+      this.updateProgress();
+    }
+  }
+
+  updateProgress()
+  {
+    this.div.textContent = this.pendingCount;
+    if (this.pendingCount > 0)
+    {
+      this.div.classList.add("flash");
+    }
+    else
+    {
+      this.div.classList.remove("flash");
+    }
+  }
+
+  onAdd(map)
+  {
+    map.on("dataloading", (e) => this.loadingStarted(e));
+    map.on("data", (e) => this.loadingCompleted(e));
+    map.on("dataabort", (e) => this.loadingCompleted(e));
+
+    const div = document.createElement("div");
+    this.div = div;
+    div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
+    div.style.width = "29px";
+    div.style.height = "29px";
+    div.style.fontFamily = "var(--font-family)";
     return div;
   }
 }
@@ -30,21 +84,21 @@ function getSourceUrl(source, services)
 
   let service = services[serviceParameters.service];
   if (service === undefined) return null;
-  
-  let serviceUrl = service.url;  
+
+  let serviceUrl = service.url;
   let urlParams;
   if (service.type === "wms")
   {
     let tileSize = source.tileSize || 256;
     urlParams = "SERVICE=WMS" +
     "&VERSION=1.1.1" +
-    "&REQUEST=GetMap" +                
-    "&LAYERS=" + serviceParameters.layer + 
-    "&FORMAT=" + serviceParameters.format + 
-    "&TRANSPARENT=" + (serviceParameters.transparent ? "TRUE" : "FALSE") + 
-    "&TILES=true" + 
+    "&REQUEST=GetMap" +
+    "&LAYERS=" + serviceParameters.layer +
+    "&FORMAT=" + serviceParameters.format +
+    "&TRANSPARENT=" + (serviceParameters.transparent ? "TRUE" : "FALSE") +
+    "&TILES=true" +
     "&STYLES=" + (serviceParameters.styles ? serviceParameters.styles : "") +
-    "&srs=EPSG:3857" + 
+    "&srs=EPSG:3857" +
     "&BBOX={bbox-epsg-3857}" +
     "&WIDTH=" + tileSize +
     "&HEIGHT=" + tileSize;
@@ -58,16 +112,16 @@ function getSourceUrl(source, services)
     }
     if (serviceParameters.sldUrl)
     {
-      urlParams += "&SLD=" + serviceParameters.sldUrl; 
+      urlParams += "&SLD=" + serviceParameters.sldUrl;
     }
   }
   else if (service.type === "wfs")
   {
     urlParams = "SERVICE=WFS" +
     "&VERSION=1.0.0" +
-    "&REQUEST=GetFeature" +                
-    "&typeName=" + serviceParameters.layer + 
-    "&outputFormat=" + serviceParameters.format + 
+    "&REQUEST=GetFeature" +
+    "&typeName=" + serviceParameters.layer +
+    "&outputFormat=" + serviceParameters.format +
     "&srsName=EPSG:4326";
     if (serviceParameters.cqlFilter)
     {
@@ -79,7 +133,7 @@ function getSourceUrl(source, services)
   let url;
   if (service.useProxy)
   {
-    url = "https://" + document.location.host + "/proxy?url=" + 
+    url = "https://" + document.location.host + "/proxy?url=" +
           serviceUrl + "&" + urlParams;
   }
   else
@@ -103,7 +157,7 @@ function maplibreInit(clientId, config)
 
   const camera = config.camera;
   delete config.camera;
- 
+
   const mapConfig = {
     container: clientId,
     center: camera.center,
@@ -120,8 +174,8 @@ function maplibreInit(clientId, config)
       layers: []
     }
   };
-  
- 
+
+
   // process sources
   for (let sourceName in config.sources)
   {
@@ -150,7 +204,7 @@ function maplibreInit(clientId, config)
       }
     }
     else if (source.type === "vector")
-    {      
+    {
     }
     else if (source.type === "geojson")
     {
@@ -168,12 +222,12 @@ function maplibreInit(clientId, config)
       }
     }
   }
-  
+
   if (config.terrain && config.terrain.source)
   {
     mapConfig.style.terrain = config.terrain;
   }
-  
+
   // process layers
   for (let layer of config.layers)
   {
@@ -182,7 +236,7 @@ function maplibreInit(clientId, config)
       mapConfig.style.layers.push(layer);
     }
   }
-  
+
   console.info("MapConfig", mapConfig);
 
   const map = new maplibregl.Map(mapConfig);
@@ -214,8 +268,10 @@ function maplibreInit(clientId, config)
     pitch: camera.pitch,
     speed: 1,
     curve: 1,
-    easing(t) { return t; } 
+    easing(t) { return t; }
   }), "top-right");
+
+  map.addControl(new LoadingIndicator(), "top-right");
 
   if (mapConfig.style.terrain)
   {
