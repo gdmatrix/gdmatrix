@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="role_containers_table" value="#{roleContainersTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="10"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{roleContainersTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{roleContainersTabBean.create}"
+                           process="@form:cnt:search_tabs:tabs"
+                           update="@parent:@parent:@parent:role_containers_dialog"
+                           resetValues="true"
+                           oncomplete="PF('roleContainersDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
+
+      <p:column headerText="#{securityBundle.role_role}" styleClass="col-3">
+        <h:outputText value="#{row.containerRole.roleId}" />
+      </p:column>
+
+      <p:column headerText="#{securityBundle.role_name}" styleClass="col-7">
+        <h:outputText value="#{row.containerRole.name}" />
+      </p:column>
+
+      <p:column styleClass="col-2 text-right white-space-nowrap">
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this" update="@form:cnt"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                         action="#{navigatorBean.show('Role', row.containerRole.roleId)}" />
+        <p:commandButton action="#{roleContainersTabBean.remove(row)}"
+                         process="@this"
+                         update="@parent:@parent:@parent:@parent:role_containers_dialog role_containers_table"
+                         resetValues="true"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="Esborrar rol #{row.containerRole.roleId}"
+                     message="Segur que vols esborrar aquest rol?" icon="pi pi-info-circle" />
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+
+  </h:panelGroup>
+
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="role_containers_dialog" widgetVar="roleContainersDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{roleObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(roleObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{roleContainersTabBean.editing.includedRoleId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="role_containers_panel" layout="block"
+             rendered="#{roleContainersTabBean.editing != null}">
+
+      <p:messages showSummary="true" styleClass="messages" 
+                  showIcon="true" closable="false" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>      
+      
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{securityBundle.role_role}"
+                         indicateRequired="true"
+                         styleClass="w-full" />
+          <emcomp:objectReference value="#{roleContainersTabBean.containerRoleId}"
+                                  process="@form:cnt:search_tabs:tabs:role_containers_dialog"
+                                  type="Role"
+                                  oncomplete="PF('roleContainersDialog').hide();"
+                                  onselect="PF('roleContainersDialog').show();"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="#{not empty param['mainform:search_tabs:tabs:role_containers_store']}"
+                                  renderShowButton="false"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>
+
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton id="role_containers_store"
+                         action="#{roleContainersTabBean.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
+                         process="role_containers_dialog"
+                         update="role_containers_table role_containers_panel"
+                         oncomplete="if (!isFacesError()) PF('roleContainersDialog').hide()"
+                         />
+        <p:commandButton action="#{roleContainersTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="role_containers_dialog" global="false"
+                         onclick="PF('roleContainersDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>

@@ -114,6 +114,7 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/security/role_main.xhtml"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", "/pages/security/role_roles.xhtml", "roleRolesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_containers", "/pages/security/role_containers.xhtml", "roleContainersTabBean"));    
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_users", "/pages/security/role_users.xhtml", "roleUsersTabBean"));
     objectSetup.setEditTabs(editTabs);
 
