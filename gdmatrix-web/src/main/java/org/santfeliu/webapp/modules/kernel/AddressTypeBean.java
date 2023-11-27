@@ -54,12 +54,10 @@ import org.santfeliu.webapp.setup.ObjectSetup;
 public class AddressTypeBean extends TypeBean<Address, AddressFilter>
 {
   private static final String DEFAULT_CITY_NAME = "defaultCityName";
-  private static final String BUNDLE_PREFIX = "$$kernelBundle.";  
+  private static final String BUNDLE_PREFIX = "$$kernelBundle."; 
 
   @Inject
   StreetTypeBean streetTypeBean;
-
-  private List<SelectItem> streetTypeSelectItems;
 
   @Override
   public String getRootTypeId()
@@ -141,31 +139,41 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
         filter.getAddressIdList().add(query); 
       else
       {
-        String[] parts = query.split("\\s");
-        if (parts != null && parts.length > 1)    
+        String[] parts = query.split(",");
+        String[] addressParts = parts[0].split("\\s");
+        String streetName = parts[0];
+        if (addressParts != null && addressParts.length > 1)    
         {
-          String streetTypeId = (String)
-            streetTypeBean.getStreetTypeSelectItems().stream()
-            .filter(i -> i.getLabel().equalsIgnoreCase(parts[0]))
-            .map(SelectItem::getValue)
-            .findFirst()
-            .orElse(null);
-
+          String streetTypeId = addressParts[0];
+          if (!streetTypeId.endsWith("."))
+          {
+            streetTypeId = (String)
+              streetTypeBean.getStreetTypeSelectItems().stream()
+              .filter(i -> i.getLabel().equalsIgnoreCase(addressParts[0]))
+              .map(SelectItem::getValue)
+              .findFirst()
+              .orElse(null);
+          }
+          
           if (streetTypeId != null)
           {
             filter.setStreetTypeId(streetTypeId);
-            query = query.substring(parts[0].length() + 1);
+            streetName = streetName
+              .substring(addressParts[0].length(), streetName.length());
           } 
-        }
+        } 
+                
+        filter.setStreetName(streetName.trim());
         
-        int index = query.indexOf(",");
-        if (index > 0)
+        if (parts.length > 1)
         {
-          String streetNumber = query.substring(index + 1).trim();
-          filter.setNumber(streetNumber);          
-          query = query.substring(0, index).trim();
-        }  
-        filter.setStreetName(query);
+          if (parts[1].trim().matches("\\d+"))
+            filter.setNumber(parts[1].trim());          
+          else if (parts.length == 2)
+            filter.setCityName(parts[1].trim());
+        }
+        if (parts.length == 3)
+          filter.setCityName(parts[2].trim());   
       } 
     }
       
@@ -187,6 +195,8 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
         sbValue.append(" ").append(filter.getStreetName());
       if (!StringUtils.isBlank(filter.getNumber()))
         sbValue.append(", ").append(filter.getNumber());
+      if (!StringUtils.isBlank(filter.getCityName()))
+        sbValue.append(", ").append(filter.getCityName());      
       value = sbValue.toString().trim();
     }
     return value;
@@ -197,7 +207,8 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
   {
     try
     {
-      filter.setStreetName(setWildcards(filter.getStreetName()));
+      filter.setStreetName(setWildcards(filter.getStreetName())); 
+      filter.setMaxResults(50);
       return KernelModuleBean.getPort(true).findAddresses(filter);
     }
     catch (Exception ex)
@@ -214,5 +225,5 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
       text = text.replaceAll("^\"|\"$", "");
     return text;
   } 
-    
+      
 }
