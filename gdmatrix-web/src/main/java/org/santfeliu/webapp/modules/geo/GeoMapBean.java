@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -46,10 +47,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
+import org.matrix.dic.Property;
+import org.matrix.doc.Document;
+import org.matrix.doc.DocumentFilter;
+import org.matrix.doc.DocumentManagerPort;
 import org.matrix.security.AccessControl;
 import org.matrix.security.Role;
 import org.matrix.security.RoleFilter;
 import org.primefaces.event.ReorderEvent;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.maplibre.model.Layer;
 import org.santfeliu.faces.maplibre.model.Map;
 import org.santfeliu.faces.maplibre.model.Service;
@@ -58,9 +64,13 @@ import org.santfeliu.faces.maplibre.model.Source;
 import org.santfeliu.security.web.SecurityConfigBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
+import org.santfeliu.webapp.modules.geo.io.SvgStore;
+import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
+import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
 
 /**
@@ -84,6 +94,8 @@ public class GeoMapBean extends WebBean implements Serializable
   private Source editingSource;
   private Service editingService;
   private Layer editingLayer;
+  private LayerForm editingLayerForm;
+  private PrintReport editingPrintReport;
   private String roleToAdd;
   private transient ServiceCapabilities serviceCapabilities;
   private transient String capabilitiesServiceName;
@@ -603,6 +615,120 @@ public class GeoMapBean extends WebBean implements Serializable
   {
   }
 
+  // LayerForm ----------------------------------------------------
+
+  public List<LayerForm> getLayerForms()
+  {
+    List<LayerForm> layerForms =
+      (List<LayerForm>)getMap().getMetadata().get("layerForms");
+    if (layerForms == null)
+    {
+      layerForms = new ArrayList<>();
+      getMap().getMetadata().put("layerForms", layerForms);
+    }
+    return layerForms;
+  }
+
+  public LayerForm getEditingLayerForm()
+  {
+    return editingLayerForm;
+  }
+
+  public void addLayerForm()
+  {
+    editingLayerForm = new LayerForm();
+  }
+
+  public void editLayerForm(LayerForm form)
+  {
+    editingLayerForm = form;
+  }
+
+  public void removeLayerForm(LayerForm form)
+  {
+    getLayerForms().remove(form);
+  }
+
+  public void acceptLayerForm()
+  {
+    if (!getLayerForms().contains(editingLayerForm))
+    {
+      getLayerForms().add(editingLayerForm);
+    }
+    editingLayerForm = null;
+  }
+
+  public void cancelLayerForm()
+  {
+    editingLayerForm = null;
+  }
+
+  // PrintReports
+
+  public List<PrintReport> getPrintReports()
+  {
+    List<PrintReport> printReports =
+      (List<PrintReport>)getMap().getMetadata().get("printReports");
+    if (printReports == null)
+    {
+      printReports = new ArrayList<>();
+      getMap().getMetadata().put("printReports", printReports);
+    }
+    return printReports;
+  }
+
+  public PrintReport getEditingPrintReport()
+  {
+    return editingPrintReport;
+  }
+
+  public void addPrintReport()
+  {
+    editingPrintReport = new PrintReport();
+  }
+
+  public void editPrintReport(PrintReport printReport)
+  {
+    editingPrintReport = printReport;
+  }
+
+  public void removePrintReport(PrintReport printReport)
+  {
+    getPrintReports().remove(printReport);
+  }
+
+  public void acceptPrintReport()
+  {
+    if (!getPrintReports().contains(editingPrintReport))
+    {
+      getPrintReports().add(editingPrintReport);
+    }
+    editingPrintReport = null;
+  }
+
+  public void cancelPrintReport()
+  {
+    editingPrintReport = null;
+  }
+
+  public String getPrintReportUrl(String reportName)
+  {
+    return getSvgStore().getSvgUrl(reportName);
+  }
+
+  public List<String> completeReportName(String text)
+  {
+    try
+    {
+      SvgStore svgStore = getSvgStore();
+      return svgStore.findSvg(text);
+    }
+    catch (Exception ex)
+    {
+      // ignore;
+      return Collections.EMPTY_LIST;
+    }
+  }
 
   // Map -------------------------------------------------------
 
@@ -629,6 +755,7 @@ public class GeoMapBean extends WebBean implements Serializable
       }
       else if (view != null)
       {
+        convertMetadata();
         this.setView(view);
       }
     }
@@ -650,6 +777,7 @@ public class GeoMapBean extends WebBean implements Serializable
       else
       {
         mapDocument = mapReloaded;
+        convertMetadata();
         growl("MAP_RELOADED");
       }
     }
@@ -705,6 +833,7 @@ public class GeoMapBean extends WebBean implements Serializable
     try
     {
       getMap().fromString(json);
+      convertMetadata();
     }
     catch (IOException ex)
     {
@@ -753,5 +882,32 @@ public class GeoMapBean extends WebBean implements Serializable
     return sldStore;
   }
 
+  private SvgStore getSvgStore()
+  {
+    SvgStore svgStore = CDI.current().select(SvgStore.class).get();
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    svgStore.setCredentials(userSessionBean.getUserId(), userSessionBean.getPassword());
+    return svgStore;
+  }
 
+  private void convertMetadata()
+  {
+    List list = (List)getMap().getMetadata().get("layerForms");
+    if (list != null)
+    {
+      for (int i = 0; i < list.size(); i++)
+      {
+        list.set(i, new LayerForm((java.util.Map)list.get(i)));
+      }
+    }
+
+    list = (List)getMap().getMetadata().get("printReports");
+    if (list != null)
+    {
+      for (int i = 0; i < list.size(); i++)
+      {
+        list.set(i, new PrintReport((java.util.Map)list.get(i)));
+      }
+    }
+  }
 }

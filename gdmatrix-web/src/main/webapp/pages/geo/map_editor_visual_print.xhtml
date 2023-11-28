@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <p:panel>
+    <f:facet name="header">
+
+      <div class="flex align-items-center">
+        <div class="flex-grow-1">Print reports</div>
+
+        <p:commandButton action="#{geoMapBean.addPrintReport}"
+                         icon="pi pi-plus-circle"
+                         alt="#{objectBundle.create}" title="#{objectBundle.create}"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@form:cnt:map_tabs"
+                         update="@form:cnt:map_tabs:map_print_dialog"
+                         resetValues="true"
+                         oncomplete="PF('mapPrintDialog').show()"
+                         />
+      </div>
+    </f:facet>
+
+    <div class="flex flex-wrap">
+    <ui:repeat id="map_print_table" 
+               value="#{geoMapBean.printReports}" var="report">
+
+      <div class="p-2">
+        <div class="pb-1" style="max-width: 250px; overflow: hidden">#{report.reportName}</div>
+
+        <div class="border-solid border-1" style="width:250px; min-height:180px; display:inline-block; border-color:gray">
+          <h:panelGroup rendered="#{geoMapBean.getPrintReportUrl(report.reportName) != '#'}">
+            <a href="#{geoMapBean.getPrintReportUrl(report.reportName)}" target="_blank">
+              <img src="#{geoMapBean.getPrintReportUrl(report.reportName)}" width="250px" alt="report.reportName" />
+            </a>
+          </h:panelGroup>
+        </div>
+
+        <div><h:outputText value="#{report.formSelectors}" /></div>
+        <div>
+          <p:commandButton action="#{geoMapBean.editPrintReport(report)}"
+                           icon="pi pi-pencil"
+                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                           styleClass="rounded-button ui-button-flat"
+                           process="@form:cnt:map_tabs"
+                           update="@form:cnt:map_tabs:map_print_dialog"
+                           resetValues="true"
+                           oncomplete="PF('mapPrintDialog').show()"
+                           />
+          <p:commandButton action="#{geoMapBean.removePrintReport(report)}"
+                           process="@this" update="@parent:@parent"
+                           resetValues="true"
+                           icon="pi pi-trash"
+                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                           styleClass="rounded-button ui-button-flat" />
+        </div>
+      </div>
+
+    </ui:repeat>
+    </div>
+  </p:panel>
+
+  <p:dialog id="map_print_dialog" widgetVar="mapPrintDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="pi pi-print mr-2"/><span>Print report</span>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="map_print_panel" layout="block"
+                  rendered="#{geoMapBean.editingPrintReport != null}">
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="false">
+        <p:autoUpdate />
+      </p:messages>
+
+      <div class="ui-fluid formgrid grid">
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Report name" />
+          <p:autoComplete value="#{geoMapBean.editingPrintReport.reportName}"
+                          maxResults="50" var="reportName" 
+                          itemLabel="#{reportName}" itemValue="#{reportName}" 
+                          scrollHeight="200"
+                          completeMethod="#{geoMapBean.completeReportName}">
+            <p:column>
+              #{reportName}
+            </p:column>
+          </p:autoComplete>
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Form selectors" />
+          <p:chips value="#{geoMapBean.editingPrintReport.formSelectors}" />
+        </div>        
+      </div>
+    </h:panelGroup>
+
+    <f:facet name="footer">
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{geoMapBean.acceptPrintReport}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
+                         process="@form:cnt:map_tabs:map_print_dialog"
+                         update="@form:cnt"
+                         oncomplete="if (!isFacesError()) PF('mapPrintDialog').hide()"
+                         />
+        <p:commandButton action="#{geoMapBean.cancelPrintReport}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="@form:cnt:map_tabs:map_print_dialog" global="false"
+                         onclick="PF('mapPrintDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>

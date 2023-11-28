@@ -61,7 +61,7 @@ public class Map implements Serializable
   java.util.Map<String, Source> sources = new HashMap<>();
   Terrain terrain = new Terrain();
   List<Layer> layers = new ArrayList<>();
-  List<Group> group = new ArrayList<>();
+  java.util.Map<String, Object> metadata = new HashMap<>();
 
   public String getName()
   {
@@ -133,14 +133,14 @@ public class Map implements Serializable
     return sources;
   }
 
-  public List<Group> getGroup()
-  {
-    return group;
-  }
-
   public List<Layer> getLayers()
   {
     return layers;
+  }
+
+  public java.util.Map<String, Object> getMetadata()
+  {
+    return metadata;
   }
 
   public void read(Reader reader) throws IOException

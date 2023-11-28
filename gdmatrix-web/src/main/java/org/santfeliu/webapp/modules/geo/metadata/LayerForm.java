@@ -28,7 +28,7 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.faces.maplibre.model;
+package org.santfeliu.webapp.modules.geo.metadata;
 
 import java.io.Serializable;
 
@@ -36,40 +36,50 @@ import java.io.Serializable;
  *
  * @author realor
  */
-public class Group implements Serializable
+public class LayerForm implements Serializable
 {
-  String id;
-  String label;
-  boolean expanded;
+  String layer;
+  String formSelector;
+  boolean highlight;
 
-  public String getId()
+  public LayerForm()
   {
-    return id;
   }
 
-  public void setId(String id)
+  public LayerForm(java.util.Map properties)
   {
-    this.id = id;
+    this.layer = (String)properties.get("layer");
+    this.formSelector = (String)properties.get("formSelector");
+    this.highlight = (Boolean)properties.get("highlight");
   }
 
-  public String getLabel()
+  public String getLayer()
   {
-    return label;
+    return layer;
   }
 
-  public void setLabel(String label)
+  public void setLayer(String layer)
   {
-    this.label = label;
+    this.layer = layer;
   }
 
-  public boolean isExpanded()
+  public String getFormSelector()
   {
-    return expanded;
+    return formSelector;
   }
 
-  public void setExpanded(boolean expanded)
+  public void setFormSelector(String formSelector)
   {
-    this.expanded = expanded;
+    this.formSelector = formSelector;
   }
 
+  public boolean isHighlight()
+  {
+    return highlight;
+  }
+
+  public void setHighlight(boolean highlight)
+  {
+    this.highlight = highlight;
+  }
 }
