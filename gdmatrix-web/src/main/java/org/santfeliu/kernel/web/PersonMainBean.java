@@ -152,6 +152,7 @@ public class PersonMainBean extends TypifiedPageBean
 
   public String searchBirthCity()
   {
+    citySelectItems = null;
     return getControllerBean().searchObject("City",
       "#{personMainBean.person.birthCityId}");
   }
@@ -164,6 +165,7 @@ public class PersonMainBean extends TypifiedPageBean
 
   public String searchNationality()
   {
+    countrySelectItems = null;
     return getControllerBean().searchObject("Country",
       "#{personMainBean.person.nationalityId}");
   }

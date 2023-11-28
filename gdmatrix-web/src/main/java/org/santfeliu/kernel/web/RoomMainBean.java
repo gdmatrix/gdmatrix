@@ -82,6 +82,7 @@ public class RoomMainBean extends TypifiedPageBean
 
   public String searchAddress()
   {
+    addressSelectItems = null;
     return getControllerBean().searchObject("Address",
       "#{roomMainBean.room.addressId}");
   }
@@ -134,7 +135,6 @@ public class RoomMainBean extends TypifiedPageBean
       AddressBean addressBean = (AddressBean)getBean("addressBean");
       addressSelectItems = addressBean.getSelectItems(room.getAddressId());
     }
-
     return addressSelectItems;
   }
 

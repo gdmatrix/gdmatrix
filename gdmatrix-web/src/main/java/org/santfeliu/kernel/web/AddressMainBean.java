@@ -99,6 +99,7 @@ public class AddressMainBean extends TypifiedPageBean
 
   public String searchStreet()
   {
+    streetSelectItems = null;
     return getControllerBean().searchObject("Street",
       "#{addressMainBean.address.streetId}");
   }
@@ -107,14 +108,13 @@ public class AddressMainBean extends TypifiedPageBean
   {
     return getControllerBean().showObject("Street", address.getStreetId());
   }
-
   
   public List<SelectItem> getStreetSelectItems()
   {
     if (streetSelectItems == null)
     {
       StreetBean streetBean = (StreetBean)getBean("streetBean");
-      return streetBean.getSelectItems(address.getStreetId());
+      streetSelectItems = streetBean.getSelectItems(address.getStreetId());
     }
     return streetSelectItems;
   }
