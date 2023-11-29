@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.dic;
@@ -63,11 +63,11 @@ public class TypeCache
 
   private int maxSize = 3000; // 3000 types
   private Map typeMap = Collections.synchronizedMap(new LRUMap(maxSize));
-  private Map<String, List> childrenMap = 
+  private Map<String, List> childrenMap =
     Collections.synchronizedMap(new HashMap<String, List>());
-  private Map<String, String> parentsMap = 
+  private Map<String, String> parentsMap =
     Collections.synchronizedMap(new HashMap<String, String>());
-  private Map<String, List> actionsMap = 
+  private Map<String, List> actionsMap =
     Collections.synchronizedMap(new HashMap<String, List>());
 
   private Credentials credentials;
@@ -283,24 +283,6 @@ public class TypeCache
       {
         // previous parent found: clear derived typeId list
         clearDerivedTypeIds(superTypeId);
-      }
-
-      // try to load type
-      try
-      {
-        Type type = new Type(this, getPort().loadType(typeId));
-        typeMap.put(typeId, type);
-
-        // get new superTypeId
-        superTypeId = type.getSuperTypeId();
-        if (superTypeId != null)
-        {
-          clearDerivedTypeIds(superTypeId);
-        }
-      }
-      catch (Exception ex)
-      {
-        // type was removed
       }
     }
   }
