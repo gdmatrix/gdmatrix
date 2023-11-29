@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.geo.metadata;
 
 import java.io.Serializable;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -40,7 +41,7 @@ import java.util.List;
 public class PrintReport implements Serializable
 {
   String reportName;
-  List<String> formSelectors;
+  String formSelector;
 
   public PrintReport()
   {
@@ -48,8 +49,8 @@ public class PrintReport implements Serializable
 
   public PrintReport(java.util.Map properties)
   {
-    this.reportName = (String)properties.get("reportName");
-    formSelectors = (List<String>)properties.get("formSelectors");
+    reportName = (String)properties.get("reportName");
+    formSelector = (String)properties.get("formSelector");
   }
 
   public String getReportName()
@@ -62,13 +63,13 @@ public class PrintReport implements Serializable
     this.reportName = reportName;
   }
 
-  public List<String> getFormSelectors()
+  public String getFormSelector()
   {
-    return formSelectors;
+    return formSelector;
   }
 
-  public void setFormSelectors(List<String> formSelectors)
+  public void setFormSelector(String formSelector)
   {
-    this.formSelectors = formSelectors;
+    this.formSelector = StringUtils.isBlank(formSelector) ? null : formSelector;
   }
 }

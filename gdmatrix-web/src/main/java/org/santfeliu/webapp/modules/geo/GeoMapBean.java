@@ -32,13 +32,14 @@ package org.santfeliu.webapp.modules.geo;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -46,16 +47,10 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import static org.matrix.dic.DictionaryConstants.READ_ACTION;
-import org.matrix.dic.Property;
-import org.matrix.doc.Document;
-import org.matrix.doc.DocumentFilter;
-import org.matrix.doc.DocumentManagerPort;
 import org.matrix.security.AccessControl;
 import org.matrix.security.Role;
 import org.matrix.security.RoleFilter;
 import org.primefaces.event.ReorderEvent;
-import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.maplibre.model.Layer;
 import org.santfeliu.faces.maplibre.model.Map;
 import org.santfeliu.faces.maplibre.model.Service;
@@ -64,7 +59,6 @@ import org.santfeliu.faces.maplibre.model.Source;
 import org.santfeliu.security.web.SecurityConfigBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
@@ -72,6 +66,10 @@ import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
 import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
+import org.santfeliu.util.IOUtils;
 
 /**
  *
@@ -96,6 +94,7 @@ public class GeoMapBean extends WebBean implements Serializable
   private Layer editingLayer;
   private LayerForm editingLayerForm;
   private PrintReport editingPrintReport;
+  private String reportToUpload;
   private String roleToAdd;
   private transient ServiceCapabilities serviceCapabilities;
   private transient String capabilitiesServiceName;
@@ -682,6 +681,44 @@ public class GeoMapBean extends WebBean implements Serializable
     return editingPrintReport;
   }
 
+  public void setPrintReportToUpload(String reportName)
+  {
+    reportToUpload = reportName;
+  }
+
+  public void uploadPrintReportFile(FileUploadEvent event)
+  {
+    UploadedFile reportFileToUpload = event.getFile();
+    if (reportToUpload != null)
+    {
+      File fileToStore = null;
+      try
+      {
+        fileToStore = File.createTempFile("template", ".svg");
+        try (InputStream is = reportFileToUpload.getInputStream())
+        {
+          IOUtils.writeToFile(is, fileToStore);
+        }
+        getSvgStore().storeSvg(reportToUpload, fileToStore);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+      finally
+      {
+        try
+        {
+          if (fileToStore != null) fileToStore.delete();
+          reportFileToUpload.delete();
+        }
+        catch (Exception ex2)
+        {
+        }
+      }
+    }
+  }
+
   public void addPrintReport()
   {
     editingPrintReport = new PrintReport();
@@ -713,7 +750,18 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public String getPrintReportUrl(String reportName)
   {
-    return getSvgStore().getSvgUrl(reportName);
+    return getSvgStore().getReportUrl(reportName);
+  }
+
+  public boolean isSvgPrintReport(String reportName)
+  {
+    return getSvgStore().getReportUrl(reportName).endsWith(".svg");
+  }
+
+  public boolean isUploadablePrintReport(String reportName)
+  {
+    String url = getSvgStore().getReportUrl(reportName);
+    return url.endsWith(".svg") || url.equals("#");
   }
 
   public List<String> completeReportName(String text)

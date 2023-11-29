@@ -26,42 +26,58 @@
     </f:facet>
 
     <div class="flex flex-wrap">
-    <ui:repeat id="map_print_table" 
-               value="#{geoMapBean.printReports}" var="report">
+      <ui:repeat id="map_print_table" 
+                 value="#{geoMapBean.printReports}" var="report">
 
-      <div class="p-2">
-        <div class="pb-1" style="max-width: 250px; overflow: hidden">#{report.reportName}</div>
+        <div class="p-2">
+          <div class="pb-1" style="max-width: 250px; overflow: hidden">#{report.reportName}</div>
 
-        <div class="border-solid border-1" style="width:250px; min-height:180px; display:inline-block; border-color:gray">
-          <h:panelGroup rendered="#{geoMapBean.getPrintReportUrl(report.reportName) != '#'}">
-            <a href="#{geoMapBean.getPrintReportUrl(report.reportName)}" target="_blank">
-              <img src="#{geoMapBean.getPrintReportUrl(report.reportName)}" width="250px" alt="report.reportName" />
-            </a>
-          </h:panelGroup>
+          <div class="border-solid border-1" style="width:250px; min-height:180px; display:inline-block; border-color:gray">
+            <h:panelGroup rendered="#{geoMapBean.isSvgPrintReport(report.reportName)}">
+              <a href="#{geoMapBean.getPrintReportUrl(report.reportName)}" target="_blank">
+                <img src="#{geoMapBean.getPrintReportUrl(report.reportName)}" width="250px" alt="#{report.reportName}" />
+              </a>
+            </h:panelGroup>
+          </div>
+
+          <div>#{report.formSelector}</div>
+          <div class="pt-1 pb-1">
+            <p:linkButton href="#{geoMapBean.getPrintReportUrl(report.reportName)}?saveas=#{report.reportName}.svg" 
+                          icon="pi pi-download" title="Download"
+                          rendered="#{geoMapBean.isSvgPrintReport(report.reportName)}"
+                          styleClass="rounded-button ui-button-flat" />
+            <p:commandButton action="#{geoMapBean.setPrintReportToUpload(report.reportName)}"
+                             icon="pi pi-upload" title="Upload"
+                             rendered="#{geoMapBean.isUploadablePrintReport(report.reportName)}"
+                             oncomplete="PF('printUpload').show()" 
+                             styleClass="rounded-button ui-button-flat" />
+            <p:commandButton action="#{geoMapBean.editPrintReport(report)}"
+                             icon="pi pi-pencil"                             
+                             alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                             styleClass="rounded-button ui-button-flat"
+                             process="@form:cnt:map_tabs"
+                             update="@form:cnt:map_tabs:map_print_dialog"
+                             resetValues="true"
+                             oncomplete="PF('mapPrintDialog').show()"
+                             />
+            <p:commandButton action="#{geoMapBean.removePrintReport(report)}"
+                             process="@this" update="@parent:@parent"
+                             resetValues="true"
+                             icon="pi pi-trash"
+                             alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                             styleClass="rounded-button ui-button-flat" />
+          </div>
         </div>
 
-        <div><h:outputText value="#{report.formSelectors}" /></div>
-        <div>
-          <p:commandButton action="#{geoMapBean.editPrintReport(report)}"
-                           icon="pi pi-pencil"
-                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           styleClass="rounded-button ui-button-flat"
-                           process="@form:cnt:map_tabs"
-                           update="@form:cnt:map_tabs:map_print_dialog"
-                           resetValues="true"
-                           oncomplete="PF('mapPrintDialog').show()"
-                           />
-          <p:commandButton action="#{geoMapBean.removePrintReport(report)}"
-                           process="@this" update="@parent:@parent"
-                           resetValues="true"
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           styleClass="rounded-button ui-button-flat" />
-        </div>
-      </div>
-
-    </ui:repeat>
+      </ui:repeat>
     </div>
+
+    <p:fileUpload listener="#{geoMapBean.uploadPrintReportFile}"
+                  mode="simple" skinSimple="true" 
+                  widgetVar="printUpload" auto="true"
+                  process="@this" update="@parent"
+                  style="display:none" /> 
+
   </p:panel>
 
   <p:dialog id="map_print_dialog" widgetVar="mapPrintDialog"
@@ -96,8 +112,8 @@
         </div>
 
         <div class="field col-12">
-          <p:outputLabel for="@next" value="Form selectors" />
-          <p:chips value="#{geoMapBean.editingPrintReport.formSelectors}" />
+          <p:outputLabel for="@next" value="Form selector" />
+          <p:inputText value="#{geoMapBean.editingPrintReport.formSelector}" />
         </div>        
       </div>
     </h:panelGroup>

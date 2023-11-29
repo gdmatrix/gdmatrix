@@ -136,6 +136,7 @@ public class SldStore
     DataHandler dh = new DataHandler(ds);
     Content content = new Content();
     content.setData(dh);
+    content.setContentType("text/xml");
     document.setContent(content);
     getPort().storeDocument(document);
 

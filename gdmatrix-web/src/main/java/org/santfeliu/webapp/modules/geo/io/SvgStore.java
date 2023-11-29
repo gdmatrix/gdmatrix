@@ -30,19 +30,23 @@
  */
 package org.santfeliu.webapp.modules.geo.io;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
+import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
 import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.util.FileDataSource;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 
 /**
@@ -55,10 +59,11 @@ public class SvgStore
 {
   public static final String SVG_TYPEID = "SVGTEMPLATE";
   public static final String SVG_PROPERTY_NAME = "report";
+  public static final String SVG_MIMETYPE = "image/svg+xml";
 
   private DocumentManagerPort documentManagerPort;
 
-  final private Map<String, String> svgUrlCache = new HashMap<>();
+  final private Map<String, String> reportUrlCache = new HashMap<>();
 
   public void setCredentials(String userId, String password)
   {
@@ -80,16 +85,46 @@ public class SvgStore
       .collect(Collectors.toList());
   }
 
-  public Document getSvgDocument(String svgName, boolean content)
+  public void storeSvg(String svgName, File svgFile)
   {
-    Document document = null;
-    if (!StringUtils.isBlank(svgName))
+    Document document = getSvgDocument(svgName, true);
+    if (document == null)
     {
-      DocumentFilter filter = new DocumentFilter();
-      filter.setDocTypeId(SVG_TYPEID);
+      document = new Document();
+      document.setDocTypeId(SVG_TYPEID);
       Property property = new Property();
       property.setName(SVG_PROPERTY_NAME);
       property.getValue().add(svgName);
+      document.getProperty().add(property);
+      document.setTitle("SVG TEMPLATE: " + svgName);
+    }
+    FileDataSource ds = new FileDataSource(svgFile, SVG_MIMETYPE);
+    DataHandler dh = new DataHandler(ds);
+    Content content = new Content();
+    content.setData(dh);
+    content.setContentType(SVG_MIMETYPE);
+    document.setContent(content);
+    getPort().storeDocument(document);
+
+    reportUrlCache.remove(svgName);
+  }
+
+  public Document getSvgDocument(String svgName, boolean content)
+  {
+    return getReportDocument(svgName, SVG_TYPEID, content);
+  }
+
+  public Document getReportDocument(String reportName, String type,
+    boolean content)
+  {
+    Document document = null;
+    if (!StringUtils.isBlank(reportName))
+    {
+      DocumentFilter filter = new DocumentFilter();
+      filter.setDocTypeId(type);
+      Property property = new Property();
+      property.setName(SVG_PROPERTY_NAME);
+      property.getValue().add(reportName);
       filter.getProperty().add(property);
       List<Document> documents = getPort().findDocuments(filter);
       if (!documents.isEmpty())
@@ -105,13 +140,13 @@ public class SvgStore
     return document;
   }
 
-  public String getSvgUrl(String svgName)
+  public String getReportUrl(String reportName)
   {
-    String svgUrl = svgUrlCache.get(svgName);
+    String svgUrl = reportUrlCache.get(reportName);
     if (svgUrl == null)
     {
-      svgUrl = buildSvgUrl(svgName);
-      svgUrlCache.put(svgName, svgUrl);
+      svgUrl = buildReportUrl(reportName);
+      reportUrlCache.put(reportName, svgUrl);
     }
     return svgUrl;
   }
@@ -130,14 +165,26 @@ public class SvgStore
     return documentManagerPort;
   }
 
-  private String buildSvgUrl(String svgName)
+  private String buildReportUrl(String reportName)
   {
-    if (!StringUtils.isBlank(svgName))
+    if (!StringUtils.isBlank(reportName))
     {
-      Document document = getSvgDocument(svgName, false);
-      if (document != null && document.getContent() != null)
+      Document document = getReportDocument(reportName, null, false);
+      if (document != null)
       {
-        return "/documents/" + document.getContent().getContentId();
+        Content content = document.getContent();
+        if (content != null)
+        {
+          String url = "/documents/" + content.getContentId() + "/" + reportName;
+          if (document.getDocTypeId().endsWith(SVG_TYPEID))
+          {
+            return url + ".svg";
+          }
+          else
+          {
+            return url;
+          }
+        }
       }
     }
     return "#";
