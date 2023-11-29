@@ -139,11 +139,31 @@ public class CMSListener implements PhaseListener
       FacesContext context = FacesContext.getCurrentInstance();
       ExternalContext externalContext = context.getExternalContext();
       application = context.getApplication();
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
 
       HttpServletRequest request =
         (HttpServletRequest)externalContext.getRequest();
-      HttpSession session = request.getSession();
+
+      HttpSession session = request.getSession(false);
+      boolean viewExpired = session == null && "POST".equals(request.getMethod());
+      if (viewExpired)
+      {
+        try
+        {
+          StringBuffer buffer = request.getRequestURL();
+          String params = request.getQueryString();
+          if (params != null) buffer.append("?").append(params);
+          String url = buffer.toString();
+          externalContext.redirect(url);
+          context.responseComplete();
+        }
+        catch(Exception ex)
+        {
+        }
+        return;
+      }
+
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      session = request.getSession();
 
       try
       {
