@@ -32,12 +32,15 @@ package org.santfeliu.faces;
 
 import java.util.Iterator;
 import javax.faces.FacesException;
+import javax.faces.application.ViewExpiredException;
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerFactory;
 import javax.faces.context.ExceptionHandlerWrapper;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
+import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.web.UserSessionBean;
 
 /**
@@ -95,9 +98,24 @@ public class MatrixExceptionHandlerFactory extends ExceptionHandlerFactory
           Throwable throwable = context.getException();
           userSessionBean.setUnhandledError(throwable);
 
-          throwable.printStackTrace();
-
-          facesContext.getExternalContext().redirect(UNHANDLED_ERROR_PAGE);
+          ExternalContext externalContext = facesContext.getExternalContext();
+          if (throwable instanceof ViewExpiredException)
+          {
+            HttpServletRequest request =
+              (HttpServletRequest)externalContext.getRequest();
+            StringBuffer buffer = request.getRequestURL();
+            String params = request.getQueryString();
+            if (params != null)
+            {
+              buffer.append("?").append(params);
+            }
+            externalContext.redirect(buffer.toString());
+          }
+          else
+          {
+            throwable.printStackTrace();
+            externalContext.redirect(UNHANDLED_ERROR_PAGE);
+          }
         }
         catch (Exception ex)
         {
