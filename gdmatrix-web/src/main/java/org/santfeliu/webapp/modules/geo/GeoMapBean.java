@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -68,8 +70,13 @@ import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.util.IOUtils;
+import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
+import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
+import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
 
 /**
  *
@@ -88,10 +95,17 @@ public class GeoMapBean extends WebBean implements Serializable
   private int activeSourceTabIndex;
   private transient List<String> serviceNames;
   private transient List<String> sourceNames;
+  private transient List<String> layerIds;
   private String editingName;
   private Source editingSource;
   private Service editingService;
   private Layer editingLayer;
+  private LegendTreeNode legendTreeRoot;
+  private List<TreeNode> legendSelection;
+  private List<TreeNode> legendCut;
+  private LegendGroup editingLegendGroup;
+  private LegendLayer editingLegendLayer;
+  private boolean isNewLegendItem;
   private LayerForm editingLayerForm;
   private PrintReport editingPrintReport;
   private String reportToUpload;
@@ -542,6 +556,17 @@ public class GeoMapBean extends WebBean implements Serializable
 
   // Layers ----------------------------------------------------
 
+  public List<String> getLayerIds()
+  {
+    if (layerIds == null)
+    {
+      layerIds = getMap().getLayers().stream().map(l -> l.getId()).
+        collect(Collectors.toList());
+      Collections.sort(layerIds);
+    }
+    return layerIds;
+  }
+
   public Layer getEditingLayer()
   {
     return editingLayer;
@@ -612,6 +637,204 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void onLayerReorder(ReorderEvent event)
   {
+  }
+
+  // Legend
+
+  public TreeNode getLegendTreeRoot()
+  {
+    if (legendTreeRoot == null)
+    {
+      legendTreeRoot = new LegendTreeNode("group", null, null);
+
+      LegendGroup legendGroup =
+        (LegendGroup)getMap().getMetadata().get("legend");
+      if (legendGroup != null)
+      {
+        populateLegendItem(legendGroup, legendTreeRoot);
+      }
+    }
+    return legendTreeRoot;
+  }
+
+  public List<TreeNode> getLegendSelection()
+  {
+    return legendSelection;
+  }
+
+  public void setLegendSelection(List<TreeNode> legendSelection)
+  {
+    this.legendSelection = legendSelection;
+  }
+
+  public void cutLegendNodes()
+  {
+    legendCut = legendSelection;
+  }
+
+  public boolean isLegendNodeSelected(String type)
+  {
+    if (legendSelection != null && legendSelection.size() == 1)
+    {
+      LegendTreeNode node = (LegendTreeNode)legendSelection.get(0);
+      return node.getType().equals(type);
+    }
+    return false;
+  }
+
+  public LegendGroup getEditingLegendGroup()
+  {
+    return editingLegendGroup;
+  }
+
+  public LegendLayer getEditingLegendLayer()
+  {
+    return editingLegendLayer;
+  }
+
+  public void addLegendGroup()
+  {
+    if (legendSelection != null && legendSelection.size() == 1)
+    {
+      editingLegendGroup = new LegendGroup();
+      editingLegendGroup.setMode(LegendGroup.MULTIPLE);
+      editingLegendGroup.setLabel("Group");
+      isNewLegendItem = true;
+    }
+  }
+
+  public void addLegendLayer()
+  {
+    if (legendSelection != null && legendSelection.size() == 1)
+    {
+      editingLegendLayer = new LegendLayer();
+      isNewLegendItem = true;
+    }
+  }
+
+  public void editLegendGroup()
+  {
+    editingLegendGroup = (LegendGroup)legendSelection.get(0).getData();
+  }
+
+  public void editLegendLayer()
+  {
+    editingLegendLayer = (LegendLayer)legendSelection.get(0).getData();
+  }
+
+  public void acceptLegendGroup()
+  {
+    if (isNewLegendItem)
+    {
+      LegendTreeNode groupNode = new LegendTreeNode(editingLegendGroup);
+      LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
+      if (targetNode.isGroupNode())
+      {
+        targetNode.add(groupNode);
+      }
+      isNewLegendItem = false;
+    }
+    editingLegendGroup = null;
+  }
+
+  public void cancelLegendGroup()
+  {
+    editingLegendGroup = null;
+    isNewLegendItem = false;
+  }
+
+  public void acceptLegendLayer()
+  {
+    if (StringUtils.isBlank(editingLegendLayer.getLabel()))
+    {
+      Optional<Layer> layer = getMap().getLayers().stream()
+        .filter(l -> l.getId().equals(editingLegendLayer.getLayerId()))
+        .findAny();
+      if (layer.isPresent())
+      {
+        editingLegendLayer.setLabel(layer.get().getLabel());
+      }
+      else
+      {
+        editingLegendLayer.setLabel(editingLegendLayer.getLayerId());
+      }
+    }
+    if (isNewLegendItem)
+    {
+      LegendTreeNode layerNode = new LegendTreeNode(editingLegendLayer);
+      LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
+      if (targetNode.isGroupNode())
+      {
+        targetNode.add(layerNode);
+      }
+      isNewLegendItem = false;
+    }
+    editingLegendLayer = null;
+  }
+
+  public void cancelLegendLayer()
+  {
+    editingLegendLayer = null;
+  }
+
+  public void removeLegendNodes()
+  {
+    for (TreeNode node : legendSelection)
+    {
+      TreeNode parentNode = node.getParent();
+      if (parentNode != null)
+      {
+        parentNode.getChildren().remove(node);
+      }
+    }
+  }
+
+  public boolean isTopLegendNode()
+  {
+    if (legendSelection == null || legendSelection.size() != 1) return false;
+
+    return legendSelection.get(0).getParent() == this.legendTreeRoot;
+  }
+
+  public boolean isCutLegendNode(TreeNode node)
+  {
+    if (legendCut == null || node == null) return false;
+
+    if (legendCut.contains(node)) return true;
+
+    return isCutLegendNode(node.getParent());
+  }
+
+  public boolean isLegendPasteEnabled()
+  {
+    if (legendCut == null) return false;
+    if (legendSelection == null) return false;
+    if (legendSelection.size() != 1) return false;
+    LegendTreeNode node = (LegendTreeNode)legendSelection.get(0);
+    return node.isGroupNode();
+  }
+
+  public void pasteLegendNodes()
+  {
+    if (legendCut != null && legendSelection != null)
+    {
+      if (legendSelection.size() == 1 && !legendCut.isEmpty())
+      {
+        LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
+        if (targetNode.isGroupNode())
+        {
+          for (TreeNode node : legendCut)
+          {
+            LegendTreeNode sourceNode = (LegendTreeNode)node;
+            if (!targetNode.isDescendant(sourceNode))
+            {
+              targetNode.add(sourceNode);
+            }
+          }
+        }
+      }
+      legendCut = null;
+    }
   }
 
   // LayerForm ----------------------------------------------------
@@ -956,6 +1179,113 @@ public class GeoMapBean extends WebBean implements Serializable
       {
         list.set(i, new PrintReport((java.util.Map)list.get(i)));
       }
+    }
+
+    java.util.Map legendProperties =
+      (java.util.Map)getMap().getMetadata().get("legend");
+    if (legendProperties != null &&
+        "group".equals(legendProperties.get("type")))
+    {
+      getMap().getMetadata().put("legend", new LegendGroup(legendProperties));
+    }
+    legendTreeRoot = null;
+  }
+
+  private LegendTreeNode populateLegendItem(LegendItem legendItem,
+    LegendTreeNode parentTreeNode)
+  {
+    LegendTreeNode node = new LegendTreeNode(legendItem);
+    node.setType(legendItem.getType());
+    node.setExpanded(true);
+    if (parentTreeNode != null)
+    {
+      parentTreeNode.getChildren().add(node);
+    }
+    if (legendItem instanceof LegendGroup)
+    {
+      LegendGroup group = (LegendGroup)legendItem;
+      for (LegendItem item : group.getChildren())
+      {
+        populateLegendItem(item, node);
+      }
+    }
+    return node;
+  }
+
+  static public class LegendTreeNode extends DefaultTreeNode<LegendItem>
+  {
+    public LegendTreeNode()
+    {
+    }
+
+    public LegendTreeNode(LegendItem data)
+    {
+      this(data, null);
+    }
+
+    public LegendTreeNode(LegendItem data, TreeNode parent)
+    {
+      this(data.getType(), data, parent);
+    }
+
+    public LegendTreeNode(String type, LegendItem data, TreeNode parent)
+    {
+      super(type, data, parent);
+    }
+
+    public boolean isGroupNode()
+    {
+      return "group".equals(getType());
+    }
+
+    public void add(LegendTreeNode legendNode)
+    {
+      getChildren().add(legendNode);
+      LegendGroup legendGroup = (LegendGroup)getData();
+      legendGroup.getChildren().add(legendNode.getData());
+      setExpanded(true);
+    }
+
+    public void add(int index, LegendTreeNode legendNode)
+    {
+      getChildren().add(index, legendNode);
+      LegendGroup legendGroup = (LegendGroup)getData();
+      legendGroup.getChildren().add(index, legendNode.getData());
+      setExpanded(true);
+    }
+
+    public boolean isDescendant(TreeNode ancestor)
+    {
+      TreeNode node = getParent();
+      while (node != null && node != ancestor)
+      {
+        node = node.getParent();
+      }
+      return node == ancestor;
+    }
+
+    @Override
+    public void clearParent()
+    {
+      LegendTreeNode oldParentNode = (LegendTreeNode)getParent();
+      if (oldParentNode != null)
+      {
+        LegendGroup legendGroup = (LegendGroup)oldParentNode.getData();
+        LegendItem legendItem = (LegendItem)getData();
+        legendGroup.getChildren().remove(legendItem);
+      }
+      super.clearParent();
+    }
+
+    @Override
+    public String toString()
+    {
+      LegendItem legendItem = getData();
+      if (legendItem == null) return null;
+
+      String type = legendItem.getType();
+      String label = legendItem.getLabel();
+      return type + ": " + label;
     }
   }
 }

@@ -1,0 +1,183 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <p:tree id="legend"
+          value="#{geoMapBean.legendTreeRoot}"
+          selection="#{geoMapBean.legendSelection}"
+          var="item" nodeVar="node" selectionMode="multiple" animate="true">
+
+    <p:ajax event="expand" />
+    <p:ajax event="collapse" />
+    <p:ajax event="contextMenu" update="@parent:legend_menu" />
+
+    <p:treeNode type="group" styleClass="#{geoMapBean.isCutLegendNode(node) ? 'font-italic' : ''}">
+      <span class="pi pi-folder mr-1"/><h:outputText value="#{item.label}"/>
+    </p:treeNode>
+
+    <p:treeNode type="layer" styleClass="#{geoMapBean.isCutLegendNode(node) ? 'font-italic' : ''}">
+      <span class="fa fa-layer-group mr-1"/>#{item.label} <span class="code">(#{item.layerId})</span>
+    </p:treeNode>
+
+  </p:tree>
+
+  <p:contextMenu id="legend_menu" for="legend">
+    <p:menuitem value="Edit group" action="#{geoMapBean.editLegendGroup}"
+                rendered="#{geoMapBean.isLegendNodeSelected('group')}"
+                update="@form:cnt:map_tabs:legend_group_dialog"
+                resetValues="true"
+                oncomplete="PF('legendGroupDialog').show()"
+                icon="pi pi-pencil" />
+    <p:menuitem value="Edit layer" action="#{geoMapBean.editLegendLayer}"
+                rendered="#{geoMapBean.isLegendNodeSelected('layer')}"
+                update="@form:cnt:map_tabs:legend_layer_dialog"
+                resetValues="true"
+                oncomplete="PF('legendLayerDialog').show()"
+                icon="pi pi-pencil" />
+    <p:menuitem value="Add group" action="#{geoMapBean.addLegendGroup}"
+                rendered="#{geoMapBean.isLegendNodeSelected('group')}"
+                update="@form:cnt:map_tabs:legend_group_dialog"
+                resetValues="true"
+                oncomplete="PF('legendGroupDialog').show()"
+                icon="pi pi-folder" />
+    <p:menuitem value="Add layer" action="#{geoMapBean.addLegendLayer}"
+                rendered="#{geoMapBean.isLegendNodeSelected('group')}"
+                update="@form:cnt:map_tabs:legend_layer_dialog"
+                resetValues="true"
+                oncomplete="PF('legendLayerDialog').show()"
+                icon="fa fa-layer-group" />
+    <p:menuitem value="Cut" action="#{geoMapBean.cutLegendNodes}"
+                icon="fa fa-scissors" update="legend"
+                rendered="#{!geoMapBean.isTopLegendNode()}" />
+    <p:menuitem value="Paste" action="#{geoMapBean.pasteLegendNodes}"
+                rendered="#{geoMapBean.isLegendPasteEnabled()}"
+                icon="fa fa-clipboard" update="legend" />
+    <p:menuitem value="Remove" action="#{geoMapBean.removeLegendNodes}"
+                icon="pi pi-trash" update="legend"
+                rendered="#{!geoMapBean.isTopLegendNode()}" />
+
+  </p:contextMenu>
+
+  <p:dialog id="legend_group_dialog" widgetVar="legendGroupDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="pi pi-folder mr-2"/><span>Legend group</span>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="legend_group_panel" layout="block"
+                  rendered="#{geoMapBean.editingLegendGroup != null}">
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="false">
+        <p:autoUpdate />
+      </p:messages>
+
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Label" />
+          <p:inputText value="#{geoMapBean.editingLegendGroup.label}" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Mode" />
+          <p:selectOneMenu value="#{geoMapBean.editingLegendGroup.mode}">
+            <f:selectItem itemValue="multiple" itemLabel="multiple" />
+            <f:selectItem itemValue="single" itemLabel="single" />
+            <f:selectItem itemValue="block" itemLabel="block" />
+          </p:selectOneMenu>
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Icon" />
+          <p:inputText value="#{geoMapBean.editingLegendGroup.icon}" />
+        </div>
+
+      </div>
+    </h:panelGroup>
+
+    <f:facet name="footer">
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{geoMapBean.acceptLegendGroup}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
+                         process="@form:cnt:map_tabs:legend_group_dialog"
+                         update="@form:cnt:map_tabs:legend"
+                         oncomplete="if (!isFacesError()) PF('legendGroupDialog').hide()"
+                         />
+        <p:commandButton action="#{geoMapBean.cancelLegendGroup}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="@form:cnt:map_tabs:legend" global="false"
+                         onclick="PF('legendGroupDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+  <p:dialog id="legend_layer_dialog" widgetVar="legendLayerDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="fa fa-layer-group mr-2"/><span>Legend layer</span>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="legend_layer_panel" layout="block"
+                  rendered="#{geoMapBean.editingLegendLayer != null}">
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="false">
+        <p:autoUpdate />
+      </p:messages>
+
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Layer" />
+          <p:selectOneMenu value="#{geoMapBean.editingLegendLayer.layerId}">
+            <f:selectItems value="#{geoMapBean.layerIds}" var="layerId" 
+                           itemValue="#{layerId}" itemLabel="#{layerId}" />
+          </p:selectOneMenu>
+        </div>
+        
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Label" />
+          <p:inputText value="#{geoMapBean.editingLegendLayer.label}" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Icon" />
+          <p:inputText value="#{geoMapBean.editingLegendLayer.icon}" />
+        </div>
+
+      </div>
+    </h:panelGroup>
+
+    <f:facet name="footer">
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{geoMapBean.acceptLegendLayer}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
+                         process="@form:cnt:map_tabs:legend_layer_dialog"
+                         update="@form:cnt:map_tabs:legend"
+                         oncomplete="if (!isFacesError()) PF('legendLayerDialog').hide()"
+                         />
+        <p:commandButton action="#{geoMapBean.cancelLegendLayer}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="@form:cnt:map_tabs:legend" global="false"
+                         onclick="PF('legendLayerDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>
