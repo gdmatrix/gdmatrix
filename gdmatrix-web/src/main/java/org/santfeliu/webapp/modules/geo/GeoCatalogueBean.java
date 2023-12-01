@@ -31,15 +31,20 @@
 package org.santfeliu.webapp.modules.geo;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Named;
+import org.santfeliu.faces.maplibre.model.Map;
+import org.santfeliu.util.template.Template;
+import org.santfeliu.util.template.WebTemplate;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapFilter;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapGroup;
+import org.santfeliu.webapp.modules.geo.io.MapStore.MapView;
 
 /**
  *
@@ -59,6 +64,33 @@ public class GeoCatalogueBean extends WebBean implements Serializable
       mapGroups = getMapStore().findMaps(filter);
     }
     return mapGroups;
+  }
+
+  public String getMapInfo(MapView mapView)
+  {
+    try
+    {
+      MapStore.MapDocument mapDocument =
+        getMapStore().loadMap(mapView.getMapName());
+      Map map = mapDocument.getMap();
+      String description = mapDocument.getMap().getDescription();
+      description = description.replace(GeoMapBean.DESCRIPTION_BREAK_TAG, "\n");
+      Template template = WebTemplate.create(description);
+      HashMap<String, Object> variables = new HashMap<>();
+      variables.putAll(map.getMetadata());
+      variables.put("title", map.getTitle());
+      variables.put("creationDate", mapDocument.getCreationDate());
+      variables.put("captureDateTime", mapDocument.getCaptureDateTime());
+      variables.put("changeDateTime", mapDocument.getChangeDateTime());
+      variables.put("captureUserId", mapDocument.getCaptureUserId());
+      variables.put("changeUserId", mapDocument.getChangeUserId());
+      return template.merge(variables);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+      return null;
+    }
   }
 
   public MapFilter getFilter()

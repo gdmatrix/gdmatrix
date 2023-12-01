@@ -10,46 +10,64 @@
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
                 var="objectBundle" />
 
-  <p:panel styleClass="p-3">
+  <div class="flex flex-column h-full" style="color:var(--text-color)">
 
-    <f:facet name="header">
-      <div class="flex align-items-center">
-        <div class="flex-grow-0">#{userSessionBean.selectedMenuItem.label}</div>
-        <div class="flex-grow-1">
-          <div class="ui-inputgroup justify-content-end">
-            <p:inputText value="#{geoCatalogueBean.filter.title}"
-                         autocomplete="off" placeholder="Map name" />
-            <p:commandButton id="find_maps" 
-                             action="#{geoCatalogueBean.findMaps}"
-                             icon="pi pi-search"
-                             process="@form:cnt" update="@form:cnt:maps" />
-            <p:defaultCommand target="find_maps" />
-          </div>
+    <div class="flex align-items-center flex-grow-0 border-none border-solid border-bottom-1"
+         style="border-color:var(--surface-border)">
+      <div class="flex-grow-0 p-2">#{userSessionBean.selectedMenuItem.label}</div>
+      <div class="flex-grow-1 p-2">
+        <div class="ui-inputgroup justify-content-end">
+          <p:inputText value="#{geoCatalogueBean.filter.title}"
+                       autocomplete="off" placeholder="Map name" />
+          <p:commandButton id="find_maps" 
+                           action="#{geoCatalogueBean.findMaps}"
+                           icon="pi pi-search"
+                           process="@form:cnt" update="@form:cnt:maps" />
+          <p:defaultCommand target="find_maps" />
         </div>
       </div>
-    </f:facet>
+    </div>
 
-    <h:panelGroup id="maps">
+    <h:panelGroup id="maps" styleClass="flex-grow-1 overflow-auto pl-3 pr-3">
       <ul class="list-none pl-0">
-        <ui:repeat value="#{geoCatalogueBean.mapGroups}" var="mapGroup">    
-          <li>
-            <span><strong>#{mapGroup.category.title}</strong> (#{mapGroup.mapViews.size()} mapes)</span>
-            <ul class="list-none pl-4 pt-2 pb-4">
-              <ui:repeat value="#{mapGroup.mapViews}" var="mapView">    
-                <li class="pt-1 pb-1">
-                  <span class="pi pi-map mr-2" />
-                  <p:commandLink action="#{geoMapBean.loadMap(mapView.mapName, 'map_viewer')}"
-                                 value="#{mapView.title}" 
-                                 process="@this" update="@form:cnt" />
-                </li>
+        <ui:repeat value="#{geoCatalogueBean.mapGroups}" var="mapGroup1">    
+          <li class="pt-1">
+            <span><strong>#{mapGroup1.category.title}</strong> (#{mapGroup1.mapViews.size()} mapes)</span>
+            <ul class="list-none pl-4 pt-2 pb-2">
+              <ui:repeat value="#{mapGroup1.mapViews}" var="mapView1">
+                <ui:param name="mapView" value="#{mapView1}" />
+                <ui:include src="/pages/geo/catalogue_mapview.xhtml" />
+              </ui:repeat>
+              <ui:repeat value="#{mapGroup1.mapGroups}" var="mapGroup2">    
+                <li class="pt-1">
+                  <span><strong>#{mapGroup2.category.title}</strong> (#{mapGroup2.mapViews.size()} mapes)</span>
+                  <ul class="list-none pl-4 pt-2">
+                    <ui:repeat value="#{mapGroup2.mapViews}" var="mapView2">    
+                      <ui:param name="mapView" value="#{mapView2}" />
+                      <ui:include src="/pages/geo/catalogue_mapview.xhtml" />
+                    </ui:repeat>
+                    <ui:repeat value="#{mapGroup3.mapGroups}" var="mapGroup3">    
+                      <li class="pt-1">
+                        <span><strong>#{mapGroup3.category.title}</strong> (#{mapGroup3.mapViews.size()} mapes)</span>
+                        <ul class="list-none pl-4 pt-2">
+                          <ui:repeat value="#{mapGroup3.mapViews}" var="mapView3">    
+                            <ui:param name="mapView" value="#{mapView3}" />
+                            <ui:include src="/pages/geo/catalogue_mapview.xhtml" />
+                          </ui:repeat>
+                        </ul>
+                      </li>                
+                    </ui:repeat>
+                  </ul>
+                </li>                
               </ui:repeat>
             </ul>
           </li>
         </ui:repeat>
       </ul>
     </h:panelGroup>
-  </p:panel>
-  
+
+  </div>  
+
   <gdm:saveBean value="geoCatalogueBean" />
 
   <p:growl id="growl" life="1000">

@@ -86,6 +86,8 @@ import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
 @RequestScoped
 public class GeoMapBean extends WebBean implements Serializable
 {
+  public static final String DESCRIPTION_BREAK_TAG = "-break-";
+
   private MapDocument mapDocument;
   private String view = "catalogue"; // or "map_viewer", "map_editor", "sld_editor"
   private String mode = "visual"; // or "code"

@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -69,8 +70,9 @@ public class MapStore
   public static final String MAP_CATEGORY_TYPEID = "XMAPCAT";
   public static final String MAP_NAME_PROPERTY = "mapName";
   public static final String MAP_DESCRIPTION_PROPERTY = "description";
-  public static final String MAP_CATEGORY_PROPERTY = "category";
+  public static final String MAP_CATEGORY_NAME_PROPERTY = "category";
   public static final String MAP_CATEGORY_POSITION_PROPERTY = "position";
+  public static final String MAP_CATEGORY_PARENT_PROPERTY = "parentCategory";
 
   public static HashMap<String, MapCategory> categoryCache = new HashMap<>();
 
@@ -93,19 +95,18 @@ public class MapStore
       filter.setTitle("%" + mapFilter.getTitle() + "%");
     }
 
-    if (!StringUtils.isBlank(mapFilter.getCategory()))
+    if (!StringUtils.isBlank(mapFilter.getCategoryName()))
     {
       Property property = new Property();
-      property.setName(MAP_CATEGORY_PROPERTY);
-      property.getValue().add(mapFilter.getCategory());
+      property.setName(MAP_CATEGORY_NAME_PROPERTY);
+      property.getValue().add(mapFilter.getCategoryName());
       filter.getProperty().add(property);
     }
 
     filter.getOutputProperty().add(MAP_NAME_PROPERTY);
-    filter.getOutputProperty().add(MAP_CATEGORY_PROPERTY);
-    filter.getOutputProperty().add(MAP_DESCRIPTION_PROPERTY);
+    filter.getOutputProperty().add(MAP_CATEGORY_NAME_PROPERTY);
     OrderByProperty orderProperty = new OrderByProperty();
-    orderProperty.setName(MAP_CATEGORY_PROPERTY);
+    orderProperty.setName(MAP_CATEGORY_NAME_PROPERTY);
     filter.getOrderByProperty().add(orderProperty);
     List<Document> documents = getPort().findDocuments(filter);
     for (Document document : documents)
@@ -113,29 +114,51 @@ public class MapStore
       String mapTitle = document.getTitle();
       String mapName = DictionaryUtils.getPropertyValue(
         document.getProperty(), MAP_NAME_PROPERTY);
-      String mapDescription = DictionaryUtils.getPropertyValue(
-        document.getProperty(), MAP_DESCRIPTION_PROPERTY);
-      String category = DictionaryUtils.getPropertyValue(
-        document.getProperty(), MAP_CATEGORY_PROPERTY);
+      String categoryName = DictionaryUtils.getPropertyValue(
+        document.getProperty(), MAP_CATEGORY_NAME_PROPERTY);
 
-      MapGroup mapGroup = mapGroupMap.get(category);
-      if (mapGroup == null)
-      {
-        mapGroup = new MapGroup();
-        mapGroup.setCategory(loadCategory(category));
-        mapGroupMap.put(category, mapGroup);
-      }
+      if (categoryName == null) categoryName = "Unclassified";
+
+      MapGroup mapGroup = getMapGroup(categoryName, mapGroupMap);
 
       MapView mapView = new MapView();
       mapView.setTitle(mapTitle);
       mapView.setMapName(mapName);
-      mapView.setDescription(mapDescription);
       mapGroup.getMapViews().add(mapView);
     }
-    List<MapGroup> mapGroups = new ArrayList(mapGroupMap.values());
-    // sort MapViewGroups;
+    List<MapGroup> mapGroups = mapGroupMap.values().stream().filter(
+      g -> g.getCategory().getParentCategoryName() == null)
+      .collect(Collectors.toList());
+
+    // sort mapGroups;
+    System.out.println(mapGroups);
 
     return mapGroups;
+  }
+
+  public MapGroup getMapGroup(String categoryName,
+    HashMap<String, MapGroup> mapGroupMap)
+  {
+    MapGroup mapGroup = mapGroupMap.get(categoryName);
+    if (mapGroup == null)
+    {
+      mapGroup = new MapGroup();
+      MapCategory category = loadCategory(categoryName);
+      mapGroup.setCategory(category);
+      mapGroupMap.put(categoryName, mapGroup);
+      System.out.println(">>> Creating " + mapGroup);
+
+      String parentCategoryName = category.getParentCategoryName();
+      if (parentCategoryName != null)
+      {
+        System.out.println(">>> parentCategory: " + parentCategoryName);
+
+        MapGroup parentMapGroup = getMapGroup(parentCategoryName, mapGroupMap);
+        parentMapGroup.getMapGroups().add(mapGroup);
+      }
+
+    }
+    return mapGroup;
   }
 
   public MapDocument loadMap(String mapName) throws Exception
@@ -221,34 +244,44 @@ public class MapStore
     getPort().removeDocument(docId, 0);
   }
 
-  public MapCategory loadCategory(String category)
+  public MapCategory loadCategory(String categoryName)
   {
-    MapCategory mapCategory = categoryCache.get(category);
-    if (mapCategory == null)
+    MapCategory category = categoryCache.get(categoryName);
+    if (category == null)
     {
-      mapCategory = new MapCategory();
-      mapCategory.setCategory(category);
-      mapCategory.setTitle(category);
-      mapCategory.setIcon("pi pi-circle");
+      category = new MapCategory();
+      category.setName(categoryName);
+      category.setTitle(categoryName);
+      category.setIcon("pi pi-circle");
+      categoryCache.put(categoryName, category);
 
       DocumentFilter filter = new DocumentFilter();
       filter.setDocTypeId(MAP_CATEGORY_TYPEID);
       Property property = new Property();
-      property.setName(MAP_CATEGORY_PROPERTY);
-      property.getValue().add(category);
+      property.setName(MAP_CATEGORY_NAME_PROPERTY);
+      property.getValue().add(categoryName);
       filter.getProperty().add(property);
+      filter.getOutputProperty().add(MAP_CATEGORY_PARENT_PROPERTY);
+      filter.getOutputProperty().add(MAP_CATEGORY_POSITION_PROPERTY);
+
       List<Document> documents = getPort().findDocuments(filter);
       if (!documents.isEmpty())
       {
         Document document = documents.get(0);
-        mapCategory.setTitle(document.getTitle());
+        category.setTitle(document.getTitle());
+
+        String parentCategoryName = DictionaryUtils.getPropertyValue(
+          document.getProperty(), MAP_CATEGORY_PARENT_PROPERTY);
+        category.setParentCategoryName(parentCategoryName);
+
         String position = DictionaryUtils.getPropertyValue(
           document.getProperty(), MAP_CATEGORY_POSITION_PROPERTY);
-        mapCategory.setPosition(position);
+        category.setPosition(position);
+
+        // TODO: load icon
       }
-      categoryCache.put(category, mapCategory);
     }
-    return mapCategory;
+    return category;
   }
 
   public void setPort(DocumentManagerPort port)
@@ -436,20 +469,31 @@ public class MapStore
 
   public static class MapCategory implements Serializable
   {
-    String category;
+    String name;
     String title;
     String icon;
     String description;
     String position;
+    String parentCategoryName;
 
-    public String getCategory()
+    public String getName()
     {
-      return category;
+      return name;
     }
 
-    public void setCategory(String category)
+    public void setName(String categoryName)
     {
-      this.category = category;
+      this.name = categoryName;
+    }
+
+    public String getParentCategoryName()
+    {
+      return parentCategoryName;
+    }
+
+    public void setParentCategoryName(String parentCategoryName)
+    {
+      this.parentCategoryName = parentCategoryName;
     }
 
     public String getTitle()
@@ -491,12 +535,24 @@ public class MapStore
     {
       this.position = position;
     }
+
+    public boolean isRootCategoty()
+    {
+      return parentCategoryName == null;
+    }
+
+    @Override
+    public String toString()
+    {
+      return "MapCategory{" + name + ", " + parentCategoryName + "}";
+    }
   }
 
   public static class MapGroup implements Serializable
   {
     MapCategory category;
     List<MapView> mapViews = new ArrayList<>();
+    List<MapGroup> mapGroups = new ArrayList<>();
 
     public MapCategory getCategory()
     {
@@ -510,6 +566,7 @@ public class MapStore
 
     public List<MapView> getMapViews()
     {
+      if (mapViews == null) mapViews = new ArrayList<>();
       return mapViews;
     }
 
@@ -517,13 +574,30 @@ public class MapStore
     {
       this.mapViews = mapViews;
     }
+
+    public List<MapGroup> getMapGroups()
+    {
+      if (mapGroups == null) mapGroups = new ArrayList<>();
+      return mapGroups;
+    }
+
+    public void setMapGroups(List<MapGroup> mapGroups)
+    {
+      this.mapGroups = mapGroups;
+    }
+
+    @Override
+    public String toString()
+    {
+      return "MapGroup{" + category + ", " +
+        getMapGroups() + ", " + getMapViews() + "}";
+    }
   }
 
   public static class MapView implements Serializable
   {
     String mapName;
     String title;
-    String description;
 
     public String getMapName()
     {
@@ -545,21 +619,17 @@ public class MapStore
       this.title = title;
     }
 
-    public String getDescription()
+    @Override
+    public String toString()
     {
-      return description;
-    }
-
-    public void setDescription(String description)
-    {
-      this.description = description;
+      return "MapView{" + mapName + "}";
     }
   }
 
   public static class MapFilter implements Serializable
   {
     String title;
-    String category;
+    String categoryName;
 
     public String getTitle()
     {
@@ -571,14 +641,14 @@ public class MapStore
       this.title = title;
     }
 
-    public String getCategory()
+    public String getCategoryName()
     {
-      return category;
+      return categoryName;
     }
 
-    public void setCategory(String category)
+    public void setCategoryName(String categoryName)
     {
-      this.category = category;
+      this.categoryName = categoryName;
     }
   }
 }

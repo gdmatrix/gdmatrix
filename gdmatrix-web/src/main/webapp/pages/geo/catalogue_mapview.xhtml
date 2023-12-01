@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <li class="pt-1 pb-1">
+    <span class="pi pi-map mr-2" />
+    <p:commandLink action="#{geoMapBean.loadMap(mapView.mapName, 'map_viewer')}"
+                   value="#{mapView.title}" 
+                   process="@this" update="@form:cnt" />
+
+    <p:commandLink id="map_info"
+                   title="#{objectBundle.edit}"
+                   styleClass="rounded-button ui-button-flat no-underline ml-1"
+                   style="color:var(--primary-text)"
+                   process="@this" update="@none">
+      <span class="pi pi-info-circle" />
+    </p:commandLink>
+    <p:overlayPanel for="map_info" style="width:300px"  
+                    appendTo="@(body)" my="left top"
+                    dynamic="true" showCloseIcon="true">
+      <div style="max-height: 200px; overflow: auto">
+        <h:outputText value="#{geoCatalogueBean.getMapInfo(mapView)}" escape="false" />
+      </div>
+
+      <div>
+        <p:commandButton action="#{geoMapBean.loadMap(mapView.mapName, 'map_viewer')}" 
+                         value="#{objectBundle.show}"
+                         styleClass="rounded-button ui-button-flat no-underline ml-1"
+                         icon="pi pi-eye mr-1"
+                         process="@this" update="@form:cnt" />
+
+        <p:commandButton action="#{geoMapBean.loadMap(mapView.mapName, 'map_editor')}" 
+                         value="#{objectBundle.edit}"
+                         styleClass="rounded-button ui-button-flat no-underline ml-1"
+                         icon="pi pi-pencil mr-1"
+                         process="@this" update="@form:cnt" />
+      </div>
+    </p:overlayPanel>
+
+  </li>
+
+</ui:composition>
