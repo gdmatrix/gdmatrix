@@ -142,3 +142,21 @@ div.ui-growl {
   background: yellow;
   animation: flash 1s infinite;
 }
+
+.legend_cut_node
+{
+  font-style: italic;
+  color: var(--primary-color);
+}
+
+body .map_summary_button.ui-button.ui-button-icon-only
+{
+  width: 16px !important;
+  height: 16px !important;
+  margin-left: 4px;
+}
+
+body .map_summary_button.ui-button.ui-button-icon-only .ui-button-text 
+{
+  padding: 0;
+}

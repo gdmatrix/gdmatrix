@@ -16,11 +16,11 @@
     <p:ajax event="collapse" />
     <p:ajax event="contextMenu" update="@parent:legend_menu" />
 
-    <p:treeNode type="group" styleClass="#{geoMapBean.isCutLegendNode(node) ? 'font-italic' : ''}">
+    <p:treeNode type="group" styleClass="#{geoMapBean.isCutLegendNode(node) ? 'legend_cut_node' : ''}">
       <span class="pi pi-folder mr-1"/><h:outputText value="#{item.label}"/>
     </p:treeNode>
 
-    <p:treeNode type="layer" styleClass="#{geoMapBean.isCutLegendNode(node) ? 'font-italic' : ''}">
+    <p:treeNode type="layer" styleClass="#{geoMapBean.isCutLegendNode(node) ? 'legend_cut_node' : ''}">
       <span class="fa fa-layer-group mr-1"/>#{item.label} <span class="code">(#{item.layerId})</span>
     </p:treeNode>
 

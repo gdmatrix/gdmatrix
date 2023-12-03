@@ -17,7 +17,7 @@
          style="border-color:var(--surface-border)">
       <div class="flex-grow-0 align-items-center" style="color:var(--text-color)">
         <span class="pi pi-map"/>
-        <strong>#{geoMapBean.map.title}</strong>
+        <strong>#{geoMapBean.mapDocument.title}</strong>
       </div>      
       <div class="flex-grow-1 flex justify-content-end">
         <div class="ui-inputgroup">
@@ -65,7 +65,7 @@
     };
 
     window.addEventListener("popstate", window.popStateListener);
-    document.title = "#{geoMapBean.map.title == null ? geoMapBean.map.name : geoMapBean.map.title}";  
+    document.title = "#{geoMapBean.mapDocument.title == null ? geoMapBean.mapDocument.name : geoMapBean.mapDocument.title}";  
   </script>
   
 </ui:composition>

@@ -46,6 +46,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -74,6 +75,7 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.util.IOUtils;
+import org.santfeliu.webapp.modules.geo.io.MapStore.MapCategory;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
 import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
@@ -86,8 +88,6 @@ import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
 @RequestScoped
 public class GeoMapBean extends WebBean implements Serializable
 {
-  public static final String DESCRIPTION_BREAK_TAG = "-break-";
-
   private MapDocument mapDocument;
   private String view = "catalogue"; // or "map_viewer", "map_editor", "sld_editor"
   private String mode = "visual"; // or "code"
@@ -168,6 +168,24 @@ public class GeoMapBean extends WebBean implements Serializable
   public MapDocument getMapDocument()
   {
     return mapDocument;
+  }
+
+  public MapCategory getCategory(String categoryName)
+  {
+    return getMapStore().getCategory(categoryName);
+  }
+
+  public List<SelectItem> getCategorySelectItems()
+  {
+    List<SelectItem> selectItems = new ArrayList<>();
+
+    for (MapCategory category : getMapStore().getCategoryList())
+    {
+      SelectItem selectItem =
+        new SelectItem(category.getName(), category.getTitle());
+      selectItems.add(selectItem);
+    }
+    return selectItems;
   }
 
   public String getMetadataFormSelector()
@@ -828,7 +846,8 @@ public class GeoMapBean extends WebBean implements Serializable
           for (TreeNode node : legendCut)
           {
             LegendTreeNode sourceNode = (LegendTreeNode)node;
-            if (!targetNode.isDescendant(sourceNode))
+            if (targetNode != sourceNode &&
+                !targetNode.isDescendant(sourceNode))
             {
               targetNode.add(sourceNode);
             }
@@ -1042,7 +1061,7 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     try
     {
-      MapDocument mapReloaded = getMapStore().loadMap(getMap().getName());
+      MapDocument mapReloaded = getMapStore().loadMap(getMapDocument().getName());
       if (mapReloaded == null)
       {
         error("MAP_NOT_FOUND");
@@ -1082,7 +1101,7 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void removeMap()
   {
-    String mapName = getMap().getName();
+    String mapName = getMapDocument().getName();
 
     getMapStore().removeMap(mapName);
 

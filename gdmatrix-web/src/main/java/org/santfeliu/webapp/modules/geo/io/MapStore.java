@@ -36,9 +36,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -56,7 +56,7 @@ import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import static org.matrix.dic.DictionaryConstants.WRITE_ACTION;
-import org.matrix.doc.OrderByProperty;
+import org.santfeliu.util.template.WebTemplate;
 
 /**
  *
@@ -69,12 +69,16 @@ public class MapStore
   public static final String MAP_TYPEID = "GMAP";
   public static final String MAP_CATEGORY_TYPEID = "XMAPCAT";
   public static final String MAP_NAME_PROPERTY = "mapName";
+  public static final String MAP_SUMMARY_PROPERTY = "summary";
   public static final String MAP_DESCRIPTION_PROPERTY = "description";
+  public static final String MAP_KEYWORDS_PROPERTY = "keywords";
   public static final String MAP_CATEGORY_NAME_PROPERTY = "category";
   public static final String MAP_CATEGORY_POSITION_PROPERTY = "position";
   public static final String MAP_CATEGORY_PARENT_PROPERTY = "parentCategory";
 
+  public static List<MapCategory> categoryList;
   public static HashMap<String, MapCategory> categoryCache = new HashMap<>();
+  public static long lastPurgeMillis;
 
   private DocumentManagerPort documentManagerPort;
 
@@ -83,9 +87,11 @@ public class MapStore
     documentManagerPort = DocModuleBean.getPort(userId, password);
   }
 
-  public List<MapGroup> findMaps(MapFilter mapFilter)
+  public MapGroup findMaps(MapFilter mapFilter)
   {
     HashMap<String, MapGroup> mapGroupMap = new HashMap<>();
+    MapGroup rootGroup = new MapGroup();
+    mapGroupMap.put(null, rootGroup);
 
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(MAP_TYPEID);
@@ -103,11 +109,16 @@ public class MapStore
       filter.getProperty().add(property);
     }
 
+    if (!StringUtils.isBlank(mapFilter.getKeyword()))
+    {
+      Property property = new Property();
+      property.setName(MAP_KEYWORDS_PROPERTY);
+      property.getValue().add("%" + mapFilter.getKeyword().toLowerCase() + "%");
+      filter.getProperty().add(property);
+    }
+
     filter.getOutputProperty().add(MAP_NAME_PROPERTY);
     filter.getOutputProperty().add(MAP_CATEGORY_NAME_PROPERTY);
-    OrderByProperty orderProperty = new OrderByProperty();
-    orderProperty.setName(MAP_CATEGORY_NAME_PROPERTY);
-    filter.getOrderByProperty().add(orderProperty);
     List<Document> documents = getPort().findDocuments(filter);
     for (Document document : documents)
     {
@@ -117,8 +128,6 @@ public class MapStore
       String categoryName = DictionaryUtils.getPropertyValue(
         document.getProperty(), MAP_CATEGORY_NAME_PROPERTY);
 
-      if (categoryName == null) categoryName = "Unclassified";
-
       MapGroup mapGroup = getMapGroup(categoryName, mapGroupMap);
 
       MapView mapView = new MapView();
@@ -126,39 +135,9 @@ public class MapStore
       mapView.setMapName(mapName);
       mapGroup.getMapViews().add(mapView);
     }
-    List<MapGroup> mapGroups = mapGroupMap.values().stream().filter(
-      g -> g.getCategory().getParentCategoryName() == null)
-      .collect(Collectors.toList());
+    rootGroup.complete();
 
-    // sort mapGroups;
-    System.out.println(mapGroups);
-
-    return mapGroups;
-  }
-
-  public MapGroup getMapGroup(String categoryName,
-    HashMap<String, MapGroup> mapGroupMap)
-  {
-    MapGroup mapGroup = mapGroupMap.get(categoryName);
-    if (mapGroup == null)
-    {
-      mapGroup = new MapGroup();
-      MapCategory category = loadCategory(categoryName);
-      mapGroup.setCategory(category);
-      mapGroupMap.put(categoryName, mapGroup);
-      System.out.println(">>> Creating " + mapGroup);
-
-      String parentCategoryName = category.getParentCategoryName();
-      if (parentCategoryName != null)
-      {
-        System.out.println(">>> parentCategory: " + parentCategoryName);
-
-        MapGroup parentMapGroup = getMapGroup(parentCategoryName, mapGroupMap);
-        parentMapGroup.getMapGroups().add(mapGroup);
-      }
-
-    }
-    return mapGroup;
+    return rootGroup;
   }
 
   public MapDocument loadMap(String mapName) throws Exception
@@ -176,8 +155,7 @@ public class MapStore
     throws Exception
   {
     Map map = mapDocument.getMap();
-    String mapName = map.getName();
-    String mapDescription = map.getDescription();
+    String mapName = mapDocument.getName();
     String docId = getMapDocId(mapName);
 
     DocumentManagerPort port = getPort();
@@ -199,13 +177,18 @@ public class MapStore
       }
     }
     // set document properties
-    document.setTitle(map.getTitle());
+    document.setTitle(mapDocument.getTitle());
+    document.setCreationDate(mapDocument.getCreationDate());
+
     document.getProperty().clear();
-    for (Property property : mapDocument.getProperties())
+    for (Property property : mapDocument.getProperty())
     {
       String propertyName = property.getName();
       if (!propertyName.equals(MAP_NAME_PROPERTY) &&
-        !propertyName.equals(MAP_DESCRIPTION_PROPERTY))
+          !propertyName.equals(MAP_SUMMARY_PROPERTY) &&
+          !propertyName.equals(MAP_DESCRIPTION_PROPERTY) &&
+          !propertyName.equals(MAP_KEYWORDS_PROPERTY) &&
+          !propertyName.equals(MAP_CATEGORY_NAME_PROPERTY))
       {
         document.getProperty().add(property);
       }
@@ -215,11 +198,39 @@ public class MapStore
     property.getValue().add(mapName);
     document.getProperty().add(property);
 
+    String mapSummary = mapDocument.getSummary();
+    if (!StringUtils.isBlank(mapSummary))
+    {
+      property = new Property();
+      property.setName(MAP_SUMMARY_PROPERTY);
+      property.getValue().add(mapSummary);
+      document.getProperty().add(property);
+    }
+
+    String mapDescription = mapDocument.getDescription();
     if (!StringUtils.isBlank(mapDescription))
     {
       property = new Property();
       property.setName(MAP_DESCRIPTION_PROPERTY);
       property.getValue().add(mapDescription);
+      document.getProperty().add(property);
+    }
+
+    String mapCategoryName = mapDocument.getCategoryName();
+    if (!StringUtils.isBlank(mapCategoryName))
+    {
+      property = new Property();
+      property.setName(MAP_CATEGORY_NAME_PROPERTY);
+      property.getValue().add(mapCategoryName);
+      document.getProperty().add(property);
+    }
+
+    String mapKeywords = mapDocument.getKeywords();
+    if (!StringUtils.isBlank(mapKeywords))
+    {
+      property = new Property();
+      property.setName(MAP_KEYWORDS_PROPERTY);
+      property.getValue().add(mapKeywords);
       document.getProperty().add(property);
     }
 
@@ -244,31 +255,69 @@ public class MapStore
     getPort().removeDocument(docId, 0);
   }
 
-  public MapCategory loadCategory(String categoryName)
+  public String getMapSummary(String mapName) throws Exception
   {
-    MapCategory category = categoryCache.get(categoryName);
-    if (category == null)
+    MapStore.MapDocument mapDocument = loadMap(mapName);
+    String summary = mapDocument.getSummary();
+    return mergeMapTemplate(mapDocument, summary);
+  }
+
+  public String getMapDescription(String mapName) throws Exception
+  {
+    MapStore.MapDocument mapDocument = loadMap(mapName);
+    String summary = mapDocument.getSummary();
+    String description = mapDocument.getDescription();
+    return mergeMapTemplate(mapDocument, summary + description);
+  }
+
+  public String mergeMapTemplate(MapDocument mapDocument, String templateSource)
+    throws Exception
+  {
+    WebTemplate template = WebTemplate.create(templateSource);
+    HashMap<String, Object> variables = new HashMap<>();
+    for (Property property : mapDocument.getProperty())
     {
-      category = new MapCategory();
-      category.setName(categoryName);
-      category.setTitle(categoryName);
-      category.setIcon("pi pi-circle");
-      categoryCache.put(categoryName, category);
+      variables.put(property.getName(), property.getValue().get(0));
+    }
+    variables.put("title", mapDocument.getTitle());
+    variables.put("creationDate", mapDocument.getCreationDate());
+    variables.put("captureDateTime", mapDocument.getCaptureDateTime());
+    variables.put("changeDateTime", mapDocument.getChangeDateTime());
+    variables.put("captureUserId", mapDocument.getCaptureUserId());
+    variables.put("changeUserId", mapDocument.getChangeUserId());
+    return template.merge(variables);
+  }
+
+  // Categories
+
+  public void purgeCategoryCache()
+  {
+    lastPurgeMillis = 0;
+  }
+
+  public java.util.Map<String, MapCategory> getCategoryCache()
+  {
+    long now = System.currentTimeMillis();
+    if (now - lastPurgeMillis > 60000)
+    {
+      lastPurgeMillis = now;
+      HashMap<String, MapCategory> cache = new HashMap<>();
 
       DocumentFilter filter = new DocumentFilter();
       filter.setDocTypeId(MAP_CATEGORY_TYPEID);
-      Property property = new Property();
-      property.setName(MAP_CATEGORY_NAME_PROPERTY);
-      property.getValue().add(categoryName);
-      filter.getProperty().add(property);
+      filter.getOutputProperty().add(MAP_CATEGORY_NAME_PROPERTY);
       filter.getOutputProperty().add(MAP_CATEGORY_PARENT_PROPERTY);
       filter.getOutputProperty().add(MAP_CATEGORY_POSITION_PROPERTY);
-
       List<Document> documents = getPort().findDocuments(filter);
-      if (!documents.isEmpty())
+      for (Document document : documents)
       {
-        Document document = documents.get(0);
+        MapCategory category = new MapCategory();
+
         category.setTitle(document.getTitle());
+
+        String categoryName = DictionaryUtils.getPropertyValue(
+          document.getProperty(), MAP_CATEGORY_NAME_PROPERTY);
+        category.setName(categoryName);
 
         String parentCategoryName = DictionaryUtils.getPropertyValue(
           document.getProperty(), MAP_CATEGORY_PARENT_PROPERTY);
@@ -276,12 +325,103 @@ public class MapStore
 
         String position = DictionaryUtils.getPropertyValue(
           document.getProperty(), MAP_CATEGORY_POSITION_PROPERTY);
+        if (position == null) position = "00";
         category.setPosition(position);
 
-        // TODO: load icon
+        Content content = document.getContent();
+        if (content != null && content.getContentId() != null)
+        {
+          category.setIcon("image:" + content.getContentId());
+        }
+        else
+        {
+          category.setIcon("pi pi-circle");
+        }
+        cache.put(categoryName, category);
+      }
+
+      List<MapCategory> rootCategories = new ArrayList<>();
+      HashMap<MapCategory, List<MapCategory>> subCategoriesMap = new HashMap<>();
+
+      // find and fix loops
+      for (MapCategory category : cache.values())
+      {
+        String parentCategoryName = category.getParentCategoryName();
+        MapCategory parentCategory = cache.get(parentCategoryName);
+
+        MapCategory ancestorCategory = parentCategory;
+        while (ancestorCategory != null && ancestorCategory != category)
+        {
+          parentCategoryName = ancestorCategory.getParentCategoryName();
+          ancestorCategory = cache.get(parentCategoryName);
+        }
+        if (ancestorCategory == category) // loop detected
+        {
+          category.setParentCategoryName(null); // fix loop
+          parentCategory = null;
+        }
+
+        if (parentCategory == null)
+        {
+          rootCategories.add(category);
+        }
+        else
+        {
+          List<MapCategory> subCategories = subCategoriesMap.get(parentCategory);
+          if (subCategories == null)
+          {
+            subCategories = new ArrayList<>();
+            subCategoriesMap.put(parentCategory, subCategories);
+          }
+          subCategories.add(category);
+        }
+      }
+
+      Collections.sort(rootCategories,
+        (a, b) -> a.getPosition().compareTo(b.getPosition()));
+
+      List<MapCategory> sortedCategories = new ArrayList<>();
+      for (MapCategory rootCategory : rootCategories)
+      {
+        addCategories(rootCategory, subCategoriesMap, sortedCategories, 0);
+      }
+
+      categoryCache = cache;
+      categoryList = sortedCategories;
+    }
+    // returned cache is immutable and has no loops
+    return categoryCache;
+  }
+
+  private void addCategories(MapCategory category,
+    HashMap<MapCategory, List<MapCategory>> subCategoriesMap,
+    List<MapCategory> sortedCategories, int level)
+  {
+    sortedCategories.add(category);
+    category.setLevel(level);
+
+    List<MapCategory> subCategories = subCategoriesMap.get(category);
+    if (subCategories != null)
+    {
+      Collections.sort(subCategories,
+        (a, b) -> a.getPosition().compareTo(b.getPosition()));
+
+      for (MapCategory subCategory : subCategories)
+      {
+        addCategories(subCategory, subCategoriesMap, sortedCategories, level + 1);
       }
     }
-    return category;
+  }
+
+  public MapCategory getCategory(String categoryName)
+  {
+    return getCategoryCache().get(categoryName);
+  }
+
+  public List<MapCategory> getCategoryList()
+  {
+    getCategoryCache();
+    return categoryList;
   }
 
   public void setPort(DocumentManagerPort port)
@@ -298,6 +438,24 @@ public class MapStore
     return documentManagerPort;
   }
 
+  private MapGroup getMapGroup(String categoryName,
+    HashMap<String, MapGroup> mapGroupMap)
+  {
+    MapGroup mapGroup = mapGroupMap.get(categoryName);
+    if (mapGroup == null)
+    {
+      mapGroup = new MapGroup();
+      MapCategory category = getCategory(categoryName);
+      mapGroup.setCategory(category);
+      mapGroupMap.put(categoryName, mapGroup);
+
+      String parentCategoryName = category.getParentCategoryName();
+      MapGroup parentMapGroup = getMapGroup(parentCategoryName, mapGroupMap);
+      parentMapGroup.getMapGroups().add(mapGroup);
+    }
+    return mapGroup;
+  }
+
   private String getMapDocId(String mapName)
   {
     DocumentFilter filter = new DocumentFilter();
@@ -312,20 +470,26 @@ public class MapStore
 
   public static class MapDocument implements Serializable
   {
-    Map map;
-    final List<Property> properties = new ArrayList<>();
-    final List<AccessControl> accessControl = new ArrayList<>();
+    String name;
+    String title;
+    String summary;
+    String description;
+    String keywords;
+    String categoryName;
     String creationDate;
     String captureUserId;
     String captureDateTime;
     String changeUserId;
     String changeDateTime;
+    Map map;
+    final List<Property> property = new ArrayList<>();
+    final List<AccessControl> accessControl = new ArrayList<>();
 
     public MapDocument()
     {
       map = new Map();
-      map.setName("new_map");
-      map.setTitle("New map");
+      name = "new_map";
+      title = "New map";
     }
 
     public MapDocument(Map map)
@@ -338,9 +502,8 @@ public class MapStore
       InputStream is = document.getContent().getData().getInputStream();
       this.map = new Map();
       this.map.read(new InputStreamReader(is, "UTF-8"));
-      this.properties.addAll(document.getProperty());
+      this.readProperties(document);
       this.setAccessControl(document.getAccessControl());
-      this.updateAuditory(document);
     }
 
     public Map getMap()
@@ -348,9 +511,120 @@ public class MapStore
       return map;
     }
 
-    public List<Property> getProperties()
+    public String getName()
     {
-      return properties;
+      return name;
+    }
+
+    public void setName(String name)
+    {
+      this.name = name;
+    }
+
+    public String getTitle()
+    {
+      return title;
+    }
+
+    public void setTitle(String title)
+    {
+      this.title = title;
+    }
+
+    public String getSummary()
+    {
+      return summary;
+    }
+
+    public void setSummary(String summary)
+    {
+      this.summary = summary;
+    }
+
+    public String getDescription()
+    {
+      return description;
+    }
+
+    public void setDescription(String description)
+    {
+      this.description = description;
+    }
+
+    public String getKeywords()
+    {
+      return keywords;
+    }
+
+    public void setKeywords(String keywords)
+    {
+      this.keywords = keywords;
+    }
+
+    public String getCategoryName()
+    {
+      return categoryName;
+    }
+
+    public void setCategoryName(String categoryName)
+    {
+      if (StringUtils.isBlank(categoryName)) categoryName = null;
+      this.categoryName = categoryName;
+    }
+
+    public String getCreationDate()
+    {
+      return creationDate;
+    }
+
+    public void setCreationDate(String creationDate)
+    {
+      this.creationDate = creationDate;
+    }
+
+    public String getCaptureUserId()
+    {
+      return captureUserId;
+    }
+
+    public void setCaptureUserId(String captureUserId)
+    {
+      this.captureUserId = captureUserId;
+    }
+
+    public String getCaptureDateTime()
+    {
+      return captureDateTime;
+    }
+
+    public void setCaptureDateTime(String captureDateTime)
+    {
+      this.captureDateTime = captureDateTime;
+    }
+
+    public String getChangeUserId()
+    {
+      return changeUserId;
+    }
+
+    public void setChangeUserId(String changeUserId)
+    {
+      this.changeUserId = changeUserId;
+    }
+
+    public String getChangeDateTime()
+    {
+      return changeDateTime;
+    }
+
+    public void setChangeDateTime(String changeDateTime)
+    {
+      this.changeDateTime = changeDateTime;
+    }
+
+    public List<Property> getProperty()
+    {
+      return property;
     }
 
     public List<AccessControl> getFullAccessControl()
@@ -407,63 +681,40 @@ public class MapStore
       this.accessControl.addAll(roles.values());
     }
 
-    public final void updateAuditory(Document document)
+    public final void readProperties(Document document)
     {
+      this.title = document.getTitle();
       this.creationDate = document.getCreationDate();
       this.changeUserId = document.getChangeUserId();
       this.changeDateTime = document.getChangeDateTime();
       this.captureUserId = document.getCaptureUserId();
       this.captureDateTime = document.getCaptureDateTime();
-    }
 
-    public String getCreationDate()
-    {
-      return creationDate;
-    }
-
-    public void setCreationDate(String creationDate)
-    {
-      this.creationDate = creationDate;
-    }
-
-    public String getCaptureUserId()
-    {
-      return captureUserId;
-    }
-
-    public void setCaptureUserId(String captureUserId)
-    {
-      this.captureUserId = captureUserId;
-    }
-
-    public String getCaptureDateTime()
-    {
-      return captureDateTime;
-    }
-
-    public void setCaptureDateTime(String captureDateTime)
-    {
-      this.captureDateTime = captureDateTime;
-    }
-
-    public String getChangeUserId()
-    {
-      return changeUserId;
-    }
-
-    public void setChangeUserId(String changeUserId)
-    {
-      this.changeUserId = changeUserId;
-    }
-
-    public String getChangeDateTime()
-    {
-      return changeDateTime;
-    }
-
-    public void setChangeDateTime(String changeDateTime)
-    {
-      this.changeDateTime = changeDateTime;
+      for (Property documentProperty : document.getProperty())
+      {
+        String propertyName = documentProperty.getName();
+        String value = documentProperty.getValue().get(0);
+        switch (propertyName)
+        {
+          case MAP_NAME_PROPERTY:
+            name = value;
+            break;
+          case MAP_SUMMARY_PROPERTY:
+            summary = value;
+            break;
+          case MAP_DESCRIPTION_PROPERTY:
+            description = value;
+            break;
+          case MAP_KEYWORDS_PROPERTY:
+            keywords = value;
+            break;
+          case MAP_CATEGORY_NAME_PROPERTY:
+            categoryName = value;
+            break;
+          default:
+            getProperty().add(documentProperty);
+        }
+      }
     }
   }
 
@@ -475,6 +726,7 @@ public class MapStore
     String description;
     String position;
     String parentCategoryName;
+    int level;
 
     public String getName()
     {
@@ -541,6 +793,16 @@ public class MapStore
       return parentCategoryName == null;
     }
 
+    public int getLevel()
+    {
+      return level;
+    }
+
+    public void setLevel(int level)
+    {
+      this.level = level;
+    }
+
     @Override
     public String toString()
     {
@@ -553,6 +815,7 @@ public class MapStore
     MapCategory category;
     List<MapView> mapViews = new ArrayList<>();
     List<MapGroup> mapGroups = new ArrayList<>();
+    int mapCount;
 
     public MapCategory getCategory()
     {
@@ -584,6 +847,27 @@ public class MapStore
     public void setMapGroups(List<MapGroup> mapGroups)
     {
       this.mapGroups = mapGroups;
+    }
+
+    public int getMapCount()
+    {
+      return mapCount;
+    }
+
+    public void complete()
+    {
+      Collections.sort(mapViews, (a, b) ->
+        a.title.compareTo(b.title));
+
+      Collections.sort(mapGroups, (a, b) ->
+        a.category.position.compareTo(b.category.position));
+
+      mapCount = mapViews.size();
+      for (MapGroup group : mapGroups)
+      {
+        group.complete();
+        mapCount += group.getMapCount();
+      }
     }
 
     @Override
@@ -630,6 +914,7 @@ public class MapStore
   {
     String title;
     String categoryName;
+    String keyword;
 
     public String getTitle()
     {
@@ -649,6 +934,16 @@ public class MapStore
     public void setCategoryName(String categoryName)
     {
       this.categoryName = categoryName;
+    }
+
+    public String getKeyword()
+    {
+      return keyword;
+    }
+
+    public void setKeyword(String keyword)
+    {
+      this.keyword = keyword;
     }
   }
 }

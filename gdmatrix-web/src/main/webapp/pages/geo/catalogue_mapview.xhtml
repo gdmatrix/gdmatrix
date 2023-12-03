@@ -13,35 +13,12 @@
                    value="#{mapView.title}" 
                    process="@this" update="@form:cnt" />
 
-    <p:commandLink id="map_info"
-                   title="#{objectBundle.edit}"
-                   styleClass="rounded-button ui-button-flat no-underline ml-1"
-                   style="color:var(--primary-text)"
-                   process="@this" update="@none">
-      <span class="pi pi-info-circle" />
-    </p:commandLink>
-    <p:overlayPanel for="map_info" style="width:300px"  
-                    appendTo="@(body)" my="left top"
-                    dynamic="true" showCloseIcon="true">
-      <div style="max-height: 200px; overflow: auto">
-        <h:outputText value="#{geoCatalogueBean.getMapInfo(mapView)}" escape="false" />
-      </div>
-
-      <div>
-        <p:commandButton action="#{geoMapBean.loadMap(mapView.mapName, 'map_viewer')}" 
-                         value="#{objectBundle.show}"
-                         styleClass="rounded-button ui-button-flat no-underline ml-1"
-                         icon="pi pi-eye mr-1"
-                         process="@this" update="@form:cnt" />
-
-        <p:commandButton action="#{geoMapBean.loadMap(mapView.mapName, 'map_editor')}" 
-                         value="#{objectBundle.edit}"
-                         styleClass="rounded-button ui-button-flat no-underline ml-1"
-                         icon="pi pi-pencil mr-1"
-                         process="@this" update="@form:cnt" />
-      </div>
-    </p:overlayPanel>
-
+    <p:commandButton title="#{objectBundle.edit}"
+                     icon="pi pi-info-circle"
+                     action="#{geoCatalogueBean.setCurrentMapView(mapView)}"
+                     styleClass="rounded-button ui-button-flat map_summary_button"
+                     process="@this" update="@form:cnt:map_summary_dialog"
+                     oncomplete="PF('mapSummaryDialog').show()" />
   </li>
 
 </ui:composition>

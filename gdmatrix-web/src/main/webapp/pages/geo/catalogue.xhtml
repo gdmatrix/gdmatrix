@@ -9,7 +9,8 @@
 
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
                 var="objectBundle" />
-
+  <h:outputStylesheet library="css" name="geo.css" />
+  
   <div class="flex flex-column h-full" style="color:var(--text-color)">
 
     <div class="flex align-items-center flex-grow-0 border-none border-solid border-bottom-1"
@@ -17,8 +18,8 @@
       <div class="flex-grow-0 p-2">#{userSessionBean.selectedMenuItem.label}</div>
       <div class="flex-grow-1 p-2">
         <div class="ui-inputgroup justify-content-end">
-          <p:inputText value="#{geoCatalogueBean.filter.title}"
-                       autocomplete="off" placeholder="Map name" />
+          <p:inputText value="#{geoCatalogueBean.filter.keyword}"
+                       autocomplete="off" placeholder="Cerca" />
           <p:commandButton id="find_maps" 
                            action="#{geoCatalogueBean.findMaps}"
                            icon="pi pi-search"
@@ -30,9 +31,13 @@
 
     <h:panelGroup id="maps" styleClass="flex-grow-1 overflow-auto pl-3 pr-3">
       <ul class="list-none pl-0">
-        <ui:repeat value="#{geoCatalogueBean.mapGroups}" var="mapGroup1">    
+        <ui:repeat value="#{geoCatalogueBean.mapGroup.mapViews}" var="mapView0">
+          <ui:param name="mapView" value="#{mapView0}" />
+          <ui:include src="/pages/geo/catalogue_mapview.xhtml" />
+        </ui:repeat>
+        <ui:repeat value="#{geoCatalogueBean.mapGroup.mapGroups}" var="mapGroup1">    
           <li class="pt-1">
-            <span><strong>#{mapGroup1.category.title}</strong> (#{mapGroup1.mapViews.size()} mapes)</span>
+            <span><strong>#{mapGroup1.category.title}</strong> (#{mapGroup1.mapCount} mapes)</span>
             <ul class="list-none pl-4 pt-2 pb-2">
               <ui:repeat value="#{mapGroup1.mapViews}" var="mapView1">
                 <ui:param name="mapView" value="#{mapView1}" />
@@ -40,7 +45,7 @@
               </ui:repeat>
               <ui:repeat value="#{mapGroup1.mapGroups}" var="mapGroup2">    
                 <li class="pt-1">
-                  <span><strong>#{mapGroup2.category.title}</strong> (#{mapGroup2.mapViews.size()} mapes)</span>
+                  <span><strong>#{mapGroup2.category.title}</strong> (#{mapGroup2.mapCount} mapes)</span>
                   <ul class="list-none pl-4 pt-2">
                     <ui:repeat value="#{mapGroup2.mapViews}" var="mapView2">    
                       <ui:param name="mapView" value="#{mapView2}" />
@@ -48,7 +53,7 @@
                     </ui:repeat>
                     <ui:repeat value="#{mapGroup3.mapGroups}" var="mapGroup3">    
                       <li class="pt-1">
-                        <span><strong>#{mapGroup3.category.title}</strong> (#{mapGroup3.mapViews.size()} mapes)</span>
+                        <span><strong>#{mapGroup3.category.title}</strong> (#{mapGroup3.mapCount} mapes)</span>
                         <ul class="list-none pl-4 pt-2">
                           <ui:repeat value="#{mapGroup3.mapViews}" var="mapView3">    
                             <ui:param name="mapView" value="#{mapView3}" />
@@ -67,6 +72,35 @@
     </h:panelGroup>
 
   </div>  
+
+  <p:dialog id="map_summary_dialog" widgetVar="mapSummaryDialog" 
+            resizable="false" responsive="true" position="center center"
+            minHeight="100" width="350" showEffect="fade" hideEffect="fade">
+    
+    <f:facet name="header">
+      <div style="font-size:13px">#{geoCatalogueBean.currentMapView.title}</div>
+    </f:facet>
+
+    <h:panelGroup rendered="#{geoCatalogueBean.currentMapView != null}">
+      <h:outputText value="#{geoCatalogueBean.getCurrentMapSummary()}" escape="false" />
+    </h:panelGroup>
+    
+    <f:facet name="footer">
+        <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_viewer')}" 
+                         value="#{objectBundle.show}"
+                         styleClass="rounded-button ui-button-flat no-underline ml-1"
+                         icon="pi pi-eye mr-1"
+                         onclick="PF('mapSummaryDialog').hide()"
+                         process="@this" update="@form:cnt" />
+
+        <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_editor')}" 
+                         value="#{objectBundle.edit}"
+                         styleClass="rounded-button ui-button-flat no-underline ml-1"
+                         icon="pi pi-pencil mr-1"
+                         onclick="PF('mapSummaryDialog').hide()"
+                         process="@this" update="@form:cnt" />
+    </f:facet>    
+  </p:dialog>  
 
   <gdm:saveBean value="geoCatalogueBean" />
 

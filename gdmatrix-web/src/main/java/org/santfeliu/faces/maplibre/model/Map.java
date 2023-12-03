@@ -52,56 +52,12 @@ import java.util.List;
  */
 public class Map implements Serializable
 {
-  String name;
-  String title;
-  String description;
-  String category;
   Camera camera = new Camera();
   java.util.Map<String, Service> services = new HashMap<>();
   java.util.Map<String, Source> sources = new HashMap<>();
   Terrain terrain = new Terrain();
   List<Layer> layers = new ArrayList<>();
   java.util.Map<String, Object> metadata = new HashMap<>();
-
-  public String getName()
-  {
-    return name;
-  }
-
-  public void setName(String name)
-  {
-    this.name = name;
-  }
-
-  public String getTitle()
-  {
-    return title;
-  }
-
-  public void setTitle(String title)
-  {
-    this.title = title;
-  }
-
-  public String getDescription()
-  {
-    return description;
-  }
-
-  public void setDescription(String description)
-  {
-    this.description = description;
-  }
-
-  public String getCategory()
-  {
-    return category;
-  }
-
-  public void setCategory(String category)
-  {
-    this.category = category;
-  }
 
   public Camera getCamera()
   {

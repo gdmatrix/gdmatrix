@@ -12,33 +12,52 @@
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Name" />
-      <p:inputText value="#{geoMapBean.map.name}" styleClass="code">
+      <p:inputText value="#{geoMapBean.mapDocument.name}" styleClass="code">
         <p:ajax event="valueChange" listener="#{geoMapBean.onMapNameChanged}"
                 update="@none"/>
       </p:inputText>
     </div>
 
-    <div class="field col-12 md:col-9">
+    <div class="field col-12 md:col-5">
       <p:outputLabel for="@next" value="Title" />
-      <p:inputText value="#{geoMapBean.map.title}" />
+      <p:inputText value="#{geoMapBean.mapDocument.title}" />
     </div>
 
+    <div class="field col-12 md:col-4">
+      <p:outputLabel for="@next" value="Category" />
+      <p:selectOneMenu var="categoryName" value="#{geoMapBean.mapDocument.categoryName}">
+        <f:selectItem itemLabel="" itemValue="" />
+        <f:selectItems value="#{geoMapBean.categorySelectItems}" />
+        <p:column>
+          <h:outputText value="" rendered="#{categoryName == null}" />
+          <h:panelGroup rendered="#{categoryName != null and geoMapBean.getCategory(categoryName).level == 0}">
+            <strong>#{geoMapBean.getCategory(categoryName).title}</strong>
+          </h:panelGroup>
+          <h:panelGroup rendered="#{categoryName != null and geoMapBean.getCategory(categoryName).level > 0}">
+            <span style="margin-left:#{geoMapBean.getCategory(categoryName).level * 8}px">#{geoMapBean.getCategory(categoryName).title}</span>
+          </h:panelGroup>            
+        </p:column>        
+      </p:selectOneMenu>
+    </div>
+    
     <div class="field col-12">
       <p:tabView dynamic="true">
         <p:tab title="Description">
-          <gdm:codemirror value="#{geoMapBean.map.description}"
-                          language="xml"
-                          styleClass="w-full" />
-        </p:tab>
-
-        <p:tab title="Metadata">
-          <emcomp:dynamicProperties typeId="GMAP"
-                              formSelector="#{geoMapBean.metadataFormSelector}"                              
-                              properties="#{geoMapBean.mapDocument.properties}" />
-        </p:tab>
-
-        <p:tab title="Auditory">
           <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel value="Summary" for="@next" />
+              <p:inputTextarea value="#{geoMapBean.mapDocument.summary}" styleClass="code" />
+            </div>
+
+            <div class="field col-12">
+              <p:outputLabel value="Description" for="@next" />
+              <p:inputTextarea value="#{geoMapBean.mapDocument.description}" styleClass="code" />
+            </div>
+
+            <div class="field col-12">
+              <p:outputLabel value="Keywords" for="@next" />
+              <p:inputTextarea value="#{geoMapBean.mapDocument.keywords}" styleClass="code" />
+            </div>            
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="Creation date: " />
@@ -53,6 +72,17 @@
                               monthNavigator="true" yearNavigator="true" />
               </div>
             </div>
+          </div>
+        </p:tab>
+
+        <p:tab title="Metadata">
+          <emcomp:dynamicProperties typeId="GMAP"
+                              formSelector="#{geoMapBean.metadataFormSelector}"                              
+                              properties="#{geoMapBean.mapDocument.property}" />
+        </p:tab>
+
+        <p:tab title="Auditory">
+          <div class="ui-fluid formgrid grid">
 
             <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="#{geoBundle.captureUserId}: " />

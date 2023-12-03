@@ -31,14 +31,9 @@
 package org.santfeliu.webapp.modules.geo;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Named;
-import org.santfeliu.faces.maplibre.model.Map;
-import org.santfeliu.util.template.Template;
-import org.santfeliu.util.template.WebTemplate;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
@@ -54,37 +49,34 @@ import org.santfeliu.webapp.modules.geo.io.MapStore.MapView;
 @RequestScoped
 public class GeoCatalogueBean extends WebBean implements Serializable
 {
-  List<MapGroup> mapGroups;
+  MapGroup mapGroup;
   MapFilter filter = new MapFilter();
+  MapView currentMapView;
 
-  public List<MapGroup> getMapGroups()
+  public MapGroup getMapGroup()
   {
-    if (mapGroups == null)
+    if (mapGroup == null)
     {
-      mapGroups = getMapStore().findMaps(filter);
+      mapGroup = getMapStore().findMaps(filter);
     }
-    return mapGroups;
+    return mapGroup;
   }
 
-  public String getMapInfo(MapView mapView)
+  public MapView getCurrentMapView()
+  {
+    return currentMapView;
+  }
+
+  public void setCurrentMapView(MapView mapView)
+  {
+    currentMapView = mapView;
+  }
+
+  public String getCurrentMapSummary()
   {
     try
     {
-      MapStore.MapDocument mapDocument =
-        getMapStore().loadMap(mapView.getMapName());
-      Map map = mapDocument.getMap();
-      String description = mapDocument.getMap().getDescription();
-      description = description.replace(GeoMapBean.DESCRIPTION_BREAK_TAG, "\n");
-      Template template = WebTemplate.create(description);
-      HashMap<String, Object> variables = new HashMap<>();
-      variables.putAll(map.getMetadata());
-      variables.put("title", map.getTitle());
-      variables.put("creationDate", mapDocument.getCreationDate());
-      variables.put("captureDateTime", mapDocument.getCaptureDateTime());
-      variables.put("changeDateTime", mapDocument.getChangeDateTime());
-      variables.put("captureUserId", mapDocument.getCaptureUserId());
-      variables.put("changeUserId", mapDocument.getChangeUserId());
-      return template.merge(variables);
+      return getMapStore().getMapSummary(currentMapView.getMapName());
     }
     catch (Exception ex)
     {
@@ -107,7 +99,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   {
     try
     {
-      mapGroups = getMapStore().findMaps(filter);
+      mapGroup = getMapStore().findMaps(filter);
     }
     catch (Exception ex)
     {
