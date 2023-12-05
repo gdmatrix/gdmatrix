@@ -387,7 +387,7 @@ public class ContextTreeBean implements Serializable
       this(type, methodName, null, label);
     }
     
-    public ContextAction(String type, String methodName, String[] methodParams, 
+    public ContextAction(String type, String methodName, Object[] methodParams, 
       String label)
     {
       this.type = type;

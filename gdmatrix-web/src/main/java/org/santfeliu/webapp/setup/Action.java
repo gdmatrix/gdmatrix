@@ -57,7 +57,7 @@ public class Action
     this.icon = icon;
   }
   
-  public Action(String label, String name, String[] parameters, String icon)
+  public Action(String label, String name, Object[] parameters, String icon)
   {
     this(label, name, icon);
     this.parameters = parameters;
