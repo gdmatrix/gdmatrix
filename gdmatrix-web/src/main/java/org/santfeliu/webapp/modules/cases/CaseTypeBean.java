@@ -201,6 +201,9 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     eventsEditTab.getWriteRoles().add("EVERYONE");      
     editTabs.add(eventsEditTab);
     
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", 
+      "/pages/policy/case_policies.xhtml", "casePoliciesTabBean"));      
+    
     objectSetup.setEditTabs(editTabs);
     
     return objectSetup;

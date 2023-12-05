@@ -1,0 +1,192 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="case_policies_table" value="#{casePoliciesTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"  rows="10"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{casePoliciesTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+      
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{casePoliciesTabBean.create}"
+                           process="@form:cnt:search_tabs:tabs"
+                           update="@parent:@parent:@parent:case_policies_dialog"
+                           resetValues="true"
+                           oncomplete="PF('casePoliciesDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>      
+
+      <p:column headerText="#{policyBundle.casePolicies_casePolicyId}" styleClass="col-1">
+        <h:outputText value="#{row.policy.policyId}" />
+      </p:column>
+
+      <p:column headerText="#{policyBundle.casePolicies_policy}" styleClass="col-4">
+        <h:outputText value="#{row.policy.title}" />
+      </p:column>
+      
+      <p:column headerText="#{policyBundle.casePolicies_activationDate}" styleClass="col-2">
+        <h:outputText value="#{row.casePolicy.activationDate}"><f:converter converterId="dateConverter" /></h:outputText>
+      </p:column>
+
+      <p:column headerText="#{policyBundle.casePolicies_policy}" styleClass="col-3">
+        <h:outputText value="#{typeTypeBean.getDescription(row.policy.policyTypeId)}"></h:outputText>
+      </p:column>      
+      
+      <p:column headerText="#{policyBundle.casePolicies_state}" styleClass="col-2">
+        <h:outputText value="#{casePoliciesTabBean.getPolicyState(row)}"></h:outputText>
+      </p:column>        
+    
+      <p:column styleClass="text-right white-space-nowrap">
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this" update="@form:cnt"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                         action="#{navigatorBean.show('Policy', row.policy.policyId)}" />
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{casePoliciesTabBean.edit(row)}"
+                         process="@form:cnt:search_tabs:tabs"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         update="@parent:@parent:@parent:@parent:case_policies_dialog"
+                         resetValues="true"
+                         oncomplete="PF('casePoliciesDialog').show()" />        
+        <p:commandButton action="#{casePoliciesTabBean.remove(row)}"
+                         process="@this"
+                         update="case_policies_table"
+                         resetValues="true"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+    
+
+  </h:panelGroup>
+  
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="case_policies_dialog" widgetVar="casePoliciesDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{caseObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(caseObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{casePoliciesTabBean.editing.policyId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="case_policies_panel" layout="block"
+             rendered="#{casePoliciesTabBean.editing != null}">
+
+      <p:messages showSummary="true" styleClass="messages" 
+                  showIcon="true" closable="false" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>      
+      
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{policyBundle.casePolicies_policy}"
+                         styleClass="w-full" indicateRequired="true" />
+          <emcomp:objectReference value="#{casePoliciesTabBean.editing.policyId}"
+                                  process="@form:cnt:search_tabs:tabs:case_policies_dialog"
+                                  type="Policy"
+                                  oncomplete="PF('casePoliciesDialog').hide();"
+                                  onselect="PF('casePoliciesDialog').show();"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="#{not empty param['mainform:search_tabs:tabs:case_policies_store']}"
+                                  renderShowButton="false"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>
+        
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{policyBundle.casePolicies_state}"/>
+          <p:selectOneMenu value="#{casePoliciesTabBean.editing.state}">
+            <f:selectItems value="#{casePoliciesTabBean.policyStateSelectItems}" />
+          </p:selectOneMenu>
+        </div>        
+        
+    
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{policyBundle.casePolicies_activationDate}"/>
+          <p:datePicker value="#{casePoliciesTabBean.editing.activationDate}"
+                        autocomplete="off" placeholder="dd/MM/yyyy"
+                        locale="#{casePoliciesTabBean.language}" showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>
+        
+        <emcomp:auditData creationDateTime="#{casePoliciesTabBean.editing.creationDateTime}"
+                          creationUserId="#{casePoliciesTabBean.editing.creationUserId}"
+                          changeDateTime="#{casePoliciesTabBean.editing.approvalDateTime}"
+                          changeUserId="#{casePoliciesTabBean.editing.approvalUserId}"
+                          changeDateTimeLabel="#{policyBundle.casePolicies_approvalDateTime}"
+                          changeUserIdLabel="#{policyBundle.casePolicies_approvalUserId}"
+                          rendered="#{casePoliciesTabBean.editing != null}" /> 
+        <emcomp:auditData changeDateTime="#{casePoliciesTabBean.editing.executionDateTime}"
+                          changeUserId="#{casePoliciesTabBean.editing.executionUserId}"
+                          changeDateTimeLabel="#{policyBundle.casePolicies_executionDateTime}"
+                          changeUserIdLabel="#{policyBundle.casePolicies_executionUserId}"                          
+                          rendered="#{casePoliciesTabBean.editing != null}" />         
+        
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{policyBundle.casePolicies_executionResult}"/>
+          <p:inputTextarea value="#{casePoliciesTabBean.editing.executionResult}" />
+        </div>          
+             
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton id="case_policies_store"
+                         action="#{casePoliciesTabBean.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
+                         process="case_policies_dialog"
+                         update="case_policies_table case_policies_panel"
+                         oncomplete="if (!isFacesError()) PF('casePoliciesDialog').hide()"
+                         />
+        <p:commandButton action="#{casePoliciesTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="case_policies_dialog" global="false"
+                         onclick="PF('casePoliciesDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>  
+
+</ui:composition>

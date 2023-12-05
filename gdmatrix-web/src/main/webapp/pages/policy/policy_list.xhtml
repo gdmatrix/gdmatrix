@@ -1,0 +1,47 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+    
+  <p:dataTable value="#{policyFinderBean.rows}" 
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{policyFinderBean.firstRow}"
+               rowStyleClass="#{row.policyId == policyObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+               rows="10"
+               rowIndexVar="rowIndex">
+
+    <p:column headerText="policyId" styleClass="w-1" style="white-space: nowrap">
+      <h:outputText value="#{row.policyId}" />
+    </p:column>   
+    <p:column headerText="#{policyBundle.policySearch_type}" styleClass="w-4">
+      <h:outputText value="#{typeTypeBean.getDescription(row.policyTypeId)}" />
+    </p:column>         
+    <p:column headerText="#{policyBundle.policySearch_title}" styleClass="w-5">
+      <h:outputText value="#{row.title}" />
+    </p:column>
+    <p:column styleClass="w-2 text-right white-space-nowrap">
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.policyId)}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       process="@this" update="@form:cnt"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}"
+                       />
+      <p:commandButton icon="pi pi-external-link" 
+                       styleClass="rounded-button ui-button-flat"  
+                       action="#{policyFinderBean.view(rowIndex)}"
+                       alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                       />     
+    </p:column>
+  </p:dataTable>  
+
+</ui:composition> 
+

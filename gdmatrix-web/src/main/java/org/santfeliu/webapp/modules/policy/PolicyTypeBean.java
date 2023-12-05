@@ -28,59 +28,56 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.classif;
+package org.santfeliu.webapp.modules.policy;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
-import org.matrix.classif.ClassFilter;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.policy.Policy;
+import org.matrix.policy.PolicyFilter;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
-import static org.santfeliu.webapp.modules.classif.ClassifModuleBean.getPort;
-import org.matrix.classif.Class;
-import org.santfeliu.util.TextUtils;
+import static org.santfeliu.webapp.modules.policy.PolicyModuleBean.getPort;
+import org.santfeliu.webapp.setup.SearchTab;
 
 /**
  *
- * @author realor
+ * @author blanquepa
  */
 @Named
 @ApplicationScoped
-public class ClassTypeBean extends TypeBean<Class, ClassFilter>
+public class PolicyTypeBean extends TypeBean<Policy, PolicyFilter>
 {
-  private static final String BUNDLE_PREFIX = "$$classificationBundle.";
-  
+  private static final String BUNDLE_PREFIX = "$$policyBundle.";
+
   @Override
   public String getRootTypeId()
   {
-    return DictionaryConstants.CLASS_TYPE;
+    return DictionaryConstants.POLICY_TYPE;
   }
 
   @Override
-  public String getObjectId(Class classObject)
+  public String getObjectId(Policy policy)
   {
-    return classObject.getClassId();
+    return policy.getPolicyId();
   }
 
   @Override
-  public String describe(Class classObject)
+  public String describe(Policy policy)
   {
-    return classObject.getClassId() + ": " + classObject.getTitle();
+    return policy.getTitle() + " (" + policy.getPolicyId() + ")";
   }
 
   @Override
-  public Class loadObject(String objectId)
+  public Policy loadObject(String objectId)
   {
     try
     {
-      String dateTime = getDefaultDateTime();
-      return getPort(true).loadClass(objectId, dateTime);
+      return getPort(true).loadPolicy(objectId);
     }
     catch (Exception ex)
     {
@@ -89,39 +86,55 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
   }
 
   @Override
-  public String getTypeId(Class classObject)
+  public String getTypeId(Policy policy)
   {
-    return classObject.getClassTypeId();
+    return policy.getPolicyTypeId();
   }
 
   @Override
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
-    objectSetup.setViewId("/pages/classif/class.xhtml");
+    objectSetup.setViewId("/pages/policy/policy.xhtml");
+
+    List<SearchTab> searchTabs = new ArrayList();
+    SearchTab searchTab =
+      new SearchTab("List", "/pages/policy/policy_list.xhtml");
+//    searchTab.getColumns().add(new Column("policyId",
+//      BUNDLE_PREFIX + "policySearch_policyId", "col-1"));
+//    searchTab.getColumns().add(new Column("policyTypeId",
+//      BUNDLE_PREFIX + "policySearch_policyTypeId", "col-3"));
+//    Column titleColumn = new Column("title",
+//      BUNDLE_PREFIX + "policySearch_title", "col-6");
+//    titleColumn.setIcon("text-xl mr-2");
+//    searchTab.getColumns().add(titleColumn);
+
+    searchTabs.add(searchTab);
+
+    objectSetup.setSearchTabs(searchTabs);
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/classif/class_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", "/pages/policy/class_policies.xhtml", "classPoliciesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/policy/policy_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_classes", "/pages/policy/policy_classes.xhtml", "policyClassesTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;
   }
 
   @Override
-  public ClassFilter queryToFilter(String query, String typeId)
+  public PolicyFilter queryToFilter(String query, String typeId)
   {
     if (query == null) query = "";
 
-    ClassFilter filter = new ClassFilter();
-    if (query.matches(".{0,4}[0-9]+"))
+    PolicyFilter filter = new PolicyFilter();
+    if (query.matches("\\d+"))
     {
-      filter.setClassId(query);
+      filter.setPolicyId(query);
     }
     else
     {
       if (!query.startsWith("%")) query = "%" + query;
-      if (!query.endsWith("%")) query += "%";
+      if (!query.endsWith("%")) query += "%";      
       filter.setTitle(query);
     }
     filter.setMaxResults(10);
@@ -130,11 +143,11 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
   }
 
   @Override
-  public String filterToQuery(ClassFilter filter)
+  public String filterToQuery(PolicyFilter filter)
   {
-    if (!StringUtils.isBlank(filter.getClassId()))
+    if (filter.getPolicyId() != null)
     {
-      return filter.getClassId();
+      return filter.getPolicyId();
     }
     else if (filter.getTitle() != null)
     {
@@ -143,18 +156,15 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
       if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
       return query;
     }
-    return "";
+   return "";
   }
 
   @Override
-  public List<Class> find(ClassFilter filter)
+  public List<Policy> find(PolicyFilter filter)
   {
     try
     {
-      String dateTime = getDefaultDateTime();
-      filter.setStartDateTime(dateTime);
-      filter.setEndDateTime(dateTime);
-      return getPort(true).findClasses(filter);
+      return getPort(true).findPolicies(filter);
     }
     catch (Exception ex)
     {
@@ -167,8 +177,4 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
     return String.valueOf(object);
   }
 
-  private String getDefaultDateTime()
-  {
-    return TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-  }
 }

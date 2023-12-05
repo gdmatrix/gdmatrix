@@ -1,0 +1,182 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="class_policies_table" value="#{classPoliciesTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"  rows="10"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{classPoliciesTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+      
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{classPoliciesTabBean.create}"
+                           process="@form:cnt:search_tabs:tabs"
+                           update="@parent:@parent:@parent:class_policies_dialog"
+                           resetValues="true"
+                           oncomplete="PF('classPoliciesDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>      
+
+      <p:column headerText="#{policyBundle.classPolicies_classPolicyId}" styleClass="col-1">
+        <h:outputText value="#{row.policy.policyId}" />
+      </p:column>
+
+      <p:column headerText="#{policyBundle.classPolicies_policy}" styleClass="col-6">
+        <h:outputText value="#{row.policy.title}" />
+      </p:column>
+      
+      <p:column headerText="#{policyBundle.classPolicies_startDate}" styleClass="col-2">
+        <h:outputText value="#{row.classPolicy.startDate}"><f:converter converterId="dateConverter" /></h:outputText>
+      </p:column>
+
+      <p:column headerText="#{policyBundle.classPolicies_endDate}" styleClass="col-2">
+        <h:outputText value="#{row.classPolicy.endDate}"><f:converter converterId="dateConverter" /></h:outputText>
+      </p:column>      
+
+      <p:column styleClass="text-right white-space-nowrap">
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this" update="@form:cnt"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                         action="#{navigatorBean.show('Policy', row.policy.policyId)}" />
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{classPoliciesTabBean.edit(row)}"
+                         process="@form:cnt:search_tabs:tabs"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         update="@parent:@parent:@parent:@parent:class_policies_dialog"
+                         resetValues="true"
+                         oncomplete="PF('classPoliciesDialog').show()" />        
+        <p:commandButton action="#{classPoliciesTabBean.remove(row)}"
+                         process="@this"
+                         update="class_policies_table"
+                         resetValues="true"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+
+  </h:panelGroup>
+  
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="class_policies_dialog" widgetVar="classPoliciesDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{classObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(classObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{classPoliciesTabBean.editing.policyId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="class_policies_panel" layout="block"
+             rendered="#{classPoliciesTabBean.editing != null}">
+
+      <p:messages showSummary="true" styleClass="messages" 
+                  showIcon="true" closable="false" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>      
+      
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{policyBundle.classPolicies_policy}"
+                         styleClass="w-full" indicateRequired="true" />
+          <emcomp:objectReference value="#{classPoliciesTabBean.editing.policyId}"
+                                  process="@form:cnt:search_tabs:tabs:class_policies_dialog"
+                                  type="Policy"
+                                  oncomplete="PF('classPoliciesDialog').hide();"
+                                  onselect="PF('classPoliciesDialog').show();"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="#{not empty param['mainform:search_tabs:tabs:class_policies_store']}"
+                                  renderShowButton="false"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>
+        
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="#{policyBundle.classPolicies_reason}" />
+          <p:inputText value="#{classPoliciesTabBean.editing.reason}"
+                       readonly="#{!caseObjectBean.editable}" />
+        </div>        
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{policyBundle.classPolicies_startDate}"/>
+          <p:datePicker value="#{classPoliciesTabBean.editing.startDate}"
+                        autocomplete="off" placeholder="dd/MM/yyyy"
+                        locale="#{classPoliciesTabBean.language}" showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{policyBundle.classPolicies_endDate}"/>
+          <p:datePicker value="#{classPoliciesTabBean.editing.endDate}"
+                        autocomplete="off" placeholder="dd/MM/yyyy"
+                        locale="#{classPoliciesTabBean.language}" showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>
+        
+        <emcomp:auditData creationDateTime="#{classPoliciesTabBean.editing.creationDateTime}"
+                          creationUserId="#{classPoliciesTabBean.editing.creationUserId}"
+                          changeDateTime="#{classPoliciesTabBean.editing.changeDateTime}"
+                          changeUserId="#{classPoliciesTabBean.editing.changeUserId}"
+                          rendered="#{classPoliciesTabBean.editing != null}" />        
+
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton id="class_policies_store"
+                         action="#{classPoliciesTabBean.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
+                         process="class_policies_dialog"
+                         update="class_policies_table class_policies_panel"
+                         oncomplete="if (!isFacesError()) PF('classPoliciesDialog').hide()"
+                         />
+        <p:commandButton action="#{classPoliciesTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="class_policies_dialog" global="false"
+                         onclick="PF('classPoliciesDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>  
+
+</ui:composition>
