@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <p:dataTable id="files_table" value="#{assistantBean.assistant.fileIds}"
+               var="fileId" stripedRows="true" size="small" 
+               resizableColumns="false" showGridlines="true">
+
+    <p:column headerText="FileId" styleClass="col-4 white-space-nowrap" >
+      <span class="pi pi-file mr-1"/><h:outputText value="#{fileId}" />
+    </p:column>
+
+    <p:column headerText="Filename" styleClass="col-3">
+      <h:outputText value="#{assistantBean.getFile(fileId).filename}" />
+    </p:column>
+
+    <p:column headerText="Size" styleClass="col-2" >
+      <h:outputText value="#{assistantBean.getFile(fileId).bytes} bytes" />
+    </p:column>
+
+    <p:column headerText="Created" styleClass="col-2" >
+      <h:outputText value="#{assistantBean.getFile(fileId).createdAt}" />
+    </p:column>
+    
+    <p:column styleClass="col-1 text-right white-space-nowrap">
+      <p:commandButton action="#{assistantBean.removeFile(fileId)}"
+                       process="@this" update="@namingcontainer"
+                       resetValues="true"
+                       icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       styleClass="rounded-button ui-button-flat">
+      </p:commandButton>
+    </p:column>
+    
+    <f:facet name="footer">
+    </f:facet>
+    
+  </p:dataTable>  
+
+</ui:composition>

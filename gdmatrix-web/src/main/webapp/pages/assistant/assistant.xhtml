@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+                var="objectBundle" />
+  <h:outputStylesheet library="css" name="assistant.css" />
+
+  <div class="flex flex-column h-full">
+    <div id="assistant_toolbar"
+         class="p-2 pl-3 pr-3 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         style="border-color:var(--surface-border)">
+      <div class="flex-grow-0 text-left align-items-center" style="color:var(--text-color)">
+        <p:selectOneMenu value="#{assistantBean.assistantId}">
+          <f:selectItems value="#{assistantBean.assistantSelectItems}" />
+              <p:ajax event="valueChange" listener="#{assistantBean.onAssistantChange}"
+                      process="@this" update="@form:cnt:assistant_tabs" />
+        </p:selectOneMenu>
+      </div>
+      <div class="buttons flex flex-grow-1 justify-content-end gap-2">
+        <div class="ui-inputgroup">
+          <p:commandButton value="Threads"
+                           action="#{assistantBean.setView('thread')}"
+                           icon="fa fa-comment-dots"
+                           styleClass="mini"
+                           process="@form:cnt" update="@form:cnt" />
+          <p:commandButton value="#{objectBundle.create}"
+                           action="#{assistantBean.createAssistant}"
+                           icon="pi pi-plus-circle"
+                           styleClass="mini"
+                           process="@this" update="@form:cnt" />
+          <p:commandButton value="#{objectBundle.store}"
+                           action="#{assistantBean.saveAssistant}"
+                           icon="pi pi-save"
+                           styleClass="mini"
+                           process="@form:cnt" update="@form:cnt" />
+          <p:commandButton value="#{objectBundle.delete}"
+                           action="#{assistantBean.deleteAssistant}"
+                           icon="pi pi-trash"
+                           styleClass="mini"
+                           process="@this" update="@form:cnt" />
+        </div>
+      </div>
+    </div>
+
+    <div id="assistant_body" class="p-3 flex-grow-1 overflow-auto flex flex-column"
+         style="color:var(--text-color)">
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="true" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>
+
+      <p:tabView id="assistant_tabs" dynamic="true">
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-list mr-2"/>Properties
+          </f:facet>
+          <ui:include src="/pages/assistant/assistant_properties.xhtml" />
+        </p:tab>
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-copy mr-2"/>Files
+          </f:facet>
+          <ui:include src="/pages/assistant/assistant_files.xhtml" />
+        </p:tab>
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-cog mr-2"/>Tools
+          </f:facet>
+          <ui:include src="/pages/assistant/assistant_tools.xhtml" />
+        </p:tab>
+      </p:tabView>
+    </div>
+  </div>
+
+  <gdm:saveBean value="assistantBean" />
+
+  <p:growl for="growl" life="1500" >
+    <p:autoUpdate />
+  </p:growl>
+
+  <script>
+    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    document.title = "#{userSessionBean.selectedMenuItem.label}";
+  </script>
+
+</ui:composition>

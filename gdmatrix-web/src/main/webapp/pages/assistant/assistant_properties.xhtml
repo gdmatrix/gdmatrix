@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <div class="ui-fluid formgrid grid">
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="AssistantId:" />
+      <p:inputText value="#{assistantBean.assistant.id}" readonly="true" />
+    </div>
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="Name:" />
+      <p:inputText value="#{assistantBean.assistant.name}" />
+    </div>
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="Description:" />
+      <p:inputTextarea value="#{assistantBean.assistant.description}" />
+    </div>        
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="Instructions:" />
+      <p:inputTextarea value="#{assistantBean.assistant.instructions}" />
+    </div>
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="Model:" />
+      <p:selectOneMenu value="#{assistantBean.assistant.model}">
+        <f:selectItems value="#{assistantBean.modelSelectItems}" />
+      </p:selectOneMenu>
+    </div>
+  </div>
+  
+</ui:composition>
