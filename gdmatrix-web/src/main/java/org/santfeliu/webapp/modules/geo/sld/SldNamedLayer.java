@@ -31,7 +31,7 @@
 package org.santfeliu.webapp.modules.geo.sld;
 
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -93,7 +93,7 @@ public class SldNamedLayer extends SldNode
       {
         userStyle = (SldUserStyle)child;
         String styleName = userStyle.getStyleName();
-        if (StringUtils.isBlank(name) && StringUtils.isBlank(styleName))
+        if (isBlank(name) && isBlank(styleName))
           found = true;
         else if (name != null && name.equals(styleName))
           found = true;

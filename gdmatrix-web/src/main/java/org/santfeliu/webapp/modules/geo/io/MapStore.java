@@ -42,7 +42,7 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
@@ -51,7 +51,7 @@ import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
 import org.matrix.security.AccessControl;
 import org.santfeliu.dic.util.DictionaryUtils;
-import org.santfeliu.faces.maplibre.model.Map;
+import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
@@ -96,12 +96,12 @@ public class MapStore
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(MAP_TYPEID);
 
-    if (!StringUtils.isBlank(mapFilter.getTitle()))
+    if (!isBlank(mapFilter.getTitle()))
     {
       filter.setTitle("%" + mapFilter.getTitle() + "%");
     }
 
-    if (!StringUtils.isBlank(mapFilter.getCategoryName()))
+    if (!isBlank(mapFilter.getCategoryName()))
     {
       Property property = new Property();
       property.setName(MAP_CATEGORY_NAME_PROPERTY);
@@ -109,7 +109,7 @@ public class MapStore
       filter.getProperty().add(property);
     }
 
-    if (!StringUtils.isBlank(mapFilter.getKeyword()))
+    if (!isBlank(mapFilter.getKeyword()))
     {
       Property property = new Property();
       property.setName(MAP_KEYWORDS_PROPERTY);
@@ -154,9 +154,11 @@ public class MapStore
   public boolean storeMap(MapDocument mapDocument, boolean isNewMap)
     throws Exception
   {
-    Map map = mapDocument.getMap();
+    Style style = mapDocument.getStyle();
     String mapName = mapDocument.getName();
     String docId = getMapDocId(mapName);
+    style.setName(mapName);
+    style.cleanUp();
 
     DocumentManagerPort port = getPort();
     Document document;
@@ -199,7 +201,7 @@ public class MapStore
     document.getProperty().add(property);
 
     String mapSummary = mapDocument.getSummary();
-    if (!StringUtils.isBlank(mapSummary))
+    if (!isBlank(mapSummary))
     {
       property = new Property();
       property.setName(MAP_SUMMARY_PROPERTY);
@@ -208,7 +210,7 @@ public class MapStore
     }
 
     String mapDescription = mapDocument.getDescription();
-    if (!StringUtils.isBlank(mapDescription))
+    if (!isBlank(mapDescription))
     {
       property = new Property();
       property.setName(MAP_DESCRIPTION_PROPERTY);
@@ -217,7 +219,7 @@ public class MapStore
     }
 
     String mapCategoryName = mapDocument.getCategoryName();
-    if (!StringUtils.isBlank(mapCategoryName))
+    if (!isBlank(mapCategoryName))
     {
       property = new Property();
       property.setName(MAP_CATEGORY_NAME_PROPERTY);
@@ -226,7 +228,7 @@ public class MapStore
     }
 
     String mapKeywords = mapDocument.getKeywords();
-    if (!StringUtils.isBlank(mapKeywords))
+    if (!isBlank(mapKeywords))
     {
       property = new Property();
       property.setName(MAP_KEYWORDS_PROPERTY);
@@ -238,7 +240,7 @@ public class MapStore
     document.getAccessControl().addAll(mapDocument.getAccessControl());
 
     Content content = new Content();
-    byte[] bytes = map.toString().getBytes("UTF-8");
+    byte[] bytes = style.toString().getBytes("UTF-8");
     ByteArrayDataSource ds = new ByteArrayDataSource(bytes, "application/json");
     content.setData(new DataHandler(ds));
     document.setContent(content);
@@ -481,34 +483,34 @@ public class MapStore
     String captureDateTime;
     String changeUserId;
     String changeDateTime;
-    Map map;
+    Style style; // MapLibre style
     final List<Property> property = new ArrayList<>();
     final List<AccessControl> accessControl = new ArrayList<>();
 
     public MapDocument()
     {
-      map = new Map();
+      style = new Style();
       name = "new_map";
       title = "New map";
     }
 
-    public MapDocument(Map map)
+    public MapDocument(Style map)
     {
-      this.map = map;
+      this.style = map;
     }
 
     public MapDocument(Document document) throws IOException
     {
       InputStream is = document.getContent().getData().getInputStream();
-      this.map = new Map();
-      this.map.read(new InputStreamReader(is, "UTF-8"));
+      this.style = new Style();
+      this.style.read(new InputStreamReader(is, "UTF-8"));
       this.readProperties(document);
       this.setAccessControl(document.getAccessControl());
     }
 
-    public Map getMap()
+    public Style getStyle()
     {
-      return map;
+      return style;
     }
 
     public String getName()
@@ -568,7 +570,7 @@ public class MapStore
 
     public void setCategoryName(String categoryName)
     {
-      if (StringUtils.isBlank(categoryName)) categoryName = null;
+      if (isBlank(categoryName)) categoryName = null;
       this.categoryName = categoryName;
     }
 

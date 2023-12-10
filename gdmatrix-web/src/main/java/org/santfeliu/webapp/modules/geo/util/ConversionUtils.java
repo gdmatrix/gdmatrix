@@ -30,7 +30,7 @@
  */
 package org.santfeliu.webapp.modules.geo.util;
 
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.webapp.modules.geo.expr.Expression;
 import org.santfeliu.webapp.modules.geo.io.CqlReader;
 import org.santfeliu.webapp.modules.geo.io.CqlWriter;
@@ -45,7 +45,7 @@ public class ConversionUtils
 {
   public static String xmlToCql(String xml)
   {
-    if (StringUtils.isBlank(xml)) return null;
+    if (isBlank(xml)) return null;
 
     OgcReader ogcReader = new OgcReader();
     Expression expression = ogcReader.fromString(xml);
@@ -55,7 +55,7 @@ public class ConversionUtils
 
   public static String cqlToXml(String cql)
   {
-    if (StringUtils.isBlank(cql)) return null;
+    if (isBlank(cql)) return null;
 
     CqlReader cqlReader = new CqlReader();
     Expression expression = cqlReader.fromString(cql);

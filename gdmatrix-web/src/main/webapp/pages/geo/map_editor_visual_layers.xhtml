@@ -5,12 +5,13 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
   <p:dataTable id="map_layers_table" size="small" 
                showGridlines="true" stripedRows="true"
                draggableRows="true" rowDragSelector=".drag"
-               value="#{geoMapBean.map.layers}" var="layer">
+               value="#{geoMapBean.style.layers}" var="layer">
     <p:ajax event="rowReorder" listener="#{geoMapBean.onLayerReorder}" 
             update="@form:cnt:map_tabs:map_layers_table"/>
     
@@ -21,7 +22,7 @@
       #{layer.label}
     </p:column>
     <p:column headerText="Source" styleClass="code">
-      #{layer.source} (#{geoMapBean.map.sources[layer.source].type})
+      #{layer.source} (#{geoMapBean.style.sources[layer.source].type})
     </p:column>
     <p:column headerText="Type">
       #{layer.type}
@@ -106,7 +107,8 @@
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Id" />
-          <p:inputText value="#{geoMapBean.editingLayer.id}" />
+          <p:inputText value="#{geoMapBean.editingLayer.id}" styleClass="code" 
+                       pt:spellcheck="false" />
         </div>
 
         <div class="field col-12 md:col-6">
@@ -117,8 +119,8 @@
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Source" />
           <p:selectOneMenu value="#{geoMapBean.editingLayer.source}">
-            <f:selectItems value="#{geoMapBean.sourceNames}" var="sourceName" 
-                           itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.map.sources[sourceName].type})" />
+            <f:selectItems value="#{geoMapBean.sourceIds}" var="sourceName" 
+                           itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.style.sources[sourceName].type})" />
           </p:selectOneMenu>
         </div>
 
@@ -150,7 +152,58 @@
         </div>
         
         <div class="field col-12">
-          <p:tabView>
+          <p:tabView dynamic="true">
+            <p:tab title="OGC parameters">
+              <div class="ui-fluid formgrid grid">
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="Layers (separated by ,)" />
+                  <p:autoComplete value="#{geoMapBean.editingLayer.layers}"
+                                  maxResults="50" var="layerName" 
+                                  widgetVar="layerLayers"
+                                  itemLabel="#{layerName}" itemValue="#{layerName}" 
+                                  scrollHeight="200"
+                                  styleClass="code"
+                                  pt:spellcheck="false"
+                                  oninput="acLayerOnInput('layerLayers')"
+                                  onchange="acLayerOnChange('layerLayers')"
+                                  completeMethod="#{geoMapBean.completeLayerLayer}">
+                    <p:ajax event="change" process="@this" update="cql_filter" />
+                    <p:column>
+                      #{layerName}
+                    </p:column>
+                  </p:autoComplete>
+                </div>
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="CQL filter (separated by ;)" />
+                  <div class="ui-inputgroup">
+                    <p:inputText id="cql_filter"
+                                 value="#{geoMapBean.editingLayer.cqlFilter}"
+                                 pt:spellcheck="false"
+                                 onfocus="CQLAssistant.show('#{geoMapBean.editingLayer.layers}', this)"
+                                 onblur="CQLAssistant.hide()"
+                                 styleClass="code" />
+                    <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
+                  </div>
+                </div>
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="Styles (separated by ,) " />
+                  <p:inputText value="#{geoMapBean.editingLayer.styles}" 
+                               pt:spellcheck="false"                               
+                               styleClass="code" />
+                </div>
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="SLD" />
+                  <div class="ui-inputgroup">
+                    <p:inputText value="#{geoMapBean.editingLayerSldName}" readonly="true" styleClass="w-auto" />
+                    <p:commandButton icon="pi pi-palette" action="#{geoMapBean.editLayerSld}" 
+                                     process="@form:cnt:map_tabs:map_layers_panel" 
+                                     update="@form:cnt" 
+                                     oncomplete="PF('mapLayersDialog').hide()" />
+                  </div>
+                </div>
+              </div>              
+            </p:tab>
+            
             <p:tab title="Paint">
               <gdm:codemirror value="#{geoMapBean.jsonPaint}" language="json">
                 <f:validator validatorId="JsonValidator" />

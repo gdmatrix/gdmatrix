@@ -103,6 +103,24 @@
   </p:growl>
 
   <script>
+    function acLayerOnInput(widgetVar)
+    {
+      var value = PF(widgetVar).input.val();
+      var index = value.lastIndexOf(",");
+      value = index === -1 ? null : value.substring(0, index);
+      window.acLayerValue = value;
+    }
+    
+    function acLayerOnChange(widgetVar)
+    {
+      if (acLayerValue !== null)
+      {
+        var value = PF(widgetVar).input.val();
+        PF(widgetVar).input.val(acLayerValue + "," + value);
+        PF(widgetVar).hinput.val(acLayerValue + "," + value);
+      }
+    }
+  
     function objectScrollUp()
     {
       var elem = document.getElementById("editor_body");

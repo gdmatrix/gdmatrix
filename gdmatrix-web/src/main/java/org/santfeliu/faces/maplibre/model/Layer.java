@@ -41,15 +41,11 @@ import java.util.Map;
 public class Layer implements Serializable
 {
   String id;
-  String label;
   String type;
   String source;
-  boolean locatable;
-  boolean visible;
-  boolean legend;
-  String form;
   Map<String, Object> paint = new HashMap<>();
   Map<String, Object> layout = new HashMap<>();
+  Map<String, Object> metadata = new HashMap<>();
 
   public String getId()
   {
@@ -63,12 +59,12 @@ public class Layer implements Serializable
 
   public String getLabel()
   {
-    return label;
+    return (String)metadata.get("label");
   }
 
   public void setLabel(String label)
   {
-    this.label = label;
+    metadata.put("label", label);
   }
 
   public String getType()
@@ -91,44 +87,56 @@ public class Layer implements Serializable
     this.source = source;
   }
 
+  public String getLayers()
+  {
+    return (String)metadata.get("layers");
+  }
+
+  public void setLayers(String layers)
+  {
+    metadata.put("layers", layers);
+  }
+
+  public String getCqlFilter()
+  {
+    return (String)metadata.get("cqlFilter");
+  }
+
+  public void setCqlFilter(String cqlFilter)
+  {
+    metadata.put("cqlFilter", cqlFilter);
+  }
+
+  public String getStyles()
+  {
+    return (String)metadata.get("styles");
+  }
+
+  public void setStyles(String styles)
+  {
+    metadata.put("styles", styles);
+  }
+
   public boolean isLocatable()
   {
-    return locatable;
+    Object value = metadata.get("locatable");
+    return (value instanceof Boolean) ? (Boolean)value : false;
   }
 
   public void setLocatable(boolean locatable)
   {
-    this.locatable = locatable;
+    metadata.put("locatable", locatable);
   }
 
   public boolean isVisible()
   {
-    return visible;
+    Object value = metadata.get("visible");
+    return (value instanceof Boolean) ? (Boolean)value : true;
   }
 
   public void setVisible(boolean visible)
   {
-    this.visible = visible;
-  }
-
-  public boolean isLegend()
-  {
-    return legend;
-  }
-
-  public void setLegend(boolean legend)
-  {
-    this.legend = legend;
-  }
-
-  public String getForm()
-  {
-    return form;
-  }
-
-  public void setForm(String form)
-  {
-    this.form = form;
+    metadata.put("visible", visible);
   }
 
   public Map<String, Object> getPaint()
@@ -149,5 +157,15 @@ public class Layer implements Serializable
   public void setLayout(Map<String, Object> layout)
   {
     this.layout = layout;
+  }
+
+  public Map<String, Object> getMetadata()
+  {
+    return metadata;
+  }
+
+  public void setMetadata(Map<String, Object> metadata)
+  {
+    this.metadata = metadata;
   }
 }

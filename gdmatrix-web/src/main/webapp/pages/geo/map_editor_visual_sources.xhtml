@@ -5,28 +5,29 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
   <p:dataTable id="map_sources_table" size="small" 
                showGridlines="true" stripedRows="true"
-               value="#{geoMapBean.sourceNames}" var="sourceName">
-    <p:column headerText="Name">
-      <span class="code">#{sourceName}</span>
+               value="#{geoMapBean.sourceIds}" var="sourceId">
+    <p:column headerText="Id">
+      <span class="code">#{sourceId}</span>
     </p:column>
     <p:column headerText="Type">
-      #{geoMapBean.map.sources[sourceName].type}
+      #{geoMapBean.style.sources[sourceId].type}
     </p:column>
     <p:column headerText="Service - Layer / Tiles / Url / Data">
-      <span class="code">#{geoMapBean.getSourceData(sourceName)}</span>
+      <span class="code">#{geoMapBean.getSourceInfo(sourceId)}</span>
     </p:column>
     <p:column headerText="minzoom">
-      #{geoMapBean.map.sources[sourceName].minzoom}
+      #{geoMapBean.style.sources[sourceId].minzoom}
     </p:column>
     <p:column headerText="maxzoom">
-      #{geoMapBean.map.sources[sourceName].maxzoom}
+      #{geoMapBean.style.sources[sourceId].maxzoom}
     </p:column>
     <p:column headerText="tileSize">
-      #{geoMapBean.map.sources[sourceName].tileSize}
+      #{geoMapBean.style.sources[sourceId].tileSize}
     </p:column>
     <p:column styleClass="w-2 text-right white-space-nowrap">
       <f:facet name="header">
@@ -40,7 +41,7 @@
                          oncomplete="PF('mapSourcesDialog').show()"
                          />
       </f:facet>
-      <p:commandButton action="#{geoMapBean.editSource(sourceName)}"
+      <p:commandButton action="#{geoMapBean.editSource(sourceId)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"
@@ -49,7 +50,7 @@
                        resetValues="true"
                        oncomplete="PF('mapSourcesDialog').show()"
                        />
-      <p:commandButton action="#{geoMapBean.removeSource(sourceName)}"
+      <p:commandButton action="#{geoMapBean.removeSource(sourceId)}"
                        process="@this"
                        update="@form:cnt:map_tabs"
                        resetValues="true"
@@ -86,8 +87,9 @@
       <div class="ui-fluid formgrid grid">
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Name" />
-          <p:inputText value="#{geoMapBean.editingName}" styleClass="code" />
+          <p:outputLabel for="@next" value="Id" />
+          <p:inputText value="#{geoMapBean.editingId}" styleClass="code" 
+                       pt:spellcheck="false" />
         </div>
 
         <div class="field col-12 md:col-6">
@@ -140,47 +142,17 @@
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12 md:col-6">
                   <p:outputLabel for="@next" value="Service" />
-                  <p:selectOneMenu value="#{geoMapBean.editingSource.serviceParameters.service}">
+                  <p:selectOneMenu value="#{geoMapBean.editingServiceParameters.service}">
                     <f:selectItem itemValue="" itemLabel="" />
-                    <f:selectItems value="#{geoMapBean.serviceNames}" var="svc" 
-                                   itemValue="#{svc}" itemLabel="#{geoMapBean.map.services[svc].description}" />
+                    <f:selectItems value="#{geoMapBean.serviceIds}" var="svc" 
+                                   itemValue="#{svc}" itemLabel="#{geoMapBean.services[svc].description}" />
                     <p:ajax event="change" process="@this" update="@parent:@parent:@parent:cql_assistant" />
                   </p:selectOneMenu>
                 </div>
                 <div class="field col-12 md:col-6">
-                  <p:outputLabel for="@next" value="Layer" />
-                  <p:autoComplete value="#{geoMapBean.editingSource.serviceParameters.layer}"
-                                  maxResults="50" var="layerName" 
-                                  widgetVar="acLayer"
-                                  itemLabel="#{layerName}" itemValue="#{layerName}" 
-                                  scrollHeight="200"
-                                  oninput="acLayerOnInput()"
-                                  onchange="acLayerOnChange()"
-                                  completeMethod="#{geoMapBean.completeLayer}">
-                    <p:ajax event="change" process="@this" update="cql_filter" />
-                    <p:column>
-                      #{layerName}
-                    </p:column>
-                  </p:autoComplete>
-                </div>
-                <div class="field col-12 md:col-6">
-                  <p:outputLabel for="@next" value="Format" />
-                  <p:selectOneMenu value="#{geoMapBean.editingSource.serviceParameters.format}">
-                    <f:selectItem itemValue="" itemLabel="" />
-                    <f:selectItem itemValue="image/png" itemLabel="PNG" />
-                    <f:selectItem itemValue="image/jpeg" itemLabel="JPEG" />
-                    <f:selectItem itemValue="image/gif" itemLabel="GIF" />
-                    <f:selectItem itemValue="application/json" itemLabel="GEOJSON" />
-                  </p:selectOneMenu>
-                </div>
-                <div class="field col-12 md:col-6">
-                  <p:outputLabel for="@next" value="Buffer size" />
-                  <p:spinner value="#{geoMapBean.editingSource.serviceParameters.buffer}" />
-                </div>
-                <div class="field col-12 md:col-6">
                   <p:outputLabel for="@next" value="SLD" />
                   <div class="ui-inputgroup">
-                    <p:autoComplete value="#{geoMapBean.editingSource.serviceParameters.sldName}"
+                    <p:autoComplete value="#{geoMapBean.editingServiceParameters.sldName}"
                                     maxResults="50" var="sldName" minQueryLength="2" 
                                     itemLabel="#{sldName}" itemValue="#{sldName}"
                                     scrollHeight="200"
@@ -189,30 +161,65 @@
                         #{sldName}
                       </p:column>
                     </p:autoComplete>
-                    <p:commandButton icon="pi pi-palette" action="#{geoMapBean.editSld}" 
+                    <p:commandButton icon="pi pi-palette" action="#{geoMapBean.editSourceSld}" 
                                      process="@form:cnt:map_tabs:map_sources_panel" 
                                      update="@form:cnt" 
                                      oncomplete="PF('mapSourcesDialog').hide()" />
                   </div>
                 </div>
-                <div class="field col-12 md:col-6">
-                  <p:outputLabel for="@next" value="Style" />
-                  <p:inputText value="#{geoMapBean.editingSource.serviceParameters.styles}" />
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="Layers (separated by ,)" />
+                  <p:autoComplete value="#{geoMapBean.editingServiceParameters.layers}"
+                                  maxResults="50" var="layerName" 
+                                  widgetVar="sourceLayers"
+                                  itemLabel="#{layerName}" itemValue="#{layerName}" 
+                                  scrollHeight="200"
+                                  styleClass="code"
+                                  pt:spellcheck="false"
+                                  oninput="acLayerOnInput('sourceLayers')"
+                                  onchange="acLayerOnChange('sourceLayers')"
+                                  completeMethod="#{geoMapBean.completeSourceLayer}">
+                    <p:ajax event="change" process="@this" update="cql_filter" />
+                    <p:column>
+                      #{layerName}
+                    </p:column>
+                  </p:autoComplete>
                 </div>
                 <div class="field col-12">
-                  <p:outputLabel for="@next" value="CQL filter" />
+                  <p:outputLabel for="@next" value="CQL filter (separated by ;)" />
                   <div class="ui-inputgroup">
                     <p:inputText id="cql_filter"
-                                 value="#{geoMapBean.editingSource.serviceParameters.cqlFilter}"
-                                 onfocus="CQLAssistant.show('#{geoMapBean.editingSource.serviceParameters.layer}', this)"
+                                 value="#{geoMapBean.editingServiceParameters.cqlFilter}"
+                                 pt:spellcheck="false"
+                                 onfocus="CQLAssistant.show('#{geoMapBean.editingServiceParameters.layers}', this)"
                                  onblur="CQLAssistant.hide()"
                                  styleClass="code" />
                     <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
                   </div>
                 </div>
                 <div class="field col-12">
+                  <p:outputLabel for="@next" value="Styles (separated by ,) " />
+                  <p:inputText value="#{geoMapBean.editingServiceParameters.styles}" 
+                               pt:spellcheck="false"
+                               styleClass="code" />
+                </div>
+                <div class="field col-6">
+                  <p:outputLabel for="@next" value="Format" />
+                  <p:selectOneMenu value="#{geoMapBean.editingServiceParameters.format}">
+                    <f:selectItem itemValue="" itemLabel="" />
+                    <f:selectItem itemValue="image/png" itemLabel="PNG" />
+                    <f:selectItem itemValue="image/jpeg" itemLabel="JPEG" />
+                    <f:selectItem itemValue="image/gif" itemLabel="GIF" />
+                    <f:selectItem itemValue="application/json" itemLabel="GEOJSON" />
+                  </p:selectOneMenu>
+                </div>
+                <div class="field col-6">
+                  <p:outputLabel for="@next" value="Buffer size" />
+                  <p:spinner value="#{geoMapBean.editingServiceParameters.buffer}" />
+                </div>
+                <div class="field col-12">
                   <p:outputLabel for="@next" value="Transparent" />
-                  <p:toggleSwitch value="#{geoMapBean.editingSource.serviceParameters.transparent}"
+                  <p:toggleSwitch value="#{geoMapBean.editingServiceParameters.transparent}"
                                   styleClass="vertical-align-middle ml-2" />
                 </div>
               </div>
@@ -326,28 +333,6 @@
       </div>
     </f:facet>
 
-  </p:dialog>
-
-  <script>
-    function acLayerOnInput()
-    {
-      var value = PF('acLayer').input.val();
-      var index = value.lastIndexOf(";");
-      value = index === -1 ? null : value.substring(0, index);
-      window.acLayerValue = value;
-    }
-    
-    function acLayerOnChange()
-    {
-      if (acLayerValue !== null)
-      {
-        var value = PF('acLayer').input.val();
-        PF('acLayer').input.val(acLayerValue + ";" + value);
-        PF('acLayer').hinput.val(acLayerValue + ";" + value);
-      }
-    }
-  </script>
-  
-  
+  </p:dialog>  
 
 </ui:composition>

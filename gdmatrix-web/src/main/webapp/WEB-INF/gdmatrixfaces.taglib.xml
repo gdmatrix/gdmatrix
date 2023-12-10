@@ -121,7 +121,7 @@
     <attribute>
       <name>value</name>
       <type>java.lang.Object</type>
-      <description>The map to visualize</description>
+      <description>The Maplibre style</description>
     </attribute>
     <attribute>
       <name>style</name>

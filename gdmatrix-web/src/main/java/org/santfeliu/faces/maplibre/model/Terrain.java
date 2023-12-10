@@ -60,6 +60,4 @@ public class Terrain implements Serializable
   {
     this.exaggeration = exaggeration;
   }
-
-  
 }

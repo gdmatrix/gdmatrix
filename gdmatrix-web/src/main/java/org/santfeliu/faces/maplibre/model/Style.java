@@ -45,32 +45,112 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
+ * Maplibre style (https://maplibre.org/maplibre-style-spec/root/)
  *
  * @author realor
  */
-public class Map implements Serializable
+public class Style implements Serializable
 {
-  Camera camera = new Camera();
-  java.util.Map<String, Service> services = new HashMap<>();
-  java.util.Map<String, Source> sources = new HashMap<>();
-  Terrain terrain = new Terrain();
+  String name;
+  int version = 8;
+  double[] center = new double[]{2.045, 41.384};
+  double zoom = 10;
+  double bearing;
+  double pitch;
+  List sprite;
+  String glyphs =  "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf";
+  Map<String, Source> sources = new HashMap<>();
+  Terrain terrain;
   List<Layer> layers = new ArrayList<>();
-  java.util.Map<String, Object> metadata = new HashMap<>();
+  Map<String, Object> metadata = new HashMap<>();
 
-  public Camera getCamera()
+  public String getName()
   {
-    return camera;
+    return name;
   }
 
-  public void setCamera(Camera camera)
+  public void setName(String name)
   {
-    this.camera = camera;
+    this.name = name;
+  }
+
+  public int getVersion()
+  {
+    return version;
+  }
+
+  public void setVersion(int version)
+  {
+    this.version = version;
+  }
+
+  public double[] getCenter()
+  {
+    return center;
+  }
+
+  public void setCenter(double[] center)
+  {
+    this.center = center;
+  }
+
+  public double getZoom()
+  {
+    return zoom;
+  }
+
+  public void setZoom(double zoom)
+  {
+    this.zoom = zoom;
+  }
+
+  public double getBearing()
+  {
+    return bearing;
+  }
+
+  public void setBearing(double bearing)
+  {
+    this.bearing = bearing;
+  }
+
+  public double getPitch()
+  {
+    return pitch;
+  }
+
+  public void setPitch(double pitch)
+  {
+    this.pitch = pitch;
+  }
+
+  public List getSprite()
+  {
+    return sprite;
+  }
+
+  public void setSprite(List sprite)
+  {
+    this.sprite = sprite;
+  }
+
+  public String getGlyphs()
+  {
+    return glyphs;
+  }
+
+  public void setGlyphs(String glyphs)
+  {
+    this.glyphs = glyphs;
   }
 
   public Terrain getTerrain()
   {
+    if (terrain == null) terrain = new Terrain();
     return terrain;
   }
 
@@ -79,35 +159,33 @@ public class Map implements Serializable
     this.terrain = terrain;
   }
 
-  public java.util.Map<String, Service> getServices()
+  public Map<String, Source> getSources()
   {
-    return services;
-  }
-
-  public java.util.Map<String, Source> getSources()
-  {
+    if (sources == null) sources = new HashMap<>();
     return sources;
   }
 
   public List<Layer> getLayers()
   {
+    if (layers == null) layers = new ArrayList<>();
     return layers;
   }
 
-  public java.util.Map<String, Object> getMetadata()
+  public Map<String, Object> getMetadata()
   {
+    if (metadata == null) metadata = new HashMap<>();
     return metadata;
   }
 
   public void read(Reader reader) throws IOException
   {
     Gson gson = new GsonBuilder()
-      .registerTypeAdapter(Map.class, (InstanceCreator) (Type type) -> this)
+      .registerTypeAdapter(Style.class, (InstanceCreator) (Type type) -> this)
       .create();
 
     try
     {
-      gson.fromJson(reader, Map.class);
+      gson.fromJson(reader, Style.class);
     }
     finally
     {
@@ -143,24 +221,18 @@ public class Map implements Serializable
     read(new StringReader(json));
   }
 
+  public void cleanUp()
+  {
+    if (terrain != null && isBlank(terrain.source))
+    {
+      terrain = null;
+    }
+  }
+
   @Override
   public String toString()
   {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     return gson.toJson(this);
-  }
-
-  public static void main(String[] args)
-  {
-    try
-    {
-      Map map = new Map();
-      map.read(new File("c:/users/realor/Documents/NetbeansProjects/gdmatrix/gdmatrix-web/src/main/webapp/resources/gdmatrixfaces/maplibre/sample-map.json"));
-      System.out.println(map);
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-    }
   }
 }

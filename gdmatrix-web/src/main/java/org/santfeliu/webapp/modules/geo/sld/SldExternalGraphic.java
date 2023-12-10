@@ -30,7 +30,7 @@
  */
 package org.santfeliu.webapp.modules.geo.sld;
 
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -49,7 +49,7 @@ public class SldExternalGraphic extends SldNode
 
   public void setOnlineResource(String resource)
   {
-    if (StringUtils.isBlank(resource))
+    if (isBlank(resource))
     {
       int index = findNode("OnlineResource", 0);
       if (index != -1)

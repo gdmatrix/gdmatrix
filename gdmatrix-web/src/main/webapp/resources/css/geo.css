@@ -70,7 +70,8 @@
   }
 }
 
-.code
+.code,
+.code > .ui-inputfield
 {
   font-family: monospace !important;
 }

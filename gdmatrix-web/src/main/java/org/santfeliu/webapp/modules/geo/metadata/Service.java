@@ -28,91 +28,72 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.faces.maplibre.model;
+package org.santfeliu.webapp.modules.geo.metadata;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  *
  * @author realor
  */
-public class Camera implements Serializable
+public class Service implements Serializable
 {
-  double[] center = new double[]{2.045, 41.384};
-  double zoom = 10;
-  double bearing;
-  double pitch;
-  double maxZoom = 18;
-  double maxPitch = 75;
-  boolean hash;
+  String description;
+  String type;
+  String url;
+  Boolean useProxy;
 
-  public double[] getCenter()
+  public Service()
   {
-    return center;
   }
 
-  public void setCenter(double[] center)
+  public Service(Map properties)
   {
-    this.center = center;
+    description = (String)properties.get("description");
+    type = (String)properties.get("type");
+    url = (String)properties.get("url");
+    Object value = properties.get("useProxy");
+    useProxy = value instanceof Boolean ? (Boolean)value : false;
   }
 
-  public double getZoom()
+  public String getDescription()
   {
-    return zoom;
+    return description;
   }
 
-  public void setZoom(double zoom)
+  public void setDescription(String description)
   {
-    this.zoom = zoom;
+    this.description = description;
   }
 
-  public double getBearing()
+  public String getType()
   {
-    return bearing;
+    return type;
   }
 
-  public void setBearing(double bearing)
+  public void setType(String type)
   {
-    this.bearing = bearing;
+    this.type = type;
   }
 
-  public double getPitch()
+  public String getUrl()
   {
-    return pitch;
+    return url;
   }
 
-  public void setPitch(double pitch)
+  public void setUrl(String url)
   {
-    this.pitch = pitch;
+    this.url = url;
   }
 
-  public double getMaxZoom()
+  public Boolean getUseProxy()
   {
-    return maxZoom;
+    return useProxy;
   }
 
-  public void setMaxZoom(double maxZoom)
+  public void setUseProxy(Boolean useProxy)
   {
-    this.maxZoom = maxZoom;
-  }
-
-  public double getMaxPitch()
-  {
-    return maxPitch;
-  }
-
-  public void setMaxPitch(double maxPitch)
-  {
-    this.maxPitch = maxPitch;
-  }
-
-  public boolean isHash()
-  {
-    return hash;
-  }
-
-  public void setHash(boolean hash)
-  {
-    this.hash = hash;
+    this.useProxy = useProxy;
   }
 }

@@ -41,14 +41,14 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.SldReader;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
-import static org.santfeliu.webapp.modules.geo.io.SldStore.SLD_ENCODING;
 import org.santfeliu.webapp.modules.geo.io.SldWriter;
 import org.santfeliu.webapp.modules.geo.sld.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.santfeliu.webapp.modules.geo.io.SldStore.SLD_ENCODING;
 
 /**
  *
@@ -97,7 +97,7 @@ public class GeoSldBean extends WebBean implements Serializable
 
   public String getServiceUrlString()
   {
-    return StringUtils.isBlank(serviceUrl) ? "null" : "'" + serviceUrl + "'";
+    return isBlank(serviceUrl) ? "null" : "'" + serviceUrl + "'";
   }
 
   public String getXmlSld()
@@ -194,21 +194,21 @@ public class GeoSldBean extends WebBean implements Serializable
     String maxScale = rule.getMaxScaleDenominator();
     String filter = rule.getFilterAsCql();
     StringBuilder buffer = new StringBuilder();
-    if (!StringUtils.isBlank(minScale) || !StringUtils.isBlank(maxScale))
+    if (!isBlank(minScale) || !isBlank(maxScale))
     {
       buffer.append("Scales:[");
-      if (!StringUtils.isBlank(minScale))
+      if (!isBlank(minScale))
       {
         buffer.append(minScale);
       }
       buffer.append("..");
-      if (!StringUtils.isBlank(maxScale))
+      if (!isBlank(maxScale))
       {
         buffer.append(maxScale);
       }
       buffer.append("]");
     }
-    if (!StringUtils.isBlank(filter))
+    if (!isBlank(filter))
     {
       buffer.append(" Filter: ");
       buffer.append(filter);
@@ -257,7 +257,7 @@ public class GeoSldBean extends WebBean implements Serializable
     SldExternalGraphic externalGraphic = graphic.getExternalGraphic();
     String resource = externalGraphic.getOnlineResource();
 
-    if (!StringUtils.isBlank(resource) &&
+    if (!isBlank(resource) &&
         !resource.contains("//chart?") &&
         !resource.contains("${"))
     {
@@ -272,14 +272,14 @@ public class GeoSldBean extends WebBean implements Serializable
       buffer.append(resource);
       buffer.append("\" alt=\"\" class=\"icon\" style=\"width:16px\">");
     }
-    if (!StringUtils.isBlank(mark.getWellKnownName()))
+    if (!isBlank(mark.getWellKnownName()))
     {
       SldFill fill = mark.getFill();
       SldStroke stroke = mark.getStroke();
       buffer.append(getBox(fill, stroke));
 
       String className = getMarkerIcon(mark.getWellKnownName());
-      if (!StringUtils.isBlank(className))
+      if (!isBlank(className))
       {
         buffer.append("<span class=\"").append(className).append("\"></span> ");
       }
@@ -287,7 +287,7 @@ public class GeoSldBean extends WebBean implements Serializable
     }
 
     String size = graphic.getSizeAsCql();
-    if (!StringUtils.isBlank(size))
+    if (!isBlank(size))
     {
       buffer.append(" ");
       buffer.append(size);
@@ -302,16 +302,16 @@ public class GeoSldBean extends WebBean implements Serializable
     SldStroke stroke = symbolizer.getStroke();
 
     StringBuilder buffer = new StringBuilder();
-    if (!StringUtils.isBlank(stroke.getStrokeColor()))
+    if (!isBlank(stroke.getStrokeColor()))
     {
       buffer.append(getBox(stroke.getStrokeColor()));
     }
-    if (!StringUtils.isBlank(stroke.getStrokeWidth()))
+    if (!isBlank(stroke.getStrokeWidth()))
     {
       buffer.append(" ");
       buffer.append(stroke.getStrokeWidth());
     }
-    if (!StringUtils.isBlank(stroke.getStrokeDashArray()))
+    if (!isBlank(stroke.getStrokeDashArray()))
     {
       buffer.append(" [");
       buffer.append(stroke.getStrokeDashArray());
@@ -330,17 +330,17 @@ public class GeoSldBean extends WebBean implements Serializable
     StringBuilder buffer = new StringBuilder();
     buffer.append(getBox(fill, stroke));
 
-    if (!StringUtils.isBlank(fill.getFillOpacity()))
+    if (!isBlank(fill.getFillOpacity()))
     {
       buffer.append(" O:");
       buffer.append(fill.getFillOpacity());
     }
-    if (!StringUtils.isBlank(stroke.getStrokeWidth()))
+    if (!isBlank(stroke.getStrokeWidth()))
     {
       buffer.append(" ");
       buffer.append(stroke.getStrokeWidth());
     }
-    if (!StringUtils.isBlank(stroke.getStrokeDashArray()))
+    if (!isBlank(stroke.getStrokeDashArray()))
     {
       buffer.append(" [");
       buffer.append(stroke.getStrokeDashArray());
@@ -356,34 +356,34 @@ public class GeoSldBean extends WebBean implements Serializable
     SldFill fill = symbolizer.getFill();
 
     StringBuilder buffer = new StringBuilder();
-    if (!StringUtils.isBlank(fill.getFillColor()))
+    if (!isBlank(fill.getFillColor()))
     {
       buffer.append(getBox(fill.getFillColor()));
     }
     String label = symbolizer.getLabelAsCql();
-    if (!StringUtils.isBlank(label))
+    if (!isBlank(label))
     {
       buffer.append("Label: ");
       buffer.append(label);
     }
     SldFont font = symbolizer.getFont();
-    if (!StringUtils.isBlank(font.getFontFamily()))
+    if (!isBlank(font.getFontFamily()))
     {
       buffer.append(" \"");
       buffer.append(font.getFontFamily());
       buffer.append("\"");
     }
-    if (!StringUtils.isBlank(font.getFontSize()))
+    if (!isBlank(font.getFontSize()))
     {
       buffer.append(" ");
       buffer.append(font.getFontSize());
     }
-    if (!StringUtils.isBlank(font.getFontStyle()))
+    if (!isBlank(font.getFontStyle()))
     {
       buffer.append(" ");
       buffer.append(font.getFontStyle());
     }
-    if (!StringUtils.isBlank(font.getFontWeight()))
+    if (!isBlank(font.getFontWeight()))
     {
       buffer.append(" ");
       buffer.append(font.getFontWeight());
@@ -406,23 +406,23 @@ public class GeoSldBean extends WebBean implements Serializable
     String strokeColor = stroke.getStrokeColor();
     String strokeWidth = stroke.getStrokeWidth();
     StringBuilder buffer = new StringBuilder();
-    if (!StringUtils.isBlank(fillColor) ||
-        !StringUtils.isBlank(strokeColor) ||
-        !StringUtils.isBlank(strokeWidth))
+    if (!isBlank(fillColor) ||
+        !isBlank(strokeColor) ||
+        !isBlank(strokeWidth))
     {
-      if (StringUtils.isBlank(fillColor))
+      if (isBlank(fillColor))
       {
         fillColor = "#FFFFFF";
       }
-      if (StringUtils.isBlank(strokeColor))
+      if (isBlank(strokeColor))
       {
         strokeColor = "#FFFFFF";
       }
-      else if (StringUtils.isBlank(strokeWidth))
+      else if (isBlank(strokeWidth))
       {
         strokeWidth = "1";
       }
-      if (StringUtils.isBlank(strokeWidth))
+      if (isBlank(strokeWidth))
       {
         strokeWidth = "0";
       }

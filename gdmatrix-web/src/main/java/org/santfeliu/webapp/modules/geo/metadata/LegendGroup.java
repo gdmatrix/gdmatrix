@@ -45,6 +45,7 @@ public class LegendGroup extends LegendItem
 
   String mode = MULTIPLE;
   List<LegendItem> children;
+  boolean expanded = true;
 
   public LegendGroup()
   {
@@ -91,5 +92,15 @@ public class LegendGroup extends LegendItem
   public void setChildren(List<LegendItem> children)
   {
     this.children = children;
+  }
+
+  public boolean isExpanded()
+  {
+    return expanded;
+  }
+
+  public void setExpanded(boolean expanded)
+  {
+    this.expanded = expanded;
   }
 }

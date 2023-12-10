@@ -28,10 +28,11 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.faces.maplibre.model;
+package org.santfeliu.webapp.modules.geo.metadata;
 
 import java.io.Serializable;
-import org.apache.commons.lang.StringUtils;
+import java.util.Map;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -40,14 +41,33 @@ import org.apache.commons.lang.StringUtils;
 public class ServiceParameters implements Serializable
 {
   String service;
-  String layer;
   String sldName;
   String sldUrl;
+  String layers;
+  String cqlFilter;
   String styles;
   String format;
   Boolean transparent;
-  String cqlFilter;
   Integer buffer;
+
+  public ServiceParameters()
+  {
+  }
+
+  public ServiceParameters(Map properties)
+  {
+    service = (String)properties.get("service");
+    sldName = (String)properties.get("sldName");
+    sldUrl = (String)properties.get("sldUrl");
+    layers = (String)properties.get("layers");
+    cqlFilter = (String)properties.get("cqlFilter");
+    styles = (String)properties.get("styles");
+    format = (String)properties.get("format");
+    Object value = properties.get("transparent");
+    transparent = value instanceof Boolean ? (Boolean)value : null;
+    value = properties.get("buffer");
+    buffer = value instanceof Number ? ((Number)value).intValue() : null;
+  }
 
   public String getService()
   {
@@ -56,21 +76,9 @@ public class ServiceParameters implements Serializable
 
   public void setService(String service)
   {
-    if (StringUtils.isBlank(service)) service = null;
+    if (isBlank(service)) service = null;
 
     this.service = service;
-  }
-
-  public String getLayer()
-  {
-    return layer;
-  }
-
-  public void setLayer(String layer)
-  {
-    if (StringUtils.isBlank(layer)) layer = null;
-
-    this.layer = layer;
   }
 
   public String getSldName()
@@ -80,7 +88,7 @@ public class ServiceParameters implements Serializable
 
   public void setSldName(String sldName)
   {
-    if (StringUtils.isBlank(sldName)) sldName = null;
+    if (isBlank(sldName)) sldName = null;
 
     this.sldName = sldName;
   }
@@ -92,8 +100,32 @@ public class ServiceParameters implements Serializable
 
   public void setSldUrl(String sldUrl)
   {
-    if (StringUtils.isBlank(sldUrl)) sldUrl = null;
+    if (isBlank(sldUrl)) sldUrl = null;
     this.sldUrl = sldUrl;
+  }
+
+  public String getLayers()
+  {
+    return layers;
+  }
+
+  public void setLayers(String layers)
+  {
+    if (isBlank(layers)) layers = null;
+
+    this.layers = layers;
+  }
+
+  public String getCqlFilter()
+  {
+    return cqlFilter;
+  }
+
+  public void setCqlFilter(String cqlFilter)
+  {
+    if (isBlank(cqlFilter)) cqlFilter = null;
+
+    this.cqlFilter = cqlFilter;
   }
 
   public String getStyles()
@@ -103,7 +135,7 @@ public class ServiceParameters implements Serializable
 
   public void setStyles(String styles)
   {
-    if (StringUtils.isBlank(styles)) styles = null;
+    if (isBlank(styles)) styles = null;
 
     this.styles = styles;
   }
@@ -115,9 +147,19 @@ public class ServiceParameters implements Serializable
 
   public void setFormat(String format)
   {
-    if (StringUtils.isBlank(format)) format = null;
+    if (isBlank(format)) format = null;
 
     this.format = format;
+  }
+
+  public Integer getBuffer()
+  {
+    return buffer;
+  }
+
+  public void setBuffer(Integer buffer)
+  {
+    this.buffer = buffer;
   }
 
   public Boolean getTransparent()
@@ -130,27 +172,5 @@ public class ServiceParameters implements Serializable
     if (Boolean.FALSE.equals(transparent)) transparent = null;
 
     this.transparent = transparent;
-  }
-
-  public String getCqlFilter()
-  {
-    return cqlFilter;
-  }
-
-  public void setCqlFilter(String cqlFilter)
-  {
-    if (StringUtils.isBlank(cqlFilter)) cqlFilter = null;
-
-    this.cqlFilter = cqlFilter;
-  }
-
-  public Integer getBuffer()
-  {
-    return buffer;
-  }
-
-  public void setBuffer(Integer buffer)
-  {
-    this.buffer = buffer;
   }
 }

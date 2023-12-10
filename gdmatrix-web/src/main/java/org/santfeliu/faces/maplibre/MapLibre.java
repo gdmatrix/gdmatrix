@@ -38,7 +38,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.apache.commons.lang.StringUtils;
-import org.santfeliu.faces.maplibre.model.Map;
+import org.santfeliu.faces.maplibre.model.Style;
 
 /**
  *
@@ -114,10 +114,10 @@ public class MapLibre extends UIOutput
     writer.endElement("div");
 
     // encode script
-    Map map = (Map)getValue();
+    Style mapStyle = (Style)getValue();
 
     writer.startElement("script", this);
-    writer.writeText("maplibreInit('" + clientId + "', " + map + ");", null);
+    writer.writeText("maplibreInit('" + clientId + "', " + mapStyle + ");", null);
     writer.endElement("script");
   }
 

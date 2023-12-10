@@ -84,13 +84,71 @@ if (window.mapLibreControlsLoaded === undefined)
   window.mapLibreControlsLoaded = true;
 }
 
-function getSourceUrl(source, services)
+function getSourceUrl(sourceId, style)
 {
-  let serviceParameters = source.serviceParameters;
+  if (style.metadata.services === undefined) return null;
+  if (style.metadata.serviceParameters === undefined) return null;
+
+  let source = style.sources[sourceId];
+  if (source === undefined) return null;
+
+  let serviceParameters = style.metadata.serviceParameters[sourceId];
   if (serviceParameters === undefined) return null;
 
-  let service = services[serviceParameters.service];
+  let service = style.metadata.services[serviceParameters.service];
   if (service === undefined) return null;
+
+  const extendArray = (array, length) =>
+  {
+    while (array.length < length) array.push("");
+  };
+
+  let layersArray = [];
+  let stylesArray = [];
+  let cqlFilterArray = [];
+  if (serviceParameters.layers?.length > 0)
+  {
+    layersArray.push(...serviceParameters.layers.split(","));
+  }
+  if (serviceParameters.styles?.length > 0)
+  {
+    layersArray.push(...serviceParameters.styles.split(","));
+  }
+  if (serviceParameters.cqlFilter?.length > 0)
+  {
+    layersArray.push(...serviceParameters.cqlFilter.split(";"));
+  }
+  extendArray(stylesArray, layersArray.length);
+  extendArray(cqlFilterArray, layersArray.length);
+
+  for (let layer of style.layers)
+  {
+    if (layer.source === sourceId && layer.metadata)
+    {
+      if (layer.metadata.visible)
+      {
+        if (layer.metadata.layers?.length > 0)
+        {
+          layersArray.push(...layer.metadata.layers.split(","));
+        }
+        if (layer.metadata.styles?.length > 0)
+        {
+          stylesArray.push(...layer.metadata.styles.split(","));
+        }
+        if (layer.metadata.cqlFilter?.length > 0)
+        {
+          cqlFilterArray.push(...layer.metadata.cqlFilter.split(";"));
+        }
+        extendArray(stylesArray, layersArray.length);
+        extendArray(cqlFilterArray, layersArray.length);
+      }
+    }
+  }
+
+  if (layersArray.length === 0) return null;
+
+  if (stylesArray.join("").trim().length === 0) stylesArray = [];
+  if (cqlFilterArray.join("").trim().length === 0) cqlFilterArray = [];
 
   let serviceUrl = service.url;
   let urlParams;
@@ -100,11 +158,11 @@ function getSourceUrl(source, services)
     urlParams = "SERVICE=WMS" +
     "&VERSION=1.1.1" +
     "&REQUEST=GetMap" +
-    "&LAYERS=" + serviceParameters.layer +
+    "&LAYERS=" + layersArray.join(",") +
     "&FORMAT=" + serviceParameters.format +
     "&TRANSPARENT=" + (serviceParameters.transparent ? "TRUE" : "FALSE") +
     "&TILES=true" +
-    "&STYLES=" + (serviceParameters.styles ? serviceParameters.styles : "") +
+    "&STYLES=" + stylesArray.join(",") +
     "&srs=EPSG:3857" +
     "&BBOX={bbox-epsg-3857}" +
     "&WIDTH=" + tileSize +
@@ -113,9 +171,9 @@ function getSourceUrl(source, services)
     {
       urlParams += "&BUFFER=" + serviceParameters.buffer;
     }
-    if (serviceParameters.cqlFilter)
+    if (cqlFilterArray.length > 0)
     {
-      urlParams += "&CQL_FILTER=" + serviceParameters.cqlFilter;
+      urlParams += "&cql_filter=" + cqlFilterArray.join(";");
     }
     if (serviceParameters.sldUrl)
     {
@@ -127,12 +185,12 @@ function getSourceUrl(source, services)
     urlParams = "SERVICE=WFS" +
     "&VERSION=1.0.0" +
     "&REQUEST=GetFeature" +
-    "&typeName=" + serviceParameters.layer +
+    "&typeName=" + layersArray.join(",") +
     "&outputFormat=" + serviceParameters.format +
     "&srsName=EPSG:4326";
-    if (serviceParameters.cqlFilter)
+    if (cqlFilterArray.length > 0)
     {
-      urlParams += "&cql_filter=" + serviceParameters.cqlFilter;
+      urlParams += "&cql_filter=" + cqlFilterArray.join(";");
     }
   }
   else return null;
@@ -147,10 +205,53 @@ function getSourceUrl(source, services)
   {
     url = serviceUrl + "?" + urlParams;
   }
+  console.info(url);
   return url;
 }
 
-function maplibreInit(clientId, config)
+function initSources(style)
+{
+  for (let sourceId in style.sources)
+  {
+    let source = style.sources[sourceId];
+    let url = getSourceUrl(sourceId, style);
+    if (url !== null)
+    {
+      source.tiles = [url];
+    }
+    if (source.type === "raster" && source.tileSize === undefined)
+    {
+      source.tileSize = 256;
+    }
+  }
+}
+
+function initLayers(style)
+{
+  if (style.metadata.services === undefined) return;
+  if (style.metadata.serviceParameters === undefined) return;
+
+  for (let layer of style.layers)
+  {
+    let sourceId = layer.source;
+    let serviceParameters = style.metadata.serviceParameters[sourceId];
+    if (serviceParameters && serviceParameters.service)
+    {
+      let layerCount = serviceParameters.layerCount || 0;
+      layer.layout.visibility = layerCount === 0 ? "visible" : "none";
+      layer.metadata.virtual = layerCount > 0;
+      serviceParameters.layerCount = layerCount + 1;
+
+      let source = style.sources[sourceId];
+      if (source.tiles.length === 0)
+      {
+        layer.layout.visibility = "none";
+      }
+    }
+  }
+}
+
+function maplibreInit(clientId, style)
 {
   if (window.rtlPluginLoaded === undefined)
   {
@@ -160,91 +261,23 @@ function maplibreInit(clientId, config)
     window.rtlPluginLoaded = true;
   }
 
-  const camera = config.camera;
-  delete config.camera;
+  initSources(style);
+  initLayers(style);
 
-  const mapConfig = {
+  console.info("Map.style", style);
+
+  const map = new maplibregl.Map({
     container: clientId,
-    center: camera.center,
-    zoom: camera.zoom,
-    bearing: camera.bearing,
-    pitch: camera.pitch,
-    hash: camera.hash,
-    maxZoom: camera.maxZoom,
-    maxPitch: camera.maxPitch,
-    style: {
-      version: 8,
-      "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
-      sources: {},
-      layers: []
-    }
-  };
-
-
-  // process sources
-  for (let sourceName in config.sources)
-  {
-    let source = config.sources[sourceName];
-    if (source.type === "raster" || source.type === "raster-dem")
-    {
-      let url = getSourceUrl(source, config.services);
-      if (url)
-      {
-        source.tiles.push(url);
-        source.tileSize = source.tileSize || 256;
-        delete source.serviceParameters;
-        if (source.type === "raster-dem")
-        {
-          delete source.bounds;
-        }
-        mapConfig.style.sources[sourceName] = source;
-      }
-      else if (source.tiles && source.tiles.length > 0)
-      {
-        mapConfig.style.sources[sourceName] = source;
-      }
-      else if (source.url)
-      {
-        mapConfig.style.sources[sourceName] = source;
-      }
-    }
-    else if (source.type === "vector")
-    {
-    }
-    else if (source.type === "geojson")
-    {
-      let url = getSourceUrl(source, config.services);
-      let geojsonSource = {
-        type: "geojson"
-      };
-      if (url)
-      {
-        geojsonSource.data = url;
-      }
-      if (geojsonSource.data)
-      {
-        mapConfig.style.sources[sourceName] = geojsonSource;
-      }
-    }
-  }
-
-  if (config.terrain && config.terrain.source)
-  {
-    mapConfig.style.terrain = config.terrain;
-  }
-
-  // process layers
-  for (let layer of config.layers)
-  {
-    if (layer.visible)
-    {
-      mapConfig.style.layers.push(layer);
-    }
-  }
-
-  console.info("MapConfig", mapConfig);
-
-  const map = new maplibregl.Map(mapConfig);
+    center: style.center,
+    zoom: style.zoom,
+    bearing: style.bearing,
+    pitch: style.pitch,
+    maxZoom: style.metadata.maxZoom,
+    maxPitch: style.metadata.maxPitch,
+    hash: style.metadata.hash || false,
+    style: style
+  });
+  window.map = map;
 
   map.addControl(
     new maplibregl.NavigationControl({
@@ -267,10 +300,10 @@ function maplibreInit(clientId, config)
   }));
 
   map.addControl(new HomeButton({
-    center: camera.center,
-    zoom: camera.zoom,
-    bearing: camera.bearing,
-    pitch: camera.pitch,
+    center: style.center,
+    zoom: style.zoom,
+    bearing: style.bearing,
+    pitch: style.pitch,
     speed: 1,
     curve: 1,
     easing(t) { return t; }
@@ -278,9 +311,9 @@ function maplibreInit(clientId, config)
 
   map.addControl(new LoadingIndicator(), "top-right");
 
-  if (mapConfig.style.terrain)
+  if (style.terrain)
   {
-    const terrain = mapConfig.style.terrain;
+    const terrain = style.terrain;
     map.addControl(
       new maplibregl.TerrainControl({
         source: terrain.source,

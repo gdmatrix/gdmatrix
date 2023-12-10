@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.webapp.modules.geo.io.SldReader;
 import org.santfeliu.webapp.modules.geo.io.SldWriter;
 
@@ -213,7 +213,7 @@ public class SldNode implements Serializable
 
   public String getInnerElements()
   {
-    if (!StringUtils.isBlank(getTextValue()))
+    if (!isBlank(getTextValue()))
     {
       return StringEscapeUtils.escapeXml(getTextValue());
     }
@@ -237,7 +237,7 @@ public class SldNode implements Serializable
   public void setInnerElements(String elements)
   {
     if (children != null) children.clear();
-    if (StringUtils.isBlank(elements))
+    if (isBlank(elements))
     {
       setTextValue(null);
     }
@@ -313,7 +313,7 @@ public class SldNode implements Serializable
 
   public void setInnerElements(String prefix, String name, String elements)
   {
-    if (StringUtils.isBlank(elements))
+    if (isBlank(elements))
     {
       int index = findNode(prefix, name, 0);
       if (index != -1)

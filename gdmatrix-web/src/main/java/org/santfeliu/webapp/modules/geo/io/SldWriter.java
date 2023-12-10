@@ -38,7 +38,7 @@ import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.webapp.modules.geo.sld.SldNode;
 
 /**
@@ -183,7 +183,7 @@ public class SldWriter
     {
       SldNode child = node.getChild(i);
       cleanNode(child);
-      if (StringUtils.isBlank(child.getTextValue()))
+      if (isBlank(child.getTextValue()))
       {
         if (child.getAttributes().isEmpty())
         {

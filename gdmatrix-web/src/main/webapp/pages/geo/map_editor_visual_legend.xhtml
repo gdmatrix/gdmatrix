@@ -101,6 +101,12 @@
           <p:inputText value="#{geoMapBean.editingLegendGroup.icon}" />
         </div>
 
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Expanded" />
+          <p:toggleSwitch value="#{geoMapBean.editingLegendGroup.expanded}" 
+                          styleClass="vertical-align-middle ml-2"/>
+        </div>
+
       </div>
     </h:panelGroup>
 
@@ -158,7 +164,7 @@
           <p:outputLabel for="@next" value="Icon" />
           <p:inputText value="#{geoMapBean.editingLegendLayer.icon}" />
         </div>
-
+        
       </div>
     </h:panelGroup>
 

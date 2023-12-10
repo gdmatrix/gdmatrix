@@ -39,7 +39,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -49,15 +51,14 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.security.AccessControl;
 import org.matrix.security.Role;
 import org.matrix.security.RoleFilter;
 import org.primefaces.event.ReorderEvent;
 import org.santfeliu.faces.maplibre.model.Layer;
-import org.santfeliu.faces.maplibre.model.Map;
-import org.santfeliu.faces.maplibre.model.Service;
-import org.santfeliu.faces.maplibre.model.ServiceParameters;
+import org.santfeliu.faces.maplibre.model.Style;
+import org.santfeliu.webapp.modules.geo.metadata.Service;
+import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
 import org.santfeliu.faces.maplibre.model.Source;
 import org.santfeliu.security.web.SecurityConfigBean;
 import org.santfeliu.web.UserSessionBean;
@@ -69,7 +70,6 @@ import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
 import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
-import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
@@ -79,6 +79,8 @@ import org.santfeliu.webapp.modules.geo.io.MapStore.MapCategory;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
 import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -95,11 +97,12 @@ public class GeoMapBean extends WebBean implements Serializable
   private boolean mapNameChanged;
   private int activeTabIndex;
   private int activeSourceTabIndex;
-  private transient List<String> serviceNames;
-  private transient List<String> sourceNames;
+  private transient List<String> serviceIds;
+  private transient List<String> sourceIds;
   private transient List<String> layerIds;
-  private String editingName;
+  private String editingId;
   private Source editingSource;
+  private ServiceParameters editingServiceParameters;
   private Service editingService;
   private Layer editingLayer;
   private LegendTreeNode legendTreeRoot;
@@ -113,7 +116,7 @@ public class GeoMapBean extends WebBean implements Serializable
   private String reportToUpload;
   private String roleToAdd;
   private transient ServiceCapabilities serviceCapabilities;
-  private transient String capabilitiesServiceName;
+  private transient String capabilitiesServiceId;
 
   @Inject
   GeoServiceBean geoServiceBean;
@@ -126,8 +129,8 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void setViewAndMode(String view, String mode)
   {
-    this.setView(view);
-    this.setMode(mode);
+    setView(view);
+    setMode(mode);
   }
 
   public String getView()
@@ -137,7 +140,11 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void setView(String view)
   {
-    if ("map_viewer".equals(view)) updateSldUrls();
+    if ("map_viewer".equals(view))
+    {
+      getStyle().cleanUp();
+      updateSldUrls();
+    }
     this.view = view;
   }
 
@@ -160,9 +167,9 @@ public class GeoMapBean extends WebBean implements Serializable
     return content + ".xhtml";
   }
 
-  public Map getMap()
+  public Style getStyle()
   {
-    return mapDocument.getMap();
+    return mapDocument.getStyle();
   }
 
   public MapDocument getMapDocument()
@@ -208,71 +215,14 @@ public class GeoMapBean extends WebBean implements Serializable
     this.activeTabIndex = activeTabIndex;
   }
 
-  public String getEditingName()
+  public String getEditingId()
   {
-    return editingName;
+    return editingId;
   }
 
-  public void setEditingName(String editingName)
+  public void setEditingId(String editingId)
   {
-    this.editingName = editingName;
-  }
-
-  public String getRoleToAdd()
-  {
-    return roleToAdd;
-  }
-
-  public void setRoleToAdd(String roleToAdd)
-  {
-    this.roleToAdd = roleToAdd;
-  }
-
-  public void updateAccessControl(AccessControl ac, String action)
-  {
-    ac.setAction(action);
-  }
-
-  public void removeAccessControl(AccessControl ac)
-  {
-    mapDocument.getAccessControl().remove(ac);
-  }
-
-  public void addAccessControl()
-  {
-    if (StringUtils.isBlank(roleToAdd)) return;
-
-    long count = mapDocument.getAccessControl().stream()
-      .filter(ac -> ac.getRoleId().equals(roleToAdd)).count();
-
-    if (count == 0)
-    {
-      AccessControl ac = new AccessControl();
-      ac.setRoleId(roleToAdd);
-      ac.setAction(READ_ACTION);
-      mapDocument.getAccessControl().add(ac);
-    }
-  }
-
-  public List<String> findRoles(String text)
-  {
-    List<String> roleIds = new ArrayList<>();
-    try
-    {
-      RoleFilter filter = new RoleFilter();
-      filter.setName(text);
-      List<Role> roles = SecurityConfigBean.getPort(true).findRoles(filter);
-      for (Role role : roles)
-      {
-        roleIds.add(role.getRoleId());
-      }
-      Collections.sort(roleIds);
-    }
-    catch (Exception ex)
-    {
-      // ignore
-    }
-    return roleIds;
+    this.editingId = editingId;
   }
 
   public void onMapNameChanged(AjaxBehaviorEvent event)
@@ -280,22 +230,41 @@ public class GeoMapBean extends WebBean implements Serializable
     this.mapNameChanged = true;
   }
 
+  // services ---------------------------------------------
+
+  public Map<String, Service> getServices()
+  {
+    return getServices(true);
+  }
+
+  public Map<String, Service> getServices(boolean neverNull)
+  {
+    Map<String, Service> services =
+      (Map<String, Service>)getStyle().getMetadata().get("services");
+    if (services == null && neverNull)
+    {
+      services = new HashMap<>();
+      getStyle().getMetadata().put("services", services);
+    }
+    return services;
+  }
+
   public ServiceCapabilities getServiceCapabilities()
   {
     return serviceCapabilities;
   }
 
-  public String getCapabilitiesServiceName()
+  public String getCapabilitiesServiceId()
   {
-    return capabilitiesServiceName;
+    return capabilitiesServiceId;
   }
 
-  public void loadServiceCapabilities(String serviceName)
+  public void loadServiceCapabilities(String serviceId)
   {
     try
     {
-      capabilitiesServiceName = serviceName;
-      Service service = getMap().getServices().get(capabilitiesServiceName);
+      capabilitiesServiceId = serviceId;
+      Service service = getServices().get(capabilitiesServiceId);
       serviceCapabilities =
         geoServiceBean.getServiceCapabilities(service.getUrl(), true);
     }
@@ -305,16 +274,14 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
-  // services ---------------------------------------------
-
-  public List<String> getServiceNames()
+  public List<String> getServiceIds()
   {
-    if (serviceNames == null)
+    if (serviceIds == null)
     {
-      serviceNames = new ArrayList<>(getMap().getServices().keySet());
-      Collections.sort(serviceNames);
+      serviceIds = new ArrayList<>(getServices().keySet());
+      Collections.sort(serviceIds);
     }
-    return serviceNames;
+    return serviceIds;
   }
 
   public Service getEditingService()
@@ -324,40 +291,39 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void addService()
   {
-    editingName = null;
+    editingId = null;
     editingService = new Service();
   }
 
-  public void editService(String serviceName)
+  public void editService(String serviceId)
   {
-    editingName = serviceName;
-    editingService = cloneObject(getMap().getServices().get(serviceName), Service.class);
+    editingId = serviceId;
+    editingService = cloneObject(getServices().get(serviceId), Service.class);
   }
 
-  public void removeService(String serviceName)
+  public void removeService(String serviceId)
   {
-    editingName = null;
-    serviceNames = null;
-    getMap().getServices().remove(serviceName);
+    editingId = null;
+    serviceIds = null;
+    getServices().remove(serviceId);
   }
 
   public void acceptService()
   {
-    if (!StringUtils.isBlank(editingName))
+    if (!isBlank(editingId))
     {
-      getMap().getServices().put(editingName, editingService);
+      getServices().put(editingId, editingService);
     }
-    editingName = null;
+    editingId = null;
     editingService = null;
-    serviceNames = null;
+    serviceIds = null;
   }
 
   public void cancelService()
   {
-    editingName = null;
+    editingId = null;
     editingService = null;
   }
-
 
   // sources ---------------------------------------------
 
@@ -371,32 +337,32 @@ public class GeoMapBean extends WebBean implements Serializable
     this.activeSourceTabIndex = activeSourceTabIndex;
   }
 
-  public List<String> getSourceNames()
+  public List<String> getSourceIds()
   {
-    if (sourceNames == null)
+    if (sourceIds == null)
     {
-      sourceNames = new ArrayList<>(getMap().getSources().keySet());
-      Collections.sort(sourceNames);
+      sourceIds = new ArrayList<>(getStyle().getSources().keySet());
+      Collections.sort(sourceIds);
     }
-    return sourceNames;
+    return sourceIds;
   }
 
-  public String getSourceData(String sourceName)
+  public String getSourceInfo(String sourceId)
   {
-    Source source = getMap().getSources().get(sourceName);
-    ServiceParameters serviceParameters = source.getServiceParameters();
-    String service = serviceParameters.getService();
+    Source source = getStyle().getSources().get(sourceId);
+    ServiceParameters serviceParameters = getServiceParameters(sourceId);
 
-    if (!StringUtils.isBlank(service))
+    if (serviceParameters != null)
     {
-      String layer = serviceParameters.getLayer();
-      return service + " - " + layer;
+      String serviceId = serviceParameters.getService();
+      String layers = serviceParameters.getLayers();
+      return serviceId + " - " + layers;
     }
     else if (!source.getTiles().isEmpty())
     {
       return source.getTiles().toString();
     }
-    else if (!StringUtils.isBlank(source.getUrl()))
+    else if (!isBlank(source.getUrl()))
     {
       return source.getUrl();
     }
@@ -404,6 +370,32 @@ public class GeoMapBean extends WebBean implements Serializable
     {
       return String.valueOf(source.getData());
     }
+  }
+
+  public Map<String, ServiceParameters> getServiceParametersMap()
+  {
+    Map<String, Object> metadata = getStyle().getMetadata();
+    Map<String, ServiceParameters> map =
+      (Map<String, ServiceParameters>)metadata.get("serviceParameters");
+    if (map == null)
+    {
+      map = new HashMap<>();
+      metadata.put("serviceParameters", map);
+    }
+    return map;
+  }
+
+  public ServiceParameters getServiceParameters(String sourceId)
+  {
+    Map<String, ServiceParameters> map = getServiceParametersMap();
+    return map.get(sourceId);
+  }
+
+  public void setServiceParameters(String sourceIds,
+    ServiceParameters serviceParameters)
+  {
+    Map<String, ServiceParameters> map = getServiceParametersMap();
+    map.put(sourceIds, serviceParameters);
   }
 
   public String getSourceDataUrl()
@@ -414,7 +406,7 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void setSourceDataUrl(String url)
   {
-    if (!StringUtils.isBlank(url))
+    if (!isBlank(url))
     {
       editingSource.setData(url);
     }
@@ -422,42 +414,21 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public String getSourceServiceUrl()
   {
-    String serviceName = editingSource.getServiceParameters().getService();
-    if (StringUtils.isBlank(serviceName)) return null;
+    ServiceParameters serviceParameters = getServiceParameters(editingId);
+    if (serviceParameters == null) return null;
 
-    Service service = getMap().getServices().get(serviceName);
+    String serviceId = serviceParameters.getService();
+    if (isBlank(serviceId)) return null;
+
+    Service service = getServices().get(serviceId);
     if (service == null) return null;
 
     return service.getUrl();
   }
 
-  public List<String> completeLayer(String text)
+  public List<String> completeSourceLayer(String text)
   {
-    try
-    {
-      int index = text.lastIndexOf(";");
-      if (index != -1) text = text.substring(index + 1);
-      text = text.toUpperCase();
-      String serviceName = editingSource.getServiceParameters().getService();
-      Service service = getMap().getServices().get(serviceName);
-      String serviceUrl = service.getUrl();
-      ServiceCapabilities capabilities =
-        geoServiceBean.getServiceCapabilities(serviceUrl, false);
-      List<ServiceCapabilities.Layer> layers = capabilities.getLayers();
-      List<String> layerNames = new ArrayList<>();
-      for (ServiceCapabilities.Layer layer : layers)
-      {
-        if (layer.getName().toUpperCase().contains(text))
-        {
-          layerNames.add(layer.getName());
-        }
-      }
-      return layerNames;
-    }
-    catch (Exception ex)
-    {
-      return Collections.EMPTY_LIST;
-    }
+    return completeLayer(editingServiceParameters, text);
   }
 
   public List<String> completeSldName(String text)
@@ -474,41 +445,14 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
-  public void editSld()
-  {
-    try
-    {
-      ServiceParameters serviceParameters = editingSource.getServiceParameters();
-      String sldName = serviceParameters.getSldName();
-      String layer = serviceParameters.getLayer();
-      Service service = getMap().getServices().get(serviceParameters.getService());
-      String serviceUrl = service == null ? null : service.getUrl();
-
-      if (!StringUtils.isBlank(sldName) && !StringUtils.isBlank(layer))
-      {
-        List<String> layers = Arrays.asList(layer.split(";"));
-        String styleNames = serviceParameters.getStyles();
-        List<String> styles = StringUtils.isBlank(styleNames) ?
-          Collections.EMPTY_LIST : Arrays.asList(styleNames.split(";"));
-
-        acceptSource();
-
-        GeoSldBean geoSldBean = CDI.current().select(GeoSldBean.class).get();
-        geoSldBean.editSld(sldName, layers, styles, serviceUrl);
-
-        this.view = "sld_editor";
-        this.mode = "visual";
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
   public Source getEditingSource()
   {
     return editingSource;
+  }
+
+  public ServiceParameters getEditingServiceParameters()
+  {
+    return editingServiceParameters;
   }
 
   public void addSourceTile()
@@ -521,22 +465,40 @@ public class GeoMapBean extends WebBean implements Serializable
     editingSource.getTiles().remove(index);
   }
 
-  public void addSource()
+  public void editSourceSld()
   {
-    editingName = null;
-    editingSource = new Source();
+    try
+    {
+      editSld(editingId, null, null);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
-  public void editSource(String sourceName)
+  public void addSource()
   {
-    editingName = sourceName;
-    editingSource = cloneObject(getMap().getSources().get(sourceName), Source.class);
+    editingId = null;
+    editingSource = new Source();
+    editingServiceParameters = new ServiceParameters();
+  }
+
+  public void editSource(String sourceId)
+  {
+    editingId = sourceId;
+    editingSource =
+      cloneObject(getStyle().getSources().get(sourceId), Source.class);
+    editingServiceParameters = getServiceParameters(sourceId);
+    editingServiceParameters = editingServiceParameters == null ?
+      new ServiceParameters() :
+      cloneObject(editingServiceParameters, ServiceParameters.class);
 
     if (!editingSource.getTiles().isEmpty())
     {
       activeSourceTabIndex = 1;
     }
-    else if (!StringUtils.isBlank(editingSource.getUrl()))
+    else if (!isBlank(editingSource.getUrl()))
     {
       activeSourceTabIndex = 2;
     }
@@ -550,27 +512,29 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
-  public void removeSource(String sourceName)
+  public void removeSource(String sourceId)
   {
-    editingName = null;
-    sourceNames = null;
-    getMap().getSources().remove(sourceName);
+    editingId = null;
+    sourceIds = null;
+    getStyle().getSources().remove(sourceId);
   }
 
   public void acceptSource()
   {
-    if (!StringUtils.isBlank(editingName))
+    if (!isBlank(editingId))
     {
-      getMap().getSources().put(editingName, editingSource);
+      getStyle().getSources().put(editingId, editingSource);
+      setServiceParameters(editingId, editingServiceParameters);
     }
-    editingName = null;
+    editingId = null;
     editingSource = null;
-    sourceNames = null;
+    editingServiceParameters = null;
+    sourceIds = null;
   }
 
   public void cancelSource()
   {
-    editingName = null;
+    editingId = null;
     editingSource = null;
   }
 
@@ -580,7 +544,7 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     if (layerIds == null)
     {
-      layerIds = getMap().getLayers().stream().map(l -> l.getId()).
+      layerIds = getStyle().getLayers().stream().map(l -> l.getId()).
         collect(Collectors.toList());
       Collections.sort(layerIds);
     }
@@ -590,6 +554,16 @@ public class GeoMapBean extends WebBean implements Serializable
   public Layer getEditingLayer()
   {
     return editingLayer;
+  }
+
+  public String getEditingLayerSldName()
+  {
+    String sourceId = editingLayer.getSource();
+    if (sourceId == null) return null;
+    ServiceParameters serviceParameters = getServiceParameters(sourceId);
+    if (serviceParameters == null) return null;
+
+    return serviceParameters.getSldName();
   }
 
   public void setLayerVisible(Layer layer, boolean visible)
@@ -611,7 +585,7 @@ public class GeoMapBean extends WebBean implements Serializable
   public void setJsonPaint(String json)
   {
     Gson gson = new Gson();
-    editingLayer.setPaint(gson.fromJson(json, java.util.Map.class));
+    editingLayer.setPaint(gson.fromJson(json, Map.class));
   }
 
   public String getJsonLayout()
@@ -623,7 +597,32 @@ public class GeoMapBean extends WebBean implements Serializable
   public void setJsonLayout(String json)
   {
     Gson gson = new Gson();
-    editingLayer.setLayout(gson.fromJson(json, java.util.Map.class));
+    editingLayer.setLayout(gson.fromJson(json, Map.class));
+  }
+
+  public void onLayerReorder(ReorderEvent event)
+  {
+  }
+
+  public List<String> completeLayerLayer(String text)
+  {
+    String sourceId = editingLayer.getSource();
+    ServiceParameters serviceParameters = getServiceParameters(sourceId);
+    if (serviceParameters == null) return Collections.EMPTY_LIST;
+    return completeLayer(serviceParameters, text);
+  }
+
+  public void editLayerSld()
+  {
+    try
+    {
+      String sourceId = editingLayer.getSource();
+      editSld(sourceId, editingLayer.getLayers(), editingLayer.getStyles());
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void addLayer()
@@ -638,14 +637,14 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void removeLayer(Layer layer)
   {
-    getMap().getLayers().remove(layer);
+    getStyle().getLayers().remove(layer);
   }
 
   public void acceptLayer()
   {
-    if (!getMap().getLayers().contains(editingLayer))
+    if (!getStyle().getLayers().contains(editingLayer))
     {
-      getMap().getLayers().add(editingLayer);
+      getStyle().getLayers().add(editingLayer);
     }
     editingLayer = null;
   }
@@ -655,11 +654,7 @@ public class GeoMapBean extends WebBean implements Serializable
     editingLayer = null;
   }
 
-  public void onLayerReorder(ReorderEvent event)
-  {
-  }
-
-  // Legend
+  // Legend ----------------------------------------------------
 
   public TreeNode getLegendTreeRoot()
   {
@@ -668,11 +663,14 @@ public class GeoMapBean extends WebBean implements Serializable
       legendTreeRoot = new LegendTreeNode("group", null, null);
 
       LegendGroup legendGroup =
-        (LegendGroup)getMap().getMetadata().get("legend");
-      if (legendGroup != null)
+        (LegendGroup)getStyle().getMetadata().get("legend");
+      if (legendGroup == null)
       {
-        populateLegendItem(legendGroup, legendTreeRoot);
+        legendGroup = new LegendGroup();
+        legendGroup.setLabel("Legend");
+        getStyle().getMetadata().put("legend", legendGroup);
       }
+      populateLegendItem(legendGroup, legendTreeRoot);
     }
     return legendTreeRoot;
   }
@@ -765,9 +763,9 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void acceptLegendLayer()
   {
-    if (StringUtils.isBlank(editingLegendLayer.getLabel()))
+    if (isBlank(editingLegendLayer.getLabel()))
     {
-      Optional<Layer> layer = getMap().getLayers().stream()
+      Optional<Layer> layer = getStyle().getLayers().stream()
         .filter(l -> l.getId().equals(editingLegendLayer.getLayerId()))
         .findAny();
       if (layer.isPresent())
@@ -863,11 +861,11 @@ public class GeoMapBean extends WebBean implements Serializable
   public List<LayerForm> getLayerForms()
   {
     List<LayerForm> layerForms =
-      (List<LayerForm>)getMap().getMetadata().get("layerForms");
+      (List<LayerForm>)getStyle().getMetadata().get("layerForms");
     if (layerForms == null)
     {
       layerForms = new ArrayList<>();
-      getMap().getMetadata().put("layerForms", layerForms);
+      getStyle().getMetadata().put("layerForms", layerForms);
     }
     return layerForms;
   }
@@ -906,16 +904,16 @@ public class GeoMapBean extends WebBean implements Serializable
     editingLayerForm = null;
   }
 
-  // PrintReports
+  // PrintReports ----------------------------------------------------
 
   public List<PrintReport> getPrintReports()
   {
     List<PrintReport> printReports =
-      (List<PrintReport>)getMap().getMetadata().get("printReports");
+      (List<PrintReport>)getStyle().getMetadata().get("printReports");
     if (printReports == null)
     {
       printReports = new ArrayList<>();
-      getMap().getMetadata().put("printReports", printReports);
+      getStyle().getMetadata().put("printReports", printReports);
     }
     return printReports;
   }
@@ -1022,12 +1020,128 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
+  // Roles --------------------------------------------------------
+
+  public String getRoleToAdd()
+  {
+    return roleToAdd;
+  }
+
+  public void setRoleToAdd(String roleToAdd)
+  {
+    this.roleToAdd = roleToAdd;
+  }
+
+  public void updateAccessControl(AccessControl ac, String action)
+  {
+    ac.setAction(action);
+  }
+
+  public void removeAccessControl(AccessControl ac)
+  {
+    mapDocument.getAccessControl().remove(ac);
+  }
+
+  public void addAccessControl()
+  {
+    if (isBlank(roleToAdd)) return;
+
+    long count = mapDocument.getAccessControl().stream()
+      .filter(ac -> ac.getRoleId().equals(roleToAdd)).count();
+
+    if (count == 0)
+    {
+      AccessControl ac = new AccessControl();
+      ac.setRoleId(roleToAdd);
+      ac.setAction(READ_ACTION);
+      mapDocument.getAccessControl().add(ac);
+    }
+  }
+
+  public List<String> findRoles(String text)
+  {
+    List<String> roleIds = new ArrayList<>();
+    try
+    {
+      RoleFilter filter = new RoleFilter();
+      filter.setName(text);
+      List<Role> roles = SecurityConfigBean.getPort(true).findRoles(filter);
+      for (Role role : roles)
+      {
+        roleIds.add(role.getRoleId());
+      }
+      Collections.sort(roleIds);
+    }
+    catch (Exception ex)
+    {
+      // ignore
+    }
+    return roleIds;
+  }
+
+  // MapOptions
+
+  public void setMaxZoom(Double zoom)
+  {
+    getStyle().getMetadata().put("maxZoom", zoom);
+  }
+
+  public Double getMaxZoom()
+  {
+    Object value = getStyle().getMetadata().get("maxZoom");
+    return value instanceof Number ? ((Number)value).doubleValue() : null;
+  }
+
+  public void setMinZoom(Double zoom)
+  {
+    getStyle().getMetadata().put("minZoom", zoom);
+  }
+
+  public Double getMinZoom()
+  {
+    Object value = getStyle().getMetadata().get("minZoom");
+    return value instanceof Number ? ((Number)value).doubleValue() : null;
+  }
+
+  public void setMaxPitch(Double pitch)
+  {
+    getStyle().getMetadata().put("maxPitch", pitch);
+  }
+
+  public Double getMaxPitch()
+  {
+    Object value = getStyle().getMetadata().get("maxPitch");
+    return value instanceof Number ? ((Number)value).doubleValue() : null;
+  }
+
+  public void setMinPitch(Double pitch)
+  {
+    getStyle().getMetadata().put("minPitch", pitch);
+  }
+
+  public Double getMinPitch()
+  {
+    Object value = getStyle().getMetadata().get("minPitch");
+    return value instanceof Number ? ((Number)value).doubleValue() : null;
+  }
+
+  public void setHash(boolean hash)
+  {
+    getStyle().getMetadata().put("hash", hash);
+  }
+
+  public boolean isHash()
+  {
+    Object value = getStyle().getMetadata().get("hash");
+    return value instanceof Boolean ? (Boolean)value : false;
+  }
+
   // Map -------------------------------------------------------
 
   public void newMap()
   {
     mapDocument = new MapDocument();
-    this.activeTabIndex = 0;
+    activeTabIndex = 0;
   }
 
   public void loadMap(String mapName)
@@ -1048,7 +1162,7 @@ public class GeoMapBean extends WebBean implements Serializable
       else if (view != null)
       {
         convertMetadata();
-        this.setView(view);
+        setView(view);
       }
     }
     catch (Exception ex)
@@ -1071,6 +1185,7 @@ public class GeoMapBean extends WebBean implements Serializable
         mapDocument = mapReloaded;
         convertMetadata();
         growl("MAP_RELOADED");
+        mapNameChanged = false;
       }
     }
     catch (Exception ex)
@@ -1090,8 +1205,8 @@ public class GeoMapBean extends WebBean implements Serializable
       else
       {
         warn("A map with that name already exists. Save again to replace it.");
-        mapNameChanged = false;
       }
+      mapNameChanged = false;
     }
     catch (Exception ex)
     {
@@ -1117,14 +1232,14 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public String getJsonMap()
   {
-    return getMap().toString();
+    return getStyle().toString();
   }
 
   public void setJsonMap(String json)
   {
     try
     {
-      getMap().fromString(json);
+      getStyle().fromString(json);
       convertMetadata();
     }
     catch (IOException ex)
@@ -1135,18 +1250,104 @@ public class GeoMapBean extends WebBean implements Serializable
 
   // private -------------------------------------------------------
 
+  private void editSld(String sourceId, String layers, String styles)
+  {
+    try
+    {
+      ServiceParameters serviceParameters = getServiceParameters(sourceId);
+      if (serviceParameters == null) return;
+
+      String serviceId = serviceParameters.getService();
+      if (serviceId == null) return;
+
+      String sldName = serviceParameters.getSldName();
+      Service service = getServices().get(serviceId);
+      String serviceUrl = service == null ? null : service.getUrl();
+
+      List<String> layerList = new ArrayList<>();
+      List<String> styleList = new ArrayList<>();
+
+      if (!isBlank(serviceParameters.getLayers()))
+      {
+        layerList.addAll(Arrays.asList(serviceParameters.getLayers().split(",")));
+      }
+      if (!isBlank(layers))
+      {
+        layerList.addAll(Arrays.asList(layers.split(",")));
+      }
+      if (!isBlank(serviceParameters.getStyles()))
+      {
+        styleList.addAll(Arrays.asList(serviceParameters.getStyles().split(",")));
+      }
+      if (!isBlank(styles))
+      {
+        styleList.addAll(Arrays.asList(styles.split(",")));
+      }
+
+      if (serviceUrl != null && !isBlank(sldName))
+      {
+        acceptSource();
+
+        GeoSldBean geoSldBean = CDI.current().select(GeoSldBean.class).get();
+        geoSldBean.editSld(sldName, layerList, styleList, serviceUrl);
+
+        this.view = "sld_editor";
+        this.mode = "visual";
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  private List<String> completeLayer(ServiceParameters serviceParameters,
+    String text)
+  {
+    try
+    {
+      int index = text.lastIndexOf(",");
+      if (index != -1) text = text.substring(index + 1);
+      text = text.toUpperCase();
+
+      String serviceId = serviceParameters.getService();
+      Service service = getServices().get(serviceId);
+
+      String serviceUrl = service.getUrl();
+      ServiceCapabilities capabilities =
+        geoServiceBean.getServiceCapabilities(serviceUrl, false);
+      List<ServiceCapabilities.Layer> layers = capabilities.getLayers();
+      List<String> layerNames = new ArrayList<>();
+      for (ServiceCapabilities.Layer layer : layers)
+      {
+        if (layer.getName().toUpperCase().contains(text))
+        {
+          layerNames.add(layer.getName());
+        }
+      }
+      return layerNames;
+    }
+    catch (Exception ex)
+    {
+      return Collections.EMPTY_LIST;
+    }
+  }
+
   private void updateSldUrls()
   {
     SldStore sldStore = getSldStore();
-    for (Source source : getMap().getSources().values())
+    Map<String, Source> sourceMap = getStyle().getSources();
+    for (String sourceId : sourceMap.keySet())
     {
-      ServiceParameters serviceParameters = source.getServiceParameters();
-      String sldName = serviceParameters.getSldName();
-      if (!StringUtils.isBlank(sldName))
+      ServiceParameters serviceParameters = getServiceParameters(sourceId);
+      if (serviceParameters != null)
       {
-        String sldUrl = sldStore.getSldUrl(sldName);
-        System.out.println(">>>>SLD " + sldName + "=" + sldUrl);
-        serviceParameters.setSldUrl(sldUrl);
+        String sldName = serviceParameters.getSldName();
+        if (!isBlank(sldName))
+        {
+          String sldUrl = sldStore.getSldUrl(sldName);
+          serviceParameters.setSldUrl(sldUrl);
+        }
       }
     }
   }
@@ -1184,30 +1385,50 @@ public class GeoMapBean extends WebBean implements Serializable
 
   private void convertMetadata()
   {
-    List list = (List)getMap().getMetadata().get("layerForms");
+    Map<String, Object> services =
+      (Map<String, Object>)getStyle().getMetadata().get("services");
+    if (services != null)
+    {
+      for (String serviceId : services.keySet())
+      {
+        services.put(serviceId, new Service((Map)services.get(serviceId)));
+      }
+    }
+
+    Map<String, Object> params =
+      (Map<String, Object>)getStyle().getMetadata().get("serviceParameters");
+    if (params != null)
+    {
+      for (String sourceId : params.keySet())
+      {
+        params.put(sourceId, new ServiceParameters((Map)params.get(sourceId)));
+      }
+    }
+
+    List list = (List)getStyle().getMetadata().get("layerForms");
     if (list != null)
     {
       for (int i = 0; i < list.size(); i++)
       {
-        list.set(i, new LayerForm((java.util.Map)list.get(i)));
+        list.set(i, new LayerForm((Map)list.get(i)));
       }
     }
 
-    list = (List)getMap().getMetadata().get("printReports");
+    list = (List)getStyle().getMetadata().get("printReports");
     if (list != null)
     {
       for (int i = 0; i < list.size(); i++)
       {
-        list.set(i, new PrintReport((java.util.Map)list.get(i)));
+        list.set(i, new PrintReport((Map)list.get(i)));
       }
     }
 
-    java.util.Map legendProperties =
-      (java.util.Map)getMap().getMetadata().get("legend");
+    Map legendProperties =
+      (Map)getStyle().getMetadata().get("legend");
     if (legendProperties != null &&
         "group".equals(legendProperties.get("type")))
     {
-      getMap().getMetadata().put("legend", new LegendGroup(legendProperties));
+      getStyle().getMetadata().put("legend", new LegendGroup(legendProperties));
     }
     legendTreeRoot = null;
   }

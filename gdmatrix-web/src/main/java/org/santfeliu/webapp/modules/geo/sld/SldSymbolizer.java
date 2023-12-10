@@ -30,7 +30,7 @@
  */
 package org.santfeliu.webapp.modules.geo.sld;
 
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.webapp.modules.geo.util.ConversionUtils;
 
 /**
@@ -89,7 +89,7 @@ public abstract class SldSymbolizer extends SldNode
 
   public void setCssParameter(SldNode tagNode, String parameter, String value)
   {
-    if (StringUtils.isBlank(value)) value = null;
+    if (isBlank(value)) value = null;
 
     boolean found = false;
     int index = 0;
@@ -135,7 +135,7 @@ public abstract class SldSymbolizer extends SldNode
 
   public void setCssParameter(String tag, String parameter, String value)
   {
-    if (StringUtils.isBlank(value)) value = null;
+    if (isBlank(value)) value = null;
 
     SldNode tagNode = null;
     int tagIndex = findNode(tag, 0);

@@ -31,8 +31,7 @@
 package org.santfeliu.webapp.modules.geo.sld;
 
 import java.util.regex.Pattern;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.webapp.modules.geo.util.ConversionUtils;
 
 /**
@@ -59,7 +58,7 @@ public class SldCssNode extends SldNode
     if (child == null) return null;
 
     String value = child.getTextValue();
-    if (!StringUtils.isBlank(value)) return value;
+    if (!isBlank(value)) return value;
 
     String cql = ConversionUtils.xmlToCql(child.getInnerElements());
     if (NUMBER_PATTERN.matcher(cql).matches())
@@ -75,7 +74,7 @@ public class SldCssNode extends SldNode
 
   public void setCssParameter(String parameter, String value)
   {
-    if (StringUtils.isBlank(value)) value = null;
+    if (isBlank(value)) value = null;
 
     SldNode child = getCssParameterNode(parameter);
     if (value == null)
@@ -103,7 +102,7 @@ public class SldCssNode extends SldNode
     if (child == null) return null;
 
     String value = child.getTextValue();
-    if (!StringUtils.isBlank(value))
+    if (!isBlank(value))
     {
       if (NUMBER_PATTERN.matcher(value).matches())
       {
@@ -119,7 +118,7 @@ public class SldCssNode extends SldNode
 
   public void setCssParameterAsCql(String parameter, String cql)
   {
-    if (StringUtils.isBlank(cql)) cql = null;
+    if (isBlank(cql)) cql = null;
 
     SldNode child = getCssParameterNode(parameter);
     if (cql == null)

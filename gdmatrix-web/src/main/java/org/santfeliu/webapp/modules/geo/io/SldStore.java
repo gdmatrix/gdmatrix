@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
@@ -148,7 +148,7 @@ public class SldStore
   public Document getSldDocument(String sldName, boolean content)
   {
     Document document = null;
-    if (!StringUtils.isBlank(sldName))
+    if (!isBlank(sldName))
     {
       DocumentFilter filter = new DocumentFilter();
       filter.setDocTypeId(SLD_TYPEID);
@@ -197,7 +197,7 @@ public class SldStore
 
   private String buildSldUrl(String sldName)
   {
-    if (!StringUtils.isBlank(sldName))
+    if (!isBlank(sldName))
     {
       Document document = getSldDocument(sldName, false);
       if (document != null)

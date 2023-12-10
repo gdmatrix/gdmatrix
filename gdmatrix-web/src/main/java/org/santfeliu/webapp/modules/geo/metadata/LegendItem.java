@@ -31,7 +31,7 @@
 package org.santfeliu.webapp.modules.geo.metadata;
 
 import java.io.Serializable;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -52,7 +52,7 @@ public abstract class LegendItem implements Serializable
     this.type = (String)properties.get("type");
     this.label = (String)properties.get("label");
     this.icon = (String)properties.get("icon");
-    if (StringUtils.isBlank(icon)) icon = null;
+    if (isBlank(icon)) icon = null;
   }
 
   public String getType()
@@ -82,7 +82,7 @@ public abstract class LegendItem implements Serializable
 
   public void setIcon(String icon)
   {
-    if (StringUtils.isBlank(icon)) icon = null;
+    if (isBlank(icon)) icon = null;
     this.icon = icon;
   }
 

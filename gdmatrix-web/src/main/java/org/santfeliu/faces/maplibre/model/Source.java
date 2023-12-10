@@ -30,6 +30,7 @@
  */
 package org.santfeliu.faces.maplibre.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,8 @@ public class Source implements Serializable
   String scheme;
   List<String> tiles = new ArrayList<>();
   String url;
-  Boolean cache; // MapLibre volatile
+  @SerializedName("volatile")
+  Boolean _volatile;
 
   Object promoteId;
 
@@ -64,7 +66,6 @@ public class Source implements Serializable
   Object data;
   Object filter;
   Double tolerance;
-  ServiceParameters serviceParameters;
 
   public String getType()
   {
@@ -148,14 +149,14 @@ public class Source implements Serializable
     this.url = url;
   }
 
-  public Boolean getCache()
+  public Boolean getVolatile()
   {
-    return cache;
+    return _volatile;
   }
 
-  public void setCache(Boolean cache)
+  public void setVolatile(Boolean _volatile)
   {
-    this.cache = cache;
+    this._volatile = _volatile;
   }
 
   public Object getPromoteId()
@@ -266,19 +267,5 @@ public class Source implements Serializable
   public void setTolerance(Double tolerance)
   {
     this.tolerance = tolerance;
-  }
-
-  public ServiceParameters getServiceParameters()
-  {
-    if (serviceParameters == null)
-    {
-      serviceParameters = new ServiceParameters();
-    }
-    return serviceParameters;
-  }
-
-  public void setServiceParameters(ServiceParameters serviceParameters)
-  {
-    this.serviceParameters = serviceParameters;
   }
 }

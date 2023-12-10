@@ -5,25 +5,26 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
   <p:dataTable id="map_services_table" size="small" 
                showGridlines="true" stripedRows="true"
-               value="#{geoMapBean.serviceNames}" var="serviceName">
-    <p:column headerText="Name">
-      <span class="code">#{serviceName}</span>
+               value="#{geoMapBean.serviceIds}" var="serviceId">
+    <p:column headerText="Id">
+      <span class="code">#{serviceId}</span>
     </p:column>
     <p:column headerText="Description">
-      #{geoMapBean.map.services[serviceName].description}
+      #{geoMapBean.services[serviceId].description}
     </p:column>
     <p:column headerText="Type">
-      #{geoMapBean.map.services[serviceName].type}
+      #{geoMapBean.services[serviceId].type}
     </p:column>
     <p:column headerText="Url">
-      <span class="code">#{geoMapBean.map.services[serviceName].url}</span>
+      <span class="code">#{geoMapBean.services[serviceId].url}</span>
     </p:column>
     <p:column headerText="Use proxy">
-      <span class="code">#{geoMapBean.map.services[serviceName].useProxy}</span>
+      <span class="code">#{geoMapBean.services[serviceId].useProxy}</span>
     </p:column>
 
     <p:column styleClass="w-2 text-right white-space-nowrap">
@@ -38,13 +39,13 @@
                          oncomplete="PF('mapServicesDialog').show()"
                          />
       </f:facet>
-      <p:commandButton action="#{geoMapBean.loadServiceCapabilities(serviceName)}"
+      <p:commandButton action="#{geoMapBean.loadServiceCapabilities(serviceId)}"
                        icon="pi pi-info-circle"
                        alt="#{objectBundle.info}" title="#{objectBundle.info}"
                        styleClass="rounded-button ui-button-flat"
                        process="@form:cnt:map_tabs"
                        update="@form:cnt:map_tabs:service_capabilities" />
-      <p:commandButton action="#{geoMapBean.editService(serviceName)}"
+      <p:commandButton action="#{geoMapBean.editService(serviceId)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"
@@ -53,7 +54,7 @@
                        resetValues="true"
                        oncomplete="PF('mapServicesDialog').show()"
                        />
-      <p:commandButton action="#{geoMapBean.removeService(serviceName)}"
+      <p:commandButton action="#{geoMapBean.removeService(serviceId)}"
                        process="@this"
                        update="@form:cnt:map_tabs"
                        resetValues="true"
@@ -68,7 +69,7 @@
            visible="#{geoMapBean.serviceCapabilities != null}">
     
     <f:facet name="header">
-      <h:outputText value="Service capabilities: #{geoMapBean.capabilitiesServiceName}" />
+      <h:outputText value="Service capabilities: #{geoMapBean.capabilitiesServiceId}" />
     </f:facet>
     
     <h:panelGroup layout="block" styleClass="field">
@@ -189,8 +190,9 @@
       <div class="ui-fluid formgrid grid">
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Name" />
-          <p:inputText value="#{geoMapBean.editingName}" styleClass="code" />
+          <p:outputLabel for="@next" value="Id" />
+          <p:inputText value="#{geoMapBean.editingId}" styleClass="code"
+                       pt:spellcheck="false" />
         </div>
 
         <div class="field col-12 md:col-6">

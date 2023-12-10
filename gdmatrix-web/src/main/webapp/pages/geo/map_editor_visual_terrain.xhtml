@@ -11,20 +11,18 @@
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Source (raster-dem)" />
-      <p:selectOneMenu value="#{geoMapBean.map.terrain.source}">
+      <p:selectOneMenu value="#{geoMapBean.style.terrain.source}">
         <f:selectItem itemValue="" itemLabel="" />
-        <f:selectItems value="#{geoMapBean.sourceNames}" var="sourceName" 
-                       itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.map.sources[sourceName].type})" />
+        <f:selectItems value="#{geoMapBean.sourceIds}" var="sourceName" 
+                       itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.style.sources[sourceName].type})" />
       </p:selectOneMenu>
     </div>
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Exaggeration" />
-      <p:spinner value="#{geoMapBean.map.terrain.exaggeration}" />
+      <p:spinner value="#{geoMapBean.style.terrain.exaggeration}" />
     </div>
     
   </div>
-
-
 
 </ui:composition>

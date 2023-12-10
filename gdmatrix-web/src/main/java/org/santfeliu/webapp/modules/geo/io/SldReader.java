@@ -37,7 +37,7 @@ import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.webapp.modules.geo.sld.SldDebug;
 import org.santfeliu.webapp.modules.geo.sld.SldExternalGraphic;
 import org.santfeliu.webapp.modules.geo.sld.SldFill;
@@ -138,7 +138,7 @@ public class SldReader
       String attributePrefix = xmlReader.getAttributePrefix(i);
       String attributeLocalName = xmlReader.getAttributeLocalName(i);
       String attributeValue = xmlReader.getAttributeValue(i);
-      String attributeName = StringUtils.isBlank(attributePrefix) ?
+      String attributeName = isBlank(attributePrefix) ?
         attributeLocalName : attributePrefix + ":" + attributeLocalName;
       attributes.put(StringEscapeUtils.escapeXml(attributeName),
         StringEscapeUtils.escapeXml(attributeValue));

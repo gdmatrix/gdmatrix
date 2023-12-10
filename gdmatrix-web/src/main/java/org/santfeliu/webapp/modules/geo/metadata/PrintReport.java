@@ -31,8 +31,7 @@
 package org.santfeliu.webapp.modules.geo.metadata;
 
 import java.io.Serializable;
-import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -70,6 +69,6 @@ public class PrintReport implements Serializable
 
   public void setFormSelector(String formSelector)
   {
-    this.formSelector = StringUtils.isBlank(formSelector) ? null : formSelector;
+    this.formSelector = isBlank(formSelector) ? null : formSelector;
   }
 }
