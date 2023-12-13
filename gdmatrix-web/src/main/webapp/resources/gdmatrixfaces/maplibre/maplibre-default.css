@@ -1,7 +1,125 @@
 /* maplibre-default.css */
 
-div.maplibre
+div.maplibre_layout
+{
+  display: flex;
+  flex-direction: row;    
+}
+
+div.maplibre_panel_container
+{
+  position:relative;
+  transition: width 0.2s linear;
+  width: 0;
+}
+
+div.maplibre_panel_container.expanded
+{
+  width: 260px;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.1);
+}
+
+div.maplibre_panel_container .scroller
+{
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  bottom:0;
+  overflow: auto;
+}
+
+div.maplibre_panel_container .scroller .panel
 {
   width: 100%;
-  height: 200px;
+  padding: 4px;
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+  color: var(--text-color);
+  margin-bottom: 10px;
 }
+
+div.maplibre_panel_container .scroller .panel > .header
+{
+  font-weight: bold; 
+}
+
+div.maplibre_panel_container .scroller .panel .panel_button
+{
+  display:block;
+  width:16px;
+  height:16px;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+}
+
+div.maplibre_panel_container .scroller .panel .body
+{
+  color: var(--text-color);
+  background: var(--surface-ground);  
+}
+
+/* Legend */
+
+div.maplibre_panel_container .scroller .panel ul.legend
+{
+  padding-left: 4px;
+  list-style: none;
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend ul
+{
+  list-style: none;
+  padding-left: 16px;
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend li > div
+{
+  padding-top: 3px;
+  padding-bottom: 3px;  
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend > li > div
+{
+  font-weight: bold;
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend a
+{
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend .hidden_layer
+{
+  color: #c0c0c0;
+}
+
+@media only screen and (max-width: 700px) 
+{
+  div.maplibre_layout
+  {
+    flex-direction: column;
+  }
+
+  div.maplibre_panel_container
+  {
+    transition: height 0.2s linear;
+  }
+
+  div.maplibre_panel_container
+  {
+    height: 0;    
+  }
+  
+  div.maplibre_panel_container.expanded
+  {
+    width: 100%;
+    height: 200px;
+  }  
+}
+
+
+
