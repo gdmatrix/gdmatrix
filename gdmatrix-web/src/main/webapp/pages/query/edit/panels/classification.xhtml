@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:gdm="http://gdmatrix.org/faces">
+  
+  <p:outputPanel id="classification_panel">
+    <div class="flex mt-2">
+      <p:outputLabel value="#{queryBundle.query_scope}:" styleClass="output_label" for="@next" />
+      <p:selectOneMenu value="#{queryMainBean.queryScope}"
+                       styleClass="select_box">
+        <f:selectItem itemValue="" itemLabel=" " />
+        <f:selectItems value="#{queryEditBean.queryScopeSelectItems}" />            
+      </p:selectOneMenu>
+    </div>
+    <div class="flex mt-2">
+      <p:outputLabel value="#{queryBundle.query_object}:" styleClass="output_label" for="@next" />
+      <p:selectOneMenu value="#{queryMainBean.queryObject}"
+                       styleClass="select_box">
+        <f:selectItem itemValue="" itemLabel=" " />
+        <f:selectItems value="#{queryEditBean.queryObjectSelectItems}" />            
+      </p:selectOneMenu>
+    </div>
+    <div class="flex mt-2">
+      <p:outputLabel value="#{queryBundle.query_type}:" styleClass="output_label" for="@next" />
+      <p:selectOneMenu value="#{queryMainBean.queryType}"
+                       styleClass="select_box">
+        <f:selectItem itemValue="" itemLabel=" " />
+        <f:selectItems value="#{queryEditBean.queryTypeSelectItems}" />            
+      </p:selectOneMenu>
+    </div>
+    <div class="flex mt-2">
+      <p:outputLabel value="#{queryBundle.query_code}:" styleClass="output_label" for="@next" />
+      <p:inputText value="#{queryMainBean.queryCode}"
+                   styleClass="input_text" />
+    </div>
+    <div class="mt-3">
+      <p:commandButton value="#{queryBundle.set_query_name}" action="#{queryMainBean.setQueryName}"
+                       process="@this classification_panel" 
+                       update="@parent:@parent:@parent:@parent:query_edit_toolbar @parent:@parent:@parent:@parent:query_name_input" />
+    </div>
+  </p:outputPanel>
+  
+</ui:composition>
+

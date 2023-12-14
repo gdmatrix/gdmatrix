@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+                var="objectBundle" /> 
+
+  <f:loadBundle basename="org.santfeliu.misc.query.web.resources.QueryBundle" 
+                var="queryBundle" />  
+
+  <h:outputStylesheet library="css" name="query.css" />
+
+  <p:growl id="growl" life="1000">
+    <p:autoUpdate />
+  </p:growl>
+  
+  <h:panelGroup layout="block" styleClass="query_body #{queryMainBean.view}">       
+    <div class="flex flex-column h-full">
+      <div class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+           style="border-color:var(--surface-border)">      
+        <div class="buttons flex flex-grow-1 gap-2">        
+          <p:outputPanel id="query_common_toolbar" 
+                         styleClass="ui-inputgroup flex-grow-1 justify-content-start">
+            <p:commandButton widgetVar="querySearchButton" 
+                             action="#{queryMainBean.setView('query_list')}" value="#{queryBundle.list}"
+                             icon="pi pi-th-large" title="Search" styleClass="mini"
+                             process="@form:cnt" update="@form:cnt" />
+            <p:commandButton action="#{queryMainBean.setView('query_view')}" value="#{objectBundle.show}"
+                             icon="pi pi-eye" title="View" 
+                             styleClass="mini #{queryMainBean.view == 'query_view' ? 'ui-button-outlined' : ''}"
+                             process="@form:cnt" update="@form:cnt" 
+                             disabled="#{!queryMainBean.persistent}" />
+            <p:commandButton action="#{queryMainBean.setView('query_edit')}" value="#{objectBundle.edit}"
+                             icon="pi pi-pencil" title="Edit" 
+                             styleClass="mini #{queryMainBean.view == 'query_edit' ? 'ui-button-outlined' : ''}"
+                             process="@form:cnt" update="@form:cnt" 
+                             rendered="#{queryMainBean.editionEnabled}" />
+          </p:outputPanel>
+          <ui:insert name="toolbar"></ui:insert>
+        </div>
+      </div>
+      <div class="p-2 flex-grow-1 overflow-auto">
+        <ui:insert name="body"></ui:insert>
+      </div>
+    </div>
+  </h:panelGroup>
+
+  <script>
+    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+
+    if (window.popStateListener)
+    {
+      window.removeEventListener("popstate", window.popStateListener);
+    }
+
+    window.popStateListener = () => {
+      var pfButton = PF("querySearchButton");
+      if (pfButton)
+      {
+        var id = pfButton.id;
+        var button = document.getElementById(id);
+        button.click();
+      }
+      ;
+    };
+
+    window.addEventListener("popstate", window.popStateListener);
+    document.title = "#{queryMainBean.query != null ? queryMainBean.query.title : userSessionBean.selectedMenuItem.label}";
+  </script>       
+
+</ui:composition>

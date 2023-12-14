@@ -1,0 +1,22 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+                  
+  <p:dataView var="exprName"
+              layout="list"
+              styleClass="data_list" 
+              value="#{queryViewBean.expressionListItems}">
+    <p:dataViewListItem>
+      <p:commandLink action="#{queryViewBean.addExpression(exprName)}"
+                     value="#{queryViewBean.getExpressionLabel(exprName)}"
+                     styleClass="expr_option"
+                     process="@this" update="@parent:@parent:@parent" />    
+    </p:dataViewListItem>
+  </p:dataView>
+  <p:commandButton action="#{queryViewBean.cancel}"
+                   value="#{objectBundle.cancel}"
+                   process="@this" update="@parent"
+                   styleClass="mt-2"
+                   icon="pi pi-times" />
+
+</ui:composition>

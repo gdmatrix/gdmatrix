@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:gdm="http://gdmatrix.org/faces">
+  
+  <p:outputPanel id="#{componentRef}_panel" styleClass="edit_panel #{componentRef}">
+    
+    <div class="left">
+      
+      <div class="item_list #{componentRef}" onscroll="changeItemListScroll('#{componentRef}')">
+        <p:dataTable id="#{componentRef}_list" value="#{componentList}" var="item" 
+                     rowKey="#{item.name}" draggableRows="true" 
+                     selectionMode="single" selection="#{componentSelectedItem}" 
+                     emptyMessage="#{componentNoElementsLabel}">
+          <p:ajax event="rowSelect" listener="#{queryEditBean[componentOnItemSelectMethod]}" 
+                  process="@this @parent:#{componentRef}_properties" 
+                  update="@parent:#{componentRef}_panel" oncomplete="updateItemListScroll('#{componentRef}')" />        
+          <p:ajax event="rowReorder" listener="#{queryEditBean[componentOnItemReorderMethod]}" 
+                  process="@this" update="@parent:#{componentRef}_panel:#{componentRef}_buttons" />
+          <p:column styleClass="item#{item.inherited ? ' inherited' : ''}">
+            <p:outputLabel value="#{item.name}" styleClass="row1" />
+            <br/>
+            <p:outputLabel value="#{item[componentItemDescriptionProperty]}" styleClass="row2" />
+          </p:column>
+        </p:dataTable>
+      </div>
+      
+      <p:outputPanel id="#{componentRef}_buttons" styleClass="edit_panel_buttons">
+        <p:commandButton icon="pi pi-plus-circle" update="#{componentRef}_panel" process="@this,#{componentRef}_properties"
+                         action="#{queryEditBean[componentAddItemMethod]}" styleClass="small_button" 
+                         alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                         oncomplete="updateItemListScroll('#{componentRef}')" />
+        <p:commandButton icon="pi pi-minus-circle" update="#{componentRef}_panel" process="@this" 
+                         rendered="#{queryEditBean[componentRenderRemoveItemMethod]}" 
+                         action="#{queryEditBean[componentRemoveItemMethod]}" styleClass="small_button" 
+                         alt="#{objectBundle.remove}" title="#{objectBundle.remove}"
+                         oncomplete="updateItemListScroll('#{componentRef}')" />
+        <p:commandButton icon="pi pi-arrow-up" update="#{componentRef}_list,#{componentRef}_buttons" process="@this,#{componentRef}_list" 
+                         rendered="#{queryEditBean[componentRenderMoveItemUpMethod]}" 
+                         action="#{queryEditBean[componentMoveItemUpMethod]}" styleClass="small_button" 
+                         alt="#{queryBundle.move_up}" title="#{queryBundle.move_up}" />
+        <p:commandButton icon="pi pi-arrow-down" update="#{componentRef}_list,#{componentRef}_buttons" process="@this,#{componentRef}_list" 
+                         rendered="#{queryEditBean[componentRenderMoveItemDownMethod]}"
+                         action="#{queryEditBean[componentMoveItemDownMethod]}" styleClass="small_button" 
+                         alt="#{queryBundle.move_down}" title="#{queryBundle.move_down}" />      
+        <p:commandButton icon="pi pi-sort" update="#{componentRef}_list,#{componentRef}_buttons" process="@this" 
+                         action="#{queryEditBean[componentSortItemsMethod]}" styleClass="small_button" 
+                         alt="#{queryBundle.sort}" title="#{queryBundle.sort}" />
+      </p:outputPanel>
+
+    </div>
+    
+    <p:outputPanel id="#{componentRef}_properties" class="right">
+      
+      <p:outputPanel rendered="#{componentEditingItem != null}">
+        <ui:insert name="properties"></ui:insert>
+      </p:outputPanel>
+      
+      <p:outputPanel rendered="#{componentEditingItem == null}" 
+                     styleClass="no_object_selected">
+        <p:outputLabel value="#{componentNotSelectedLabel}" />
+      </p:outputPanel>
+      
+    </p:outputPanel>
+    
+  </p:outputPanel>
+  
+</ui:composition>

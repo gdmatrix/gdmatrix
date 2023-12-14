@@ -1,0 +1,121 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                template="/pages/query/query_common.xhtml">                
+
+  <ui:define name="toolbar">    
+
+    <p:outputPanel id="query_view_toolbar" styleClass="ui-inputgroup flex-grow-1 justify-content-end">
+      <p:commandButton value="#{queryBundle.reload}" action="#{queryViewBean.reloadQuery}" 
+                       icon="pi pi-refresh" title="#{queryBundle.reload}" styleClass="mini"
+                       process="@this" update="@form:cnt"
+                       rendered="#{queryMainBean.persistent}" />
+      <p:commandButton value="#{objectBundle.store}" action="#{queryViewBean.saveQuery}" 
+                       icon="pi pi-save" title="#{objectBundle.store}" styleClass="mini"
+                       process="@form:cnt" 
+                       rendered="#{queryMainBean.saveEnabled}" />
+    </p:outputPanel>
+
+  </ui:define>
+
+  <ui:define name="body">  
+
+    <div class="query_header">
+      <p:outputLabel value="#{queryViewBean.query.title}" styleClass="title" />
+      <p:outputLabel value="#{queryViewBean.query.description}" styleClass="description" />
+    </div>
+
+    <p:outputPanel id="instance_selector_pan">
+
+      <p:outputPanel styleClass="instance_selector_panel flex" 
+                     rendered="#{queryViewBean.selectedInstanceDescription == null}">
+        <p:selectOneMenu id="instance_selector" 
+                         value="#{queryViewBean.selectedInstanceName}" 
+                         styleClass="instance_description flex-grow-1">
+          <p:ajax listener="#{queryViewBean.selectInstance}"
+                  process="@this" update="@form:cnt" />                
+          <f:selectItems value="#{queryViewBean.instanceSelectItems}" />
+        </p:selectOneMenu>
+        <div class="flex-grow-0 ui-inputgroup ml-6">
+          <p:commandButton value="#{queryBundle.add_instance}" action="#{queryViewBean.addInstance}"
+                           process="@this" update="@form:cnt" 
+                           styleClass="mini" icon="pi pi-plus-circle" />
+          <p:commandButton value="#{queryBundle.rename_instance}" action="#{queryViewBean.renameInstance}"
+                           process="@this instance_selector" update="instance_selector_pan"
+                           styleClass="mini" icon="pi pi-pencil" />          
+          <p:commandButton value="#{queryBundle.remove_instance}" action="#{queryViewBean.removeInstance}"
+                           process="@this instance_selector" update="@form:cnt"
+                           icon="pi pi-trash" styleClass="mini ui-button-danger"                           
+                           onclick="return confirm('#{objectBundle.confirm_full_remove}')" />
+        </div>
+      </p:outputPanel>
+
+      <p:outputPanel styleClass="instance_selector_panel flex" 
+                     rendered="#{queryViewBean.selectedInstanceDescription != null}">
+        <p:inputText value="#{queryViewBean.selectedInstanceDescription}" 
+                     styleClass="instance_description flex-grow-1"
+                     required="true" />
+        <div class="flex-grow-0 ml-6">
+          <p:commandButton value="#{objectBundle.accept}" action="#{queryViewBean.acceptRename}" 
+                           process="@this instance_selector_pan" update="instance_selector_pan"
+                           styleClass="mini" icon="pi pi-check" />
+          <p:commandButton value="#{objectBundle.cancel}" action="#{queryViewBean.cancelRename}" 
+                           process="@this" update="instance_selector_pan"
+                           styleClass="mini ml-1" icon="pi pi-times" />          
+        </div>
+      </p:outputPanel>
+
+    </p:outputPanel>
+
+    <p:panel id="instance_editor" styleClass="instance_editor mt-3">
+      <ui:include src="/pages/query/view/components/root.xhtml" />
+    </p:panel>
+
+    <p:outputPanel styleClass="output_selector mt-3" 
+                   rendered="#{queryViewBean.query.outputCount != 0}">
+      <p:pickList id="pickList" value="#{queryViewBean.outputs}" 
+                  var="output" 
+                  itemLabel="#{output.label}" 
+                  itemValue="#{output}" 
+                  converter="#{queryViewBean.outputConverter}" responsive="true">
+        <f:facet name="sourceCaption">#{queryBundle.available_fields}</f:facet>
+        <f:facet name="targetCaption">#{queryBundle.selected_fields}</f:facet>        
+        <p:ajax event="transfer" listener="#{queryViewBean.onOutputTransfer}" />
+        <p:ajax event="reorder" listener="#{queryViewBean.onOutputReorder}" />        
+      </p:pickList>
+    </p:outputPanel>
+
+    <div class="mt-3 flex justify-content-between">
+      <div class="flex-grow-0">
+        <p:outputLabel for="@next"
+                       value="#{queryBundle.max_results}:"
+                        />
+        <p:inputText styleClass="max_results ml-2 w-6rem flex-grow-0" 
+                     value="#{queryViewBean.selectedInstance.maxResults}" />
+      </div>
+      <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
+                     styleClass="flex-grow-0">
+        <p:outputLabel for="@next" value="#{queryBundle.create_new_version}" />
+        <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
+                        styleClass="ml-2" style="top:4px" />
+      </p:outputPanel>                
+    </div>
+
+    <p:commandButton value="#{queryBundle.execute_query}" 
+                     action="#{queryViewBean.execute}"
+                     icon="pi pi-play"
+                     styleClass="mt-2" 
+                     ajax="false" 
+                     onclick="changeTarget();" />        
+
+    <gdm:saveBean value="queryMainBean" />  
+    <gdm:saveBean value="queryViewBean" />
+    <gdm:saveBean value="queryListBean" />
+
+  </ui:define>
+
+</ui:composition>

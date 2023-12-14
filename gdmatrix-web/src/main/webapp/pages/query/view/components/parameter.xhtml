@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                  
+  <c:choose>
+    <c:when test="${parameter.sql == null or parameter.sql.trim() == ''}">
+      <c:choose>      
+        <c:when test="${'date'.equals(parameter.format)}">          
+          <p:datePicker locale="#{queryViewBean.language}"
+                        pattern="dd/MM/yyyy"
+                        placeholder="dd/MM/yyyy"
+                        converter="datePickerConverter"
+                        showIcon="true"
+                        showOnFocus="false"
+                        yearNavigator="true"
+                        monthNavigator="true"
+                        value="#{valuesMap[parameter.getName()]}"
+                        styleClass="input_value date" /> 
+        </c:when>
+        <c:when test="${'number'.equals(parameter.format)}">
+          <p:inputNumber value="#{valuesMap[parameter.getName()]}"
+                       styleClass="input_value"
+                       title="#{parameter.getDescription() == null ? 
+                                parameter.getName() : 
+                                parameter.getDescription()}"
+                       alt="#{parameter.getDescription() == null ? 
+                                parameter.getName() : 
+                                parameter.getDescription()}"
+                       size="#{parameter.size}" 
+                       decimalPlaces="0"
+                       thousandSeparator="" />          
+        </c:when>        
+        <c:otherwise> <!-- text -->         
+          <p:inputText value="#{valuesMap[parameter.getName()]}"
+                       styleClass="input_value"
+                       title="#{parameter.getDescription() == null ? 
+                                parameter.getName() : 
+                                parameter.getDescription()}"
+                       alt="#{parameter.getDescription() == null ? 
+                                parameter.getName() : 
+                                parameter.getDescription()}"
+                       size="#{parameter.size}" />
+        </c:otherwise>
+      </c:choose>      
+    </c:when>  
+    <c:otherwise>
+      <p:selectOneMenu value="#{valuesMap[parameter.getName()]}"
+                       styleClass="input_value select">
+        <f:selectItems value="#{queryViewBean.parameterSelectItemsMap.get(parameter.name)}" />
+      </p:selectOneMenu>
+    </c:otherwise>
+  </c:choose>    
+
+</ui:composition>

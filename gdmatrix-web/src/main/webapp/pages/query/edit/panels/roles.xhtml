@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:gdm="http://gdmatrix.org/faces">
+  
+  <p:outputPanel id="roles_panel">
+    <div class="flex mt-2">
+      <p:outputLabel value="#{queryBundle.read_roles}:" 
+                     styleClass="output_label role flex-grow-0" for="@next" />    
+      <p:inputText id="read_roles" value="#{queryMainBean.readRolesString}" 
+                       styleClass="input_text roles flex-grow-1" />
+    </div>
+    <div class="flex mt-2">
+      <p:outputLabel value="#{queryBundle.write_roles}:" 
+                     styleClass="output_label role flex-grow-0" for="@next" />
+      <p:inputText id="write_roles" value="#{queryMainBean.writeRolesString}" 
+                       styleClass="input_text roles flex-grow-1" />
+    </div>
+  </p:outputPanel>
+  
+</ui:composition>

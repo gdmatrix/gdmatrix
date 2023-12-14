@@ -1,0 +1,22 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                  
+  <div class="flex">
+    <div class="flex-grow-1">
+      <ui:include src="/pages/query/view/components/label.xhtml">                   
+        <ui:param name="label" value="#{predicate.label}" />
+        <ui:param name="valuesMap" value="#{predicate.parameterValuesMap}" />
+        <ui:param name="parameters" value="#{predicate.parameters}" />
+      </ui:include>
+    </div>
+    <div class="flex-grow-0 ml-3">
+      <p:commandButton action="#{queryViewBean.removeExpression(predicate)}"
+                       styleClass="expr_button remove ui-button-flat"
+                       icon="pi pi-minus-circle"
+                       process="@this" update="@parent:@parent" />                  
+    </div>
+  </div>
+  
+</ui:composition>

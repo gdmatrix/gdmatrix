@@ -1,0 +1,11 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+  <p:outputPanel styleClass="operator">      
+    <ui:include src="/pages/query/view/components/expression.xhtml">
+      <ui:param name="expression" value="#{queryViewBean.selectedInstance.rootExpression}" />
+    </ui:include>
+  </p:outputPanel>
+
+</ui:composition>

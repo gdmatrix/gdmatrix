@@ -1,0 +1,166 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:gdm="http://gdmatrix.org/faces"                
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="/pages/query/query_common.xhtml">
+
+  <ui:define name="toolbar">    
+
+    <p:outputPanel id="query_edit_toolbar" styleClass="ui-inputgroup flex-grow-1 justify-content-end">
+      <p:commandButton value="#{queryBundle.reload}" action="#{queryEditBean.reloadQuery}"
+                       process="@this" update="@form:cnt"
+                       rendered="#{queryMainBean.persistent}" immediate="true" 
+                       icon="pi pi-refresh" styleClass="mini" />
+      <p:commandButton value="#{queryBundle.copy}" action="#{queryEditBean.copyQuery}"
+                       process="@this" update="query_common_toolbar query_edit_toolbar query_name_input"
+                       rendered="#{queryMainBean.persistent}" immediate="true" 
+                       icon="pi pi-copy" styleClass="mini" />
+      <c:choose>
+        <c:when test="${queryMainBean.persistent}">
+          <p:commandButton id="query_store_button" 
+                           value="#{objectBundle.store}" action="#{queryEditBean.saveQuery}" 
+                           rendered="#{queryMainBean.saveEnabled}"
+                           process="@form:cnt" update="query_tabs" 
+                           icon="pi pi-save" styleClass="mini" />      
+        </c:when>
+        <c:otherwise>
+          <p:commandButton id="query_store_button" 
+                           value="#{objectBundle.store}" action="#{queryEditBean.saveNewQuery}" 
+                           rendered="#{queryMainBean.saveEnabled}"
+                           process="@form:cnt" update="@form:cnt" 
+                           icon="pi pi-save" styleClass="mini" />                
+        </c:otherwise>
+      </c:choose>      
+      <p:commandButton value="#{objectBundle.delete}" action="#{queryEditBean.removeQuery}"
+                       process="@this" update="@form:cnt"
+                       icon="pi pi-trash" styleClass="mini ui-button-danger"
+                       rendered="#{queryMainBean.persistent}" 
+                       onclick="return confirm('#{objectBundle.confirm_full_remove}')" />
+    </p:outputPanel>
+
+  </ui:define>
+
+  <ui:define name="body">
+
+    <div class="flex flex-wrap justify-content-between">
+      <div class="flex-grow-1 flex query_name mt-2 mr-3">
+        <p:outputLabel for="@next" value="#{queryBundle.name}:" 
+                       styleClass="output_label top flex-grow-0"
+                       indicateRequired="true" />
+        <p:inputText id="query_name_input" 
+                     readonly="#{queryMainBean.persistent}"
+                     value="#{queryMainBean.query.name}" 
+                     styleClass="input_text flex-grow-1" 
+                     required="#{not empty param['mainform:query_store_button']}" />
+      </div>
+      <div class="flex-grow-1 flex query_base mt-2">
+        <p:outputLabel for="@next" value="#{queryBundle.base}:" 
+                       styleClass="output_label flex-grow-0" />
+        <p:inputText value="#{queryMainBean.query.base}" 
+                     styleClass="input_text flex-grow-1" />
+      </div>
+    </div>
+
+    <div class="flex mt-2">
+      <p:outputLabel for="@next" value="#{queryBundle.title}:" 
+                     styleClass="output_label top flex-grow-0"
+                     indicateRequired="true" />
+      <p:inputText value="#{queryMainBean.query.title}" 
+                   styleClass="input_text query_title flex-grow-1"
+                   required="#{not empty param['mainform:query_store_button']}" />
+    </div>
+
+    <div class="mt-2">
+      <p:outputLabel for="@next" value="#{queryBundle.description}:" />
+      <p:inputTextarea value="#{queryMainBean.query.description}" 
+                       styleClass="input_text query_description w-full mt-2" />
+    </div>
+    
+    <div class="mt-2">
+      <p:outputLabel for="@next" value="#{queryBundle.label}:" />
+      <p:inputTextarea value="#{queryMainBean.query.label}" 
+                       styleClass="input_text query_label w-full mt-2" />
+    </div>
+
+    <div class="mt-2">    
+      <p:outputLabel for="@next" value="#{queryBundle.sql_statement}:" />
+      <p:commandButton id="variables_button" type="button" 
+                       icon="pi pi-question-circle"
+                       styleClass="ui-button-flat" />
+      <p:overlayPanel for="variables_button">
+        <div class="vars_popup">
+          <h:outputText value="_FILTER" /><br/>
+          <h:outputText value="_OUTPUT" /><br/>
+          <h:outputText value="_OUTPUT_NAMES" /><br/>
+          <h:outputText value="_OUTPUT_LABELS" /><br/>
+          <h:outputText value="_USERID" /><br/>
+          <h:outputText value="_DATE" /><br/>    
+          <h:outputText value="_DATETIME" /><br/>      
+        </div>
+      </p:overlayPanel>      
+      <gdm:codemirror language="sql" 
+                       value="#{queryMainBean.query.sql}"
+                       lineNumbers="false"
+                       style="font-size:14px" />                 
+    </div>
+    
+    <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
+                   styleClass="mt-2">
+      <p:outputLabel for="@next" value="#{queryBundle.create_new_version}" />
+      <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
+                      styleClass="ml-2" style="top:4px" />
+    </p:outputPanel>      
+    
+    <p:tabView id="query_tabs" styleClass="tabbed_panel mt-2" activeIndex="#{queryEditBean.selectedTab}">
+      <p:ajax event="tabChange" process="@this" />
+      <p:tab title="#{queryBundle.classification}">        
+        <ui:include src="/pages/query/edit/panels/classification.xhtml" />
+      </p:tab>
+      <p:tab title="#{queryBundle.connection}">
+        <ui:include src="/pages/query/edit/panels/connection.xhtml" />
+      </p:tab>
+      <p:tab title="#{queryBundle.parameters}">
+        <ui:include src="/pages/query/edit/panels/parameters.xhtml" />
+      </p:tab>
+      <p:tab title="#{queryBundle.predicates}">
+        <ui:include src="/pages/query/edit/panels/predicates.xhtml" />
+      </p:tab>
+      <p:tab title="#{queryBundle.outputs}">
+        <ui:include src="/pages/query/edit/panels/outputs.xhtml" />
+      </p:tab>
+      <p:tab title="#{queryBundle.roles}">
+        <ui:include src="/pages/query/edit/panels/roles.xhtml" />
+      </p:tab>
+    </p:tabView>    
+    
+    <gdm:saveBean value="queryMainBean" />  
+    <gdm:saveBean value="queryEditBean" />
+    <gdm:saveBean value="queryListBean" />    
+    
+    <script>
+      var itemListScrollValues = {};
+
+      function changeItemListScroll(componentRef)
+      {
+        var selector = ".item_list." + componentRef;
+        var element = document.querySelectorAll(selector)[0];
+        itemListScrollValues[componentRef] = element.scrollTop;      
+      }
+
+      function updateItemListScroll(componentRef)
+      {
+        var selector = ".item_list." + componentRef;
+        var element = document.querySelectorAll(selector)[0];      
+        element.scrollTop = itemListScrollValues[componentRef];
+      }     
+    </script>    
+    
+  </ui:define>
+
+</ui:composition>
+

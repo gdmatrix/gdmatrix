@@ -1,0 +1,27 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+  <c:set var="labelTokens" value="${queryViewBean.getLabelTokens(label)}" /> 
+  <c:forEach items="${labelTokens}" var="token">
+    <c:choose>
+      <c:when test="${token.startsWith('t:')}">
+        <p:outputLabel value="#{token.substring(2)}" />
+      </c:when>
+      <c:when test="${token.startsWith('p:')}">
+        <c:set var="param" value="${queryViewBean.getParameter(parameters, token.substring(2))}" />
+        <c:if test="${param != null}">
+          <ui:include src="/pages/query/view/components/parameter.xhtml">
+            <ui:param name="parameter" value="#{param}" />
+            <ui:param name="valuesMap" value="#{valuesMap}" />
+          </ui:include>        
+        </c:if>
+      </c:when>
+      <c:otherwise>
+        <p:outputLabel value="***ERROR***" />      
+      </c:otherwise>      
+    </c:choose>    
+  </c:forEach>
+  
+</ui:composition>

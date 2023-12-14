@@ -1,0 +1,403 @@
+/* query */
+
+.query_body
+{
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.query_body .data_list .ui-dataview-header
+{
+  display: none;
+}
+
+.query_body .data_list .ui-dataview-content
+{
+  background: transparent;
+}
+
+.query_body .data_list li
+{
+  padding: 4px;
+  border: 0 !important;
+}
+
+.query_body .data_list li a
+{
+  color: black;
+  text-decoration: none;
+  opacity: 1;
+}
+
+.query_body .data_list li a:hover
+{
+  opacity: 0.5;
+}
+
+/* query_list */
+
+.query_list
+{  
+}
+
+.query_list .filter_list
+{
+}
+
+.query_list .result_list
+{
+}
+
+.query_list .result_list .col_icon
+{
+  width: 10%;
+}
+
+.query_list .result_list .col_data
+{
+  width: 75%;
+}
+
+.query_list .result_list .col_data > *
+{
+  display: block;
+}
+
+.query_list .result_list .col_data .query_name
+{
+  color: #D00000;
+}
+
+.query_list .result_list .col_data .query_title
+{
+  font-weight: bold;
+  color: black;
+}
+
+.query_list .result_list .col_data .query_description
+{
+  color: gray;
+}
+
+.query_list .result_list .col_buttons
+{
+  width: 15%;
+}
+
+/* query_view */
+
+.query_view
+{ 
+}
+
+.query_view .query_header
+{
+  margin-top:6px;
+  margin-bottom:6px;
+}
+
+.query_view .query_header .title
+{
+  font-weight: bold;
+  display: block;
+}
+
+.query_view .query_header .description
+{
+  color: gray;
+  display: block;
+}
+
+.query_view .instance_selector_panel
+{
+  
+}
+
+.query_view .instance_editor
+{
+  
+}
+
+.query_view .output_selector
+{
+  
+}
+
+.query_view .output_selector .ui-picklist .ui-helper-hidden-accessible
+{
+  width: 0px;
+}
+
+.query_view input.hasDatepicker
+{
+  width: 100px;
+}
+
+.query_view .execute_button
+{
+  float: right;
+}
+
+.expression
+{
+  display: block;
+  border: 1px solid #606060;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 8px;
+  border-radius: 8px;
+  border-width: 2px;
+}
+
+.operator
+{
+  color: black;
+  border:none;
+  background-color: transparent;
+}
+
+.expression.predicate
+{
+  color: black;
+  line-height: 20px;
+}
+
+.expression.ROOT label,
+.expression.ROOT span,
+.expression.predicate label,
+.expression.predicate span
+{
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.op_children
+{
+  display: block;
+  padding: 8px;
+}
+
+.expr_button
+{
+}
+
+.expr_button.add
+{
+}
+
+.expr_button.add:hover
+{
+}
+
+.expr_button.remove
+{
+}
+
+.expr_button.remove:hover
+{
+}
+
+.expression .ui-button.ui-button-flat,
+.expression .ui-button.ui-button-flat:hover
+{
+  color: #333;
+}
+
+.expression .operator_link
+{
+  padding: 4px;
+}
+
+.expression.ROOT
+{
+  border-color: orange;
+  background-color: #FFFFE0;
+}
+
+.expression.AND
+{
+  border-color: red;
+  background-color: #FFE0E0;
+}
+
+.expression.OR
+{
+  border-color: green;
+  background-color: #E0FFE0;
+}
+
+.expression.NOR
+{
+  border-color: blue;    
+  background-color: #E0E0FF;
+}
+
+/* query_edit */
+
+.query_edit
+{
+}
+
+.query_edit .query_name,
+.query_edit .query_base
+{
+  max-width: 90%;
+}
+
+.query_edit .codemirror-container
+{
+  max-height: 500px;
+  overflow: auto;
+}
+
+.query_edit .output_label
+{
+  line-height: 29px;
+  margin-right: 4px;
+  min-width: 50px;  
+}
+
+.query_edit .tabbed_panel .output_label
+{
+  min-width: 90px;
+}
+
+.query_edit .tabbed_panel .output_label.role
+{
+  min-width: 150px;
+}
+
+.query_edit .tabbed_panel .edit_panel
+{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.query_edit .tabbed_panel .edit_panel .left
+{
+  flex-grow: 0;
+  width: 200px;
+  padding: 8px;
+}
+
+.query_edit .tabbed_panel .edit_panel .right
+{  
+  flex-grow: 1;
+  padding: 8px;
+  min-width: 200px;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property
+{
+  margin-bottom: 4px;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property > *:nth-child(1),
+.query_edit .tabbed_panel .edit_panel .right .property > *:nth-child(2)
+{
+  display: block;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property > *:nth-child(1)
+{
+  width: auto;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property > *:nth-child(2)
+{
+  width: 100%;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property.one_line
+{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property.one_line > label
+{
+  flex-grow: 0;
+  max-width: 120px;
+  margin-right: 10px;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property.one_line > *:nth-child(2)
+{
+  flex-grow: 1;
+  width: auto;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property .codemirror_container
+{   
+  max-width: 448px;  
+}
+
+.query_edit .tabbed_panel .edit_panel .right .property .codemirror-container
+{
+  max-height: 200px;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .item_list
+{
+  min-height: 200px;
+  max-height: 400px;
+  overflow: auto;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .item_list .item
+{
+  padding: 4px;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .item_list .item.inherited
+{
+  color: blue;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .item_list .item .row1
+{
+  word-break: break-all;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .item_list .item .row2
+{ 
+  font-size: 10px;
+  word-break: break-word;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .item_list .item label
+{
+  cursor: pointer;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .edit_panel_buttons
+{
+  margin-top: 10px;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .edit_panel_buttons > button
+{
+  margin-right: 4px;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .ui-datatable thead th
+{
+  display: none;
+}
+
+.query_edit .tabbed_panel .edit_panel .right .no_object_selected
+{  
+  padding: 20px;
+  border: 1px solid #DEE2E6;
+  text-align: center;
+}
+
+.query_edit .tabbed_panel .edit_panel .left .list_entry.inherited
+{
+  color: blue;  
+}
+
+.query_edit .tabbed_panel .edit_panel .left .list_entry:hover
+{
+}
