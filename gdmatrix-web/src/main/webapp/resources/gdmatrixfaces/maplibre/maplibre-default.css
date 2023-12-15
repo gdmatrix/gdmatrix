@@ -47,7 +47,6 @@ div.maplibre_panel_container .scroller .panel > .header
 
 div.maplibre_panel_container .scroller .panel .panel_button
 {
-  display:block;
   width:16px;
   height:16px;
   background: transparent;
@@ -69,16 +68,40 @@ div.maplibre_panel_container .scroller .panel ul.legend
   list-style: none;
 }
 
+div.maplibre_panel_container .scroller .panel ul.legend li
+{
+  position: relative;
+}
+
 div.maplibre_panel_container .scroller .panel ul.legend ul
 {
   list-style: none;
   padding-left: 16px;
+  overflow: hidden;
+  transition: max-height 0.3s linear;
 }
 
 div.maplibre_panel_container .scroller .panel ul.legend li > div
 {
+  display: flex;
+  align-items: center;
   padding-top: 3px;
   padding-bottom: 3px;  
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend li > div > button
+{
+  border: none;
+  background-color: transparent;
+  color: var(--text-color);
+  padding: 0;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend li > div > button > span
+{
+  transition: transform 0.3s linear;
 }
 
 div.maplibre_panel_container .scroller .panel ul.legend > li > div
@@ -95,6 +118,19 @@ div.maplibre_panel_container .scroller .panel ul.legend a
 div.maplibre_panel_container .scroller .panel ul.legend .hidden_layer
 {
   color: #c0c0c0;
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic
+{
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic.circle
+{
+  border-radius: 50%;
 }
 
 @media only screen and (max-width: 700px) 

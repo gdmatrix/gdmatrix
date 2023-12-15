@@ -41,7 +41,7 @@ public abstract class LegendItem implements Serializable
 {
   String type;
   String label;
-  String icon;
+  String graphic;
 
   public LegendItem()
   {
@@ -51,8 +51,8 @@ public abstract class LegendItem implements Serializable
   {
     this.type = (String)properties.get("type");
     this.label = (String)properties.get("label");
-    this.icon = (String)properties.get("icon");
-    if (isBlank(icon)) icon = null;
+    this.graphic = (String)properties.get("graphic");
+    if (isBlank(graphic)) graphic = null;
   }
 
   public String getType()
@@ -75,15 +75,15 @@ public abstract class LegendItem implements Serializable
     this.label = label;
   }
 
-  public String getIcon()
+  public String getGraphic()
   {
-    return icon;
+    return graphic;
   }
 
-  public void setIcon(String icon)
+  public void setGraphic(String graphic)
   {
-    if (isBlank(icon)) icon = null;
-    this.icon = icon;
+    if (isBlank(graphic)) graphic = null;
+    this.graphic = graphic;
   }
 
   public static LegendItem create(java.util.Map properties)

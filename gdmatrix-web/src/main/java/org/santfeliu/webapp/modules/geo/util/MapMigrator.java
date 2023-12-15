@@ -325,7 +325,19 @@ public class MapMigrator
         {
           LegendLayer legendLayer = new LegendLayer();
           legendLayer.setType("layer");
-          legendLayer.setIcon(oldLayer.getLegendGraphic());
+          String legendGraphic = oldLayer.getLegendGraphic();
+          if (!isBlank(legendGraphic))
+          {
+            System.out.print(legendGraphic + "->");
+            legendGraphic = legendGraphic.trim();
+            if ("true".equals(legendGraphic)) legendGraphic = "auto";
+            else if ("false".equals(legendGraphic)) legendGraphic = null;
+            else if ("auto".equals(legendGraphic)) legendGraphic = "auto";
+            else if (legendGraphic.startsWith("large:")) legendGraphic = "image:" + legendGraphic.substring(6);
+            else legendGraphic = "icon:" + legendGraphic;
+            System.out.println(legendGraphic);
+          }
+          legendLayer.setGraphic(legendGraphic);
           legendLayer.setLabel(oldLayer.getLabel());
           legendLayer.setLayerId(layerId);
           if (oldLayer.isBaseLayer())
