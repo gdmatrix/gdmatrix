@@ -5,7 +5,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
+  
+  <h:outputStylesheet library="css" name="policy.css" />  
+  
   <h:panelGroup>
 
     <!-- Results table -->
@@ -17,15 +19,29 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
-      
+
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-play" styleClass="ui-button-flat"
+                           alt="#{policyBundle.analyze}" title="#{policyBundle.analyze}"
+                           action="#{casePoliciesTabBean.analyzeCase}"
+                           rendered="#{caseObjectBean.editable}"
+                           global="false"
+                           process="@this" update="case_policies_table @parent:@parent:@parent:analyzer_messages"
+                           onclick="PF('poll').start();"
+                           oncomplete="PF('poll').stop();PF('scrollPanel').scrollTo(0,600000000);"
+                           />
+          <p:commandButton icon="pi pi-refresh" styleClass="ui-button-flat"
+                           alt="#{policyBundle.reload}" title="#{policyBundle.reload}"
+                           action="#{casePoliciesTabBean.load}"
+                           rendered="#{caseObjectBean.editable}"
+                           process="@this" update="case_policies_table @parent:@parent:@parent:analyzer_messages" />          
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{casePoliciesTabBean.create}"
                            process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:case_policies_dialog"
                            resetValues="true"
-                           oncomplete="PF('casePoliciesDialog').show()"
+                           oncomplete="PF('casePoliciesDialog')"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>      
@@ -37,7 +53,7 @@
       <p:column headerText="#{policyBundle.casePolicies_policy}" styleClass="col-4">
         <h:outputText value="#{row.policy.title}" />
       </p:column>
-      
+
       <p:column headerText="#{policyBundle.casePolicies_activationDate}" styleClass="col-2">
         <h:outputText value="#{row.casePolicy.activationDate}"><f:converter converterId="dateConverter" /></h:outputText>
       </p:column>
@@ -45,11 +61,11 @@
       <p:column headerText="#{policyBundle.casePolicies_policy}" styleClass="col-3">
         <h:outputText value="#{typeTypeBean.getDescription(row.policy.policyTypeId)}"></h:outputText>
       </p:column>      
-      
+
       <p:column headerText="#{policyBundle.casePolicies_state}" styleClass="col-2">
         <h:outputText value="#{casePoliciesTabBean.getPolicyState(row)}"></h:outputText>
       </p:column>        
-    
+
       <p:column styleClass="text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
@@ -77,10 +93,23 @@
         </p:commandButton>
       </p:column>
     </p:dataTable>
-    
+
+    <p:outputPanel id="analyzer_messages">
+      <p:scrollPanel styleClass="analyzer w-full" widgetVar="scrollPanel"
+                     rendered="#{not empty casePoliciesTabBean.messageList}">
+        <ui:repeat value="#{casePoliciesTabBean.messageList}" var="row" varStatus="rowStatus">
+          <h:outputText value="#{casePoliciesTabBean.getFormattedMessage(row)}" 
+                        styleClass="#{row.level.name} #{rowStatus.odd ? 'row0' : 'row1'}" />
+        </ui:repeat>
+      </p:scrollPanel>
+
+      <p:poll interval="1" listener="#{casePoliciesTabBean.refreshAnalyzeStatus}" 
+              update="analyzer_messages"
+              widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>    
+    </p:outputPanel>
 
   </h:panelGroup>
-  
+
   <!-- Only works appendTo="@(form)" with one single form -->
   <p:dialog id="case_policies_dialog" widgetVar="casePoliciesDialog"
             styleClass="edit_data_dialog mw_600"
@@ -99,13 +128,13 @@
     </f:facet>
 
     <h:panelGroup styleClass="mt-2" id="case_policies_panel" layout="block"
-             rendered="#{casePoliciesTabBean.editing != null}">
+                  rendered="#{casePoliciesTabBean.editing != null}">
 
       <p:messages showSummary="true" styleClass="messages" 
                   showIcon="true" closable="false" forIgnores="growl">
         <p:autoUpdate />
       </p:messages>      
-      
+
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12">
@@ -125,7 +154,7 @@
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
-        
+
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{policyBundle.casePolicies_state}"/>
@@ -133,8 +162,8 @@
             <f:selectItems value="#{casePoliciesTabBean.policyStateSelectItems}" />
           </p:selectOneMenu>
         </div>        
-        
-    
+
+
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{policyBundle.casePolicies_activationDate}"/>
@@ -145,7 +174,7 @@
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
         </div>
-        
+
         <emcomp:auditData creationDateTime="#{casePoliciesTabBean.editing.creationDateTime}"
                           creationUserId="#{casePoliciesTabBean.editing.creationUserId}"
                           changeDateTime="#{casePoliciesTabBean.editing.approvalDateTime}"
@@ -158,20 +187,20 @@
                           changeDateTimeLabel="#{policyBundle.casePolicies_executionDateTime}"
                           changeUserIdLabel="#{policyBundle.casePolicies_executionUserId}"                          
                           rendered="#{casePoliciesTabBean.editing != null}" />         
-        
+
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{policyBundle.casePolicies_executionResult}"/>
           <p:inputTextarea value="#{casePoliciesTabBean.editing.executionResult}" />
-        </div>          
-             
+        </div>        
+
       </div>
 
     </h:panelGroup>
 
     <f:facet name="footer">
 
-      <div class="field col-12 text-right">
+      <div class="field col-12 text-right">        
         <p:commandButton id="case_policies_store"
                          action="#{casePoliciesTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"

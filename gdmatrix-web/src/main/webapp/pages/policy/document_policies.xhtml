@@ -5,7 +5,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
+  
+  <h:outputStylesheet library="css" name="policy.css" />  
+    
   <h:panelGroup>
 
     <!-- Results table -->
@@ -20,6 +22,19 @@
       
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-play" styleClass="ui-button-flat"
+                           alt="#{policyBundle.analyze}" title="#{policyBundle.analyze}"
+                           action="#{documentPoliciesTabBean.analyzeCase}"
+                           rendered="#{documentObjectBean.editable}"
+                           global="false"
+                           process="@this" update="document_policies_table @parent:@parent:@parent:analyzer_messages"
+                           onclick="PF('poll').start();"
+                           oncomplete="PF('poll').stop();PF('scrollPanel').scrollTo(0,600000000);" />
+          <p:commandButton icon="pi pi-refresh" styleClass="ui-button-flat"
+                           alt="#{policyBundle.reload}" title="#{policyBundle.reload}"
+                           action="#{documentPoliciesTabBean.load}"
+                           rendered="#{documentObjectBean.editable}"
+                           process="@this" update="document_policies_table @parent:@parent:@parent:analyzer_messages" />           
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{documentPoliciesTabBean.create}"
                            process="@form:cnt:search_tabs:tabs"
@@ -78,7 +93,20 @@
       </p:column>
     </p:dataTable>
     
+    <p:outputPanel id="analyzer_messages">
+      <p:scrollPanel styleClass="analyzer w-full" widgetVar="scrollPanel"
+                     rendered="#{not empty documentPoliciesTabBean.messageList}">
+        <ui:repeat value="#{documentPoliciesTabBean.messageList}" var="row" varStatus="rowStatus">
+          <h:outputText value="#{documentPoliciesTabBean.getFormattedMessage(row)}" 
+                        styleClass="#{row.level.name} #{rowStatus.odd ? 'row0' : 'row1'}" />
+        </ui:repeat>
+      </p:scrollPanel>
 
+      <p:poll interval="1" listener="#{documentPoliciesTabBean.refreshAnalyzeStatus}" 
+              update="analyzer_messages"
+              widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>    
+    </p:outputPanel>
+    
   </h:panelGroup>
   
   <!-- Only works appendTo="@(form)" with one single form -->

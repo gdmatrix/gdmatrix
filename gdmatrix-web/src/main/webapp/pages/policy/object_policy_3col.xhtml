@@ -1,0 +1,150 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:outputStylesheet library="css" name="object_3col.css" />
+    <h:outputStylesheet library="css" name="policy.css" />  
+
+    <div class="template-layout flex h-full">
+
+      <div class="col flex slick-columns w-full pl-0 pr-0">
+        <!-- Left column -->
+        <p:panel id="left_colunn"
+                 widgetVar="leftPanel"
+                 class="side_panel left m-1 first_time">
+          <f:facet name="header">
+            <i class="pi pi-search m-1"></i>
+            <p:outputLabel value="#{not empty userSessionBean.menuModel.selectedMenuItem.properties.searchLabel 
+                                  ? applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.searchLabel) 
+                                  : searchLabel}" />
+            <p:commandLink onclick="return closePanel('leftPanel');"
+                           class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
+              <span class="ui-icon ui-icon-closethick"></span>
+            </p:commandLink>
+          </f:facet>
+
+          <ui:insert name="filter"></ui:insert>
+
+        </p:panel>
+
+        <!-- Central column -->
+        <p:outputPanel id="central_column"
+                       class="central_column flex-grow-1 m-1">
+          <div class="object_header">
+            <h1 class="object_label">
+              <h:outputText value="" styleClass="#{userSessionBean.menuModel.selectedMenuItem.properties.icon} ml-2" />
+              <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" styleClass="ml-2" />
+            </h1>
+
+            <div class="header_buttons">
+              <p:outputPanel id="state_buttons" class="ui-inputgroup">
+                <p:commandButton icon="ui-icon pi pi-save" value="#{objectBundle.apply}"
+                                 styleClass="mini"
+                                 action="#{finderBean.changeState}"
+                                 process="@this" update="@parent @form:cnt:search_tabs"
+                                 rendered="#{not finderBean.statesMap.isEmpty()}"/>
+                <p:commandButton icon="ui-icon pi pi-undo" value="#{objectBundle.cancel}"
+                                 action="#{finderBean.cancelChanges}"
+                                 styleClass="mini"
+                                 process="@this" update="@parent @form:cnt:search_tabs" 
+                                 rendered="#{not finderBean.statesMap.isEmpty()}"/>                
+              </p:outputPanel>
+              
+              <p:button onclick="return showPanel('leftPanel');"
+                        icon="pi pi-search"
+                        title="#{objectBundle.search}"
+                        widgetVar="leftPanelButton"
+                        class="rounded-button ui-button-flat first_time side_button"  />
+              <p:button onclick="return showPanel('rightPanel')"
+                        icon="pi pi-sitemap"
+                        title="#{objectBundle.context}"
+                        widgetVar="rightPanelButton"
+                        class="rounded-button ui-button-flat first_time side_button" />
+            </div>
+          </div>
+
+          <p:messages showSummary="true" styleClass="messages" 
+                      showIcon="true" closable="false" forIgnores="growl"
+                      rendered="#{objectBean.activeTabBean == null or 
+                                  !objectBean.activeTabBean.dialogVisible}">
+            <p:autoUpdate />
+          </p:messages>
+
+          <div class="object_data">
+            <ui:insert name="object"></ui:insert>
+          </div>
+        </p:outputPanel>
+
+        <!-- Right column -->
+        <p:panel id="right_column"
+                 widgetVar="rightPanel"
+                 class="side_panel right m-1 first_time">
+          <f:facet name="header">
+            <i class="pi pi-sitemap m-1"></i>
+            <span>#{objectBundle.context}</span>
+            <p:commandLink onclick="return closePanel('rightPanel');"
+                           class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
+              <span class="ui-icon ui-icon-closethick"></span>
+            </p:commandLink>
+          </f:facet>
+
+          <p:outputPanel id="context_panel">
+            <p:tabView styleClass="context_tabs"
+                       dynamic="true"
+                       activeIndex="#{navigatorBean.contextTabSelector}">
+
+              <p:ajax event="tabChange" process="@this" />
+
+              <c:forEach items="#{navigatorBean.contextPanels}" var="contextPanel" >
+                <ui:include src="/pages/obj/#{contextPanel}.xhtml" />
+              </c:forEach>
+            </p:tabView>
+          </p:outputPanel>
+        </p:panel>
+      </div>
+
+      <script>
+        function showPanel(panelVar)
+        {
+          var panel = PF(panelVar);
+          panel.show();
+          panel.getJQ().css("display", "flex");
+          var panelButton = PF(panelVar + "Button");
+          panel.getJQ().removeClass("first_time");
+          panelButton.getJQ().removeClass("first_time");
+          panelButton.getJQ().css("display", "none");
+          return false;
+        }
+
+        function closePanel(panelVar)
+        {
+          var panel = PF(panelVar);
+          panel.close();
+          var panelButton = PF(panelVar + "Button");
+          panelButton.getJQ().css("display", "inline");
+          return false;
+        }
+
+        function endPanel(panelVar)
+        {
+          if (700 > window.innerWidth)
+          {
+            closePanel(panelVar);
+          }
+        }
+      </script>
+
+    </div>
+
+    <p:growl for="growl" life="1500" >
+      <p:autoUpdate />
+    </p:growl>          
+    
+</ui:composition>
+
+
+

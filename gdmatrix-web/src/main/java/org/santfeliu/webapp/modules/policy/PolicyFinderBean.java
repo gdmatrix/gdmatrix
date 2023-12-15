@@ -43,7 +43,6 @@ import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
-import org.santfeliu.webapp.setup.Column;
 
 /**
  *
@@ -111,20 +110,20 @@ public class PolicyFinderBean extends FinderBean
     this.formSelector = formSelector;
   }
 
-  public List<Column> getColumns()
-  {
-    try
-    {
-      if (objectSetup == null)
-        loadObjectSetup();
-
-      return objectSetup.getSearchTabs().get(0).getColumns();
-    }
-    catch (Exception ex)
-    {
-      return Collections.emptyList();
-    }
-  }
+//  public List<Column> getColumns()
+//  {
+//    try
+//    {
+//      if (objectSetup == null)
+//        loadObjectSetup();
+//
+//      return objectSetup.getSearchTabs().get(0).getColumns();
+//    }
+//    catch (Exception ex)
+//    {
+//      return Collections.emptyList();
+//    }
+//  }
 
   @Override
   public String getObjectId(int position)

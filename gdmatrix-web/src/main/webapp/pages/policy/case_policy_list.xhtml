@@ -1,0 +1,147 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+
+  <p:dataTable value="#{casePolicyFinderBean.rows}" 
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{casePolicyFinderBean.firstRow}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+               rows="10" 
+               rowIndexVar="rowIndex" reflow="true">
+
+    <p:column headerText="#{policyBundle.casePolicySearch_case}" styleClass="col-6 vertical-align-top">
+      <div>       
+        <h:outputText styleClass="font-bold" value="#{row.casePolicy.caseId}:" />
+        <span class="font-bold">#{row.case.title}</span>
+      </div>
+
+      <div class="mb-1">        
+        <h:outputText value="#{typeTypeBean.getDescription(row.case.caseTypeId)}" rendered="#{row.case != null}"
+                      />
+      </div>
+      <p:outputPanel rendered="#{row.case != null and not empty row.case.classId}">
+        <i class="pi pi-tag mr-2 nowrap" />
+        <h:outputText value="#{classTypeBean.getDescription(row.case.classId.get(0))}"/>
+      </p:outputPanel>
+
+    </p:column>
+
+    <p:column styleClass="text-right vertical-align-top">
+      <p:commandButton icon="pi pi-external-link" 
+                       styleClass="ui-button-flat"  
+                       action="#{navigatorBean.show('Case', row.case.caseId)}"
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}"
+                       process="@this"
+                       update="@form:cnt"
+                       rendered="#{row.case != null}"
+                       />      
+    </p:column>
+
+    <p:column headerText="#{policyBundle.casePolicySearch_policy}" styleClass="col-6">
+      <h:panelGroup>
+        <div>
+          <h:outputText styleClass="font-bold" value="#{row.policy.policyId}: #{row.policy.title}"/> 
+        </div>
+        #{typeTypeBean.getDescription(row.policy.policyTypeId)}
+        <p:outputPanel rendered="#{row.casePolicy.reason != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_reason}: "
+                        style="font-weight:bold"/>
+          <h:outputText value="#{row.casePolicy.reason}" />
+        </p:outputPanel>
+
+        <div class="flex w-12 m-1 align-content-start align-items-center justify-content-center gap-1">
+          <p:outputPanel styleClass="border-round border-1 surface-border h-4rem w-3 p-1 text-sm #{row.casePolicy.creationDateTime != null ? 'bg-green-100' : 'surface-ground'}">
+            <div class="text-center font-bold pb-1">#{policyBundle.casePolicySearch_creation}</div>
+            <div class="text-center ">
+              <h:outputText value="#{row.casePolicy.creationDateTime}">
+                <f:converter converterId="DateTimeConverter" />
+                <f:attribute name="userFormat" value="dd/MM/yyyy" />                
+              </h:outputText>
+            </div>
+            <div class="text-center">#{row.casePolicy.creationUserId}</div>
+          </p:outputPanel>
+
+          <p:outputPanel styleClass="border-round border-1 surface-border h-4rem w-3 p-1 text-sm #{row.casePolicy.activationDate != null ? 'bg-green-100' : 'surface-ground'}">
+            <div class="text-center font-bold pb-1">#{policyBundle.casePolicySearch_activation}</div>
+            <div class="text-center "><h:outputText value="#{row.casePolicy.activationDate}" converter="dateConverter" /></div>                      
+          </p:outputPanel>
+
+
+          <p:outputPanel id="approval-info" styleClass="border-round border-1 surface-border h-4rem w-3 p-1 text-sm #{row.casePolicy.approvalDateTime != null ? 'bg-green-100' : 'surface-ground'}">
+            <div class="text-center font-bold pb-1 flex flex-nowrap">
+              <div class="flex-grow-1">#{policyBundle.casePolicySearch_approval}</div>
+              <i class="flex-grow-0 pi #{row.policy.automaticExecution == 'true' ? 'pi pi-verified' : ''}" />
+            </div>
+            <div class="text-center ">
+              <h:outputText value="#{row.casePolicy.approvalDateTime}">
+                <f:converter converterId="DateTimeConverter" />
+                <f:attribute name="userFormat" value="dd/MM/yyyy" />                
+              </h:outputText>            
+            </div>            
+            <div class="text-center">#{row.casePolicy.approvalUserId}</div>            
+          </p:outputPanel>
+
+          <p:outputPanel  styleClass="border-round border-1 surface-border h-4rem w-3 p-1 text-sm #{row.casePolicy.state != 'FAILED' ? row.casePolicy.executionDateTime != null ?  'bg-green-100' : 'surface-ground' : 'bg-red-100'}">
+
+            <div class="text-center font-bold pb-1 flex flex-nowrap">
+              <h:outputText class="flex-grow-1" value="#{policyBundle.casePolicySearch_execution}" />
+              <p:commandButton id="execution-info" type="button" 
+                               styleClass="ui-button-flat rounded-button flex-grow-0 w-1rem h-1rem" 
+                               rendered="#{row.casePolicy.executionResult != null}" 
+                               icon="pi pi-info-circle" 
+                               title="#{policyBundle.casePolicies_executionResult}" alt="#{policyBundle.casePolicies_executionResult}"/>                          
+            </div>
+
+
+            <div class="text-center ">
+              <h:outputText value="#{row.casePolicy.executionDateTime}">
+                <f:converter converterId="DateTimeConverter" />
+                <f:attribute name="userFormat" value="dd/MM/yyyy" />                
+              </h:outputText>            
+            </div>   
+
+            <div class="text-center">#{row.casePolicy.executionUserId}</div> 
+            <p:overlayPanel for="execution-info" 
+                            rendered="#{row.casePolicy.executionResult != null}">
+              #{row.casePolicy.executionResult}
+              <h:outputText value="#{row.casePolicy.reason}" />
+            </p:overlayPanel>              
+          </p:outputPanel>
+
+          <div class="text-center">
+
+          </div>
+        </div>
+
+      </h:panelGroup>
+    </p:column>
+
+    <p:column styleClass="text-right vertical-align-top">      
+      <p:commandButton icon="pi pi-external-link" 
+                       styleClass="ui-button-flat"  
+                       action="#{navigatorBean.show('Policy', row.policy.policyId)}"
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}"
+                       process="@this"
+                       update="@form:cnt"
+                       rendered="#{row.policy != null}" />    
+
+      <p:selectOneMenu id="state_selector" value="#{casePolicyFinderBean.rowState}" 
+                       styleClass="state_selector #{casePolicyFinderBean.isRowStateChanged(row) ? 'state_changed' : null}"
+                       panelStyleClass="state_selector_items" >            
+        <f:selectItems value="#{casePoliciesTabBean.policyStateSelectItems}"/>                        
+        <p:ajax event="itemSelect" update="@this @form:cnt:state_buttons" process="@this" />             
+      </p:selectOneMenu>  
+    </p:column>
+
+  </p:dataTable>  
+
+</ui:composition> 
+

@@ -1,0 +1,208 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                template="/pages/policy/object_policy_3col.xhtml">
+
+  <ui:param name="finderBean" value="#{casePolicyFinderBean}" />
+  <ui:param name="searchLabel" value="#{policyBundle.policySearch_searchLabel}" />
+
+  <ui:define name="filter">
+    <p:outputPanel id="filter_panel">
+
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="CaseId" />
+          <p:inputText value="#{casePolicyFinderBean.filter.caseId}" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicies_policy}" />
+          <emcomp:objectReference value="#{casePolicyFinderBean.filter.policyId}"
+                                  type="Policy"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  renderShowButton="false"
+                                  onselect="showPanel('leftPanel')"
+                                  process="@form:cnt:filter_panel"
+                                  update="@form:cnt:filter_panel">
+          </emcomp:objectReference>
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicies_type}" />
+          <emcomp:typeReference value="#{casePolicyFinderBean.filter.policyTypeId}"
+                                type="Policy"
+                                showNonInstantiableItems="false"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                renderShowButton="false"
+                                onselect="showPanel('leftPanel')"
+                                process="@form:cnt:filter_panel"
+                                update="@form:cnt:filter_panel">
+          </emcomp:typeReference>
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_state}" />
+          <p:selectOneMenu value="#{casePolicyFinderBean.filter.state}">
+            <f:selectItem itemLabel=" " itemValue="" />
+            <f:selectItems value="#{casePoliciesTabBean.policyStateSelectItems}" />
+          </p:selectOneMenu>          
+        </div>
+
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_creationDates}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.startCreationDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>   
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_and}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.endCreationDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>   
+
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_approvalDates}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.startApprovalDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>   
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_and}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.endApprovalDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>   
+
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_activationDates}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.startActivationDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>   
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_and}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.endActivationDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>          
+
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_executionDates}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.startExecutionDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>   
+        <div class="field col-12 xl:col-6">
+          <p:outputLabel for="@next" value="#{policyBundle.casePolicySearch_and}" />
+          <p:datePicker value="#{casePolicyFinderBean.filter.endExecutionDate}"
+                        autocomplete="off"
+                        placeholder="dd/MM/yyyy"
+                        locale="#{casePolicyFinderBean.language}"
+                        showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
+        </div>   
+
+      </div>
+
+      <div class="buttons text-right">
+        <p:commandButton value="#{objectBundle.clear}"
+                         action="#{casePolicyFinderBean.clear}"
+                         process="@form:cnt:filter_panel"
+                         styleClass="m-1"
+                         update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                         resetValues="true"
+                         />
+        <p:commandButton id="advanced_search_button"
+                         value="#{objectBundle.search}"
+                         action="#{casePolicyFinderBean.find}"
+                         process="@form:cnt:filter_panel"
+                         update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                         resetValues="true"
+                         styleClass="m-1"
+                         oncomplete="endPanel('leftPanel');"
+                         />
+      </div>
+    </p:outputPanel>
+  </ui:define>
+
+  <ui:define name="object">
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0)
+        {
+          updateResults();
+        }
+      }
+    </script>
+
+    <p:remoteCommand name="updateResults"
+                     action="#{casePolicyFinderBean.update}"
+                     process="@this"
+                     update="@form:cnt:search_tabs:result_list" />
+
+    <h:panelGroup id="search_tabs">
+      <h:panelGroup id="result_list">
+        <ui:include src="case_policy_list.xhtml" />
+      </h:panelGroup>      
+      <h:panelGroup id="obj_tabs"></h:panelGroup>
+    </h:panelGroup>    
+
+    <script>
+      window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+      document.title = "#{userSessionBean.selectedMenuItem.label}";
+    </script>  
+
+  </ui:define>
+
+
+</ui:composition>

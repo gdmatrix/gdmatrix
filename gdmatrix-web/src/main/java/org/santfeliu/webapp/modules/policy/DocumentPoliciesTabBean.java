@@ -31,9 +31,14 @@
 package org.santfeliu.webapp.modules.policy;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -43,6 +48,9 @@ import org.matrix.policy.DocumentPolicyFilter;
 import org.matrix.policy.DocumentPolicyView;
 import org.matrix.policy.PolicyState;
 import org.santfeliu.faces.FacesUtils;
+import org.santfeliu.util.log.ListHandler;
+import org.santfeliu.util.script.ScriptClient;
+import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.doc.DocumentObjectBean;
@@ -60,6 +68,12 @@ public class DocumentPoliciesTabBean extends TabBean
   private List<DocumentPolicyView> rows;
   private int firstRow;
   private DocumentPolicy editing; 
+  
+  @CMSProperty
+  public static final String ANALYZER_SCRIPT_PROPERTY = "analyzer";
+  public static final Logger LOGGER = Logger.getLogger("document_analyzer");  
+  private List<LogRecord> messageList = new ArrayList<>();
+  private ListHandler logHandler;    
   
   @Inject
   private DocumentObjectBean documentObjectBean;
@@ -99,6 +113,52 @@ public class DocumentPoliciesTabBean extends TabBean
   {
     this.editing = editing;
   }
+  
+  public List<LogRecord> getMessageList()
+  {
+    return messageList;
+  }
+
+  public void setMessageList(List<LogRecord> messageList)
+  {
+    this.messageList = messageList;
+  }  
+  
+  public String getFormattedMessage(LogRecord record)
+  {
+    try
+    {
+      String formattedMessage;
+      if (record.getParameters() == null)
+      {
+        formattedMessage = record.getMessage();
+      }
+      else
+      {
+        formattedMessage =
+          MessageFormat.format(record.getMessage(), record.getParameters());
+      }
+      return formattedMessage;
+    }
+    catch (Exception ex)
+    {
+      return ex.toString();
+    }
+  }  
+  
+  public void refreshAnalyzeStatus()
+  {
+    if (logHandler != null)
+    {
+      List<LogRecord> logRecords = logHandler.getLogRecords();
+      if (!logRecords.isEmpty())
+      {
+        getMessageList().clear();    
+        getMessageList().addAll(logRecords);        
+      }
+    }
+  }
+    
   
   public SelectItem[] getPolicyStateSelectItems()
   {
@@ -215,6 +275,51 @@ public class DocumentPoliciesTabBean extends TabBean
       }
     }
   }
+  
+  public void analyzeCase()
+  {
+    try
+    {
+      getMessageList().clear();
+
+      logHandler = new ListHandler();
+      logHandler.setFilter(record ->
+        record.getThreadID() == Thread.currentThread().getId());
+      logHandler.setLevel(Level.ALL);
+      LOGGER.addHandler(logHandler);
+      LOGGER.setLevel(Level.ALL);
+
+      String docId = getObjectId();
+
+      try
+      {
+        ScriptClient client = new ScriptClient();
+        client.put("docId", docId);
+        client.put("logger", LOGGER);
+        client.refreshCache();
+
+        String scriptName = getProperty(ANALYZER_SCRIPT_PROPERTY);
+        if (scriptName == null) scriptName = "analyzer";
+
+        client.executeScript(scriptName);
+      }
+      catch (Exception screx)
+      {
+        LOGGER.log(Level.SEVERE, screx.toString());
+      }
+      finally
+      {
+        getMessageList().clear();
+        getMessageList().addAll(logHandler.getLogRecords());
+        LOGGER.removeHandler(logHandler);
+        load();
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
 
   @Override
   public Serializable saveState()
