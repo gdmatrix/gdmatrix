@@ -51,178 +51,26 @@
                       creationDateTime="#{policyObjectBean.policy.creationDateTime}" 
                       changeUserId="#{policyObjectBean.policy.changeUserId}" 
                       changeDateTime="#{policyObjectBean.policy.changeDateTime}" />
-<!--
-    <div class="w-12 font-bold surface-ground p-2 m-2">#{policyBundle.policyMain_activation}</div> 
--->
+    <!--
+        <div class="w-12 font-bold surface-ground p-2 m-2">#{policyBundle.policyMain_activation}</div> 
+    -->
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{policyBundle.policyMain_date}" />
-      <p:commandButton icon="pi pi-question-circle" styleClass="rounded-button ui-button-info ui-button-flat"/>
-      <p:overlayPanel for="@previous" class="text-s" at="bottom" my="left">
-        <H3 class="text">Funcions</H3>
-        <UL>
-          <LI>
-            <SPAN class="code">addDate(dateTime, increment, unit)</SPAN>
-            <SPAN class="info">Incrementa la data <SPAN class="code">dateTime</SPAN>, <SPAN class="code">increment</SPAN>
-              unitats de tipus <SPAN class="code">unit</SPAN>.</SPAN>
-          </LI>
-
-          <LI>
-            <SPAN class="code">parseDate(text, pattern)</SPAN>
-            <SPAN class="info">Converteix <SPAN class="code">text</SPAN> a data segons el patró
-              <SPAN class="code">pattern</SPAN>.</SPAN>
-          </LI>
-
-          <LI>
-            <SPAN class="code">formatDate(dateTime, pattern)</SPAN>
-            <SPAN class="info">Dona format a la data <SPAN class="code">dateTime</SPAN> segons el patró <SPAN class="code">pattern</SPAN>.</SPAN>
-          </LI>
-        </UL>
-
-        <SPAN class="text">Els valors acceptars pels paràmetres 
-          <SPAN class="code">unit</SPAN> i <SPAN class="code">pattern</SPAN> són:</SPAN>
-        <TABLE class="table">
-          <TR class="row1">
-            <TD class="metadata">y</TD>
-            <TD>Anys</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">M</TD>
-            <TD>Mesos</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">d</TD>
-            <TD>Dies</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">H</TD>
-            <TD>Hores</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">m</TD>
-            <TD>Minuts</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">s</TD>
-            <TD>Segons</TD>
-          </TR>
-        </TABLE>
-
-        <H3 class="text">Metadades bàsiques de document</H3>
-        <TABLE class="table">
-          <TR class="row1">
-            <TD class="metadata">docId</TD>
-            <TD>Identificador del document</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">version</TD>
-            <TD>Versió del document</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">title</TD>
-            <TD>Títol del document</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">description</TD>
-            <TD>Descripció</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">docTypeId</TD>
-            <TD>Tipus del document</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">state</TD>
-            <TD>Estat del document</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">language</TD>
-            <TD>Idioma del document</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">classId</TD>
-            <TD>Sèrie del document (mulitvalor)</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">captureDateTime</TD>
-            <TD>Data/hora de captura</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">captureUserId</TD>
-            <TD>Usuari que ha capturat el document</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">changeDateTime</TD>
-            <TD>Data de la darrera modificació</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">changeUserId</TD>
-            <TD>Usuari que ha fet la darrera modifcació</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">creationDate</TD>
-            <TD>Data de creació</TD>
-          </TR>
-        </TABLE>
-
-        <H3 class="text">Metadades bàsiques d'expedient</H3>
-        <TABLE class="table">
-          <TR class="row1">
-            <TD class="metadata">caseId</TD>
-            <TD>Identificador de l'expedient</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">title</TD>
-            <TD>Títol del document</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">description</TD>
-            <TD>Descripció</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">caseTypeId</TD>
-            <TD>Tipus de l'expedient</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">classId</TD>
-            <TD>Sèrie de l'expedient (mulitvalor)</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">startDate</TD>
-            <TD>Data d'obertura de l'expedient</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">endDate</TD>
-            <TD>Data de tancament de l'expedient</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">creationDateTime</TD>
-            <TD>Data de creació de l'expedient.</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">creationUserId</TD>
-            <TD>Usuari que va crear l'expedient.</TD>
-          </TR>
-          <TR class="row2">
-            <TD class="metadata">changeDateTime</TD>
-            <TD>Data de la darrera modificació</TD>
-          </TR>
-          <TR class="row1">
-            <TD class="metadata">changeUserId</TD>
-            <TD>Usuari que ha fet la darrera modifcació</TD>
-          </TR>
-        </TABLE>
-      </p:overlayPanel>      
+      <p:commandButton icon="pi pi-question-circle" styleClass="rounded-button ui-button-info ui-button-flat"
+                       onclick="PF('helpDocumentDialog').show()"/>     
       <gdm:codemirror value="#{policyObjectBean.policy.activationDateExpression}" language="javascript"/>
     </div>
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{policyBundle.policyMain_condition}" />
-      <p:commandButton icon="pi pi-question-circle" styleClass="rounded-button ui-button-info ui-button-flat"/>
+      <p:commandButton icon="pi pi-question-circle" styleClass="rounded-button ui-button-info ui-button-flat"
+                       onclick="PF('helpDocumentDialog').show()"/>
       <gdm:codemirror value="#{policyObjectBean.policy.activationCondition}" language="javascript"/>
     </div>
 
-<!--
-    <div class="w-12 font-bold surface-ground p-2 m-2">#{policyBundle.policyMain_execution}</div> 
--->
+    <!--
+        <div class="w-12 font-bold surface-ground p-2 m-2">#{policyBundle.policyMain_execution}</div> 
+    -->
     <div class="field col-12">
       <p:selectBooleanCheckbox value="#{policyObjectBean.policy.automaticExecution}"
                                itemLabel="#{policyBundle.policyMain_automatic}"
@@ -234,6 +82,14 @@
   <emcomp:dynamicProperties typeId="#{policyObjectBean.policy.policyTypeId}"
                             formSelector="#{policyObjectBean.formSelector}"
                             properties="#{policyObjectBean.policy.property}" 
-                            options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}"/>   
+                            options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}"/> 
+
+  <p:dialog id="help_document_dialog" widgetVar="helpDocumentDialog" 
+            resizable="false" responsive="true" position="center center"
+            minHeight="100" width="600" showEffect="fade" hideEffect="fade">
+    
+    <ui:include src="help.html" />
+
+  </p:dialog>  
 
 </ui:composition>
