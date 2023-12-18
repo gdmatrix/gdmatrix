@@ -469,7 +469,16 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     try
     {
-      editSld(editingId, null, null);
+      getStyle().getSources().put(editingId, editingSource);
+      setServiceParameters(editingId, editingServiceParameters);
+      String sourceId = editingId;
+
+      editingId = null;
+      editingSource = null;
+      editingServiceParameters = null;
+      sourceIds = null;
+
+      editSld(sourceId, null, null);
     }
     catch (Exception ex)
     {
@@ -566,14 +575,34 @@ public class GeoMapBean extends WebBean implements Serializable
     return serviceParameters.getSldName();
   }
 
-  public void setLayerVisible(Layer layer, boolean visible)
+  public void toggleLayerVisibility(Layer layer)
   {
-    layer.setVisible(visible);
+    layer.setVisible(!layer.isVisible());
   }
 
-  public void setLayerLocatable(Layer layer, boolean locatable)
+  public boolean isLayerVisible(Layer layer)
   {
-    layer.setLocatable(locatable);
+    return layer.isVisible();
+  }
+
+  public void toggleLayerLocatability(Layer layer)
+  {
+    layer.setLocatable(!layer.isLocatable());
+  }
+
+  public boolean isLayerLocatable(Layer layer)
+  {
+    return layer.isLocatable();
+  }
+
+  public void toggleLayerHighlight(Layer layer)
+  {
+    layer.setHighlightEnabled(!layer.isHighlightEnabled());
+  }
+
+  public boolean isLayerHighlightEnabled(Layer layer)
+  {
+    return layer.isHighlightEnabled();
   }
 
   public String getJsonPaint()
@@ -599,6 +628,7 @@ public class GeoMapBean extends WebBean implements Serializable
     Gson gson = new Gson();
     editingLayer.setLayout(gson.fromJson(json, Map.class));
   }
+
 
   public void onLayerReorder(ReorderEvent event)
   {
@@ -1261,6 +1291,8 @@ public class GeoMapBean extends WebBean implements Serializable
       if (serviceId == null) return;
 
       String sldName = serviceParameters.getSldName();
+      System.out.println("sldName:" + sldName);
+
       Service service = getServices().get(serviceId);
       String serviceUrl = service == null ? null : service.getUrl();
 
@@ -1284,10 +1316,9 @@ public class GeoMapBean extends WebBean implements Serializable
         styleList.addAll(Arrays.asList(styles.split(",")));
       }
 
+      System.out.println("service + sld: " + serviceUrl + " " + sldName);
       if (serviceUrl != null && !isBlank(sldName))
       {
-        acceptSource();
-
         GeoSldBean geoSldBean = CDI.current().select(GeoSldBean.class).get();
         geoSldBean.editSld(sldName, layerList, styleList, serviceUrl);
 

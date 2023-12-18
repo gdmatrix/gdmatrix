@@ -27,29 +27,25 @@
     <p:column headerText="Type">
       #{layer.type}
     </p:column>
-    <p:column headerText="Visible">
-      <p:commandButton action="#{geoMapBean.setLayerVisible(layer, true)}"
-                       icon="pi pi-eye-slash" rendered="#{not layer.visible}"
+    <p:column headerText="Flags" styleClass="white-space-nowrap">
+      <p:commandButton action="#{geoMapBean.toggleLayerVisibility(layer)}"
+                       icon="pi #{geoMapBean.isLayerVisible(layer) ? 'pi-eye' : 'pi-eye-slash'}" 
                        styleClass="rounded-button ui-button-flat"
+                       title="#{geoMapBean.isLayerVisible(layer) ? 'Visible' : 'Hidden'}"
                        process="@this"
-                       update="@form:cnt:map_tabs:map_layers_table" />
-      <p:commandButton action="#{geoMapBean.setLayerVisible(layer, false)}"
-                       icon="pi pi-eye" rendered="#{layer.visible}"
+                       update="@this" />
+      <p:commandButton action="#{geoMapBean.toggleLayerLocatability(layer)}"
+                       icon="pi #{geoMapBean.isLayerLocatable(layer) ? 'pi-arrow-up-left' : 'pi-times'}" 
                        styleClass="rounded-button ui-button-flat"
+                       title="#{geoMapBean.isLayerVisible(layer) ? 'Locatable' : 'No locatable'}"
                        process="@this"
-                       update="@form:cnt:map_tabs:map_layers_table" />
-    </p:column>
-    <p:column headerText="Locatable">
-      <p:commandButton action="#{geoMapBean.setLayerLocatable(layer, true)}"
-                       icon="pi pi-times" rendered="#{not layer.locatable}"
+                       update="@this" />
+      <p:commandButton action="#{geoMapBean.toggleLayerHighlight(layer)}"
+                       icon="pi #{geoMapBean.isLayerHighlightEnabled(layer) ? 'pi-sun' : 'pi-minus'}" 
                        styleClass="rounded-button ui-button-flat"
+                       title="#{geoMapBean.isLayerHighlightEnabled(layer) ? 'Highlighted' : 'Not highlighted'}"
                        process="@this"
-                       update="@form:cnt:map_tabs:map_layers_table" />
-      <p:commandButton action="#{geoMapBean.setLayerLocatable(layer, false)}"
-                       icon="pi pi-arrow-up-right" rendered="#{layer.locatable}"
-                       styleClass="rounded-button ui-button-flat"
-                       process="@this"
-                       update="@form:cnt:map_tabs:map_layers_table" />
+                       update="@this" />
     </p:column>
 
     <p:column styleClass="w-2 text-right white-space-nowrap">
@@ -216,6 +212,16 @@
               </gdm:codemirror>            
             </p:tab>
 
+            <p:tab title="Highlight">
+              <div class="ui-fluid formgrid grid">
+                <div class="field col-12">
+                  <p:outputLabel value="Enabled" for="@next" />
+                  <p:toggleSwitch value="#{geoMapBean.editingLayer.highlightEnabled}"
+                                  styleClass="vertical-align-middle ml-2"/>
+                </div> 
+              </div>
+            </p:tab>            
+            
           </p:tabView>
         </div>
         

@@ -40,7 +40,6 @@ public class LayerForm implements Serializable
 {
   String layer;
   String formSelector;
-  boolean highlight;
 
   public LayerForm()
   {
@@ -50,7 +49,6 @@ public class LayerForm implements Serializable
   {
     this.layer = (String)properties.get("layer");
     this.formSelector = (String)properties.get("formSelector");
-    this.highlight = (Boolean)properties.get("highlight");
   }
 
   public String getLayer()
@@ -71,15 +69,5 @@ public class LayerForm implements Serializable
   public void setFormSelector(String formSelector)
   {
     this.formSelector = formSelector;
-  }
-
-  public boolean isHighlight()
-  {
-    return highlight;
-  }
-
-  public void setHighlight(boolean highlight)
-  {
-    this.highlight = highlight;
   }
 }

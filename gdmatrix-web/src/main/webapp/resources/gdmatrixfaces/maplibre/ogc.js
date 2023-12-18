@@ -29,12 +29,15 @@ if (window.ogcLoaded === undefined)
       const properties = [];
       const parser = new DOMParser();
       const xml = parser.parseFromString(responseText, "application/xml");
+      
+      let geometryColumn = null;
       let complexType = xml.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "complexType")[0];
       if (complexType)
       {
         let elements = complexType.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "element");
         for (let element of elements)
         {
+          let name = element.getAttribute("name");
           let type = element.getAttribute("type");
           let index = type.indexOf(":");
           if (index !== -1) type = type.substring(index + 1);
@@ -42,9 +45,16 @@ if (window.ogcLoaded === undefined)
           {
             type = type.substring(0, type.length - 12);
           }
+          if (type === "Point" || 
+              type === "LineString" ||
+              type === "Surface" || 
+              type === "Geometry")
+          {
+            geometryColumn = name;
+          }
 
           let property = {
-            name: element.getAttribute("name"),
+            name: name,
             type: type,
             minOccurs: element.getAttribute("minOccurs"),
             maxOccurs: element.getAttribute("maxOccurs")
@@ -52,7 +62,11 @@ if (window.ogcLoaded === undefined)
           properties.push(property);      
         }
       }
-      return { name: typeName, properties: properties };
+      return { 
+        name: typeName, 
+        geometryColumn: geometryColumn, 
+        properties: properties 
+      };
     }
   }
 

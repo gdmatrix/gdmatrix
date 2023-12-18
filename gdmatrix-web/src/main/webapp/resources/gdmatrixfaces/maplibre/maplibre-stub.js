@@ -103,6 +103,8 @@ if (window.mapLibreControlsLoaded === undefined)
       div.style.userSelect = "none";
       div.style.fontFamily = "var(--font-family)";
       div.title = "Pending tiles";
+
+      this.updateProgress();
       return div;
     }
   }
@@ -116,6 +118,7 @@ if (window.mapLibreControlsLoaded === undefined)
       this.title = title;
       this.iconClassName = iconClassName || "pi pi-info-circle";
       this.insertTop = insertTop;
+      this.createPanel();
     }
 
     show()
@@ -148,29 +151,6 @@ if (window.mapLibreControlsLoaded === undefined)
       }
     }
 
-    onAdd(map)
-    {
-      this.map = map;
-      this.createPanel();
-
-      const div = document.createElement("div");
-      this.div = div;
-      div.innerHTML = `<button><span class="${this.iconClassName}"/></button>`;
-      div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
-      div.title = this.title;
-      div.style.width = "29px";
-      div.style.height = "29px";
-      div.style.fontFamily = "var(--font-family)";
-      div.addEventListener("contextmenu", (e) => e.preventDefault());
-      div.addEventListener("click", (e) =>
-      {
-        e.preventDefault();
-        this.show();
-      });
-
-      return div;
-    }
-
     createPanel()
     {
       const panelDiv = document.createElement("div");
@@ -197,7 +177,6 @@ if (window.mapLibreControlsLoaded === undefined)
       this.bodyDiv = bodyDiv;
       bodyDiv.className = "body flex-grow-1 overflow-auto body";
       panelDiv.appendChild(bodyDiv);
-      this.createBody(bodyDiv);
     }
 
     createHeader(headerDiv)
@@ -219,33 +198,53 @@ if (window.mapLibreControlsLoaded === undefined)
       });
     }
 
-    createBody(bodyDiv)
-    {
-    }
-
     createTitle(titleDiv)
     {
       titleDiv.innerHTML = `<span class="${this.iconClassName} mr-1"></span> <span>${this.title}</span>`;
     }
   }
 
-  class SearchPanel extends Panel
+  class Search
   {
     constructor(containerId, insertTop)
     {
-      super(containerId, "Search", "pi pi-search", insertTop);
+      this.panel = new Panel(containerId, "Search", "pi pi-search", insertTop);
     }
+
+    onAdd(map)
+    {
+      this.map = map;
+
+      const div = document.createElement("div");
+      this.div = div;
+      div.innerHTML = `<button><span class="pi pi-search"/></button>`;
+      div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
+      div.title = this.title;
+      div.style.width = "29px";
+      div.style.height = "29px";
+      div.style.fontFamily = "var(--font-family)";
+      div.addEventListener("contextmenu", (e) => e.preventDefault());
+      div.addEventListener("click", (e) =>
+      {
+        e.preventDefault();
+        this.panel.show();
+      });
+
+      return div;
+    }  
   }
 
-  class InfoPanel extends Panel
+  class Info
   {
     constructor(containerId, insertTop)
     {
-      super(containerId, "Information", "pi pi-info-circle", insertTop);
+      this.panel = new Panel(containerId, "Information", "pi pi-info-circle", insertTop);
+      this.createBody();
     }
 
-    createBody(bodyDiv)
+    createBody()
     {
+      const bodyDiv = this.panel.bodyDiv;
       for (let i = 0; i < 20; i++)
       {
         let div = document.createElement("div");
@@ -253,13 +252,36 @@ if (window.mapLibreControlsLoaded === undefined)
         bodyDiv.appendChild(div);
       }
     }
+
+    onAdd(map)
+    {
+      this.map = map;
+
+      const div = document.createElement("div");
+      this.div = div;
+      div.innerHTML = `<button><span class="pi pi-info-circle"/></button>`;
+      div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
+      div.title = this.title;
+      div.style.width = "29px";
+      div.style.height = "29px";
+      div.style.fontFamily = "var(--font-family)";
+      div.addEventListener("contextmenu", (e) => e.preventDefault());
+      div.addEventListener("click", (e) =>
+      {
+        e.preventDefault();
+        this.panel.show();
+      });
+
+      return div;
+    }  
   }
 
-  class LegendPanel extends Panel
+  class Legend
   {
     constructor(containerId, insertTop)
     {
-      super(containerId, "Legend", "fa fa-layer-group", insertTop);
+      this.panel = new Panel(containerId, "Legend", "fa fa-layer-group", insertTop);
+      this.createBody();
     }
 
     createBody(bodyDiv)
@@ -267,10 +289,33 @@ if (window.mapLibreControlsLoaded === undefined)
       setTimeout(() => this.populateTree(), 0);
     }
 
+    onAdd(map)
+    {
+      this.map = map;
+
+      const div = document.createElement("div");
+      this.div = div;
+      div.innerHTML = `<button><span class="fa fa-layer-group"/></button>`;
+      div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
+      div.title = this.title;
+      div.style.width = "29px";
+      div.style.height = "29px";
+      div.style.fontFamily = "var(--font-family)";
+      div.addEventListener("contextmenu", (e) => e.preventDefault());
+      div.addEventListener("click", (e) =>
+      {
+        e.preventDefault();
+        this.panel.show();
+      });
+
+      return div;
+    }
+
     populateTree()
     {
       const style = this.map.getStyle();
-      const legend = style.metadata.legend;
+      const legend = style?.metadata?.legend;
+      const bodyDiv = this.panel.bodyDiv;
       if (legend)
       {
         this.titleDiv = legend.label || "Legend";
@@ -278,7 +323,7 @@ if (window.mapLibreControlsLoaded === undefined)
         {
           const ul = document.createElement("ul");
           ul.className = "legend";
-          this.bodyDiv.appendChild(ul);
+          bodyDiv.appendChild(ul);
 
           for (let childNode of legend.children)
           {
@@ -306,7 +351,7 @@ if (window.mapLibreControlsLoaded === undefined)
         liDiv.appendChild(button);
         node.button = button;
         button.innerHTML = `<span class="pi pi-angle-right"></span>`;
-        
+
         if (node.mode === "block")
         {
           button.style.visibility = "hidden";
@@ -367,7 +412,7 @@ if (window.mapLibreControlsLoaded === undefined)
             else if (node.children.length > 0)
             {
               this.changeNodeVisibility(node.children[0], "visible");
-            };            
+            };
           }
           else
           {
@@ -582,12 +627,202 @@ if (window.mapLibreControlsLoaded === undefined)
     }
   }
 
+  class GetFeatureInfo
+  {
+    constructor(containerId, insertTop)
+    {
+      this.panel = new Panel(containerId, "Feature info", "pi pi-info-circle", insertTop);
+    }
+    
+    showInfo(data)
+    {
+      const bodyDiv = this.panel.bodyDiv;
+      bodyDiv.innerHTML = "";
+
+      const ul = document.createElement("ul");
+      ul.className = "feature_info";
+      bodyDiv.appendChild(ul);
+      
+      for (let layerData of data)
+      {
+        if (layerData)
+        {
+          let features = layerData.features;
+          if (features && features.length > 0)
+          {
+            for (let feature of features)
+            {
+              const li = document.createElement("li");
+              ul.appendChild(li);
+
+              const liDiv = document.createElement("div");
+              let featureId = feature.id;
+              let index = featureId.lastIndexOf(".");
+              if (index !== -1) featureId = featureId.substring(0, index);
+              
+              liDiv.textContent = featureId;      
+              li.appendChild(liDiv);
+
+              const subUl = document.createElement("ul");
+              li.appendChild(subUl);
+
+              for (let propertyName in feature.properties)
+              {
+                let propLi = document.createElement("li");
+                propLi.textContent = propertyName + ": " + feature.properties[propertyName];
+                subUl.appendChild(propLi);
+              }
+            }
+          }
+        }
+      }   
+
+//      map.addSource("highlight", 
+//      {
+//        type: 'geojson',
+//        data: json
+//      });    
+//
+//      map.addLayer({
+//        "id": "highlight",
+//        "type": 'line',
+//        "source": "highlight",
+//        "layout": {},
+//        "paint": 
+//        {
+//          "line-color": "#0000ff",
+//          "line-width": 3,
+//          "line-opacity": 0.5
+//        }});        
+    }
+    
+    async getFeatureInfo(lngLat)
+    {
+      const map = this.map;
+
+      this.panel.bodyDiv.innerHTML = "...";
+      this.panel.show();
+
+
+      const services = map.getStyle().metadata?.services;
+      const serviceParameters = map.getStyle().metadata?.serviceParameters;
+      if (services === undefined) return;
+      if (serviceParameters === undefined) return;
+
+      let source = map.getSource("highlight");
+      if (source)
+      {
+        map.removeLayer("highlight");
+        map.removeSource("highlight");
+      }
+
+      const promises = [];
+      const layers = map.getStyle().layers;
+      for (let lay of layers)
+      {
+        let layer = map.getLayer(lay.id);
+        if (layer.metadata?.visible && layer.metadata?.locatable)
+        {
+          let sourceId = layer.source;
+          let params = serviceParameters[sourceId];
+          if (params)
+          {
+            let serviceId = params.service;
+            if (serviceId)
+            {
+              let service = services[serviceId];
+              let layerNames = layer.metadata?.layers || params.layers;
+              if (layerNames)
+              {
+                let layerNameArray = layerNames.split(",");
+                for (let layerName of layerNameArray)
+                {
+                  let promise = this.getFeatures(lngLat, service, layerName);
+                  promises.push(promise);
+                }
+              }
+            }
+          }
+        }
+      }
+      let data = await Promise.all(promises);
+      this.showInfo(data);
+    }
+    
+    async getFeatures(lngLat, service, layerName)
+    {
+      return FeatureTypeInspector.getInfo(service.url, layerName).then(info =>
+      {
+        const map = this.map;
+
+        if (info.geometryColumn)
+        {
+          let url = "/proxy?url=" + service.url + "&" +
+            "request=GetFeature" +
+            "&service=WFS" +
+            "&version=2.0.0" +
+            "&typeNames=" + layerName +
+            "&srsName=EPSG:4326" +
+            "&outputFormat=application/json" +
+            "&cql_filter=" + "INTERSECTS(" + info.geometryColumn + 
+              ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))";
+
+          return fetch(url).then(response => response.json()).catch(error => error);
+        }
+        else
+        {
+          return Promise.resolve();
+        }
+      });
+    }
+
+    onButtonClick(event)
+    {
+      event.preventDefault();
+
+      this.map = map;
+      if (this.enabled)
+      {
+        map.off("click", this._onMapClick);
+        this.div.style.backgroundColor = "";
+        map.getCanvas().style.cursor = "grab";
+      }
+      else
+      {
+        map.on("click", this._onMapClick); 
+        this.div.style.backgroundColor = "yellow";
+        map.getCanvas().style.cursor = "crosshair";
+      }
+      this.enabled = !this.enabled;
+    }
+
+    onAdd(map)
+    {
+      this.map = map;
+      this.enabled = false;
+      
+      this._onMapClick = (event) => this.getFeatureInfo(event.lngLat);
+
+      const div = document.createElement("div");
+      this.div = div;
+      div.className = "maplibregl-ctrl maplibregl-ctrl-group";
+      div.innerHTML = `<button><span class="fa fa-arrow-pointer"/></button>`;
+      div.title = "Get feature info";
+      div.addEventListener("contextmenu", (e) => e.preventDefault());
+      div.addEventListener("click", (e) => { 
+        this.onButtonClick(e);
+      });
+      return div;
+    }
+  }
+
   window.maplibreglx = {};
   maplibreglx.HomeButton = HomeButton;
   maplibreglx.LoadingIndicator = LoadingIndicator;
-  maplibreglx.SearchPanel = SearchPanel;
-  maplibreglx.InfoPanel = InfoPanel;
-  maplibreglx.LegendPanel = LegendPanel;
+  maplibreglx.Search = Search;
+  maplibreglx.Info = Info;
+  maplibreglx.Legend = Legend;
+  maplibreglx.GetFeatureInfo = GetFeatureInfo;
   window.mapLibreControlsLoaded = true;
 }
 
@@ -726,13 +961,25 @@ function initSources(style)
   {
     let source = style.sources[sourceId];
     let url = getSourceUrl(sourceId, style);
-    if (url)
+    if (source.type === "raster")
     {
-      source.tiles = [url];
+      if (url)
+      {
+        source.tiles = [url];
+      }
+      if (source.tileSize === undefined)
+      {
+        source.tileSize = 256;
+      }
     }
-    if (source.type === "raster" && source.tileSize === undefined)
+    else if (source.type === "geojson")
     {
-      source.tileSize = 256;
+      if (url)
+      {
+        source.data = url;
+        delete source.tiles;
+        delete source.bounds;
+      }
     }
   }
 }
@@ -746,7 +993,9 @@ function initLayers(style)
   {
     let sourceId = layer.source;
     let serviceParameters = style.metadata.serviceParameters[sourceId];
-    if (serviceParameters && serviceParameters.service)
+
+    if (layer.type === "raster" && 
+        serviceParameters && serviceParameters.service)
     {
       let layerCount = serviceParameters.layerCount || 0;
       layer.layout.visibility = layerCount === 0 ? "visible" : "none";
@@ -754,9 +1003,16 @@ function initLayers(style)
       serviceParameters.layerCount = layerCount + 1;
 
       let source = style.sources[sourceId];
-      if (source.tiles.length === 0)
+      if (source.tiles && source.tiles.length === 0)
       {
         layer.layout.visibility = "none";
+      }
+    }
+    else
+    {
+      if (layer.metadata?.visible === false)
+      {
+        layer.layout.visibility = "none";        
       }
     }
   }
@@ -823,13 +1079,15 @@ function maplibreInit(clientId, style)
 
   map.addControl(new maplibreglx.LoadingIndicator(), "top-right");
 
-  map.addControl(new maplibreglx.SearchPanel("maplibre_left_container"), "top-left");
+  map.addControl(new maplibreglx.Search("maplibre_left_container"), "top-left");
 
-  map.addControl(new maplibreglx.InfoPanel("maplibre_left_container"), "top-left");
+  map.addControl(new maplibreglx.Info("maplibre_left_container"), "top-left");
 
-  map.addControl(new maplibreglx.LegendPanel("maplibre_right_container", true), "bottom-right");
+  map.addControl(new maplibreglx.GetFeatureInfo("maplibre_right_container", true), "top-right");
 
-  map.addControl(new maplibreglx.InfoPanel("maplibre_right_container", true), "bottom-right");
+  map.addControl(new maplibreglx.Legend("maplibre_right_container", true), "bottom-right");
+
+  map.addControl(new maplibreglx.Info("maplibre_right_container", true), "bottom-right");
 
   if (style.terrain)
   {

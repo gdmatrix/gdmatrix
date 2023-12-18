@@ -133,6 +133,37 @@ div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic.circle
   border-radius: 50%;
 }
 
+div.maplibre_panel_container .scroller .panel ul.feature_info
+{
+  list-style-type: none;  
+  margin-top: 0;
+  padding-top: 0;
+  padding-left: 0;
+}
+
+div.maplibre_panel_container .scroller .panel ul.feature_info ul
+{
+  padding-left: 20px;  
+}
+
+div.maplibre_panel_container .scroller .panel ul.feature_info > li
+{
+  padding-bottom: 4px;  
+}
+
+div.maplibre_panel_container .scroller .panel ul.feature_info > li > div
+{
+  padding-top: 4px; 
+  padding-bottom: 4px; 
+  font-weight: bold;
+}
+
+div.maplibre_panel_container .scroller .panel ul.feature_info li
+{
+  list-style-type: disc;  
+  padding-left: 0px;
+}
+
 @media only screen and (max-width: 700px) 
 {
   div.maplibre_layout

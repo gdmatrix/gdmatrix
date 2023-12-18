@@ -39,7 +39,9 @@ import java.io.FileReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.matrix.dic.Property;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
@@ -215,6 +217,7 @@ public class MapMigrator
       style.setZoom(14.0D);
       style.getMetadata().put("maxZoom", 20.0);
 
+      // services
       HashMap<String, Service> newServices = new HashMap<>();
       style.getMetadata().put("services", newServices);
 
@@ -237,6 +240,27 @@ public class MapMigrator
         newService.setUseProxy(Boolean.TRUE);
         newServices.put(service.getName(), newService);
       }
+
+      // layerForms
+      Set<String> highLightedLayers = new HashSet<>();
+      List<Map.InfoLayer> infoLayers = mapDoc.getInfoLayers();
+      List<LayerForm> layerForms = new ArrayList<>();
+      for (Map.InfoLayer infoLayer : infoLayers)
+      {
+        String layerName = infoLayer.getName();
+        String formSelector = infoLayer.getFormSelector();
+        boolean highlight = infoLayer.isHighlight();
+        if (highlight)
+        {
+          highLightedLayers.add(layerName);
+        }
+        LayerForm layerForm = new LayerForm();
+        layerForm.setLayer(layerName);
+        layerForm.setFormSelector(formSelector);
+        layerForms.add(layerForm);
+      }
+      style.getMetadata().put("layerForms", layerForms);
+
 
       // prepare legend groups
       HashMap<String, LegendGroup> legendGroups = new HashMap<>();
@@ -277,6 +301,20 @@ public class MapMigrator
         newLayer.setStyles(oldLayer.getStylesString());
         newLayer.setCqlFilter(oldLayer.getCqlFilter());
         style.getLayers().add(newLayer);
+
+        String namesString = oldLayer.getNamesString();
+        String[] parts = namesString.split(",");
+        for (String part : parts)
+        {
+          int index = part.indexOf(":");
+          if (index != -1) part = part.substring(index + 1);
+          boolean highlighted = highLightedLayers.contains(part);
+          if (highlighted)
+          {
+            newLayer.getMetadata().put("highlight", highlighted);
+            break;
+          }
+        }
 
         if (oldLayer.isIndependent())
         {
@@ -361,25 +399,9 @@ public class MapMigrator
           topLegendGroup.getChildren().add(legendLayer);
         }
       }
-
-      // legend
       style.getMetadata().put("legend", topLegendGroup);
-      List<Map.InfoLayer> infoLayers = mapDoc.getInfoLayers();
-      List<LayerForm> layerForms = new ArrayList<>();
-      for (Map.InfoLayer infoLayer : infoLayers)
-      {
-        String layerName = infoLayer.getName();
-        String formSelector = infoLayer.getFormSelector();
-        boolean highlight = infoLayer.isHighlight();
-        LayerForm layerForm = new LayerForm();
-        layerForm.setLayer(layerName);
-        layerForm.setFormSelector(formSelector);
-        layerForm.setHighlight(highlight);
-        layerForms.add(layerForm);
-      }
 
-      // layerForms
-      style.getMetadata().put("layerForms", layerForms);
+      // print reports
       java.util.Map<String, String> properties = mapDoc.getProperties();
       String printReports = properties.get("printReports");
       if (printReports != null)

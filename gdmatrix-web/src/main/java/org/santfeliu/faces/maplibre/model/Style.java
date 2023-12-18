@@ -227,6 +227,14 @@ public class Style implements Serializable
     {
       terrain = null;
     }
+    for (Source source : getSources().values())
+    {
+      if ("geojson".equals(source.getType()))
+      {
+        source.setTiles(null);
+        source.setBounds(null);
+      }
+    }
   }
 
   @Override

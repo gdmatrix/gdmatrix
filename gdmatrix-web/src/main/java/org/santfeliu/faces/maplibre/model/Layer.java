@@ -117,6 +117,17 @@ public class Layer implements Serializable
     metadata.put("styles", styles);
   }
 
+  public boolean isVisible()
+  {
+    Object value = metadata.get("visible");
+    return (value instanceof Boolean) ? (Boolean)value : true;
+  }
+
+  public void setVisible(boolean visible)
+  {
+    metadata.put("visible", visible);
+  }
+
   public boolean isLocatable()
   {
     Object value = metadata.get("locatable");
@@ -128,15 +139,15 @@ public class Layer implements Serializable
     metadata.put("locatable", locatable);
   }
 
-  public boolean isVisible()
+  public boolean isHighlightEnabled()
   {
-    Object value = metadata.get("visible");
-    return (value instanceof Boolean) ? (Boolean)value : true;
+    Object value = metadata.get("highlight");
+    return value instanceof Boolean ? (Boolean)value : false;
   }
 
-  public void setVisible(boolean visible)
+  public void setHighlightEnabled(boolean enabled)
   {
-    metadata.put("visible", visible);
+    metadata.put("highlight", enabled);
   }
 
   public Map<String, Object> getPaint()
