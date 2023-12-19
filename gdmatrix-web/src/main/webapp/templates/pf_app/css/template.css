@@ -473,34 +473,14 @@ body .ui-messages-error ul
 
 .tipInputText .tipDialog
 {
-  overflow-y: hidden;
-  position: absolute;
-  left: 0 !important;
-  top: 90px !important;
-  max-height: 600px;
-  max-width: 280px !important;
-}
-
-.tipInputText .tipDialog .ui-dialog-titlebar
-{
-  display: flex;
-  padding-bottom: 0;
-}
-
-.tipInputText .tipDialog .ui-dialog-titlebar span
-{
-  flex-grow: 1;
-}
-
-.tipInputText .tipDialog .ui-dialog-titlebar a
-{
-  flex-grow: 0;
+  word-break: break-word;
 }
 
 .tipInputText .tipDialog .tipHeader
 {
   font-weight: bold;
   font-size: 14px;
+  margin-bottom: 10px;
 }
 
 .tipInputText .tipDialog .tipContent

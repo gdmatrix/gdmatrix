@@ -35,23 +35,24 @@
               <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
             </c:if>
           </p:inputText>
-          <p:commandButton icon="#{cc.attrs.icon}"
-                           styleClass="#{cc.attrs.iconStyleClass}"
-                           onclick="PF('tipDialog').show();return false;"
+          <p:commandButton id="#{cc.attrs.id}_tip_button"
+                           icon="#{cc.attrs.icon}"
+                           styleClass="#{cc.attrs.iconStyleClass}"                           
                            rendered="#{tipInputTextBean.tipContent != null}"
                            alt="#{cc.attrs.iconTitle != null ? cc.attrs.iconTitle : objectBundle.showTip}"
                            title="#{cc.attrs.iconTitle != null ? cc.attrs.iconTitle : objectBundle.showTip}" />
         </div>
-        <p:dialog widgetVar="tipDialog"
-                  rendered="#{tipInputTextBean.tipContent != null}"
-                  styleClass="#{cc.attrs.tipStyleClass}" draggable="false">
-          <f:facet name="header" class="tipHeader">
+        <p:overlayPanel for="#{cc.attrs.id}_tip_button"
+                        rendered="#{tipInputTextBean.tipContent != null}"
+                        styleClass="#{cc.attrs.tipStyleClass}" 
+                        at="right bottom" my="right top">
+          <div class="tipHeader">
             <h:outputText value="#{cc.attrs.tipHeader != null ? cc.attrs.tipHeader : objectBundle.tipHeader}" />
-          </f:facet>
-          <div class="tipContent">
+          </div>
+          <div class="tipContent">            
             <h:outputText value="#{applicationBean.translate(tipInputTextBean.tipContent, userSessionBean.translationGroup)}" escape="false" />
           </div>
-        </p:dialog>
+        </p:overlayPanel>      
       </div>
     </composite:implementation>
   </h:body>
