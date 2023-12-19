@@ -456,6 +456,11 @@ body .ui-messages-error ul
   }
 }
 
+.cursor_move
+{
+  cursor: move;
+}
+
 .tipInputText
 {  
   position: relative;

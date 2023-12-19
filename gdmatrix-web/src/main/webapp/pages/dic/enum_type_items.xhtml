@@ -8,12 +8,13 @@
 
   <p:dataTable id="enum_type_items_table" value="#{enumTypeItemsTabBean.rows}"
                var="row" stripedRows="true" paginator="true" pageLinks="5"
-               resizableColumns="false" showGridlines="true"  rows="#{enumTypeItemsTabBean.rowsPerPage}"
+               resizableColumns="false" showGridlines="true" rows="#{enumTypeItemsTabBean.rowsPerPage}"
                size="small" paginatorPosition="bottom"
                rowIndexVar="rowIndex" first="#{enumTypeItemsTabBean.firstRow}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-               rowsPerPageTemplate="5,10,25,50" >
+               rowsPerPageTemplate="5,10,25,50" 
+               draggableRows="true" rowDragSelector=".drag">
 
     <f:facet name="header">
       <div class="flex justify-content-end col-12">
@@ -40,7 +41,10 @@
     </p:column>
 
     <p:column styleClass="col-3 text-right white-space-nowrap">
-
+      <p:commandLink rendered="#{enumTypeItemsTabBean.sortedEnumType}"
+                     onclick="return false;">
+        <span class="drag pi pi-arrows-v p-2 cursor_move" />
+      </p:commandLink>
       <p:commandButton action="#{enumTypeItemsTabBean.moveUpItem(rowIndex)}"
                        update="enum_type_items_table"
                        icon="pi pi-arrow-up"
@@ -62,8 +66,6 @@
                        styleClass="rounded-button ui-button-flat"
                        resetValues="true"
                        oncomplete="PF('enumTypeItemsDialog').show()" />
-
-
       <p:commandButton action="#{enumTypeItemsTabBean.edit(row)}"
                        icon="pi pi-pencil"
                        styleClass="rounded-button ui-button-flat"
@@ -83,7 +85,8 @@
                    icon="pi pi-info-circle" />
       </p:commandButton>
     </p:column>
-
+    <p:ajax event="rowReorder" listener="#{enumTypeItemsTabBean.onRowReorder}"
+            update="enum_type_items_table" />
   </p:dataTable>
 
   <!-- Only works appendTo="@(form)" with one single form -->

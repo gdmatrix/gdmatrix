@@ -39,6 +39,7 @@ import javax.inject.Named;
 import org.matrix.dic.DictionaryManagerPort;
 import org.matrix.dic.EnumTypeItem;
 import org.matrix.dic.EnumTypeItemFilter;
+import org.primefaces.event.ReorderEvent;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -273,6 +274,35 @@ public class EnumTypeItemsTabBean extends TabBean
     return (editing != null);
   }  
   
+  public void onRowReorder(ReorderEvent event) 
+  {
+    try
+    {
+      EnumTypeItem row = rows.get(event.getToIndex());
+      String itemId = row.getEnumTypeItemId();
+      DictionaryManagerPort port = DicModuleBean.getPort(false);
+      EnumTypeItem item = port.loadEnumTypeItem(itemId);
+      if (event.getToIndex() < event.getFromIndex())
+      {
+        item.setIndex(event.getToIndex() + 1);
+      }
+      else if (event.getToIndex() > event.getFromIndex())
+      {
+        item.setIndex(event.getToIndex() + 2);
+      }
+      else
+      {
+        return;
+      }
+      port.storeEnumTypeItem(item);
+      load();      
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
   @Override
   public Serializable saveState()
   {
@@ -293,8 +323,8 @@ public class EnumTypeItemsTabBean extends TabBean
     {
       error(ex);
     }
-  }
-
+  }  
+  
   private boolean isNew(EnumTypeItem enumTypeItem)
   {
     return (enumTypeItem != null &&
