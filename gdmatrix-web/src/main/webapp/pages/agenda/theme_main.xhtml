@@ -6,9 +6,10 @@
 
       <p:outputPanel styleClass="field col-12"
                      rendered="true">
-        <p:outputLabel for="description" value="#{agendaBundle.theme_description}" />
+        <p:outputLabel for="description" value="#{agendaBundle.theme_description}" 
+                       indicateRequired="true" />
         <p:inputText id="description" value="#{themeObjectBean.theme.description}"
-                     required="true"
+                     required="#{not empty param['mainform:search_tabs:store']}"
                      requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}"
                      styleClass="inputfield w-full"
                      readonly="#{!themeObjectBean.editable}" />
