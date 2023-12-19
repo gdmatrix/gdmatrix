@@ -578,7 +578,7 @@ public class NavigatorBean extends WebBean implements Serializable
       }
     }
 
-    public boolean isFindOnFirstLoad()
+    public String getFindOnFirstLoad() //'true', 'false' or 'custom'
     {
       try
       {
@@ -594,14 +594,14 @@ public class NavigatorBean extends WebBean implements Serializable
             if (propdef != null && !propdef.getValue().isEmpty())
             {
               val = propdef.getValue().get(0);
-            }
+            }            
           }
         }
-        return Boolean.parseBoolean(val);
+        return (val != null ? val : "false");
       }
       catch (Exception ex)
       {
-        return false;
+        return "false";
       }
     }
 
@@ -1008,9 +1008,18 @@ public class NavigatorBean extends WebBean implements Serializable
       FinderBean finderBean = objectBean.getFinderBean();
       baseTypeInfo.restoreBeanState(finderBean);
 
-      if (!finderBean.isFinding() && baseTypeInfo.isFindOnFirstLoad())
+      if (!finderBean.isFinding())
       {
-        finderBean.smartFind();
+        String findOnFirstLoadValue = baseTypeInfo.getFindOnFirstLoad();
+        if ("custom".equals(findOnFirstLoadValue))
+        {
+          finderBean.putDefaultFilter();        
+          finderBean.find();
+        }
+        else if ("true".equals(findOnFirstLoadValue))
+        {
+          finderBean.smartFind();
+        }
       }
 
       finderBean.setObjectPosition(-1);

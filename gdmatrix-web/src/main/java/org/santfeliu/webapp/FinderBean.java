@@ -37,9 +37,11 @@ import javax.activation.DataHandler;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
+import org.mozilla.javascript.Callable;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
+import org.santfeliu.util.script.ScriptClient;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -107,6 +109,30 @@ public abstract class FinderBean extends BaseBean
     this.finding = finding;
   }
 
+  public void putDefaultFilter()
+  {
+    try
+    {
+      if (objectSetup == null) loadObjectSetup();      
+      String actionsScriptName = 
+        (String)objectSetup.getScriptActions().getScriptName();
+      if (actionsScriptName != null)
+      {
+        ScriptClient actionsClient = new ScriptClient();        
+        actionsClient.executeScript(actionsScriptName);
+        Object callable = actionsClient.get("putDefaultFilter");
+        if (callable instanceof Callable)
+        {
+          actionsClient.execute((Callable)callable);
+        }        
+      }
+    }                
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
   public String getSmartSearchTip()
   {
     if (System.currentTimeMillis() - lastSmartSearchTipRefresh >
