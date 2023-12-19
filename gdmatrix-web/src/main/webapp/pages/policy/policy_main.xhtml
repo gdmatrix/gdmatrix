@@ -8,6 +8,8 @@
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
+  <h:outputStylesheet library="css" name="policy.css" /> 
+
   <div class="ui-fluid formgrid grid">
 
     <div class="field col-12 md:col-4">
@@ -51,9 +53,7 @@
                       creationDateTime="#{policyObjectBean.policy.creationDateTime}" 
                       changeUserId="#{policyObjectBean.policy.changeUserId}" 
                       changeDateTime="#{policyObjectBean.policy.changeDateTime}" />
-    <!--
-        <div class="w-12 font-bold surface-ground p-2 m-2">#{policyBundle.policyMain_activation}</div> 
-    -->
+    
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{policyBundle.policyMain_date}" />
       <p:commandButton icon="pi pi-question-circle" styleClass="rounded-button ui-button-info ui-button-flat"
@@ -68,9 +68,6 @@
       <gdm:codemirror value="#{policyObjectBean.policy.activationCondition}" language="javascript"/>
     </div>
 
-    <!--
-        <div class="w-12 font-bold surface-ground p-2 m-2">#{policyBundle.policyMain_execution}</div> 
-    -->
     <div class="field col-12">
       <p:selectBooleanCheckbox value="#{policyObjectBean.policy.automaticExecution}"
                                itemLabel="#{policyBundle.policyMain_automatic}"
@@ -85,10 +82,166 @@
                             options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}"/> 
 
   <p:dialog id="help_document_dialog" widgetVar="helpDocumentDialog" 
-            resizable="false" responsive="true" position="center center"
-            minHeight="100" width="600" showEffect="fade" hideEffect="fade">
-    
-    <ui:include src="help.html" />
+            resizable="true" responsive="true" position="center center"
+            minHeight="100" width="600" showEffect="fade" hideEffect="fade"
+            closable="true">
+
+    <div class="help">
+
+      <div class="header">#{policyBundle.policyMainHelp_functions}</div>
+      <ul>
+        <li>
+          <span class="code">addDate(dateTime, increment, unit)</span>
+          <span class="info">#{policyBundle.policyMainHelp_increaseDate} <span class="code">dateTime</span>, <span class="code">increment</span>
+            #{policyBundle.policyMainHelp_unitsOfType} <span class="code">unit</span>.</span>
+        </li>
+
+        <li>
+          <span class="code">parseDate(text, pattern)</span>
+          <span class="info"> #{policyBundle.policyMainHelp_converts} <span class="code">text</span> #{policyBundle.policyMainHelp_toDateWithPattern}
+            <span class="code">pattern</span>.</span>
+        </li>
+
+        <li>
+          <span class="code">formatDate(dateTime, pattern)</span>
+          <span class="info">#{policyBundle.policyMainHelp_formatDate} <span class="code">dateTime</span>#{policyBundle.policyMainHelp_withPattern} <span class="code">pattern</span>.</span>
+        </li>
+      </ul>
+
+      <span>#{policyBundle.policyMainHelp_acceptedValues}  
+        <span class="code">unit</span> i <span class="code">pattern</span>:</span>
+      <table class=" w-4">
+        <tr class="row1">
+          <td class="metadata">y</td>
+          <td>#{policyBundle.policyMainHelp_years}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">M</td>
+          <td>#{policyBundle.policyMainHelp_months}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">d</td>
+          <td>#{policyBundle.policyMainHelp_days}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">H</td>
+          <td>#{policyBundle.policyMainHelp_hours}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">m</td>
+          <td>#{policyBundle.policyMainHelp_minutes}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">s</td>
+          <td>#{policyBundle.policyMainHelp_seconds}</td>
+        </tr>
+      </table>
+
+      <div class="header">#{policyBundle.policyMainHelp_docMetadata}</div>
+      <table class=" w-full">
+        <tr class="row1">
+          <td class="metadata">docId</td>
+          <td>#{policyBundle.policyMainHelp_docId}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">version</td>
+          <td>#{policyBundle.policyMainHelp_version}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">title</td>
+          <td>#{policyBundle.policyMainHelp_title}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">description</td>
+          <td>#{policyBundle.policyMainHelp_description}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">docTypeId</td>
+          <td>#{policyBundle.policyMainHelp_docTypeId}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">state</td>
+          <td>#{policyBundle.policyMainHelp_state}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">language</td>
+          <td>#{policyBundle.policyMainHelp_language}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">classId</td>
+          <td>#{policyBundle.policyMainHelp_classId}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">captureDateTime</td>
+          <td>#{policyBundle.policyMainHelp_captureDateTime}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">captureUserId</td>
+          <td>#{policyBundle.policyMainHelp_captureUserId}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">changeDateTime</td>
+          <td>#{policyBundle.policyMainHelp_changeDateTime}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">changeUserId</td>
+          <td>#{policyBundle.policyMainHelp_changeUserId}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">creationDate</td>
+          <td>#{policyBundle.policyMainHelp_creationDate}</td>
+        </tr>
+      </table>
+
+      <div class="header">#{policyBundle.policyMainHelp_caseMetadata}</div>
+      <table class=" w-full">
+        <tr class="row1">
+          <td class="metadata">caseId</td>
+          <td>#{policyBundle.policyMainHelp_caseId}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">title</td>
+          <td>#{policyBundle.policyMainHelp_title}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">description</td>
+          <td>#{policyBundle.policyMainHelp_description}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">caseTypeId</td>
+          <td>#{policyBundle.policyMainHelp_caseTypeId}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">classId</td>
+          <td>#{policyBundle.policyMainHelp_caseClassId}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">startDate</td>
+          <td>#{policyBundle.policyMainHelp_startDate}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">endDate</td>
+          <td>#{policyBundle.policyMainHelp_endDate}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">creationDateTime</td>
+          <td>#{policyBundle.policyMainHelp_creationDateTime}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">creationUserId</td>
+          <td>#{policyBundle.policyMainHelp_creationUserId}</td>
+        </tr>
+        <tr class="row2">
+          <td class="metadata">changeDateTime</td>
+          <td>#{policyBundle.policyMainHelp_changeDateTime}</td>
+        </tr>
+        <tr class="row1">
+          <td class="metadata">changeUserId</td>
+          <td>#{policyBundle.policyMainHelp_changeUserId}</td>
+        </tr>
+      </table>
+
+    </div>
 
   </p:dialog>  
 

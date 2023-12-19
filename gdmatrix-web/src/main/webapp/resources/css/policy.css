@@ -11,6 +11,8 @@ body .state_changed div
   background-color: yellow !important;
 }
 
+/* Analyzer */
+
 .analyzer
 {
   overflow:auto;
@@ -63,5 +65,52 @@ body .state_changed div
 {
   background-color: #707070;
   color: white;
+}
+
+/* Help document */
+
+.help .info
+{
+  display:block;
+}
+
+.help .header 
+{
+  font-size:12px;
+  font-weight:bold;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.help table 
+{
+  border-collapse:collapse;
+  border-style:solid;
+  border-width:1px;
+  border-color:blue;
+  font-size:11px;
+}
+.help table TR TD 
+{
+  border-style:solid;
+  border-width:1px 1px 1px 1px;
+  border-color:#D0D0DF;
+  padding:2px;
+}
+
+.help table TR.row1 
+{
+  background:#FEFEFE;
+}
+
+.help table TR.row2 
+{
+  background:#F0F0F0;
+}
+
+.help metadata, .code
+{
+  font-family:"courier new";
+  font-size:12px;
 }
 
