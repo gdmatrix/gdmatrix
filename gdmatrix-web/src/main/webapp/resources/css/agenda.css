@@ -331,12 +331,54 @@
 
 /***** event_schedule.xhtml *****/
 
-@media only screen and (max-width: 1400px) 
+body .fc .fc-header-toolbar
 {
-  .fc .fc-toolbar.fc-header-toolbar 
+  container-type: inline-size;
+}
+
+body .fc .fc-header-toolbar
+{
+  display: block;
+  text-align: center;
+}
+
+@container (min-width: 650px) 
+{
+  body .fc .fc-header-toolbar > div
   {
-    flex-direction: column-reverse;
+    display: inline-block;
+  }
+  body .fc .fc-header-toolbar > div:nth-child(1)
+  {
+    float: left;
+  }
+  body .fc .fc-header-toolbar > div:nth-child(2)
+  {
+    line-height: 29px;
   }  
+  body .fc .fc-header-toolbar > div:nth-child(3)
+  {
+    float: right;
+  }  
+}
+
+@container (max-width: 649px) 
+{ 
+  body .fc .fc-header-toolbar > div
+  {
+    display: block;
+    margin-bottom: 6px;
+  }
+}
+
+body .fc .fc-toolbar-title 
+{
+  font-size: 1.2em;
+}
+
+body .fc .fc-view-harness
+{
+  min-height: 60vh;
 }
 
 body .fc .fc-event /*, body .fc .fc-event .fc-event-main*/
@@ -365,11 +407,6 @@ body .fc .fc-event.fc-timegrid-event
 .fc-event-time
 {
   margin-left: 3px;
-}
-
-.fc-toolbar-chunk
-{
-  padding: 4px;
 }
 
 .fc-daygrid-dot-event .fc-event-title
