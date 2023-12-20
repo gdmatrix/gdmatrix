@@ -588,6 +588,14 @@ public class EventFinderBean extends FinderBean
     return -1;
   }  
   
+  public int getDefaultSearchTabSelector()
+  {
+    int searchTabSelector =
+      navigatorBean.getBaseTypeInfo().getDefaultSearchTabSelector();
+    if (searchTabSelector == -1) searchTabSelector = 0;
+    return searchTabSelector;
+  }  
+  
   @Override
   public Serializable saveState()
   {
@@ -700,10 +708,8 @@ public class EventFinderBean extends FinderBean
             if (eventObjectBean.getSearchTabSelector() ==
               eventObjectBean.getEditModeSelector())
             {
-              int searchTabSelector =
-                navigatorBean.getBaseTypeInfo().getDefaultSearchTabSelector();
-              if (searchTabSelector == -1) searchTabSelector = 0;
-              eventObjectBean.setSearchTabSelector(searchTabSelector);
+              eventObjectBean.setSearchTabSelector(
+                getDefaultSearchTabSelector());
             }
           }
         }
