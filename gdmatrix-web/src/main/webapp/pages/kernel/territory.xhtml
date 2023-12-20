@@ -92,13 +92,13 @@
                      rendered="#{objectBean.rootTypeId == 'Province'
                                  or objectBean.rootTypeId == 'City'
                                  or objectBean.rootTypeId == 'Street'}">
-        <p:outputLabel for="@next" value="#{kernelBundle.country}" />
+        <p:outputLabel for="@next" value="#{kernelBundle.country}" indicateRequired="true" />
         <div class="ui-inputgroup">
           <p:selectOneMenu id="country_selector" 
                            value="#{objectBean.country.countryId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
-                           required="true"
+                           required="#{not empty param['mainform:search_tabs:store']}"
                            requiredMessage="#{messageBundle.COUNTRY_MUST_BE_SELECTED}"
                            touchable="true">
             <p:ajax update="province_selector"/>
@@ -117,8 +117,9 @@
 
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Country'}">      
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="#{kernelBundle.country_name}" />
-          <p:inputText value="#{objectBean.country.name}" required="true" requiredMessage="#{messageBundle.NAME_IS_REQUIRED}"/>
+          <p:outputLabel for="@next" value="#{kernelBundle.country_name}" indicateRequired="true" />
+          <p:inputText value="#{objectBean.country.name}" 
+                       required="#{not empty param['mainform:search_tabs:store']}" requiredMessage="#{messageBundle.NAME_IS_REQUIRED}"/>
         </div>     
 
         <div class="field col-12 md:col-3">
@@ -136,12 +137,12 @@
       <p:outputPanel class="field col-12" 
                      rendered="#{objectBean.rootTypeId == 'City'
                                  or objectBean.rootTypeId == 'Street'}">
-        <p:outputLabel for="@next" value="#{kernelBundle.province}"  />
+        <p:outputLabel for="@next" value="#{kernelBundle.province}" indicateRequired="true"  />
         <div class="ui-inputgroup"> 
 
           <p:selectOneMenu id="province_selector" value="#{objectBean.province.provinceId}" 
                            filter="true"
-                           disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true"
+                           disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="#{not empty param['mainform:search_tabs:store']}"
                            requiredMessage="#{messageBundle.PROVINCE_MUST_BE_SELECTED}"
                            touchable="true">
             <p:ajax update="city_selector"/>
@@ -159,9 +160,9 @@
       </p:outputPanel> 
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Province'}">      
         <div class="field col-12">
-          <p:outputLabel for="@next" value="#{kernelBundle.province}" />
+          <p:outputLabel for="@next" value="#{kernelBundle.province}"  indicateRequired="true" />
           <p:inputText id="province_name" value="#{objectBean.province.name}" 
-                       required="true"
+                       required="#{not empty param['mainform:search_tabs:store']}"
                        requiredMessage="#{messageBundle.PROVINCE_IS_REQUIRED}"/>
         </div>         
       </h:panelGroup>
@@ -169,12 +170,12 @@
       <!-- City -->
       <p:outputPanel class="field col-12" 
                      rendered="#{objectBean.rootTypeId == 'Street'}">
-        <p:outputLabel for="@next" value="#{kernelBundle.city}"  />
+        <p:outputLabel for="@next" value="#{kernelBundle.city}" indicateRequired="true"  />
         <div class="ui-inputgroup"> 
           <p:selectOneMenu id="city_selector" value="#{objectBean.city.cityId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
-                           required="true"
+                           required="#{not empty param['mainform:search_tabs:store']}"
                            requiredMessage="#{messageBundle.CITY_MUST_BE_SELECTED}"
                            touchable="true">
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
@@ -191,9 +192,9 @@
       </p:outputPanel>  
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'City'}">
         <div class="field col-12">
-          <p:outputLabel for="@next" value="#{kernelBundle.city}" />
+          <p:outputLabel for="@next" value="#{kernelBundle.city}"  indicateRequired="true" />
           <p:inputText value="#{objectBean.city.name}" 
-                       required="true"
+                       required="#{not empty param['mainform:search_tabs:store']}"
                        requiredMessage="#{messageBundle.CITY_IS_REQUIRED}"/>
         </div>          
       </h:panelGroup>
@@ -201,10 +202,10 @@
       <!-- Street -->
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Street'}">
         <div class="field col-8 md:col-6 lg:col-3">
-          <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
+          <p:outputLabel for="@next" value="#{kernelBundle.street_type}" indicateRequired="true" />
           <p:selectOneMenu value="#{objectBean.street.streetTypeId}" filter="true"
                            autoWidth="false"
-                           required="true"
+                           required="#{not empty param['mainform:search_tabs:store']}"
                            requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                            touchable="true">
             <f:selectItems value="#{streetTypeBean.streetTypeSelectItems}" />
@@ -217,9 +218,9 @@
         </div>
 
         <div class="field col-12 lg:col-7">
-          <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
+          <p:outputLabel for="@next" value="#{kernelBundle.street_name}"  indicateRequired="true" />
           <p:inputText value="#{objectBean.street.name}" 
-                       required="true"
+                       required="#{not empty param['mainform:search_tabs:store']}"
                        requiredMessage="#{messageBundle.STREET_IS_REQUIRED}"/>
         </div>   
       </h:panelGroup>
@@ -227,7 +228,7 @@
     </div>
 
     <div class="tab_footer text-right pt-3">
-      <p:commandButton value="#{objectBundle.store}" 
+      <p:commandButton id="store" value="#{objectBundle.store}" 
                        icon="pi pi-save"
                        action="#{objectBean.store}"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel" 
