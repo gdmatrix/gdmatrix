@@ -101,11 +101,11 @@
                         styleClass="#{row.level.name} #{rowStatus.odd ? 'row0' : 'row1'}" />
         </ui:repeat>
       </p:scrollPanel>
-
-      <p:poll interval="1" listener="#{documentPoliciesTabBean.refreshAnalyzeStatus}" 
-              update="analyzer_messages"
-              widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>    
     </p:outputPanel>
+    
+    <p:poll interval="1" listener="#{documentPoliciesTabBean.refreshAnalyzeStatus}" 
+            update="analyzer_messages"
+            widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>     
     
   </h:panelGroup>
   

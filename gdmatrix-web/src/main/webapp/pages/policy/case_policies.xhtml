@@ -101,12 +101,12 @@
           <h:outputText value="#{casePoliciesTabBean.getFormattedMessage(row)}" 
                         styleClass="#{row.level.name} #{rowStatus.odd ? 'row0' : 'row1'}" />
         </ui:repeat>
-      </p:scrollPanel>
-
-      <p:poll interval="1" listener="#{casePoliciesTabBean.refreshAnalyzeStatus}" 
-              update="analyzer_messages"
-              widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>    
+      </p:scrollPanel>   
     </p:outputPanel>
+    
+    <p:poll interval="1" listener="#{casePoliciesTabBean.refreshAnalyzeStatus}" 
+            update="analyzer_messages"
+            widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>     
 
   </h:panelGroup>
 
