@@ -125,7 +125,8 @@ if (window.mapLibreControlsLoaded === undefined)
     {
       this.panelDiv.style.display = "";
       this.container.classList.add("expanded");
-      this.panelDiv.scrollIntoView({ behavior : "smooth" });
+      this.panelDiv.scrollIntoView({ 
+        block: "start", inline: "start", behavior : "smooth" });
     }
 
     hide()
@@ -632,26 +633,32 @@ if (window.mapLibreControlsLoaded === undefined)
     constructor(containerId, insertTop)
     {
       this.panel = new Panel(containerId, "Feature info", "pi pi-info-circle", insertTop);
+      this.highlightCount = 0;
     }
     
     showInfo(data)
     {
+      const map = this.map;
       const bodyDiv = this.panel.bodyDiv;
       bodyDiv.innerHTML = "";
 
       const ul = document.createElement("ul");
       ul.className = "feature_info";
       bodyDiv.appendChild(ul);
-      
+
+      let featureCount = 0;
       for (let layerData of data)
       {
         if (layerData)
         {
-          let features = layerData.features;
+          let layerId = layerData.layerId;
+          let geojson = layerData.geojson;
+          let features = geojson.features;
           if (features && features.length > 0)
           {
             for (let feature of features)
             {
+              featureCount++;
               const li = document.createElement("li");
               ul.appendChild(li);
 
@@ -674,47 +681,129 @@ if (window.mapLibreControlsLoaded === undefined)
               }
             }
           }
+          let layer = map.getLayer(layerId);
+          if (layer.metadata.highlight)
+          {
+            this.highlight(geojson);
+          }          
         }
-      }   
-
-//      map.addSource("highlight", 
-//      {
-//        type: 'geojson',
-//        data: json
-//      });    
-//
-//      map.addLayer({
-//        "id": "highlight",
-//        "type": 'line',
-//        "source": "highlight",
-//        "layout": {},
-//        "paint": 
-//        {
-//          "line-color": "#0000ff",
-//          "line-width": 3,
-//          "line-opacity": 0.5
-//        }});        
+      }
+      if (featureCount === 0)
+      {
+        bodyDiv.innerHTML = `<span class="p-4">No data found.</span>`;
+      }      
+      this.panel.show();
     }
     
+    clearHighlight()
+    {
+      const map = this.map;
+      for (let i = 0; i < this.highlightCount; i++)
+      {
+        map.removeLayer("highlight_" + i + "_point");
+        map.removeLayer("highlight_" + i + "_linestring");
+        map.removeLayer("highlight_" + i + "_polygon");
+        map.removeSource("highlight_" + i);
+      }
+      this.highlightCount = 0;
+    }
+    
+    addPointer(lngLat)
+    {
+      const map = this.map;
+
+      let i = this.highlightCount++;     
+
+      map.addSource("highlight_" + i, 
+      {
+        type: 'geojson',
+        data: { 
+          "type": "Feature",
+          "properties" : {},
+          "geometry" : { "type" : "Point", "coordinates" : [lngLat.lng, lngLat.lat]}
+        }
+      });
+
+      map.addLayer({
+        "id": "highlight_" + i + "_point",
+        "type": 'circle',
+        "source": "highlight_" + i,
+        "layout": {},
+        "paint": 
+        {
+          "circle-radius": 3,
+          "circle-color": "#000000"
+        }
+      });      
+    }
+    
+    highlight(geojson)
+    {
+      const map = this.map;
+
+      let i = this.highlightCount++;     
+
+      map.addSource("highlight_" + i, 
+      {
+        type: 'geojson',
+        data: geojson
+      });
+
+      map.addLayer({
+        "id": "highlight_" + i + "_point",
+        "type": 'circle',
+        "source": "highlight_" + i,
+        "layout": {},
+        "paint": 
+        {
+          "circle-radius": 6,
+          "circle-color": "#0000ff"
+        },
+        "filter": ['==', '$type', 'Point']
+      });
+      
+      map.addLayer({
+        "id": "highlight_" + i + "_linestring",
+        "type": 'line',
+        "source": "highlight_" + i,
+        "layout": {},
+        "paint": 
+        {
+          "line-color": "#0000ff",
+          "line-width": 4,
+          "line-opacity": 0.5
+        },
+        "filter": ["any", ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']]   
+      });
+      
+      map.addLayer({
+        "id": "highlight_" + i + "_polygon",
+        "type": 'fill',
+        "source": "highlight_" + i,
+        "layout": {},
+        "paint": 
+        {
+          "fill-color": "#0000ff",
+          "fill-opacity": 0.2
+        },
+        "filter": ['==', '$type', 'Polygon']      
+      });
+    }
+
     async getFeatureInfo(lngLat)
     {
       const map = this.map;
 
-      this.panel.bodyDiv.innerHTML = "...";
       this.panel.show();
-
+      this.panel.bodyDiv.innerHTML = `<span class="pi pi-spin pi-spinner p-4" />`;
+      
+      this.clearHighlight();
+      this.addPointer(lngLat);
 
       const services = map.getStyle().metadata?.services;
       const serviceParameters = map.getStyle().metadata?.serviceParameters;
       if (services === undefined) return;
       if (serviceParameters === undefined) return;
-
-      let source = map.getSource("highlight");
-      if (source)
-      {
-        map.removeLayer("highlight");
-        map.removeSource("highlight");
-      }
 
       const promises = [];
       const layers = map.getStyle().layers;
@@ -731,13 +820,36 @@ if (window.mapLibreControlsLoaded === undefined)
             if (serviceId)
             {
               let service = services[serviceId];
-              let layerNames = layer.metadata?.layers || params.layers;
-              if (layerNames)
+              let layerNameArray = [];
+              let cqlFilterArray = [];
+              if (layer.metadata?.layers)
               {
-                let layerNameArray = layerNames.split(",");
-                for (let layerName of layerNameArray)
+                layerNameArray.push(...layer.metadata.layers.split(","));
+              }
+              if (layer.metadata?.cqlFilter)
+              {
+                cqlFilterArray.push(...layer.metadata.cqlFilter.split(";"));
+              }
+              extendArray(cqlFilterArray, layerNameArray.length);
+
+              if (params.layers)
+              {
+                layerNameArray.push(...params.layers.split(","));                
+              }
+              if (params.cqlFilter)
+              {
+                cqlFilterArray.push(...params.cqlFilter.split(";"));                
+              }
+              extendArray(cqlFilterArray, layerNameArray.length);
+
+              if (layerNameArray.length > 0)
+              {
+                for (let i = 0; i < layerNameArray.length; i++)
                 {
-                  let promise = this.getFeatures(lngLat, service, layerName);
+                  let layerName = layerNameArray[i];
+                  let cqlFilter = cqlFilterArray[i];
+                  let promise = this.getFeatures(
+                    lngLat, layer.id, service, layerName, cqlFilter);
                   promises.push(promise);
                 }
               }
@@ -748,12 +860,13 @@ if (window.mapLibreControlsLoaded === undefined)
       let data = await Promise.all(promises);
       this.showInfo(data);
     }
-    
-    async getFeatures(lngLat, service, layerName)
+
+    async getFeatures(lngLat, layerId, service, layerName, cqlFilter = "")
     {
       return FeatureTypeInspector.getInfo(service.url, layerName).then(info =>
       {
         const map = this.map;
+        const dist = 10 / map.getZoom();
 
         if (info.geometryColumn)
         {
@@ -764,10 +877,22 @@ if (window.mapLibreControlsLoaded === undefined)
             "&typeNames=" + layerName +
             "&srsName=EPSG:4326" +
             "&outputFormat=application/json" +
-            "&cql_filter=" + "INTERSECTS(" + info.geometryColumn + 
-              ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))";
+            "&cql_filter=" + "DISTANCE(" + info.geometryColumn + 
+              ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))<" + dist;
 
-          return fetch(url).then(response => response.json()).catch(error => error);
+      
+          if (cqlFilter && cqlFilter.trim().length > 0)
+          {
+            url += " and " + cqlFilter;
+          }
+
+          return fetch(url).then(response => response.json()).then(geojson => {
+            return {
+              "layerId": layerId,
+              "geojson": geojson
+            };
+          })
+          .catch(error => error);
         }
         else
         {
@@ -826,6 +951,11 @@ if (window.mapLibreControlsLoaded === undefined)
   window.mapLibreControlsLoaded = true;
 }
 
+function extendArray(array, length)
+{
+  while (array.length < length) array.push("");  
+}
+
 function getSourceUrl(sourceId, style)
 {
   if (style.metadata.services === undefined) return null;
@@ -839,11 +969,6 @@ function getSourceUrl(sourceId, style)
 
   let service = style.metadata.services[serviceParameters.service];
   if (service === undefined) return null;
-
-  const extendArray = (array, length) =>
-  {
-    while (array.length < length) array.push("");
-  };
 
   let layersArray = [];
   let stylesArray = [];
@@ -977,38 +1102,48 @@ function initSources(style)
       if (url)
       {
         source.data = url;
-        delete source.tiles;
-        delete source.bounds;
       }
+      delete source.tiles;
+      delete source.bounds;
     }
   }
 }
 
 function initLayers(style)
 {
-  if (style.metadata.services === undefined) return;
   if (style.metadata.serviceParameters === undefined) return;
 
   for (let layer of style.layers)
   {
-    let sourceId = layer.source;
-    let serviceParameters = style.metadata.serviceParameters[sourceId];
-
-    if (layer.type === "raster" && 
-        serviceParameters && serviceParameters.service)
+    if (layer.type === "raster")
     {
-      let layerCount = serviceParameters.layerCount || 0;
-      layer.layout.visibility = layerCount === 0 ? "visible" : "none";
-      layer.metadata.virtual = layerCount > 0;
-      serviceParameters.layerCount = layerCount + 1;
+      let sourceId = layer.source;
+      let serviceParameters = style.metadata.serviceParameters[sourceId];
+      if (serviceParameters && serviceParameters.service)
+      {
+        if (layer.id === serviceParameters.masterLayer)
+        {
+          // master layer
+          let visible = style.layers.some(
+            l => l.source === sourceId && l.metadata?.visible !== false);
+          layer.layout.visibility = visible ? "visible" : "none";
+          layer.metadata.virtual = false;
+        }
+        else
+        {
+          // virtual layer
+          layer.layout.visibility = "none";
+          layer.metadata.virtual = true;
+        }
+      }
 
       let source = style.sources[sourceId];
-      if (source.tiles && source.tiles.length === 0)
+      if (source?.tiles?.length === 0)
       {
         layer.layout.visibility = "none";
       }
     }
-    else
+    else // not raster layer
     {
       if (layer.metadata?.visible === false)
       {
@@ -1045,6 +1180,7 @@ function maplibreInit(clientId, style)
     style: style,
     antialias: true
   });
+  
   window.map = map;
   map.setPixelRatio(window.devicePixelRatio);
 

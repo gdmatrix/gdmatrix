@@ -45,6 +45,7 @@ public class Layer implements Serializable
   String source;
   Map<String, Object> paint = new HashMap<>();
   Map<String, Object> layout = new HashMap<>();
+  Object filter;
   Map<String, Object> metadata = new HashMap<>();
 
   public String getId()
@@ -168,6 +169,16 @@ public class Layer implements Serializable
   public void setLayout(Map<String, Object> layout)
   {
     this.layout = layout;
+  }
+
+  public Object getFilter()
+  {
+    return filter;
+  }
+
+  public void setFilter(Object filter)
+  {
+    this.filter = filter;
   }
 
   public Map<String, Object> getMetadata()

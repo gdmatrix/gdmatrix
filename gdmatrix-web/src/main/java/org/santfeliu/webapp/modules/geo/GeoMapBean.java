@@ -629,6 +629,17 @@ public class GeoMapBean extends WebBean implements Serializable
     editingLayer.setLayout(gson.fromJson(json, Map.class));
   }
 
+  public String getJsonFilter()
+  {
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    return gson.toJson(editingLayer.getFilter());
+  }
+
+  public void setJsonFilter(String json)
+  {
+    Gson gson = new Gson();
+    editingLayer.setFilter(gson.fromJson(json, Object.class));
+  }
 
   public void onLayerReorder(ReorderEvent event)
   {

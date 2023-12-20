@@ -37,7 +37,7 @@
       <p:commandButton action="#{geoMapBean.toggleLayerLocatability(layer)}"
                        icon="pi #{geoMapBean.isLayerLocatable(layer) ? 'pi-arrow-up-left' : 'pi-times'}" 
                        styleClass="rounded-button ui-button-flat"
-                       title="#{geoMapBean.isLayerVisible(layer) ? 'Locatable' : 'No locatable'}"
+                       title="#{geoMapBean.isLayerLocatable(layer) ? 'Locatable' : 'No locatable'}"
                        process="@this"
                        update="@this" />
       <p:commandButton action="#{geoMapBean.toggleLayerHighlight(layer)}"
@@ -115,7 +115,7 @@
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Source" />
           <p:selectOneMenu value="#{geoMapBean.editingLayer.source}">
-            <f:selectItems value="#{geoMapBean.sourceIds}" var="sourceName" 
+            <f:selectItems value="#{geoMapBean.sourceIds}" var="sourceName"                       
                            itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.style.sources[sourceName].type})" />
           </p:selectOneMenu>
         </div>
@@ -132,6 +132,7 @@
             <f:selectItem itemValue="heatmap" itemLabel="heatmap" />
             <f:selectItem itemValue="hillshade" itemLabel="hillshade" />
             <f:selectItem itemValue="background" itemLabel="background" />
+            <p:ajax event="valueChange" update="layer_options" />
           </p:selectOneMenu>
         </div>
         
@@ -148,8 +149,8 @@
         </div>
         
         <div class="field col-12">
-          <p:tabView dynamic="true">
-            <p:tab title="OGC parameters">
+          <p:tabView id="layer_options" dynamic="true">
+            <p:tab title="Raster" rendered="#{geoMapBean.editingLayer.type == 'raster'}">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Layers (separated by ,)" />
@@ -212,6 +213,12 @@
               </gdm:codemirror>            
             </p:tab>
 
+            <p:tab title="Filter">
+              <gdm:codemirror value="#{geoMapBean.jsonFilter}" language="json">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>            
+            </p:tab>            
+            
             <p:tab title="Highlight">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
