@@ -999,7 +999,8 @@ public class NavigatorBean extends WebBean implements Serializable
     public void construct(ObjectBean objectBean)
     {
       objectBean.setObjectId(objectId);
-      objectBean.setSearchTabSelector(searchTabSelector == -1 ?
+      boolean showObject = (searchTabSelector == -1);
+      objectBean.setSearchTabSelector(showObject ?
         objectBean.getEditModeSelector() : searchTabSelector);
       objectBean.setEditTabSelector(editTabSelector);
 
@@ -1008,7 +1009,7 @@ public class NavigatorBean extends WebBean implements Serializable
       FinderBean finderBean = objectBean.getFinderBean();
       baseTypeInfo.restoreBeanState(finderBean);
 
-      if (!finderBean.isFinding())
+      if (!finderBean.isFinding() && !showObject)
       {
         String findOnFirstLoadValue = baseTypeInfo.getFindOnFirstLoad();
         if ("custom".equals(findOnFirstLoadValue))
