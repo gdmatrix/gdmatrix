@@ -108,7 +108,7 @@
         </p:panel>
       </div>
 
-      <script>
+      <script>        
         function showPanel(panelVar)
         {
           var panel = PF(panelVar);
@@ -118,6 +118,7 @@
           panel.getJQ().removeClass("first_time");
           panelButton.getJQ().removeClass("first_time");
           panelButton.getJQ().css("display", "none");
+          document.dispatchEvent(new CustomEvent('sidePanelChange', { detail: { mode: 'show', panel: panelVar } }));
           return false;
         }
 
@@ -127,6 +128,7 @@
           panel.close();
           var panelButton = PF(panelVar + "Button");
           panelButton.getJQ().css("display", "inline");
+          document.dispatchEvent(new CustomEvent('sidePanelChange', { detail: { mode: 'close', panel: panelVar } }));
           return false;
         }
 
