@@ -4,45 +4,68 @@
                 xmlns:p="http://primefaces.org/ui">
 
   <script>
+    
     function removeFocus()
     {
-      document.activeElement.blur(); 
+      document.activeElement.blur();
     }
+
+    if (document.scheduleRefresh)
+    {
+      document.removeEventListener("sidePanelChange", document.scheduleRefresh);
+    }
+    
+    document.scheduleRefresh = () => {
+      var scheduleWidget = PrimeFaces.widgets['schedule'];
+      if (scheduleWidget)
+      {
+        if (scheduleWidget.calendar) //calendar is loaded
+        {
+          scheduleWidget.update();
+          updateSchedule();
+        }
+      }
+    };
+    
+    document.addEventListener('sidePanelChange', document.scheduleRefresh);
+    
   </script>
-  
-  <p:schedule id="schedule" 
+
+  <p:schedule id="schedule"
               rendered="#{eventFinderBean.renderSchedule}"
               value="#{eventFinderBean.eventModel}"
               widgetVar="schedule"
               timeZone="#{eventFinderBean.serverTimeZone}"
-              clientTimeZone="#{eventFinderBean.serverTimeZone}"                       
+              clientTimeZone="#{eventFinderBean.serverTimeZone}"
               view="#{eventFinderBean.scheduleView}"
               initialDate="#{eventFinderBean.scheduleInitialDate}"
-              tooltip="true">    
-    <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}" 
+              tooltip="true">
+    <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}"
             process="@this"
             delay="500" />
-    <p:ajax event="dateDblSelect" listener="#{eventFinderBean.onDateDblSelect}" 
-            process="@this" 
-            update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"            
-            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />        
-    <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"            
+    <p:ajax event="dateDblSelect" listener="#{eventFinderBean.onDateDblSelect}"
+            process="@this"
+            update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
+    <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"
             process="@this"
             update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
     <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}"
             process="@this"
-            update="@form:cnt:search_tabs:obj_tabs" 
+            update="@form:cnt:search_tabs:obj_tabs"
             oncomplete="if (updateScheduleEventStyles) updateScheduleEventStyles()" />
     <p:ajax event="eventResize" listener="#{eventFinderBean.onEventResize}"
             process="@this"
-            update="@form:cnt:search_tabs:obj_tabs" 
+            update="@form:cnt:search_tabs:obj_tabs"
             oncomplete="if (updateScheduleEventStyles) updateScheduleEventStyles()" />
   </p:schedule>
-  
+
   <h:outputText value="#{agendaBundle.insufficientFilter}"
-                rendered="#{not eventFinderBean.renderSchedule}" 
+                rendered="#{not eventFinderBean.renderSchedule}"
                 escape="false" />
-  
+
+  <p:remoteCommand name="updateSchedule" update="schedule" />
+
 </ui:composition>
 
