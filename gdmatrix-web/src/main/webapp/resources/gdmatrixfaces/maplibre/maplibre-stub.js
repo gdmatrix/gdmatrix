@@ -125,7 +125,7 @@ if (window.mapLibreControlsLoaded === undefined)
     {
       this.panelDiv.style.display = "";
       this.container.classList.add("expanded");
-      this.panelDiv.scrollIntoView({ 
+      this.panelDiv.scrollIntoView({
         block: "start", inline: "start", behavior : "smooth" });
     }
 
@@ -232,7 +232,7 @@ if (window.mapLibreControlsLoaded === undefined)
       });
 
       return div;
-    }  
+    }
   }
 
   class Info
@@ -274,7 +274,7 @@ if (window.mapLibreControlsLoaded === undefined)
       });
 
       return div;
-    }  
+    }
   }
 
   class Legend
@@ -628,23 +628,101 @@ if (window.mapLibreControlsLoaded === undefined)
     }
   }
 
-  class GetFeatureInfo
+  class Tool
+  {
+    static activeTool;
+
+    constructor(iconClass, title)
+    {
+      this.iconClass = iconClass;
+      this.title = title;
+    }
+
+    activate()
+    {
+    }
+
+    deactivate()
+    {
+    }
+
+    onAdd(map)
+    {
+      this.map = map;
+
+      const div = document.createElement("div");
+      this.div = div;
+      div.className = "maplibregl-ctrl maplibregl-ctrl-group";
+      div.innerHTML = `<button><span class="${this.iconClass}"/></button>`;
+      div.title = this.title;
+      div.addEventListener("contextmenu", (e) => e.preventDefault());
+      div.addEventListener("click", (e) =>
+      {
+        e.preventDefault();
+        if (Tool.activeTool !== this)
+        {
+          if (Tool.activeTool)
+          {
+            Tool.activeTool.deactivate();
+            Tool.activeTool.div.classList.remove("active");
+          }
+          Tool.activeTool = this;
+          this.div.classList.add("active");
+          this.activate();
+        }
+      });
+      return div;
+    }
+  }
+
+  class GetFeatureInfo extends Tool
   {
     constructor(containerId, insertTop)
     {
+      super("fa fa-arrow-pointer", "Get feature info");
       this.panel = new Panel(containerId, "Feature info", "pi pi-info-circle", insertTop);
       this.highlightCount = 0;
+      this._onMapClick = (event) => this.getFeatureInfo(event.lngLat);
+      this.createPanel();
+    }
+
+    activate()
+    {
+      const map = this.map;
+      map.on("click", this._onMapClick);
+      map.getCanvas().style.cursor = "crosshair";
+      this.panel.show();
+    }
+
+    deactivate()
+    {
+      const map = this.map;
+      map.off("click", this._onMapClick);
+      map.getCanvas().style.cursor = "grab";
+      this.headerDiv.innerHTML = "";      
+      this.infoDiv.innerHTML = "";
+      this.clearHighlight();
+      this.panel.hide();
     }
     
+    createPanel()
+    {
+      this.headerDiv = document.createElement("div");
+      this.panel.bodyDiv.appendChild(this.headerDiv);
+
+      this.infoDiv = document.createElement("div");
+      this.panel.bodyDiv.appendChild(this.infoDiv);
+    }
+
     showInfo(data)
     {
       const map = this.map;
-      const bodyDiv = this.panel.bodyDiv;
-      bodyDiv.innerHTML = "";
-
+      const infoDiv = this.infoDiv;
+      infoDiv.innerHTML = "";
+      
       const ul = document.createElement("ul");
       ul.className = "feature_info";
-      bodyDiv.appendChild(ul);
+      infoDiv.appendChild(ul);
 
       let featureCount = 0;
       for (let layerData of data)
@@ -666,8 +744,8 @@ if (window.mapLibreControlsLoaded === undefined)
               let featureId = feature.id;
               let index = featureId.lastIndexOf(".");
               if (index !== -1) featureId = featureId.substring(0, index);
-              
-              liDiv.textContent = featureId;      
+
+              liDiv.textContent = featureId;
               li.appendChild(liDiv);
 
               const subUl = document.createElement("ul");
@@ -681,20 +759,15 @@ if (window.mapLibreControlsLoaded === undefined)
               }
             }
           }
-          let layer = map.getLayer(layerId);
-          if (layer.metadata.highlight)
-          {
-            this.highlight(geojson);
-          }          
         }
       }
       if (featureCount === 0)
       {
-        bodyDiv.innerHTML = `<span class="p-4">No data found.</span>`;
-      }      
+        infoDiv.innerHTML = `<div class="pt-4 pb-4">No data found.</div>`;
+      }
       this.panel.show();
     }
-    
+
     clearHighlight()
     {
       const map = this.map;
@@ -707,17 +780,17 @@ if (window.mapLibreControlsLoaded === undefined)
       }
       this.highlightCount = 0;
     }
-    
+
     addPointer(lngLat)
     {
       const map = this.map;
 
-      let i = this.highlightCount++;     
+      let i = this.highlightCount++;
 
-      map.addSource("highlight_" + i, 
+      map.addSource("highlight_" + i,
       {
         type: 'geojson',
-        data: { 
+        data: {
           "type": "Feature",
           "properties" : {},
           "geometry" : { "type" : "Point", "coordinates" : [lngLat.lng, lngLat.lat]}
@@ -729,21 +802,21 @@ if (window.mapLibreControlsLoaded === undefined)
         "type": 'circle',
         "source": "highlight_" + i,
         "layout": {},
-        "paint": 
+        "paint":
         {
           "circle-radius": 3,
           "circle-color": "#000000"
         }
-      });      
+      });
     }
-    
+
     highlight(geojson)
     {
       const map = this.map;
 
-      let i = this.highlightCount++;     
+      let i = this.highlightCount++;
 
-      map.addSource("highlight_" + i, 
+      map.addSource("highlight_" + i,
       {
         type: 'geojson',
         data: geojson
@@ -754,39 +827,39 @@ if (window.mapLibreControlsLoaded === undefined)
         "type": 'circle',
         "source": "highlight_" + i,
         "layout": {},
-        "paint": 
+        "paint":
         {
           "circle-radius": 6,
           "circle-color": "#0000ff"
         },
         "filter": ['==', '$type', 'Point']
       });
-      
+
       map.addLayer({
         "id": "highlight_" + i + "_linestring",
         "type": 'line',
         "source": "highlight_" + i,
         "layout": {},
-        "paint": 
+        "paint":
         {
           "line-color": "#0000ff",
           "line-width": 4,
           "line-opacity": 0.5
         },
-        "filter": ["any", ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']]   
+        "filter": ["any", ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']]
       });
-      
+
       map.addLayer({
         "id": "highlight_" + i + "_polygon",
         "type": 'fill',
         "source": "highlight_" + i,
         "layout": {},
-        "paint": 
+        "paint":
         {
           "fill-color": "#0000ff",
           "fill-opacity": 0.2
         },
-        "filter": ['==', '$type', 'Polygon']      
+        "filter": ['==', '$type', 'Polygon']
       });
     }
 
@@ -795,10 +868,27 @@ if (window.mapLibreControlsLoaded === undefined)
       const map = this.map;
 
       this.panel.show();
-      this.panel.bodyDiv.innerHTML = `<span class="pi pi-spin pi-spinner p-4" />`;
-      
+
       this.clearHighlight();
       this.addPointer(lngLat);
+
+      const headerDiv = this.headerDiv;
+      headerDiv.innerHTML = "";
+      const lngLatDiv = document.createElement("div");
+      headerDiv.appendChild(lngLatDiv);
+      lngLatDiv.innerHTML = `<div>Lon: ${lngLat.lng}</div>
+                             <div>Lat: ${lngLat.lat}</div>`;
+
+      if (toUtm)
+      {
+        const utm = toUtm(lngLat.lat, lngLat.lng, 7, 'ETRS89');
+        const utmDiv = document.createElement("div");
+        headerDiv.appendChild(utmDiv);
+        utmDiv.innerHTML = `<div>UTM-x: ${utm.easting}</div>
+                            <div>UTM-y: ${utm.northing}</div>`;      
+      }
+
+      this.infoDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
 
       const services = map.getStyle().metadata?.services;
       const serviceParameters = map.getStyle().metadata?.serviceParameters;
@@ -834,11 +924,11 @@ if (window.mapLibreControlsLoaded === undefined)
 
               if (params.layers)
               {
-                layerNameArray.push(...params.layers.split(","));                
+                layerNameArray.push(...params.layers.split(","));
               }
               if (params.cqlFilter)
               {
-                cqlFilterArray.push(...params.cqlFilter.split(";"));                
+                cqlFilterArray.push(...params.cqlFilter.split(";"));
               }
               extendArray(cqlFilterArray, layerNameArray.length);
 
@@ -877,16 +967,22 @@ if (window.mapLibreControlsLoaded === undefined)
             "&typeNames=" + layerName +
             "&srsName=EPSG:4326" +
             "&outputFormat=application/json" +
-            "&cql_filter=" + "DISTANCE(" + info.geometryColumn + 
+            "&cql_filter=" + "DISTANCE(" + info.geometryColumn +
               ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))<" + dist;
 
-      
+
           if (cqlFilter && cqlFilter.trim().length > 0)
           {
             url += " and " + cqlFilter;
           }
 
-          return fetch(url).then(response => response.json()).then(geojson => {
+          return fetch(url).then(response => response.json()).then(geojson =>
+          {
+            let layer = map.getLayer(layerId);
+            if (layer.metadata.highlight)
+            {
+              this.highlight(geojson);
+            }
             return {
               "layerId": layerId,
               "geojson": geojson
@@ -900,46 +996,352 @@ if (window.mapLibreControlsLoaded === undefined)
         }
       });
     }
+  }
 
-    onButtonClick(event)
+  class MeasureLength extends Tool
+  {
+    constructor(containerId, insertTop)
     {
-      event.preventDefault();
-
-      this.map = map;
-      if (this.enabled)
-      {
-        map.off("click", this._onMapClick);
-        this.div.style.backgroundColor = "";
-        map.getCanvas().style.cursor = "grab";
-      }
-      else
-      {
-        map.on("click", this._onMapClick); 
-        this.div.style.backgroundColor = "yellow";
-        map.getCanvas().style.cursor = "crosshair";
-      }
-      this.enabled = !this.enabled;
+      super("fa fa-ruler-horizontal", "Measure length");
+      this.panel = new Panel(containerId, "Measure length", "pi pi-info-circle", insertTop);
+      this.createPanel();
+      this._onMapClick = (event) => this.addPoint(event.lngLat);
+      this.startData = {
+        "type": "Feature",
+        "geometry": { "type": "Point", "coordinates": [] }
+      };
+      this.data = {
+        "type": "Feature",
+        "geometry": { "type": "LineString", "coordinates": [] }
+      };
     }
 
-    onAdd(map)
+    activate()
     {
-      this.map = map;
-      this.enabled = false;
-      
-      this._onMapClick = (event) => this.getFeatureInfo(event.lngLat);
+      const map = this.map;
+      map.on("click", this._onMapClick);
+      map.getCanvas().style.cursor = "crosshair";
+      this.panel.show();
 
-      const div = document.createElement("div");
-      this.div = div;
-      div.className = "maplibregl-ctrl maplibregl-ctrl-group";
-      div.innerHTML = `<button><span class="fa fa-arrow-pointer"/></button>`;
-      div.title = "Get feature info";
-      div.addEventListener("contextmenu", (e) => e.preventDefault());
-      div.addEventListener("click", (e) => { 
-        this.onButtonClick(e);
+      map.addSource("measured_linestring_start", {
+        type: 'geojson',
+        data: this.startData
       });
-      return div;
+
+      map.addLayer({
+        "id": "measured_linestring_start",
+        "type": 'circle',
+        "source": "measured_linestring_start",
+        "layout": {},
+        "paint":
+        {
+          "circle-color": "#000000",
+          "circle-radius": 4
+        }
+      });
+
+      map.addSource("measured_linestring", {
+        type: 'geojson',
+        data: this.data
+      });
+
+      map.addLayer({
+        "id": "measured_linestring",
+        "type": 'line',
+        "source": "measured_linestring",
+        "layout": {},
+        "paint":
+        {
+          "line-color": "#0000ff",
+          "line-width": 4,
+          "line-opacity": 0.5
+        }
+      });
+
+      map.addLayer({
+        "id": "measured_linestring_points",
+        "type": 'circle',
+        "source": "measured_linestring",
+        "layout": {},
+        "paint":
+        {
+          "circle-color": "#000000",
+          "circle-radius": 3
+        }
+      });
+    }
+
+    deactivate()
+    {
+      const map = this.map;
+      map.off("click", this._onMapClick);
+      map.getCanvas().style.cursor = "grab";
+      this.panel.hide();
+
+      map.removeLayer("measured_linestring_start");
+      map.removeSource("measured_linestring_start");
+
+      map.removeLayer("measured_linestring");
+      map.removeLayer("measured_linestring_points");
+      map.removeSource("measured_linestring");
+    }
+
+    addPoint(lngLat)
+    {
+      const map = this.map;
+
+      if (this.startData.geometry.coordinates.length === 0)
+      {
+        this.startData.geometry.coordinates = [lngLat.lng, lngLat.lat];
+        map.getSource("measured_linestring_start").setData(this.startData);
+      }
+
+      this.data.geometry.coordinates.push([lngLat.lng, lngLat.lat]);
+      map.getSource("measured_linestring").setData(this.data);
+
+      this.updateLength();
+
+      this.panel.show();
+    }
+
+    updateLength()
+    {
+      let distance = 0;
+      for (let i = 0; i < this.data.geometry.coordinates.length - 1; i++)
+      {
+        let c1 = this.data.geometry.coordinates[i];
+        let c2 = this.data.geometry.coordinates[i + 1];
+
+        let lngLat1 =  new maplibregl.LngLat(c1[0], c1[1]);
+        let lngLat2 =  new maplibregl.LngLat(c2[0], c2[1]);
+        distance += lngLat1.distanceTo(lngLat2);
+      }
+      this.resultDiv.textContent = "Length: " + distance.toFixed(3) + " m";
+      this.resultDiv.className = "p-4";
+    }
+
+    createPanel()
+    {
+      const bodyDiv = this.panel.bodyDiv;
+      const buttonBar = document.createElement("div");
+      buttonBar.className = "button_bar";
+      bodyDiv.appendChild(buttonBar);
+
+      const clearButton = document.createElement("button");
+      clearButton.textContent = "Reset";
+      clearButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.startData.geometry.coordinates = [];
+        map.getSource("measured_linestring_start").setData(this.startData);
+
+        this.data.geometry.coordinates = [];
+        map.getSource("measured_linestring").setData(this.data);
+
+        this.updateLength();
+      });
+      buttonBar.appendChild(clearButton);
+
+      const undoButton = document.createElement("button");
+      undoButton.textContent = "Undo";
+      undoButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (this.data.geometry.coordinates.length > 0)
+        {
+          this.data.geometry.coordinates.pop();
+          map.getSource("measured_linestring").setData(this.data);
+
+          if (this.data.geometry.coordinates.length === 0)
+          {
+            this.startData.geometry.coordinates = [];
+            map.getSource("measured_linestring_start").setData(this.startData);
+          }
+          this.updateLength();
+        }
+      });
+      buttonBar.appendChild(undoButton);
+
+      this.resultDiv = document.createElement("div");
+      bodyDiv.appendChild(this.resultDiv);
     }
   }
+  
+  
+  class MeasureArea extends Tool
+  {
+    constructor(containerId, insertTop)
+    {
+      super("fa fa-ruler-combined", "Measure area");
+      this.panel = new Panel(containerId, "Measure area", "pi pi-info-circle", insertTop);
+      this.createPanel();
+      this._onMapClick = (event) => this.addPoint(event.lngLat);
+      this.startData = {
+        "type": "Feature",
+        "geometry": { "type": "Point", "coordinates": [] }
+      };
+      this.data = {
+        "type": "Feature",
+        "geometry": { "type": "Polygon", "coordinates": [[]] }
+      };
+    }
+
+    activate()
+    {
+      const map = this.map;
+      map.on("click", this._onMapClick);
+      map.getCanvas().style.cursor = "crosshair";
+      this.panel.show();
+
+      map.addSource("measured_polygon_start", {
+        type: 'geojson',
+        data: this.startData
+      });
+
+      map.addLayer({
+        "id": "measured_polygon_start",
+        "type": 'circle',
+        "source": "measured_polygon_start",
+        "layout": {},
+        "paint":
+        {
+          "circle-color": "#000000",
+          "circle-radius": 4
+        }
+      });
+
+      map.addSource("measured_polygon", {
+        type: 'geojson',
+        data: this.data
+      });
+
+      map.addLayer({
+        "id": "measured_polygon",
+        "type": 'fill',
+        "source": "measured_polygon",
+        "layout": {},
+        "paint":
+        {
+          "fill-color": "#0000ff",
+          "fill-opacity": 0.2
+        }
+      });
+
+      map.addLayer({
+        "id": "measured_polygon_points",
+        "type": 'circle',
+        "source": "measured_polygon",
+        "layout": {},
+        "paint":
+        {
+          "circle-color": "#000000",
+          "circle-radius": 3
+        }
+      });
+    }
+
+    deactivate()
+    {
+      const map = this.map;
+      map.off("click", this._onMapClick);
+      map.getCanvas().style.cursor = "grab";
+      this.panel.hide();
+
+      map.removeLayer("measured_polygon_start");
+      map.removeSource("measured_polygon_start");
+
+      map.removeLayer("measured_polygon");
+      map.removeLayer("measured_polygon_points");
+      map.removeSource("measured_polygon");
+    }
+
+    addPoint(lngLat)
+    {
+      const map = this.map;
+
+      if (this.startData.geometry.coordinates.length === 0)
+      {
+        this.startData.geometry.coordinates = [lngLat.lng, lngLat.lat];
+        map.getSource("measured_polygon_start").setData(this.startData);
+      }
+
+      this.data.geometry.coordinates[0].push([lngLat.lng, lngLat.lat]);
+      map.getSource("measured_polygon").setData(this.data);
+
+      this.updateArea();
+
+      this.panel.show();
+    }
+
+    updateArea()
+    {
+      let area = 0;
+      const coordinates = this.data.geometry.coordinates[0];
+      for (let i = 0; i < coordinates.length; i++)
+      {
+        let c1 = coordinates[i];
+        let c2 = coordinates[(i + 1) % coordinates.length];
+
+        let utm1 = toUtm(c1[1], c1[0], 7, 'ETRS89');
+        let utm2 = toUtm(c2[1], c2[0], 7, 'ETRS89');
+        
+        let x1 = utm1.easting;
+        let y1 = utm1.northing;
+
+        let x2 = utm2.easting;
+        let y2 = utm2.northing;        
+        
+        area += (0.5 * (y1 + y2) * (x2 - x1));
+      }
+      
+      area = Math.abs(area);
+      
+      this.resultDiv.textContent = "Area: " + area.toFixed(3) + " m2";
+      this.resultDiv.className = "p-4";
+    }
+
+    createPanel()
+    {
+      const bodyDiv = this.panel.bodyDiv;
+      const buttonBar = document.createElement("div");
+      buttonBar.className = "button_bar";
+      bodyDiv.appendChild(buttonBar);
+
+      const clearButton = document.createElement("button");
+      clearButton.textContent = "Reset";
+      clearButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.startData.geometry.coordinates = [];
+        map.getSource("measured_polygon_start").setData(this.startData);
+
+        this.data.geometry.coordinates[0] = [];
+        map.getSource("measured_polygon").setData(this.data);
+
+        this.updateArea();
+      });
+      buttonBar.appendChild(clearButton);
+
+      const undoButton = document.createElement("button");
+      undoButton.textContent = "Undo";
+      undoButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (this.data.geometry.coordinates[0].length > 0)
+        {
+          this.data.geometry.coordinates[0].pop();
+          map.getSource("measured_polygon").setData(this.data);
+
+          if (this.data.geometry.coordinates[0].length === 0)
+          {
+            this.startData.geometry.coordinates = [];
+            map.getSource("measured_polygon_start").setData(this.startData);
+          }
+          this.updateArea();
+        }
+      });
+      buttonBar.appendChild(undoButton);
+
+      this.resultDiv = document.createElement("div");
+      bodyDiv.appendChild(this.resultDiv);
+    }
+  }  
 
   window.maplibreglx = {};
   maplibreglx.HomeButton = HomeButton;
@@ -948,12 +1350,15 @@ if (window.mapLibreControlsLoaded === undefined)
   maplibreglx.Info = Info;
   maplibreglx.Legend = Legend;
   maplibreglx.GetFeatureInfo = GetFeatureInfo;
+  maplibreglx.MeasureLength = MeasureLength;
+  maplibreglx.MeasureArea = MeasureArea;
+
   window.mapLibreControlsLoaded = true;
 }
 
 function extendArray(array, length)
 {
-  while (array.length < length) array.push("");  
+  while (array.length < length) array.push("");
 }
 
 function getSourceUrl(sourceId, style)
@@ -1147,7 +1552,7 @@ function initLayers(style)
     {
       if (layer.metadata?.visible === false)
       {
-        layer.layout.visibility = "none";        
+        layer.layout.visibility = "none";
       }
     }
   }
@@ -1180,7 +1585,7 @@ function maplibreInit(clientId, style)
     style: style,
     antialias: true
   });
-  
+
   window.map = map;
   map.setPixelRatio(window.devicePixelRatio);
 
@@ -1217,9 +1622,11 @@ function maplibreInit(clientId, style)
 
   map.addControl(new maplibreglx.Search("maplibre_left_container"), "top-left");
 
-  map.addControl(new maplibreglx.Info("maplibre_left_container"), "top-left");
+  map.addControl(new maplibreglx.GetFeatureInfo("maplibre_right_container", true), "top-left");
 
-  map.addControl(new maplibreglx.GetFeatureInfo("maplibre_right_container", true), "top-right");
+  map.addControl(new maplibreglx.MeasureLength("maplibre_right_container", true), "top-left");
+
+  map.addControl(new maplibreglx.MeasureArea("maplibre_right_container", true), "top-left");
 
   map.addControl(new maplibreglx.Legend("maplibre_right_container", true), "bottom-right");
 

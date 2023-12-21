@@ -60,6 +60,11 @@ div.maplibre_panel_container .scroller .panel .body
   background: var(--surface-ground);  
 }
 
+div.maplibregl-ctrl.active
+{
+  background-color: yellow;
+}
+
 /* Legend */
 
 div.maplibre_panel_container .scroller .panel ul.legend
@@ -188,5 +193,19 @@ div.maplibre_panel_container .scroller .panel ul.feature_info li
   }  
 }
 
+div.maplibre_panel_container .scroller .panel .button_bar button
+{
+  font-family: var(--font-family);
+  font-size: 13px;
+  border: none;
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
+  border-radius: var(--border-radius);
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 5px;
+  padding-right: 5px;  
+  margin: 2px;
+}
 
 
