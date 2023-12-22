@@ -208,4 +208,14 @@ div.maplibre_panel_container .scroller .panel .button_bar button
   margin: 2px;
 }
 
+.export_link
+{
+  text-decoration: none;
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
+  margin: 3px;
+  padding:2px 4px 2px 4px;
+  border-radius: var(--border-radius);
+  display:inline-block;
+}
 
