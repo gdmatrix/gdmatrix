@@ -4,6 +4,12 @@
   "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
 
 <faces-config xmlns="http://java.sun.com/JSF/Configuration">
+  <application>
+    <resource-bundle>
+      <base-name>org.santfeliu.translation.web.resources.TranslationBundle</base-name>
+      <var>translationBundle</var>
+    </resource-bundle>
+  </application>  
   <managed-bean>
     <managed-bean-name>translationBean</managed-bean-name>
     <managed-bean-class>org.santfeliu.translation.web.TranslationBean</managed-bean-class>

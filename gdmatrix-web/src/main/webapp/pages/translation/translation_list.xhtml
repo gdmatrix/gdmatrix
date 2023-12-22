@@ -1,0 +1,64 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+  <p:dataTable value="#{translationFinderBean.rows}"
+               var="row" stripedRows="true"
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{translationFinderBean.firstRow}"
+               rowStyleClass="#{row.transId == translationObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"               
+               rows="10"
+               rowIndexVar="rowIndex">
+
+
+    <p:column styleClass="text-center">
+      <span class="mr-2 #{row.state == 'COMPLETED' ? 'pi pi-check-circle': 'pi pi-exclamation-circle'}"></span> 
+    </p:column>
+
+    <p:column headerText="#{translationBundle.language}" styleClass="col-1 text-center">
+      <h:outputText value="#{translationObjectBean.getDisplayLanguage(row.language)}" />
+    </p:column>       
+
+    <p:column headerText="#{translationBundle.text}" styleClass="col-10">
+      <div class="mb-1 font-semibold">#{translationTypeBean.describeText(row.text)} </div>
+      <div class="font-italic">#{translationTypeBean.describeText(row.translation)} </div>
+      <p:overlayPanel for="view-full-translation" rendered="true">
+        <div class="mb-1 font-semibold">#{row.text} </div>
+        <div class="font-italic">#{row.translation}</div>
+      </p:overlayPanel> 
+    </p:column>     
+
+    <p:column styleClass="col-1 text-right white-space-nowrap">
+      <p:commandButton id="view-full-translation" type="button" 
+                             styleClass="ui-button-flat rounded-button" 
+                             rendered="#{row.text.length() > 80}" 
+                             icon="material-icons mi-more-horiz" 
+                             title="#{translationBundle.show_full_text}" alt=""/>       
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.transId)}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       process="@this" update="@form:cnt"
+                       alt="#{objectBundle.select}" title="#{objectBundle.select}"
+                       />
+      <p:commandButton icon="pi pi-external-link"
+                       alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{translationFinderBean.view(rowIndex)}"
+                       resetValues="true"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                       />
+    </p:column>
+  </p:dataTable>
+
+</ui:composition>
+

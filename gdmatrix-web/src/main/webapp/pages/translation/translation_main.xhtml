@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <h:outputStylesheet library="css" name="flag-icons.css" /> 
+  
+  <div class="w-full m-0 flex justify-content-end">
+    
+  </div>  
+
+  <div class="ui-fluid formgrid grid">
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{translationBundle.text}" />
+      <p:inputTextarea value="#{translationObjectBean.translation.text}" readonly="true" />
+    </div> 
+
+    <div class="field col-12 lg:col-4">
+      <p:outputLabel for="@next" value="#{translationBundle.editor_creation_date}" />
+      <p:inputText value="#{translationObjectBean.translation.creationDateTime}" 
+                   readonly="true" disabled="true" converter="DateTimeConverter"/>
+    </div> 
+
+    <div class="field col-12 lg:col-4">
+      <p:outputLabel for="@next" value="#{translationBundle.editor_last_read}" />
+      <p:inputText value="#{translationObjectBean.translation.readDateTime}" 
+                   readonly="true" disabled="true" converter="DateTimeConverter"/>
+    </div>    
+
+    <div class="field col-12 lg:col-4">
+      <p:outputLabel for="@next" value="#{translationBundle.editor_last_mod}" />
+      <p:inputText value="#{translationObjectBean.translation.modifyDateTime}"
+                   readonly="true" disabled="true" converter="DateTimeConverter" />
+    </div>     
+
+    <div class="field col-12 lg:col-2">
+      <p:outputLabel for="@next" value="#{translationBundle.language}" />
+      <p:inputText value="#{translationObjectBean.displayLanguage}" readonly="true" disabled="true"/>
+    </div>   
+    
+    <div class="field col-12 lg:col-4">
+      <p:outputLabel for="@next" value="#{translationBundle.group}" />
+      <p:inputText value="#{translationObjectBean.translation.group}" readonly="true" disabled="true"/>
+    </div>      
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{translationBundle.translation}" />
+      <p:inputTextarea value="#{translationObjectBean.translation.translation}" />
+    </div> 
+    
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{translationBundle.editor_closed}" />
+      <p:toggleSwitch styleClass="block" value="#{translationObjectBean.translationClosed}" onIcon="pi pi-check" offIcon="pi pi-times"  />
+    </div>     
+
+  </div>   
+
+</ui:composition>
