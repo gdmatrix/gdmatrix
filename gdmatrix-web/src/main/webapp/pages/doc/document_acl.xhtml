@@ -181,7 +181,7 @@
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="document_acl_dialog"
                          update="document_acl_table document_acl_panel"
-                         oncomplete="if (!isFacesError()) PF('documentACLDialog').hide()"
+                         oncomplete="closePFDialog('documentACLDialog',args)"
                          disabled="#{!documentObjectBean.editable}"/>
         <p:commandButton action="#{documentACLTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"

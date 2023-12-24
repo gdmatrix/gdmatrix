@@ -117,7 +117,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="role_containers_dialog"
                          update="role_containers_table role_containers_panel"
-                         oncomplete="if (!isFacesError()) PF('roleContainersDialog').hide()"
+                         oncomplete="closePFDialog('roleContainersDialog',args)"
                          />
         <p:commandButton action="#{roleContainersTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

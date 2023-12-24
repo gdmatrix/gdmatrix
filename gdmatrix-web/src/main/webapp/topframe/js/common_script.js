@@ -517,5 +517,26 @@ function isFacesError()
     || (document.getElementsByClassName('ui-messages-error').length > 0));
 }
 
+function closePFDialog(widgetVar, args)
+{
+  var dialog = PF(widgetVar);
+  if (dialog && args)
+  {
+    if (args.validationFailed)
+    {
+      var elem = dialog.jq[0];      
+      elem.scroll({
+        top: 0,
+        left: 0,
+        behavior: "smooth"
+      });
+    }
+    else
+    {
+      dialog.hide();
+    }
+  }
+}
+
 initKeyCapture();
 checkFirefoxFontSizeChange();

@@ -170,7 +170,7 @@
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="document_documents_dialog"
                          update="document_documents_table document_documents_panel"
-                         oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').hide()"
+                         oncomplete="closePFDialog('documentDocumentsDialog',args)"
                          disabled="#{!documentObjectBean.editable}"/>
         <p:commandButton action="#{documentDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

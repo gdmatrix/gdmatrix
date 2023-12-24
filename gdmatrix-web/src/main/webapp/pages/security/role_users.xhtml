@@ -154,7 +154,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="role_users_dialog"
                          update="role_users_table role_users_panel"
-                         oncomplete="if (!isFacesError()) PF('roleUsersDialog').hide()"
+                         oncomplete="closePFDialog('roleUsersDialog',args)"
                          />
         <p:commandButton action="#{roleUsersTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
