@@ -517,12 +517,12 @@ function isFacesError()
     || (document.getElementsByClassName('ui-messages-error').length > 0));
 }
 
-function closePFDialog(widgetVar, args)
+function closePFDialog(widgetVar)
 {
   var dialog = PF(widgetVar);
-  if (dialog && args)
+  if (dialog)
   {
-    if (args.validationFailed)
+    if (isFacesError())
     {
       var elem = dialog.jq[0];      
       elem.scroll({

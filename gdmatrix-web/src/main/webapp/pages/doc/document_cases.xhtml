@@ -94,13 +94,13 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>        
+    
     <h:panelGroup styleClass="mt-2" id="document_cases_panel" layout="block"
              rendered="#{documentCasesTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>        
       
       <div class="ui-fluid formgrid grid" >
 
@@ -153,7 +153,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="document_cases_dialog"
                          update="document_cases_table document_cases_panel"
-                         oncomplete="closePFDialog('documentCasesDialog',args)"
+                         oncomplete="closePFDialog('documentCasesDialog')"
                          disabled="#{!documentObjectBean.editable}" />
         <p:commandButton action="#{documentCasesTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"

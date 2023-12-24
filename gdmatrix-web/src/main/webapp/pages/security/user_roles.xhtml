@@ -85,13 +85,13 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>      
+    
     <h:panelGroup styleClass="mt-2" id="user_roles_panel" layout="block"
              rendered="#{userRolesTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
       
       <div class="ui-fluid formgrid grid" >
 
@@ -154,7 +154,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="user_roles_dialog"
                          update="user_roles_table user_roles_panel"
-                         oncomplete="closePFDialog('userRolesDialog',args)"
+                         oncomplete="closePFDialog('userRolesDialog')"
                          />
         <p:commandButton action="#{userRolesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
