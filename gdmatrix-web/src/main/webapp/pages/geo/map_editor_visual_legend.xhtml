@@ -72,13 +72,13 @@
       <span class="pi pi-folder mr-2"/><span>Legend group</span>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>
+    
     <h:panelGroup styleClass="mt-2" id="legend_group_panel" layout="block"
                   rendered="#{geoMapBean.editingLegendGroup != null}">
-
-      <p:messages showSummary="true" styleClass="messages"
-                  showIcon="true" closable="false">
-        <p:autoUpdate />
-      </p:messages>
 
       <div class="ui-fluid formgrid grid">
 
@@ -116,7 +116,7 @@
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:legend_group_dialog"
                          update="@form:cnt:map_tabs:legend"
-                         oncomplete="if (!isFacesError()) PF('legendGroupDialog').hide()"
+                         oncomplete="closePFDialog('legendGroupDialog')"
                          />
         <p:commandButton action="#{geoMapBean.cancelLegendGroup}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
@@ -137,18 +137,18 @@
       <span class="fa fa-layer-group mr-2"/><span>Legend layer</span>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>
+    
     <h:panelGroup styleClass="mt-2" id="legend_layer_panel" layout="block"
                   rendered="#{geoMapBean.editingLegendLayer != null}">
-
-      <p:messages showSummary="true" styleClass="messages"
-                  showIcon="true" closable="false">
-        <p:autoUpdate />
-      </p:messages>
 
       <div class="ui-fluid formgrid grid">
 
         <div class="field col-12">
-          <p:outputLabel for="@next" value="Layer" />
+          <p:outputLabel for="@next" value="Layer Id" />
           <p:selectOneMenu value="#{geoMapBean.editingLegendLayer.layerId}">
             <f:selectItems value="#{geoMapBean.layerIds}" var="layerId" 
                            itemValue="#{layerId}" itemLabel="#{layerId}" />
@@ -174,7 +174,7 @@
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:legend_layer_dialog"
                          update="@form:cnt:map_tabs:legend"
-                         oncomplete="if (!isFacesError()) PF('legendLayerDialog').hide()"
+                         oncomplete="closePFDialog('legendLayerDialog')"
                          />
         <p:commandButton action="#{geoMapBean.cancelLegendLayer}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

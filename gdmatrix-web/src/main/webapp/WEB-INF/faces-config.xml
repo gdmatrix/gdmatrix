@@ -17,71 +17,71 @@
     <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>
   </lifecycle>
 
- <application>
-  <locale-config>
-   <default-locale>ca</default-locale>
-   <supported-locale>ca</supported-locale>
-   <supported-locale>es</supported-locale>
-   <supported-locale>en</supported-locale>
-   <supported-locale>fr</supported-locale>
-   <supported-locale>de</supported-locale>
-   <supported-locale>it</supported-locale>
-   <supported-locale>pt</supported-locale>
-   <supported-locale>ru</supported-locale>
-   <supported-locale>ar</supported-locale>
-   <supported-locale>zh</supported-locale>
-   <supported-locale>ro</supported-locale>
-   <supported-locale>bg</supported-locale>
-  </locale-config>
+  <application>
+    <locale-config>
+      <default-locale>ca</default-locale>
+      <supported-locale>ca</supported-locale>
+      <supported-locale>es</supported-locale>
+      <supported-locale>en</supported-locale>
+      <supported-locale>fr</supported-locale>
+      <supported-locale>de</supported-locale>
+      <supported-locale>it</supported-locale>
+      <supported-locale>pt</supported-locale>
+      <supported-locale>ru</supported-locale>
+      <supported-locale>ar</supported-locale>
+      <supported-locale>zh</supported-locale>
+      <supported-locale>ro</supported-locale>
+      <supported-locale>bg</supported-locale>
+    </locale-config>
 
-  <message-bundle>org.santfeliu.web.resources.MessageBundle</message-bundle>
+    <message-bundle>org.santfeliu.web.resources.MessageBundle</message-bundle>
 
-  <resource-bundle>
-    <base-name>org.santfeliu.web.resources.MessageBundle</base-name>
-    <var>messageBundle</var>
-  </resource-bundle>
+    <resource-bundle>
+      <base-name>org.santfeliu.web.resources.MessageBundle</base-name>
+      <var>messageBundle</var>
+    </resource-bundle>
 
-  <resource-bundle>
-    <base-name>org.santfeliu.web.obj.resources.ObjectBundle</base-name>
-    <var>objectBundle</var>
-  </resource-bundle>
+    <resource-bundle>
+      <base-name>org.santfeliu.web.obj.resources.ObjectBundle</base-name>
+      <var>objectBundle</var>
+    </resource-bundle>
 
-  <resource-bundle>
-    <base-name>org.santfeliu.web.resources.WebBundle</base-name>
-    <var>webBundle</var>
-  </resource-bundle>
+    <resource-bundle>
+      <base-name>org.santfeliu.web.resources.WebBundle</base-name>
+      <var>webBundle</var>
+    </resource-bundle>
 
-  <resource-bundle>
-    <base-name>org.santfeliu.web.resources.HelpBundle</base-name>
-    <var>helpBundle</var>
-  </resource-bundle>
+    <resource-bundle>
+      <base-name>org.santfeliu.web.resources.HelpBundle</base-name>
+      <var>helpBundle</var>
+    </resource-bundle>
 
-   <system-event-listener>
-    <system-event-listener-class>org.santfeliu.webapp.util.PreDestroyViewMapListener</system-event-listener-class>
-    <system-event-class>javax.faces.event.PreDestroyViewMapEvent</system-event-class>
-   </system-event-listener>
- </application>
+    <system-event-listener>
+      <system-event-listener-class>org.santfeliu.webapp.util.PreDestroyViewMapListener</system-event-listener-class>
+      <system-event-class>javax.faces.event.PreDestroyViewMapEvent</system-event-class>
+    </system-event-listener>
+  </application>
 
- <managed-bean>
-  <managed-bean-name>applicationBean</managed-bean-name>
-  <managed-bean-class>org.santfeliu.web.ApplicationBean</managed-bean-class>
-  <managed-bean-scope>application</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>userSessionBean</managed-bean-name>
-  <managed-bean-class>org.santfeliu.web.UserSessionBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-   <managed-bean-name>controllerBean</managed-bean-name>
-   <managed-bean-class>org.santfeliu.web.obj.ControllerBean</managed-bean-class>
-   <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>objectActionsBean</managed-bean-name>
-  <managed-bean-class>org.santfeliu.web.obj.ObjectActionsBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
+  <managed-bean>
+    <managed-bean-name>applicationBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.web.ApplicationBean</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
+  </managed-bean>
+  <managed-bean>
+    <managed-bean-name>userSessionBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.web.UserSessionBean</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+  <managed-bean>
+    <managed-bean-name>controllerBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.web.obj.ControllerBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  <managed-bean>
+    <managed-bean-name>objectActionsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.web.obj.ObjectActionsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
 
   <navigation-rule>
     <from-view-id>*</from-view-id>
@@ -91,20 +91,20 @@
     </navigation-case>
 
     <navigation-case>
-     <from-outcome>blank</from-outcome>
-     <to-view-id>/common/util/blank.xhtml</to-view-id>
+      <from-outcome>blank</from-outcome>
+      <to-view-id>/common/util/blank.xhtml</to-view-id>
     </navigation-case>
     <navigation-case>
-     <from-outcome>error</from-outcome>
-     <to-view-id>/common/util/error.xhtml</to-view-id>
+      <from-outcome>error</from-outcome>
+      <to-view-id>/common/util/error.xhtml</to-view-id>
     </navigation-case>
     <navigation-case>
-     <from-outcome>faces_error</from-outcome>
-     <to-view-id>/common/util/faces_error.xhtml</to-view-id>
+      <from-outcome>faces_error</from-outcome>
+      <to-view-id>/common/util/faces_error.xhtml</to-view-id>
     </navigation-case>
     <navigation-case>
-     <from-outcome>object_actions</from-outcome>
-     <to-view-id>/common/obj/object_actions.xhtml</to-view-id>
+      <from-outcome>object_actions</from-outcome>
+      <to-view-id>/common/obj/object_actions.xhtml</to-view-id>
     </navigation-case>
 
   </navigation-rule>
@@ -186,19 +186,19 @@
 
   <render-kit>
     <renderer>
-     <component-family>javax.faces.Panel</component-family>
-     <renderer-type>org.apache.myfaces.DataScroller</renderer-type>
-     <renderer-class>org.santfeliu.faces.render.myfaces.datascroller.HtmlDataScrollerRenderer</renderer-class>
+      <component-family>javax.faces.Panel</component-family>
+      <renderer-type>org.apache.myfaces.DataScroller</renderer-type>
+      <renderer-class>org.santfeliu.faces.render.myfaces.datascroller.HtmlDataScrollerRenderer</renderer-class>
     </renderer>
     <renderer>
-     <component-family>javax.faces.Data</component-family>
-     <renderer-type>org.apache.myfaces.Table</renderer-type>
-     <renderer-class>org.santfeliu.faces.render.HtmlTableRenderer</renderer-class>
+      <component-family>javax.faces.Data</component-family>
+      <renderer-type>org.apache.myfaces.Table</renderer-type>
+      <renderer-class>org.santfeliu.faces.render.HtmlTableRenderer</renderer-class>
     </renderer>
     <renderer>
-     <component-family>javax.faces.Input</component-family>
-     <renderer-type>org.apache.myfaces.Calendar</renderer-type>
-     <renderer-class>org.santfeliu.faces.render.myfaces.calendar.HtmlCalendarRenderer</renderer-class>
+      <component-family>javax.faces.Input</component-family>
+      <renderer-type>org.apache.myfaces.Calendar</renderer-type>
+      <renderer-class>org.santfeliu.faces.render.myfaces.calendar.HtmlCalendarRenderer</renderer-class>
     </renderer>
     <renderer>
       <component-family>javax.faces.SelectOne</component-family>

@@ -31,6 +31,7 @@ if (window.ogcLoaded === undefined)
       const xml = parser.parseFromString(responseText, "application/xml");
       
       let geometryColumn = null;
+      let geometryType = null;
       let complexType = xml.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "complexType")[0];
       if (complexType)
       {
@@ -47,10 +48,14 @@ if (window.ogcLoaded === undefined)
           }
           if (type === "Point" || 
               type === "LineString" ||
-              type === "Surface" || 
+              type === "Surface" ||
+              type === "MultiPoint" || 
+              type === "MultiLineString" ||
+              type === "MultiSurface" ||              
               type === "Geometry")
           {
             geometryColumn = name;
+            geometryType = type;
           }
 
           let property = {
@@ -64,7 +69,8 @@ if (window.ogcLoaded === undefined)
       }
       return { 
         name: typeName, 
-        geometryColumn: geometryColumn, 
+        geometryColumn: geometryColumn,
+        geometryType: geometryType,
         properties: properties 
       };
     }

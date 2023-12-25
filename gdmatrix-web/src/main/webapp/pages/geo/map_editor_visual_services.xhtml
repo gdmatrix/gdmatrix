@@ -54,6 +54,15 @@
                        resetValues="true"
                        oncomplete="PF('mapServicesDialog').show()"
                        />
+      <p:commandButton action="#{geoMapBean.copyService(serviceId)}"
+                       icon="pi pi-copy"
+                       alt="#{objectBundle.copy}" title="#{objectBundle.copy}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@form:cnt:map_tabs"
+                       update="@form:cnt:map_tabs:map_services_dialog"
+                       resetValues="true"
+                       oncomplete="PF('mapServicesDialog').show()"
+                       />
       <p:commandButton action="#{geoMapBean.removeService(serviceId)}"
                        process="@this"
                        update="@form:cnt:map_tabs"
@@ -61,7 +70,11 @@
                        icon="pi pi-trash"
                        alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                        styleClass="rounded-button ui-button-flat"
-                       onclick="PF('mapServicesDialog').hide()"/>
+                       onclick="PF('mapServicesDialog').hide()">
+        <p:confirm header="Remove service #{serviceId}"
+                   message="Remove service #{serviceId} and its dependent sources?" 
+                   icon="pi pi-info-circle" />
+      </p:commandButton>
     </p:column>
   </p:dataTable>
 
@@ -179,28 +192,34 @@
       <span class="pi pi-server mr-2"/><span>Service</span>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>    
+    
     <h:panelGroup styleClass="mt-2" id="map_services_panel" layout="block"
                   rendered="#{geoMapBean.editingService != null}">
-
-      <p:messages showSummary="true" styleClass="messages"
-                  showIcon="true" closable="false">
-        <p:autoUpdate />
-      </p:messages>
 
       <div class="ui-fluid formgrid grid">
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Id" />
+          <p:outputLabel for="@next" value="Id" indicateRequired="true" />
           <p:inputText value="#{geoMapBean.editingId}" styleClass="code"
+                       required="#{not empty param['mainform:map_tabs:accept_service']}"
+                       requiredMessage="Service Id is mandatory"
+                       readonly="#{not geoMapBean.isNewItem()}"
                        pt:spellcheck="false" />
         </div>
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Type" />
-          <p:selectOneMenu value="#{geoMapBean.editingService.type}">
+          <p:outputLabel for="@next" value="Type" indicateRequired="true" />
+          <p:selectOneMenu value="#{geoMapBean.editingService.type}"
+                           required="#{not empty param['mainform:map_tabs:accept_service']}"
+                           requiredMessage="Service type is mandatory">
             <f:selectItem itemValue="" itemLabel="" />
-            <f:selectItem itemValue="wms" itemLabel="WMS" />
-            <f:selectItem itemValue="wfs" itemLabel="WFS" />
+            <f:selectItem itemValue="wms" itemLabel="WMS (Web Map Service)" />
+            <f:selectItem itemValue="wfs" itemLabel="WFS (Web Feature Service)" />
+            <f:selectItem itemValue="wmts" itemLabel="WMTS (Web Map Tile Service)" />
           </p:selectOneMenu>
         </div>
 
@@ -210,8 +229,10 @@
         </div>
 
         <div class="field col-12">
-          <p:outputLabel for="@next" value="Url" />
-          <p:inputText value="#{geoMapBean.editingService.url}" styleClass="code" />
+          <p:outputLabel for="@next" value="Url" indicateRequired="true" />
+          <p:inputText value="#{geoMapBean.editingService.url}" styleClass="code" 
+                       required="#{not empty param['mainform:map_tabs:accept_service']}"
+                       requiredMessage="Service url is required"/>
         </div>
 
         <div class="field col-12">
@@ -224,11 +245,12 @@
 
     <f:facet name="footer">
       <div class="field col-12 text-right">
-        <p:commandButton action="#{geoMapBean.acceptService}"
+        <p:commandButton id="accept_service"
+                         action="#{geoMapBean.acceptService}"
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:map_services_dialog"
-                         update="@form:cnt"
-                         oncomplete="if (!isFacesError()) PF('mapServicesDialog').hide()"
+                         update="map_services_panel map_services_table"
+                         oncomplete="closePFDialog('mapServicesDialog')"
                          />
         <p:commandButton action="#{geoMapBean.cancelService}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

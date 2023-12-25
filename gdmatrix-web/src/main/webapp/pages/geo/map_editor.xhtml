@@ -77,16 +77,17 @@
                            icon="pi pi-trash" title="Delete" styleClass="mini"
                            process="@form:cnt" update="@form:cnt"
                            oncomplete="if (isFacesError()) objectScrollUp()">
-                          <p:confirm header="Remove"
-                            message="Remove map?"
-                            icon="pi pi-info-circle" />
+                           <p:confirm header="Remove"
+                             message="Remove map?"
+                             icon="pi pi-info-circle" />
           </p:commandButton>
         </div>
       </div>
     </div>
     <div id="editor_body" class="p-2 flex-grow-1 overflow-auto">
 
-      <p:messages showSummary="true" styleClass="messages"
+      <p:messages showSummary="true" styleClass="messages" 
+                  rendered="#{not geoMapBean.isDialogVisible()}"
                   showIcon="true" closable="false" forIgnores="growl">
         <p:autoUpdate />
       </p:messages>

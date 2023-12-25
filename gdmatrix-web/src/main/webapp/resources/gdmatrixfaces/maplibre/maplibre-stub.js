@@ -957,11 +957,13 @@ if (window.mapLibreControlsLoaded === undefined)
     {
       return FeatureTypeInspector.getInfo(service.url, layerName).then(info =>
       {
-        const map = this.map;
-        const dist = 20 / map.getZoom();
-
         if (info.geometryColumn)
         {
+          const map = this.map;
+          const isSurface = info.geometryType.indexOf("Surface") !== -1;
+          const zoom = map.getZoom();
+          const dist = isSurface ? 0 : Math.pow(2, 18 - zoom);
+          
           let url = "/proxy?url=" + service.url + "&" +
             "request=GetFeature" +
             "&service=WFS" +
@@ -970,8 +972,7 @@ if (window.mapLibreControlsLoaded === undefined)
             "&srsName=EPSG:4326" +
             "&outputFormat=application/json" +
             "&cql_filter=" + "DISTANCE(" + info.geometryColumn +
-              ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))<" + dist;
-
+              ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))<=" + dist;
 
           if (cqlFilter && cqlFilter.trim().length > 0)
           {
@@ -1791,44 +1792,43 @@ function initSources(style)
 
 function initLayers(style)
 {
-  if (style.metadata.serviceParameters === undefined) return;
-
   for (let layer of style.layers)
   {
     if (layer.type === "raster")
     {
       let sourceId = layer.source;
-      let serviceParameters = style.metadata.serviceParameters[sourceId];
-      if (serviceParameters && serviceParameters.service)
-      {
-        if (layer.id === serviceParameters.masterLayer)
-        {
-          // master layer
-          let visible = style.layers.some(
-            l => l.source === sourceId && l.metadata?.visible !== false);
-          layer.layout.visibility = visible ? "visible" : "none";
-          layer.metadata.virtual = false;
-        }
-        else
-        {
-          // virtual layer
-          layer.layout.visibility = "none";
-          layer.metadata.virtual = true;
-        }
-      }
-
       let source = style.sources[sourceId];
       if (source?.tiles?.length === 0)
       {
         layer.layout.visibility = "none";
+        continue;
+      }
+      else if (style.metadata?.serviceParameters)
+      {
+        let serviceParameters = style.metadata.serviceParameters[sourceId];
+        if (serviceParameters && serviceParameters.service)
+        {
+          if (layer.id === serviceParameters.masterLayer)
+          {
+            // master layer
+            let visible = style.layers.some(
+              l => l.source === sourceId && l.metadata?.visible !== false);
+            layer.layout.visibility = visible ? "visible" : "none";
+          }
+          else
+          {
+            // virtual layer
+            layer.layout.visibility = "none";
+          }
+          continue;
+        }
       }
     }
-    else // not raster layer
+
+    // general case
+    if (layer.metadata?.visible === false)
     {
-      if (layer.metadata?.visible === false)
-      {
-        layer.layout.visibility = "none";
-      }
+      layer.layout.visibility = "none";
     }
   }
 }

@@ -89,13 +89,13 @@
       <span class="pi pi-print mr-2"/><span>Print report</span>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>
+    
     <h:panelGroup styleClass="mt-2" id="map_print_panel" layout="block"
                   rendered="#{geoMapBean.editingPrintReport != null}">
-
-      <p:messages showSummary="true" styleClass="messages"
-                  showIcon="true" closable="false">
-        <p:autoUpdate />
-      </p:messages>
 
       <div class="ui-fluid formgrid grid">
         <div class="field col-12">
@@ -124,7 +124,7 @@
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:map_print_dialog"
                          update="@form:cnt"
-                         oncomplete="if (!isFacesError()) PF('mapPrintDialog').hide()"
+                         oncomplete="closePFDialog('mapPrintDialog')"
                          />
         <p:commandButton action="#{geoMapBean.cancelPrintReport}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

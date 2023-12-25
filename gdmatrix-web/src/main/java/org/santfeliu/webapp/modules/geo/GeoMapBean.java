@@ -97,22 +97,23 @@ public class GeoMapBean extends WebBean implements Serializable
   private boolean mapNameChanged;
   private int activeTabIndex;
   private int activeSourceTabIndex;
+  private int activeLayerTabIndex;
   private transient List<String> serviceIds;
   private transient List<String> sourceIds;
   private transient List<String> layerIds;
   private String editingId;
-  private Source editingSource;
+  private boolean newItem;
   private ServiceParameters editingServiceParameters;
   private Service editingService;
+  private Source editingSource;
   private Layer editingLayer;
+  private LayerForm editingLayerForm;
+  private LegendGroup editingLegendGroup;
+  private LegendLayer editingLegendLayer;
+  private PrintReport editingPrintReport;
   private LegendTreeNode legendTreeRoot;
   private List<TreeNode> legendSelection;
   private List<TreeNode> legendCut;
-  private LegendGroup editingLegendGroup;
-  private LegendLayer editingLegendLayer;
-  private boolean isNewLegendItem;
-  private LayerForm editingLayerForm;
-  private PrintReport editingPrintReport;
   private String reportToUpload;
   private String roleToAdd;
   private transient ServiceCapabilities serviceCapabilities;
@@ -225,6 +226,22 @@ public class GeoMapBean extends WebBean implements Serializable
     this.editingId = editingId;
   }
 
+  public boolean isNewItem()
+  {
+    return newItem;
+  }
+
+  public boolean isDialogVisible()
+  {
+    return editingService != null ||
+           editingSource != null ||
+           editingLayer != null ||
+           editingLayerForm != null ||
+           editingLegendGroup != null ||
+           editingLegendLayer != null ||
+           editingPrintReport != null;
+  }
+
   public void onMapNameChanged(AjaxBehaviorEvent event)
   {
     this.mapNameChanged = true;
@@ -292,6 +309,7 @@ public class GeoMapBean extends WebBean implements Serializable
   public void addService()
   {
     editingId = null;
+    newItem = true;
     editingService = new Service();
   }
 
@@ -301,19 +319,49 @@ public class GeoMapBean extends WebBean implements Serializable
     editingService = cloneObject(getServices().get(serviceId), Service.class);
   }
 
+  public void copyService(String serviceId)
+  {
+    editingId = null;
+    newItem = true;
+    editingService = cloneObject(getServices().get(serviceId), Service.class);
+  }
+
   public void removeService(String serviceId)
   {
     editingId = null;
     serviceIds = null;
+    // remove cascade sources
+    List<String> sourceIdList = new ArrayList<>(getStyle().getSources().keySet());
+    for (String sourceId : sourceIdList)
+    {
+      ServiceParameters serviceParameters = getServiceParameters(sourceId);
+      if (serviceParameters != null)
+      {
+        if (serviceId.equals(serviceParameters.getService()))
+        {
+          removeSource(sourceId);
+        }
+      }
+    }
     getServices().remove(serviceId);
   }
 
   public void acceptService()
   {
-    if (!isBlank(editingId))
+    if (newItem)
     {
-      getServices().put(editingId, editingService);
+      if (getServices().containsKey(editingId))
+      {
+        error("DUPLICATED_ID");
+        return;
+      }
+      else
+      {
+        newItem = false;
+      }
     }
+    getServices().put(editingId, editingService);
+
     editingId = null;
     editingService = null;
     serviceIds = null;
@@ -323,6 +371,7 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     editingId = null;
     editingService = null;
+    newItem = false;
   }
 
   // sources ---------------------------------------------
@@ -489,8 +538,10 @@ public class GeoMapBean extends WebBean implements Serializable
   public void addSource()
   {
     editingId = null;
+    newItem = true;
     editingSource = new Source();
     editingServiceParameters = new ServiceParameters();
+    activeSourceTabIndex = 0;
   }
 
   public void editSource(String sourceId)
@@ -502,39 +553,55 @@ public class GeoMapBean extends WebBean implements Serializable
     editingServiceParameters = editingServiceParameters == null ?
       new ServiceParameters() :
       cloneObject(editingServiceParameters, ServiceParameters.class);
+    updateSourcePanel();
+  }
 
-    if (!editingSource.getTiles().isEmpty())
-    {
-      activeSourceTabIndex = 1;
-    }
-    else if (!isBlank(editingSource.getUrl()))
-    {
-      activeSourceTabIndex = 2;
-    }
-    else if (editingSource.getData() != null)
-    {
-      activeSourceTabIndex = 3;
-    }
-    else
-    {
-      activeSourceTabIndex = 0;
-    }
+  public void copySource(String sourceId)
+  {
+    editingId = null;
+    newItem = true;
+    editingSource =
+      cloneObject(getStyle().getSources().get(sourceId), Source.class);
+    editingServiceParameters = getServiceParameters(sourceId);
+    editingServiceParameters = editingServiceParameters == null ?
+      new ServiceParameters() :
+      cloneObject(editingServiceParameters, ServiceParameters.class);
+    updateSourcePanel();
   }
 
   public void removeSource(String sourceId)
   {
     editingId = null;
     sourceIds = null;
+    List<Layer> layers = new ArrayList<>(getStyle().getLayers());
+    for (Layer layer : layers)
+    {
+      if (sourceId.equals(layer.getSource()))
+      {
+        removeLayer(layer);
+      }
+    }
     getStyle().getSources().remove(sourceId);
+    getServiceParametersMap().remove(sourceId);
   }
 
   public void acceptSource()
   {
-    if (!isBlank(editingId))
+    if (newItem)
     {
-      getStyle().getSources().put(editingId, editingSource);
-      setServiceParameters(editingId, editingServiceParameters);
+      if (getStyle().getSources().containsKey(editingId))
+      {
+        error("DUPLICATED_ID");
+        return;
+      }
+      else
+      {
+        newItem = false;
+      }
     }
+    getStyle().getSources().put(editingId, editingSource);
+    setServiceParameters(editingId, editingServiceParameters);
+
     editingId = null;
     editingSource = null;
     editingServiceParameters = null;
@@ -545,9 +612,86 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     editingId = null;
     editingSource = null;
+    newItem = false;
+  }
+
+  public void updateSourcePanel()
+  {
+    if (editingSource != null)
+    {
+      if ("image".equals(editingSource.getType()))
+      {
+        activeSourceTabIndex = 4;
+        return;
+      }
+
+      if ("video".equals(editingSource.getType()))
+      {
+        activeSourceTabIndex = 5;
+        return;
+      }
+
+      if ("vector".equals(editingSource.getType()))
+      {
+        if (editingSource.getUrl() != null)
+        {
+          activeSourceTabIndex = 2;
+          return;
+        }
+      }
+
+      if ("raster".equals(editingSource.getType()) ||
+          "raster-dem".equals(editingSource.getType()))
+      {
+        ServiceParameters serviceParameters = getEditingServiceParameters();
+        if (serviceParameters != null)
+        {
+          if ("application/json".equals(serviceParameters.getFormat()))
+          {
+            serviceParameters.setFormat("image/png");
+          }
+        }
+      }
+
+      if ("geojson".equals(editingSource.getType()))
+      {
+        ServiceParameters serviceParameters = getEditingServiceParameters();
+        if (serviceParameters != null)
+        {
+          serviceParameters.setFormat("application/json");
+        }
+
+        if (editingSource.getData() != null)
+        {
+          activeSourceTabIndex = 3;
+          return;
+        }
+      }
+
+      if (editingSource.getTiles() != null)
+      {
+        if (!editingSource.getTiles().isEmpty())
+        {
+          activeSourceTabIndex = 1;
+          return;
+        }
+      }
+
+      activeSourceTabIndex = 0;
+    }
   }
 
   // Layers ----------------------------------------------------
+
+  public int getActiveLayerTabIndex()
+  {
+    return activeLayerTabIndex;
+  }
+
+  public void setActiveLayerTabIndex(int activeLayerTabIndex)
+  {
+    this.activeLayerTabIndex = activeLayerTabIndex;
+  }
 
   public List<String> getLayerIds()
   {
@@ -666,26 +810,85 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
+  public void updateLayerPanel()
+  {
+    if (editingLayer != null)
+    {
+      String sourceId = editingLayer.getSource();
+      Source source = getStyle().getSources().get(sourceId);
+      if (source != null)
+      {
+        String sourceType = source.getType();
+        if ("raster".equals(sourceType))
+        {
+          editingLayer.setType("raster");
+        }
+        else if ("vector".equals(sourceType) || "geojson".equals(sourceType))
+        {
+          String layerType = editingLayer.getType();
+          if ("raster".equals(layerType))
+          {
+            editingLayer.setType(null);
+          }
+        }
+      }
+      activeLayerTabIndex = 0;
+    }
+  }
+
   public void addLayer()
   {
     editingLayer = new Layer();
+    newItem = true;
   }
 
   public void editLayer(Layer layer)
   {
-    editingLayer = layer;
+    editingLayer = cloneObject(layer, Layer.class);
+    updateLayerPanel();
+  }
+
+  public void copyLayer(Layer layer)
+  {
+    editingLayer = cloneObject(layer, Layer.class);
+    editingLayer.setId(null);
+    newItem = true;
+    updateLayerPanel();
   }
 
   public void removeLayer(Layer layer)
   {
+    removeLegendLayerNode(getLegendTreeRoot(), layer.getId());
+
     getStyle().getLayers().remove(layer);
   }
 
   public void acceptLayer()
   {
-    if (!getStyle().getLayers().contains(editingLayer))
+    if (newItem)
     {
-      getStyle().getLayers().add(editingLayer);
+      String layerId = editingLayer.getId();
+      if (getStyle().getLayers().stream().anyMatch(l -> l.getId().equals(layerId)))
+      {
+        error("DUPLICATED_ID");
+        return;
+      }
+      else
+      {
+        newItem = false;
+        getStyle().getLayers().add(editingLayer);
+      }
+    }
+    else
+    {
+      for (int i = 0; i < getStyle().getLayers().size(); i++)
+      {
+        if (getStyle().getLayers().get(i).getId().equals(editingLayer.getId()))
+        {
+          getStyle().getLayers().set(i, editingLayer);
+          break;
+        }
+      }
     }
     editingLayer = null;
   }
@@ -693,6 +896,7 @@ public class GeoMapBean extends WebBean implements Serializable
   public void cancelLayer()
   {
     editingLayer = null;
+    newItem = false;
   }
 
   // Legend ----------------------------------------------------
@@ -758,7 +962,7 @@ public class GeoMapBean extends WebBean implements Serializable
       editingLegendGroup = new LegendGroup();
       editingLegendGroup.setMode(LegendGroup.MULTIPLE);
       editingLegendGroup.setLabel("Group");
-      isNewLegendItem = true;
+      newItem = true;
     }
   }
 
@@ -767,7 +971,7 @@ public class GeoMapBean extends WebBean implements Serializable
     if (legendSelection != null && legendSelection.size() == 1)
     {
       editingLegendLayer = new LegendLayer();
-      isNewLegendItem = true;
+      newItem = true;
     }
   }
 
@@ -783,7 +987,7 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public void acceptLegendGroup()
   {
-    if (isNewLegendItem)
+    if (newItem)
     {
       LegendTreeNode groupNode = new LegendTreeNode(editingLegendGroup);
       LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
@@ -791,7 +995,7 @@ public class GeoMapBean extends WebBean implements Serializable
       {
         targetNode.add(groupNode);
       }
-      isNewLegendItem = false;
+      newItem = false;
     }
     editingLegendGroup = null;
   }
@@ -799,7 +1003,7 @@ public class GeoMapBean extends WebBean implements Serializable
   public void cancelLegendGroup()
   {
     editingLegendGroup = null;
-    isNewLegendItem = false;
+    newItem = false;
   }
 
   public void acceptLegendLayer()
@@ -818,7 +1022,7 @@ public class GeoMapBean extends WebBean implements Serializable
         editingLegendLayer.setLabel(editingLegendLayer.getLayerId());
       }
     }
-    if (isNewLegendItem)
+    if (newItem)
     {
       LegendTreeNode layerNode = new LegendTreeNode(editingLegendLayer);
       LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
@@ -826,7 +1030,7 @@ public class GeoMapBean extends WebBean implements Serializable
       {
         targetNode.add(layerNode);
       }
-      isNewLegendItem = false;
+      newItem = false;
     }
     editingLegendLayer = null;
   }
@@ -834,6 +1038,31 @@ public class GeoMapBean extends WebBean implements Serializable
   public void cancelLegendLayer()
   {
     editingLegendLayer = null;
+  }
+
+  public void removeLegendLayerNode(TreeNode<LegendItem> node, String layerId)
+  {
+    LegendItem item = node.getData();
+    if (item instanceof LegendLayer)
+    {
+      LegendLayer legendLayer = (LegendLayer)item;
+      if (layerId.equals(legendLayer.getLayerId()))
+      {
+        TreeNode parentNode = node.getParent();
+        if (parentNode != null)
+        {
+          parentNode.getChildren().remove(node);
+        }
+      }
+    }
+    else
+    {
+      List<TreeNode<LegendItem>> children = new ArrayList<>(node.getChildren());
+      for (TreeNode<LegendItem> childNode : children)
+      {
+        removeLegendLayerNode(childNode, layerId);
+      }
+    }
   }
 
   public void removeLegendNodes()

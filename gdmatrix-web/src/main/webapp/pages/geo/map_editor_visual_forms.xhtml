@@ -64,18 +64,20 @@
       <span class="fa fa-table-list mr-2"/><span>Layer form</span>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>
+
     <h:panelGroup styleClass="mt-2" id="map_forms_panel" layout="block"
                   rendered="#{geoMapBean.editingLayerForm != null}">
 
-      <p:messages showSummary="true" styleClass="messages"
-                  showIcon="true" closable="false">
-        <p:autoUpdate />
-      </p:messages>
-
       <div class="ui-fluid formgrid grid">
         <div class="field col-12">
-          <p:outputLabel for="@next" value="Layer" />
-          <p:inputText value="#{geoMapBean.editingLayerForm.layer}" />
+          <p:outputLabel for="@next" value="Layer name" indicateRequired="true" />
+          <p:inputText value="#{geoMapBean.editingLayerForm.layer}" 
+                       required="#{not empty param['mainform:map_tabs:accept_form']}"
+                       requiredMessage="Layer name is required" />
         </div>
 
         <div class="field col-12">
@@ -87,11 +89,12 @@
 
     <f:facet name="footer">
       <div class="field col-12 text-right">
-        <p:commandButton action="#{geoMapBean.acceptLayerForm}"
+        <p:commandButton id="accept_form"
+                         action="#{geoMapBean.acceptLayerForm}"
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:map_forms_dialog"
-                         update="@form:cnt"
-                         oncomplete="if (!isFacesError()) PF('mapFormsDialog').hide()"
+                         update="map_forms_panel map_forms_table"
+                         oncomplete="closePFDialog('mapFormsDialog')"
                          />
         <p:commandButton action="#{geoMapBean.cancelLayerForm}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

@@ -70,6 +70,15 @@
                        resetValues="true"
                        oncomplete="PF('mapLayersDialog').show()"
                        />
+      <p:commandButton action="#{geoMapBean.copyLayer(layer)}"
+                       icon="pi pi-copy"
+                       alt="#{objectBundle.copy}" title="#{objectBundle.copy}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@form:cnt:map_tabs"
+                       update="@form:cnt:map_tabs:map_layers_dialog"
+                       resetValues="true"
+                       oncomplete="PF('mapLayersDialog').show()"
+                       />
       <p:commandButton action="#{geoMapBean.removeLayer(layer)}"
                        process="@this"
                        update="@form:cnt:map_tabs"
@@ -77,7 +86,11 @@
                        icon="pi pi-trash"
                        alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                        styleClass="rounded-button ui-button-flat"
-                       onclick="PF('mapLayersDialog').hide()"/>
+                       onclick="PF('mapLayersDialog').hide()">
+       <p:confirm header="Remove layer #{layer.id}"
+                 message="Remove layer #{layer.id} and its references in the legend?" 
+                 icon="pi pi-info-circle" />       
+      </p:commandButton>
     </p:column>
   </p:dataTable>
 
@@ -91,19 +104,23 @@
       <span class="fa fa-layer-group mr-2"/><span>Layer</span>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>
+    
     <h:panelGroup styleClass="mt-2" id="map_layers_panel" layout="block"
                   rendered="#{geoMapBean.editingLayer != null}">
-
-      <p:messages showSummary="true" styleClass="messages"
-                  showIcon="true" closable="false">
-        <p:autoUpdate />
-      </p:messages>
 
       <div class="ui-fluid formgrid grid">
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Id" />
-          <p:inputText value="#{geoMapBean.editingLayer.id}" styleClass="code" 
+          <p:outputLabel for="@next" value="Id" indicateRequired="true" />
+          <p:inputText value="#{geoMapBean.editingLayer.id}" 
+                       required="#{not empty param['mainform:map_tabs:accept_layer']}" 
+                       requiredMessage="Layer Id is mandatory"
+                       readonly="#{not geoMapBean.isNewItem()}"
+                       styleClass="code" 
                        pt:spellcheck="false" />
         </div>
 
@@ -113,17 +130,27 @@
         </div>
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Source" />
-          <p:selectOneMenu value="#{geoMapBean.editingLayer.source}">
+          <p:outputLabel for="@next" value="Source" indicateRequired="true" />
+          <p:selectOneMenu value="#{geoMapBean.editingLayer.source}"
+                           required="#{not empty param['mainform:map_tabs:accept_layer']}"
+                           requiredMessage="Layer source is required">
+            <p:ajax event="valueChange" update="layer_type layer_options"
+                    listener="#{geoMapBean.updateLayerPanel()}" />
+            <f:selectItem itemValue="" itemLabel="" />
             <f:selectItems value="#{geoMapBean.sourceIds}" var="sourceName"                       
                            itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.style.sources[sourceName].type})" />
           </p:selectOneMenu>
         </div>
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Type" />
-          <p:selectOneMenu value="#{geoMapBean.editingLayer.type}">
-            <f:selectItem itemValue="raster" itemLabel="raster" />
+          <p:outputLabel for="@next" value="Type" indicateRequired="true" />
+          <p:selectOneMenu id="layer_type" value="#{geoMapBean.editingLayer.type}" 
+                           required="#{not empty param['mainform:map_tabs:accept_layer']}"
+                           requiredMessage="Layer type is mandatory">
+            <p:ajax event="valueChange" update="layer_options" 
+                    listener="#{geoMapBean.updateLayerPanel()}" />
+            <f:selectItem itemValue="" itemLabel="" />
+            <f:selectItem itemValue="raster" itemLabel="raster" itemDisabled="" />
             <f:selectItem itemValue="circle" itemLabel="circle" />
             <f:selectItem itemValue="symbol" itemLabel="symbol" />
             <f:selectItem itemValue="line" itemLabel="line" />
@@ -132,7 +159,6 @@
             <f:selectItem itemValue="heatmap" itemLabel="heatmap" />
             <f:selectItem itemValue="hillshade" itemLabel="hillshade" />
             <f:selectItem itemValue="background" itemLabel="background" />
-            <p:ajax event="valueChange" update="layer_options" />
           </p:selectOneMenu>
         </div>
         
@@ -149,8 +175,40 @@
         </div>
         
         <div class="field col-12">
-          <p:tabView id="layer_options" dynamic="true">
-            <p:tab title="Raster" rendered="#{geoMapBean.editingLayer.type == 'raster'}">
+          <p:tabView id="layer_options" dynamic="true" 
+                     activeIndex="#{geoMapBean.activeLayerTabIndex}">
+            
+            <p:tab>
+              <f:facet name="title">
+                <span class="fa fa-paintbrush mr-2"/>Paint
+              </f:facet>
+              <gdm:codemirror value="#{geoMapBean.jsonPaint}" language="json">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>
+            </p:tab>
+
+            <p:tab>
+              <f:facet name="title">
+                <span class="fa fa-up-down-left-right mr-2"/>Layout
+              </f:facet>
+              <gdm:codemirror value="#{geoMapBean.jsonLayout}" language="json">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>            
+            </p:tab>
+
+            <p:tab>
+              <f:facet name="title">
+                <span class="pi pi-filter mr-2"/>Filter
+              </f:facet>
+              <gdm:codemirror value="#{geoMapBean.jsonFilter}" language="json">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>            
+            </p:tab>
+
+            <p:tab disabled="#{geoMapBean.editingLayer.type != 'raster'}">
+              <f:facet name="title">
+                <span class="pi pi-image mr-2"/>Raster
+              </f:facet>
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Layers (separated by ,)" />
@@ -201,25 +259,10 @@
               </div>              
             </p:tab>
             
-            <p:tab title="Paint">
-              <gdm:codemirror value="#{geoMapBean.jsonPaint}" language="json">
-                <f:validator validatorId="JsonValidator" />
-              </gdm:codemirror>
-            </p:tab>
-
-            <p:tab title="Layout">
-              <gdm:codemirror value="#{geoMapBean.jsonLayout}" language="json">
-                <f:validator validatorId="JsonValidator" />
-              </gdm:codemirror>            
-            </p:tab>
-
-            <p:tab title="Filter">
-              <gdm:codemirror value="#{geoMapBean.jsonFilter}" language="json">
-                <f:validator validatorId="JsonValidator" />
-              </gdm:codemirror>            
-            </p:tab>            
-            
-            <p:tab title="Highlight">
+            <p:tab>
+              <f:facet name="title">
+                <span class="pi pi-sun mr-2"/>Highlight
+              </f:facet>
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel value="Enabled" for="@next" />
@@ -237,11 +280,12 @@
 
     <f:facet name="footer">
       <div class="field col-12 text-right">
-        <p:commandButton action="#{geoMapBean.acceptLayer}"
+        <p:commandButton id="accept_layer"
+                         action="#{geoMapBean.acceptLayer}"
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:map_layers_dialog"
-                         update="@form:cnt"
-                         oncomplete="if (!isFacesError()) PF('mapLayersDialog').hide()"
+                         update="map_layers_panel map_layers_table"
+                         oncomplete="closePFDialog('mapLayersDialog')"
                          />
         <p:commandButton action="#{geoMapBean.cancelLayer}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

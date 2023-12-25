@@ -49,7 +49,9 @@ public class Source implements Serializable
   Double minzoom;
   String scheme;
   List<String> tiles = new ArrayList<>();
-  String url;
+  String url; // tile url or image url
+  List<String> urls; // videos
+  List<double[]> coordinates;
   @SerializedName("volatile")
   Boolean _volatile;
 
@@ -147,6 +149,26 @@ public class Source implements Serializable
   {
     if (StringUtils.isBlank(url)) url = null;
     this.url = url;
+  }
+
+  public List<String> getUrls()
+  {
+    return urls;
+  }
+
+  public void setUrls(List<String> urls)
+  {
+    this.urls = urls;
+  }
+
+  public List<double[]> getCoordinates()
+  {
+    return coordinates;
+  }
+
+  public void setCoordinates(List<double[]> coordinates)
+  {
+    this.coordinates = coordinates;
   }
 
   public Boolean getVolatile()
