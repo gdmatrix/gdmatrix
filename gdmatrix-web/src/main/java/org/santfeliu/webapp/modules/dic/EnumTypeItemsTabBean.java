@@ -214,8 +214,7 @@ public class EnumTypeItemsTabBean extends TabBean
   
   public boolean isRenderDownButton(int rowIndex)
   {
-    int rowsSize = rows.size() < rowsPerPage ? rows.size() : rowsPerPage;
-    return isSortedEnumType() && ((rowIndex + 1) % rowsSize != 0);
+    return isSortedEnumType() && rowIndex < rows.size() - 1;
   }
     
   public boolean isSortedEnumType()

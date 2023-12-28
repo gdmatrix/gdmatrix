@@ -32,58 +32,53 @@
       <h:outputText value="#{row.index}" />
     </p:column>
 
-    <p:column headerText="#{dicBundle.enumTypeItems_label}" styleClass="col-7">
+    <p:column headerText="#{dicBundle.enumTypeItems_label}" styleClass="col-8">
       <h:outputText value="#{row.label}" />
     </p:column>
 
-    <p:column headerText="#{dicBundle.enumTypeItems_value}" styleClass="col-1">
+    <p:column headerText="#{dicBundle.enumTypeItems_value}" styleClass="col-2">
       <h:outputText value="#{row.value}" />
     </p:column>
 
-    <p:column styleClass="col-3 text-right white-space-nowrap">
+    <p:column styleClass="col-1 text-right white-space-nowrap">
       <p:commandLink rendered="#{enumTypeItemsTabBean.sortedEnumType}"
                      onclick="return false;">
         <span class="drag pi pi-arrows-v p-2 cursor_move" />
       </p:commandLink>
-      <p:commandButton action="#{enumTypeItemsTabBean.moveUpItem(rowIndex)}"
-                       update="enum_type_items_table"
-                       icon="pi pi-arrow-up"
-                       alt="#{objectBundle.moveUp}" title="#{objectBundle.moveUp}"
-                       rendered="#{enumTypeItemsTabBean.isRenderUpButton(rowIndex)}"
-                       styleClass="rounded-button ui-button-flat"/>
-      <p:commandButton action="#{enumTypeItemsTabBean.moveDownItem(rowIndex)}"
-                       update="enum_type_items_table"
-                       icon="pi pi-arrow-down"
-                       alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}"
-                       rendered="#{enumTypeItemsTabBean.isRenderDownButton(rowIndex)}"
-                       styleClass="rounded-button ui-button-flat"/>
-      <p:commandButton action="#{enumTypeItemsTabBean.insertItem(rowIndex)}"
-                       process="@form:cnt:search_tabs:tabs"
-                       update="@form:cnt:search_tabs:tabs:enum_type_items_dialog"
-                       icon="pi pi-plus"
-                       alt="#{objectBundle.insertHere}" title="#{objectBundle.insertHere}"
-                       rendered="#{enumTypeItemsTabBean.sortedEnumType and row.enumTypeItemId != null}"
-                       styleClass="rounded-button ui-button-flat"
-                       resetValues="true"
-                       oncomplete="PF('enumTypeItemsDialog').show()" />
-      <p:commandButton action="#{enumTypeItemsTabBean.edit(row)}"
-                       icon="pi pi-pencil"
-                       styleClass="rounded-button ui-button-flat"
-                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                       process="@form:cnt:search_tabs:tabs"
-                       update="@form:cnt:search_tabs:tabs:enum_type_items_dialog"
-                       resetValues="true"
-                       oncomplete="PF('enumTypeItemsDialog').show()" />
-      <p:commandButton action="#{enumTypeItemsTabBean.remove(row)}"
-                       update="enum_type_items_table"
-                       icon="pi pi-trash"
-                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                       rendered="#{row.enumTypeItemId != null}"
-                       styleClass="rounded-button ui-button-flat">
-        <p:confirm header="#{objectBundle.confirm_remove_header}"
-                   message="#{objectBundle.confirm_remove_message}"
-                   icon="pi pi-info-circle" />
-      </p:commandButton>
+      <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                    title="#{objectBundle.actions}">
+        <p:menuitem value="#{objectBundle.moveUp}" 
+                    action="#{enumTypeItemsTabBean.moveUpItem(rowIndex)}"
+                    process="@form:cnt" update="enum_type_items_table"
+                    icon="pi pi-arrow-up"  
+                    rendered="#{enumTypeItemsTabBean.isRenderUpButton(rowIndex)}" />        
+        <p:menuitem value="#{objectBundle.moveDown}" 
+                    action="#{enumTypeItemsTabBean.moveDownItem(rowIndex)}"
+                    process="@form:cnt" update="enum_type_items_table"
+                    icon="pi pi-arrow-down"  
+                    rendered="#{enumTypeItemsTabBean.isRenderDownButton(rowIndex)}" />        
+        <p:menuitem value="#{objectBundle.insertHere}" 
+                    action="#{enumTypeItemsTabBean.insertItem(rowIndex)}"
+                    process="@form:cnt:search_tabs:tabs"
+                    update="@form:cnt:search_tabs:tabs:enum_type_items_dialog"                    
+                    icon="pi pi-plus"  
+                    rendered="#{enumTypeItemsTabBean.sortedEnumType}" 
+                    oncomplete="PF('enumTypeItemsDialog').show()" />        
+        <p:menuitem value="#{objectBundle.edit}" 
+                    action="#{enumTypeItemsTabBean.edit(row)}"
+                    process="@form:cnt:search_tabs:tabs"
+                    update="@form:cnt:search_tabs:tabs:enum_type_items_dialog"                    
+                    icon="pi pi-pencil"  
+                    oncomplete="PF('enumTypeItemsDialog').show()" />        
+        <p:menuitem value="#{objectBundle.delete}"
+                    action="#{enumTypeItemsTabBean.remove(row)}"
+                    process="@form:cnt" update="enum_type_items_table"
+                    icon="pi pi-trash">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+        </p:menuitem>        
+      </p:menuButton>
     </p:column>
     <p:ajax event="rowReorder" listener="#{enumTypeItemsTabBean.onRowReorder}"
             update="enum_type_items_table" />
