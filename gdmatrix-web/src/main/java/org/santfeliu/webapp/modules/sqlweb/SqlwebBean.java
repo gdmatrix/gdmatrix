@@ -85,6 +85,7 @@ public class SqlwebBean extends WebBean implements Serializable
   private long duration = 0;
   private String exception;
   private Map<String, String> columnDescriptionMap;
+  private boolean deferredExecution = false;
 
   public SqlwebBean()
   {
@@ -195,6 +196,16 @@ public class SqlwebBean extends WebBean implements Serializable
     return columnDescriptionMap;
   }
 
+  public boolean isDeferredExecution()
+  {
+    return deferredExecution;
+  }
+
+  public void setDeferredExecution(boolean deferredExecution)
+  {
+    this.deferredExecution = deferredExecution;
+  }
+
   public String getContent()
   {
     return "/pages/sqlweb/sqlweb.xhtml";
@@ -294,6 +305,7 @@ public class SqlwebBean extends WebBean implements Serializable
     }
     long t1 = System.currentTimeMillis();
     duration = t1 - t0;
+    deferredExecution = false;
   }
 
   public String getException()

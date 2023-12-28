@@ -163,6 +163,17 @@
   line-height: 20px;
 }
 
+.expression.predicate > div > div:first-child
+{
+  overflow: hidden;
+}
+
+.expression.predicate .input_value .ui-selectonemenu-label,
+.operator .ui-selectonemenu-label
+{
+  white-space: normal;
+}
+
 .expression.ROOT label,
 .expression.ROOT span,
 .expression.predicate label,

@@ -619,7 +619,7 @@ public class QueryViewBean extends WebBean implements Serializable
         sqlWebBean.getColumnDescriptionMap().put(label, description);
       }
     }
-    sqlWebBean.execute();
+    sqlWebBean.setDeferredExecution(true);
     queryMainBean.setView("query_results");
   }
 
@@ -643,7 +643,7 @@ public class QueryViewBean extends WebBean implements Serializable
   public String getLanguage()
   {
     return getLocale().getLanguage();
-  }  
+  }
 
   private void putInstanceDefaultValues(QueryInstance instance)
   {    

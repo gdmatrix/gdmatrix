@@ -3,7 +3,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
-                  
+  
   <c:choose>
     <c:when test="${parameter.sql == null or parameter.sql.trim() == ''}">
       <c:choose>      
@@ -47,7 +47,8 @@
     </c:when>  
     <c:otherwise>
       <p:selectOneMenu value="#{valuesMap[parameter.getName()]}"
-                       styleClass="input_value select">
+                       styleClass="input_value select" 
+                       autoWidth="false">
         <f:selectItems value="#{queryViewBean.parameterSelectItemsMap.get(parameter.name)}" />
       </p:selectOneMenu>
     </c:otherwise>

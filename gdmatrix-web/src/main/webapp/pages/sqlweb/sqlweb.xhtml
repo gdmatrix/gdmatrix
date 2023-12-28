@@ -18,12 +18,16 @@
     <p:panel styleClass="mb-2">
       <f:facet name="header">
         <h:outputText value="#{sqlwebBean.title == null ? userSessionBean.menuModel.selectedMenuItem.label : sqlwebBean.title}" />
-        <h:outputLink value="javascript:showHideEditor()" styleClass="show_hide_button" 
-                      rendered="#{sqlwebBean.editMode}" 
-                      title="#{sqlWebBundle.change_view}" />        
+        <p:commandButton id="switch_sql_button" 
+                         type="button" icon="pi pi-eye" 
+                         onclick="switchSql()"
+                         styleClass="rounded-button ui-button-flat"
+                         rendered="#{sqlwebBean.editMode}"
+                         title="#{sqlWebBundle.change_view}"  />
       </f:facet>
       
-      <h:panelGroup rendered="#{sqlwebBean.editMode}" 
+      <h:panelGroup id="sqlweb_edit_panel" 
+                    rendered="#{sqlwebBean.editMode}" 
                     styleClass="ui-fluid formgrid grid">
         <div class="field col-12 md:col-6 xl:col-4">
           <p:outputLabel value="#{sqlWebBundle.driver}:" for="@next" />
@@ -136,12 +140,45 @@
     </h:panelGroup>
   </div>  
   
+  <p:remoteCommand name="executeQuery" update="result_container" 
+                   action="#{sqlwebBean.execute}" 
+                   onstart="showOverlay()" onsuccess="hideOverlay()" 
+                   delay="1000" />
+  
   <gdm:saveBean value="sqlwebBean" />
   <gdm:saveBean value="queryMainBean" />
 
   <script>
     window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
     document.title = "#{userSessionBean.selectedMenuItem.label}";
+        
+    $(function() {
+      if (#{sqlwebBean.deferredExecution})
+      {
+        executeQuery();
+      }
+    });
+    
+    var renderSql = true;
+    
+    function switchSql()
+    {
+      var icon = $("#mainform\\:switch_sql_button span:first-child");
+      if (renderSql) //hide
+      {
+        $("#mainform\\:sqlweb_edit_panel").hide();
+        icon.removeClass('pi-eye');
+        icon.addClass('pi-eye-slash');
+        renderSql = false;        
+      }
+      else //show
+      {
+        $("#mainform\\:sqlweb_edit_panel").show();
+        icon.removeClass('pi-eye-slash');
+        icon.addClass('pi-eye');
+        renderSql = true;
+      }
+    }
   </script>
   
 </ui:composition>
