@@ -33,27 +33,24 @@ package org.santfeliu.webapp.modules.assistant;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.CDI;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.doc.DocumentManagerPort;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.assistant.openai.Assistant;
 import org.santfeliu.webapp.modules.assistant.openai.AssistantList;
-import org.santfeliu.webapp.modules.assistant.openai.File;
-import org.santfeliu.webapp.modules.assistant.openai.MessageList;
 import org.santfeliu.webapp.modules.assistant.openai.Model;
 import org.santfeliu.webapp.modules.assistant.openai.ModelList;
 import org.santfeliu.webapp.modules.assistant.openai.OpenAI;
-import org.santfeliu.webapp.modules.assistant.openai.Thread;
-import org.santfeliu.webapp.modules.assistant.openai.ThreadStore;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 
 /**
  *
@@ -63,25 +60,33 @@ import org.santfeliu.webapp.modules.assistant.openai.ThreadStore;
 @RequestScoped
 public class AssistantBean extends WebBean implements Serializable
 {
-  String view = "thread"; // thread || assistant
+  String view = "threads"; // threads || assistant
   String assistantId;
-  String threadId;
   Assistant assistant;
-  Thread thread;
-  String text;
-  MessageList messageList;
-  boolean processing;
   List<SelectItem> assistantSelectItems;
-  List<SelectItem> threadSelectItems;
   List<SelectItem> modelSelectItems;
+  boolean dialogVisible;
+
   transient OpenAI openAI = new OpenAI();
-  transient HashMap<String, File> fileCache = new HashMap<>();
+
+  @Inject
+  ThreadsBean threadsBean;
 
   @PostConstruct
   public void init()
   {
     String apiKey = MatrixConfig.getProperty("openai.apiKey");
     openAI.setApiKey(apiKey);
+  }
+
+  public boolean isDialogVisible()
+  {
+    return dialogVisible;
+  }
+
+  public void setDialogVisible(boolean dialogVisible)
+  {
+    this.dialogVisible = dialogVisible;
   }
 
   // Assistant
@@ -106,6 +111,18 @@ public class AssistantBean extends WebBean implements Serializable
     assistant = new Assistant();
     assistant.setName("New assistant");
     assistantId = null;
+  }
+
+  public void reloadAssistant()
+  {
+    try
+    {
+      assistant = openAI.retrieveAssistant(assistantId);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void saveAssistant()
@@ -173,7 +190,7 @@ public class AssistantBean extends WebBean implements Serializable
     }
   }
 
-  private void updateAssistantSelectItems() throws Exception
+  public void updateAssistantSelectItems() throws Exception
   {
     assistantSelectItems = new ArrayList<>();
     AssistantList assistants = openAI.listAssistants();
@@ -187,156 +204,6 @@ public class AssistantBean extends WebBean implements Serializable
     assistantSelectItems.add(new SelectItem(null, "New assistant"));
   }
 
-  // Threads
-
-  public String getThreadId()
-  {
-    return threadId;
-  }
-
-  public void setThreadId(String threadId)
-  {
-    this.threadId = threadId;
-  }
-
-  public List<SelectItem> getThreadSelectItems()
-  {
-    return threadSelectItems;
-  }
-
-  public MessageList getMessageList()
-  {
-    return messageList;
-  }
-
-  public String getText()
-  {
-    return text;
-  }
-
-  public void setText(String text)
-  {
-    this.text = text;
-  }
-
-  public void onThreadChange(AjaxBehaviorEvent event)
-  {
-    try
-    {
-      if (StringUtils.isBlank(threadId))
-      {
-        threadId = null;
-        thread = null;
-        messageList = null;
-      }
-      else
-      {
-        thread = openAI.retrieveThread(threadId);
-        updateMessages();
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void createThread()
-  {
-    thread = null;
-    threadId = null;
-    messageList = null;
-  }
-
-  public void deleteThread()
-  {
-    try
-    {
-      if (threadId != null)
-      {
-        openAI.deleteThread(threadId);
-        getThreadStore().removeThread(threadId);
-        updateThreadSelectItems();
-        thread = null;
-        threadId = null;
-        messageList = null;
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  private void updateThreadSelectItems() throws Exception
-  {
-    threadSelectItems = new ArrayList<>();
-    threadSelectItems.add(new SelectItem(null, "New thread"));
-
-    List<Thread> threads = getThreadStore().findThreads();
-    for (Thread t : threads)
-    {
-      SelectItem selectItem = new SelectItem();
-      String title = (String)t.getMetadata().get("title");
-      if (title == null) title = t.getId();
-      selectItem.setLabel(title);
-      selectItem.setValue(t.getId());
-      threadSelectItems.add(selectItem);
-    }
-  }
-
-  // Messages
-
-  public void createMessage()
-  {
-    try
-    {
-      if (threadId == null)
-      {
-        thread = openAI.createThread();
-        threadId = thread.getId();
-        String title = text;
-        if (title.length() > 100) title = title.substring(0, 100) + "...";
-        thread.getMetadata().put("title", title);
-        getThreadStore().storeThread(thread);
-        updateThreadSelectItems();
-      }
-      openAI.createMessage(thread, "user", text);
-      updateMessages();
-      processing = true;
-      text = null;
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void assist()
-  {
-    try
-    {
-      if (assistantId != null)
-      {
-        openAI.assist(thread, assistant);
-      }
-      updateMessages();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    finally
-    {
-      processing = false;
-    }
-  }
-
-  public boolean isProcessing()
-  {
-    return processing;
-  }
-
   // Models
 
   public List<SelectItem> getModelSelectItems()
@@ -344,7 +211,7 @@ public class AssistantBean extends WebBean implements Serializable
     return modelSelectItems;
   }
 
-  private void updateModelSelectItems() throws Exception
+  public void updateModelSelectItems() throws Exception
   {
     modelSelectItems = new ArrayList<>();
     ModelList models = openAI.listModels();
@@ -360,37 +227,11 @@ public class AssistantBean extends WebBean implements Serializable
     }
   }
 
-  // Files
-
-  public File getFile(String fileId)
-  {
-    File file = null;
-    try
-    {
-      file = fileCache.get(fileId);
-      if (file == null)
-      {
-        file = openAI.retrieveFile(fileId);
-        fileCache.put(fileId, file);
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return file;
-  }
-
-  public void removeFile(String fileId)
-  {
-    assistant.getFileIds().remove(fileId);
-  }
-
   public String show()
   {
     try
     {
-      updateThreadSelectItems();
+      threadsBean.updateThreads();
       updateAssistantSelectItems();
       updateModelSelectItems();
       // TODO: search assistant name specified in cms node property
@@ -428,18 +269,12 @@ public class AssistantBean extends WebBean implements Serializable
     this.view = view;
   }
 
-  public ThreadStore getThreadStore()
+  public DocumentManagerPort getDocPort()
   {
-    ThreadStore threadStore = CDI.current().select(ThreadStore.class).get();
-    String userId = UserSessionBean.getCurrentInstance().getUserId();
-    threadStore.setUserId(userId);
-    return threadStore;
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    String userId = userSessionBean.getUserId();
+    String password = userSessionBean.getPassword();
+    return DocModuleBean.getPort(userId, password);
   }
 
-  private void updateMessages() throws Exception
-  {
-    messageList = openAI.listMessages(threadId);
-    Collections.sort(messageList.getData(),
-      (a, b) -> (int)(a.getCreatedAt() - b.getCreatedAt()));
-  }
 }

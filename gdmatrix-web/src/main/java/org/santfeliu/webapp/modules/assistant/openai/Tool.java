@@ -36,28 +36,32 @@ import java.io.Serializable;
  *
  * @author realor
  */
-public class Function implements Serializable
+public class Tool implements Serializable
 {
-  String name;
-  String arguments;
+  public static final String CODE_INTERPRETER_TOOL = "code_interpreter";
+  public static final String RETRIEVAL_TOOL = "retrieval";
+  public static final String FUNCTION_TOOL = "function";
 
-  public String getName()
+  String type;
+  FunctionDefinition function;
+
+  public String getType()
   {
-    return name;
+    return type;
   }
 
-  public void setName(String name)
+  public void setType(String type)
   {
-    this.name = name;
+    this.type = type;
   }
 
-  public String getArguments()
+  public FunctionDefinition getFunction()
   {
-    return arguments;
+    return function;
   }
 
-  public void setArguments(String arguments)
+  public void setFunction(FunctionDefinition function)
   {
-    this.arguments = arguments;
+    this.function = function;
   }
 }

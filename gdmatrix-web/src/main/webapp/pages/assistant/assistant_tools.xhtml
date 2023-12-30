@@ -5,9 +5,156 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
+  <p:dataTable id="assistant_tools_table" value="#{assistantBean.assistant.tools}"
+               var="tool" stripedRows="true" size="small" 
+               resizableColumns="false" showGridlines="true">
 
-  <p>tools</p>
+    <p:column headerText="Type" styleClass="col-4 white-space-nowrap" >
+      <span class="pi pi-cog mr-1"/><h:outputText value="#{tool.type}" />
+    </p:column>
 
+    <p:column headerText="Function name" styleClass="col-6 white-space-nowrap" >
+      <h:outputText value="#{tool.function.name}" />
+    </p:column>
+    
+    <p:column styleClass="col-2 text-right white-space-nowrap">
+      <f:facet name="header">
+        <p:commandButton action="#{assistantToolsBean.addTool()}"
+                         icon="pi pi-plus-circle"
+                         alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this"
+                         update="@form:cnt:assistant_tabs:assistant_tools_dialog"
+                         resetValues="true"
+                         oncomplete="PF('assistantToolsDialog').show()" />
+      </f:facet>
+      
+      <p:commandButton action="#{assistantToolsBean.editTool(tool)}"
+                       icon="pi pi-pencil"
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       styleClass="rounded-button ui-button-flat"
+                       rendered="#{tool.type == 'function'}"
+                       process="@this"
+                       update="@form:cnt:assistant_tabs:assistant_tools_dialog"
+                       resetValues="true"
+                       oncomplete="PF('assistantToolsDialog').show()"
+                       />
+      <p:commandButton action="#{assistantToolsBean.removeTool(tool)}"
+                       process="@this" update="@namingcontainer"
+                       resetValues="true"
+                       icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       styleClass="rounded-button ui-button-flat">
+      </p:commandButton>
+    </p:column>
+
+  </p:dataTable>
+
+  <p:dialog id="assistant_tools_dialog" widgetVar="assistantToolsDialog"
+            styleClass="edit_data_dialog mw_600" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="pi pi-cog mr-2"/><span>Assistant tool</span>
+    </f:facet>
+
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>
+    
+    <h:panelGroup id="assistant_tools_panel" class="mt-2" layout="block"
+                  rendered="#{assistantToolsBean.editingTool != null}">
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel value="Type:" for="@next" />
+          <p:selectOneMenu value="#{assistantToolsBean.editingTool.type}">
+            <p:ajax event="valueChange" process="@this" update="assistant_tools_panel" />
+            <f:selectItem itemValue="code_interpreter" itemLabel="code_interpreter" />
+            <f:selectItem itemValue="retrieval" itemLabel="retrieval" />
+            <f:selectItem itemValue="function" itemLabel="function" />            
+          </p:selectOneMenu>
+        </div>
+        
+        <h:panelGroup rendered="#{assistantToolsBean.editingTool.type == 'function'}">
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="Name" indicateRequired="true" />
+            <p:autoComplete value="#{assistantToolsBean.editingTool.function.name}" 
+                            maxResults="50" var="toolName" 
+                            required="#{not empty param['mainform:assistant_tabs:accept_tool']}"
+                            scrollHeight="200" widgetVar="filenameSelector"
+                            readonly="#{assistantFilesBean.phase == 2}"
+                            itemLabel="#{toolName}" itemValue="#{toolName}"
+                            completeMethod="#{assistantToolsBean.completeToolName}" 
+                            forceSelection="true"
+                            pt:spellcheck="false"
+                            emptyMessage="">
+              <p:ajax event="itemSelect"
+                      listener="#{assistantToolsBean.loadFunction()}"
+                      process="@this"
+                      update="function_desc function_params" />
+              <p:ajax event="blur"
+                      listener="#{assistantToolsBean.onBlur()}"
+                      process="@this"
+                      update="@none" />
+              <p:column>
+                #{toolName}
+              </p:column>
+            </p:autoComplete>
+          </div>
+
+          <h:panelGroup class="field col-12" layout="block">
+            <p:outputLabel value="Description:" for="@next" />
+            <p:inputTextarea id="function_desc"
+                             value="#{assistantToolsBean.editingTool.function.description}" readonly="true" />
+          </h:panelGroup>
+
+          <div class="field col-12">          
+            <p:dataTable id="function_params" 
+                         value="#{assistantToolsBean.functionParameterNames}" var="name"
+                         stripedRows="true" size="small"
+                         emptyMessage="No parameters defined"
+                         resizableColumns="false" showGridlines="true">
+              <p:column headerText="Name" styleClass="col-3">
+                <span class="code white-space-nowrap #{assistantToolsBean.isFunctionParameterRequired(name) ? 'font-semibold' : ''}">
+                  #{name} #{assistantToolsBean.isFunctionParameterRequired(name) ? "*" : ""}
+                </span>
+              </p:column>
+              <p:column headerText="Type" styleClass="col-3">
+                <span class="code">#{assistantToolsBean.getFunctionParameter(name).type}</span>
+              </p:column>
+              <p:column headerText="Description" styleClass="col-6">
+                #{assistantToolsBean.getFunctionParameter(name).description}
+              </p:column>
+            </p:dataTable>
+          </div>
+
+        </h:panelGroup>
+      </div>
+    </h:panelGroup>
+    
+    <f:facet name="footer">
+      <p:commandButton id="accept_tool"
+                       action="#{assistantToolsBean.acceptTool}"
+                       styleClass="m-1" value="#{objectBundle.accept}"
+                       icon="pi pi-check"
+                       process="@form:cnt:assistant_tabs:assistant_tools_dialog"
+                       update="assistant_tools_panel assistant_tools_table"
+                       oncomplete="closePFDialog('assistantToolsDialog')"
+                       />
+      <p:commandButton action="#{assistantToolsBean.cancelTool}"
+                       styleClass="m-1" value="#{objectBundle.cancel}"
+                       icon="pi pi-times"
+                       process="@this"
+                       update="@form:cnt:assistant_tabs:assistant_tools_dialog" global="false"
+                       onclick="PF('assistantToolsDialog').hide()" />
+    </f:facet>
+
+  </p:dialog>
+  
 </ui:composition>

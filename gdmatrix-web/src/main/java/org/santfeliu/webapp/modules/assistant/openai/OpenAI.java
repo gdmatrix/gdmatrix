@@ -188,13 +188,13 @@ public class OpenAI
     return fetch("DELETE", "/v1/threads/" + threadId, JsonObject.class);
   }
 
-  public Message createMessage(Thread thread, String role, String content)
+  public Message createMessage(String threadId, String role, String content)
     throws Exception
   {
     JsonObject request = new JsonObject();
     request.addProperty("role", role);
     request.addProperty("content", content);
-    return fetch("POST", "/v1/threads/" + thread.getId() + "/messages",
+    return fetch("POST", "/v1/threads/" + threadId + "/messages",
       request, Message.class);
   }
 
@@ -251,7 +251,7 @@ public class OpenAI
     return fetch("GET", "/v1/files" + params, FileList.class);
   }
 
-  public File uploadFile(java.io.File file,
+  public File uploadFile(java.io.File file, String filename,
     String contentType, String purpose) throws Exception
   {
     HttpURLConnection conn = prepareConnection("POST", "/v1/files", true);
@@ -266,7 +266,7 @@ public class OpenAI
       {
         contentType = URLConnection.guessContentTypeFromName(file.getName());
       }
-      sendFilePart("file", file, contentType, writer, outputStream);
+      sendFilePart("file", file, filename, contentType, writer, outputStream);
 
       writer.append("--" + BOUNDARY + "--").append(EOL);
       writer.flush();
@@ -305,9 +305,26 @@ public class OpenAI
     return fetch("DELETE", "/v1/files/" + fileId, JsonObject.class);
   }
 
-  public Run assist(Thread thread, Assistant assistant) throws Exception
+  public Run updateRun(Run run) throws Exception
   {
-    Run run = createRun(thread.getId(), assistant.getId());
+    run = retrieveRun(run);
+    if (run.isRequiresAction())
+    {
+      List<ToolCall> toolCalls =
+        run.getRequiredAction().getSubmitToolOutputs().toolCalls;
+
+      for (int i = 0; i < toolCalls.size(); i++)
+      {
+        ToolCall toolCall = toolCalls.get(i);
+        run = executeToolCall(run, toolCall);
+      }
+    }
+    return run;
+  }
+
+  public Run assist(String threadId, String assistantId) throws Exception
+  {
+    Run run = createRun(threadId, assistantId);
     while (run.isPending() || run.isRequiresAction())
     {
       if (run.isPending())
@@ -318,7 +335,7 @@ public class OpenAI
       else // requires action
       {
         List<ToolCall> toolCalls =
-          run.getRequiredAction().getSubmitToolOutputs().toolCalls;
+          run.getRequiredAction().getSubmitToolOutputs().getToolCalls();
 
         for (int i = 0; i < toolCalls.size(); i++)
         {
@@ -463,14 +480,14 @@ public class OpenAI
   }
 
   private void sendFilePart(String name, java.io.File uploadFile,
-    String contentType, PrintWriter writer, OutputStream outputStream)
-    throws IOException
+    String filename, String contentType, PrintWriter writer,
+    OutputStream outputStream) throws IOException
   {
     writer.append("--" + BOUNDARY).append(EOL)
       .append("Content-Disposition: form-data; name=\"")
       .append(name)
       .append("\"; filename=\"")
-      .append(uploadFile.getName())
+      .append(filename)
       .append('"').append(EOL)
       .append("Content-Type: ").append(contentType).append(EOL)
       .append("Content-Transfer-Encoding: binary").append(EOL)

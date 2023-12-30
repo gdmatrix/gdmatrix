@@ -37,19 +37,11 @@ package org.santfeliu.webapp.modules.assistant.openai;
 public class DefaultFunctionExecutor implements FunctionExecutor
 {
   @Override
-  public String execute(Function function)
+  public String execute(FunctionCall function)
   {
     String functionName = function.getName();
     String arguments = function.getArguments();
-    System.out.println("CALL " + functionName + " " + arguments);
-    switch (functionName)
-    {
-      case "get_question_status":
-        return "Hem procedit a substituir el fanal trencat tal com es havia demanat.";
-
-      case "get_questions_by_nif":
-        return "[\"question_id:\": \"42351\", \"subject\": \"Fanal trencat.\"]";
-    }
-    return "Funció no reconeguda";
+    System.out.println("CALL " + functionName + "(" + arguments + ")");
+    return "Function not available.";
   }
 }

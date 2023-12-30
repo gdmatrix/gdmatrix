@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.assistant.openai;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
@@ -61,5 +62,12 @@ public class RequiredAction implements Serializable
   public void setSubmitToolOutputs(SubmitToolOutputs submitToolOutputs)
   {
     this.submitToolOutputs = submitToolOutputs;
+  }
+
+  @Override
+  public String toString()
+  {
+    Gson gson = new Gson();
+    return gson.toJson(this);
   }
 }

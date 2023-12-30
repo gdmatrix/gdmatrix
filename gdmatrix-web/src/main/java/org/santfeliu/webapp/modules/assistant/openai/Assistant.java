@@ -45,7 +45,7 @@ public class Assistant extends OpenAIObject
   String description;
   String model;
   String instructions;
-  List tools;
+  List<Tool> tools;
   @SerializedName("created_at")
   long createdAt;
   @SerializedName("file_ids")
@@ -102,12 +102,12 @@ public class Assistant extends OpenAIObject
     this.instructions = instructions;
   }
 
-  public List getTools()
+  public List<Tool> getTools()
   {
     return tools;
   }
 
-  public void setTools(List tools)
+  public void setTools(List<Tool> tools)
   {
     this.tools = tools;
   }

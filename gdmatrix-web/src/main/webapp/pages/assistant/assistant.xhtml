@@ -11,27 +11,34 @@
                 var="objectBundle" />
   <h:outputStylesheet library="css" name="assistant.css" />
 
-  <div class="flex flex-column h-full">
+  <div class="flex flex-column h-full overflow-x-hidden">
     <div id="assistant_toolbar"
-         class="p-2 pl-3 pr-3 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         class="p-2 pl-2 pr-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
-      <div class="flex-grow-0 text-left align-items-center" style="color:var(--text-color)">
-        <p:selectOneMenu value="#{assistantBean.assistantId}">
-          <f:selectItems value="#{assistantBean.assistantSelectItems}" />
-              <p:ajax event="valueChange" listener="#{assistantBean.onAssistantChange}"
-                      process="@this" update="@form:cnt:assistant_tabs" />
-        </p:selectOneMenu>
-      </div>
-      <div class="buttons flex flex-grow-1 justify-content-end gap-2">
+
+      <p:selectOneMenu value="#{assistantBean.assistantId}"
+                       styleClass="flex-shrink-1 flex-grow-0 text-left align-items-center mr-2" 
+                       style="color:var(--text-color);min-width: 16px">
+        <f:selectItems value="#{assistantBean.assistantSelectItems}" />
+            <p:ajax event="valueChange" listener="#{assistantBean.onAssistantChange}"
+                    process="@this" update="@form:cnt:assistant_tabs" />
+      </p:selectOneMenu>
+
+      <div class="buttons flex flex-grow-1 flex-shrink-0 justify-content-end gap-2">
         <div class="ui-inputgroup">
           <p:commandButton value="Threads"
-                           action="#{assistantBean.setView('thread')}"
+                           action="#{assistantBean.setView('threads')}"
                            icon="fa fa-comment-dots"
                            styleClass="mini"
                            process="@form:cnt" update="@form:cnt" />
           <p:commandButton value="#{objectBundle.create}"
                            action="#{assistantBean.createAssistant}"
                            icon="pi pi-plus-circle"
+                           styleClass="mini"
+                           process="@this" update="@form:cnt" />
+          <p:commandButton value="Reload"
+                           action="#{assistantBean.reloadAssistant}"
+                           icon="pi pi-refresh"
                            styleClass="mini"
                            process="@this" update="@form:cnt" />
           <p:commandButton value="#{objectBundle.store}"
@@ -48,10 +55,11 @@
       </div>
     </div>
 
-    <div id="assistant_body" class="p-3 flex-grow-1 overflow-auto flex flex-column"
+    <div id="assistant_body" class="p-3 flex-grow-1 overflow-hidden flex flex-column"
          style="color:var(--text-color)">
 
-      <p:messages showSummary="true" styleClass="messages"
+      <p:messages showSummary="true" styleClass="messages" 
+                  rendered="#{not assistantBean.dialogVisible}"
                   showIcon="true" closable="true" forIgnores="growl">
         <p:autoUpdate />
       </p:messages>
@@ -79,7 +87,10 @@
     </div>
   </div>
 
+  <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
+  <gdm:saveBean value="assistantFilesBean" />
+  <gdm:saveBean value="assistantToolsBean" />
 
   <p:growl for="growl" life="1500" >
     <p:autoUpdate />

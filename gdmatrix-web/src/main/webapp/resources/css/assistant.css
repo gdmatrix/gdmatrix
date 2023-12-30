@@ -1,9 +1,64 @@
-.thread_panel .ui-panel-content
+/* assistant.css */
+
+.threads_panel
 {
-  display: flex;
+  width: 30%;
+  min-width: 220px;
+  height: 100%;
+  display:flex;
+  flex-shrink: 0;
   flex-direction: column;
-  flex-grow: 1;
-  height: calc(100% - 60px);
+}
+
+.threads_panel > .ui-panel-content
+{
+  height: 100%;
+  overflow: auto;
+}
+
+.threads_panel > .ui-panel-content ul
+{
+  list-style: none;
+  padding-left: 0;
+}
+
+.threads_panel_button.first_time
+{
+  display: none;
+}
+
+@media only screen and (max-width: 700px) 
+{
+  .threads_panel
+  {
+    position:absolute;
+    top:0;
+    bottom: 0;
+    z-index: 10 !important;
+    background: var(--surface-0);
+    overflow:auto;
+    width: 400px !important;
+    max-width: 100%;
+    margin: 0 !important;
+    right:0;
+    box-shadow: -5px 0px 3px -3px rgb(50 50 50 / 30%);
+  }
+
+  .threads_panel.first_time
+  {
+    display: none;
+    opacity: 1;
+  }        
+
+  .threads_panel_button.first_time
+  {
+    display: inline;
+  }  
+}
+
+.message_list li:first-child
+{
+  margin-top:50px;
 }
 
 .avatar
@@ -39,6 +94,11 @@
   width: 16px;
   height: 16px;
   display: block;
+}
+
+.code
+{
+  font-family: monospace;
 }
 
 .dot-typing {

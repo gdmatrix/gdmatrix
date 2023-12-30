@@ -1,0 +1,203 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+                var="objectBundle" />
+  <h:outputStylesheet library="css" name="assistant.css" />
+
+  <div class="flex flex-column h-full">
+    <div id="assistant_toolbar"
+         class="p-2 pl-3 pr-3 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         style="border-color:var(--surface-border)">
+      <div class="flex-grow-0 text-left align-items-center" style="color:var(--text-color)">
+        <strong>#{assistantBean.assistant.name}</strong>
+      </div>
+      <div class="buttons flex flex-grow-1 justify-content-end gap-2">
+        <p:commandButton value="Setup"
+                         action="#{assistantBean.setView('assistant')}"
+                         icon="pi pi-cog"
+                         process="@form:cnt" update="@form:cnt" />
+      </div>
+    </div>
+
+    <p:messages showSummary="true" styleClass="messages pl-3 pr-3"
+                showIcon="true" closable="true" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>
+
+    <div class="flex-grow-1 p-2 pb-2 flex w-full overflow-hidden">
+
+      <div id="assistant_body" 
+           class="flex-grow-1 pr-2 flex flex-column relative"
+           style="color:var(--text-color)">
+
+        <h:panelGroup id="floating_bar" layout="block"
+                      styleClass="absolute top-0 right-0 p-2 pt-0 flex surface-0 border-round">
+            <p:commandButton value="#{objectBundle.create}"
+                             title="#{objectBundle.create}"
+                             action="#{threadsBean.createThread}"
+                             icon="pi pi-plus-circle"
+                             rendered="#{threadsBean.threadId != null}"
+                             styleClass="white-space-nowrap mini"
+                             process="@form:cnt" update="@form:cnt" />
+            <p:commandButton value="#{objectBundle.delete}"
+                             title="#{objectBundle.delete}"
+                             action="#{threadsBean.deleteThread}"
+                             rendered="#{threadsBean.threadId != null}"
+                             icon="pi pi-trash"
+                             styleClass="ml-2 white-space-nowrap mini"
+                             process="@form:cnt" update="@form:cnt">
+              <p:confirm header="Delete"
+                         message="Delete this thread?" 
+                         icon="pi pi-info-circle" />       
+            </p:commandButton>
+            <p:button value="Threads"
+                      title="Threads"
+                      widgetVar="threadsPanelButton"
+                      onclick="return showPanel()"
+                      icon="fa fa-comment-dots"
+                      styleClass="ml-2 mini white-space-nowrap threads_panel_button first_time" />
+        </h:panelGroup>
+
+        <h:panelGroup id="message_list" layout="block"
+                      styleClass="flex-grow-1 flex-shrink-1 overflow-auto message_list">
+
+          <ul class="list-none pl-0">
+            <ui:repeat value="#{threadsBean.messageList.data}" var="message">
+              <li>
+                <div class="flex m-2 mb-4">
+                  <div class="flex-grow-0">
+                    <div class="avatar #{message.role == 'user' ? 'user' : 'assistant'}">
+                      <span />
+                    </div>
+                  </div>
+                  <div class="flex-grow-1 flex flex-column ml-2">
+                    <div>
+                      <b>#{message.role == 'user' ? 'Tu' : 'Assistent'}</b>
+                    </div>
+                    <div>
+                      #{message.content.get(0).text.value}
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ui:repeat>
+
+            <h:panelGroup rendered="#{threadsBean.isProcessing()}">
+              <li>
+                <div class="stage ml-5">
+                  <div class="dot-typing" />
+                </div>
+              </li>
+            </h:panelGroup>
+          </ul>
+        </h:panelGroup>
+
+        <div class="flex-grow-0 flex-shrink-0 flex pt-0">
+          <p:inputTextarea id="question" value="#{threadsBean.text}"
+                           styleClass="w-full" rows="3" placeholder="Your question..." />
+          <p:commandButton action="#{threadsBean.createMessage()}"
+                           process="@form:cnt" update="@form:cnt"
+                           oncomplete="scrollMessages()"
+                           icon="pi pi-arrow-up" styleClass="ui-button-outlined ml-2" />
+        </div>
+
+      </div>
+
+      <p:panel styleClass="threads_panel flex-grow-0 v-full first_time"
+               widgetVar="threadsPanel" closeSpeed="50">
+        <f:facet name="header">
+          <i class="fa fa-comment-dots vertical-align-middle m-1"></i>
+
+          <span>Threads</span>
+          <p:commandLink onclick="return closePanel();"
+                         class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
+            <span class="ui-icon ui-icon-closethick"></span>
+          </p:commandLink>
+        </f:facet>
+        <ul>
+          <ui:repeat value="#{threadsBean.threads}" var="thread">
+            <li class="p-2">
+              <p:commandLink value="#{thread.metadata.title}" 
+                             action="#{threadsBean.changeThread(thread.id)}"
+                             process="@this"
+                             update="@form:cnt:message_list @form:cnt:floating_bar"
+                             oncomplete="endPanel();scrollMessages()"
+                             />
+            </li>
+          </ui:repeat>
+        </ul>
+      </p:panel>            
+
+    </div>
+  </div>
+
+  <p:remoteCommand action="#{threadsBean.assist}" name="assist"
+                   process="@this" update="@form:cnt:message_list @form:cnt:question"
+                   global="false"
+                   oncomplete="scrollMessages()" />
+
+  <gdm:saveBean value="threadsBean" />
+  <gdm:saveBean value="assistantBean" />
+
+  <script>
+    function showPanel()
+    {
+      var panel = PF("threadsPanel");
+      panel.show();
+      panel.getJQ().css("display", "flex");
+      panel.getJQ().removeClass("first_time");
+
+      var threadsPanelButton = PF("threadsPanelButton");
+      threadsPanelButton.getJQ().css("display", "none");
+      threadsPanelButton.getJQ().removeClass("first_time");
+
+      return false;
+    }
+
+    function closePanel()
+    {
+      var panel = PF("threadsPanel");
+      panel.close();
+
+      var threadsPanelButton = PF("threadsPanelButton");
+      threadsPanelButton.getJQ().css("display", "inline");
+
+      return false;
+    }
+
+    function endPanel()
+    {
+      if (700 > window.innerWidth)
+      {
+        closePanel();
+      }
+    }
+
+    function scrollMessages()
+    {
+      var elems = document.getElementsByClassName("message_list");
+      if (elems.length > 0)
+      {
+        var elem = elems[0];
+        elem.scrollTop = elem.scrollHeight;
+      }
+    }
+  
+    if (window.assistantResizeDetection === undefined)
+    {
+      window.addEventListener("resize", scrollMessages);
+      window.assistantResizeDetection = true;
+    }
+
+    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    document.title = "#{userSessionBean.selectedMenuItem.label}";
+  </script>
+
+</ui:composition>

@@ -40,7 +40,7 @@ public class ToolCall implements Serializable
 {
   String id;
   String type;
-  Function function;
+  FunctionCall function;
 
   public String getId()
   {
@@ -62,12 +62,12 @@ public class ToolCall implements Serializable
     this.type = type;
   }
 
-  public Function getFunction()
+  public FunctionCall getFunction()
   {
     return function;
   }
 
-  public void setFunction(Function function)
+  public void setFunction(FunctionCall function)
   {
     this.function = function;
   }

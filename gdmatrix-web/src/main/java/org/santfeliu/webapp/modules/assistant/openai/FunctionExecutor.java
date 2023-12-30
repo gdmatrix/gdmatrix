@@ -36,5 +36,5 @@ package org.santfeliu.webapp.modules.assistant.openai;
  */
 public interface FunctionExecutor
 {
-  public String execute(Function function);
+  public String execute(FunctionCall function);
 }

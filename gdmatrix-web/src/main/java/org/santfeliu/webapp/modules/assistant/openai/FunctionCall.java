@@ -30,73 +30,42 @@
  */
 package org.santfeliu.webapp.modules.assistant.openai;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.Gson;
+import java.io.Serializable;
 
 /**
  *
  * @author realor
  */
-public class File extends OpenAIObject
+public class FunctionCall implements Serializable
 {
-  public static final String ASSISTANTS_PURPOSE = "assistants";
-  public static final String ASSISTANTS_OUTPUT_PURPOSE = "assistants-output";
-  public static final String FINE_TUNE_PURPOSE = "fine-tune";
-  public static final String FINE_TUNE_RESULTS_PURPOSE = "fine-tune-results";
+  String name;
+  String arguments;
 
-  String id;
-  long bytes;
-  @SerializedName("created_at")
-  long createdAt;
-  String filename;
-  String purpose;
-
-  public String getId()
+  public String getName()
   {
-    return id;
+    return name;
   }
 
-  public void setId(String id)
+  public void setName(String name)
   {
-    this.id = id;
+    this.name = name;
   }
 
-  public long getBytes()
+  public String getArguments()
   {
-    return bytes;
+    return arguments;
   }
 
-  public void setBytes(long bytes)
+  public void setArguments(String arguments)
   {
-    this.bytes = bytes;
+    this.arguments = arguments;
   }
 
-  public long getCreatedAt()
+  @Override
+  public String toString()
   {
-    return createdAt;
-  }
-
-  public void setCreatedAt(long createdAt)
-  {
-    this.createdAt = createdAt;
-  }
-
-  public String getFilename()
-  {
-    return filename;
-  }
-
-  public void setFilename(String filename)
-  {
-    this.filename = filename;
-  }
-
-  public String getPurpose()
-  {
-    return purpose;
-  }
-
-  public void setPurpose(String purpose)
-  {
-    this.purpose = purpose;
+    Gson gson = new Gson();
+    return gson.toJson(this);
   }
 }

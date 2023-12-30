@@ -5,9 +5,10 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <p:dataTable id="files_table" value="#{assistantBean.assistant.fileIds}"
+  <p:dataTable id="assistant_files_table" value="#{assistantBean.assistant.fileIds}"
                var="fileId" stripedRows="true" size="small" 
                resizableColumns="false" showGridlines="true">
 
@@ -16,19 +17,39 @@
     </p:column>
 
     <p:column headerText="Filename" styleClass="col-3">
-      <h:outputText value="#{assistantBean.getFile(fileId).filename}" />
+      <h:outputText value="#{assistantFilesBean.getFile(fileId).filename}" />
     </p:column>
 
     <p:column headerText="Size" styleClass="col-2" >
-      <h:outputText value="#{assistantBean.getFile(fileId).bytes} bytes" />
+      <h:outputText value="#{assistantFilesBean.getFile(fileId).bytes} bytes" />
     </p:column>
 
     <p:column headerText="Created" styleClass="col-2" >
-      <h:outputText value="#{assistantBean.getFile(fileId).createdAt}" />
+      <h:outputText value="#{assistantFilesBean.getFile(fileId).createdAt}" />
     </p:column>
-    
+
     <p:column styleClass="col-1 text-right white-space-nowrap">
-      <p:commandButton action="#{assistantBean.removeFile(fileId)}"
+      <f:facet name="header">
+        <p:commandButton action="#{assistantFilesBean.addFile()}"
+                         icon="pi pi-plus-circle"
+                         alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this"
+                         update="@form:cnt:assistant_tabs:assistant_files_dialog"
+                         resetValues="true"
+                         oncomplete="PF('assistantFilesDialog').show()" />
+      </f:facet>
+      
+      <p:commandButton action="#{assistantFilesBean.editFile(fileId)}"
+                       icon="pi pi-pencil"
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@this"
+                       update="@form:cnt:assistant_tabs:assistant_files_dialog"
+                       resetValues="true"
+                       oncomplete="PF('assistantFilesDialog').show()"
+                       />
+      <p:commandButton action="#{assistantFilesBean.removeFile(fileId)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"
                        icon="pi pi-trash"
@@ -36,10 +57,140 @@
                        styleClass="rounded-button ui-button-flat">
       </p:commandButton>
     </p:column>
+
+  </p:dataTable>
+
+
+  <p:dialog id="assistant_files_dialog" widgetVar="assistantFilesDialog"
+            styleClass="edit_data_dialog mw_600" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="pi pi-file mr-2"/><span>Assistant file</span>
+    </f:facet>
+
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>
+    
+    <h:panelGroup id="assistant_files_panel" class="mt-2" layout="block"
+                  rendered="#{assistantFilesBean.phase != 0}">
+      <div class="ui-fluid formgrid grid">
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Filename" indicateRequired="true" />
+          <div class="ui-inputgroup flex">
+            <p:autoComplete value="#{assistantFilesBean.editingFilename}" 
+                            maxResults="50" required="true" var="filename" 
+                            scrollHeight="200" widgetVar="filenameSelector"
+                            readonly="#{assistantFilesBean.phase == 2}"
+                            itemLabel="#{filename}" itemValue="#{filename}"
+                            completeMethod="#{assistantFilesBean.completeFilename}" 
+                            pt:spellcheck="false"
+                            emptyMessage="">
+              <p:ajax event="itemSelect" 
+                      listener="#{assistantFilesBean.setPhase(2)}"
+                      process="@this"
+                      update="assistant_files_panel assistant_files_footer" />
+              <p:column>
+                #{filename}
+              </p:column>
+            </p:autoComplete>
+            <p:commandButton icon="pi pi-check" 
+                             action="#{assistantFilesBean.setPhase(2)}" 
+                             rendered="#{assistantFilesBean.phase == 1}"
+                             process="@form:cnt:assistant_tabs:assistant_files_dialog"
+                             update="assistant_files_panel assistant_files_footer" />
+            <p:commandButton icon="pi pi-pencil" 
+                             action="#{assistantFilesBean.setPhase(1)}" 
+                             rendered="#{assistantFilesBean.phase == 2}"
+                             process="@form:cnt:assistant_tabs:assistant_files_dialog"
+                             update="assistant_files_panel assistant_files_footer"
+                             oncomplete="PF('filenameSelector').input.focus()"
+                              />
+          </div>
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel value="FileId:" for="@next" />
+          <p:inputText value="#{assistantFilesBean.lastFileId}" readonly="true" 
+                       style="#{assistantFilesBean.isInvalidFileId() ? 'color:red' : ''}" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel value="ContentId:" for="@next" />
+          <p:inputText value="#{assistantFilesBean.contentId}" readonly="true" />
+        </div>
+        
+        <div class="field col-6">
+          <p:outputLabel value="DocId / version:" for="@next" />
+          <p:inputText value="#{assistantFilesBean.docIdAndVersion}" readonly="true" />
+        </div>
+
+        <div class="field col-6">
+          <p:outputLabel value="Content type:" for="@next" />
+          <p:inputText value="#{assistantFilesBean.contentType}" readonly="true" />
+        </div>
+        
+        <div class="field col-6">
+          <p:outputLabel value="Change date/time" for="@next" />
+          <p:inputText value="#{assistantFilesBean.fileChangeDateTime}" readonly="true">
+            <f:converter converterId="DateTimeConverter" />
+          </p:inputText>
+        </div>
+
+        <div class="field col-6">
+          <p:outputLabel value="Size" for="@next" />
+          <p:inputText value="#{assistantFilesBean.fileSize}" readonly="true">
+          </p:inputText>
+        </div>          
+
+        <div class="field col-12">
+          <div class="ui-inputgroup">
+            <p:linkButton href="#{assistantFilesBean.downloadUrl}" 
+                          icon="pi pi-download" value="Download" styleClass="border-round-left"
+                          disabled="#{assistantFilesBean.phase == 1 or assistantFilesBean.contentId == null}" />
+            <p:commandButton icon="pi pi-upload" value="Upload"
+                             disabled="#{assistantFilesBean.phase == 1}"
+                             onclick="PF('fileUpload').show()" />
+            <p:commandButton icon="fa fa-broom" value="Purge"
+                             action="#{assistantFilesBean.purgeFile}"
+                             disabled="#{assistantFilesBean.phase == 1}" 
+                             process="@this" 
+                             update="assistant_files_panel" />
+          </div>
+          <p:fileUpload listener="#{assistantFilesBean.uploadFile}"
+                        style="display:none" widgetVar="fileUpload"
+                        mode="simple" skinSimple="true" auto="true" 
+                        process="@this" 
+                        update="assistant_files_panel assistant_files_footer" 
+                        global="false" />
+        </div>
+      </div>
+    </h:panelGroup>
     
     <f:facet name="footer">
+      <h:panelGroup id="assistant_files_footer" 
+                    styleClass="field col-12 text-right" layout="block">
+        <p:commandButton id="accept_file"
+                         action="#{assistantFilesBean.acceptFile}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
+                         rendered="#{assistantFilesBean.phase == 2 and not assistantFilesBean.isInvalidFileId()}"
+                         icon="pi pi-check"
+                         process="@form:cnt:assistant_tabs:assistant_files_dialog"
+                         update="assistant_files_panel assistant_files_table"
+                         oncomplete="closePFDialog('assistantFilesDialog')"
+                         />
+        <p:commandButton action="#{assistantFilesBean.cancelFile}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         icon="pi pi-times"
+                         process="@this"
+                         update="@form:cnt:assistant_tabs:assistant_files_dialog" global="false"
+                         onclick="PF('assistantFilesDialog').hide()" />
+      </h:panelGroup>
     </f:facet>
-    
-  </p:dataTable>  
+
+  </p:dialog>
 
 </ui:composition>
