@@ -30,10 +30,73 @@
  */
 package org.santfeliu.webapp.modules.assistant.openai;
 
+import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  * @author realor
+ * @param <T> the object type contained in the list
  */
-public class FileList extends OpenAIList<File>
+public class OpenAIList<T> extends OpenAIObject
 {
+  List<T> data;
+  @SerializedName("first_id")
+  String firstId;
+  @SerializedName("last_id")
+  String lastId;
+  @SerializedName("hasMore")
+  boolean hasMore;
+
+  public List<T> getData()
+  {
+    if (data == null) data = new ArrayList<>();
+    return data;
+  }
+
+  public void setData(List<T> data)
+  {
+    this.data = data;
+  }
+
+  public String getFirstId()
+  {
+    return firstId;
+  }
+
+  public void setFirstId(String firstId)
+  {
+    this.firstId = firstId;
+  }
+
+  public String getLastId()
+  {
+    return lastId;
+  }
+
+  public void setLastId(String lastId)
+  {
+    this.lastId = lastId;
+  }
+
+  public boolean isHasMore()
+  {
+    return hasMore;
+  }
+
+  public void setHasMore(boolean hasMore)
+  {
+    this.hasMore = hasMore;
+  }
+
+  public void reverse()
+  {
+    Collections.reverse(data);
+    String _firstId = firstId;
+    String _lastId = lastId;
+    firstId = _lastId;
+    lastId = _firstId;
+  }
 }

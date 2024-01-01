@@ -30,23 +30,10 @@
  */
 package org.santfeliu.webapp.modules.assistant.openai;
 
-import java.util.List;
-
 /**
  *
  * @author realor
  */
-public class ModelList extends OpenAIObject
+public class ModelList extends OpenAIList<Model>
 {
-  List<Model> data;
-
-  public List<Model> getData()
-  {
-    return data;
-  }
-
-  public void setData(List<Model> data)
-  {
-    this.data = data;
-  }
 }

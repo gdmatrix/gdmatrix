@@ -39,6 +39,9 @@ import java.io.Serializable;
  */
 public class ContentItem implements Serializable
 {
+  public static final String TEXT_TYPE = "text";
+  public static final String IMAGE_FILE_TYPE = "image_file";
+
   String type;
   Text text;
   @SerializedName("image_file")
@@ -72,5 +75,15 @@ public class ContentItem implements Serializable
   public void setImageFile(ImageFile imageFile)
   {
     this.imageFile = imageFile;
+  }
+
+  public boolean isTextType()
+  {
+    return TEXT_TYPE.equals(type);
+  }
+
+  public boolean isImageFileType()
+  {
+    return IMAGE_FILE_TYPE.equals(type);
   }
 }

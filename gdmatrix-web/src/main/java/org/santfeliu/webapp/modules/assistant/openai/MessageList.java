@@ -30,25 +30,10 @@
  */
 package org.santfeliu.webapp.modules.assistant.openai;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author realor
  */
-public class MessageList extends OpenAIObject
+public class MessageList extends OpenAIList<Message>
 {
-  List<Message> data;
-
-  public List<Message> getData()
-  {
-    if (data == null) data = new ArrayList<>();
-    return data;
-  }
-
-  public void setData(List<Message> data)
-  {
-    this.data = data;
-  }
 }

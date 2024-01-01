@@ -45,7 +45,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -55,6 +58,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class OpenAI
 {
+  static final Logger LOGGER = Logger.getLogger("OpenAI");
 
   static final String CHARSET = "utf-8";
   static final FunctionExecutor DEFAULT_FUNCTION_EXECUTOR =
@@ -65,7 +69,6 @@ public class OpenAI
   String apiUrl = "https://api.openai.com";
   String apiKey;
   FunctionExecutor functionExecutor = DEFAULT_FUNCTION_EXECUTOR;
-  long pollInterval = 1000;
 
   Gson gson = new Gson();
 
@@ -103,15 +106,7 @@ public class OpenAI
     this.functionExecutor = functionExecutor;
   }
 
-  public long getPollInterval()
-  {
-    return pollInterval;
-  }
-
-  public void setPollInterval(long pollInterval)
-  {
-    this.pollInterval = pollInterval;
-  }
+  // Assistant
 
   public AssistantList listAssistants() throws Exception
   {
@@ -125,53 +120,55 @@ public class OpenAI
 
   public Assistant createAssistant(Assistant assistant) throws Exception
   {
-    JsonObject request = new JsonObject();
-    request.addProperty("model", assistant.getModel());
-    request.addProperty("name", assistant.getName());
-    request.addProperty("description", assistant.getDescription());
-    request.addProperty("instructions", assistant.getInstructions());
+    JsonObject body = new JsonObject();
+    body.addProperty("model", assistant.getModel());
+    body.addProperty("name", assistant.getName());
+    body.addProperty("description", assistant.getDescription());
+    body.addProperty("instructions", assistant.getInstructions());
     if (assistant.getTools() != null)
     {
-      request.add("tools", gson.toJsonTree(assistant.getTools()));
+      body.add("tools", gson.toJsonTree(assistant.getTools()));
     }
     if (assistant.getFileIds() != null)
     {
-      request.add("file_ids", gson.toJsonTree(assistant.getFileIds()));
+      body.add("file_ids", gson.toJsonTree(assistant.getFileIds()));
     }
     if (assistant.getMetadata() != null)
     {
-      request.add("metadata", gson.toJsonTree(assistant.getMetadata()));
+      body.add("metadata", gson.toJsonTree(assistant.getMetadata()));
     }
-    return fetch("POST", "/v1/assistants", request, Assistant.class);
+    return fetch("POST", "/v1/assistants", body, Assistant.class);
   }
 
   public Assistant modifyAssistant(Assistant assistant) throws Exception
   {
-    JsonObject request = new JsonObject();
-    request.addProperty("model", assistant.getModel());
-    request.addProperty("name", assistant.getName());
-    request.addProperty("description", assistant.getDescription());
-    request.addProperty("instructions", assistant.getInstructions());
+    JsonObject body = new JsonObject();
+    body.addProperty("model", assistant.getModel());
+    body.addProperty("name", assistant.getName());
+    body.addProperty("description", assistant.getDescription());
+    body.addProperty("instructions", assistant.getInstructions());
     if (assistant.getTools() != null)
     {
-      request.add("tools", gson.toJsonTree(assistant.getTools()));
+      body.add("tools", gson.toJsonTree(assistant.getTools()));
     }
     if (assistant.getFileIds() != null)
     {
-      request.add("file_ids", gson.toJsonTree(assistant.getFileIds()));
+      body.add("file_ids", gson.toJsonTree(assistant.getFileIds()));
     }
     if (assistant.getMetadata() != null)
     {
-      request.add("metadata", gson.toJsonTree(assistant.getMetadata()));
+      body.add("metadata", gson.toJsonTree(assistant.getMetadata()));
     }
     return fetch("POST", "/v1/assistants/" + assistant.getId(),
-      request, Assistant.class);
+      body, Assistant.class);
   }
 
   public JsonObject deleteAssistant(String assistantId) throws Exception
   {
     return fetch("DELETE", "/v1/assistants/" + assistantId, JsonObject.class);
   }
+
+  // Thread
 
   public Thread createThread() throws Exception
   {
@@ -188,20 +185,30 @@ public class OpenAI
     return fetch("DELETE", "/v1/threads/" + threadId, JsonObject.class);
   }
 
+  // Message
+
   public Message createMessage(String threadId, String role, String content)
     throws Exception
   {
-    JsonObject request = new JsonObject();
-    request.addProperty("role", role);
-    request.addProperty("content", content);
+    JsonObject body = new JsonObject();
+    body.addProperty("role", role);
+    body.addProperty("content", content);
     return fetch("POST", "/v1/threads/" + threadId + "/messages",
-      request, Message.class);
+      body, Message.class);
   }
 
   public MessageList listMessages(String threadId) throws Exception
   {
-    return fetch("GET", "/v1/threads/" + threadId + "/messages",
-      MessageList.class);
+    return listMessages(threadId, null);
+  }
+
+  public MessageList listMessages(String threadId, Map<String, Object> parameters)
+    throws Exception
+  {
+    StringBuilder buffer = new StringBuilder();
+    buffer.append("/v1/threads/").append(threadId).append("/messages");
+    addParameters(buffer, parameters);
+    return fetch("GET", buffer.toString(), MessageList.class);
   }
 
   public ModelList listModels() throws Exception
@@ -209,19 +216,100 @@ public class OpenAI
     return fetch("GET", "/v1/models", ModelList.class);
   }
 
+  // Run
+
+  public Run assist(String threadId, String assistantId, long pollInterval)
+    throws Exception
+  {
+    Run run = createRun(threadId, assistantId);
+    while (run.isPending() || run.isRequiresAction())
+    {
+      if (run.isPending())
+      {
+        java.lang.Thread.sleep(pollInterval);
+        run = retrieveRun(run);
+      }
+      else // requires action
+      {
+        run = executeRequiredAction(run);
+      }
+    }
+    return run;
+  }
+
   public Run createRun(String threadId, String assistantId)
     throws Exception
   {
-    JsonObject request = new JsonObject();
-    request.addProperty("assistant_id", assistantId);
+    JsonObject body = new JsonObject();
+    body.addProperty("assistant_id", assistantId);
     return fetch("POST", "/v1/threads/" + threadId
-      + "/runs", request, Run.class);
+      + "/runs", body, Run.class);
+  }
+
+  public RunList listRuns(String threadId) throws Exception
+  {
+    return listRuns(threadId, null);
+  }
+
+  public RunList listRuns(String threadId, Map parameters) throws Exception
+  {
+    StringBuilder buffer = new StringBuilder();
+    buffer.append("/v1/threads/").append(threadId).append("/runs");
+    addParameters(buffer, parameters);
+
+    return fetch("GET", buffer.toString(), RunList.class);
+  }
+
+  public Run retrieveRun(String threadId, String runId) throws Exception
+  {
+    return fetch("GET", "/v1/threads/" + threadId
+      + "/runs/" + runId, Run.class);
   }
 
   public Run retrieveRun(Run run) throws Exception
   {
-    return fetch("GET", "/v1/threads/" + run.getThreadId()
-      + "/runs/" + run.getId(), Run.class);
+    return retrieveRun(run.getThreadId(), run.getId());
+  }
+
+  public Run modifyRun(String threadId, String runId, Map metadata)
+    throws Exception
+  {
+    JsonObject body = new JsonObject();
+    body.add("metadata", gson.toJsonTree(metadata));
+    return fetch("POST", "/v1/threads/" + threadId
+      + "/runs/" + runId, body, Run.class);
+  }
+
+  public Run modifyRun(Run run, Map metadata) throws Exception
+  {
+    return modifyRun(run.getThreadId(), run.getId(), metadata);
+  }
+
+  public Run cancelRun(String threadId, String runId) throws Exception
+  {
+    return fetch("POST", "/v1/threads/" + threadId
+      + "/runs/" + runId + "/cancel", Run.class);
+  }
+
+  public Run cancelRun(Run run) throws Exception
+  {
+    return cancelRun(run.getThreadId(), run.getId());
+  }
+
+  public Run executeRequiredAction(Run run) throws Exception
+  {
+    RequiredAction requiredAction = run.getRequiredAction();
+    if (requiredAction != null)
+    {
+      List<ToolCall> toolCalls =
+        requiredAction.getSubmitToolOutputs().getToolCalls();
+
+      for (ToolCall toolCall : toolCalls)
+      {
+        run = executeToolCall(run, toolCall);
+      }
+    }
+    return run;
   }
 
   public Run executeToolCall(Run run, ToolCall toolCall) throws Exception
@@ -244,6 +332,8 @@ public class OpenAI
     return fetch("POST", "/v1/threads/" + run.getThreadId() + "/runs/" +
       run.getId() + "/submit_tool_outputs", request, Run.class);
   }
+
+  // File
 
   public FileList listFiles(String purpose) throws Exception
   {
@@ -305,48 +395,6 @@ public class OpenAI
     return fetch("DELETE", "/v1/files/" + fileId, JsonObject.class);
   }
 
-  public Run updateRun(Run run) throws Exception
-  {
-    run = retrieveRun(run);
-    if (run.isRequiresAction())
-    {
-      List<ToolCall> toolCalls =
-        run.getRequiredAction().getSubmitToolOutputs().toolCalls;
-
-      for (int i = 0; i < toolCalls.size(); i++)
-      {
-        ToolCall toolCall = toolCalls.get(i);
-        run = executeToolCall(run, toolCall);
-      }
-    }
-    return run;
-  }
-
-  public Run assist(String threadId, String assistantId) throws Exception
-  {
-    Run run = createRun(threadId, assistantId);
-    while (run.isPending() || run.isRequiresAction())
-    {
-      if (run.isPending())
-      {
-        java.lang.Thread.sleep(pollInterval);
-        run = retrieveRun(run);
-      }
-      else // requires action
-      {
-        List<ToolCall> toolCalls =
-          run.getRequiredAction().getSubmitToolOutputs().getToolCalls();
-
-        for (int i = 0; i < toolCalls.size(); i++)
-        {
-          ToolCall toolCall = toolCalls.get(i);
-          run = executeToolCall(run, toolCall);
-        }
-      }
-    }
-    return run;
-  }
-
   // private methods
 
   private <T> T fetch(String method, String uri, Class<T> returnClass)
@@ -358,6 +406,9 @@ public class OpenAI
   private <T> T fetch(String method, String uri, Object body,
     Class<T> returnClass) throws Exception
   {
+    LOGGER.log(Level.FINE, "request: {0} {1} {2}",
+      new Object[]{method, uri, body});
+
     HttpURLConnection conn = prepareConnection(method, uri);
 
     T result = null;
@@ -367,6 +418,8 @@ public class OpenAI
       sendBody(conn, body);
 
       result = readResponse(conn, returnClass);
+
+      LOGGER.log(Level.FINE, "response: {0}", result);
     }
     finally
     {
@@ -435,7 +488,9 @@ public class OpenAI
     }
     catch (Exception ex)
     {
-      throw new IOException(readErrorMessage(conn));
+      String error = readErrorMessage(conn);
+      LOGGER.log(Level.SEVERE, "error: {0}", error);
+      throw new IOException(error);
     }
     return result;
   }
@@ -501,5 +556,27 @@ public class OpenAI
     }
     writer.append(EOL);
     writer.flush();
+  }
+
+  private void addParameters(StringBuilder buffer, Map<String, Object> parameters)
+  {
+    if (parameters != null && !parameters.isEmpty())
+    {
+      boolean first = true;
+      for (String name : parameters.keySet())
+      {
+        if (first)
+        {
+          buffer.append("?");
+          first = false;
+        }
+        else
+        {
+          buffer.append("&");
+        }
+        Object value = parameters.get(name);
+        buffer.append(name).append("=").append(value);
+      }
+    }
   }
 }

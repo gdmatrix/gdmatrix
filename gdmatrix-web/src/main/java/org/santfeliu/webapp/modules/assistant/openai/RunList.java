@@ -34,6 +34,6 @@ package org.santfeliu.webapp.modules.assistant.openai;
  *
  * @author realor
  */
-public class FileList extends OpenAIList<File>
+public class RunList extends OpenAIList<Run>
 {
 }

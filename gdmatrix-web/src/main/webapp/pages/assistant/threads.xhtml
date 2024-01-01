@@ -5,6 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
@@ -31,14 +32,14 @@
       <p:autoUpdate />
     </p:messages>
 
-    <div class="flex-grow-1 p-2 pb-2 flex w-full overflow-hidden">
+    <div class="flex-grow-1 p-2 pt-0 flex w-full overflow-hidden">
 
       <div id="assistant_body" 
            class="flex-grow-1 pr-2 flex flex-column relative"
            style="color:var(--text-color)">
 
         <h:panelGroup id="floating_bar" layout="block"
-                      styleClass="absolute top-0 right-0 p-2 pt-0 flex surface-0 border-round">
+                      styleClass="absolute top-0 right-0 p-2 flex surface-0 border-round">
             <p:commandButton value="#{objectBundle.create}"
                              title="#{objectBundle.create}"
                              action="#{threadsBean.createThread}"
@@ -71,9 +72,9 @@
           <ul class="list-none pl-0">
             <ui:repeat value="#{threadsBean.messageList.data}" var="message">
               <li>
-                <div class="flex m-2 mb-4">
+                <div class="flex m-2 mb-4 #{message.role} #{message.id == null ? 'internal' : ''}">
                   <div class="flex-grow-0">
-                    <div class="avatar #{message.role == 'user' ? 'user' : 'assistant'}">
+                    <div class="avatar">
                       <span />
                     </div>
                   </div>
@@ -81,26 +82,25 @@
                     <div>
                       <b>#{message.role == 'user' ? 'Tu' : 'Assistent'}</b>
                     </div>
-                    <div>
-                      #{message.content.get(0).text.value}
+                    <div class="msg">
+                      #{message.content[0].text.value}
                     </div>
                   </div>
                 </div>
               </li>
             </ui:repeat>
 
-            <h:panelGroup rendered="#{threadsBean.isProcessing()}">
-              <li>
-                <div class="stage ml-5">
-                  <div class="dot-typing" />
-                </div>
-              </li>
-            </h:panelGroup>
+            <li id="typing" class="hidden">
+              <div class="stage ml-5">
+                <div class="dot-typing" />
+              </div>
+            </li>
           </ul>
         </h:panelGroup>
 
         <div class="flex-grow-0 flex-shrink-0 flex pt-0">
           <p:inputTextarea id="question" value="#{threadsBean.text}"
+                           pt:spellcheck="false"
                            styleClass="w-full" rows="3" placeholder="Your question..." />
           <p:commandButton action="#{threadsBean.createMessage()}"
                            process="@form:cnt" update="@form:cnt"
@@ -128,8 +128,7 @@
                              action="#{threadsBean.changeThread(thread.id)}"
                              process="@this"
                              update="@form:cnt:message_list @form:cnt:floating_bar"
-                             oncomplete="endPanel();scrollMessages()"
-                             />
+                             oncomplete="endPanel();scrollMessages()" />
             </li>
           </ui:repeat>
         </ul>
@@ -140,13 +139,26 @@
 
   <p:remoteCommand action="#{threadsBean.assist}" name="assist"
                    process="@this" update="@form:cnt:message_list @form:cnt:question"
-                   global="false"
+                   global="false" 
+                   onstart="console.info('assist')"
                    oncomplete="scrollMessages()" />
 
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
 
   <script>
+    function assistImmediately()
+    {
+      document.getElementById("typing").classList.remove("hidden");
+      assist();
+    }
+
+    function assistDelayed()
+    {
+      document.getElementById("typing").classList.remove("hidden");
+      setTimeout(assist, 1000);
+    }
+  
     function showPanel()
     {
       var panel = PF("threadsPanel");

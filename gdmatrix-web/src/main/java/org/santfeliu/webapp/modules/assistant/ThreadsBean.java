@@ -31,8 +31,11 @@
 package org.santfeliu.webapp.modules.assistant;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -52,6 +55,10 @@ import org.santfeliu.webapp.modules.assistant.openai.OpenAI;
 import org.santfeliu.webapp.modules.assistant.openai.Thread;
 import org.santfeliu.webapp.modules.assistant.openai.ThreadStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.webapp.modules.assistant.openai.Message;
+import static org.santfeliu.webapp.modules.assistant.openai.Message.ASSISTANT_ROLE;
+import static org.santfeliu.webapp.modules.assistant.openai.Message.USER_ROLE;
+import org.santfeliu.webapp.modules.assistant.openai.Run;
 
 /**
  *
@@ -67,7 +74,9 @@ public class ThreadsBean extends WebBean
   String text;
   List<Thread> threads;
   MessageList messageList;
-  boolean processing;
+  String runId;
+  boolean debugEnabled = false;
+  boolean assistEnabled = true;
 
   transient OpenAI openAI = new OpenAI();
 
@@ -116,11 +125,11 @@ public class ThreadsBean extends WebBean
   {
     try
     {
+      messageList = null;
       if (StringUtils.isBlank(threadId))
       {
         this.threadId = null;
         thread = null;
-        messageList = null;
       }
       else
       {
@@ -197,25 +206,27 @@ public class ThreadsBean extends WebBean
         updateThreads();
       }
 
-      openAI.createMessage(threadId, "user", text);
-      updateMessages();
-
       if (text.startsWith("#"))
       {
-        if (text.equals("#error"))
-        {
-          error(text);
-        }
+        String cmd = text;
+        if (messageList == null) messageList = new MessageList();
+        Message message = processCommand(cmd);
+        messageList.getData().add(message);
       }
       else
       {
-        PrimeFaces.current().executeScript("assist()");
-        processing = true;
+        openAI.createMessage(threadId, "user", text);
+        updateMessages();
+        if (assistEnabled)
+        {
+          PrimeFaces.current().executeScript("assistImmediately()");
+        }
       }
       text = null;
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       error(ex);
     }
   }
@@ -224,20 +235,39 @@ public class ThreadsBean extends WebBean
   {
     try
     {
-      String assistantId = assistantBean.getAssistantId();
-      if (assistantId != null)
+      Run run;
+
+      if (runId == null)
       {
-        openAI.assist(threadId, assistantId);
+        String assistantId = assistantBean.getAssistantId();
+        if (assistantId == null) return;
+
+        run = openAI.createRun(threadId, assistantId);
+        runId = run.getId();
+      }
+      else
+      {
+        run = openAI.retrieveRun(threadId, runId);
+      }
+
+      if (run.isPending())
+      {
+        PrimeFaces.current().executeScript("assistDelayed()");
+      }
+      else if (run.isRequiresAction())
+      {
+        openAI.executeRequiredAction(run);
+        PrimeFaces.current().executeScript("assistImmediately()");
+      }
+      else // run completed or cancelled
+      {
+        runId = null;
       }
       updateMessages();
     }
     catch (Exception ex)
     {
       error(ex);
-    }
-    finally
-    {
-      processing = false;
     }
   }
 
@@ -247,44 +277,25 @@ public class ThreadsBean extends WebBean
     String functionName = function.getName();
     String functionArgs = function.getArguments();
     String resultText;
-
     try
     {
-      ScriptClient scriptClient = new ScriptClient();
-      scriptClient.executeScript(functionName);
-
-      Object value = scriptClient.get(functionName);
-      if (value instanceof Callable)
-      {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(functionName);
-        buffer.append("(");
-        if (!StringUtils.isBlank(functionArgs))
-        {
-          buffer.append(functionArgs);
-        }
-        buffer.append(")");
-        String cmd = buffer.toString();
-        System.out.println("CALL " + cmd);
-        Object result = scriptClient.execute(cmd);
-        resultText = String.valueOf(result);
-      }
-      else
-      {
-        resultText = "Function executed.";
-      }
+      resultText = executeFunction(functionName, functionArgs);
+      if (resultText == null) resultText = "Function executed";
     }
     catch (Exception ex)
     {
+      // hide error to assistant
       resultText = "Function not available";
     }
-    System.out.println("Result: " + resultText);
-    return resultText;
-  }
 
-  public boolean isProcessing()
-  {
-    return processing;
+    if (debugEnabled)
+    {
+      if (functionArgs == null) functionArgs = "";
+      Message message = Message.create(ASSISTANT_ROLE,
+        "@" + functionName + " " + functionArgs + "\n" + resultText);
+      messageList.getData().add(message);
+    }
+    return resultText;
   }
 
   public ThreadStore getThreadStore()
@@ -295,10 +306,161 @@ public class ThreadsBean extends WebBean
     return threadStore;
   }
 
+  private Message processCommand(String cmd)
+  {
+    String cmdName;
+    String cmdArgs;
+    int index = cmd.indexOf(" ");
+    if (index == -1)
+    {
+      cmdName = cmd.trim();
+      cmdArgs = null;
+    }
+    else
+    {
+      cmdName = cmd.substring(0, index).trim();
+      cmdArgs = cmd.substring(index).trim();
+    }
+
+    switch (cmdName)
+    {
+      case "#debug":
+      {
+        if (cmdArgs != null)
+        {
+          if ("on".equals(cmdArgs)) debugEnabled = true;
+          else if ("off".equals(cmdArgs)) debugEnabled = false;
+        }
+        String stateMessage = debugEnabled ?
+          "Debug mode is enabled." : "Debug mode is disabled.";
+
+        return Message.create(USER_ROLE, cmd + "\n" + stateMessage);
+      }
+      case "#assist":
+      {
+        if (cmdArgs != null)
+        {
+          if ("on".equals(cmdArgs)) assistEnabled = true;
+          else if ("off".equals(cmdArgs)) assistEnabled = false;
+        }
+        String stateMessage = assistEnabled ?
+          "Assist mode is enabled." : "Assist mode is disabled.";
+
+        return Message.create(USER_ROLE, cmd + "\n" + stateMessage);
+      }
+      case "#call":
+      {
+        String result;
+        if (cmdArgs != null)
+        {
+          String functionName;
+          String functionArgs;
+          index = cmdArgs.indexOf(" ");
+          if (index == -1)
+          {
+            functionName = cmdArgs.trim();
+            functionArgs = null;
+          }
+          else
+          {
+            functionName = cmdArgs.substring(0, index).trim();
+            functionArgs = cmdArgs.substring(index).trim();
+          }
+          try
+          {
+            result = executeFunction(functionName, functionArgs);
+          }
+          catch (Exception ex)
+          {
+            result = ex.toString();
+          }
+        }
+        else
+        {
+          result = "Function name not specified.";
+        }
+        return Message.create(USER_ROLE, cmd + "\n" + result);
+      }
+      case "#log":
+      {
+        Logger logger = Logger.getLogger("OpenAI");
+        if (cmdArgs != null)
+        {
+          String level = cmdArgs;
+          if ("info".equalsIgnoreCase(level)) logger.setLevel(Level.INFO);
+          else if ("fine".equalsIgnoreCase(level)) logger.setLevel(Level.FINE);
+          else if ("finer".equalsIgnoreCase(level)) logger.setLevel(Level.FINER);
+        }
+        String level = logger.getLevel() == null ?
+          "default" : logger.getLevel().toString();
+        String stateMessage = "Logging level is " + level;
+
+        return Message.create(Message.USER_ROLE, cmd + "\n" + stateMessage);
+      }
+      default:
+        return Message.create(Message.USER_ROLE, cmd +
+          "\nUnknown command. Valid commands are:\n " +
+          "#debug [on|off]\n" +
+          "#assist [on|off]\n" +
+          "#call functionName [argumentsMap]\n" +
+          "#log [info|fine|finer]");
+    }
+  }
+
+  private String executeFunction(String functionName, String functionArgs)
+    throws Exception
+  {
+    ScriptClient scriptClient = new ScriptClient();
+    scriptClient.executeScript(functionName);
+
+    Object value = scriptClient.get(functionName);
+    if (value instanceof Callable)
+    {
+      StringBuilder buffer = new StringBuilder();
+      buffer.append(functionName);
+      buffer.append("(");
+      if (!StringUtils.isBlank(functionArgs))
+      {
+        buffer.append(functionArgs);
+      }
+      buffer.append(")");
+      String cmd = buffer.toString();
+      Object result = scriptClient.execute(cmd);
+      return String.valueOf(result);
+    }
+    return null;
+  }
+
   private void updateMessages() throws Exception
   {
-    messageList = openAI.listMessages(threadId);
-    Collections.sort(messageList.getData(),
-      (a, b) -> (int)(a.getCreatedAt() - b.getCreatedAt()));
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("limit", 100);
+    parameters.put("order", "desc");
+
+    if (messageList == null || messageList.getData().isEmpty())
+    {
+      messageList = openAI.listMessages(threadId, parameters);
+      messageList.reverse();
+    }
+    else
+    {
+      if (messageList.getLastId() != null)
+      {
+        parameters.put("before", messageList.getLastId());
+      }
+      MessageList newMessages = openAI.listMessages(threadId, parameters);
+      if (!newMessages.getData().isEmpty())
+      {
+        newMessages.reverse();
+        for (Message newMessage : newMessages.getData())
+        {
+          if (newMessage.isCompleted())
+          {
+            messageList.getData().add(newMessage);
+            messageList.setLastId(newMessage.getId());
+          }
+        }
+      }
+    }
   }
 }
