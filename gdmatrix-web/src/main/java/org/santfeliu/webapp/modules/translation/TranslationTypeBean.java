@@ -147,8 +147,13 @@ public class TranslationTypeBean extends TypeBean<Translation, TranslationFilter
   public String filterToQuery(TranslationFilter filter)
   {
     String query = filter.getText();
+    
+    if (query == null)
+      return "";
+    
     if (query.startsWith("%")) query = query.substring(1);
     if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
+    
     return query;
   }
 
