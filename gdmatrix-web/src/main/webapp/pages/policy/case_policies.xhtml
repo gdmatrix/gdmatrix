@@ -8,6 +8,27 @@
   
   <h:outputStylesheet library="css" name="policy.css" />  
   
+  <p:remoteCommand name="updateScrollPanel" update="@form:cnt:search_tabs:tabs:analyzer_messages" />  
+  
+  <script>
+    document.removeEventListener("sidePanelChange", document.scrollPanelRefresh);
+
+    document.scrollPanelRefresh = () => {
+      if (PrimeFaces.widgets['scrollPanel']) {
+        setTimeout(() => {
+          PrimeFaces.widgets['scrollPanel'].redraw();
+          updateScrollPanel();
+        }, 300);
+      }
+    };
+    
+    document.addEventListener('sidePanelChange', document.scrollPanelRefresh);
+  </script>    
+    
+  <p:poll interval="1" listener="#{casePoliciesTabBean.refreshAnalyzeStatus}" 
+          update="analyzer_messages"
+          widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>   
+  
   <h:panelGroup>
 
     <!-- Results table -->
@@ -103,13 +124,9 @@
         </ui:repeat>
       </p:scrollPanel>   
     </p:outputPanel>
-    
-    <p:poll interval="1" listener="#{casePoliciesTabBean.refreshAnalyzeStatus}" 
-            update="analyzer_messages"
-            widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>     
-
+        
   </h:panelGroup>
-
+  
   <!-- Only works appendTo="@(form)" with one single form -->
   <p:dialog id="case_policies_dialog" widgetVar="casePoliciesDialog"
             styleClass="edit_data_dialog mw_600"
@@ -216,6 +233,6 @@
       </div>
     </f:facet>
 
-  </p:dialog>  
+  </p:dialog>   
 
 </ui:composition>

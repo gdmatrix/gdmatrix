@@ -187,9 +187,8 @@ public class DocumentPoliciesTabBean extends TabBean
     {
       try
       {
-        DocumentPolicyFilter filter = new DocumentPolicyFilter();
-        filter.setDocId(getObjectId());
-        rows = getPort(false).findDocumentPolicyViews(filter);
+        loadTableRows();
+        messageList.clear();
       }
       catch (Exception ex)
       {
@@ -312,7 +311,7 @@ public class DocumentPoliciesTabBean extends TabBean
         getMessageList().clear();
         getMessageList().addAll(logHandler.getLogRecords());
         LOGGER.removeHandler(logHandler);
-        load();
+        loadTableRows();
       }
     }
     catch (Exception ex)
@@ -341,5 +340,12 @@ public class DocumentPoliciesTabBean extends TabBean
     {
       error(ex);
     }
-  }  
+  } 
+  
+  private void loadTableRows() throws Exception
+  {  
+    DocumentPolicyFilter filter = new DocumentPolicyFilter();
+    filter.setDocId(getObjectId());
+    rows = getPort(false).findDocumentPolicyViews(filter); 
+  }
 }

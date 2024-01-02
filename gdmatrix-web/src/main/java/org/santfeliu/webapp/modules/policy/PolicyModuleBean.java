@@ -41,7 +41,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author realor
+ * @author blanquepa
  */
 @Named
 @ApplicationScoped

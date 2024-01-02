@@ -186,9 +186,8 @@ public class CasePoliciesTabBean extends TabBean
     {
       try
       {
-        CasePolicyFilter filter = new CasePolicyFilter();
-        filter.setCaseId(getObjectId());
-        rows = getPort(false).findCasePolicyViews(filter);
+        loadTableRows();
+        messageList.clear();
       }
       catch (Exception ex)
       {
@@ -197,7 +196,7 @@ public class CasePoliciesTabBean extends TabBean
     }
     else rows = Collections.EMPTY_LIST;
   }
-
+  
   @Override
   public void store()
   {
@@ -311,7 +310,7 @@ public class CasePoliciesTabBean extends TabBean
         getMessageList().clear();
         getMessageList().addAll(logHandler.getLogRecords());
         LOGGER.removeHandler(logHandler);
-        load();
+        loadTableRows();
       }
     }
     catch (Exception ex)
@@ -340,5 +339,12 @@ public class CasePoliciesTabBean extends TabBean
     {
       error(ex);
     }
+  }  
+  
+  private void loadTableRows() throws Exception
+  {
+    CasePolicyFilter filter = new CasePolicyFilter();
+    filter.setCaseId(getObjectId());
+    rows = getPort(false).findCasePolicyViews(filter);    
   }  
 }

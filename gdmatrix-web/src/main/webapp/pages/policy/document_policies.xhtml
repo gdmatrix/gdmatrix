@@ -5,9 +5,30 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-  
+
   <h:outputStylesheet library="css" name="policy.css" />  
+  
+  <p:remoteCommand name="updateScrollPanel" update="@form:cnt:search_tabs:tabs:analyzer_messages" />  
+  
+  <script>
+    document.removeEventListener("sidePanelChange", document.scrollPanelRefresh);
+
+    document.scrollPanelRefresh = () => {
+      if (PrimeFaces.widgets['scrollPanel']) {
+        setTimeout(() => {
+          PrimeFaces.widgets['scrollPanel'].redraw();
+          updateScrollPanel();
+        }, 300);
+      }
+    };
     
+    document.addEventListener('sidePanelChange', document.scrollPanelRefresh);
+  </script>    
+  
+  <p:poll interval="1" listener="#{documentPoliciesTabBean.refreshAnalyzeStatus}" 
+          update="analyzer_messages"
+          widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>    
+
   <h:panelGroup>
 
     <!-- Results table -->
@@ -19,7 +40,7 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
-      
+
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-play" styleClass="ui-button-flat"
@@ -52,7 +73,7 @@
       <p:column headerText="#{policyBundle.documentPolicies_policy}" styleClass="col-4">
         <h:outputText value="#{row.policy.title}" />
       </p:column>
-      
+
       <p:column headerText="#{policyBundle.documentPolicies_activationDate}" styleClass="col-2">
         <h:outputText value="#{row.docPolicy.activationDate}"><f:converter converterId="dateConverter" /></h:outputText>
       </p:column>
@@ -60,11 +81,11 @@
       <p:column headerText="#{policyBundle.documentPolicies_policy}" styleClass="col-3">
         <h:outputText value="#{typeTypeBean.getDescription(row.policy.policyTypeId)}"></h:outputText>
       </p:column>      
-      
+
       <p:column headerText="#{policyBundle.documentPolicies_state}" styleClass="col-2">
         <h:outputText value="#{documentPoliciesTabBean.getPolicyState(row)}"></h:outputText>
       </p:column>        
-    
+
       <p:column styleClass="text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
@@ -92,7 +113,7 @@
         </p:commandButton>
       </p:column>
     </p:dataTable>
-    
+
     <p:outputPanel id="analyzer_messages">
       <p:scrollPanel styleClass="analyzer w-full" widgetVar="scrollPanel"
                      rendered="#{not empty documentPoliciesTabBean.messageList}">
@@ -102,13 +123,9 @@
         </ui:repeat>
       </p:scrollPanel>
     </p:outputPanel>
-    
-    <p:poll interval="1" listener="#{documentPoliciesTabBean.refreshAnalyzeStatus}" 
-            update="analyzer_messages"
-            widgetVar="poll" autoStart="false" async="true" oncomplete="PF('scrollPanel').scrollTo(0,600000000);"/>     
-    
+
   </h:panelGroup>
-  
+
   <!-- Only works appendTo="@(form)" with one single form -->
   <p:dialog id="document_policies_dialog" widgetVar="documentPoliciesDialog"
             styleClass="edit_data_dialog mw_600"
@@ -127,13 +144,13 @@
     </f:facet>
 
     <h:panelGroup styleClass="mt-2" id="document_policies_panel" layout="block"
-             rendered="#{documentPoliciesTabBean.editing != null}">
+                  rendered="#{documentPoliciesTabBean.editing != null}">
 
       <p:messages showSummary="true" styleClass="messages" 
                   showIcon="true" closable="false" forIgnores="growl">
         <p:autoUpdate />
       </p:messages>      
-      
+
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12">
@@ -153,7 +170,7 @@
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
-        
+
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{policyBundle.documentPolicies_state}"/>
@@ -161,8 +178,8 @@
             <f:selectItems value="#{documentPoliciesTabBean.policyStateSelectItems}" />
           </p:selectOneMenu>
         </div>        
-        
-    
+
+
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{policyBundle.documentPolicies_activationDate}"/>
@@ -173,7 +190,7 @@
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
         </div>
-        
+
         <emcomp:auditData creationDateTime="#{documentPoliciesTabBean.editing.creationDateTime}"
                           creationUserId="#{documentPoliciesTabBean.editing.creationUserId}"
                           changeDateTime="#{documentPoliciesTabBean.editing.approvalDateTime}"
@@ -186,13 +203,13 @@
                           changeDateTimeLabel="#{policyBundle.documentPolicies_executionDateTime}"
                           changeUserIdLabel="#{policyBundle.documentPolicies_executionUserId}"                          
                           rendered="#{documentPoliciesTabBean.editing != null}" />         
-        
+
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{policyBundle.documentPolicies_executionResult}"/>
           <p:inputTextarea value="#{documentPoliciesTabBean.editing.executionResult}" />
         </div>          
-             
+
       </div>
 
     </h:panelGroup>
