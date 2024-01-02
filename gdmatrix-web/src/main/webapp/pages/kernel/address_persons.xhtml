@@ -74,14 +74,14 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>    
+    
     <h:panelGroup id="address_persons_panel" layout="block"
                   rendered="#{addressPersonsTabBean.editing != null}"
                   styleClass="mt-2">
-      
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>    
       
       <div class="ui-fluid formgrid grid" >
         
@@ -112,7 +112,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
                          update="address_persons_table address_persons_panel"
-                         oncomplete="if (!isFacesError()) PF('addressPersonsDialog').hide()"/>
+                         oncomplete="closePFDialog('addressPersonsDialog')"/>
         <p:commandButton action="#{addressPersonsTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}" 
                          process="@this" update="address_persons_panel" global="false" 

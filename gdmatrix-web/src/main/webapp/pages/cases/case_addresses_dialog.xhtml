@@ -23,14 +23,14 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>   
+    
     <h:panelGroup styleClass="mt-2" id="case_addresses_panel"
                   layout="block"
                   rendered="#{caseAddressesTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
       
       <div class="ui-fluid formgrid grid" >
 
@@ -126,7 +126,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_addresses_dialog"
                          update="@form:cnt:search_tabs:tabs case_addresses_panel"
-                         oncomplete="if (!isFacesError()) PF('caseAddressesDialog').hide()"
+                         oncomplete="closePFDialog('caseAddressesDialog')"
                          disabled="#{!caseObjectBean.editable}"/>
         <p:commandButton action="#{caseAddressesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

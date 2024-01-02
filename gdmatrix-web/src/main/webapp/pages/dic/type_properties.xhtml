@@ -188,13 +188,13 @@
           </p:outputPanel>
         </f:facet>
 
+        <p:messages showSummary="true" styleClass="messages" 
+                    showIcon="true" closable="false" forIgnores="growl">
+          <p:autoUpdate />
+        </p:messages>  
+    
         <h:panelGroup styleClass="mt-2" id="type_properties_panel" layout="block"
                       rendered="#{typePropertiesTabBean.editing != null}">
-
-          <p:messages showSummary="true" styleClass="messages" 
-                      showIcon="true" closable="false" forIgnores="growl">
-            <p:autoUpdate />
-          </p:messages>  
           
           <div class="ui-fluid formgrid grid" >
 
@@ -288,7 +288,7 @@
                              styleClass="m-1" value="#{objectBundle.accept}"
                              process="type_properties_dialog"
                              update="type_properties_table type_properties_panel"
-                             oncomplete="if (!isFacesError()) PF('typePropertiesDialog').hide()" />
+                             oncomplete="closePFDialog('typePropertiesDialog')" />
             <p:commandButton action="#{typePropertiesTabBean.cancel}"
                              styleClass="m-1" value="#{objectBundle.cancel}"
                              process="@this"

@@ -7,13 +7,17 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <style>
-    .modified { font-style: italic; }
-    .removed { text-decoration: line-through; }
+    .modified {
+      font-style: italic;
+    }
+    .removed {
+      text-decoration: line-through;
+    }
   </style>
-  
-  
+
+
   <h:panelGroup>      
-    
+
     <!-- Results table -->
     <p:dataTable id="type_acl_table" value="#{typeACLTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
@@ -36,15 +40,15 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
       </f:facet>      
-            
+
       <p:column headerText="RoleId" styleClass="col-5">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
-      
+
       <p:column headerText="Actions" styleClass="col-5">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
-      
+
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
@@ -93,14 +97,14 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>  
+
     <h:panelGroup styleClass="mt-2" id="type_acl_panel" layout="block"
                   rendered="#{typeACLTabBean.editing != null}">
 
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>  
-      
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12">
@@ -122,16 +126,16 @@
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>              
-        
+
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="Actions:" />
           <p:selectManyCheckbox value="#{typeACLTabBean.editing.actions}" 
-                                 layout="responsive" columns="3">
+                                layout="responsive" columns="3">
             <f:selectItems value="#{typeACLTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
-                
+
       </div>
 
     </h:panelGroup>     
@@ -144,14 +148,15 @@
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="type_acl_dialog"
                          update="type_acl_table type_acl_panel"
-                         oncomplete="if (!isFacesError()) PF('typeACLDialog').hide()"
-                         />
+                         oncomplete="closePFDialog('typeACLDialog')" />
+
         <p:commandButton action="#{typeACLTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="type_acl_dialog" global="false" 
                          onclick="PF('typeACLDialog').hide()"/>
-      </div>      
+      </div> 
+
     </f:facet>
 
   </p:dialog>  

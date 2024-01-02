@@ -23,15 +23,15 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>     
+    
     <h:panelGroup styleClass="mt-2" id="case_documents_panel"
                   layout="block"
                   rendered="#{caseDocumentsTabBean.editing != null}">
 
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
-      
       <div class="ui-fluid formgrid grid" >
 
         <!-- Document -->
@@ -113,7 +113,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_documents_dialog"
                          update="@form:cnt:search_tabs:tabs case_documents_panel"
-                         oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').hide()"
+                         oncomplete="closePFDialog('caseDocumentsDialog')"
                          disabled="#{!caseObjectBean.editable}" />
         <p:commandButton action="#{caseDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
@@ -190,7 +190,7 @@
                          styleClass="m-1" value="#{objectBundle.delete}"
                          process="remove_document_dialog"
                          update="@form:cnt:search_tabs:tabs @form:cnt:context_panel"
-                         oncomplete="if (!isFacesError()) PF('removeDocumentDialog').hide()"
+                         oncomplete="closePFDialog('removeDocumentDialog')"
                          disabled="#{!caseObjectBean.editable}" />
         <p:commandButton styleClass="m-1" value="#{objectBundle.cancel}"
                          action="#{caseDocumentsTabBean.cancelRemove}"

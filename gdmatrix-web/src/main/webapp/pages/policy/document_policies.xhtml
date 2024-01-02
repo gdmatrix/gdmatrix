@@ -143,13 +143,13 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages> 
+    
     <h:panelGroup styleClass="mt-2" id="document_policies_panel" layout="block"
                   rendered="#{documentPoliciesTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
 
       <div class="ui-fluid formgrid grid" >
 
@@ -222,7 +222,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="document_policies_dialog"
                          update="document_policies_table document_policies_panel"
-                         oncomplete="if (!isFacesError()) PF('documentPoliciesDialog').hide()"
+                         oncomplete="closePFDialog('documentPoliciesDialog')"
                          />
         <p:commandButton action="#{documentPoliciesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

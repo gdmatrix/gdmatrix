@@ -62,7 +62,7 @@
                            process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:case_policies_dialog"
                            resetValues="true"
-                           oncomplete="PF('casePoliciesDialog')"
+                           oncomplete="PF('casePoliciesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>      
@@ -143,14 +143,14 @@
         <h:outputText value="#{casePoliciesTabBean.editing.policyId}" />
       </p:outputPanel>
     </f:facet>
+    
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>        
 
     <h:panelGroup styleClass="mt-2" id="case_policies_panel" layout="block"
                   rendered="#{casePoliciesTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
 
       <div class="ui-fluid formgrid grid" >
 
@@ -223,7 +223,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_policies_dialog"
                          update="case_policies_table case_policies_panel"
-                         oncomplete="if (!isFacesError()) PF('casePoliciesDialog').hide()"
+                         oncomplete="closePFDialog('casePoliciesDialog')"
                          />
         <p:commandButton action="#{casePoliciesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

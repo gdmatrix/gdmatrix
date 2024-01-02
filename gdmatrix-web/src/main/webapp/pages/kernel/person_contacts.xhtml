@@ -83,15 +83,15 @@
       </p:outputPanel>
     </f:facet>
     
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>     
+    
     <h:panelGroup id="contact_edit_panels" layout="div"
                   rendered="#{personContactsTabBean.editing != null}"
                   styleClass="mt-2">
 
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
-      
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12 md:col-6">
@@ -137,7 +137,7 @@
       <p:commandButton id="person_contacts_store" action="#{personContactsTabBean.store}" 
                        styleClass="m-1" value="#{objectBundle.store}"
                        update="contact_results_table contact_edit_panels"
-                       oncomplete="if (args &amp;&amp; !args.validationFailed) PF('personContactsDialog').hide()" />
+                       oncomplete="closePFDialog('personContactsDialog')" />
       <p:commandButton action="#{personContactsTabBean.cancel}" 
                        styleClass="m-1" value="#{objectBundle.cancel}" 
                        process="@this" update="contact_edit_panels" global="false" 

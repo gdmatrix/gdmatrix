@@ -101,68 +101,68 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>    
+
     <h:panelGroup id="enum_type_items_panel" layout="block"
                   rendered="#{enumTypeItemsTabBean.editing != null}"
                   styleClass="mt-2">
 
-          <p:messages showSummary="true" styleClass="messages" 
-                      showIcon="true" closable="false" forIgnores="growl">
-            <p:autoUpdate />
-          </p:messages>      
-      
-          <div class="ui-fluid formgrid grid" >
+      <div class="ui-fluid formgrid grid" >
 
-            <div class="field col-12 md:col-4">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.enumTypeItems_index}" />
-              <p:inputText value="#{enumTypeItemsTabBean.editing.index}"  />
-            </div>
+        <div class="field col-12 md:col-4">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.enumTypeItems_index}" />
+          <p:inputText value="#{enumTypeItemsTabBean.editing.index}"  />
+        </div>
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.enumTypeItems_label}"
-                             indicateRequired="true"/>
-              <p:inputText value="#{enumTypeItemsTabBean.editing.label}"
-                           required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                           requiredMessage="#{messageBundle.LABEL_IS_REQUIRED}" />
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.enumTypeItems_label}"
+                         indicateRequired="true"/>
+          <p:inputText value="#{enumTypeItemsTabBean.editing.label}"
+                       required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
+                       requiredMessage="#{messageBundle.LABEL_IS_REQUIRED}" />
+        </div>
 
-            <p:importEnum type="org.matrix.dic.PropertyType" var="PropertyType" allSuffix="ALL_TYPES"/>
+        <p:importEnum type="org.matrix.dic.PropertyType" var="PropertyType" allSuffix="ALL_TYPES"/>
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.enumTypeItems_value}"
-                             indicateRequired="true"/>
-              <p:inputText value="#{enumTypeItemsTabBean.editing.value}"
-                           rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.TEXT or enumTypeObjectBean.enumType.itemType == PropertyType.STRUCT}"
-                           required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                           requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}" />
-              <p:spinner value="#{enumTypeItemsTabBean.editing.value}"
-                         rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.NUMERIC}"
-                         required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                         requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}" />
-              <p:datePicker value="#{enumTypeItemsTabBean.editing.value}"
-                            autocomplete="off" converter="datePickerConverter"
-                            placeholder="dd/MM/yyyy HH:mm:ss"
-                            locale="#{enumTypeItemsTabBean.language}"
-                            pattern="dd/MM/yyyy HH:mm:ss"
-                            showOnFocus="false"
-                            showIcon="true" showTime="true" showSeconds="true"
-                            monthNavigator="true" yearNavigator="true"
-                            rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.DATE}"
-                            required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                            requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}"/>
-              <p:toggleSwitch value="#{enumTypeItemsTabBean.editing.value}"
-                              rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.BOOLEAN}" />
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.enumTypeItems_value}"
+                         indicateRequired="true"/>
+          <p:inputText value="#{enumTypeItemsTabBean.editing.value}"
+                       rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.TEXT or enumTypeObjectBean.enumType.itemType == PropertyType.STRUCT}"
+                       required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
+                       requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}" />
+          <p:spinner value="#{enumTypeItemsTabBean.editing.value}"
+                     rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.NUMERIC}"
+                     required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
+                     requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}" />
+          <p:datePicker value="#{enumTypeItemsTabBean.editing.value}"
+                        autocomplete="off" converter="datePickerConverter"
+                        placeholder="dd/MM/yyyy HH:mm:ss"
+                        locale="#{enumTypeItemsTabBean.language}"
+                        pattern="dd/MM/yyyy HH:mm:ss"
+                        showOnFocus="false"
+                        showIcon="true" showTime="true" showSeconds="true"
+                        monthNavigator="true" yearNavigator="true"
+                        rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.DATE}"
+                        required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
+                        requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}"/>
+          <p:toggleSwitch value="#{enumTypeItemsTabBean.editing.value}"
+                          rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.BOOLEAN}" />
+        </div>
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.enumTypeItems_description}"/>
-              <p:inputTextarea value="#{enumTypeItemsTabBean.editing.description}" />
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.enumTypeItems_description}"/>
+          <p:inputTextarea value="#{enumTypeItemsTabBean.editing.description}" />
+        </div>
 
-          </div>
+      </div>
     </h:panelGroup>
 
     <f:facet name="footer">
@@ -171,7 +171,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          disabled="#{!enumTypeObjectBean.editable}"
                          update="enum_type_items_table enum_type_items_panel"
-                         oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').hide()"/>
+                         oncomplete="closePFDialog('enumTypeItemsDialog')"/>
         <p:commandButton action="#{enumTypeItemsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          immediate="true" update="enum_type_items_panel" global="false"

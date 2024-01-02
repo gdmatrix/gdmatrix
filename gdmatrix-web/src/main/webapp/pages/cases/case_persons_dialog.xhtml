@@ -24,15 +24,15 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>    
+    
     <h:panelGroup styleClass="mt-2" id="case_persons_panel"
                   layout="block"
                   rendered="#{casePersonsTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
-      
+ 
       <p:tabView activeIndex="#{casePersonsTabBean.tabIndex}">
         <p:tab title="#{caseBundle.casePersons_person}">
           <h:panelGroup id="person_data_panel">
@@ -371,7 +371,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_persons_dialog"
                          update="@form:cnt:search_tabs:tabs case_persons_panel"
-                         oncomplete="if (!isFacesError()) PF('casePersonsDialog').hide()"
+                         oncomplete="closePFDialog('casePersonsDialog')"
                          disabled="#{!caseObjectBean.editable}" />
         <p:commandButton action="#{casePersonsTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
@@ -381,8 +381,6 @@
       </div>  
 
     </f:facet>
-
-
 
   </p:dialog>
 
