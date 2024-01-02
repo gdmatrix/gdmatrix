@@ -30,7 +30,12 @@
  */
 package org.santfeliu.webapp.modules.sqlweb;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -86,6 +91,8 @@ public class SqlwebBean extends WebBean implements Serializable
   private String exception;
   private Map<String, String> columnDescriptionMap;
   private boolean deferredExecution = false;
+  private boolean showLobValues = false;
+  private boolean showNullAsEmpty = false;
 
   public SqlwebBean()
   {
@@ -206,6 +213,26 @@ public class SqlwebBean extends WebBean implements Serializable
     this.deferredExecution = deferredExecution;
   }
 
+  public boolean isShowLobValues()
+  {
+    return showLobValues;
+  }
+
+  public void setShowLobValues(boolean showLobValues)
+  {
+    this.showLobValues = showLobValues;
+  }
+
+  public boolean isShowNullAsEmpty()
+  {
+    return showNullAsEmpty;
+  }
+
+  public void setShowNullAsEmpty(boolean showNullAsEmpty)
+  {
+    this.showNullAsEmpty = showNullAsEmpty;
+  }
+
   public String getContent()
   {
     return "/pages/sqlweb/sqlweb.xhtml";
@@ -265,7 +292,7 @@ public class SqlwebBean extends WebBean implements Serializable
                   Object value = rs.getObject(i);
                   if (value == null)
                   {
-                    value = "NULL";
+                    //nothing here
                   }
                   else if (value instanceof java.sql.Date ||
                         value instanceof java.sql.Timestamp)
@@ -277,9 +304,13 @@ public class SqlwebBean extends WebBean implements Serializable
                     Struct struct = (Struct)value;
                     value = struct.getSQLTypeName();
                   }
-                  else if (value instanceof Blob || value instanceof Clob)
+                  else if (value instanceof Blob)
                   {
-                    value = "(" + value.getClass().getSimpleName() + ")";
+                    value = getBlobPreview((Blob)value, 200);
+                  }
+                  else if (value instanceof Clob)
+                  {
+                    value = getClobPreview((Clob)value, 200);
                   }
                   else if (!(value instanceof Serializable))
                   {
@@ -348,7 +379,28 @@ public class SqlwebBean extends WebBean implements Serializable
   {
     Column column = (Column)getValue("#{column}");
     Object[] row = (Object[])getValue("#{row}");
-    return row[column.getIndex()];
+    Object value = row[column.getIndex()];
+    if (value == null)
+    {
+      value = (showNullAsEmpty ? "" : "NULL");
+    }
+    return value;
+  }
+  
+  public String getCellStyleClass()
+  {
+    Column column = (Column)getValue("#{column}");
+    Object[] row = (Object[])getValue("#{row}");
+    Object value = row[column.getIndex()];
+    if ((column.isLob() && !showLobValues) || 
+      (value == null && !showNullAsEmpty))
+    {
+      return "specialValue";
+    }
+    else
+    {
+      return "";
+    }
   }
 
   public boolean isColumnLinkRendered()
@@ -412,6 +464,11 @@ public class SqlwebBean extends WebBean implements Serializable
     {
       return getColumnDescriptionMap().get(name);
     }
+    
+    public boolean isLob()
+    {
+      return ("CLOB".equals(type) || "BLOB".equals(type));
+    }
   }
 
   public ExporterOptions getCsvOptions()
@@ -419,6 +476,43 @@ public class SqlwebBean extends WebBean implements Serializable
     return CSVOptions.EXCEL_NORTHERN_EUROPE;
   }
 
+  private String getClobPreview(Clob clob, int numChars)
+  {
+    StringBuilder sb = new StringBuilder();
+    try (Reader reader = clob.getCharacterStream();
+       BufferedReader br = new BufferedReader(reader))      
+    {
+      char[] buffer = new char[numChars];
+      br.read(buffer);
+      sb.append(buffer);
+    } 
+    catch (Exception ex)
+    {
+    }
+    String result = sb.toString();
+    if (result.length() >= numChars) result = result + "...";
+    return result;
+  }
+  
+  private String getBlobPreview(Blob blob, int numChars)
+  {
+    byte[] bytes = new byte[numChars];
+    int bytesRead = 0;
+    try (InputStream is = blob.getBinaryStream();
+      BufferedInputStream bis = new BufferedInputStream(is)) 
+    {
+      bytesRead = bis.read(bytes, 0, numChars);
+    } 
+    catch (Exception e) 
+    {
+    }
+    byte[] trimmedBytes = new byte[bytesRead];
+    System.arraycopy(bytes, 0, trimmedBytes, 0, bytesRead);
+    String result = new String(trimmedBytes, StandardCharsets.UTF_8);
+    if (result.length() >= numChars) result = result + "...";    
+    return result;
+  }
+  
   private void restoreParameters()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();

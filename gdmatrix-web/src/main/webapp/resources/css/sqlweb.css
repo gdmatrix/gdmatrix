@@ -1,0 +1,23 @@
+/* sqlweb */
+
+.sqlweb .specialValue
+{
+  color: gray;
+  font-style: italic;
+}
+
+.sqlweb .switchToggle
+{
+  top: 4px; 
+}
+
+.sqlweb .switchLabel
+{
+  cursor: pointer;
+}
+
+.sqlweb .message
+{
+  color: #495057;
+  font-weight: bold;
+}
