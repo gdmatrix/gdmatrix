@@ -101,13 +101,13 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>      
+    
     <h:panelGroup styleClass="mt-2" id="event_places_panel" layout="block"
                   rendered="#{eventPlacesTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
       
       <div class="ui-fluid formgrid grid" >
 
@@ -182,7 +182,7 @@
                          disabled="#{!eventObjectBean.editable}"
                          process="event_places_dialog"
                          update="event_places_table event_places_panel"
-                         oncomplete="if (!isFacesError()) PF('eventPlacesDialog').hide()" />
+                         oncomplete="closePFDialog('eventPlacesDialog')" />
         <p:commandButton action="#{eventPlacesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"

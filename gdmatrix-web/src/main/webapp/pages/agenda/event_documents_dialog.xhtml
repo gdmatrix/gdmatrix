@@ -21,14 +21,14 @@
       </p:outputPanel>
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>      
+
     <h:panelGroup styleClass="mt-2" id="event_documents_panel"
                   layout="block"
                   rendered="#{eventDocumentsTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
       
       <div class="ui-fluid formgrid grid" >
 
@@ -96,7 +96,7 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="event_documents_dialog"
                          update="@form:cnt:search_tabs:tabs event_documents_panel"
-                         oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').hide()"
+                         oncomplete="closePFDialog('eventDocumentsDialog')"
                          disabled="#{!eventObjectBean.editable}" />
         <p:commandButton action="#{eventDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

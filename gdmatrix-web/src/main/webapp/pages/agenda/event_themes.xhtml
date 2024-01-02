@@ -76,13 +76,13 @@
 
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>      
+    
     <h:panelGroup styleClass="mt-2" id="event_themes_panel" layout="block"
                   rendered="#{eventThemesTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
       
       <div class="ui-fluid formgrid grid">
         <div class="field col-12">
@@ -112,7 +112,7 @@
                          disabled="#{!eventObjectBean.editable}"
                          process="event_themes_dialog"
                          update="event_themes_table event_themes_panel"
-                         oncomplete="if (!isFacesError()) PF('eventThemesDialog').hide()" />
+                         oncomplete="closePFDialog('eventThemesDialog')" />
         <p:commandButton action="#{eventThemesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"

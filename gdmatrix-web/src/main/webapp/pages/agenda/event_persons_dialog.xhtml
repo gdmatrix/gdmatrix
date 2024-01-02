@@ -24,13 +24,13 @@
 
     </f:facet>
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>      
+    
     <h:panelGroup styleClass="mt-2" id="event_persons_panel" layout="block"
                   rendered="#{eventPersonsTabBean.editing != null}">
-
-      <p:messages showSummary="true" styleClass="messages" 
-                  showIcon="true" closable="false" forIgnores="growl">
-        <p:autoUpdate />
-      </p:messages>      
       
       <div class="ui-fluid formgrid grid" >
 
@@ -134,7 +134,7 @@
                          disabled="#{!eventObjectBean.editable}"
                          process="event_persons_dialog"
                          update="@form:cnt:search_tabs:tabs event_persons_panel"
-                         oncomplete="if (!isFacesError()) PF('eventPersonsDialog').hide()" />
+                         oncomplete="closePFDialog('eventPersonsDialog')" />
         <p:commandButton action="#{eventPersonsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
