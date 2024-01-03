@@ -22,11 +22,11 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            disabled="#{eventObjectBean.isNew() or !eventObjectBean.editable}"
-                           action="#{eventCopyTabBean.reset}"
+                           action="#{eventRecurrencesTabBean.openCopyDialog()}"
                            process="@form:cnt:search_tabs:tabs"
                            update="@parent:@parent:@parent:@parent:event_copy_dialog"
                            resetValues="true"
-                           oncomplete="PF('eventCopyDialog').show()"
+                           oncomplete="PF('eventCopyPanel').select(0);PF('eventCopyDialog').show();"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
@@ -125,6 +125,11 @@
         <h:outputText value="#{agendaBundle.eventRecurrences_newRecurrences}" />
       </f:facet>
 
+      <p:messages showSummary="true" styleClass="messages" 
+                  showIcon="true" closable="false" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>      
+      
       <ui:include src="/pages/agenda/event_copy.xhtml"/>
 
     </p:dialog>

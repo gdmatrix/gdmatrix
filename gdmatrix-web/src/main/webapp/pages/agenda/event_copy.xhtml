@@ -19,12 +19,14 @@
           <p:outputLabel value="#{agendaBundle.eventRecurrences_noParams}" />
         </p:outputPanel>
       </p:outputPanel>
-    </p:tab>    
-    
+    </p:tab>
+
+    <p:ajax event="tabChange" />
+
   </p:accordionPanel>
   
   <p:outputPanel styleClass="actionBar">
-    <p:commandButton action="#{eventCopyTabBean.reset}"
+    <p:commandButton action="#{eventRecurrencesTabBean.closeCopyDialog}"
                      styleClass="m-1" value="#{objectBundle.cancel}"
                      process="@this"
                      update="event_copy_dialog" global="false"

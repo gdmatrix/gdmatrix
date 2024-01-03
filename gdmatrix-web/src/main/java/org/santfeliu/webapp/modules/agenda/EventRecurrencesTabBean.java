@@ -63,6 +63,8 @@ public class EventRecurrencesTabBean extends TabBean
 
   private String deleteDateTime;
   private String deleteMode = "0";
+  
+  private boolean dialogVisible = false;
 
   @Inject
   EventObjectBean eventObjectBean;
@@ -126,6 +128,24 @@ public class EventRecurrencesTabBean extends TabBean
     this.deleteDateTime = deleteDateTime;
   }
 
+  @Override
+  public boolean isDialogVisible()
+  {
+    return dialogVisible;
+  }
+
+  public void openCopyDialog()
+  {
+    eventCopyTabBean.reset();
+    dialogVisible = true;
+  }
+  
+  public void closeCopyDialog()
+  {
+    eventCopyTabBean.reset();
+    dialogVisible = false;
+  }  
+  
   public Date getStartDateTime()
   {
     Event row = (Event) getValue("#{row}");
@@ -160,7 +180,7 @@ public class EventRecurrencesTabBean extends TabBean
     return null;
   }
 
-  public String deleteRecurrences()
+  public void deleteRecurrences()
   {
     try
     {
@@ -189,7 +209,6 @@ public class EventRecurrencesTabBean extends TabBean
       error(ex);
     }
     load();
-    return null;
   }
 
   @Override
@@ -273,11 +292,19 @@ public class EventRecurrencesTabBean extends TabBean
 
   public void copyRecurrences()
   {
-    if (eventCopyTabBean != null)
-      eventCopyTabBean.copy();
-    load();
-    eventFinderBean.outdate();
-  }
+    try
+    {
+      if (eventCopyTabBean != null)
+        eventCopyTabBean.copy();
+      load();
+      eventFinderBean.outdate();
+      dialogVisible = false;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  } 
 
   private int deleteFutureRecurrences(String deleteDateTime)
     throws Exception

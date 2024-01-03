@@ -62,10 +62,11 @@ import org.matrix.cases.CaseManagerPort;
 import org.matrix.dic.Property;
 import org.primefaces.event.TabChangeEvent;
 import org.santfeliu.agenda.client.AgendaManagerClient;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.PojoUtils;
 import org.santfeliu.util.TextUtils;
-import org.santfeliu.web.obj.PageBean;
+import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 
 /**
@@ -74,7 +75,7 @@ import org.santfeliu.webapp.modules.cases.CasesModuleBean;
  */
 @Named
 @ViewScoped
-public class EventCopyTabBean extends PageBean implements Serializable
+public class EventCopyTabBean extends WebBean implements Serializable
 {
   private int firstRowIndex = 0;
 
@@ -654,75 +655,98 @@ public class EventCopyTabBean extends PageBean implements Serializable
   }
 
   //GUI actions
-  @Override
-  public String show()
-  {
-    buildPreview();
-    return null;
-  }
-
-  public String reset()
-  {
-    resetFilter();
-    resetPreview();
-
-    return null;
-  }
-
-  public String copy()
+  public void show()
   {
     try
     {
-      if (rows != null)
-      {
-        copyRecurrences(true);
-        growl("RECURRENCES_CREATED", new Object[]{rows.size()});
-        resetPreview();
-      }
+      buildPreview();
     }
     catch (Exception ex)
     {
       error(ex);
     }
-
-    return null;
   }
 
-  public String editEvent()
+  public void reset()
   {
-    editingRow = (EventRow)getValue("#{row}");
-    Event e = new Event();
-    PojoUtils.copy(editingRow.getEvent(), e);
-    editedRow = new EventRow(e);
-
-    return null;
+    try
+    {
+      resetFilter();
+      resetPreview();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
-  public String removeEvent()
+  public void copy() throws Exception
   {
-    EventRow row = (EventRow)getValue("#{row}");
-    rows.remove(row);
-
-    return null;
+    if (rows != null)
+    {
+      copyRecurrences(true);
+      growl("RECURRENCES_CREATED", new Object[]{rows.size()});
+      resetPreview();
+    }
   }
 
-  public String storeEvent()
+  public void editEvent()
   {
-    //set room & attendants availability
-    int index = rows.indexOf(editingRow);
-    rows.get(index).checkRoomsAvailability(editingRow.getEvent());
-    if (checkAttendantsAvailability)
-      rows.get(index).checkAttendantsAvailability(editingRow.getEvent());
-    editingRow = null;
-    return null;
+    try
+    {
+      editingRow = (EventRow)getValue("#{row}");
+      Event e = new Event();
+      PojoUtils.copy(editingRow.getEvent(), e);
+      editedRow = new EventRow(e);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
-  public String cancelEvent()
+  public void removeEvent()
   {
-    int index = rows.indexOf(editingRow);
-    rows.set(index, editedRow);
-    editingRow = null;
-    return null;
+    try
+    {
+      EventRow row = (EventRow)getValue("#{row}");
+      rows.remove(row);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void storeEvent()
+  {
+    try
+    {
+      //set room & attendants availability
+      int index = rows.indexOf(editingRow);
+      rows.get(index).checkRoomsAvailability(editingRow.getEvent());
+      if (checkAttendantsAvailability)
+        rows.get(index).checkAttendantsAvailability(editingRow.getEvent());
+      editingRow = null;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void cancelEvent()
+  {
+    try
+    {
+      int index = rows.indexOf(editingRow);
+      rows.set(index, editedRow);
+      editingRow = null;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   //Other actions
@@ -826,13 +850,17 @@ public class EventCopyTabBean extends PageBean implements Serializable
           if (addMasterEventId)
           {
             //Add masterEventId property
-            Property p = new Property();
-            p.setName("masterEventId");
-            if (masterEventId == null)
-              p.getValue().add(event.getEventId());
-            else
-              p.getValue().add(masterEventId);
-            storeEvent.getProperty().add(p);
+            if (DictionaryUtils.getProperty(storeEvent, "masterEventId") == 
+              null)
+            {
+              Property p = new Property();
+              p.setName("masterEventId");
+              if (masterEventId == null)
+                p.getValue().add(event.getEventId());
+              else
+                p.getValue().add(masterEventId);
+              storeEvent.getProperty().add(p);
+            }
           }
           storeEvent = port.storeEvent(storeEvent);
           row.setEvent(storeEvent);

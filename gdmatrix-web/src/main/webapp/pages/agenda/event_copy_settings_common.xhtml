@@ -52,7 +52,8 @@
             <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_endsAfter}" />
             <p:inputNumber id="numberOfIterations"
                            value="#{eventCopyTabBean.numberOfIterations}" 
-                           inputStyleClass="inputBox" 
+                           inputStyleClass="inputBox"
+                           emptyValue="1"
                            minValue="1">
             </p:inputNumber>
             <h:outputLabel value="#{agendaBundle.eventCopy_iterations} (#{agendaBundle.eventCopy_maxIterations} #{eventCopyTabBean.maxRecurrencesCount})" />
@@ -115,7 +116,7 @@
                      value="#{agendaBundle.eventCopy_preview}"
                      styleClass="showButton"
                      update="event_copy_preview"
-                     oncomplete="PF('eventCopyPanel').unselect(0);PF('eventCopyPanel').select(1);" />
+                     oncomplete="PF('eventCopyPanel').select(1);" />
     <p:commandButton action="#{eventCopyTabBean.reset}"
                      value="#{agendaBundle.eventCopy_reset}"
                      styleClass="cancelButton"

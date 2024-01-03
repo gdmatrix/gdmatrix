@@ -27,7 +27,8 @@
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_every}" />
               <p:inputNumber id="daylyFrequencyValue"
                              value="#{eventCopyTabBean.daylyFrequencyValue}" 
-                             inputStyleClass="inputBox" 
+                             inputStyleClass="inputBox"
+                             emptyValue="1"
                              minValue="1">
               </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_days}" />
@@ -50,7 +51,8 @@
         <p:outputPanel styleClass="field-radiobutton">
           <p:outputLabel value="#{agendaBundle.eventCopy_repeatsEvery}"/>
           <p:inputNumber value="#{eventCopyTabBean.weeklyFrequencyValue}"
-                         inputStyleClass="inputBox" 
+                         inputStyleClass="inputBox"
+                         emptyValue="1"
                          minValue="1">
           </p:inputNumber>
           <p:outputLabel value="#{agendaBundle.eventCopy_weeks} "/>
@@ -84,12 +86,14 @@
               <p:radioButton for="monthlyFrequency" itemIndex="0"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_theDay}" />
               <p:inputNumber value="#{eventCopyTabBean.monthlyDayOfMonth}" 
-                             inputStyleClass="inputBox" 
+                             inputStyleClass="inputBox"
+                             emptyValue="1"
                              minValue="1">
               </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_ofEvery}" />
               <p:inputNumber value="#{eventCopyTabBean.monthlyFrequencyValue0}" 
                              inputStyleClass="inputBox" 
+                             emptyValue="1"
                              minValue="1">
               </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_months}" />
@@ -120,7 +124,8 @@
               </p:selectOneMenu>
               <h:outputText value="#{agendaBundle.eventCopy_ofEvery}" />
               <p:inputNumber value="#{eventCopyTabBean.monthlyFrequencyValue1}" 
-                             inputStyleClass="inputBox" 
+                             inputStyleClass="inputBox"
+                             emptyValue="1"
                              minValue="1">
               </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_months}" />
@@ -146,6 +151,7 @@
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_every}" />
               <p:inputNumber value="#{eventCopyTabBean.yearlyDayOfMonth}"
                              inputStyleClass="inputBox" 
+                             emptyValue="1"
                              minValue="1">
               </p:inputNumber>
               <h:outputText value="#{agendaBundle.eventCopy_of}" />
