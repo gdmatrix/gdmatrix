@@ -30,12 +30,19 @@
  */
 package org.santfeliu.webapp.modules.assistant;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -54,11 +61,22 @@ import org.santfeliu.webapp.modules.assistant.openai.MessageList;
 import org.santfeliu.webapp.modules.assistant.openai.OpenAI;
 import org.santfeliu.webapp.modules.assistant.openai.Thread;
 import org.santfeliu.webapp.modules.assistant.openai.ThreadStore;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.webapp.modules.assistant.openai.Message;
+import org.santfeliu.webapp.modules.assistant.openai.Run;
 import static org.santfeliu.webapp.modules.assistant.openai.Message.ASSISTANT_ROLE;
 import static org.santfeliu.webapp.modules.assistant.openai.Message.USER_ROLE;
-import org.santfeliu.webapp.modules.assistant.openai.Run;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import org.matrix.dic.Property;
+import org.matrix.doc.Content;
+import org.matrix.doc.Document;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
+import org.santfeliu.util.FileDataSource;
+import org.santfeliu.util.IOUtils;
+import org.santfeliu.util.MimeTypeMap;
+import org.santfeliu.util.markdown.MarkdownToHtml;
+import org.santfeliu.webapp.modules.assistant.openai.ContentItem;
+import org.santfeliu.webapp.modules.assistant.openai.Text;
 
 /**
  *
@@ -69,6 +87,12 @@ import org.santfeliu.webapp.modules.assistant.openai.Run;
 public class ThreadsBean extends WebBean
   implements Serializable, FunctionExecutor
 {
+  public static final String TEXT_PLACEHOLDER_PROPERTY = "textPlaceholder";
+  public static final String ATTACH_PLACEHOLDER_PROPERTY = "attachPlaceholder";
+
+  public static final String ATTACHMENT_DOCTYPEID_PROPERTY = "Document";
+  public static final String ATTACHMENT_THREADID_PROPERTY = "threadId";
+
   String threadId;
   Thread thread;
   String text;
@@ -77,8 +101,13 @@ public class ThreadsBean extends WebBean
   String runId;
   boolean debugEnabled = false;
   boolean assistEnabled = true;
+  String attachedFilename;
+  File attachedFile;
 
   transient OpenAI openAI = new OpenAI();
+  transient MarkdownToHtml md2html = new MarkdownToHtml();
+  transient SimpleDateFormat dateFormat;
+  transient SimpleDateFormat timeFormat;
 
   @Inject
   AssistantBean assistantBean;
@@ -89,6 +118,10 @@ public class ThreadsBean extends WebBean
     String apiKey = MatrixConfig.getProperty("openai.apiKey");
     openAI.setApiKey(apiKey);
     openAI.setFunctionExecutor(this);
+
+    Locale locale = getFacesContext().getViewRoot().getLocale();
+    dateFormat = new SimpleDateFormat("EEE, dd/MM/yyyy", locale);
+    timeFormat = new SimpleDateFormat("HH:mm:ss", locale);
   }
 
   public String getThreadId()
@@ -191,6 +224,55 @@ public class ThreadsBean extends WebBean
 
   // Messages
 
+  public String getInputPlaceholder()
+  {
+    if (attachedFilename == null)
+    {
+      return getProperty(TEXT_PLACEHOLDER_PROPERTY);
+    }
+    else
+    {
+      return getProperty(ATTACH_PLACEHOLDER_PROPERTY);
+    }
+  }
+
+  public String formatMessageDate(Message message, int index)
+  {
+    Date date = message.getCreationDate();
+    String formattedTime = timeFormat.format(date);
+
+    if (index == 0)
+    {
+      String formattedDate = dateFormat.format(date);
+      return formattedDate + " " + formattedTime;
+    }
+    else
+    {
+      Message prevMessage = messageList.getData().get(index - 1);
+      if (message.getCreatedAt() - prevMessage.getCreatedAt() > 300) // 5 min
+      {
+        String formattedDate = dateFormat.format(date);
+        return formattedDate + " " + formattedTime;
+      }
+    }
+    return formattedTime;
+  }
+
+  public String formatMessageContent(Message message)
+  {
+    List<ContentItem> content = message.getContent();
+    if (content != null && !content.isEmpty())
+    {
+      Text msgText = content.get(0).getText();
+      if (msgText != null)
+      {
+        String md = msgText.getValue();
+        return md2html.transform(md);
+      }
+    }
+    return null;
+  }
+
   public void createMessage()
   {
     try
@@ -215,7 +297,18 @@ public class ThreadsBean extends WebBean
       }
       else
       {
-        openAI.createMessage(threadId, "user", text);
+        if (attachedFile == null || !attachedFile.exists())
+        {
+          openAI.createMessage(threadId, "user", text);
+          deleteAttachedFile();
+        }
+        else
+        {
+          String docId = storeAttachedFile();
+          String attachText = text +
+            "\n(docId: [" + docId + "](/documents/" + docId + "))";
+          openAI.createMessage(threadId, "user", attachText);
+        }
         updateMessages();
         if (assistEnabled)
         {
@@ -226,7 +319,49 @@ public class ThreadsBean extends WebBean
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      error(ex);
+    }
+  }
+
+  public String getAttachedFilename()
+  {
+    return attachedFilename;
+  }
+
+  public void deleteAttachedFile()
+  {
+    attachedFilename = null;
+    if (attachedFile != null)
+    {
+      attachedFile.delete();
+    }
+  }
+
+  public void uploadFile(FileUploadEvent event)
+  {
+    UploadedFile fileToUpload = event.getFile();
+    try
+    {
+      if (attachedFile != null)
+      {
+        attachedFile.delete();
+        attachedFile = null;
+      }
+
+      attachedFilename = fileToUpload.getFileName();
+      int index = attachedFilename.lastIndexOf(".");
+      String extension = index == -1 ? "bin" :
+        attachedFilename.substring(index + 1);
+
+      attachedFile = java.io.File.createTempFile("attach", "." + extension);
+
+      try (InputStream is = fileToUpload.getInputStream())
+      {
+        IOUtils.writeToFile(is, attachedFile);
+      }
+    }
+    catch (IOException ex)
+    {
       error(ex);
     }
   }
@@ -304,6 +439,30 @@ public class ThreadsBean extends WebBean
     String userId = UserSessionBean.getCurrentInstance().getUserId();
     threadStore.setUserId(userId);
     return threadStore;
+  }
+
+  private String storeAttachedFile() throws Exception
+  {
+    Document document = new Document();
+    document.setTitle(attachedFilename);
+    document.setDocTypeId(ATTACHMENT_DOCTYPEID_PROPERTY);
+
+    Property property = new Property();
+    property.setName(ATTACHMENT_THREADID_PROPERTY);
+    property.getValue().add(threadId);
+    document.getProperty().add(property);
+
+    String contentType = MimeTypeMap.getMimeTypeMap().getContentType(attachedFile);
+
+    Content content = new Content();
+    content.setData(new DataHandler(new FileDataSource(attachedFile)));
+    content.setContentType(contentType);
+    document.setContent(content);
+    document = assistantBean.getDocPort().storeDocument(document);
+
+    deleteAttachedFile();
+
+    return document.getDocId();
   }
 
   private Message processCommand(String cmd)
@@ -397,13 +556,19 @@ public class ThreadsBean extends WebBean
 
         return Message.create(Message.USER_ROLE, cmd + "\n" + stateMessage);
       }
-      default:
+      case "#help":
+      {
         return Message.create(Message.USER_ROLE, cmd +
-          "\nUnknown command. Valid commands are:\n " +
+          "\nSupported commands:\n " +
           "#debug [on|off]\n" +
           "#assist [on|off]\n" +
           "#call functionName [argumentsMap]\n" +
-          "#log [info|fine|finer]");
+          "#log [info|fine|finer]\n" +
+          "#help");
+      }
+      default:
+        return Message.create(Message.USER_ROLE, cmd +
+          "\nUnknown command. Type #help to know what commands are supported.");
     }
   }
 

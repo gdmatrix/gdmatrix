@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.assistant.openai;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ public class Message extends OpenAIObject
 {
   public static final String USER_ROLE = "user";
   public static final String ASSISTANT_ROLE = "assistant";
-  
+
   String id;
   @SerializedName("created_at")
   long createdAt;
@@ -150,19 +151,9 @@ public class Message extends OpenAIObject
     this.metadata = metadata;
   }
 
-  public static Message create(String role, String text)
+  public Date getCreationDate()
   {
-    Message message = new Message();
-    message.setRole(role);
-    List<ContentItem> content = new ArrayList<>();
-    message.setContent(content);
-    ContentItem item = new ContentItem();
-    item.setType(ContentItem.TEXT_TYPE);
-    Text itemText = new Text();
-    itemText.setValue(text);
-    item.setText(itemText);
-    content.add(item);
-    return message;
+    return new Date(createdAt * 1000);
   }
 
   public boolean isCompleted()
@@ -181,5 +172,21 @@ public class Message extends OpenAIObject
       }
     }
     return true;
+  }
+
+  public static Message create(String role, String text)
+  {
+    Message message = new Message();
+    message.setRole(role);
+    message.setCreatedAt(System.currentTimeMillis() / 1000);
+    List<ContentItem> content = new ArrayList<>();
+    message.setContent(content);
+    ContentItem item = new ContentItem();
+    item.setType(ContentItem.TEXT_TYPE);
+    Text itemText = new Text();
+    itemText.setValue(text);
+    item.setText(itemText);
+    content.add(item);
+    return message;
   }
 }
