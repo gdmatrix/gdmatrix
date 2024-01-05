@@ -92,14 +92,15 @@
     <div class="mt-3 flex justify-content-between">
       <div class="flex-grow-0">
         <p:outputLabel for="@next"
-                       value="#{queryBundle.max_results}:"
-                        />
+                       value="#{queryBundle.max_results}:" 
+                       styleClass="output_label" />
         <p:inputText styleClass="max_results ml-2 w-6rem flex-grow-0" 
                      value="#{queryViewBean.selectedInstance.maxResults}" />
       </div>
       <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
                      styleClass="flex-grow-0">
-        <p:outputLabel for="@next" value="#{queryBundle.create_new_version}" />
+        <p:outputLabel for="@next" value="#{queryBundle.create_new_version}"
+                       styleClass="output_label" />
         <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
                         styleClass="ml-2" style="top:4px" />
       </p:outputPanel>                

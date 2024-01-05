@@ -142,7 +142,6 @@
 
 .eventRecurrences .actionsContainer
 {
-  background-color:#ffffff;
   text-align:left;
   padding:4px;
   width:100%;
@@ -254,14 +253,12 @@
 .eventRecurrences .patternContainer
 {
   width:100%;
-  background-color:#ffffff;
   text-align:left;
   padding:4px
 }
 
 .eventRecurrences .rangeContainer
 {
-  background-color:#ffffff;
   text-align:left;
   padding:4px
 }

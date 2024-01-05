@@ -76,19 +76,22 @@
     </div>
 
     <div class="mt-2">
-      <p:outputLabel for="@next" value="#{queryBundle.description}:" />
+      <p:outputLabel for="@next" value="#{queryBundle.description}:" 
+                     styleClass="output_label" />
       <p:inputTextarea value="#{queryMainBean.query.description}" 
                        styleClass="input_text query_description w-full mt-2" />
     </div>
     
     <div class="mt-2">
-      <p:outputLabel for="@next" value="#{queryBundle.label}:" />
+      <p:outputLabel for="@next" value="#{queryBundle.label}:" 
+                     styleClass="output_label" />
       <p:inputTextarea value="#{queryMainBean.query.label}" 
                        styleClass="input_text query_label w-full mt-2" />
     </div>
 
     <div class="mt-2">    
-      <p:outputLabel for="@next" value="#{queryBundle.sql_statement}:" />
+      <p:outputLabel for="@next" value="#{queryBundle.sql_statement}:" 
+                     styleClass="output_label" />
       <p:commandButton id="variables_button" type="button" 
                        icon="pi pi-question-circle"
                        styleClass="ui-button-flat" />
@@ -110,7 +113,7 @@
     </div>
     
     <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
-                   styleClass="mt-2">
+                   styleClass="output_label mt-2">
       <p:outputLabel for="@next" value="#{queryBundle.create_new_version}" />
       <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
                       styleClass="ml-2" style="top:4px" />

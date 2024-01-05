@@ -75,9 +75,8 @@
     <p:dataTable value="#{queryListBean.documents}" var="document"
                  styleClass="result_list">
       <p:column styleClass="col_icon">
-        <img src="/common/misc/images/#{queryListBean.queryUpdate ? 'update_data.png' : 'select_data.png'}"
-             alt="#{queryListBean.queryUpdate ? queryBundle.updateQuery : queryBundle.selectQuery}"
-             title="#{queryListBean.queryUpdate ? queryBundle.updateQuery : queryBundle.selectQuery}" />
+        <span class="fa #{queryListBean.queryUpdate ? 'fa-pen-to-square' : 'fa-magnifying-glass'} fa-xl" 
+              title="#{queryListBean.queryUpdate ? queryBundle.updateQuery : queryBundle.selectQuery}" />        
       </p:column>
       <p:column styleClass="col_data">
         <p:outputLabel value="#{queryListBean.queryName}" styleClass="query_name" />
