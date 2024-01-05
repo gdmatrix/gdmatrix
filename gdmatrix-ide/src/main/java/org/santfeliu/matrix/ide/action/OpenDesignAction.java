@@ -88,7 +88,7 @@ public class OpenDesignAction extends BaseAction
                 openDocument(type, ref);
               }
             }
-            else if ("dynamic".equals(formType))
+            else if ("dynamic".equals(formType) || "flex".equals(formType))
             {
               String selector =
                 (String)formNode.getParameters().get("selector");

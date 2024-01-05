@@ -125,6 +125,7 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     formTypes.add("biometric");
     formTypes.add("custom");
     formTypes.add("dynamic");
+    formTypes.add("flex");
     formTypes.add("identification");
     formTypes.add("inputNumber");
     formTypes.add("inputText");
@@ -471,6 +472,10 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     else if ("dynamic".equals(formType))
     {
       parametersEditor = new DynamicFormParametersEditor();
+    }
+    else if ("flex".equals(formType))
+    {
+      parametersEditor = new FlexFormParametersEditor();
     }
     else if ("scanDocument".equals(formType))
     {

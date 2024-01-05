@@ -74,7 +74,7 @@ public class FormNodeRenderer extends AbstractNodeRenderer
         text += ": " + ref;
       }
     }
-    else if ("dynamic".equals(formType))
+    else if ("dynamic".equals(formType) || "flex".equals(formType))
     {
       String selector = (String)formNode.getParameters().get("selector");
       if (!StringUtils.isBlank(selector))
