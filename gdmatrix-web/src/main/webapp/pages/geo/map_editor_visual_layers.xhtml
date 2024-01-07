@@ -12,7 +12,7 @@
                showGridlines="true" stripedRows="true"
                draggableRows="true" rowDragSelector=".drag"
                value="#{geoMapBean.style.layers}" var="layer">
-    <p:ajax event="rowReorder" listener="#{geoMapBean.onLayerReorder}" 
+    <p:ajax event="rowReorder" listener="#{geoMapLayersBean.onLayerReorder}" 
             update="@form:cnt:map_tabs:map_layers_table"/>
     
     <p:column headerText="Id" styleClass="code">
@@ -28,29 +28,29 @@
       #{layer.type}
     </p:column>
     <p:column headerText="Flags" styleClass="white-space-nowrap">
-      <p:commandButton action="#{geoMapBean.toggleLayerVisibility(layer)}"
-                       icon="pi #{geoMapBean.isLayerVisible(layer) ? 'pi-eye' : 'pi-eye-slash'}" 
+      <p:commandButton action="#{geoMapLayersBean.toggleLayerVisibility(layer)}"
+                       icon="pi #{geoMapLayersBean.isLayerVisible(layer) ? 'pi-eye' : 'pi-eye-slash'}" 
                        styleClass="rounded-button ui-button-flat"
-                       title="#{geoMapBean.isLayerVisible(layer) ? 'Visible' : 'Hidden'}"
+                       title="#{geoMapLayersBean.isLayerVisible(layer) ? 'Visible' : 'Hidden'}"
                        process="@this"
                        update="@this" />
-      <p:commandButton action="#{geoMapBean.toggleLayerLocatability(layer)}"
-                       icon="pi #{geoMapBean.isLayerLocatable(layer) ? 'pi-arrow-up-left' : 'pi-times'}" 
+      <p:commandButton action="#{geoMapLayersBean.toggleLayerLocatability(layer)}"
+                       icon="pi #{geoMapLayersBean.isLayerLocatable(layer) ? 'pi-arrow-up-left' : 'pi-times'}" 
                        styleClass="rounded-button ui-button-flat"
-                       title="#{geoMapBean.isLayerLocatable(layer) ? 'Locatable' : 'No locatable'}"
+                       title="#{geoMapLayersBean.isLayerLocatable(layer) ? 'Locatable' : 'No locatable'}"
                        process="@this"
                        update="@this" />
-      <p:commandButton action="#{geoMapBean.toggleLayerHighlight(layer)}"
-                       icon="pi #{geoMapBean.isLayerHighlightEnabled(layer) ? 'pi-sun' : 'pi-minus'}" 
+      <p:commandButton action="#{geoMapLayersBean.toggleLayerHighlight(layer)}"
+                       icon="pi #{geoMapLayersBean.isLayerHighlightEnabled(layer) ? 'pi-sun' : 'pi-minus'}" 
                        styleClass="rounded-button ui-button-flat"
-                       title="#{geoMapBean.isLayerHighlightEnabled(layer) ? 'Highlighted' : 'Not highlighted'}"
+                       title="#{geoMapLayersBean.isLayerHighlightEnabled(layer) ? 'Highlighted' : 'Not highlighted'}"
                        process="@this"
                        update="@this" />
     </p:column>
 
     <p:column styleClass="w-2 text-right white-space-nowrap">
       <f:facet name="header">
-        <p:commandButton action="#{geoMapBean.addLayer}"
+        <p:commandButton action="#{geoMapLayersBean.addLayer}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
                          styleClass="rounded-button ui-button-flat"
@@ -61,7 +61,7 @@
                          />
       </f:facet>
       <span class="drag pi pi-arrows-v p-2" />
-      <p:commandButton action="#{geoMapBean.editLayer(layer)}"
+      <p:commandButton action="#{geoMapLayersBean.editLayer(layer)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"
@@ -70,7 +70,7 @@
                        resetValues="true"
                        oncomplete="PF('mapLayersDialog').show()"
                        />
-      <p:commandButton action="#{geoMapBean.copyLayer(layer)}"
+      <p:commandButton action="#{geoMapLayersBean.copyLayer(layer)}"
                        icon="pi pi-copy"
                        alt="#{objectBundle.copy}" title="#{objectBundle.copy}"
                        styleClass="rounded-button ui-button-flat"
@@ -79,7 +79,7 @@
                        resetValues="true"
                        oncomplete="PF('mapLayersDialog').show()"
                        />
-      <p:commandButton action="#{geoMapBean.removeLayer(layer)}"
+      <p:commandButton action="#{geoMapLayersBean.removeLayer(layer)}"
                        process="@this"
                        update="@form:cnt:map_tabs"
                        resetValues="true"
@@ -110,79 +110,71 @@
     </p:messages>
     
     <h:panelGroup styleClass="mt-2" id="map_layers_panel" layout="block"
-                  rendered="#{geoMapBean.editingLayer != null}">
+                  rendered="#{geoMapLayersBean.editingLayer != null}">
 
       <div class="ui-fluid formgrid grid">
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Id" indicateRequired="true" />
-          <p:inputText value="#{geoMapBean.editingLayer.id}" 
+          <p:inputText value="#{geoMapLayersBean.editingLayer.id}" 
                        required="#{not empty param['mainform:map_tabs:accept_layer']}" 
                        requiredMessage="Layer Id is mandatory"
-                       readonly="#{not geoMapBean.isNewItem()}"
+                       readonly="#{not geoMapLayersBean.isNewLayer()}"
                        styleClass="code" 
                        pt:spellcheck="false" />
         </div>
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Label" />
-          <p:inputText value="#{geoMapBean.editingLayer.label}" />
+          <p:inputText value="#{geoMapLayersBean.editingLayer.label}" />
         </div>
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Source" indicateRequired="true" />
-          <p:selectOneMenu value="#{geoMapBean.editingLayer.source}"
+          <p:selectOneMenu value="#{geoMapLayersBean.editingLayer.source}"
                            required="#{not empty param['mainform:map_tabs:accept_layer']}"
                            requiredMessage="Layer source is required">
             <p:ajax event="valueChange" update="layer_type layer_options"
-                    listener="#{geoMapBean.updateLayerPanel()}" />
+                    listener="#{geoMapLayersBean.updateLayerPanel()}" />
             <f:selectItem itemValue="" itemLabel="" />
-            <f:selectItems value="#{geoMapBean.sourceIds}" var="sourceName"                       
+            <f:selectItems value="#{geoMapSourcesBean.sourceIds}" var="sourceName"                       
                            itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.style.sources[sourceName].type})" />
           </p:selectOneMenu>
         </div>
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Type" indicateRequired="true" />
-          <p:selectOneMenu id="layer_type" value="#{geoMapBean.editingLayer.type}" 
+          <p:selectOneMenu id="layer_type" value="#{geoMapLayersBean.editingLayer.type}" 
                            required="#{not empty param['mainform:map_tabs:accept_layer']}"
                            requiredMessage="Layer type is mandatory">
             <p:ajax event="valueChange" update="layer_options" 
-                    listener="#{geoMapBean.updateLayerPanel()}" />
+                    listener="#{geoMapLayersBean.updateLayerPanel()}" />
             <f:selectItem itemValue="" itemLabel="" />
-            <f:selectItem itemValue="raster" itemLabel="raster" itemDisabled="" />
-            <f:selectItem itemValue="circle" itemLabel="circle" />
-            <f:selectItem itemValue="symbol" itemLabel="symbol" />
-            <f:selectItem itemValue="line" itemLabel="line" />
-            <f:selectItem itemValue="fill" itemLabel="fill" />
-            <f:selectItem itemValue="fill-extrusion" itemLabel="fill-extrusion" />
-            <f:selectItem itemValue="heatmap" itemLabel="heatmap" />
-            <f:selectItem itemValue="hillshade" itemLabel="hillshade" />
-            <f:selectItem itemValue="background" itemLabel="background" />
+            <f:selectItems value="#{geoMapLayersBean.layerTypeSelectItems}" />
           </p:selectOneMenu>
         </div>
         
-        <div class="field col-12 md:col-6">
+        <div class="field col-6">
           <p:outputLabel value="Visible" for="@next" />
-          <p:toggleSwitch value="#{geoMapBean.editingLayer.visible}" 
+          <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.visible}" 
                           styleClass="vertical-align-middle ml-2"/>
         </div>
         
-        <div class="field col-12 md:col-6">
+        <div class="field col-6">
           <p:outputLabel value="Locatable" for="@next" />
-          <p:toggleSwitch value="#{geoMapBean.editingLayer.locatable}" 
+          <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.locatable}" 
                           styleClass="vertical-align-middle ml-2" />
         </div>
         
         <div class="field col-12">
           <p:tabView id="layer_options" dynamic="true" 
-                     activeIndex="#{geoMapBean.activeLayerTabIndex}">
+                     activeIndex="#{geoMapLayersBean.activeLayerTabIndex}">
             
             <p:tab>
               <f:facet name="title">
                 <span class="fa fa-paintbrush mr-2"/>Paint
               </f:facet>
-              <gdm:codemirror value="#{geoMapBean.jsonPaint}" language="json">
+              <gdm:codemirror value="#{geoMapLayersBean.jsonPaint}" language="json">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>
             </p:tab>
@@ -191,7 +183,7 @@
               <f:facet name="title">
                 <span class="fa fa-up-down-left-right mr-2"/>Layout
               </f:facet>
-              <gdm:codemirror value="#{geoMapBean.jsonLayout}" language="json">
+              <gdm:codemirror value="#{geoMapLayersBean.jsonLayout}" language="json">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>
@@ -200,19 +192,19 @@
               <f:facet name="title">
                 <span class="pi pi-filter mr-2"/>Filter
               </f:facet>
-              <gdm:codemirror value="#{geoMapBean.jsonFilter}" language="json">
+              <gdm:codemirror value="#{geoMapLayersBean.jsonFilter}" language="json">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>
 
-            <p:tab disabled="#{geoMapBean.editingLayer.type != 'raster'}">
+            <p:tab disabled="#{geoMapLayersBean.editingLayer.type != 'raster'}">
               <f:facet name="title">
                 <span class="pi pi-image mr-2"/>Raster
               </f:facet>
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Layers (separated by ,)" />
-                  <p:autoComplete value="#{geoMapBean.editingLayer.layers}"
+                  <p:autoComplete value="#{geoMapLayersBean.editingLayer.layers}"
                                   maxResults="50" var="layerName" 
                                   widgetVar="layerLayers"
                                   itemLabel="#{layerName}" itemValue="#{layerName}" 
@@ -221,7 +213,7 @@
                                   pt:spellcheck="false"
                                   oninput="acLayerOnInput('layerLayers')"
                                   onchange="acLayerOnChange('layerLayers')"
-                                  completeMethod="#{geoMapBean.completeLayerLayer}">
+                                  completeMethod="#{geoMapLayersBean.completeLayerLayer}">
                     <p:ajax event="change" process="@this" update="cql_filter" />
                     <p:column>
                       #{layerName}
@@ -232,9 +224,9 @@
                   <p:outputLabel for="@next" value="CQL filter (separated by ;)" />
                   <div class="ui-inputgroup">
                     <p:inputText id="cql_filter"
-                                 value="#{geoMapBean.editingLayer.cqlFilter}"
+                                 value="#{geoMapLayersBean.editingLayer.cqlFilter}"
                                  pt:spellcheck="false"
-                                 onfocus="CQLAssistant.show('#{geoMapBean.editingLayer.layers}', this)"
+                                 onfocus="CQLAssistant.show('#{geoMapLayersBean.editingLayer.layers}', this)"
                                  onblur="CQLAssistant.hide()"
                                  styleClass="code" />
                     <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
@@ -242,15 +234,15 @@
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Styles (separated by ,) " />
-                  <p:inputText value="#{geoMapBean.editingLayer.styles}" 
+                  <p:inputText value="#{geoMapLayersBean.editingLayer.styles}" 
                                pt:spellcheck="false"                               
                                styleClass="code" />
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="SLD" />
                   <div class="ui-inputgroup">
-                    <p:inputText value="#{geoMapBean.editingLayerSldName}" readonly="true" styleClass="w-auto" />
-                    <p:commandButton icon="pi pi-palette" action="#{geoMapBean.editLayerSld}" 
+                    <p:inputText value="#{geoMapLayersBean.editingLayerSldName}" readonly="true" styleClass="w-auto" />
+                    <p:commandButton icon="pi pi-palette" action="#{geoMapLayersBean.editLayerSld}" 
                                      process="@form:cnt:map_tabs:map_layers_panel" 
                                      update="@form:cnt" 
                                      oncomplete="PF('mapLayersDialog').hide()" />
@@ -266,7 +258,7 @@
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel value="Enabled" for="@next" />
-                  <p:toggleSwitch value="#{geoMapBean.editingLayer.highlightEnabled}"
+                  <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.highlightEnabled}"
                                   styleClass="vertical-align-middle ml-2"/>
                 </div> 
               </div>
@@ -281,16 +273,18 @@
     <f:facet name="footer">
       <div class="field col-12 text-right">
         <p:commandButton id="accept_layer"
-                         action="#{geoMapBean.acceptLayer}"
+                         action="#{geoMapLayersBean.acceptLayer}"
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:map_layers_dialog"
                          update="map_layers_panel map_layers_table"
+                         icon="pi pi-check"
                          oncomplete="closePFDialog('mapLayersDialog')"
                          />
-        <p:commandButton action="#{geoMapBean.cancelLayer}"
+        <p:commandButton action="#{geoMapLayersBean.cancelLayer}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="@form:cnt:map_tabs:map_layers_dialog" global="false"
+                         icon="pi pi-times"
                          onclick="PF('mapLayersDialog').hide()"/>
       </div>
     </f:facet>

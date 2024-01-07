@@ -59,8 +59,8 @@ public class GeoServiceBean implements Serializable
 
       URL url = new URL(requestUrl);
       URLConnection conn = url.openConnection();
-      conn.setConnectTimeout(10000);
-      conn.setReadTimeout(10000);
+      conn.setConnectTimeout(60000);
+      conn.setReadTimeout(60000);
       try (InputStream is = conn.getInputStream())
       {
         ServiceCapabilitiesReader reader = new ServiceCapabilitiesReader();
@@ -68,7 +68,6 @@ public class GeoServiceBean implements Serializable
       }
       cache.put(serviceUrl, capabilities);
     }
-    System.out.println(capabilities);
     return capabilities;
   }
 

@@ -10,7 +10,7 @@
 
   <p:dataTable id="map_sources_table" size="small" 
                showGridlines="true" stripedRows="true"
-               value="#{geoMapBean.sourceIds}" var="sourceId">
+               value="#{geoMapSourcesBean.sourceIds}" var="sourceId">
     <p:column headerText="Id">
       <span class="code">#{sourceId}</span>
     </p:column>
@@ -18,7 +18,7 @@
       #{geoMapBean.style.sources[sourceId].type}
     </p:column>
     <p:column headerText="Service - Layer / Tiles / Url / Data">
-      <span class="code">#{geoMapBean.getSourceInfo(sourceId)}</span>
+      <span class="code">#{geoMapSourcesBean.getSourceInfo(sourceId)}</span>
     </p:column>
     <p:column headerText="minzoom">
       #{geoMapBean.style.sources[sourceId].minzoom}
@@ -31,7 +31,7 @@
     </p:column>
     <p:column styleClass="w-2 text-right white-space-nowrap">
       <f:facet name="header">
-        <p:commandButton action="#{geoMapBean.addSource}"
+        <p:commandButton action="#{geoMapSourcesBean.addSource}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
                          styleClass="rounded-button ui-button-flat"
@@ -41,7 +41,7 @@
                          oncomplete="PF('mapSourcesDialog').show()"
                          />
       </f:facet>
-      <p:commandButton action="#{geoMapBean.editSource(sourceId)}"
+      <p:commandButton action="#{geoMapSourcesBean.editSource(sourceId)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"
@@ -50,7 +50,7 @@
                        resetValues="true"
                        oncomplete="PF('mapSourcesDialog').show()"
                        />
-      <p:commandButton action="#{geoMapBean.copySource(sourceId)}"
+      <p:commandButton action="#{geoMapSourcesBean.copySource(sourceId)}"
                        icon="pi pi-copy"
                        alt="#{objectBundle.copy}" title="#{objectBundle.copy}"
                        styleClass="rounded-button ui-button-flat"
@@ -59,7 +59,7 @@
                        resetValues="true"
                        oncomplete="PF('mapSourcesDialog').show()"
                        />
-      <p:commandButton action="#{geoMapBean.removeSource(sourceId)}"
+      <p:commandButton action="#{geoMapSourcesBean.removeSource(sourceId)}"
                        process="@this"
                        update="@form:cnt:map_tabs"
                        resetValues="true"
@@ -89,11 +89,11 @@
     </p:messages>
     
     <h:panelGroup styleClass="mt-2" id="map_sources_panel" layout="block"
-                  rendered="#{geoMapBean.editingSource != null}">
+                  rendered="#{geoMapSourcesBean.editingSource != null}">
       
       <h:panelGroup id="cql_assistant">
         <script>
-          CQLAssistant.serviceUrl = '#{geoMapBean.sourceServiceUrl}';
+          CQLAssistant.serviceUrl = '#{geoMapSourcesBean.sourceServiceUrl}';
         </script>
       </h:panelGroup>
 
@@ -101,49 +101,44 @@
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Id" indicateRequired="true" />
-          <p:inputText value="#{geoMapBean.editingId}" 
+          <p:inputText value="#{geoMapSourcesBean.editingSourceId}" 
                        required="#{not empty param['mainform:map_tabs:accept_source']}"
                        requiredMessage="Source Id is mandatory"
-                       readonly="#{not geoMapBean.isNewItem()}"
+                       readonly="#{not geoMapSourcesBean.isNewSource()}"
                        styleClass="code" 
                        pt:spellcheck="false" />
         </div>
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Type" indicateRequired="true" />
-          <p:selectOneMenu value="#{geoMapBean.editingSource.type}"
+          <p:selectOneMenu value="#{geoMapSourcesBean.editingSource.type}"
                            required="#{not empty param['mainform:map_tabs:accept_source']}"
                            requiredMessage="Source type is mandatory">
-            <p:ajax event="change" listener="#{geoMapBean.updateSourcePanel()}"
+            <p:ajax event="change" listener="#{geoMapSourcesBean.updateSourcePanel()}"
                     process="@form:cnt:map_tabs:map_sources_panel"
                     update="@form:cnt:map_tabs:map_sources_panel" />
             <f:selectItem itemValue="" itemLabel="" />
-            <f:selectItem itemValue="vector" itemLabel="vector" />
-            <f:selectItem itemValue="raster" itemLabel="raster" />
-            <f:selectItem itemValue="raster-dem" itemLabel="raster-dem" />
-            <f:selectItem itemValue="geojson" itemLabel="geojson" />
-            <f:selectItem itemValue="image" itemLabel="image" />
-            <f:selectItem itemValue="video" itemLabel="video" />
+            <f:selectItems value="#{geoMapSourcesBean.sourceTypeSelectItems}" />
           </p:selectOneMenu>
         </div>
 
         <div class="field col-12">
           <p:outputLabel for="@next" value="Attribution" />
-          <p:inputText value="#{geoMapBean.editingSource.attribution}" />
+          <p:inputText value="#{geoMapSourcesBean.editingSource.attribution}" />
         </div>
 
         <div class="field col-12">
           <p:tabView id="source_data" dynamic="true" 
-                     activeIndex="#{geoMapBean.activeSourceTabIndex}">
+                     activeIndex="#{geoMapSourcesBean.activeSourceTabIndex}">
             <p:tab title="OGC Service" 
-                   disabled="#{geoMapBean.editingSource.type == 'image' or 
-                               geoMapBean.editingSource.type == 'video'}">
+                   disabled="#{geoMapSourcesBean.editingSource.type == 'image' or 
+                               geoMapSourcesBean.editingSource.type == 'video'}">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12 md:col-6">
                   <p:outputLabel for="@next" value="Service" />
-                  <p:selectOneMenu value="#{geoMapBean.editingServiceParameters.service}">
+                  <p:selectOneMenu value="#{geoMapSourcesBean.editingServiceParameters.service}">
                     <f:selectItem itemValue="" itemLabel="" />
-                    <f:selectItems value="#{geoMapBean.serviceIds}" var="svc" 
+                    <f:selectItems value="#{geoMapServicesBean.serviceIds}" var="svc" 
                                    itemValue="#{svc}" itemLabel="#{geoMapBean.services[svc].description}" />
                     <p:ajax event="change" process="@this" update="@parent:@parent:@parent:cql_assistant" />
                   </p:selectOneMenu>
@@ -151,16 +146,16 @@
                 <div class="field col-12 md:col-6">
                   <p:outputLabel for="@next" value="SLD" />
                   <div class="ui-inputgroup">
-                    <p:autoComplete value="#{geoMapBean.editingServiceParameters.sldName}"
+                    <p:autoComplete value="#{geoMapSourcesBean.editingServiceParameters.sldName}"
                                     maxResults="50" var="sldName" minQueryLength="2" 
                                     itemLabel="#{sldName}" itemValue="#{sldName}"
                                     scrollHeight="200"
-                                    completeMethod="#{geoMapBean.completeSldName}">                
+                                    completeMethod="#{geoMapSourcesBean.completeSldName}">                
                       <p:column>
                         #{sldName}
                       </p:column>
                     </p:autoComplete>
-                    <p:commandButton icon="pi pi-palette" action="#{geoMapBean.editSourceSld}" 
+                    <p:commandButton icon="pi pi-palette" action="#{geoMapSourcesBean.editSourceSld}" 
                                      process="@form:cnt:map_tabs:map_sources_panel" 
                                      update="@form:cnt" 
                                      oncomplete="PF('mapSourcesDialog').hide()" />
@@ -168,7 +163,7 @@
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Layers (separated by ,)" />
-                  <p:autoComplete value="#{geoMapBean.editingServiceParameters.layers}"
+                  <p:autoComplete value="#{geoMapSourcesBean.editingServiceParameters.layers}"
                                   maxResults="50" var="layerName" 
                                   widgetVar="sourceLayers"
                                   itemLabel="#{layerName}" itemValue="#{layerName}" 
@@ -177,7 +172,7 @@
                                   pt:spellcheck="false"
                                   oninput="acLayerOnInput('sourceLayers')"
                                   onchange="acLayerOnChange('sourceLayers')"
-                                  completeMethod="#{geoMapBean.completeSourceLayer}">
+                                  completeMethod="#{geoMapSourcesBean.completeSourceLayer}">
                     <p:ajax event="change" process="@this" update="cql_filter" />
                     <p:column>
                       #{layerName}
@@ -188,9 +183,9 @@
                   <p:outputLabel for="@next" value="CQL filter (separated by ;)" />
                   <div class="ui-inputgroup">
                     <p:inputText id="cql_filter"
-                                 value="#{geoMapBean.editingServiceParameters.cqlFilter}"
+                                 value="#{geoMapSourcesBean.editingServiceParameters.cqlFilter}"
                                  pt:spellcheck="false"
-                                 onfocus="CQLAssistant.show('#{geoMapBean.editingServiceParameters.layers}', this)"
+                                 onfocus="CQLAssistant.show('#{geoMapSourcesBean.editingServiceParameters.layers}', this)"
                                  onblur="CQLAssistant.hide()"
                                  styleClass="code" />
                     <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
@@ -198,54 +193,54 @@
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Styles (separated by ,) " />
-                  <p:inputText value="#{geoMapBean.editingServiceParameters.styles}" 
+                  <p:inputText value="#{geoMapSourcesBean.editingServiceParameters.styles}" 
                                pt:spellcheck="false"
                                styleClass="code" />
                 </div>
                 <div class="field col-6">
                   <p:outputLabel for="@next" value="Format" />
-                  <p:selectOneMenu value="#{geoMapBean.editingServiceParameters.format}">
+                  <p:selectOneMenu value="#{geoMapSourcesBean.editingServiceParameters.format}">
                     <f:selectItem itemValue="" itemLabel="" />
-                    <f:selectItem itemValue="image/png" itemLabel="PNG" itemDisabled="#{geoMapBean.editingSource.type == 'geojson'}" />
-                    <f:selectItem itemValue="image/jpeg" itemLabel="JPEG" itemDisabled="#{geoMapBean.editingSource.type == 'geojson'}" />
-                    <f:selectItem itemValue="image/gif" itemLabel="GIF" itemDisabled="#{geoMapBean.editingSource.type == 'geojson'}" />
-                    <f:selectItem itemValue="application/json" itemLabel="GEOJSON" itemDisabled="#{geoMapBean.editingSource.type == 'raster'}" />
+                    <f:selectItem itemValue="image/png" itemLabel="PNG" itemDisabled="#{geoMapSourcesBean.editingSource.type == 'geojson'}" />
+                    <f:selectItem itemValue="image/jpeg" itemLabel="JPEG" itemDisabled="#{geoMapSourcesBean.editingSource.type == 'geojson'}" />
+                    <f:selectItem itemValue="image/gif" itemLabel="GIF" itemDisabled="#{geoMapSourcesBean.editingSource.type == 'geojson'}" />
+                    <f:selectItem itemValue="application/json" itemLabel="GEOJSON" itemDisabled="#{geoMapSourcesBean.editingSource.type == 'raster'}" />
                   </p:selectOneMenu>
                 </div>
                 <div class="field col-6">
                   <p:outputLabel for="@next" value="Buffer size" />
-                  <p:spinner value="#{geoMapBean.editingServiceParameters.buffer}" />
+                  <p:spinner value="#{geoMapSourcesBean.editingServiceParameters.buffer}" />
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Transparent" />
-                  <p:toggleSwitch value="#{geoMapBean.editingServiceParameters.transparent}"
+                  <p:toggleSwitch value="#{geoMapSourcesBean.editingServiceParameters.transparent}"
                                   styleClass="vertical-align-middle ml-2" />
                 </div>
               </div>
             </p:tab>
             <p:tab title="Tiles"
-                   disabled="#{geoMapBean.editingSource.type != 'vector' and 
-                               geoMapBean.editingSource.type != 'raster' and 
-                               geoMapBean.editingSource.type != 'raster-dem'}">
+                   disabled="#{geoMapSourcesBean.editingSource.type != 'vector' and 
+                               geoMapSourcesBean.editingSource.type != 'raster' and 
+                               geoMapSourcesBean.editingSource.type != 'raster-dem'}">
               <p:dataTable id="source_tile_table" 
-                           value="#{geoMapBean.editingSource.tiles}" var="tile"
+                           value="#{geoMapSourcesBean.editingSource.tiles}" var="tile"
                            rowIndexVar="tileIndex" size="small">
                 <p:column styleClass="w-full">
                   <f:facet name="header">
                     Url
                   </f:facet>
-                  <p:inputText value="#{geoMapBean.editingSource.tiles[tileIndex]}"
+                  <p:inputText value="#{geoMapSourcesBean.editingSource.tiles[tileIndex]}"
                                styleClass="code" />
                 </p:column>
                 <p:column styleClass="w-0 text-right">
                   <f:facet name="header">
-                    <p:commandButton action="#{geoMapBean.addSourceTile}"
+                    <p:commandButton action="#{geoMapSourcesBean.addSourceTile}"
                                      process="@form:cnt:map_tabs:map_sources_panel" 
                                      update="@form:cnt:map_tabs:map_sources_panel"
                                      icon="ui-icon pi pi-plus-circle"
                                      styleClass="rounded-button ui-button-flat" />
                   </f:facet>
-                  <p:commandButton action="#{geoMapBean.removeSourceTile(tileIndex)}"
+                  <p:commandButton action="#{geoMapSourcesBean.removeSourceTile(tileIndex)}"
                                    process="@form:cnt:map_tabs:map_sources_panel" 
                                    update="@form:cnt:map_tabs:map_sources_panel"
                                    icon="ui-icon pi pi-trash"
@@ -255,45 +250,45 @@
             </p:tab>
 
             <p:tab title="TileJSON Url"
-                   disabled="#{geoMapBean.editingSource.type != 'vector' and 
-                               geoMapBean.editingSource.type != 'raster' and 
-                               geoMapBean.editingSource.type != 'raster-dem'}">
+                   disabled="#{geoMapSourcesBean.editingSource.type != 'vector' and 
+                               geoMapSourcesBean.editingSource.type != 'raster' and 
+                               geoMapSourcesBean.editingSource.type != 'raster-dem'}">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Url" />
-                  <p:inputText value="#{geoMapBean.editingSource.url}" styleClass="code" />
+                  <p:inputText value="#{geoMapSourcesBean.editingSource.url}" styleClass="code" />
                 </div>
               </div>
             </p:tab>
 
             <p:tab title="Geojson data" 
-                   disabled="#{geoMapBean.editingSource.type != 'geojson'}">
+                   disabled="#{geoMapSourcesBean.editingSource.type != 'geojson'}">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Url" />
-                  <p:inputText value="#{geoMapBean.sourceDataUrl}" 
+                  <p:inputText value="#{geoMapSourcesBean.sourceDataUrl}" 
                                styleClass="code" />
                 </div>
               </div>
             </p:tab>
 
             <p:tab title="Image" 
-                   disabled="#{geoMapBean.editingSource.type != 'image'}">
+                   disabled="#{geoMapSourcesBean.editingSource.type != 'image'}">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Url" />
-                  <p:inputText value="#{geoMapBean.editingSource.url}" 
+                  <p:inputText value="#{geoMapSourcesBean.editingSource.url}" 
                                styleClass="code" />
                 </div>
               </div>
             </p:tab>
 
             <p:tab title="Video" 
-                   disabled="#{geoMapBean.editingSource.type != 'video'}">
+                   disabled="#{geoMapSourcesBean.editingSource.type != 'video'}">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="Urls" />
-                  <h:outputText value="#{geoMapBean.editingSource.urls}" />
+                  <h:outputText value="#{geoMapSourcesBean.editingSource.urls}" />
                 </div>
               </div>
             </p:tab>            
@@ -304,14 +299,14 @@
         <p:fieldset id="tile_params" 
                     legend="Tile parameters" styleClass="field col-12 pt-4"
                     toggleable="true" collapsed="false" 
-                    rendered="#{geoMapBean.editingSource.type == 'vector' or 
-                                geoMapBean.editingSource.type == 'raster' or
-                                geoMapBean.editingSource.type == 'raster-dem'}">
+                    rendered="#{geoMapSourcesBean.editingSource.type == 'vector' or 
+                                geoMapSourcesBean.editingSource.type == 'raster' or
+                                geoMapSourcesBean.editingSource.type == 'raster-dem'}">
           <div class="ui-fluid formgrid grid">      
 
             <div class="field col-6">
               <p:outputLabel for="@next" value="Scheme" />
-              <p:selectOneMenu value="#{geoMapBean.editingSource.scheme}">
+              <p:selectOneMenu value="#{geoMapSourcesBean.editingSource.scheme}">
                 <f:selectItem itemValue="" itemLabel="" />
                 <f:selectItem itemValue="xyz" itemLabel="xyz (Slippy map tilenames)" />
                 <f:selectItem itemValue="tms" itemLabel="tms (OSGeo spec)" />
@@ -320,17 +315,17 @@
 
             <div class="field col-6">
               <p:outputLabel for="@next" value="tileSize" />
-              <p:spinner value="#{geoMapBean.editingSource.tileSize}" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.tileSize}" />
             </div>
 
             <div class="field col-6">
               <p:outputLabel for="@next" value="Minzoom" />
-              <p:spinner value="#{geoMapBean.editingSource.minzoom}" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.minzoom}" />
             </div>
 
             <div class="field col-6">
               <p:outputLabel for="@next" value="Maxzoom" />
-              <p:spinner value="#{geoMapBean.editingSource.maxzoom}" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.maxzoom}" />
             </div>
           </div>
         </p:fieldset>
@@ -338,14 +333,14 @@
         <p:fieldset id="dem_params"
                     legend="DEM parameters" styleClass="field col-12 pt-4"
                     toggleable="true" collapsed="false" 
-                    rendered="#{geoMapBean.editingSource.type == 'raster-dem'}">
+                    rendered="#{geoMapSourcesBean.editingSource.type == 'raster-dem'}">
         
           <div class="ui-fluid formgrid grid">      
           
             <div class="field col-12">
               <p:outputLabel for="@next" value="DEM Encoding" />
               <div>
-                <p:selectOneMenu value="#{geoMapBean.editingSource.encoding}">
+                <p:selectOneMenu value="#{geoMapSourcesBean.editingSource.encoding}">
                   <f:selectItem itemValue="" itemLabel="" />
                   <f:selectItem itemValue="mapbox" itemLabel="mapbox (Mapbox terrain RGB)" />
                   <f:selectItem itemValue="terranium" itemLabel="terranium (Terraing format PNG)" />
@@ -356,22 +351,22 @@
 
             <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Base shift" />
-              <p:spinner value="#{geoMapBean.editingSource.baseShift}" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.baseShift}" />
             </div>
 
             <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Red factor" />
-              <p:spinner value="#{geoMapBean.editingSource.redFactor}" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.redFactor}" />
             </div>          
 
             <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Green factor" />
-              <p:spinner value="#{geoMapBean.editingSource.greenFactor}" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.greenFactor}" />
             </div>          
 
             <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Blue factor" />
-              <p:spinner value="#{geoMapBean.editingSource.blueFactor}" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.blueFactor}" />
             </div>
           </div>
         </p:fieldset>
@@ -381,16 +376,18 @@
     <f:facet name="footer">
       <div class="field col-12 text-right">
         <p:commandButton id="accept_source"
-                         action="#{geoMapBean.acceptSource}"
+                         action="#{geoMapSourcesBean.acceptSource}"
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:map_sources_dialog"
                          update="map_sources_panel map_sources_table"
+                         icon="pi pi-check"
                          oncomplete="closePFDialog('mapSourcesDialog')"
                          />
-        <p:commandButton action="#{geoMapBean.cancelSource}"
+        <p:commandButton action="#{geoMapSourcesBean.cancelSource}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="@form:cnt:map_tabs:map_sources_dialog" global="false"
+                         icon="pi pi-times"
                          onclick="PF('mapSourcesDialog').hide()"/>
       </div>
     </f:facet>

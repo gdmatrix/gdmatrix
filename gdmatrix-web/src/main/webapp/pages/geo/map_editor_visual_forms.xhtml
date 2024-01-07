@@ -7,7 +7,7 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <p:dataTable id="map_forms_table" value="#{geoMapBean.layerForms}"
+  <p:dataTable id="map_forms_table" value="#{geoMapLayerFormsBean.layerForms}"
                var="form" stripedRows="true" size="small"
                draggableRows="true" rowDragSelector=".drag"
                resizableColumns="false" showGridlines="true">
@@ -24,7 +24,7 @@
 
     <p:column styleClass="col-2 text-right white-space-nowrap">
       <f:facet name="header">
-        <p:commandButton action="#{geoMapBean.addLayerForm}"
+        <p:commandButton action="#{geoMapLayerFormsBean.addLayerForm}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
                          styleClass="rounded-button ui-button-flat"
@@ -35,7 +35,7 @@
                          />
       </f:facet>
       <span class="drag pi pi-arrows-v p-2" />
-      <p:commandButton action="#{geoMapBean.editLayerForm(form)}"
+      <p:commandButton action="#{geoMapLayerFormsBean.editLayerForm(form)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"
@@ -44,7 +44,7 @@
                        resetValues="true"
                        oncomplete="PF('mapFormsDialog').show()"
                        />
-      <p:commandButton action="#{geoMapBean.removeLayerForm(form)}"
+      <p:commandButton action="#{geoMapLayerFormsBean.removeLayerForm(form)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"
                        icon="pi pi-trash"
@@ -70,19 +70,19 @@
     </p:messages>
 
     <h:panelGroup styleClass="mt-2" id="map_forms_panel" layout="block"
-                  rendered="#{geoMapBean.editingLayerForm != null}">
+                  rendered="#{geoMapLayerFormsBean.editingLayerForm != null}">
 
       <div class="ui-fluid formgrid grid">
         <div class="field col-12">
           <p:outputLabel for="@next" value="Layer name" indicateRequired="true" />
-          <p:inputText value="#{geoMapBean.editingLayerForm.layer}" 
+          <p:inputText value="#{geoMapLayerFormsBean.editingLayerForm.layer}" 
                        required="#{not empty param['mainform:map_tabs:accept_form']}"
                        requiredMessage="Layer name is required" />
         </div>
 
         <div class="field col-12">
           <p:outputLabel for="@next" value="Form selector" />
-          <p:inputText value="#{geoMapBean.editingLayerForm.formSelector}" />
+          <p:inputText value="#{geoMapLayerFormsBean.editingLayerForm.formSelector}" />
         </div>        
       </div>
     </h:panelGroup>
@@ -90,16 +90,18 @@
     <f:facet name="footer">
       <div class="field col-12 text-right">
         <p:commandButton id="accept_form"
-                         action="#{geoMapBean.acceptLayerForm}"
+                         action="#{geoMapLayerFormsBean.acceptLayerForm}"
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="@form:cnt:map_tabs:map_forms_dialog"
                          update="map_forms_panel map_forms_table"
+                         icon="pi pi-check"
                          oncomplete="closePFDialog('mapFormsDialog')"
                          />
-        <p:commandButton action="#{geoMapBean.cancelLayerForm}"
+        <p:commandButton action="#{geoMapLayerFormsBean.cancelLayerForm}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="@form:cnt:map_tabs:map_forms_dialog" global="false"
+                         icon="pi pi-times"
                          onclick="PF('mapFormsDialog').hide()"/>
       </div>
     </f:facet>

@@ -31,10 +31,7 @@
 package org.santfeliu.webapp.modules.geo;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,25 +39,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
-import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.security.AccessControl;
-import org.matrix.security.Role;
-import org.matrix.security.RoleFilter;
-import org.primefaces.event.ReorderEvent;
-import org.santfeliu.faces.maplibre.model.Layer;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
 import org.santfeliu.faces.maplibre.model.Source;
-import org.santfeliu.security.web.SecurityConfigBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
@@ -70,16 +58,8 @@ import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
 import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
-import org.primefaces.model.file.UploadedFile;
-import org.santfeliu.util.IOUtils;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapCategory;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
-import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
-import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
-import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
@@ -96,31 +76,7 @@ public class GeoMapBean extends WebBean implements Serializable
   private String metadataFormSelector;
   private boolean mapNameChanged;
   private int activeTabIndex;
-  private int activeSourceTabIndex;
-  private int activeLayerTabIndex;
-  private transient List<String> serviceIds;
-  private transient List<String> sourceIds;
-  private transient List<String> layerIds;
-  private String editingId;
-  private boolean newItem;
-  private ServiceParameters editingServiceParameters;
-  private Service editingService;
-  private Source editingSource;
-  private Layer editingLayer;
-  private LayerForm editingLayerForm;
-  private LegendGroup editingLegendGroup;
-  private LegendLayer editingLegendLayer;
-  private PrintReport editingPrintReport;
-  private LegendTreeNode legendTreeRoot;
-  private List<TreeNode> legendSelection;
-  private List<TreeNode> legendCut;
-  private String reportToUpload;
-  private String roleToAdd;
-  private transient ServiceCapabilities serviceCapabilities;
-  private transient String capabilitiesServiceId;
-
-  @Inject
-  GeoServiceBean geoServiceBean;
+  private boolean dialogVisible;
 
   @PostConstruct
   public void init()
@@ -216,30 +172,14 @@ public class GeoMapBean extends WebBean implements Serializable
     this.activeTabIndex = activeTabIndex;
   }
 
-  public String getEditingId()
-  {
-    return editingId;
-  }
-
-  public void setEditingId(String editingId)
-  {
-    this.editingId = editingId;
-  }
-
-  public boolean isNewItem()
-  {
-    return newItem;
-  }
-
   public boolean isDialogVisible()
   {
-    return editingService != null ||
-           editingSource != null ||
-           editingLayer != null ||
-           editingLayerForm != null ||
-           editingLegendGroup != null ||
-           editingLegendLayer != null ||
-           editingPrintReport != null;
+    return dialogVisible;
+  }
+
+  public void setDialogVisible(boolean visible)
+  {
+    this.dialogVisible = visible;
   }
 
   public void onMapNameChanged(AjaxBehaviorEvent event)
@@ -247,7 +187,7 @@ public class GeoMapBean extends WebBean implements Serializable
     this.mapNameChanged = true;
   }
 
-  // services ---------------------------------------------
+  // services
 
   public Map<String, Service> getServices()
   {
@@ -256,174 +196,24 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public Map<String, Service> getServices(boolean neverNull)
   {
+    Map<String, Object> metadata = getStyle().getMetadata();
+
     Map<String, Service> services =
-      (Map<String, Service>)getStyle().getMetadata().get("services");
+      (Map<String, Service>)metadata.get("services");
     if (services == null && neverNull)
     {
       services = new HashMap<>();
-      getStyle().getMetadata().put("services", services);
+      metadata.put("services", services);
     }
     return services;
   }
 
-  public ServiceCapabilities getServiceCapabilities()
-  {
-    return serviceCapabilities;
-  }
-
-  public String getCapabilitiesServiceId()
-  {
-    return capabilitiesServiceId;
-  }
-
-  public void loadServiceCapabilities(String serviceId)
-  {
-    try
-    {
-      capabilitiesServiceId = serviceId;
-      Service service = getServices().get(capabilitiesServiceId);
-      serviceCapabilities =
-        geoServiceBean.getServiceCapabilities(service.getUrl(), true);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public List<String> getServiceIds()
-  {
-    if (serviceIds == null)
-    {
-      serviceIds = new ArrayList<>(getServices().keySet());
-      Collections.sort(serviceIds);
-    }
-    return serviceIds;
-  }
-
-  public Service getEditingService()
-  {
-    return editingService;
-  }
-
-  public void addService()
-  {
-    editingId = null;
-    newItem = true;
-    editingService = new Service();
-  }
-
-  public void editService(String serviceId)
-  {
-    editingId = serviceId;
-    editingService = cloneObject(getServices().get(serviceId), Service.class);
-  }
-
-  public void copyService(String serviceId)
-  {
-    editingId = null;
-    newItem = true;
-    editingService = cloneObject(getServices().get(serviceId), Service.class);
-  }
-
-  public void removeService(String serviceId)
-  {
-    editingId = null;
-    serviceIds = null;
-    // remove cascade sources
-    List<String> sourceIdList = new ArrayList<>(getStyle().getSources().keySet());
-    for (String sourceId : sourceIdList)
-    {
-      ServiceParameters serviceParameters = getServiceParameters(sourceId);
-      if (serviceParameters != null)
-      {
-        if (serviceId.equals(serviceParameters.getService()))
-        {
-          removeSource(sourceId);
-        }
-      }
-    }
-    getServices().remove(serviceId);
-  }
-
-  public void acceptService()
-  {
-    if (newItem)
-    {
-      if (getServices().containsKey(editingId))
-      {
-        error("DUPLICATED_ID");
-        return;
-      }
-      else
-      {
-        newItem = false;
-      }
-    }
-    getServices().put(editingId, editingService);
-
-    editingId = null;
-    editingService = null;
-    serviceIds = null;
-  }
-
-  public void cancelService()
-  {
-    editingId = null;
-    editingService = null;
-    newItem = false;
-  }
-
-  // sources ---------------------------------------------
-
-  public int getActiveSourceTabIndex()
-  {
-    return activeSourceTabIndex;
-  }
-
-  public void setActiveSourceTabIndex(int activeSourceTabIndex)
-  {
-    this.activeSourceTabIndex = activeSourceTabIndex;
-  }
-
-  public List<String> getSourceIds()
-  {
-    if (sourceIds == null)
-    {
-      sourceIds = new ArrayList<>(getStyle().getSources().keySet());
-      Collections.sort(sourceIds);
-    }
-    return sourceIds;
-  }
-
-  public String getSourceInfo(String sourceId)
-  {
-    Source source = getStyle().getSources().get(sourceId);
-    ServiceParameters serviceParameters = getServiceParameters(sourceId);
-
-    if (serviceParameters != null)
-    {
-      String serviceId = serviceParameters.getService();
-      String layers = serviceParameters.getLayers();
-      return serviceId + " - " + layers;
-    }
-    else if (!source.getTiles().isEmpty())
-    {
-      return source.getTiles().toString();
-    }
-    else if (!isBlank(source.getUrl()))
-    {
-      return source.getUrl();
-    }
-    else
-    {
-      return String.valueOf(source.getData());
-    }
-  }
+  // service parameters
 
   public Map<String, ServiceParameters> getServiceParametersMap()
   {
     Map<String, Object> metadata = getStyle().getMetadata();
+
     Map<String, ServiceParameters> map =
       (Map<String, ServiceParameters>)metadata.get("serviceParameters");
     if (map == null)
@@ -445,908 +235,6 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     Map<String, ServiceParameters> map = getServiceParametersMap();
     map.put(sourceIds, serviceParameters);
-  }
-
-  public String getSourceDataUrl()
-  {
-    return editingSource.getData() instanceof String ?
-      (String)editingSource.getData() : null;
-  }
-
-  public void setSourceDataUrl(String url)
-  {
-    if (!isBlank(url))
-    {
-      editingSource.setData(url);
-    }
-  }
-
-  public String getSourceServiceUrl()
-  {
-    ServiceParameters serviceParameters = getServiceParameters(editingId);
-    if (serviceParameters == null) return null;
-
-    String serviceId = serviceParameters.getService();
-    if (isBlank(serviceId)) return null;
-
-    Service service = getServices().get(serviceId);
-    if (service == null) return null;
-
-    return service.getUrl();
-  }
-
-  public List<String> completeSourceLayer(String text)
-  {
-    return completeLayer(editingServiceParameters, text);
-  }
-
-  public List<String> completeSldName(String text)
-  {
-    try
-    {
-      SldStore sldStore = getSldStore();
-      return sldStore.findSld(text);
-    }
-    catch (Exception ex)
-    {
-      // ignore;
-      return Collections.EMPTY_LIST;
-    }
-  }
-
-  public Source getEditingSource()
-  {
-    return editingSource;
-  }
-
-  public ServiceParameters getEditingServiceParameters()
-  {
-    return editingServiceParameters;
-  }
-
-  public void addSourceTile()
-  {
-    editingSource.getTiles().add("");
-  }
-
-  public void removeSourceTile(int index)
-  {
-    editingSource.getTiles().remove(index);
-  }
-
-  public void editSourceSld()
-  {
-    try
-    {
-      getStyle().getSources().put(editingId, editingSource);
-      setServiceParameters(editingId, editingServiceParameters);
-      String sourceId = editingId;
-
-      editingId = null;
-      editingSource = null;
-      editingServiceParameters = null;
-      sourceIds = null;
-
-      editSld(sourceId, null, null);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void addSource()
-  {
-    editingId = null;
-    newItem = true;
-    editingSource = new Source();
-    editingServiceParameters = new ServiceParameters();
-    activeSourceTabIndex = 0;
-  }
-
-  public void editSource(String sourceId)
-  {
-    editingId = sourceId;
-    editingSource =
-      cloneObject(getStyle().getSources().get(sourceId), Source.class);
-    editingServiceParameters = getServiceParameters(sourceId);
-    editingServiceParameters = editingServiceParameters == null ?
-      new ServiceParameters() :
-      cloneObject(editingServiceParameters, ServiceParameters.class);
-    updateSourcePanel();
-  }
-
-  public void copySource(String sourceId)
-  {
-    editingId = null;
-    newItem = true;
-    editingSource =
-      cloneObject(getStyle().getSources().get(sourceId), Source.class);
-    editingServiceParameters = getServiceParameters(sourceId);
-    editingServiceParameters = editingServiceParameters == null ?
-      new ServiceParameters() :
-      cloneObject(editingServiceParameters, ServiceParameters.class);
-    updateSourcePanel();
-  }
-
-  public void removeSource(String sourceId)
-  {
-    editingId = null;
-    sourceIds = null;
-    List<Layer> layers = new ArrayList<>(getStyle().getLayers());
-    for (Layer layer : layers)
-    {
-      if (sourceId.equals(layer.getSource()))
-      {
-        removeLayer(layer);
-      }
-    }
-    getStyle().getSources().remove(sourceId);
-    getServiceParametersMap().remove(sourceId);
-  }
-
-  public void acceptSource()
-  {
-    if (newItem)
-    {
-      if (getStyle().getSources().containsKey(editingId))
-      {
-        error("DUPLICATED_ID");
-        return;
-      }
-      else
-      {
-        newItem = false;
-      }
-    }
-    getStyle().getSources().put(editingId, editingSource);
-    setServiceParameters(editingId, editingServiceParameters);
-
-    editingId = null;
-    editingSource = null;
-    editingServiceParameters = null;
-    sourceIds = null;
-  }
-
-  public void cancelSource()
-  {
-    editingId = null;
-    editingSource = null;
-    newItem = false;
-  }
-
-  public void updateSourcePanel()
-  {
-    if (editingSource != null)
-    {
-      if ("image".equals(editingSource.getType()))
-      {
-        activeSourceTabIndex = 4;
-        return;
-      }
-
-      if ("video".equals(editingSource.getType()))
-      {
-        activeSourceTabIndex = 5;
-        return;
-      }
-
-      if ("vector".equals(editingSource.getType()))
-      {
-        if (editingSource.getUrl() != null)
-        {
-          activeSourceTabIndex = 2;
-          return;
-        }
-      }
-
-      if ("raster".equals(editingSource.getType()) ||
-          "raster-dem".equals(editingSource.getType()))
-      {
-        ServiceParameters serviceParameters = getEditingServiceParameters();
-        if (serviceParameters != null)
-        {
-          if ("application/json".equals(serviceParameters.getFormat()))
-          {
-            serviceParameters.setFormat("image/png");
-          }
-        }
-      }
-
-      if ("geojson".equals(editingSource.getType()))
-      {
-        ServiceParameters serviceParameters = getEditingServiceParameters();
-        if (serviceParameters != null)
-        {
-          serviceParameters.setFormat("application/json");
-        }
-
-        if (editingSource.getData() != null)
-        {
-          activeSourceTabIndex = 3;
-          return;
-        }
-      }
-
-      if (editingSource.getTiles() != null)
-      {
-        if (!editingSource.getTiles().isEmpty())
-        {
-          activeSourceTabIndex = 1;
-          return;
-        }
-      }
-
-      activeSourceTabIndex = 0;
-    }
-  }
-
-  // Layers ----------------------------------------------------
-
-  public int getActiveLayerTabIndex()
-  {
-    return activeLayerTabIndex;
-  }
-
-  public void setActiveLayerTabIndex(int activeLayerTabIndex)
-  {
-    this.activeLayerTabIndex = activeLayerTabIndex;
-  }
-
-  public List<String> getLayerIds()
-  {
-    if (layerIds == null)
-    {
-      layerIds = getStyle().getLayers().stream().map(l -> l.getId()).
-        collect(Collectors.toList());
-      Collections.sort(layerIds);
-    }
-    return layerIds;
-  }
-
-  public Layer getEditingLayer()
-  {
-    return editingLayer;
-  }
-
-  public String getEditingLayerSldName()
-  {
-    String sourceId = editingLayer.getSource();
-    if (sourceId == null) return null;
-    ServiceParameters serviceParameters = getServiceParameters(sourceId);
-    if (serviceParameters == null) return null;
-
-    return serviceParameters.getSldName();
-  }
-
-  public void toggleLayerVisibility(Layer layer)
-  {
-    layer.setVisible(!layer.isVisible());
-  }
-
-  public boolean isLayerVisible(Layer layer)
-  {
-    return layer.isVisible();
-  }
-
-  public void toggleLayerLocatability(Layer layer)
-  {
-    layer.setLocatable(!layer.isLocatable());
-  }
-
-  public boolean isLayerLocatable(Layer layer)
-  {
-    return layer.isLocatable();
-  }
-
-  public void toggleLayerHighlight(Layer layer)
-  {
-    layer.setHighlightEnabled(!layer.isHighlightEnabled());
-  }
-
-  public boolean isLayerHighlightEnabled(Layer layer)
-  {
-    return layer.isHighlightEnabled();
-  }
-
-  public String getJsonPaint()
-  {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    return gson.toJson(editingLayer.getPaint());
-  }
-
-  public void setJsonPaint(String json)
-  {
-    Gson gson = new Gson();
-    editingLayer.setPaint(gson.fromJson(json, Map.class));
-  }
-
-  public String getJsonLayout()
-  {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    return gson.toJson(editingLayer.getLayout());
-  }
-
-  public void setJsonLayout(String json)
-  {
-    Gson gson = new Gson();
-    editingLayer.setLayout(gson.fromJson(json, Map.class));
-  }
-
-  public String getJsonFilter()
-  {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    return gson.toJson(editingLayer.getFilter());
-  }
-
-  public void setJsonFilter(String json)
-  {
-    Gson gson = new Gson();
-    editingLayer.setFilter(gson.fromJson(json, Object.class));
-  }
-
-  public void onLayerReorder(ReorderEvent event)
-  {
-  }
-
-  public List<String> completeLayerLayer(String text)
-  {
-    String sourceId = editingLayer.getSource();
-    ServiceParameters serviceParameters = getServiceParameters(sourceId);
-    if (serviceParameters == null) return Collections.EMPTY_LIST;
-    return completeLayer(serviceParameters, text);
-  }
-
-  public void editLayerSld()
-  {
-    try
-    {
-      String sourceId = editingLayer.getSource();
-      editSld(sourceId, editingLayer.getLayers(), editingLayer.getStyles());
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void updateLayerPanel()
-  {
-    if (editingLayer != null)
-    {
-      String sourceId = editingLayer.getSource();
-      Source source = getStyle().getSources().get(sourceId);
-      if (source != null)
-      {
-        String sourceType = source.getType();
-        if ("raster".equals(sourceType))
-        {
-          editingLayer.setType("raster");
-        }
-        else if ("vector".equals(sourceType) || "geojson".equals(sourceType))
-        {
-          String layerType = editingLayer.getType();
-          if ("raster".equals(layerType))
-          {
-            editingLayer.setType(null);
-          }
-        }
-      }
-      activeLayerTabIndex = 0;
-    }
-  }
-
-  public void addLayer()
-  {
-    editingLayer = new Layer();
-    newItem = true;
-  }
-
-  public void editLayer(Layer layer)
-  {
-    editingLayer = cloneObject(layer, Layer.class);
-    updateLayerPanel();
-  }
-
-  public void copyLayer(Layer layer)
-  {
-    editingLayer = cloneObject(layer, Layer.class);
-    editingLayer.setId(null);
-    newItem = true;
-    updateLayerPanel();
-  }
-
-  public void removeLayer(Layer layer)
-  {
-    removeLegendLayerNode(getLegendTreeRoot(), layer.getId());
-
-    getStyle().getLayers().remove(layer);
-  }
-
-  public void acceptLayer()
-  {
-    if (newItem)
-    {
-      String layerId = editingLayer.getId();
-      if (getStyle().getLayers().stream().anyMatch(l -> l.getId().equals(layerId)))
-      {
-        error("DUPLICATED_ID");
-        return;
-      }
-      else
-      {
-        newItem = false;
-        getStyle().getLayers().add(editingLayer);
-      }
-    }
-    else
-    {
-      for (int i = 0; i < getStyle().getLayers().size(); i++)
-      {
-        if (getStyle().getLayers().get(i).getId().equals(editingLayer.getId()))
-        {
-          getStyle().getLayers().set(i, editingLayer);
-          break;
-        }
-      }
-    }
-    editingLayer = null;
-  }
-
-  public void cancelLayer()
-  {
-    editingLayer = null;
-    newItem = false;
-  }
-
-  // Legend ----------------------------------------------------
-
-  public TreeNode getLegendTreeRoot()
-  {
-    if (legendTreeRoot == null)
-    {
-      legendTreeRoot = new LegendTreeNode("group", null, null);
-
-      LegendGroup legendGroup =
-        (LegendGroup)getStyle().getMetadata().get("legend");
-      if (legendGroup == null)
-      {
-        legendGroup = new LegendGroup();
-        legendGroup.setLabel("Legend");
-        getStyle().getMetadata().put("legend", legendGroup);
-      }
-      populateLegendItem(legendGroup, legendTreeRoot);
-    }
-    return legendTreeRoot;
-  }
-
-  public List<TreeNode> getLegendSelection()
-  {
-    return legendSelection;
-  }
-
-  public void setLegendSelection(List<TreeNode> legendSelection)
-  {
-    this.legendSelection = legendSelection;
-  }
-
-  public void cutLegendNodes()
-  {
-    legendCut = legendSelection;
-  }
-
-  public boolean isLegendNodeSelected(String type)
-  {
-    if (legendSelection != null && legendSelection.size() == 1)
-    {
-      LegendTreeNode node = (LegendTreeNode)legendSelection.get(0);
-      return node.getType().equals(type);
-    }
-    return false;
-  }
-
-  public LegendGroup getEditingLegendGroup()
-  {
-    return editingLegendGroup;
-  }
-
-  public LegendLayer getEditingLegendLayer()
-  {
-    return editingLegendLayer;
-  }
-
-  public void addLegendGroup()
-  {
-    if (legendSelection != null && legendSelection.size() == 1)
-    {
-      editingLegendGroup = new LegendGroup();
-      editingLegendGroup.setMode(LegendGroup.MULTIPLE);
-      editingLegendGroup.setLabel("Group");
-      newItem = true;
-    }
-  }
-
-  public void addLegendLayer()
-  {
-    if (legendSelection != null && legendSelection.size() == 1)
-    {
-      editingLegendLayer = new LegendLayer();
-      newItem = true;
-    }
-  }
-
-  public void editLegendGroup()
-  {
-    editingLegendGroup = (LegendGroup)legendSelection.get(0).getData();
-  }
-
-  public void editLegendLayer()
-  {
-    editingLegendLayer = (LegendLayer)legendSelection.get(0).getData();
-  }
-
-  public void acceptLegendGroup()
-  {
-    if (newItem)
-    {
-      LegendTreeNode groupNode = new LegendTreeNode(editingLegendGroup);
-      LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
-      if (targetNode.isGroupNode())
-      {
-        targetNode.add(groupNode);
-      }
-      newItem = false;
-    }
-    editingLegendGroup = null;
-  }
-
-  public void cancelLegendGroup()
-  {
-    editingLegendGroup = null;
-    newItem = false;
-  }
-
-  public void acceptLegendLayer()
-  {
-    if (isBlank(editingLegendLayer.getLabel()))
-    {
-      Optional<Layer> layer = getStyle().getLayers().stream()
-        .filter(l -> l.getId().equals(editingLegendLayer.getLayerId()))
-        .findAny();
-      if (layer.isPresent())
-      {
-        editingLegendLayer.setLabel(layer.get().getLabel());
-      }
-      else
-      {
-        editingLegendLayer.setLabel(editingLegendLayer.getLayerId());
-      }
-    }
-    if (newItem)
-    {
-      LegendTreeNode layerNode = new LegendTreeNode(editingLegendLayer);
-      LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
-      if (targetNode.isGroupNode())
-      {
-        targetNode.add(layerNode);
-      }
-      newItem = false;
-    }
-    editingLegendLayer = null;
-  }
-
-  public void cancelLegendLayer()
-  {
-    editingLegendLayer = null;
-  }
-
-  public void removeLegendLayerNode(TreeNode<LegendItem> node, String layerId)
-  {
-    LegendItem item = node.getData();
-    if (item instanceof LegendLayer)
-    {
-      LegendLayer legendLayer = (LegendLayer)item;
-      if (layerId.equals(legendLayer.getLayerId()))
-      {
-        TreeNode parentNode = node.getParent();
-        if (parentNode != null)
-        {
-          parentNode.getChildren().remove(node);
-        }
-      }
-    }
-    else
-    {
-      List<TreeNode<LegendItem>> children = new ArrayList<>(node.getChildren());
-      for (TreeNode<LegendItem> childNode : children)
-      {
-        removeLegendLayerNode(childNode, layerId);
-      }
-    }
-  }
-
-  public void removeLegendNodes()
-  {
-    for (TreeNode node : legendSelection)
-    {
-      TreeNode parentNode = node.getParent();
-      if (parentNode != null)
-      {
-        parentNode.getChildren().remove(node);
-      }
-    }
-  }
-
-  public boolean isTopLegendNode()
-  {
-    if (legendSelection == null || legendSelection.size() != 1) return false;
-
-    return legendSelection.get(0).getParent() == this.legendTreeRoot;
-  }
-
-  public boolean isCutLegendNode(TreeNode node)
-  {
-    if (legendCut == null || node == null) return false;
-
-    if (legendCut.contains(node)) return true;
-
-    return isCutLegendNode(node.getParent());
-  }
-
-  public boolean isLegendPasteEnabled()
-  {
-    if (legendCut == null) return false;
-    if (legendSelection == null) return false;
-    if (legendSelection.size() != 1) return false;
-    LegendTreeNode node = (LegendTreeNode)legendSelection.get(0);
-    return node.isGroupNode();
-  }
-
-  public void pasteLegendNodes()
-  {
-    if (legendCut != null && legendSelection != null)
-    {
-      if (legendSelection.size() == 1 && !legendCut.isEmpty())
-      {
-        LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
-        if (targetNode.isGroupNode())
-        {
-          for (TreeNode node : legendCut)
-          {
-            LegendTreeNode sourceNode = (LegendTreeNode)node;
-            if (targetNode != sourceNode &&
-                !targetNode.isDescendant(sourceNode))
-            {
-              targetNode.add(sourceNode);
-            }
-          }
-        }
-      }
-      legendCut = null;
-    }
-  }
-
-  // LayerForm ----------------------------------------------------
-
-  public List<LayerForm> getLayerForms()
-  {
-    List<LayerForm> layerForms =
-      (List<LayerForm>)getStyle().getMetadata().get("layerForms");
-    if (layerForms == null)
-    {
-      layerForms = new ArrayList<>();
-      getStyle().getMetadata().put("layerForms", layerForms);
-    }
-    return layerForms;
-  }
-
-  public LayerForm getEditingLayerForm()
-  {
-    return editingLayerForm;
-  }
-
-  public void addLayerForm()
-  {
-    editingLayerForm = new LayerForm();
-  }
-
-  public void editLayerForm(LayerForm form)
-  {
-    editingLayerForm = form;
-  }
-
-  public void removeLayerForm(LayerForm form)
-  {
-    getLayerForms().remove(form);
-  }
-
-  public void acceptLayerForm()
-  {
-    if (!getLayerForms().contains(editingLayerForm))
-    {
-      getLayerForms().add(editingLayerForm);
-    }
-    editingLayerForm = null;
-  }
-
-  public void cancelLayerForm()
-  {
-    editingLayerForm = null;
-  }
-
-  // PrintReports ----------------------------------------------------
-
-  public List<PrintReport> getPrintReports()
-  {
-    List<PrintReport> printReports =
-      (List<PrintReport>)getStyle().getMetadata().get("printReports");
-    if (printReports == null)
-    {
-      printReports = new ArrayList<>();
-      getStyle().getMetadata().put("printReports", printReports);
-    }
-    return printReports;
-  }
-
-  public PrintReport getEditingPrintReport()
-  {
-    return editingPrintReport;
-  }
-
-  public void setPrintReportToUpload(String reportName)
-  {
-    reportToUpload = reportName;
-  }
-
-  public void uploadPrintReportFile(FileUploadEvent event)
-  {
-    UploadedFile reportFileToUpload = event.getFile();
-    if (reportToUpload != null)
-    {
-      File fileToStore = null;
-      try
-      {
-        fileToStore = File.createTempFile("template", ".svg");
-        try (InputStream is = reportFileToUpload.getInputStream())
-        {
-          IOUtils.writeToFile(is, fileToStore);
-        }
-        getSvgStore().storeSvg(reportToUpload, fileToStore);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      finally
-      {
-        try
-        {
-          if (fileToStore != null) fileToStore.delete();
-          reportFileToUpload.delete();
-        }
-        catch (Exception ex2)
-        {
-        }
-      }
-    }
-  }
-
-  public void addPrintReport()
-  {
-    editingPrintReport = new PrintReport();
-  }
-
-  public void editPrintReport(PrintReport printReport)
-  {
-    editingPrintReport = printReport;
-  }
-
-  public void removePrintReport(PrintReport printReport)
-  {
-    getPrintReports().remove(printReport);
-  }
-
-  public void acceptPrintReport()
-  {
-    if (!getPrintReports().contains(editingPrintReport))
-    {
-      getPrintReports().add(editingPrintReport);
-    }
-    editingPrintReport = null;
-  }
-
-  public void cancelPrintReport()
-  {
-    editingPrintReport = null;
-  }
-
-  public String getPrintReportUrl(String reportName)
-  {
-    return getSvgStore().getReportUrl(reportName);
-  }
-
-  public boolean isSvgPrintReport(String reportName)
-  {
-    return getSvgStore().getReportUrl(reportName).endsWith(".svg");
-  }
-
-  public boolean isUploadablePrintReport(String reportName)
-  {
-    String url = getSvgStore().getReportUrl(reportName);
-    return url.endsWith(".svg") || url.equals("#");
-  }
-
-  public List<String> completeReportName(String text)
-  {
-    try
-    {
-      SvgStore svgStore = getSvgStore();
-      return svgStore.findSvg(text);
-    }
-    catch (Exception ex)
-    {
-      // ignore;
-      return Collections.EMPTY_LIST;
-    }
-  }
-
-  // Roles --------------------------------------------------------
-
-  public String getRoleToAdd()
-  {
-    return roleToAdd;
-  }
-
-  public void setRoleToAdd(String roleToAdd)
-  {
-    this.roleToAdd = roleToAdd;
-  }
-
-  public void updateAccessControl(AccessControl ac, String action)
-  {
-    ac.setAction(action);
-  }
-
-  public void removeAccessControl(AccessControl ac)
-  {
-    mapDocument.getAccessControl().remove(ac);
-  }
-
-  public void addAccessControl()
-  {
-    if (isBlank(roleToAdd)) return;
-
-    long count = mapDocument.getAccessControl().stream()
-      .filter(ac -> ac.getRoleId().equals(roleToAdd)).count();
-
-    if (count == 0)
-    {
-      AccessControl ac = new AccessControl();
-      ac.setRoleId(roleToAdd);
-      ac.setAction(READ_ACTION);
-      mapDocument.getAccessControl().add(ac);
-    }
-  }
-
-  public List<String> findRoles(String text)
-  {
-    List<String> roleIds = new ArrayList<>();
-    try
-    {
-      RoleFilter filter = new RoleFilter();
-      filter.setName(text);
-      List<Role> roles = SecurityConfigBean.getPort(true).findRoles(filter);
-      for (Role role : roles)
-      {
-        roleIds.add(role.getRoleId());
-      }
-      Collections.sort(roleIds);
-    }
-    catch (Exception ex)
-    {
-      // ignore
-    }
-    return roleIds;
   }
 
   // MapOptions
@@ -1518,9 +406,9 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
-  // private -------------------------------------------------------
+  // non public methods
 
-  private void editSld(String sourceId, String layers, String styles)
+  void editSld(String sourceId, String layers, String styles)
   {
     try
     {
@@ -1572,8 +460,7 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
-  private List<String> completeLayer(ServiceParameters serviceParameters,
-    String text)
+  List<String> completeLayer(ServiceParameters serviceParameters, String text)
   {
     try
     {
@@ -1583,10 +470,14 @@ public class GeoMapBean extends WebBean implements Serializable
 
       String serviceId = serviceParameters.getService();
       Service service = getServices().get(serviceId);
-
       String serviceUrl = service.getUrl();
+
+      GeoServiceBean geoServiceBean =
+        CDI.current().select(GeoServiceBean.class).get();
+
       ServiceCapabilities capabilities =
         geoServiceBean.getServiceCapabilities(serviceUrl, false);
+
       List<ServiceCapabilities.Layer> layers = capabilities.getLayers();
       List<String> layerNames = new ArrayList<>();
       for (ServiceCapabilities.Layer layer : layers)
@@ -1604,7 +495,7 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
-  private void updateSldUrls()
+  void updateSldUrls()
   {
     SldStore sldStore = getSldStore();
     Map<String, Source> sourceMap = getStyle().getSources();
@@ -1623,14 +514,14 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
-  private <T> T cloneObject(T object, Class<T> type)
+  <T> T cloneObject(T object, Class<T> type)
   {
     Gson gson = new Gson();
     String json = gson.toJson(object);
     return gson.fromJson(json, type);
   }
 
-  private MapStore getMapStore()
+  MapStore getMapStore()
   {
     MapStore mapStore = CDI.current().select(MapStore.class).get();
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -1638,7 +529,7 @@ public class GeoMapBean extends WebBean implements Serializable
     return mapStore;
   }
 
-  private SldStore getSldStore()
+  SldStore getSldStore()
   {
     SldStore sldStore = CDI.current().select(SldStore.class).get();
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -1646,7 +537,7 @@ public class GeoMapBean extends WebBean implements Serializable
     return sldStore;
   }
 
-  private SvgStore getSvgStore()
+  SvgStore getSvgStore()
   {
     SvgStore svgStore = CDI.current().select(SvgStore.class).get();
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -1694,111 +585,15 @@ public class GeoMapBean extends WebBean implements Serializable
       }
     }
 
-    Map legendProperties =
-      (Map)getStyle().getMetadata().get("legend");
+    Map legendProperties = (Map)getStyle().getMetadata().get("legend");
     if (legendProperties != null &&
         "group".equals(legendProperties.get("type")))
     {
       getStyle().getMetadata().put("legend", new LegendGroup(legendProperties));
     }
-    legendTreeRoot = null;
-  }
+    GeoMapLegendBean geoMapLegendBean =
+      CDI.current().select(GeoMapLegendBean.class).get();
 
-  private LegendTreeNode populateLegendItem(LegendItem legendItem,
-    LegendTreeNode parentTreeNode)
-  {
-    LegendTreeNode node = new LegendTreeNode(legendItem);
-    node.setType(legendItem.getType());
-    node.setExpanded(true);
-    if (parentTreeNode != null)
-    {
-      parentTreeNode.getChildren().add(node);
-    }
-    if (legendItem instanceof LegendGroup)
-    {
-      LegendGroup group = (LegendGroup)legendItem;
-      for (LegendItem item : group.getChildren())
-      {
-        populateLegendItem(item, node);
-      }
-    }
-    return node;
-  }
-
-  static public class LegendTreeNode extends DefaultTreeNode<LegendItem>
-  {
-    public LegendTreeNode()
-    {
-    }
-
-    public LegendTreeNode(LegendItem data)
-    {
-      this(data, null);
-    }
-
-    public LegendTreeNode(LegendItem data, TreeNode parent)
-    {
-      this(data.getType(), data, parent);
-    }
-
-    public LegendTreeNode(String type, LegendItem data, TreeNode parent)
-    {
-      super(type, data, parent);
-    }
-
-    public boolean isGroupNode()
-    {
-      return "group".equals(getType());
-    }
-
-    public void add(LegendTreeNode legendNode)
-    {
-      getChildren().add(legendNode);
-      LegendGroup legendGroup = (LegendGroup)getData();
-      legendGroup.getChildren().add(legendNode.getData());
-      setExpanded(true);
-    }
-
-    public void add(int index, LegendTreeNode legendNode)
-    {
-      getChildren().add(index, legendNode);
-      LegendGroup legendGroup = (LegendGroup)getData();
-      legendGroup.getChildren().add(index, legendNode.getData());
-      setExpanded(true);
-    }
-
-    public boolean isDescendant(TreeNode ancestor)
-    {
-      TreeNode node = getParent();
-      while (node != null && node != ancestor)
-      {
-        node = node.getParent();
-      }
-      return node == ancestor;
-    }
-
-    @Override
-    public void clearParent()
-    {
-      LegendTreeNode oldParentNode = (LegendTreeNode)getParent();
-      if (oldParentNode != null)
-      {
-        LegendGroup legendGroup = (LegendGroup)oldParentNode.getData();
-        LegendItem legendItem = (LegendItem)getData();
-        legendGroup.getChildren().remove(legendItem);
-      }
-      super.clearParent();
-    }
-
-    @Override
-    public String toString()
-    {
-      LegendItem legendItem = getData();
-      if (legendItem == null) return null;
-
-      String type = legendItem.getType();
-      String label = legendItem.getLabel();
-      return type + ": " + label;
-    }
+    geoMapLegendBean.updateLegendTreeRoot();
   }
 }

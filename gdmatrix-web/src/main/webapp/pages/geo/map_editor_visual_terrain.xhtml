@@ -13,7 +13,7 @@
       <p:outputLabel for="@next" value="Source (raster-dem)" />
       <p:selectOneMenu value="#{geoMapBean.style.terrain.source}">
         <f:selectItem itemValue="" itemLabel="" />
-        <f:selectItems value="#{geoMapBean.sourceIds}" var="sourceName" 
+        <f:selectItems value="#{geoMapSourcesBean.terrainSourceIds}" var="sourceName" 
                        itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.style.sources[sourceName].type})" />
       </p:selectOneMenu>
     </div>

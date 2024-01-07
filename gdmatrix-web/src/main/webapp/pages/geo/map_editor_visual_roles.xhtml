@@ -24,15 +24,15 @@
     
     <p:column styleClass="col-2 text-right white-space-nowrap">
       <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat">
-        <p:menuitem value="#{geoBundle.acl_Read}" action="#{geoMapBean.updateAccessControl(ac, 'Read')}"
+        <p:menuitem value="#{geoBundle.acl_Read}" action="#{geoMapRolesBean.updateAccessControl(ac, 'Read')}"
                        process="@this" update="@namingcontainer" />
-        <p:menuitem value="#{geoBundle.acl_Write}" action="#{geoMapBean.updateAccessControl(ac, 'Write')}"
+        <p:menuitem value="#{geoBundle.acl_Write}" action="#{geoMapRolesBean.updateAccessControl(ac, 'Write')}"
                        process="@this" update="@namingcontainer" />
-        <p:menuitem value="#{geoBundle.acl_Delete}" action="#{geoMapBean.updateAccessControl(ac, 'Delete')}"
+        <p:menuitem value="#{geoBundle.acl_Delete}" action="#{geoMapRolesBean.updateAccessControl(ac, 'Delete')}"
                        process="@this" update="@namingcontainer" />
       </p:menuButton>
 
-      <p:commandButton action="#{geoMapBean.removeAccessControl(ac)}"
+      <p:commandButton action="#{geoMapRolesBean.removeAccessControl(ac)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"
                        icon="pi pi-trash"
@@ -45,16 +45,16 @@
       <div class="flex align-items-center">
         <p:outputLabel value="RoleId:" for="@next" styleClass="m-2" />
         <div class="ui-inputgroup">
-          <p:autoComplete value="#{geoMapBean.roleToAdd}" var="roleId"
+          <p:autoComplete value="#{geoMapRolesBean.roleToAdd}" var="roleId"
                           maxResults="20" minQueryLength="1" 
                           itemLabel="#{roleId}" itemValue="#{roleId}" 
                           scrollHeight="200"
-                          completeMethod="#{geoMapBean.findRoles}">
+                          completeMethod="#{geoMapRolesBean.findRoles}">
             <p:column>
               #{roleId}
             </p:column>
           </p:autoComplete>
-          <p:commandButton action="#{geoMapBean.addAccessControl()}"
+          <p:commandButton action="#{geoMapRolesBean.addAccessControl()}"
             process="@parent" update="@namingcontainer" icon="pi pi-plus-circle" />
         </div>
       </div>

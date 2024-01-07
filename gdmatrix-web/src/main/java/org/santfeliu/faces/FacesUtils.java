@@ -180,15 +180,15 @@ public class FacesUtils
     }
     return facesMessage;
   }
-  
-  public static void addMessage(String clientId, String summary, String detail, 
+
+  public static void addMessage(String clientId, String summary, String detail,
     Object[] params, FacesMessage.Severity severity)
   {
     FacesMessage message = getFacesMessage(summary, params, severity);
     message.setDetail(detail);
     FacesContext context = FacesContext.getCurrentInstance();
     context.addMessage(clientId, message);
-  }  
+  }
 
   public static void addMessage(String summary, String detail, Object[] params,
     FacesMessage.Severity severity)
@@ -266,6 +266,26 @@ public class FacesUtils
     catch (Exception ex)
     {
       throw new RuntimeException(ex);
+    }
+    return selectItems;
+  }
+
+  public static SelectItem[] getEnumStringSelectItems(Class clazz,
+    ResourceBundle bundle)
+  {
+    Class<Enum> enumClass = clazz;
+    Enum[] constants = enumClass.getEnumConstants();
+    SelectItem[] selectItems = new SelectItem[constants.length];
+    int i = 0;
+    for (Enum constant : constants)
+    {
+      String value = constant.toString();
+      String label = value;
+      if (bundle != null)
+      {
+        label = bundle.getString(clazz.getName() + "." + value);
+      }
+      selectItems[i++] = new SelectItem(value, label);
     }
     return selectItems;
   }
