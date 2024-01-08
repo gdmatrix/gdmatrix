@@ -12,12 +12,12 @@
                var="ac" stripedRows="true" size="small" 
                resizableColumns="false" showGridlines="true">
 
-    <p:column headerText="#{securityBundle.role_role}" styleClass="col-5" 
+    <p:column headerText="Role" styleClass="col-7" 
               sortable="true" sortBy="#{ac.roleId}">
-      <h:outputText value="#{ac.roleId}" />
-    </p:column>
-
-    <p:column headerText="Access" styleClass="col-5" 
+      <h:outputText value="#{roleTypeBean.getDescription(ac.roleId)}" />
+    </p:column>    
+    
+    <p:column headerText="Access" styleClass="col-3" 
               sortable="true" sortBy="#{ac.action}">
       <h:outputText value="#{geoBundle['acl_' += ac.action]}" />
     </p:column>
@@ -48,10 +48,10 @@
           <p:autoComplete value="#{geoMapRolesBean.roleToAdd}" var="roleId"
                           maxResults="20" minQueryLength="1" 
                           itemLabel="#{roleId}" itemValue="#{roleId}" 
-                          scrollHeight="200"
-                          completeMethod="#{geoMapRolesBean.findRoles}">
+                          scrollHeight="200" emptyMessage=""
+                          completeMethod="#{roleTypeBean.findIdsByQuery}">
             <p:column>
-              #{roleId}
+              #{roleTypeBean.getDescription(roleId)}
             </p:column>
           </p:autoComplete>
           <p:commandButton action="#{geoMapRolesBean.addAccessControl()}"

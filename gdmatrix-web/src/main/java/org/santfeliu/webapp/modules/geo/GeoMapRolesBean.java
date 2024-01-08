@@ -31,16 +31,10 @@
 package org.santfeliu.webapp.modules.geo;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.security.AccessControl;
-import org.matrix.security.Role;
-import org.matrix.security.RoleFilter;
-import org.santfeliu.security.web.SecurityConfigBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -95,26 +89,6 @@ public class GeoMapRolesBean extends WebBean implements Serializable
       ac.setAction(READ_ACTION);
       mapDocument.getAccessControl().add(ac);
     }
-  }
-
-  public List<String> findRoles(String text)
-  {
-    List<String> roleIds = new ArrayList<>();
-    try
-    {
-      RoleFilter filter = new RoleFilter();
-      filter.setName(text);
-      List<Role> roles = SecurityConfigBean.getPort(true).findRoles(filter);
-      for (Role role : roles)
-      {
-        roleIds.add(role.getRoleId());
-      }
-      Collections.sort(roleIds);
-    }
-    catch (Exception ex)
-    {
-      // ignore
-    }
-    return roleIds;
+    roleToAdd = null;
   }
 }
