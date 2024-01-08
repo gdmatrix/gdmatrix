@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
@@ -116,7 +117,7 @@ public abstract class TypeBean<T, F> extends WebBean
   {
     if (StringUtils.isBlank(objectId))
       return "";
-    
+
     String description = descriptions.get(objectId);
     if (description == null)
     {
@@ -163,12 +164,23 @@ public abstract class TypeBean<T, F> extends WebBean
 
   public List<T> findByQuery(String query)
   {
-    return find(queryToFilter(query, getRootTypeId()));
+    return findByQuery(query, getRootTypeId());
   }
 
   public List<T> findByQuery(String query, String typeId)
   {
     return find(queryToFilter(query, typeId));
+  }
+
+  public List<String> findIdsByQuery(String query)
+  {
+    return findIdsByQuery(query, getRootTypeId());
+  }
+
+  public List<String> findIdsByQuery(String query, String typeId)
+  {
+    return find(queryToFilter(query, typeId)).stream().map(
+      o -> getObjectId(o)).collect(Collectors.toList());
   }
 
   public List<SelectItem> getSelectItems()
@@ -209,11 +221,11 @@ public abstract class TypeBean<T, F> extends WebBean
 
     return items;
   }
-  
+
   public String getPropertyLabel(T object, String propName, String altName)
   {
     String label = altName;
-    
+
     String typeId = getTypeId(object);
     PropertyDefinition pd = getPropertyDefinition(typeId, propName);
     if (pd != null)
@@ -222,24 +234,24 @@ public abstract class TypeBean<T, F> extends WebBean
       ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
       label = applicationBean.translate(pd.getDescription(), group);
     }
-    return label;    
-  }   
-  
+    return label;
+  }
+
   public boolean isPropertyHidden(T object, String propName)
   {
-    String typeId = getTypeId(object);    
-    PropertyDefinition pd = getPropertyDefinition(typeId, propName);     
+    String typeId = getTypeId(object);
+    PropertyDefinition pd = getPropertyDefinition(typeId, propName);
     if (pd == null)
       return true;
-        
+
     propName = "render" + StringUtils.capitalize(propName);
     String value = WebUtils.getMenuItemProperty(propName);
     if (value != null)
       return !Boolean.parseBoolean(value);
 
-    return pd.isHidden(); 
-  } 
-  
+    return pd.isHidden();
+  }
+
   public PropertyDefinition getPropertyDefinition(String typeId,
     String propName)
   {
@@ -261,7 +273,7 @@ public abstract class TypeBean<T, F> extends WebBean
       }
     }
     return null;
-  }   
+  }
 
   protected void addNavigatorItems(List<SelectItem> items, String typeId)
   {
@@ -299,7 +311,7 @@ public abstract class TypeBean<T, F> extends WebBean
         return -1;
     });
   }
-    
- 
+
+
 
 }
