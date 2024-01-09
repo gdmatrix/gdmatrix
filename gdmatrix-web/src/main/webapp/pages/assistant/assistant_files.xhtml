@@ -16,15 +16,15 @@
       <span class="pi pi-file mr-1"/><h:outputText value="#{fileId}" />
     </p:column>
 
-    <p:column headerText="Filename" styleClass="col-3">
+    <p:column headerText="#{assistantBundle.filename}" styleClass="col-3">
       <h:outputText value="#{assistantFilesBean.getFile(fileId).filename}" />
     </p:column>
 
-    <p:column headerText="Size" styleClass="col-2" >
+    <p:column headerText="#{assistantBundle.size}" styleClass="col-2" >
       <h:outputText value="#{assistantFilesBean.getFile(fileId).bytes} bytes" />
     </p:column>
 
-    <p:column headerText="Created" styleClass="col-2" >
+    <p:column headerText="#{assistantBundle.created}" styleClass="col-2" >
       <h:outputText value="#{assistantFilesBean.getFile(fileId).createdAt}" />
     </p:column>
 
@@ -67,7 +67,7 @@
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
-      <span class="pi pi-file mr-2"/><span>Assistant file</span>
+      <span class="pi pi-file mr-2"/><span>#{assistantBundle.file}</span>
     </f:facet>
 
     <p:messages showSummary="true" styleClass="messages"
@@ -79,7 +79,7 @@
                   rendered="#{assistantFilesBean.phase != 0}">
       <div class="ui-fluid formgrid grid">
         <div class="field col-12">
-          <p:outputLabel for="@next" value="Filename" indicateRequired="true" />
+          <p:outputLabel for="@next" value="#{assistantBundle.filename}" indicateRequired="true" />
           <div class="ui-inputgroup flex">
             <p:autoComplete value="#{assistantFilesBean.editingFilename}" 
                             maxResults="50" required="true" var="filename" 
@@ -134,14 +134,14 @@
         </div>
         
         <div class="field col-6">
-          <p:outputLabel value="Change date/time" for="@next" />
+          <p:outputLabel value="#{objectBundle.changeDateTime}:" for="@next" />
           <p:inputText value="#{assistantFilesBean.fileChangeDateTime}" readonly="true">
             <f:converter converterId="DateTimeConverter" />
           </p:inputText>
         </div>
 
         <div class="field col-6">
-          <p:outputLabel value="Size" for="@next" />
+          <p:outputLabel value="#{assistantBundle.size}:" for="@next" />
           <p:inputText value="#{assistantFilesBean.fileSize}" readonly="true">
           </p:inputText>
         </div>          
@@ -149,12 +149,12 @@
         <div class="field col-12">
           <div class="ui-inputgroup">
             <p:linkButton href="#{assistantFilesBean.downloadUrl}" 
-                          icon="pi pi-download" value="Download" styleClass="border-round-left"
+                          icon="pi pi-download" value="#{objectBundle.download}" styleClass="border-round-left"
                           disabled="#{assistantFilesBean.phase == 1 or assistantFilesBean.contentId == null}" />
-            <p:commandButton icon="pi pi-upload" value="Upload"
+            <p:commandButton icon="pi pi-upload" value="#{objectBundle.upload}"
                              disabled="#{assistantFilesBean.phase == 1}"
                              onclick="PF('fileUpload').show()" />
-            <p:commandButton icon="fa fa-broom" value="Purge"
+            <p:commandButton icon="fa fa-broom" value="#{documentBundle.purge}"
                              action="#{assistantFilesBean.purgeFile}"
                              disabled="#{assistantFilesBean.phase == 1}" 
                              process="@this" 

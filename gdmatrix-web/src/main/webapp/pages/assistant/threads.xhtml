@@ -8,21 +8,25 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
-                var="objectBundle" />
   <h:outputStylesheet library="css" name="assistant.css" />
 
   <div class="flex flex-column h-full">
     <div id="assistant_toolbar"
-         class="p-2 pl-3 pr-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
-      <div class="flex-grow-0 text-left align-items-center" style="color:var(--text-color)">
-        <strong>#{assistantBean.assistant.name}</strong>
+      <div class="flex-grow-0 text-left align-items-center flex" style="color:var(--text-color)">
+        <p:commandButton title="Assistants"
+                         icon="pi pi-ellipsis-v"
+                         oncomplete="PF('assistantsDialog').show()"
+                         styleClass="rounded-button ui-button-flat flex-shrink-0"
+                         process="@this" update="assistants_dialog" />
+        <span class="flex-grow-1 font-bold pl-1">#{assistantBean.assistant.name}</span>
       </div>
       <div class="buttons flex flex-grow-1 justify-content-end gap-2">
-        <p:commandButton value="Setup"
+        <p:commandButton value="#{objectBundle.setup}"
                          action="#{assistantBean.setView('assistant')}"
                          icon="pi pi-cog"
+                         rendered="#{assistantBean.isEditable(assistantBean.assistant)}"
                          process="@form:cnt" update="@form:cnt" />
       </div>
     </div>
@@ -54,12 +58,12 @@
                              icon="pi pi-trash"
                              styleClass="ml-2 white-space-nowrap mini"
                              process="@form:cnt" update="@form:cnt">
-              <p:confirm header="Delete"
-                         message="Delete this thread?"
+              <p:confirm header="#{objectBundle.delete}"
+                         message="#{assistantBundle.deleteThread}"
                          icon="pi pi-info-circle" />
             </p:commandButton>
-            <p:button value="Threads"
-                      title="Threads"
+            <p:button value="#{assistantBundle.threads}"
+                      title="#{assistantBundle.threads}"
                       widgetVar="threadsPanelButton"
                       onclick="return showPanel()"
                       icon="fa fa-comment-dots"
@@ -80,7 +84,7 @@
                   </div>
                   <div class="flex-grow-1 flex flex-column ml-2 overflow-x-hidden">
                     <div>
-                      <span class="role">#{message.role == 'user' ? 'Tu' : 'Assistent'}</span>
+                      <span class="role">#{message.role == 'user' ? assistantBundle.you : assistantBundle.assistant}</span>
                       <span class="time">#{threadsBean.formatMessageDate(message, status.index)}</span>
                     </div>
                     <div class="content mt-1">
@@ -132,12 +136,12 @@
             <p:commandButton action="#{threadsBean.createMessage()}"
                              process="@form:cnt" update="@form:cnt"
                              widgetVar="sendButton"
-                             title="Send"
+                             title="#{objectBundle.send}"
                              oncomplete="scrollMessages()"
-                             icon="pi pi-arrow-up" styleClass="ui-button-outlined ml-2" />
+                             icon="pi pi-send" styleClass="ui-button-outlined ml-2" />
             <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
                              process="@this" update="uploaded_file"
-                             title="Attach file"
+                             title="#{objectBundle.upload}"
                              oncomplete="PF('fileUpload').show()"
                              icon="pi pi-paperclip" styleClass="ui-button-outlined mt-1 ml-2" />
           </div>
@@ -150,7 +154,7 @@
         <f:facet name="header">
           <i class="fa fa-comment-dots vertical-align-middle m-1"></i>
 
-          <span>Threads</span>
+          <span>#{assistantBundle.threads}</span>
           <p:commandLink onclick="return closePanel();"
                          class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
             <span class="ui-icon ui-icon-closethick"></span>
@@ -170,14 +174,16 @@
       </p:panel>
 
     </div>
-  </div>
-
+  </div>    
+    
   <p:remoteCommand action="#{threadsBean.assist}" name="assist"
                    process="@this" update="@form:cnt:message_list @form:cnt:question"
                    global="false"
                    onstart="console.info('assist')"
                    oncomplete="scrollMessages()" />
 
+  <ui:include src="/pages/assistant/assistants_dialog.xhtml" />  
+  
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
 

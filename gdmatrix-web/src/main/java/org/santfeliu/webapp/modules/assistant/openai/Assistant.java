@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.assistant.openai;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -140,5 +141,17 @@ public class Assistant extends OpenAIObject
   public void setMetadata(Map<String, Object> metadata)
   {
     this.metadata = metadata;
+  }
+
+  public Object getMetadataValue(String name)
+  {
+    if (metadata == null) return null;
+    return metadata.get(name);
+  }
+
+  public void setMetadataValue(String name, Object value)
+  {
+    if (metadata == null) metadata = new HashMap<>();
+    metadata.put(name, value);
   }
 }

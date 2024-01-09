@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <p:dialog id="assistants_dialog"
+            widgetVar="assistantsDialog"
+            modal="true"
+            height="auto"
+            styleClass="mw_600"
+            resizable="false"
+            closable="true"
+            closeOnEscape="true">
+
+    <f:facet name="header">
+      #{assistantBundle.assistants}
+    </f:facet>
+    
+    <ul class="assistant_list">
+      <ui:repeat value="#{assistantBean.assistants}" var="assistant">
+        <li>
+          <p:commandLink action="#{assistantBean.changeAssistant(assistant)}"
+                         process="@this" update="@form:cnt" styleClass="block"
+                         oncomplete="if (scrollMessages) scrollMessages()">
+            #{assistant.name}
+          </p:commandLink>
+          <div>
+            #{assistant.description}
+          </div>
+        </li>
+      </ui:repeat>
+    </ul>
+
+  </p:dialog>
+
+</ui:composition>

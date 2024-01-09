@@ -568,7 +568,7 @@ public class ThreadsBean extends WebBean
       }
       default:
         return Message.create(Message.USER_ROLE, cmd +
-          "\nUnknown command. Type #help to know what commands are supported.");
+          "\nUnknown command. Type #help to list the supported commands.");
     }
   }
 
@@ -576,6 +576,7 @@ public class ThreadsBean extends WebBean
     throws Exception
   {
     ScriptClient scriptClient = new ScriptClient();
+    scriptClient.put("userId", assistantBean.getUserId());
     scriptClient.executeScript(functionName);
 
     Object value = scriptClient.get(functionName);

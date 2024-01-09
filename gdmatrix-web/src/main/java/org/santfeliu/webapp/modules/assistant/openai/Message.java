@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.assistant.openai;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -149,6 +150,18 @@ public class Message extends OpenAIObject
   public void setMetadata(Map<String, Object> metadata)
   {
     this.metadata = metadata;
+  }
+
+  public Object getMetadataValue(String name)
+  {
+    if (metadata == null) return null;
+    return metadata.get(name);
+  }
+
+  public void setMetadataValue(String name, Object value)
+  {
+    if (metadata == null) metadata = new HashMap<>();
+    metadata.put(name, value);
   }
 
   public Date getCreationDate()

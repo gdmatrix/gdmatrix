@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <application>
+    <resource-bundle>
+      <base-name>org.santfeliu.assistant.web.resources.AssistantBundle</base-name>
+      <var>assistantBundle</var>
+    </resource-bundle>
+  </application>  
+
+</faces-config>
+

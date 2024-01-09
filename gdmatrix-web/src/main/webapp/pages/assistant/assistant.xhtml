@@ -7,55 +7,66 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
-                var="objectBundle" />
   <h:outputStylesheet library="css" name="assistant.css" />
 
   <div class="flex flex-column h-full overflow-x-hidden">
     <div id="assistant_toolbar"
-         class="p-2 pl-2 pr-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
-
-      <p:selectOneMenu value="#{assistantBean.assistantId}"
-                       styleClass="flex-shrink-1 flex-grow-0 text-left align-items-center mr-2" 
-                       style="color:var(--text-color);min-width: 16px">
-        <f:selectItems value="#{assistantBean.assistantSelectItems}" />
-            <p:ajax event="valueChange" listener="#{assistantBean.onAssistantChange}"
-                    process="@this" update="@form:cnt:assistant_tabs" />
-      </p:selectOneMenu>
-
+      <div class="flex-grow-0 text-left align-items-center flex" style="color:var(--text-color)">
+        <p:commandButton title="Assistants"
+                         icon="pi pi-ellipsis-v"
+                         oncomplete="PF('assistantsDialog').show()"
+                         styleClass="rounded-button ui-button-flat flex-shrink-0"
+                         process="@this" update="assistants_dialog" />
+        <span class="flex-grow-1 font-bold pl-1">#{assistantBean.assistant.name}</span>
+      </div>
       <div class="buttons flex flex-grow-1 flex-shrink-0 justify-content-end gap-2">
         <div class="ui-inputgroup">
-          <p:commandButton value="Threads"
+          <p:commandButton value="#{assistantBundle.threads}"
+                           title="#{assistantBundle.threads}"
                            action="#{assistantBean.setView('threads')}"
                            icon="fa fa-comment-dots"
                            styleClass="mini"
                            process="@form:cnt" update="@form:cnt" />
           <p:commandButton value="#{objectBundle.create}"
+                           title="#{objectBundle.create}"
                            action="#{assistantBean.createAssistant}"
                            icon="pi pi-plus-circle"
                            styleClass="mini"
+                           rendered="#{assistantBean.isAdminUser()}"
                            process="@this" update="@form:cnt" />
-          <p:commandButton value="Reload"
+          <p:commandButton value="#{objectBundle.reload}"
+                           title="#{objectBundle.reload}"
                            action="#{assistantBean.reloadAssistant}"
                            icon="pi pi-refresh"
                            styleClass="mini"
+                           rendered="#{assistantBean.isEditable(assistantBean.assistant)}"
                            process="@this" update="@form:cnt" />
           <p:commandButton value="#{objectBundle.store}"
+                           title="#{objectBundle.store}"
                            action="#{assistantBean.saveAssistant}"
                            icon="pi pi-save"
                            styleClass="mini"
+                           rendered="#{assistantBean.isEditable(assistantBean.assistant)}"
                            process="@form:cnt" update="@form:cnt" />
           <p:commandButton value="#{objectBundle.delete}"
+                           title="#{objectBundle.delete}"
                            action="#{assistantBean.deleteAssistant}"
                            icon="pi pi-trash"
                            styleClass="mini"
-                           process="@this" update="@form:cnt" />
+                           rendered="#{assistantBean.isEditable(assistantBean.assistant)}"
+                           process="@this" update="@form:cnt">
+            <p:confirm header="#{objectBundle.delete}"
+                       message="#{assistantBundle.deleteAssistant}"
+                       icon="pi pi-info-circle" />
+          </p:commandButton>
+            
         </div>
       </div>
     </div>
 
-    <div id="assistant_body" class="p-3 flex-grow-1 overflow-hidden flex flex-column"
+    <div id="assistant_body" class="p-3 flex-grow-1 overflow-auto flex flex-column"
          style="color:var(--text-color)">
 
       <p:messages showSummary="true" styleClass="messages" 
@@ -64,28 +75,37 @@
         <p:autoUpdate />
       </p:messages>
 
-      <p:tabView id="assistant_tabs" dynamic="true">
+      <h:outputText value="#{assistantBundle.noEditPermission}" 
+                    styleClass="block"
+                    rendered="#{not assistantBean.isEditable(assistantBean.assistant)}" />
+      
+      <p:tabView id="assistant_tabs" dynamic="true" 
+                 activeIndex="#{assistantBean.activeTabIndex}"
+                              rendered="#{assistantBean.isEditable(assistantBean.assistant)}">
+        <p:ajax event="tabChange" process="@this" update="@none" />
         <p:tab>
           <f:facet name="title">
-            <span class="pi pi-list mr-2"/>Properties
+            <span class="pi pi-list mr-2"/>#{assistantBundle.properties}
           </f:facet>
           <ui:include src="/pages/assistant/assistant_properties.xhtml" />
         </p:tab>
         <p:tab>
           <f:facet name="title">
-            <span class="pi pi-copy mr-2"/>Files
+            <span class="pi pi-copy mr-2"/>#{assistantBundle.files}
           </f:facet>
           <ui:include src="/pages/assistant/assistant_files.xhtml" />
         </p:tab>
         <p:tab>
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/>Tools
+            <span class="pi pi-cog mr-2"/>#{assistantBundle.tools}
           </f:facet>
           <ui:include src="/pages/assistant/assistant_tools.xhtml" />
         </p:tab>
       </p:tabView>
     </div>
   </div>
+  
+  <ui:include src="/pages/assistant/assistants_dialog.xhtml" />
 
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />

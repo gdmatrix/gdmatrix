@@ -5,35 +5,73 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <div class="ui-fluid formgrid grid">
-    <div class="field col-12">
+    <div class="field col-12 md:col-6 lg:col-4">
       <p:outputLabel for="@next" value="AssistantId:" />
       <p:inputText value="#{assistantBean.assistant.id}" readonly="true" />
     </div>
 
     <div class="field col-12">
-      <p:outputLabel for="@next" value="Name:" />
+      <p:outputLabel for="@next" value="#{assistantBundle.name}:" />
       <p:inputText value="#{assistantBean.assistant.name}" />
     </div>
 
     <div class="field col-12">
-      <p:outputLabel for="@next" value="Description:" />
+      <p:outputLabel for="@next" value="#{assistantBundle.description}:" />
       <p:inputTextarea value="#{assistantBean.assistant.description}" />
     </div>        
 
     <div class="field col-12">
-      <p:outputLabel for="@next" value="Instructions:" />
+      <p:outputLabel for="@next" value="#{assistantBundle.instructions}:" />
       <p:inputTextarea value="#{assistantBean.assistant.instructions}" />
     </div>
 
-    <div class="field col-12">
-      <p:outputLabel for="@next" value="Model:" />
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="#{assistantBundle.model}:" />
       <p:selectOneMenu value="#{assistantBean.assistant.model}">
         <f:selectItems value="#{assistantBean.modelSelectItems}" />
       </p:selectOneMenu>
     </div>
+
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{assistantBundle.readRole}:" />
+      <p:autoComplete value="#{assistantBean.readRoleId}" var="roleId"
+                      maxResults="20" minQueryLength="1" 
+                      itemLabel="#{roleId}" itemValue="#{roleId}" 
+                      scrollHeight="200" emptyMessage=""
+                      completeMethod="#{roleTypeBean.findIdsByQuery}">
+        <p:column>
+          #{roleTypeBean.getDescription(roleId)}
+        </p:column>
+      </p:autoComplete>
+    </div>
+
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{assistantBundle.writeRole}:" />
+      <p:autoComplete value="#{assistantBean.writeRoleId}" var="roleId"
+                      maxResults="20" minQueryLength="1" 
+                      itemLabel="#{roleId}" itemValue="#{roleId}" 
+                      scrollHeight="200" emptyMessage=""
+                      completeMethod="#{roleTypeBean.findIdsByQuery}">
+        <p:column>
+          #{roleTypeBean.getDescription(roleId)}
+        </p:column>
+      </p:autoComplete>
+    </div>
+    
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{objectBundle.createdBy}:" />
+      <p:inputText value="#{assistantBean.creationUserId}" readonly="true" />
+    </div>
+
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{objectBundle.changedBy}:" />
+      <p:inputText value="#{assistantBean.changeUserId}" readonly="true" />
+    </div>
+    
   </div>
   
 </ui:composition>
