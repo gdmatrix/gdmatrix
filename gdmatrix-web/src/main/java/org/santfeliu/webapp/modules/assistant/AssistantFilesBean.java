@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.assistant;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.activation.DataHandler;
@@ -132,6 +133,11 @@ public class AssistantFilesBean extends WebBean implements Serializable
   public void setEditingFilename(String filename)
   {
     editingFilename = filename;
+  }
+
+  public Date getCreationDate(String fileId)
+  {
+    return new Date(getFile(fileId).getCreatedAt() * 1000);
   }
 
   public void addFile()
@@ -279,6 +285,7 @@ public class AssistantFilesBean extends WebBean implements Serializable
 
       docId = document.getDocId();
       docVersion = document.getVersion();
+      contentId = document.getContent().getContentId();
       fileChangeDateTime = document.getChangeDateTime();
       fileSize = document.getContent().getSize();
       growl("DOCUMENT_UPLOADED", new Object[]{ docId });
@@ -346,6 +353,7 @@ public class AssistantFilesBean extends WebBean implements Serializable
     else
     {
       docId = null;
+      docVersion = 0;
       contentId = null;
       fileChangeDateTime = null;
       lastFileId = null;
@@ -385,7 +393,7 @@ public class AssistantFilesBean extends WebBean implements Serializable
     lastFileId = null;
     fileSize = null;
     phase = 0;
-    assistantBean.setDialogVisible(true);
+    assistantBean.setDialogVisible(false);
   }
 
   public String getDocIdAndVersion()

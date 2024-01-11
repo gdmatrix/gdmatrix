@@ -25,7 +25,7 @@
     </p:column>
 
     <p:column headerText="#{assistantBundle.created}" styleClass="col-2" >
-      <h:outputText value="#{assistantFilesBean.getFile(fileId).createdAt}" />
+      <h:outputText value="#{assistantFilesBean.getCreationDate(fileId)}" />
     </p:column>
 
     <p:column styleClass="col-1 text-right white-space-nowrap">
