@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -218,25 +219,6 @@ public class OpenAI
 
   // Run
 
-  public Run assist(String threadId, String assistantId, long pollInterval)
-    throws Exception
-  {
-    Run run = createRun(threadId, assistantId);
-    while (run.isPending() || run.isRequiresAction())
-    {
-      if (run.isPending())
-      {
-        java.lang.Thread.sleep(pollInterval);
-        run = retrieveRun(run);
-      }
-      else // requires action
-      {
-        run = executeRequiredAction(run);
-      }
-    }
-    return run;
-  }
-
   public Run createRun(String threadId, String assistantId)
     throws Exception
   {
@@ -304,29 +286,31 @@ public class OpenAI
       List<ToolCall> toolCalls =
         requiredAction.getSubmitToolOutputs().getToolCalls();
 
+      List<String> outputs = new ArrayList<>();
       for (ToolCall toolCall : toolCalls)
       {
-        run = executeToolCall(run, toolCall);
+        String output = functionExecutor.execute(toolCall.getFunction());
+        outputs.add(output);
       }
+      submitToolOutputs(run, toolCalls, outputs);
     }
     return run;
   }
 
-  public Run executeToolCall(Run run, ToolCall toolCall) throws Exception
-  {
-    String output = functionExecutor.execute(toolCall.getFunction());
-    return submitToolOutputs(run, toolCall, output);
-  }
-
   public Run submitToolOutputs(Run run,
-    ToolCall toolCall, String output) throws Exception
+    List<ToolCall> toolCalls, List<String> outputs) throws Exception
   {
     JsonObject request = new JsonObject();
     JsonArray toolOutputs = new JsonArray();
-    JsonObject toolOutput = new JsonObject();
-    toolOutput.addProperty("tool_call_id", toolCall.getId());
-    toolOutput.addProperty("output", output);
-    toolOutputs.add(toolOutput);
+    for (int i = 0; i < toolCalls.size(); i++)
+    {
+      ToolCall toolCall = toolCalls.get(i);
+      String output = outputs.get(i);
+      JsonObject toolOutput = new JsonObject();
+      toolOutput.addProperty("tool_call_id", toolCall.getId());
+      toolOutput.addProperty("output", output);
+      toolOutputs.add(toolOutput);
+    }
     request.add("tool_outputs", toolOutputs);
 
     return fetch("POST", "/v1/threads/" + run.getThreadId() + "/runs/" +

@@ -288,7 +288,7 @@ public class ThreadsBean extends WebBean
         updateThreads();
       }
 
-      if (text.startsWith("#"))
+      if (text.startsWith("#") && assistantBean.isAdminUser())
       {
         String cmd = text;
         if (messageList == null) messageList = new MessageList();
@@ -385,7 +385,7 @@ public class ThreadsBean extends WebBean
         run = openAI.retrieveRun(threadId, runId);
       }
 
-      if (run.isPending())
+      if (run.isQueued() || run.isInProgress() || run.isCancelling())
       {
         PrimeFaces.current().executeScript("assistDelayed()");
       }
@@ -394,9 +394,16 @@ public class ThreadsBean extends WebBean
         openAI.executeRequiredAction(run);
         PrimeFaces.current().executeScript("assistImmediately()");
       }
-      else // run completed or cancelled
+      else if (run.isCompleted())
       {
         runId = null;
+      }
+      else // cancel, failed, expired
+      {
+        runId = null;
+        Message message =
+          Message.create(ASSISTANT_ROLE, "Run " + run.getStatus());
+        getMessageList().getData().add(message);
       }
       updateMessages();
     }

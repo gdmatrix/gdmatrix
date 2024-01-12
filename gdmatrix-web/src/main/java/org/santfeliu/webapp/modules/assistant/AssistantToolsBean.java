@@ -68,6 +68,8 @@ public class AssistantToolsBean extends WebBean implements Serializable
 {
   public static final String ASSISTANT_TOOL_DOCTYPEID = "CODE";
   public static final String ASSISTANT_TOOL_NAME_PROPERTY = "workflow.js";
+  public static final String ASSISTANT_TOOL_PURPOSE_PROPERTY = "purpose";
+  public static final String ASSISTANT_TOOL_PURPOSE_VALUE = "assistant";
   public static final String ASSISTANT_TOOL_DEF_FUNCTION = "getFunctionDefinition";
 
   Tool editingTool;
@@ -98,9 +100,12 @@ public class AssistantToolsBean extends WebBean implements Serializable
       DocumentFilter filter = new DocumentFilter();
       filter.setDocTypeId(ASSISTANT_TOOL_DOCTYPEID);
       Property property = new Property();
+      property.setName(ASSISTANT_TOOL_PURPOSE_PROPERTY);
+      property.getValue().add(ASSISTANT_TOOL_PURPOSE_VALUE);
+      filter.getProperty().add(property);
+      property = new Property();
       property.setName(ASSISTANT_TOOL_NAME_PROPERTY);
       property.getValue().add("%" + name + "%");
-      filter.getProperty().add(property);
       filter.getOutputProperty().add(ASSISTANT_TOOL_NAME_PROPERTY);
       List<Document> documents =
         assistantBean.getDocPort().findDocuments(filter);

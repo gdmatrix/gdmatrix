@@ -239,9 +239,39 @@ public class Run extends OpenAIObject
     this.metadata = metadata;
   }
 
-  public boolean isPending()
+  public boolean isCompleted()
   {
-    return "queued".equals(status) || "in_progress".equals(status);
+    return "completed".equals(status);
+  }
+
+  public boolean isExpired()
+  {
+    return "expired".equals(status);
+  }
+
+  public boolean isCancelled()
+  {
+    return "cancelled".equals(status);
+  }
+
+  public boolean isCancelling()
+  {
+    return "cancelling".equals(status);
+  }
+
+  public boolean isFailed()
+  {
+    return "failed".equals(status);
+  }
+
+  public boolean isQueued()
+  {
+    return "queued".equals(status);
+  }
+
+  public boolean isInProgress()
+  {
+    return "in_progress".equals(status);
   }
 
   public boolean isRequiresAction()

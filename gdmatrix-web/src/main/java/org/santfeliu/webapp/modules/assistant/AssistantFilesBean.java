@@ -73,6 +73,7 @@ public class AssistantFilesBean extends WebBean implements Serializable
   public static final String ASSISTANT_FILE_DOCTYPEID = "AssistantFile";
   public static final String ASSISTANT_FILE_ID_PROPERTY = "fileId";
   public static final String ASSISTANT_FILE_NAME_PROPERTY = "filename";
+  public static final String ASSISTANT_FILE_TITLE = "Assistant: ";
 
   int phase = 0;
   String editingFileId;
@@ -177,6 +178,7 @@ public class AssistantFilesBean extends WebBean implements Serializable
     try
     {
       DocumentFilter filter = new DocumentFilter();
+      filter.setTitle(ASSISTANT_FILE_TITLE + "%");
       filter.setDocTypeId(ASSISTANT_FILE_DOCTYPEID);
       Property property = new Property();
       property.setName(ASSISTANT_FILE_NAME_PROPERTY);
@@ -212,6 +214,7 @@ public class AssistantFilesBean extends WebBean implements Serializable
       if (!StringUtils.isBlank(filename))
       {
         DocumentFilter filter = new DocumentFilter();
+        filter.setTitle(ASSISTANT_FILE_TITLE + "%");
         filter.setDocTypeId(ASSISTANT_FILE_DOCTYPEID);
         Property property = new Property();
         property.setName(ASSISTANT_FILE_NAME_PROPERTY);
@@ -264,7 +267,7 @@ public class AssistantFilesBean extends WebBean implements Serializable
       Document document = new Document();
       document.setDocId(docId);
       document.setVersion(DocumentConstants.NEW_VERSION);
-      document.setTitle(editingFilename);
+      document.setTitle(ASSISTANT_FILE_TITLE + editingFilename);
       document.setDocTypeId(ASSISTANT_FILE_DOCTYPEID);
 
       Property property = new Property();
