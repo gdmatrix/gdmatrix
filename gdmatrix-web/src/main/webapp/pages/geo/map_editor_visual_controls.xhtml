@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <div class="mb-2">
+    <p:outputLabel for="@next" value="Profile:" />
+    <p:selectOneMenu value="#{geoMapControlsBean.profile}" styleClass="ml-2">
+      <f:selectItems value="#{geoMapControlsBean.profiles}" var="profile"
+                     itemLabel="#{profile}" itemValue="#{profile}" />
+    </p:selectOneMenu>
+  </div>
+  
+  <p:dataTable id="map_controls_table" value="#{geoMapControlsBean.scripts}"
+               var="script" stripedRows="true" size="small" 
+               draggableRows="true" rowDragSelector=".drag"
+               resizableColumns="false" showGridlines="true">
+    <p:ajax event="rowReorder" 
+            update="@form:cnt:map_tabs:map_controls_table"/>
+
+    <p:column headerText="Script" styleClass="col-7" 
+              sortable="true" sortBy="#{script}">
+      <h:outputText value="#{script}" />
+    </p:column>
+
+    <p:column styleClass="col-2 text-right white-space-nowrap">
+      <span class="drag pi pi-arrows-v p-2" />
+      <p:commandButton action="#{geoMapControlsBean.removeScript(script)}"
+                       process="@this" update="@namingcontainer"
+                       resetValues="true"
+                       icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       styleClass="rounded-button ui-button-flat">
+      </p:commandButton>
+    </p:column>
+    
+    <f:facet name="footer">
+      <div class="flex align-items-center">
+        <p:outputLabel value="Script:" for="@next" styleClass="m-2" />
+        <div class="ui-inputgroup">
+          <p:autoComplete value="#{geoMapControlsBean.scriptToAdd}" var="scriptName"
+                          maxResults="100" minQueryLength="1" 
+                          dropdown="true" dropdownMode="blank"                          
+                          itemLabel="#{scriptName}" itemValue="#{scriptName}" 
+                          scrollHeight="200" emptyMessage=""
+                          forceSelection="true"
+                          completeMethod="#{geoMapControlsBean.completeScriptName}">
+            <p:column>
+              #{scriptName}
+            </p:column>
+          </p:autoComplete>
+          <p:commandButton action="#{geoMapControlsBean.addScript()}"
+            process="@parent" update="@namingcontainer" icon="pi pi-plus-circle" />
+        </div>
+      </div>
+    </f:facet>
+    
+  </p:dataTable>
+
+</ui:composition>
