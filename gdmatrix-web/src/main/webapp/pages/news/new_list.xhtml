@@ -1,0 +1,55 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"  
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+
+  <p:dataTable value="#{newFinderBean.rows}"
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{newFinderBean.firstRow}"
+               rowStyleClass="#{row.newId == newObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
+               rows="10"
+               rowIndexVar="rowIndex">
+    
+    <p:column styleClass="text-center">
+      <h:panelGroup id="state-icon">
+        <span class="mr-2 text-xl #{row.draft ? 'mi-outlined mi-edit-note' : 'mi-outlined mi-public' }"></span> 
+      </h:panelGroup>
+      <p:tooltip for="state-icon" value="#{row.draft ? newsBundle.new_search_draft : 'Publicada'}" />       
+    </p:column>    
+
+    <p:column headerText="#{newsBundle.new_search_id}" styleClass="col-1">
+      <h:outputText value="#{row.newId}" />
+    </p:column>                
+    <p:column headerText="#{newsBundle.new_search_date}" styleClass="col-1">
+      <h:outputText value="#{row.startDate}" converter="dateConverter" />
+    </p:column> 
+    <p:column headerText="#{newsBundle.new_search_headline}" styleClass="col-8">
+      <h:outputText value="#{row.headline}" />
+    </p:column>   
+
+    <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.newId)}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       process="@this" update="@form:cnt"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}"
+                       />
+      <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}"
+                       action="#{newFinderBean.view(rowIndex)}"
+                       resetValues="true"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                       />  
+    </p:column>      
+
+  </p:dataTable> 
+
+</ui:composition> 

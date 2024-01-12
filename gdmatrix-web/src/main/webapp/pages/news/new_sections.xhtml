@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <div class="w-full m-1 gap-1 flex">
+
+      <p:commandButton action="#{newSectionsTabBean.expandAll}" value="#{newsBundle.new_sections_expandAll}"
+                       icon="pi pi-angle-down" title="#{newsBundle.new_sections_expandAll}"
+                       styleClass="mini"
+                       process="@this" update="sections_tree" />
+
+      <p:commandButton action="#{newSectionsTabBean.collapseAll}" value="#{newsBundle.new_sections_collapseAll}"
+                       icon="pi pi-angle-right" title="#{newsBundle.new_sections_collapseAll}"
+                       process="@this" update="sections_tree"
+                       styleClass="mini" />
+
+  </div>
+
+  <p:tree id="sections_tree" value="#{newSectionsTabBean.root}" var="section"
+          selectionMode="checkbox" 
+          selection="#{newSectionsTabBean.selected}"
+          propagateSelectionDown="false" propagateSelectionUp="false"
+          showUnselectableCheckbox="false">
+    <p:ajax event="select" listener="#{newSectionsTabBean.onNodeSelect}" process="@this" />
+    <p:ajax event="unselect" listener="#{newSectionsTabBean.onNodeUnselect}" process="@this" />
+    <p:ajax event="contextMenu" listener="#{newSectionsTabBean.onContextMenu}" update="@form:search_tabs:tabs:context_menu"/>
+
+    <p:treeNode icon="#{section.sticky ? 'fa fa-thumbtack' : ''}">
+      <h:outputText value="#{section}" />
+    </p:treeNode>
+
+  </p:tree>   
+
+  <p:contextMenu id="context_menu" for="sections_tree" selectionMode="single">
+    <p:menuitem value="Show" icon="pi pi-external-link" ajax="true"  />
+    <p:menuitem value="#{newSectionsTabBean.ctxNode.data.sticky ? newsBundle.new_sections_sticky_off : newsBundle.new_sections_sticky_on}" 
+                icon="fa fa-thumbtack #{newSectionsTabBean.ctxNode.data.sticky ? 'text-primary' : 'text-green-500'}" 
+                ajax="true" process="@this" update="sections_tree" action="#{newSectionsTabBean.switchSticky()}"/>
+  </p:contextMenu>   
+
+</ui:composition>

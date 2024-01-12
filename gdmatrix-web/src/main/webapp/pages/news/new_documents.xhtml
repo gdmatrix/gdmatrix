@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:subview id="#{tab.subviewId}">
+    
+    <!-- Results table -->
+    <p:dataTable id="new_documents_table" value="#{newDocumentsTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="5"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{newDocumentsTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex  justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                        action="#{newDocumentsTabBean.create}" 
+                        process="@form:cnt:search_tabs:tabs"
+                           update="@form:cnt:search_tabs:new_documents_dialog"
+                           resetValues="true"
+                           oncomplete="PF('newDocumentsDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!newObjectBean.editable}"/>
+        </div>
+      </f:facet>
+
+      <p:column headerText="#{newsBundle.new_documents_id}" styleClass="col-1"
+                sortBy="#{row.documentId}">
+        <h:outputText value="#{row.documentId}" />
+      </p:column>
+
+      <p:column headerText="#{newsBundle.new_documents_documentName}" styleClass="col-4"
+                sortBy="#{row.title}">
+     <!--   <i class="#{newDocumentsTabBean.getDocumentIcon(row.mimeType)} text-xl mr-1" />-->
+        <h:outputText value="#{row.title}"/>
+      </p:column>
+
+      <p:column headerText="#{newsBundle.new_documents_type}" styleClass="col-3"
+                rendered="#{newDocumentsTabBean.renderTypeColumn}"
+                sortBy="#{typeTypeBean.getDescription(row.newDocTypeId)}"
+                sortOrder="asc" sortPriority="1">
+        <h:outputText value="#{typeTypeBean.getDescription(row.newDocTypeId)}"/>
+      </p:column>
+
+       
+      <p:column styleClass="col-2 text-right white-space-nowrap">
+        <!--
+        <p:linkButton href="#{newDocumentsTabBean.viewURL}" 
+                      icon="pi pi-eye" 
+                      title="#{objectBundle.view}"
+                      styleClass="rounded-button ui-button-flat"
+                      target="_blank" />
+        -->
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this" update="@form:cnt"
+                         action="#{navigatorBean.show('Document', row.documentId)}"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{newDocumentsTabBean.edit(row)}"
+                         process="@form:cnt:search_tabs:tabs"
+                         update="@form:cnt:search_tabs:new_documents_dialog"
+                         resetValues="true"
+                         oncomplete="PF('newDocumentsDialog').show()"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}" /> 
+        <p:commandButton action="#{newDocumentsTabBean.remove(row)}"
+                         process="@this"
+                         update="@form:cnt:search_tabs:tabs"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat"
+                         disabled="#{!newObjectBean.editable}">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+    
+  </f:subview>
+
+</ui:composition>

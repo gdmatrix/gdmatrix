@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <div class="ui-fluid formgrid grid">
+
+    <h:panelGroup id="status_icons" styleClass="w-full m-0 flex justify-content-end"> 
+      <h:panelGroup id="state_icon">
+        <i class="mr-2 text-xl #{newObjectBean.newObject.draft ? 'mi-outlined mi-edit-note' : 'mi-outlined mi-public'}" /> 
+      </h:panelGroup>
+      <p:tooltip for="state_icon" value="#{newObjectBean.newObject.draft  ? newsBundle.new_main_draft : 'Publicada'}" /> 
+      <h:panelGroup id="read_count_icon">
+        <p:badge value="#{newObjectBean.newObject.totalReadingCount}" styleClass="text-xs">
+          <i class="pi pi-eye text-2xl"/>
+        </p:badge> 
+      </h:panelGroup>
+      <p:tooltip for="read_count_icon" value="#{newsBundle.new_main_readings}" />
+    </h:panelGroup>
+
+    <div class="field col-12 lg:col-2">
+      <p:outputLabel for="@next" value="Id" />
+      <p:inputText value="#{newObjectBean.objectId}" readonly="true" styleClass="text-500"/>
+    </div>
+
+    <div class="field col-12 lg:col-5 xl:col-3">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_startDay}" />
+      <!-- TODO: disable if not editable -->
+      <p:datePicker value="#{newObjectBean.startDateTime}"
+                    locale="#{newObjectBean.language}"
+                    showIcon="true" showTime="true"
+                    autocomplete="off"
+                    pattern="dd/MM/yyyy HH:mm"
+                    placeholder="dd/MM/yyyy HH:mm"
+                    showOnFocus="false"
+                    monthNavigator="true" yearNavigator="true"
+                    disabled="#{!newObjectBean.editable}"/>
+    </div>
+
+    <div class="field col-12 lg:col-5 xl:col-3">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_endDay}" />
+      <!-- TODO: disable if not editable -->
+      <p:datePicker value="#{newObjectBean.endDateTime}"
+                    locale="#{newObjectBean.language}"
+                    showIcon="true" showTime="true"
+                    autocomplete="off"
+                    pattern="dd/MM/yyyy HH:mm"
+                    placeholder="dd/MM/yyyy HH:mm"
+                    showOnFocus="false"
+                    monthNavigator="true" yearNavigator="true"
+                    disabled="#{!newObjectBean.editable}"/>
+    </div>  
+
+
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_headline}" />
+      <p:inputTextarea value="#{newObjectBean.newObject.headline}" />
+    </div> 
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_draft}" />
+      <p:toggleSwitch  value="#{newObjectBean.newObject.draft}" 
+                       styleClass="ml-2 vertical-align-middle">
+        <p:ajax update="status_icons"/>
+      </p:toggleSwitch>
+    </div> 
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_source}" />
+      <p:inputText value="#{newObjectBean.newObject.source}"  />
+    </div>     
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_keywords}" />
+      <div class="ui-inputgroup">
+        <p:chips value="#{newObjectBean.keywords}" widgetVar="keywordsInput" separator=" " />
+        <p:commandButton icon="pi pi-tags" onclick="PF('keywordsInput').toggleEditor()"  />        
+      </div>
+    </div>     
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_customUrl}" />
+      <p:inputText value="#{newObjectBean.newObject.customUrl}"  />
+    </div>   
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_customUrlTargetBlank}" />
+      <p:toggleSwitch  styleClass="ml-2 vertical-align-middle" value="#{newObjectBean.newObject.customUrlTarget}"  />
+    </div>      
+
+    <p:tabView>
+      <p:tab title="#{newsBundle.new_main_summary}">
+        <gdm:quill value="#{newObjectBean.newObject.summary}"
+                   readonly="#{!eventObjectBean.editable}" />
+      </p:tab>
+      <p:tab title="#{newsBundle.new_main_text}">
+        <gdm:quill value="#{newObjectBean.newObject.text}"
+                   readonly="#{!eventObjectBean.editable}" />  
+      </p:tab>
+    </p:tabView>
+
+
+
+
+    <emcomp:auditData creationDateTime="#{newObjectBean.newObject.registerDate}#{newObjectBean.newObject.registerTime}"
+                      creationUserIdLabel="#{newsBundle.new_main_user}"
+                      creationUserId="#{newObjectBean.newObject.userId}"  />    
+
+  </div>   
+
+</ui:composition>

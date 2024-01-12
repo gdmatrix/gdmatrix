@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <p:dialog id="new_documents_dialog" widgetVar="newDocumentsDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{newObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(newObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{newDocumentsTabBean.documentDescription}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>      
+
+    <h:panelGroup styleClass="mt-2" id="new_documents_panel"
+                  layout="block"
+                  rendered="#{newDocumentsTabBean.editing != null}">
+      
+      <div class="ui-fluid formgrid grid" >
+
+        <!-- Document -->
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{newsBundle.newDocuments_document}"
+                         styleClass="w-full"
+                         indicateRequired="true" />
+          <emcomp:objectReference value="#{newDocumentsTabBean.editing.documentId}"
+                                  process="@form:cnt:search_tabs:new_documents_dialog"
+                                  type="Document"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  oncomplete="PF('newDocumentsDialog').hide();"
+                                  onselect="PF('newDocumentsDialog').show();"
+                                  required="#{not empty param['mainform:search_tabs:new_documents_store']}"
+                                  requiredMessage="#{messageBundle.DOCUMENT_MUST_BE_SELECTED}"
+                                  minQueryLength="3"
+                                  disabled="#{!newObjectBean.editable}">
+          </emcomp:objectReference>
+        </div>
+
+        <!-- Type -->
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{newsBundle.newDocuments_type}"
+                         indicateRequired="true" />
+          <emcomp:typeReference value="#{newDocumentsTabBean.newDocTypeId}"
+                                process="@form:cnt:search_tabs:new_documents_dialog"
+                                update="@form:cnt:search_tabs:new_documents_panel"
+                                oncomplete="PF('newDocumentsDialog').hide();"
+                                onselect="PF('newDocumentsDialog').show();"
+                                type="#{newDocumentsTabBean.tabBaseTypeId != null ? newDocumentsTabBean.tabBaseTypeId : 'NewDocument'}"
+                                showNavigatorItems="#{newDocumentsTabBean.tabBaseTypeId != 'NewDocument' ? 'false' : 'true'}"
+                                showNonInstantiableItems="false"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="#{not empty param['mainform:search_tabs:new_documents_store']}"
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                disabled="#{!newObjectBean.editable}">
+          </emcomp:typeReference>
+        </div>
+        
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton id="new_documents_store"
+                         action="#{newDocumentsTabBean.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
+                         process="new_documents_dialog"
+                         update="@form:cnt:search_tabs:tabs new_documents_panel"
+                         oncomplete="closePFDialog('newDocumentsDialog')"
+                         disabled="#{!newObjectBean.editable}" />
+        <p:commandButton action="#{newDocumentsTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="new_documents_dialog" global="false"
+                         onclick="PF('newDocumentsDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>
