@@ -17,11 +17,13 @@
                rows="10"
                rowIndexVar="rowIndex">
 
-
-    <p:column styleClass="text-center">
-      <span class="mr-2 #{row.state == 'COMPLETED' ? 'pi pi-check-circle': 'pi pi-exclamation-circle'}"></span> 
+    <p:column  styleClass="text-center">
+      <h:panelGroup id="state-icon">
+        <span class="mr-2 #{row.state == 'COMPLETED' ? '': 'pi pi-exclamation-circle'}"></span> 
+      </h:panelGroup>
+      <p:tooltip for="state-icon" value="#{row.state == 'COMPLETED' ? '' : translationBundle.draft}" />       
     </p:column>
-
+   
     <p:column headerText="#{translationBundle.language}" styleClass="col-1 text-center">
       <h:outputText value="#{translationObjectBean.getDisplayLanguage(row.language)}" />
     </p:column>       
