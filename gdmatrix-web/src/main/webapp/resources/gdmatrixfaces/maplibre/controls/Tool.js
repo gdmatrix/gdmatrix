@@ -1,4 +1,4 @@
-/* Tool */
+/* Tool.js */
 
 class Tool // extends IControl
 {

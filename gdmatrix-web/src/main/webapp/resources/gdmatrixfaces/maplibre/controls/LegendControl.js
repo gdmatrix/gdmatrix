@@ -1,17 +1,18 @@
-/* Legend */
+/* LegendControl.js */
 
 import { Panel } from "./Panel.js";
 
 class LegendControl
 {
-  constructor(containerId, insertTop)
+  constructor(options)
   {
-    this.createPanel(containerId, insertTop);
+    this.createPanel(options);
   }
 
-  createPanel(containerId, insertTop)
+  createPanel(options)
   {
-    this.panel = new Panel(containerId, "Legend", "fa fa-layer-group", insertTop);
+    this.panel = new Panel(options.containerId, 
+      "Legend", "fa fa-layer-group", options.insertTop);
   }
 
   onAdd(map)

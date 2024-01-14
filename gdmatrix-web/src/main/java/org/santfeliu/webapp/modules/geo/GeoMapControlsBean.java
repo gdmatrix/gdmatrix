@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.geo;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,7 @@ public class GeoMapControlsBean extends WebBean implements Serializable
       profiles = new ArrayList<>();
 
       File[] files = dir.listFiles();
+      Arrays.sort(files, (a, b) -> (int)(b.length() - a.length()));
       for (File file : files)
       {
         String name = file.getName();

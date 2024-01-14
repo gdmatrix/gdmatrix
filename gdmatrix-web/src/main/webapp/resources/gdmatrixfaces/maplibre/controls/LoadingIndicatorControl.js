@@ -1,4 +1,4 @@
-/* LoadingIndicator */
+/* LoadingIndicatorControl.js */
 
 class LoadingIndicatorControl
 {

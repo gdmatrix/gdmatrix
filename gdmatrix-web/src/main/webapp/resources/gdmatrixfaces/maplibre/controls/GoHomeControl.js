@@ -1,4 +1,4 @@
-/* GoHome */
+/* GoHomeControl.js */
 
 class GoHomeControl
 {

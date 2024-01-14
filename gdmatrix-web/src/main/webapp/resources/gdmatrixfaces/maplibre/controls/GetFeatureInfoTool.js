@@ -1,14 +1,14 @@
-/* GetFeatureInfo */
+/* GetFeatureInfoTool.js */
 
 import { Panel } from "./Panel.js";
 import { Tool } from "./Tool.js";
 
 class GetFeatureInfoTool extends Tool
 {
-  constructor(containerId, insertTop)
+  constructor(options)
   {
     super("fa fa-arrow-pointer", "Get feature info");
-    this.createPanel(containerId, insertTop);
+    this.createPanel(options);
 
     this.highlightCount = 0;
     this._onMapClick = (event) => this.getFeatureInfo(event.lngLat);
@@ -33,10 +33,10 @@ class GetFeatureInfoTool extends Tool
     this.panel.hide();
   }
 
-  createPanel(containerId, insertTop)
+  createPanel(options)
   {
-    this.panel = new Panel(containerId, 
-      "Feature info", "pi pi-info-circle", insertTop);
+    this.panel = new Panel(options.containerId, 
+      "Feature info", "pi pi-info-circle", options.insertTop);
 
     this.headerDiv = document.createElement("div");
     this.panel.bodyDiv.appendChild(this.headerDiv);
@@ -60,7 +60,6 @@ class GetFeatureInfoTool extends Tool
     {
       if (layerData)
       {
-        let layerId = layerData.layerId;
         let geojson = layerData.geojson;
         let features = geojson.features;
         if (features && features.length > 0)

@@ -22,13 +22,17 @@
     <p:ajax event="rowReorder" 
             update="@form:cnt:map_tabs:map_controls_table"/>
 
-    <p:column headerText="Script" styleClass="col-7" 
-              sortable="true" sortBy="#{script}">
+    <p:column headerText="Script" styleClass="col-7">
       <h:outputText value="#{script}" />
     </p:column>
 
     <p:column styleClass="col-2 text-right white-space-nowrap">
       <span class="drag pi pi-arrows-v p-2" />
+      <p:linkButton href="/scripts/#{script}" 
+                    icon="pi pi-eye" 
+                    title="#{objectBundle.view}"
+                    styleClass="rounded-button ui-button-flat"
+                    target="_blank" />      
       <p:commandButton action="#{geoMapControlsBean.removeScript(script)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"

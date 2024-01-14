@@ -1,35 +1,35 @@
-/* Search */
+/* MapInfoControl.js */
 
 import { Panel } from "./Panel.js";
 
-class SearchControl
-{ 
-  constructor(containerId, insertTop)
+class MapInfoControl
+{
+  constructor(options)
   {
-    this.createPanel(containerId, insertTop);
-    this.locators = [];
-    this.activeLocator = null;
-  }
-  
-  addLocator(locator)
-  {
-    this.locators.add(locator);
-    if (this.activeLocator === null) this.activeLocator = locator;
+    this.createPanel(options);
   }
 
-  createPanel(containerId, insertTop)
+  createPanel(options)
   {
-    this.panel = new Panel(containerId, "Search", "pi pi-search", insertTop);    
+    this.panel = new Panel(options.containerId, 
+      "Information", "pi pi-info-circle", options.insertTop);
+
+    const bodyDiv = this.panel.bodyDiv;
+    for (let i = 0; i < 20; i++)
+    {
+      let div = document.createElement("div");
+      div.innerHTML = `<span>bla bla bla bla bla</span>`;
+      bodyDiv.appendChild(div);
+    }
   }
 
   onAdd(map)
   {
     this.map = map;
-    map.searchControl = this;
 
     const div = document.createElement("div");
     this.div = div;
-    div.innerHTML = `<button><span class="pi pi-search"/></button>`;
+    div.innerHTML = `<button><span class="pi pi-info-circle"/></button>`;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
     div.title = this.title;
     div.style.width = "29px";
@@ -46,5 +46,6 @@ class SearchControl
   }
 }
 
-export { SearchControl };
+export { MapInfoControl };
+
 

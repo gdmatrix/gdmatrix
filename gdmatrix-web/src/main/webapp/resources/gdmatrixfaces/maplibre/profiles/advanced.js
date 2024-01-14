@@ -2,9 +2,9 @@
 
 import { GoHomeControl } from "../controls/GoHomeControl.js";
 import { LoadingIndicatorControl } from "../controls/LoadingIndicatorControl.js";
-import { SearchControl } from "../controls/SearchControl.js";
+import { GeolocateControl, WfsGeolocator } from "../controls/GeolocateControl.js";
 import { LegendControl } from "../controls/LegendControl.js";
-import { InfoControl } from "../controls/InfoControl.js";
+import { MapInfoControl } from "../controls/MapInfoControl.js";
 import { GetFeatureInfoTool } from "../controls/GetFeatureInfoTool.js";
 import { MeasureLengthTool } from "../controls/MeasureLengthTool.js";
 import { MeasureAreaTool } from "../controls/MeasureAreaTool.js";
@@ -45,19 +45,40 @@ function init(map)
 
   map.addControl(new LoadingIndicatorControl(), "top-right");
 
-  map.addControl(new SearchControl("maplibre_left_container"), "top-left");
+  map.addControl(new GeolocateControl({
+    containerId: "maplibre_left_container", 
+    insertTop: false
+  }), "top-left");
 
-  map.addControl(new GetFeatureInfoTool("maplibre_right_container", true), "top-left");
+  map.addControl(new GetFeatureInfoTool({
+    containerId: "maplibre_right_container", 
+    insertTop: true
+  }), "top-left");
 
-  map.addControl(new MeasureLengthTool("maplibre_right_container", true), "top-left");
+  map.addControl(new MeasureLengthTool({
+    containerId: "maplibre_right_container", 
+    insertTop: true}
+  ), "top-left");
 
-  map.addControl(new MeasureAreaTool("maplibre_right_container", true), "top-left");
+  map.addControl(new MeasureAreaTool({
+    containerId: "maplibre_right_container", 
+    insertTop: true}
+  ), "top-left");
 
-  map.addControl(new ExportAreaTool("maplibre_right_container", true), "top-left");
+  map.addControl(new ExportAreaTool({
+    containerId: "maplibre_right_container", 
+    insertTop: true}
+  ), "top-left");
 
-  map.addControl(new LegendControl("maplibre_right_container", true), "bottom-right");
+  map.addControl(new LegendControl({
+    containerId: "maplibre_right_container", 
+    insertTop: true}
+  ), "bottom-right");
 
-  map.addControl(new InfoControl("maplibre_right_container", true), "bottom-right");
+  map.addControl(new MapInfoControl({
+    containerId: "maplibre_right_container", 
+    insertTop: true}
+  ), "bottom-right");
 
   if (style.terrain)
   {
@@ -69,6 +90,8 @@ function init(map)
       })
     );
   }
+  
+  map.geolocateControl.addGeolocator(new WfsGeolocator());
 }
 
 export { init };

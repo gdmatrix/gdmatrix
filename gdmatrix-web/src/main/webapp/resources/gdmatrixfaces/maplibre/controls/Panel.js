@@ -1,4 +1,4 @@
-/* Panel */
+/* Panel.js */
 
 class Panel
 {
@@ -9,6 +9,11 @@ class Panel
     this.iconClassName = iconClassName || "pi pi-info-circle";
     this.insertTop = insertTop;
     this.createPanel();
+  }
+
+  isVisible()
+  {
+    return this.panelDiv.style.display !== "none";
   }
 
   show()
@@ -46,9 +51,10 @@ class Panel
   addPanelToContainer()
   {
     if (this.container) return;
+    
+    console.info(this.containerId);
 
-    this.container = this.containerId ?
-      document.getElementById(this.containerId) : map.getContainer();      
+    this.container = document.getElementById(this.containerId);      
 
     const panelDiv = this.panelDiv;
 

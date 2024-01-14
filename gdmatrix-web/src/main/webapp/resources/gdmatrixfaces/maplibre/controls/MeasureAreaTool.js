@@ -1,14 +1,14 @@
-/* MeasureArea */
+/* MeasureAreaTool.js */
 
 import { Panel } from "./Panel.js";
 import { Tool } from "./Tool.js";
 
 class MeasureAreaTool extends Tool
 {
-  constructor(containerId, insertTop)
+  constructor(options)
   {
     super("fa fa-ruler-combined", "Measure area");
-    this.createPanel(containerId, insertTop);
+    this.createPanel(options);
     
     this._onMapClick = (event) => this.addPoint(event.lngLat);
     this.startData = {
@@ -136,10 +136,10 @@ class MeasureAreaTool extends Tool
     this.resultDiv.className = "p-4";
   }
 
-  createPanel(containerId, insertTop)
+  createPanel(options)
   {
-    this.panel = new Panel(containerId, 
-      "Measure area", "pi pi-info-circle", insertTop);
+    this.panel = new Panel(options.containerId, 
+      "Measure area", "pi pi-info-circle", options.insertTop);
 
     const bodyDiv = this.panel.bodyDiv;
     const buttonBar = document.createElement("div");
