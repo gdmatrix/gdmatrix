@@ -36,7 +36,8 @@
       
       <div class="ui-fluid formgrid grid" >
 
-        <p:outputPanel styleClass="field col-12">
+        <p:outputPanel styleClass="field col-12" 
+                       rendered="#{!caseInterventionsTabBean.leafBaseType}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_type}"
                          styleClass="w-full" indicateRequired="true" />

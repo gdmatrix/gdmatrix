@@ -70,7 +70,8 @@
               </div>              
 
               <!-- Type -->
-              <div class="field col-12 md:col-6">
+              <p:outputPanel styleClass="field col-12 md:col-6" 
+                             rendered="#{!casePersonsTabBean.leafBaseType}">
                 <p:outputLabel for="@next" 
                                value="#{caseBundle.casePersons_type}"
                                indicateRequired="true" />
@@ -89,7 +90,7 @@
                                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                       disabled="#{!caseObjectBean.editable}">            
                 </emcomp:typeReference>
-              </div>
+              </p:outputPanel>
 
               <!-- Dates -->
               <p:outputPanel styleClass="field col-12 md:col-3">

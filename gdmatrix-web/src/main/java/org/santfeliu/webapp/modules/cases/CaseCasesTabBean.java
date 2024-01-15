@@ -281,15 +281,6 @@ public class CaseCasesTabBean extends TabBean
     return null;
   }
 
-  public boolean isLeafBaseType()
-  {
-    String baseTypeId = getTabBaseTypeId();
-    if (baseTypeId == null) return false;
-    TypeCache typeCache = TypeCache.getInstance();
-    Type baseType = typeCache.getType(baseTypeId);
-    return (baseType != null ? baseType.isLeaf() : false);
-  }
-
   @Override
   public void load() throws Exception
   {
