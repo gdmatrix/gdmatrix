@@ -46,6 +46,7 @@ import org.matrix.cms.Property;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.news.New;
 import org.matrix.news.NewStoreOptions;
+import org.matrix.news.Source;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
@@ -53,6 +54,7 @@ import org.santfeliu.webapp.FinderBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.cms.CMSModuleBean;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -62,7 +64,13 @@ import org.santfeliu.webapp.modules.cms.CMSModuleBean;
 @ViewScoped
 public class NewObjectBean extends ObjectBean
 {
+  private static final String SECTION_PROPERTY = "sectionId";
+  private static final String SECTION_VALUE = "%";
+  private static final String LEGACY_SECTION_PROPERTY = "action";
+  private static final String LEGACY_SECTION_VALUE = "%newSearchBySection%";  
+  
   private New newObject = new New();
+  private List<Source> sources;
 
   @Inject
   NewFinderBean newFinderBean;
@@ -70,9 +78,18 @@ public class NewObjectBean extends ObjectBean
   @Inject
   NewTypeBean newTypeBean;
 
+
   @PostConstruct
   public void init()
   {
+    try
+    {
+      sources = NewsModuleBean.getPort(true).findSources();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public New getNewObject()
@@ -83,6 +100,30 @@ public class NewObjectBean extends ObjectBean
   public void setNewObject(New newObject)
   {
     this.newObject = newObject;
+  }
+
+  public boolean isCustomUrlTargetBlank()
+  {    
+    return newObject.getCustomUrlTarget() != null 
+      && newObject.getCustomUrlTarget().equals("_blank");
+  }
+
+  public void setCustomUrlTargetBlank(boolean customUrlTargetBlank)
+  {
+    if (customUrlTargetBlank)
+      newObject.setCustomUrlTarget("_blank");
+    else
+      newObject.setCustomUrlTarget("");
+  }
+
+  public List<Source> getSources()
+  {
+    return sources;
+  }
+
+  public void setSources(List<Source> sources)
+  {
+    this.sources = sources;
   }
   
   public Date getStartDateTime()
@@ -194,15 +235,34 @@ public class NewObjectBean extends ObjectBean
   List<MenuItemCursor> getSectionNodes() throws Exception
   {
     List<String> nodeIds = new ArrayList<>();
-    
+
     String workspaceId = UserSessionBean.getCurrentInstance().getWorkspaceId();
     NodeFilter nodeFilter = new NodeFilter();
+
+    //Search for sections under topWeb
     Property property = new Property();
-    property.setName("action");
-    property.getValue().add("%newSearchBySection%");
+    property.setName(SECTION_PROPERTY);
+    property.getValue().add(SECTION_VALUE);
     nodeFilter.getProperty().add(property);        
+    
+    MenuItemCursor topWeb = WebUtils.getTopWebMenuItem(getSelectedMenuItem());
+    nodeFilter.getPathNodeId().add(topWeb.getMid());
     nodeFilter.getWorkspaceId().add(workspaceId);
+    
     List<Node> nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
+    if (nodeList == null || nodeList.isEmpty())
+    {
+      //Search for legacy sections
+      nodeFilter = new NodeFilter();
+      nodeFilter.getWorkspaceId().add(workspaceId);
+      property = new Property();
+      property.setName(LEGACY_SECTION_PROPERTY);
+      property.getValue().add(LEGACY_SECTION_VALUE);
+      nodeFilter.getProperty().clear();
+      nodeFilter.getProperty().add(property);       
+      nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
+    }
+    
     nodeList.stream().forEach(node -> nodeIds.add(node.getNodeId()));
     
     return UserSessionBean.getCurrentInstance()
@@ -223,7 +283,10 @@ public class NewObjectBean extends ObjectBean
   {
     NewStoreOptions newStoreOptions = new NewStoreOptions();
     newStoreOptions.setCleanSummary(true);
-    newStoreOptions.setCleanText(true);    
+    newStoreOptions.setCleanText(true);  
+    
+    newObject.setUserId(UserSessionBean.getCurrentInstance().getUsername()); 
+    newObject.setCustomUrl(newObject.getCustomUrl().trim());
     
     newObject = 
       NewsModuleBean.getPort(false).storeNew(newObject, newStoreOptions);
@@ -231,6 +294,13 @@ public class NewObjectBean extends ObjectBean
     
     newFinderBean.outdate();
   }
+  
+  @Override
+  public void removeObject() throws Exception
+  {
+    if (!isNew())
+      NewsModuleBean.getPort(false).removeNew(newObject.getNewId());
+  }  
 
   @Override
   public Serializable saveState()

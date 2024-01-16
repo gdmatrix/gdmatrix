@@ -245,7 +245,6 @@ public class NewSectionsTabBean extends TabBean
     try
     {
       Object[] stateArray = (Object[])state;
-//      selected = (List<TreeNode>) stateArray[0];
       load();
     }
     catch (Exception ex)
@@ -257,19 +256,17 @@ public class NewSectionsTabBean extends TabBean
   private void loadSectionsTree() throws Exception
   {
     root = new SectionTreeNode("Root");
-//    root.setExpanded(true);
-//    root.setType("NoModule");
         
     List<MenuItemCursor> menuItemList  = newObjectBean.getSectionNodes();
     
     for (MenuItemCursor nodeMic : menuItemList)
     {    
-      if (nodeMic.getDirectProperty(PARAM_SECTION_ID) == null)
-      {
+//      if (nodeMic.getDirectProperty(PARAM_SECTION_ID) == null)
+//      {
         TreeNode node = createTreeNode(nodeMic);
         if (node != null) 
           node.setSelectable(true);
-      }
+//      }
     }
   }  
   

@@ -10,10 +10,6 @@
   <div class="ui-fluid formgrid grid">
 
     <h:panelGroup id="status_icons" styleClass="w-full m-0 flex justify-content-end"> 
-      <h:panelGroup id="state_icon">
-        <i class="mr-2 text-xl #{newObjectBean.newObject.draft ? 'mi-outlined mi-edit-note' : 'mi-outlined mi-public'}" /> 
-      </h:panelGroup>
-      <p:tooltip for="state_icon" value="#{newObjectBean.newObject.draft  ? newsBundle.new_main_draft : 'Publicada'}" /> 
       <h:panelGroup id="read_count_icon">
         <p:badge value="#{newObjectBean.newObject.totalReadingCount}" styleClass="text-xs">
           <i class="pi pi-eye text-2xl"/>
@@ -55,43 +51,47 @@
                     disabled="#{!newObjectBean.editable}"/>
     </div>  
 
-
-
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_headline}" />
-      <p:inputTextarea value="#{newObjectBean.newObject.headline}" />
+      <p:inputTextarea value="#{newObjectBean.newObject.headline}" 
+                       required="#{not empty param['mainform:search_tabs:store']}"
+                       requiredMessage="#{messageBundle.HEADLINE_IS_REQUIRED}"/>
     </div> 
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_draft}" />
       <p:toggleSwitch  value="#{newObjectBean.newObject.draft}" 
                        styleClass="ml-2 vertical-align-middle">
-        <p:ajax update="status_icons"/>
       </p:toggleSwitch>
     </div> 
 
-    <div class="field col-12">
+    <div class="field col-12 xl:col-5">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_source}" />
-      <p:inputText value="#{newObjectBean.newObject.source}"  />
-    </div>     
+      <p:selectOneMenu value="#{newObjectBean.newObject.source}" >
+        <f:selectItem itemLabel="" itemValue="" />
+        <f:selectItems value="#{newObjectBean.sources}" var="source" itemLabel="#{source.name}" itemValue="#{source.id}" />
+      </p:selectOneMenu>
+    </div>
 
+    <div class="field col-12 xl:col-7">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_customUrl}" />
+      <div class="ui-inputgroup">
+        <p:inputText value="#{newObjectBean.newObject.customUrl}"  />
+        <p:selectBooleanButton value="#{newObjectBean.customUrlTargetBlank}" 
+                               onIcon="mi-outlined mi-open-in-new" offIcon="mi-outlined mi-open-in-new-off" 
+                               title="#{newsBundle.new_main_customUrlTargetBlank}"
+                               />
+      </div>
+    </div>   
+   
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_keywords}" />
       <div class="ui-inputgroup">
         <p:chips value="#{newObjectBean.keywords}" widgetVar="keywordsInput" separator=" " />
-        <p:commandButton icon="pi pi-tags" onclick="PF('keywordsInput').toggleEditor()"  />        
+        <p:selectBooleanButton styleClass="ui-button ui-button-icon-only" onIcon="pi pi-tags" offIcon="pi pi-tags"  
+                               onchange="PF('keywordsInput').toggleEditor()"  />        
       </div>
     </div>     
-
-    <div class="field col-12">
-      <p:outputLabel for="@next" value="#{newsBundle.new_main_customUrl}" />
-      <p:inputText value="#{newObjectBean.newObject.customUrl}"  />
-    </div>   
-
-    <div class="field col-12">
-      <p:outputLabel for="@next" value="#{newsBundle.new_main_customUrlTargetBlank}" />
-      <p:toggleSwitch  styleClass="ml-2 vertical-align-middle" value="#{newObjectBean.newObject.customUrlTarget}"  />
-    </div>      
 
     <p:tabView>
       <p:tab title="#{newsBundle.new_main_summary}">
@@ -103,9 +103,6 @@
                    readonly="#{!eventObjectBean.editable}" />  
       </p:tab>
     </p:tabView>
-
-
-
 
     <emcomp:auditData creationDateTime="#{newObjectBean.newObject.registerDate}#{newObjectBean.newObject.registerTime}"
                       creationUserIdLabel="#{newsBundle.new_main_user}"
