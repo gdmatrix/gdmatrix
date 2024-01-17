@@ -36,7 +36,7 @@
           <div class="object_header">
             <h1 class="object_label">
               <h:outputText value="" styleClass="#{userSessionBean.menuModel.selectedMenuItem.properties.icon} ml-2" />
-              <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" styleClass="ml-2" />
+              <h:outputText value="#{applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.label)}" styleClass="ml-2" />
             </h1>
 
             <div class="header_buttons">

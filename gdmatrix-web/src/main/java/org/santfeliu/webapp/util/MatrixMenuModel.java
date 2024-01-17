@@ -8,6 +8,7 @@ import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuElement;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 
 /**
@@ -58,7 +59,10 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
     String label = mic.getDirectProperty("description") != null
       ? mic.getDirectProperty("description")
       : mic.getLabel();
-
+    
+    ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
+    label = applicationBean.translate(label, "jsp:" + mic.getMid());    
+    
     if (mic.hasChildren())
     {
       DefaultSubMenu.Builder builder = DefaultSubMenu.builder()
