@@ -68,8 +68,21 @@ public class NewTypeBean extends TypeBean<New, NewsFilter>
   @Override
   public String describe(New _new)
   {
-    return _new.getHeadline();
+    return describeText(_new.getHeadline());
   }
+    
+  public String describeText(String text)
+  {
+    if (text == null)
+      return "";
+    
+    String description = text.substring(0, Math.min(text.length(), 80));
+
+    if (text.length() > 80)
+      description += "...";
+    
+    return description;
+  }  
 
   @Override
   public New loadObject(String objectId)

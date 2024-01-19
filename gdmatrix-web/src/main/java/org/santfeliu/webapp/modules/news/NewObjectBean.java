@@ -54,7 +54,6 @@ import org.santfeliu.webapp.FinderBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.cms.CMSModuleBean;
-import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -64,8 +63,7 @@ import org.santfeliu.webapp.util.WebUtils;
 @ViewScoped
 public class NewObjectBean extends ObjectBean
 {
-  private static final String SECTION_PROPERTY = "sectionId";
-  private static final String SECTION_VALUE = "%";
+  public static final String NEWSECTION_PROPERTY = "newSection";
   private static final String LEGACY_SECTION_PROPERTY = "action";
   private static final String LEGACY_SECTION_VALUE = "%newSearchBySection%";  
   
@@ -239,29 +237,24 @@ public class NewObjectBean extends ObjectBean
     String workspaceId = UserSessionBean.getCurrentInstance().getWorkspaceId();
     NodeFilter nodeFilter = new NodeFilter();
 
-    //Search for sections under topWeb
-    Property property = new Property();
-    property.setName(SECTION_PROPERTY);
-    property.getValue().add(SECTION_VALUE);
-    nodeFilter.getProperty().add(property);        
-    
-    MenuItemCursor topWeb = WebUtils.getTopWebMenuItem(getSelectedMenuItem());
-    nodeFilter.getPathNodeId().add(topWeb.getMid());
     nodeFilter.getWorkspaceId().add(workspaceId);
     
+    //Search for legacy sections
+    nodeFilter = new NodeFilter();
+    nodeFilter.getWorkspaceId().add(workspaceId);
+
+    Property property = new Property();
+    property.setName(LEGACY_SECTION_PROPERTY);
+    property.getValue().add(LEGACY_SECTION_VALUE);
+    nodeFilter.getProperty().add(property);       
     List<Node> nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
-    if (nodeList == null || nodeList.isEmpty())
-    {
-      //Search for legacy sections
-      nodeFilter = new NodeFilter();
-      nodeFilter.getWorkspaceId().add(workspaceId);
-      property = new Property();
-      property.setName(LEGACY_SECTION_PROPERTY);
-      property.getValue().add(LEGACY_SECTION_VALUE);
-      nodeFilter.getProperty().clear();
-      nodeFilter.getProperty().add(property);       
-      nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
-    }
+
+    nodeFilter.getProperty().clear();
+    property = new Property();
+    property.setName(NEWSECTION_PROPERTY);
+    property.getValue().add("%");
+    nodeFilter.getProperty().add(property);       
+    nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
     
     nodeList.stream().forEach(node -> nodeIds.add(node.getNodeId()));
     

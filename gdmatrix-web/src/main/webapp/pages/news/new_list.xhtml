@@ -29,10 +29,19 @@
       <h:outputText value="#{row.startDate}" converter="dateConverter" />
     </p:column> 
     <p:column headerText="#{newsBundle.new_search_headline}" styleClass="col-8">
-      <h:outputText value="#{row.headline}" />
+      <h:outputText value="#{newTypeBean.describeText(row.headline)}" />
+      <p:overlayPanel for="view-full-headline" rendered="true">
+        <h:outputText value="#{row.headline}" />
+      </p:overlayPanel>       
     </p:column>   
 
     <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:commandButton id="view-full-headline" type="button" 
+                             styleClass="ui-button-flat rounded-button" 
+                             rendered="#{row.headline.length() > 80}" 
+                             icon="material-icons mi-more-horiz" 
+                             title="#{newsBundle.new_search_show_full_headline}" 
+                             alt="#{newsBundle.new_search_show_full_headline}"/>        
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.newId)}"

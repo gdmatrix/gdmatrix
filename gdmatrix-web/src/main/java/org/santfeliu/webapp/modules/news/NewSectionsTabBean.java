@@ -31,8 +31,6 @@
 package org.santfeliu.webapp.modules.news;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +40,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.news.NewSection;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.NodeUnselectEvent;
-import org.primefaces.model.CheckboxTreeNode;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
@@ -51,6 +48,7 @@ import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import static org.santfeliu.webapp.modules.news.NewObjectBean.NEWSECTION_PROPERTY;
 import org.santfeliu.webapp.modules.news.NewSectionsTabBean.SectionTreeData;
 
 /**
@@ -61,16 +59,18 @@ import org.santfeliu.webapp.modules.news.NewSectionsTabBean.SectionTreeData;
 @ViewScoped
 public class NewSectionsTabBean extends TabBean
 {
-  private static final String PARAM_SECTION_ID = "sectionId";
-  private static final String PARAM_SECTION_DESC  = "sectionDesc";
-  
+  private static final String SELECTABLE = "selectable";
+  private static final String UNSELECTABLE = "unselectable";
+    
+  private static final String SECTIONID_PROPERTY = "sectionId";  
+
   private SectionTreeNode root;
-  private List<TreeNode> selected;
   private Map<String, SectionTreeNode> nodeMap;
   private SectionTreeNode ctxNode;
 
   @Inject
   NewObjectBean newObjectBean;
+
 
   @PostConstruct
   public void init()
@@ -94,7 +94,7 @@ public class NewSectionsTabBean extends TabBean
     return newObjectBean;
   }
 
-  public CheckboxTreeNode getRoot()
+  public TreeNode getRoot()
   {
     return root;
   }
@@ -104,28 +104,16 @@ public class NewSectionsTabBean extends TabBean
     this.root = root;
   }
 
-  public List<TreeNode> getSelected()
-  {
-    return selected;
-  }
-  
-  public void setSelected(List<TreeNode> selected)
-  {
-    this.selected = selected;
-  }
-
   @Override
   public void load()
   {
-    if (!NEW_OBJECT_ID.equals(getObjectId()))          
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
       {
         nodeMap = new HashMap<>();
-        
-        loadSectionsTree();        
-        
-        selected = new ArrayList<>(); 
+
+        loadSectionsTree();
 
         List<NewSection> newSections = NewsModuleBean.getPort(false).
           findNewSections(getObjectId());
@@ -135,61 +123,58 @@ public class NewSectionsTabBean extends TabBean
           SectionTreeNode node = nodeMap.get(newSection.getSectionId());
           if (node != null)
           {
-            node.setSelected(true, false, false);
-            NewSection section = (NewSection)node.getData();
-            section.setNewSectionId(newSection.getNewSectionId());
-            section.setSticky(newSection.isSticky());
-            selected.add(node);            
+            node.setType(SELECTABLE);      
+            SectionTreeData std = (SectionTreeData) node.getData();
+            std.setNewSectionId(newSection.getNewSectionId());
+            std.setSticky(newSection.isSticky());
+            std.setChecked(true);
+            expandParents(node);
           }
-        }    
+        }
       }
       catch (Exception ex)
       {
         error(ex);
       }
     }
-    else
-      selected = Collections.EMPTY_LIST;
   }
-      
-  public void onNodeSelect(NodeSelectEvent event) 
-  {  
+  
+  public void onNodeSelect(NodeSelectEvent event)
+  {
     try
     {
       SectionTreeNode node = (SectionTreeNode) event.getTreeNode();
+      if (SELECTABLE.equals(node.getType()))
+      {
+        SectionTreeData std = node.getData();
 
-      NewSection ns = node.getData();
-      ns.setNewId(getObjectId());
-      NewSection stored = NewsModuleBean.getPort(false).storeNewSection(ns);
-      ns.setNewSectionId(stored.getNewSectionId());
-      growl("NEW_SECTIONS_PUBLISHED", new Object[]{node});
+        std.setNewId(getObjectId());
+
+        if (!std.isChecked())
+        {
+          NewSection ns = NewsModuleBean.getPort(false).storeNewSection(std);
+          if (std.getNewSectionId() == null)
+            std.setNewSectionId(ns.getNewSectionId());
+          std.setChecked(true);
+          growl("NEW_SECTIONS_PUBLISHED", new Object[]{node});
+        }
+        else
+        {
+          NewsModuleBean.getPort(false).removeNewSection(std.getNewSectionId());
+          std.setChecked(false);
+          std.setSticky(false);
+          growl("NEW_SECTIONS_UNPUBLISHED", new Object[]{node});
+        }
+      }
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }     
-  
-  public void onNodeUnselect(NodeUnselectEvent event) 
-  {
-    try 
-    {
-      SectionTreeNode node = (SectionTreeNode) event.getTreeNode();
-      NewSection ns = node.getData();    
-      if (ns.getNewSectionId() != null)    
-      {
-        NewsModuleBean.getPort(false).removeNewSection(ns.getNewSectionId());    
-        growl("NEW_SECTIONS_UNPUBLISHED", new Object[]{node});
-      }
-    }
-    catch (Exception ex) 
-    {
-      error(ex);
-    }   
-  }  
+  }
 
-  public void onContextMenu(NodeSelectEvent event) 
-  {  
+  public void onContextMenu(NodeSelectEvent event)
+  {
     try
     {
       ctxNode = (SectionTreeNode) event.getTreeNode();
@@ -198,45 +183,60 @@ public class NewSectionsTabBean extends TabBean
     {
       error(ex);
     }
-  } 
+  }
   
   public void switchSticky()
   {
     if (ctxNode != null)
     {
-      try 
+      try
       {
         NewSection newSection = ctxNode.getData();
         newSection.setSticky(!newSection.isSticky());
         NewsModuleBean.getPort(false).storeNewSection(newSection);
         TreeNode node = ctxNode;
-        while(node.getParent() != null)
+        while (node.getParent() != null)
         {
-          if (!node.isLeaf()) node.setExpanded(true);
+          if (!node.isLeaf())
+            node.setExpanded(true);
           node = node.getParent();
         }
       }
-      catch (Exception ex) 
+      catch (Exception ex)
       {
         error(ex);
       }
     }
   }
-  
+
   public void expandAll()
   {
     nodeMap.values().stream().forEach(node -> node.setExpanded(true));
   }
-  
+
   public void collapseAll()
   {
     nodeMap.values().stream().forEach(node -> node.setExpanded(false));
   }
   
+  public void expandChecked()
+  {
+    collapseAll();
+    
+    for (SectionTreeNode node : nodeMap.values())
+    {
+      SectionTreeData data = (SectionTreeData) node.getData();
+      if (data.isChecked()) 
+        expandParents(node);      
+    }
+  }
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{};
+    return new Object[]
+    {
+    };
   }
 
   @Override
@@ -244,7 +244,7 @@ public class NewSectionsTabBean extends TabBean
   {
     try
     {
-      Object[] stateArray = (Object[])state;
+      Object[] stateArray = (Object[]) state;
       load();
     }
     catch (Exception ex)
@@ -252,194 +252,132 @@ public class NewSectionsTabBean extends TabBean
       error(ex);
     }
   }
-    
+
   private void loadSectionsTree() throws Exception
   {
-    root = new SectionTreeNode("Root");
-        
-    List<MenuItemCursor> menuItemList  = newObjectBean.getSectionNodes();
-    
+    root = new SectionTreeNode("Root", false);
+
+    List<MenuItemCursor> menuItemList = newObjectBean.getSectionNodes();
+
     for (MenuItemCursor nodeMic : menuItemList)
-    {    
-//      if (nodeMic.getDirectProperty(PARAM_SECTION_ID) == null)
-//      {
+    {
+      //Don't use nodes refering other sections (containing 'sectionId')
+      String sectionId = nodeMic.getDirectProperty(SECTIONID_PROPERTY);
+      if (sectionId == null)
+      {
         TreeNode node = createTreeNode(nodeMic);
-        if (node != null) 
-          node.setSelectable(true);
-//      }
+        if (node != null)
+          node.setType(SELECTABLE);
+      }
     }
-  }  
-  
-  private TreeNode createTreeNode(MenuItemCursor mic)  
-  { 
+  }
+
+  private TreeNode createTreeNode(MenuItemCursor mic)
+  {
     SectionTreeNode node = null;
-    
+
     if (mic != null)
     {
       MenuItemCursor parentMic = mic.getParent();
-      TreeNode parentNode = root;  
+      TreeNode parentNode = root;
       if (!parentMic.isRoot())
         parentNode = createTreeNode(parentMic);
-      
+
       String mid = mic.getMid();
-      
+
       node = nodeMap.get(mid);
       if (node == null && parentNode != null)
       {
-        List<String> editRoles =
-          mic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
-        if (UserSessionBean.getCurrentInstance().isUserInRole(editRoles))         
+        List<String> editRoles
+          = mic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
+        if (UserSessionBean.getCurrentInstance().isUserInRole(editRoles))
         {
-          String value = mic.getDirectProperty(PARAM_SECTION_DESC);
-          if (value == null) value = mic.getDirectProperty("description");
-          if (value == null) value = mic.getDirectProperty("label");
-          if (value == null) value = mid;   
+          String value = mic.getDirectProperty(NEWSECTION_PROPERTY);
+          if (value == null)
+            value = mic.getDirectProperty("description");
+          if (value == null)
+            value = mic.getDirectProperty("label");
+          if (value == null)
+            value = mid;
 
-          node = new SectionTreeNode(mid, value, parentNode);
-          node.setSelectable(false);
-                
+          node = new SectionTreeNode(mid, value, false, parentNode);
+          node.setType(UNSELECTABLE);
+
           nodeMap.put(mid, node);
         }
       }
     }
-      
-    return node;    
+
+    return node;
   }
   
-  public class SectionTreeNode extends CheckboxTreeNode<SectionTreeData>
-  {  
-    public SectionTreeNode(String sectionId, String label, TreeNode parent)
+  private void expandParents(TreeNode node)
+  {
+    TreeNode parent = node.getParent();
+    while(parent != null)
+    {
+      parent.setExpanded(true);
+      parent = parent.getParent();
+    }    
+  }  
+
+  public class SectionTreeNode extends DefaultTreeNode<SectionTreeData>
+  {
+
+    public SectionTreeNode(String sectionId, String label, boolean checked, 
+      TreeNode parent)
     {
       super(null, parent);
-      SectionTreeData data = new SectionTreeData(label);
+      SectionTreeData data = new SectionTreeData(label, checked);
       data.setSectionId(sectionId);
       data.setNewId(getObjectId());
       setData(data);
     }
-        
-    public SectionTreeNode(String label)
+
+    public SectionTreeNode(String label, boolean checked)
     {
       super();
-      setData(new SectionTreeData(label));
+      setData(new SectionTreeData(label, checked));
     }
-    
+
     public void setSticky(boolean sticky)
     {
-      ((NewSection)getData()).setSticky(sticky);
+      ((NewSection) getData()).setSticky(sticky);
     }
-    
+
     public boolean isSticky()
     {
-      return ((NewSection)getData()).isSticky();
+      return ((NewSection) getData()).isSticky();
     }
+    
   }
-  
+
   public class SectionTreeData extends NewSection
   {
+    boolean checked;
     String label;
 
-    public SectionTreeData(String label)
+    public SectionTreeData(String label, boolean checked)
     {
+      this.checked = checked;
       this.label = label;
+    }
+
+    public boolean isChecked()
+    {
+      return checked;
+    }
+
+    public void setChecked(boolean checked)
+    {
+      this.checked = checked;
     }
 
     @Override
     public String toString()
     {
       return label;
-    }       
-  }  
-      
-//  public class Section 
-//  {
-//    private String newSectionId;
-//    private final String sectionId;
-//    private String label;
-//    private boolean sticky;
-//
-//    
-//    public Section(NewSection newSection)
-//    {
-//      this(newSection.getNewSectionId(), newSection.getSectionId(), null);
-//    }
-//    
-//    public Section(String sectionId, String label)
-//    {
-//      this(null, sectionId, label);
-//    }
-//
-//    private Section(String newSectionId, String sectionId, String label)
-//    {
-//      this.newSectionId = newSectionId;
-//      this.sectionId = sectionId;
-//      this.label = label;
-//    }
-//
-//    public void setNewSectionId(String newSectionId)
-//    {
-//      this.newSectionId = newSectionId;
-//    }
-//
-//    public String getNewSectionId()
-//    {
-//      return newSectionId;
-//    }
-//
-//    public String getSectionId()
-//    {
-//      return sectionId;
-//    }
-//    
-//    public void setLabel(String label)
-//    {
-//      this.label = label;
-//    }    
-//    
-//    public String getLabel()
-//    {
-//      return label;
-//    }
-//
-//    public boolean isSticky()
-//    {
-//      return sticky;
-//    }
-//
-//    public void setSticky(boolean sticky)
-//    {
-//      this.sticky = sticky;
-//    }
-//    
-//    @Override
-//    public boolean equals(Object obj)
-//    {
-//      if (this == obj)
-//        return true;
-//      if (obj == null)
-//        return false;
-//      if (getClass() != obj.getClass())
-//        return false;
-//      final Section other = (Section) obj;
-//      return Objects.equals(this.sectionId, other.sectionId);
-//    }
-//
-//    @Override
-//    public int hashCode()
-//    {
-//      int hash = 7;
-//      hash = 83 * hash + Objects.hashCode(this.sectionId);
-//      return hash;
-//    }
-//
-//    @Override
-//    public String toString()
-//    {
-//      return label;
-//    }
-//    
-//    
-//  }
-  
-
+    }
+  }
 
 }

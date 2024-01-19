@@ -20,7 +20,7 @@
 
     <div class="field col-12 lg:col-2">
       <p:outputLabel for="@next" value="Id" />
-      <p:inputText value="#{newObjectBean.objectId}" readonly="true" styleClass="text-500"/>
+      <p:inputText value="#{newObjectBean.objectId}" readonly="true" styleClass="text-color-secondary"/>
     </div>
 
     <div class="field col-12 lg:col-5 xl:col-3">
@@ -60,7 +60,7 @@
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_draft}" />
-      <p:toggleSwitch  value="#{newObjectBean.newObject.draft}" 
+      <p:toggleSwitch value="#{newObjectBean.newObject.draft}" 
                        styleClass="ml-2 vertical-align-middle">
       </p:toggleSwitch>
     </div> 
