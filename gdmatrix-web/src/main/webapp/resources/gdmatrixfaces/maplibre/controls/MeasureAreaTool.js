@@ -1,14 +1,17 @@
 /* MeasureAreaTool.js */
 
-import { Panel } from "./Panel.js";
 import { Tool } from "./Tool.js";
+import { Panel } from "../ui/Panel.js";
 
 class MeasureAreaTool extends Tool
 {
   constructor(options)
   {
-    super("fa fa-ruler-combined", "Measure area");
-    this.createPanel(options);
+    super({...{ 
+            "title": "Measure area", 
+            "iconClass": "fa fa-ruler-combined",
+            "position" : "right"
+          }, ...options});
     
     this._onMapClick = (event) => this.addPoint(event.lngLat);
     this.startData = {
@@ -91,6 +94,11 @@ class MeasureAreaTool extends Tool
     map.removeSource("measured_polygon");
   }
 
+  reactivate()
+  {
+    this.panel.show();
+  }
+
   addPoint(lngLat)
   {
     const map = this.map;
@@ -136,10 +144,10 @@ class MeasureAreaTool extends Tool
     this.resultDiv.className = "p-4";
   }
 
-  createPanel(options)
+  createPanel(map)
   {
-    this.panel = new Panel(options.containerId, 
-      "Measure area", "pi pi-info-circle", options.insertTop);
+    this.panel = new Panel(map, this.options);
+    this.panel.onHide = () => this.deactivateTool(this);
 
     const bodyDiv = this.panel.bodyDiv;
     const buttonBar = document.createElement("div");

@@ -1,14 +1,17 @@
 /* MeasureLengthTool.js */
 
-import { Panel } from "./Panel.js";
 import { Tool } from "./Tool.js";
+import { Panel } from "../ui/Panel.js";
 
 class MeasureLengthTool extends Tool
 {
   constructor(options)
   {
-    super("fa fa-ruler-horizontal", "Measure length");
-    this.createPanel(options);
+    super({...{ 
+            "title": "Export length", 
+            "iconClass": "fa fa-ruler-horizontal",
+            "position" : "right"
+          }, ...options});    
     
     this._onMapClick = (event) => this.addPoint(event.lngLat);
     this.startData = {
@@ -92,6 +95,11 @@ class MeasureLengthTool extends Tool
     map.removeSource("measured_linestring");
   }
 
+  reactivate()
+  {
+    this.panel.show();
+  }
+
   addPoint(lngLat)
   {
     const map = this.map;
@@ -126,10 +134,10 @@ class MeasureLengthTool extends Tool
     this.resultDiv.className = "p-4";
   }
 
-  createPanel(options)
+  createPanel(map)
   {
-    this.panel = new Panel(options.containerId, 
-      "Measure length", "pi pi-info-circle", options.insertTop);
+    this.panel = new Panel(map, this.options);
+    this.panel.onHide = () => this.deactivateTool(this);
 
     const bodyDiv = this.panel.bodyDiv;
     const buttonBar = document.createElement("div");

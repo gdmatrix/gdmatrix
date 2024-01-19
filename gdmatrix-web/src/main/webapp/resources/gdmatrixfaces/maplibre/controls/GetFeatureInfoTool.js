@@ -1,14 +1,17 @@
 /* GetFeatureInfoTool.js */
 
-import { Panel } from "./Panel.js";
 import { Tool } from "./Tool.js";
+import { Panel } from "../ui/Panel.js";
 
 class GetFeatureInfoTool extends Tool
 {
   constructor(options)
   {
-    super("fa fa-arrow-pointer", "Get feature info");
-    this.createPanel(options);
+    super({...{ 
+            "title": "Get feature info", 
+            "iconClass": "fa fa-arrow-pointer",
+            "position" : "right"
+          }, ...options});
 
     this.highlightCount = 0;
     this._onMapClick = (event) => this.getFeatureInfo(event.lngLat);
@@ -33,10 +36,15 @@ class GetFeatureInfoTool extends Tool
     this.panel.hide();
   }
 
-  createPanel(options)
+  reactivate()
   {
-    this.panel = new Panel(options.containerId, 
-      "Feature info", "pi pi-info-circle", options.insertTop);
+    this.panel.show();
+  }
+
+  createPanel(map)
+  {
+    this.panel = new Panel(map, this.options);
+    this.panel.onHide = () => this.deactivateTool(this);
 
     this.headerDiv = document.createElement("div");
     this.panel.bodyDiv.appendChild(this.headerDiv);

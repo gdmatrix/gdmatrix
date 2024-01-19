@@ -1,18 +1,21 @@
 /* LegendControl.js */
 
-import { Panel } from "./Panel.js";
+import { Panel } from "../ui/Panel.js";
 
 class LegendControl
 {
   constructor(options)
   {
-    this.createPanel(options);
+    this.options = {...{
+        "position" : "right",
+        "title" : "legend",
+        "iconClass" : "fa fa-layer-group"
+      }, ...options};
   }
 
-  createPanel(options)
+  createPanel(map)
   {
-    this.panel = new Panel(options.containerId, 
-      "Legend", "fa fa-layer-group", options.insertTop);
+    this.panel = new Panel(map, this.options);
   }
 
   onAdd(map)
@@ -34,6 +37,7 @@ class LegendControl
       this.panel.show();
     });
     
+    this.createPanel(map);
     this.populateTree();
 
     return div;

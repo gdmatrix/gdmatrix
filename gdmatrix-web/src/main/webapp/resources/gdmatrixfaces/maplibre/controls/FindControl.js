@@ -1,37 +1,40 @@
-/* GeolocateControl.js */
+/* FindControl.js */
 
-import { Panel } from "./Panel.js";
+import { Panel } from "../ui/Panel.js";
 
-class GeolocateControl
+class FindControl
 {
   constructor(options)
   {
-    this.title = "Geolocate";
-    this.createPanel(options);
-    this.geolocators = [];
-    this.activeGeolocator = null;
+    this.options = {...{
+        "position" : "right",
+        "title" : "Find",
+        "iconClass" : "pi pi-search"
+      }, ...options};
+
+    this.finders = [];
+    this.activeFinder = null;
     this.data = {
       type: "FeatureCollection",
       features: []
     };
   }
 
-  addGeolocator(geolocator)
+  addFinder(finder)
   {
-    this.geolocators.push(geolocator);
+    this.finders.push(finder);
     this.updateGeolocatorSelector();
 
-    if (this.activeGeolocator === null) this.setActiveGeolocator(geolocator);
+    if (this.activeFinder === null) this.setActiveFinder(finder);
     this.div.style.display = "";
   }
 
-  createPanel(options)
+  createPanel(map)
   {
-    this.panel = new Panel(options.containerId,
-      "Search", "pi pi-search", options.insertTop);
+    this.panel = new Panel(map, this.options);
 
-    this.geolocatorSelectorDiv = document.createElement("div");
-    this.panel.bodyDiv.appendChild(this.geolocatorSelectorDiv);
+    this.finderSelectorDiv = document.createElement("div");
+    this.panel.bodyDiv.appendChild(this.finderSelectorDiv);
 
     this.formDiv = document.createElement("div");
     this.formDiv.className = "overflow-hidden";
@@ -66,15 +69,15 @@ class GeolocateControl
   {
     const map = this.map;
 
-    map.addSource("geolocator_results", {
+    map.addSource("finder_results", {
       type: 'geojson',
       data: this.data.features
     });
 
     map.addLayer({
-      "id": "geolocator_points",
+      "id": "finder_points",
       "type": 'circle',
-      "source": "geolocator_results",
+      "source": "finder_results",
       "layout": {},
       "paint":
       {
@@ -85,9 +88,9 @@ class GeolocateControl
     });
 
     map.addLayer({
-      "id": "geolocator_linestrings",
+      "id": "finder_linestrings",
       "type": 'line',
-      "source": "geolocator_results",
+      "source": "finder_results",
       "layout": {},
       "paint":
       {
@@ -99,9 +102,9 @@ class GeolocateControl
     });
 
     map.addLayer({
-      "id": "geolocator_polygons",
+      "id": "finder_polygons",
       "type": 'fill',
-      "source": "geolocator_results",
+      "source": "finder_results",
       "layout": {},
       "paint":
       {
@@ -114,41 +117,41 @@ class GeolocateControl
 
   updateGeolocatorSelector()
   {
-    this.geolocatorSelectorDiv.innerHTML = "";
+    this.finderSelectorDiv.innerHTML = "";
     const ul = document.createElement("ul");
-    this.geolocatorSelectorDiv.appendChild(ul);
-    for (let geolocator of this.geolocators)
+    this.finderSelectorDiv.appendChild(ul);
+    for (let finder of this.finders)
     {
       let li = document.createElement("li");
       ul.appendChild(li);
       let anchor = document.createElement("a");
       anchor.href = "#";
       li.appendChild(anchor);
-      anchor.textContent = geolocator.getTitle();
+      anchor.textContent = finder.getTitle();
       anchor.addEventListener("click", (event) => {
         event.preventDefault();
-        this.setActiveGeolocator(geolocator);
+        this.setActiveFinder(finder);
       });
     }
   }
 
-  setActiveGeolocator(geolocator)
+  setActiveFinder(finder)
   {
     this.formDiv.innerHTML = "";
     this.resultDiv.innerHTML = "";
-    this.activeGeolocator = geolocator;
-    this.activeGeolocator.addFormFields(this.formDiv);
+    this.activeFinder = finder;
+    this.activeFinder.addFormFields(this.formDiv);
   }
 
   async find()
   {
-    if (this.activeGeolocator)
+    if (this.activeFinder)
     {
       this.resultDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
       try
       {
-        this.data.features = await this.activeGeolocator.find();
-        this.map.getSource("geolocator_results").setData(this.data);
+        this.data.features = await this.activeFinder.find();
+        this.map.getSource("finder_results").setData(this.data);
         if (this.data.features.length > 0)
         {
           let bbox = turf.bbox(this.data);
@@ -174,13 +177,13 @@ class GeolocateControl
   clear()
   {
     this.data.features = [];
-    this.map.getSource("geolocator_results").setData(this.data);
-    this.setActiveGeolocator(this.activeGeolocator);
+    this.map.getSource("finder_results").setData(this.data);
+    this.setActiveFinder(this.activeFinder);
   }
 
   listFeatures()
   {
-    const geolocator = this.activeGeolocator;
+    const finder = this.activeFinder;
     this.resultDiv.innerHTML = "";
     const features = this.data.features;
     const ul = document.createElement("ul");
@@ -193,7 +196,7 @@ class GeolocateControl
       let anchor = document.createElement("a");
       anchor.href = "#";
       li.appendChild(anchor);
-      anchor.textContent = geolocator.getFeatureLabel(feature);
+      anchor.textContent = finder.getFeatureLabel(feature);
       anchor.addEventListener("click", (event) => {
         event.preventDefault();
         this.selectFeature(feature);
@@ -217,15 +220,15 @@ class GeolocateControl
   onAdd(map)
   {
     this.map = map;
-    map.geolocateControl = this;
+    map.findControl = this;
 
     this.initSourceAndLayers();
 
     const div = document.createElement("div");
     this.div = div;
-    div.innerHTML = `<button><span class="pi pi-search"/></button>`;
+    div.innerHTML = `<button><span class="${this.options.iconClass}"/></button>`;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group";
-    div.title = this.title;
+    div.title = this.options.title;
     div.style.width = "29px";
     div.style.height = "29px";
     div.style.fontFamily = "var(--font-family)";
@@ -237,16 +240,18 @@ class GeolocateControl
       this.panel.show();
     });
 
-    if (this.geolocators.length > 0)
+    if (this.finders.length > 0)
     {
-      this.setActiveGeolocator(this.geolocators[0]);
+      this.setActiveFinder(this.finders[0]);
     }
+    
+    this.createPanel(map);
 
     return div;
   }
 }
 
-class Geolocator
+class Finder
 {
   constructor(params)
   {
@@ -287,11 +292,11 @@ class Geolocator
   }
 }
 
-class WfsGeolocator extends Geolocator
+class WfsFinder extends Finder
 {
   getTitle()
   {
-    return "Generic WFS geolocator";
+    return "Generic WFS finder";
   }
 
   createFormFields()
@@ -357,5 +362,5 @@ class WfsGeolocator extends Geolocator
   }
 }
 
-export { GeolocateControl, Geolocator, WfsGeolocator };
+export { FindControl, Finder, WfsFinder };
 

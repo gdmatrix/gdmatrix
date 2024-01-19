@@ -1,6 +1,7 @@
 /* maplibre-stub.js */
 
-MAPLIBRE_PROFILES_PATH = "/resources/gdmatrixfaces/maplibre/profiles/";
+MAPLIBRE_JS_PATH = "/resources/gdmatrixfaces/maplibre/";
+MAPLIBRE_PROFILES_PATH = MAPLIBRE_JS_PATH + "profiles/";
 MAPLIBRE_DEFAULT_PROFILE = "advanced";
 MAPLIBRE_SCRIPTS_PATH = "/scripts/";
 
@@ -33,6 +34,7 @@ function maplibreInit(clientId, style)
   });
 
   map.setPixelRatio(window.devicePixelRatio);
+  map.getContainer().style.touchAction = "none";
 
   const profile = style.metadata?.profile || MAPLIBRE_DEFAULT_PROFILE;
 
@@ -45,6 +47,7 @@ function maplibreInit(clientId, style)
       modules.push(MAPLIBRE_SCRIPTS_PATH + scriptName);
     }
   }
+  modules.push(MAPLIBRE_JS_PATH + "ui/PanelManager.js");
   modules.reverse();
 
   importModules(modules, map);

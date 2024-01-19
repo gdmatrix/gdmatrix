@@ -1,18 +1,21 @@
 /* MapInfoControl.js */
 
-import { Panel } from "./Panel.js";
+import { Panel } from "../ui/Panel.js";
 
 class MapInfoControl
 {
   constructor(options)
   {
-    this.createPanel(options);
+    this.options = {...{
+        "position" : "right",
+        "title" : "Map information",
+        "iconClass" : "pi pi-info-circle"
+      }, ...options};
   }
 
-  createPanel(options)
+  createPanel(map)
   {
-    this.panel = new Panel(options.containerId, 
-      "Information", "pi pi-info-circle", options.insertTop);
+    this.panel = new Panel(map, this.options);
 
     const bodyDiv = this.panel.bodyDiv;
     for (let i = 0; i < 20; i++)
@@ -41,6 +44,8 @@ class MapInfoControl
       e.preventDefault();
       this.panel.show();
     });
+    
+    this.createPanel(map);
 
     return div;
   }

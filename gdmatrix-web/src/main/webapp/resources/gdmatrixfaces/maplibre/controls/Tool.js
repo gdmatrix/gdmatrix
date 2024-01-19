@@ -2,10 +2,9 @@
 
 class Tool // extends IControl
 {
-  constructor(iconClass, title)
+  constructor(options)
   {
-    this.iconClass = iconClass;
-    this.title = title;
+    this.options = options;
   }
 
   activate()
@@ -15,6 +14,36 @@ class Tool // extends IControl
   deactivate()
   {
   }
+  
+  reactivate()
+  {    
+  }
+  
+  createPanel(map)
+  {
+  }
+  
+  activateTool(tool)
+  {
+    const map = this.map;
+    if (tool && !map.activeTool)
+    {
+      map.activeTool = tool;
+      tool.div.classList.add("active");
+      tool.activate();
+    }
+  }
+  
+  deactivateTool(tool)
+  {
+    const map = this.map;
+    if (tool && map.activeTool === tool)
+    {
+      map.activeTool = null;
+      tool.deactivate();
+      tool.div.classList.remove("active");
+    }    
+  }
 
   onAdd(map)
   {
@@ -23,30 +52,25 @@ class Tool // extends IControl
     const div = document.createElement("div");
     this.div = div;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group";
-    div.innerHTML = `<button><span class="${this.iconClass}"/></button>`;
-    div.title = this.title;
+    div.innerHTML = `<button><span class="${this.options.iconClass}"/></button>`;
+    div.title = this.options.title;
     div.addEventListener("contextmenu", (e) => e.preventDefault());
     div.addEventListener("click", (e) =>
     {
       e.preventDefault();
       if (map.activeTool === this)
       {
-        this.deactivate();
-        this.div.classList.remove("active");
-        map.activeTool = null;
+        this.reactivate();
       }
       else
       {
-        if (map.activeTool)
-        {
-          map.activeTool.deactivate();
-          map.activeTool.div.classList.remove("active");
-        }
-        map.activeTool = this;
-        this.div.classList.add("active");
-        this.activate();
+        this.deactivateTool(map.activeTool);
+        this.activateTool(this);
       }
     });
+    
+    this.createPanel(map);
+    
     return div;
   }
   

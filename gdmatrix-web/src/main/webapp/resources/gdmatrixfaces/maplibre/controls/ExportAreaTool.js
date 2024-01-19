@@ -1,14 +1,17 @@
 /* ExportAreaTool.js */
 
-import { Panel } from "./Panel.js";
 import { Tool } from "./Tool.js";
+import { Panel } from "../ui/Panel.js";
 
 class ExportAreaTool extends Tool
 {
   constructor(options)
   {
-    super("pi pi-download", "Export area");
-    this.createPanel(options);
+    super({...{ 
+            "title": "Export area", 
+            "iconClass": "pi pi-download",
+            "position" : "right"
+          }, ...options});
     
     this._onMapClick = (event) => this.addPoint(event.lngLat);
     this.startData = {
@@ -99,6 +102,11 @@ class ExportAreaTool extends Tool
     map.removeLayer("measured_polygon_points");
     map.removeSource("measured_polygon");
   }
+  
+  reactivate()
+  {
+    this.panel.show();
+  }
 
   addPoint(lngLat)
   {
@@ -117,10 +125,10 @@ class ExportAreaTool extends Tool
     this.resultDiv.innerHTML = "";
   }
 
-  createPanel(options)
+  createPanel(map)
   {
-    this.panel = new Panel(options.containerId, 
-      "Export area", "pi pi-info-circle", options.insertTop);
+    this.panel = new Panel(map, this.options);
+    this.panel.onHide = () => this.deactivateTool(this);
 
     const bodyDiv = this.panel.bodyDiv;
     const buttonBar = document.createElement("div");
