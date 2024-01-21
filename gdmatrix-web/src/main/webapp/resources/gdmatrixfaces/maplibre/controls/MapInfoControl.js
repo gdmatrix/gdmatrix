@@ -1,6 +1,9 @@
 /* MapInfoControl.js */
 
 import { Panel } from "../ui/Panel.js";
+import { Bundle } from "../i18n/Bundle.js";
+
+const bundle = Bundle.getBundle("main");
 
 class MapInfoControl
 {
@@ -8,7 +11,7 @@ class MapInfoControl
   {
     this.options = {...{
         "position" : "right",
-        "title" : "Map information",
+        "title" : bundle.get("MapInfoControl.title"),
         "iconClass" : "pi pi-info-circle"
       }, ...options};
   }
@@ -34,7 +37,7 @@ class MapInfoControl
     this.div = div;
     div.innerHTML = `<button><span class="pi pi-info-circle"/></button>`;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
-    div.title = this.title;
+    div.title = this.options.title;
     div.style.width = "29px";
     div.style.height = "29px";
     div.style.fontFamily = "var(--font-family)";

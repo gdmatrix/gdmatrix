@@ -4,7 +4,8 @@ class PanelManager
 {
   static SMALL_SCREEN_SIZE = 700;
   static HANDLER_SIZE = 14;
-    
+  static MIN_PANEL_SIZE = 32;
+
   constructor(map)
   {
     this.map = map;
@@ -46,10 +47,11 @@ class PanelManager
   {
     const map = this.map;
     const mapContainerElem = map.getContainer();
-    let width = mapContainerElem.clientWidth;
+    const bounds = map.getContainer().getBoundingClientRect();
+    this.bounds = bounds;
 
     const panelContainers = this.panelContainers;
-    if (width < PanelManager.SMALL_SCREEN_SIZE)
+    if (bounds.width < PanelManager.SMALL_SCREEN_SIZE)
     {
       let panels = [...panelContainers.left.panels];
       for (let panel of panels)
@@ -113,11 +115,17 @@ class PanelManager
         panelContainers.bottom.size = 0;
       }
     }
+    
+    this.setContainerSize("left", panelContainers.left.size, false);
+    this.setContainerSize("right", panelContainers.right.size, false);
+    this.setContainerSize("top", panelContainers.top.size, false);
+    this.setContainerSize("bottom", panelContainers.bottom.size, false);
     this.doLayout();
   }
 
   doLayout()
   {
+    const bounds = this.bounds;
     const panelContainers = this.panelContainers;
     const leftContainer = panelContainers.left;
     const rightContainer = panelContainers.right;
@@ -166,7 +174,7 @@ class PanelManager
     topHandlerStyle.top = topContainer.size - (HANDLER_SIZE / 2) + "px";
     topHandlerStyle.bottom = "auto";
     topHandlerStyle.height = handlerSize;
-    topHandlerStyle.display = topContainer.size === 0 ? "none" : ""; 
+    topHandlerStyle.display = topContainer.size === 0 ? "none" : "";
 
     const bottomHandlerStyle = this.resizeHandlers.bottom.handlerDiv.style;
     bottomHandlerStyle.left = leftSize;
@@ -174,7 +182,7 @@ class PanelManager
     bottomHandlerStyle.top = "auto";
     bottomHandlerStyle.bottom = bottomContainer.size - (HANDLER_SIZE / 2) + "px";
     bottomHandlerStyle.height = handlerSize;
-    bottomHandlerStyle.display = bottomContainer.size === 0 ? "none" : ""; 
+    bottomHandlerStyle.display = bottomContainer.size === 0 ? "none" : "";
 
     const leftHandlerStyle = this.resizeHandlers.left.handlerDiv.style;
     leftHandlerStyle.left = leftContainer.size - (HANDLER_SIZE / 2) + "px";
@@ -182,7 +190,7 @@ class PanelManager
     leftHandlerStyle.top = 0;
     leftHandlerStyle.bottom = 0;
     leftHandlerStyle.width = handlerSize;
-    leftHandlerStyle.display = leftContainer.size === 0 ? "none" : ""; 
+    leftHandlerStyle.display = leftContainer.size === 0 ? "none" : "";
 
     const rightHandlerStyle = this.resizeHandlers.right.handlerDiv.style;
     rightHandlerStyle.left = "auto";
@@ -190,7 +198,7 @@ class PanelManager
     rightHandlerStyle.top = 0;
     rightHandlerStyle.bottom = 0;
     rightHandlerStyle.width = handlerSize;
-    rightHandlerStyle.display = rightContainer.size === 0 ? "none" : ""; 
+    rightHandlerStyle.display = rightContainer.size === 0 ? "none" : "";
 
     const controlsElem = this.controlsElem;
 
@@ -227,10 +235,52 @@ class PanelManager
     }
   }
 
-  setContainerSize(position, size)
+  setContainerSize(position, size, doLayout = true, saveAsPreferred = false)
   {
-    this.panelContainers[position].size = size;
-    this.doLayout();
+    const panelContainers = this.panelContainers;
+    const panelContainer = panelContainers[position];
+    const bounds = this.bounds;
+
+    let maxSize = 1000;
+    const gap = PanelManager.HANDLER_SIZE / 2;
+
+    if (position === "left")
+    {
+      maxSize = bounds.width - panelContainers.right.size - gap;
+    }
+    else if (position === "right")
+    {
+      maxSize = bounds.width - panelContainers.left.size - gap;
+    }
+    else if (position === "top")
+    {
+      maxSize = bounds.height - panelContainers.bottom.size - gap;
+    }
+    else if (position === "bottom")
+    {
+      maxSize = bounds.height - panelContainers.top.size - gap;
+    }
+    if (maxSize < 0) maxSize = 0;
+
+    let completed = true;
+    
+    if (size < 0)
+    {
+      size = 0;
+      completed = false;
+    }
+
+    if (size > maxSize)
+    {
+      size = maxSize;
+      completed = false;
+    }
+
+    panelContainer.size = size;
+    if (saveAsPreferred) panelContainer.preferredSize = size;
+    if (doLayout) this.doLayout();
+    
+    return completed;
   }
 
   resizeContainer(position, targetSize, delay = 2)
@@ -244,13 +294,15 @@ class PanelManager
       {
         size -= 10;
         if (size < 0) size = 0;
-        this.setContainerSize(position, size);
-        if (panelContainer.animationTimerId)
+        if (this.setContainerSize(position, size))
         {
-          clearTimeout(panelContainer.animationTimerId);
+          if (panelContainer.animationTimerId)
+          {
+            clearTimeout(panelContainer.animationTimerId);
+          }
+          panelContainer.animationTimerId = setTimeout(() =>
+            this.resizeContainer(position, targetSize, delay), delay);
         }
-        panelContainer.animationTimerId = setTimeout(() =>
-          this.resizeContainer(position, targetSize, delay), delay);
       }
     }
     else // expand
@@ -259,13 +311,15 @@ class PanelManager
       {
         size += 10;
         if (size > targetSize) size = targetSize;
-        this.setContainerSize(position, size);
-        if (panelContainer.animationTimerId)
+        if (this.setContainerSize(position, size))
         {
-          clearTimeout(panelContainer.animationTimerId);
+          if (panelContainer.animationTimerId)
+          {
+            clearTimeout(panelContainer.animationTimerId);
+          }
+          panelContainer.animationTimerId = setTimeout(() =>
+            this.resizeContainer(position, targetSize, delay), delay);
         }
-        panelContainer.animationTimerId = setTimeout(() =>
-          this.resizeContainer(position, targetSize, delay), delay);
       }
     }
   }
@@ -297,10 +351,13 @@ class PanelManager
     }
   }
 
-  scrollIntoView(panel)
+  scrollIntoView(panel, smooth = false)
   {
     panel.panelDiv.scrollIntoView({
-      block: "start", inline: "start", behavior : "smooth" });
+      block: "start",
+      inline: "start",
+      behavior : smooth ? "smooth" : "instant"
+    });
   }
 }
 
@@ -387,6 +444,7 @@ class ResizeHandler
     handlerDiv.className = "maplibre_handler " + position;
     controlsElem.appendChild(handlerDiv);
     this.handlerDiv = handlerDiv;
+    handlerDiv.innerHTML = "<div></div>";
 
     this._onMove = (event) => this.onMove(event);
     this._removeListeners = (event) => this.removeListeners(event);
@@ -400,7 +458,7 @@ class ResizeHandler
     event.preventDefault();
     const handlerDiv = this.handlerDiv;
     handlerDiv.addEventListener("pointermove", this._onMove, false);
-    handlerDiv.addEventListener("pointerup", this._removeListeners, false);    
+    handlerDiv.addEventListener("pointerup", this._removeListeners, false);
     handlerDiv.setPointerCapture(event.pointerId);
   }
 
@@ -413,48 +471,39 @@ class ResizeHandler
     handlerDiv.releasePointerCapture(event.pointerId);
   }
 
-  getCurrentSize(event)
-  {    
-    const rect = this.panelManager.map.getContainer().getBoundingClientRect();
-    let curSize = 0;
-    if (this.position === "left")
-    {
-      curSize = event.clientX - rect.left;
-    }
-    else if (this.position === "right")
-    {
-      curSize = rect.left + rect.width - event.clientX;
-    }
-    else if (this.position === "top")
-    {
-      curSize = event.clientY - rect.top;
-    }
-    else if (this.position === "bottom")
-    {
-      curSize = rect.top + rect.height - event.clientY;
-    }
-    return curSize;
-  }
-
   onMove(event)
   {
-    const size = this.getCurrentSize(event);
-    const panelContainer = this.panelManager.panelContainers[this.position];    
-    panelContainer.size = size;
-    panelContainer.preferredSize = size;
-    this.panelManager.doLayout();
+    const position = this.position;
+    const bounds = this.panelManager.bounds;
+    let size;
+
+    if (position === "left")
+    {
+      size = event.clientX - bounds.left;
+    }
+    else if (position === "right")
+    {
+      size = bounds.left + bounds.width - event.clientX;
+    }
+    else if (position === "top")
+    {
+      size = event.clientY - bounds.top;
+    }
+    else if (position === "bottom")
+    {
+      size = bounds.top + bounds.height - event.clientY;
+    }
+    
+    if (size < PanelManager.MIN_PANEL_SIZE)
+    {
+      size = PanelManager.MIN_PANEL_SIZE;
+    }
+
+    this.panelManager.setContainerSize(position, size, true, true);
   }
 }
 
-function init(map)
-{
-  if (map.panelManager)
-  {
-    map.panelManager.organizePanels();
-  }
-}
-
-export { PanelManager, init };
+export { PanelManager };
 
 
 

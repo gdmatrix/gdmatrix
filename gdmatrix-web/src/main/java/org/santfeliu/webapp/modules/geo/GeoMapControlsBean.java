@@ -30,7 +30,10 @@
  */
 package org.santfeliu.webapp.modules.geo;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +43,7 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.web.WebBean;
 import org.matrix.dic.Property;
@@ -82,27 +86,41 @@ public class GeoMapControlsBean extends WebBean implements Serializable
   public void setProfile(String profile)
   {
     Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
-    metadata.put(PROFILE_METADATA, profile);
+    if (StringUtils.isBlank(profile))
+    {
+      metadata.remove(PROFILE_METADATA);
+    }
+    else
+    {
+      metadata.put(PROFILE_METADATA, profile);
+    }
   }
 
   public List<String> getProfiles()
   {
     if (profiles == null)
     {
-      String path = getFacesContext().getExternalContext().getRealPath(
-        "/resources/gdmatrixfaces/maplibre/profiles");
-      File dir = new File(path);
       profiles = new ArrayList<>();
-
-      File[] files = dir.listFiles();
-      Arrays.sort(files, (a, b) -> (int)(b.length() - a.length()));
-      for (File file : files)
+      String path = getFacesContext().getExternalContext().getRealPath(
+        "/resources/gdmatrixfaces/maplibre/profiles/list.txt");
+      File file = new File(path);
+      if (file.exists())
       {
-        String name = file.getName();
-        if (name.endsWith(".js"))
+        try (BufferedReader reader = new BufferedReader(new FileReader(file)))
         {
-          int length = file.getName().length();
-          profiles.add(file.getName().substring(0, length - 3));
+          String line = reader.readLine();
+          while (line != null)
+          {
+            line = line.trim();
+            if (line.length() > 0)
+            {
+              profiles.add(line);
+            }
+            line = reader.readLine();
+          }
+        }
+        catch (IOException ex)
+        {
         }
       }
     }

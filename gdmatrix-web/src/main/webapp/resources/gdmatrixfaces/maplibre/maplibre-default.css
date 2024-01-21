@@ -13,12 +13,14 @@ div.maplibre_handler
 {
   position:absolute;
   z-index: 2;
+  overflow: hidden;
 }
 
-div.maplibre_handler
+div.maplibre_handler div
 {
-  position:absolute;
-  z-index: 2;
+  position: absolute;
+  background-color: var(--surface-300);
+  border-radius: 2px;
 }
 
 div.maplibre_handler.right
@@ -26,9 +28,25 @@ div.maplibre_handler.right
   cursor: ew-resize;
 }
 
+div.maplibre_handler.right div
+{
+  right: 1px;
+  width: 4px;
+  top: calc(50% - 30px);
+  height: 60px;
+}
+
 div.maplibre_handler.left
 {
   cursor: ew-resize;
+}
+
+div.maplibre_handler.left div
+{
+  left: 1px;
+  width: 4px;
+  top: calc(50% - 30px);
+  height: 60px;
 }
 
 div.maplibre_handler.top
@@ -36,9 +54,25 @@ div.maplibre_handler.top
   cursor: ns-resize;
 }
 
+div.maplibre_handler.top div
+{
+  top: 1px;
+  height: 4px;
+  left: calc(50% - 30px);
+  width: 60px;
+}
+
 div.maplibre_handler.bottom
 {
   cursor: ns-resize;
+}
+
+div.maplibre_handler.bottom div
+{
+  bottom: 1px;
+  height: 4px;
+  left: calc(50% - 30px);
+  width: 60px;
 }
 
 div.maplibre_panel_container .scroller
@@ -61,9 +95,6 @@ div.maplibre_panel_container .scroller .panel
   display: flex;
   flex-direction: column;
   color: var(--text-color);
-  border-bottom-width: 1px;
-  border-bottom-color: var(--surface-300);
-  border-bottom-style: solid;
 }
 
 div.maplibre_panel_container .scroller .panel > .header
@@ -217,13 +248,23 @@ div.maplibre_panel_container .button_bar button
 .export_link
 {
   text-decoration: none;
-  background-color: var(--primary-color);
-  color: var(--primary-color-text);
+  background-color: var(--surface-200);
+  color: var(--text-color);
+  border-color: var(--surface-400);
+  border-width: 1px;
+  border-style: solid;
   margin: 3px;
   padding:2px 4px 2px 4px;
   border-radius: var(--border-radius);
   display:inline-block;
 }
+
+.export_link:hover
+{
+  border-color: var(--surface-500);  
+  background-color: var(--surface-300);
+}
+
 
 .maplibregl-ctrl.maplibregl-ctrl-group > button > span
 {

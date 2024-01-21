@@ -1,6 +1,10 @@
 /* FindControl.js */
 
 import { Panel } from "../ui/Panel.js";
+import { Bundle } from "../i18n/Bundle.js";
+import "../turf.js";
+
+const bundle = Bundle.getBundle("main");
 
 class FindControl
 {
@@ -8,7 +12,7 @@ class FindControl
   {
     this.options = {...{
         "position" : "right",
-        "title" : "Find",
+        "title" : bundle.get("FindControl.title"),
         "iconClass" : "pi pi-search"
       }, ...options};
 
@@ -23,7 +27,7 @@ class FindControl
   addFinder(finder)
   {
     this.finders.push(finder);
-    this.updateGeolocatorSelector();
+    this.updateFinderSelector();
 
     if (this.activeFinder === null) this.setActiveFinder(finder);
     this.div.style.display = "";
@@ -45,7 +49,7 @@ class FindControl
     this.panel.bodyDiv.appendChild(this.buttonsDiv);
 
     this.findButton = document.createElement("button");
-    this.findButton.textContent = "Search";
+    this.findButton.textContent = bundle.get("button.find");
     this.findButton.addEventListener("click", (event) => {
       event.preventDefault();
       this.find();
@@ -53,7 +57,7 @@ class FindControl
     this.buttonsDiv.appendChild(this.findButton);
 
     this.clearButton = document.createElement("button");
-    this.clearButton.textContent = "Clear";
+    this.clearButton.textContent = bundle.get("button.clear");
     this.clearButton.addEventListener("click", (event) => {
       event.preventDefault();
       this.clear();
@@ -115,7 +119,7 @@ class FindControl
     });
   }
 
-  updateGeolocatorSelector()
+  updateFinderSelector()
   {
     this.finderSelectorDiv.innerHTML = "";
     const ul = document.createElement("ul");
@@ -186,8 +190,15 @@ class FindControl
     const finder = this.activeFinder;
     this.resultDiv.innerHTML = "";
     const features = this.data.features;
+
+    const countDiv = document.createElement("div");
+    this.resultDiv.appendChild(countDiv);
+    countDiv.className = "mt-2";
+    countDiv.textContent = bundle.get("FindControl.featureCount", features.length) +
+      (features.length === 0 ? "." : ":");
+    
     const ul = document.createElement("ul");
-    ul.className = "pl-4";
+    ul.className = "pl-4 mt-1";
     this.resultDiv.appendChild(ul);
     for (let feature of features)
     {
@@ -223,7 +234,7 @@ class FindControl
     map.findControl = this;
 
     this.initSourceAndLayers();
-
+    
     const div = document.createElement("div");
     this.div = div;
     div.innerHTML = `<button><span class="${this.options.iconClass}"/></button>`;
@@ -304,11 +315,11 @@ class WfsFinder extends Finder
     return `
       <div class="formgrid grid">
         <div class="field col-12">
-          <label for="layer_name">Layer:</label>
+          <label for="layer_name">${bundle.get("FindControl.layer")}:</label>
           <input id="layer_name" type="text" class="code ui-widget text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full" />
         </div>
         <div class="field col-12">
-          <label for="cql_filter">Filter:</label>
+          <label for="cql_filter">${bundle.get("FindControl.filter")}:</label>
           <textarea id="cql_filter" class="code text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
         </div>
       </div>

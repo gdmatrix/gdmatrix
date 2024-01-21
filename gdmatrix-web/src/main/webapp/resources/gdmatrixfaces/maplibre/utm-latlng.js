@@ -22,20 +22,20 @@
   SOFTWARE.
 */
 
-function toDegrees(radians) {
+export function toDegrees(radians) {
   return radians / Math.PI * 180;
 }
 
-function toRadians(degrees) {
+export function toRadians(degrees) {
   return degrees * Math.PI / 180;
 }
 
-function precisionRound(number, precision) {
+export function precisionRound(number, precision) {
   const factor = Math.pow(10, precision);
   return Math.round(number * factor) / factor;
 }
 
-function getUtmLetterDesignator(latitude) {
+export function getUtmLetterDesignator(latitude) {
   latitude = parseFloat(latitude);
   if ((84 >= latitude) && (latitude >= 72))
     return 'X';
@@ -81,7 +81,7 @@ function getUtmLetterDesignator(latitude) {
     return 'Z';
 }
 
-function getEllipsoid(name = 'WGS 84') {
+export function getEllipsoid(name = 'WGS 84') {
   const ellipsoids = {
     'Airy' : { a : 6377563, eccSquared : 0.00667054 },
     'Australian National' : { a : 6378160, eccSquared : 0.006694542 },
@@ -120,7 +120,7 @@ function getEllipsoid(name = 'WGS 84') {
   return ellipsoids[name];
 }
 
-function toUtm(latitude, longitude, precision, ellipsoidName) {
+export function toUtm(latitude, longitude, precision, ellipsoidName) {
   const { a, eccSquared } = getEllipsoid(ellipsoidName);
 
   if(!Number.isInteger(precision)) {
@@ -188,7 +188,7 @@ function toUtm(latitude, longitude, precision, ellipsoidName) {
   return { easting, northing, zoneNumber, zoneLetter };
 }
 
-function fromUtm(easting, northing, zoneNumber, zoneLetter, ellipsoidName) {
+export function fromUtm(easting, northing, zoneNumber, zoneLetter, ellipsoidName) {
   const { a, eccSquared } = getEllipsoid(ellipsoidName);
   if(typeof easting !== 'number') {
     throw new Error('Could not find a valid easting number');

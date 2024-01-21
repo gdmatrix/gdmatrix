@@ -48,8 +48,6 @@ import org.santfeliu.faces.maplibre.model.Style;
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-stub.js")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-gl.js")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/ogc.js")
-@ResourceDependency(library = "gdmatrixfaces", name = "maplibre/turf.js")
-@ResourceDependency(library = "gdmatrixfaces", name = "maplibre/utm-latlng.js")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-default.css")
 @ResourceDependency(library = "gdmatrixfaces", name = "maplibre/maplibre-gl.css")
 public class MapLibre extends UIOutput
@@ -116,10 +114,12 @@ public class MapLibre extends UIOutput
     writer.endElement("div");
 
     // encode script
+    String language = context.getViewRoot().getLocale().getLanguage();
     Style mapStyle = (Style)getValue();
 
     writer.startElement("script", this);
-    writer.writeText("maplibreInit('" + clientId + "', " + mapStyle + ");", null);
+    writer.writeText("maplibreInit('" + clientId + "', " +
+      mapStyle + ", '" + language + "');", null);
     writer.endElement("script");
   }
 

@@ -1,6 +1,9 @@
 /* LegendControl.js */
 
 import { Panel } from "../ui/Panel.js";
+import { Bundle } from "../i18n/Bundle.js";
+
+const bundle = Bundle.getBundle("main");
 
 class LegendControl
 {
@@ -8,7 +11,7 @@ class LegendControl
   {
     this.options = {...{
         "position" : "right",
-        "title" : "legend",
+        "title" : bundle.get("LegendControl.title"),
         "iconClass" : "fa fa-layer-group"
       }, ...options};
   }
@@ -26,7 +29,7 @@ class LegendControl
     this.div = div;
     div.innerHTML = `<button><span class="fa fa-layer-group"/></button>`;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group flex align-items-center justify-content-center";
-    div.title = this.title;
+    div.title = this.options.title;
     div.style.width = "29px";
     div.style.height = "29px";
     div.style.fontFamily = "var(--font-family)";

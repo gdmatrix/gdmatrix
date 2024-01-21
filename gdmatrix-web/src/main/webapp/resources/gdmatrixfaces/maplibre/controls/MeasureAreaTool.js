@@ -2,13 +2,17 @@
 
 import { Tool } from "./Tool.js";
 import { Panel } from "../ui/Panel.js";
+import { toUtm } from "../utm-latlng.js";
+import { Bundle } from "../i18n/Bundle.js";
+
+const bundle = Bundle.getBundle("main");
 
 class MeasureAreaTool extends Tool
 {
   constructor(options)
   {
     super({...{ 
-            "title": "Measure area", 
+            "title": bundle.get("MeasureAreaTool.title"), 
             "iconClass": "fa fa-ruler-combined",
             "position" : "right"
           }, ...options});
@@ -138,10 +142,30 @@ class MeasureAreaTool extends Tool
       area += (0.5 * (y1 + y2) * (x2 - x1));
     }
 
+    let units;
     area = Math.abs(area);
+    if (area > 1000000)
+    {
+      area /= 1000000;
+      units = "km2";
+    }
+    else if (area > 10000)
+    {
+      area /= 10000;
+      units = "ha";
+    }
+    else
+    {
+      units = "m2";
+    }
 
-    this.resultDiv.textContent = "Area: " + area.toFixed(3) + " m2";
-    this.resultDiv.className = "p-4";
+    let value = new Intl.NumberFormat('es-ES', 
+     { minimumFractionDigits: 3, useGrouping: true })
+     .format(area);    
+
+    this.resultDiv.textContent = 
+      bundle.get("MeasureAreaTool.area", value, units);
+    this.resultDiv.className = "p-4 pl-1";
   }
 
   createPanel(map)
@@ -150,12 +174,18 @@ class MeasureAreaTool extends Tool
     this.panel.onHide = () => this.deactivateTool(this);
 
     const bodyDiv = this.panel.bodyDiv;
+
+    const helpDiv = document.createElement("div");
+    helpDiv.className = "p-1";
+    helpDiv.textContent = bundle.get("MeasureAreaTool.help");
+    bodyDiv.appendChild(helpDiv);    
+    
     const buttonBar = document.createElement("div");
     buttonBar.className = "button_bar";
     bodyDiv.appendChild(buttonBar);
 
     const clearButton = document.createElement("button");
-    clearButton.textContent = "Reset";
+    clearButton.textContent = bundle.get("button.reset");
     clearButton.addEventListener("click", (e) => {
       e.preventDefault();
       this.startData.geometry.coordinates = [];
@@ -169,7 +199,7 @@ class MeasureAreaTool extends Tool
     buttonBar.appendChild(clearButton);
 
     const undoButton = document.createElement("button");
-    undoButton.textContent = "Undo";
+    undoButton.textContent = bundle.get("button.undo");
     undoButton.addEventListener("click", (e) => {
       e.preventDefault();
       if (this.data.geometry.coordinates[0].length > 0)

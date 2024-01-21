@@ -2,13 +2,16 @@
 
 import { Tool } from "./Tool.js";
 import { Panel } from "../ui/Panel.js";
+import { Bundle } from "../i18n/Bundle.js";
+
+const bundle = Bundle.getBundle("main");
 
 class ExportAreaTool extends Tool
 {
   constructor(options)
   {
     super({...{ 
-            "title": "Export area", 
+            "title": bundle.get("ExportAreaTool.title"), 
             "iconClass": "pi pi-download",
             "position" : "right"
           }, ...options});
@@ -131,12 +134,18 @@ class ExportAreaTool extends Tool
     this.panel.onHide = () => this.deactivateTool(this);
 
     const bodyDiv = this.panel.bodyDiv;
+
+    const helpDiv = document.createElement("div");
+    helpDiv.className = "p-1";
+    helpDiv.textContent = bundle.get("ExportAreaTool.help");
+    bodyDiv.appendChild(helpDiv);    
+    
     const buttonBar = document.createElement("div");
     buttonBar.className = "button_bar";
     bodyDiv.appendChild(buttonBar);
 
     const clearButton = document.createElement("button");
-    clearButton.textContent = "Reset";
+    clearButton.textContent = bundle.get("button.reset");
     clearButton.addEventListener("click", (e) => {
       e.preventDefault();
       this.startData.geometry.coordinates = [];
@@ -149,7 +158,7 @@ class ExportAreaTool extends Tool
     buttonBar.appendChild(clearButton);
 
     const undoButton = document.createElement("button");
-    undoButton.textContent = "Undo";
+    undoButton.textContent = bundle.get("button.undo");
     undoButton.addEventListener("click", (e) => {
       e.preventDefault();
       if (this.data.geometry.coordinates[0].length > 0)
@@ -168,7 +177,7 @@ class ExportAreaTool extends Tool
     buttonBar.appendChild(undoButton);
 
     const exportButton = document.createElement("button");
-    exportButton.textContent = "Export";
+    exportButton.textContent = bundle.get("button.export");
     exportButton.addEventListener("click", (e) => {
       e.preventDefault();
       this.exportLayers();

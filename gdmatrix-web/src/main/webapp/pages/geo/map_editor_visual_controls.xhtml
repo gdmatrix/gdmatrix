@@ -10,6 +10,7 @@
   <div class="mb-2">
     <p:outputLabel for="@next" value="Profile:" />
     <p:selectOneMenu value="#{geoMapControlsBean.profile}" styleClass="ml-2">
+      <f:selectItem itemValue="" itemLabel="" /> 
       <f:selectItems value="#{geoMapControlsBean.profiles}" var="profile"
                      itemLabel="#{profile}" itemValue="#{profile}" />
     </p:selectOneMenu>

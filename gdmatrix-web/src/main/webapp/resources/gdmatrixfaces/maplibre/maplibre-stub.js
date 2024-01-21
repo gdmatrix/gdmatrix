@@ -1,11 +1,11 @@
 /* maplibre-stub.js */
 
-MAPLIBRE_JS_PATH = "/resources/gdmatrixfaces/maplibre/";
-MAPLIBRE_PROFILES_PATH = MAPLIBRE_JS_PATH + "profiles/";
+MAPLIBRE_BASE_PATH = "/resources/gdmatrixfaces/maplibre/";
+MAPLIBRE_PROFILES_PATH = MAPLIBRE_BASE_PATH + "profiles/";
 MAPLIBRE_DEFAULT_PROFILE = "advanced";
 MAPLIBRE_SCRIPTS_PATH = "/scripts/";
 
-function maplibreInit(clientId, style)
+function maplibreInit(clientId, style, language)
 {
   if (window.rtlPluginLoaded === undefined)
   {
@@ -36,34 +36,50 @@ function maplibreInit(clientId, style)
   map.setPixelRatio(window.devicePixelRatio);
   map.getContainer().style.touchAction = "none";
 
+  importControls(map, style, language);
+}
+
+async function importControls(map, style, language)
+{
   const profile = style.metadata?.profile || MAPLIBRE_DEFAULT_PROFILE;
 
-  let modules = [MAPLIBRE_PROFILES_PATH + profile + ".js"];
+  const modulePaths = [MAPLIBRE_PROFILES_PATH + profile + ".js"];
   const scripts = style.metadata.scripts;
   if (scripts instanceof Array)
   {
     for (let scriptName of style.metadata.scripts)
     {
-      modules.push(MAPLIBRE_SCRIPTS_PATH + scriptName);
+      modulePaths.push(MAPLIBRE_SCRIPTS_PATH + scriptName);
     }
   }
-  modules.push(MAPLIBRE_JS_PATH + "ui/PanelManager.js");
-  modules.reverse();
 
-  importModules(modules, map);
-}
+  const modules = [];
 
-function importModules(modules, map)
-{
-  if (modules.length > 0)
+  for (let modulePath of modulePaths)
   {
-    let uri = modules.pop();
-    console.info(`importing module ${uri}`);
-    import(uri).then(mod => 
+    console.info(`importing module ${modulePath}`);
+    modules.push(import(modulePath));
+  }
+  
+  const loadedModules = await Promise.all(modules);
+
+  const { Bundle } = await import(MAPLIBRE_BASE_PATH + "i18n/Bundle.js");
+  Bundle.userLanguage = language;
+  await Bundle.localizeBundles();
+
+  console.info("init modules");
+  for (let loadedModule of loadedModules)
+  {
+    if (loadedModule.init)
     {
-      if (mod.init) mod.init(map);
-      importModules(modules, map);
-    });    
+      loadedModule.init(map);
+    }
+  }
+
+  if (map.panelManager)
+  {
+    console.info("organize panels");
+    map.panelManager.organizePanels();
   }
 }
 

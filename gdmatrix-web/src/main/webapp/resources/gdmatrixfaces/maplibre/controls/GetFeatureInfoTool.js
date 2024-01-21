@@ -2,13 +2,17 @@
 
 import { Tool } from "./Tool.js";
 import { Panel } from "../ui/Panel.js";
+import { toUtm } from "../utm-latlng.js";
+import { Bundle } from "../i18n/Bundle.js";
+
+const bundle = Bundle.getBundle("main");
 
 class GetFeatureInfoTool extends Tool
 {
   constructor(options)
   {
     super({...{ 
-            "title": "Get feature info", 
+            "title": bundle.get("GetFeatureInfoTool.title"), 
             "iconClass": "fa fa-arrow-pointer",
             "position" : "right"
           }, ...options});
@@ -30,7 +34,7 @@ class GetFeatureInfoTool extends Tool
     const map = this.map;
     map.off("click", this._onMapClick);
     map.getCanvas().style.cursor = "grab";
-    this.headerDiv.innerHTML = "";
+    this.headerDiv.innerHTML = bundle.get("GetFeatureInfoTool.help");
     this.infoDiv.innerHTML = "";
     this.clearHighlight();
     this.panel.hide();
@@ -46,11 +50,14 @@ class GetFeatureInfoTool extends Tool
     this.panel = new Panel(map, this.options);
     this.panel.onHide = () => this.deactivateTool(this);
 
+    const bodyDiv = this.panel.bodyDiv;
+
     this.headerDiv = document.createElement("div");
-    this.panel.bodyDiv.appendChild(this.headerDiv);
+    bodyDiv.appendChild(this.headerDiv);
+    this.headerDiv.textContent = bundle.get("GetFeatureInfoTool.help");    
 
     this.infoDiv = document.createElement("div");
-    this.panel.bodyDiv.appendChild(this.infoDiv);
+    bodyDiv.appendChild(this.infoDiv);
   }
 
   showInfo(data)
@@ -101,7 +108,7 @@ class GetFeatureInfoTool extends Tool
     }
     if (featureCount === 0)
     {
-      infoDiv.innerHTML = `<div class="pt-4 pb-4">No data found.</div>`;
+      infoDiv.innerHTML = `<div class="pt-4 pb-4">${bundle.get("GetFeatureInfoTool.noDataFound")}</div>`;
     }
     this.panel.show();
   }
@@ -216,16 +223,14 @@ class GetFeatureInfoTool extends Tool
     headerDiv.innerHTML = "";
     const lngLatDiv = document.createElement("div");
     headerDiv.appendChild(lngLatDiv);
-    lngLatDiv.innerHTML = `<div>Lon: ${lngLat.lng}</div>
-                           <div>Lat: ${lngLat.lat}</div>`;
+    lngLatDiv.innerHTML = `Lon/Lat: ${lngLat.lng.toFixed(5)}, ${lngLat.lat.toFixed(5)}`;
 
     if (toUtm)
     {
       const utm = toUtm(lngLat.lat, lngLat.lng, 7, 'ETRS89');
       const utmDiv = document.createElement("div");
       headerDiv.appendChild(utmDiv);
-      utmDiv.innerHTML = `<div>UTM-x: ${utm.easting}</div>
-                          <div>UTM-y: ${utm.northing}</div>`;
+      utmDiv.innerHTML = `UTM: ${utm.easting.toFixed(3)}, ${utm.northing.toFixed(3)}`;
     }
 
     this.infoDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;

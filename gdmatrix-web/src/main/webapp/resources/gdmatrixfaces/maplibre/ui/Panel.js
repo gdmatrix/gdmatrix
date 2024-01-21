@@ -98,7 +98,7 @@ class Panel
     link.href = "#";
     link.addEventListener("click", (event) => { 
       event.preventDefault(); 
-      this.panelManager.scrollIntoView(this);
+      this.panelManager.scrollIntoView(this, true);
     });
     titleDiv.appendChild(link);
   }

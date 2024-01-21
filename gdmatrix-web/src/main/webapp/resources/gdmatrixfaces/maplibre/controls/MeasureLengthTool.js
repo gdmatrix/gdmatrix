@@ -2,13 +2,16 @@
 
 import { Tool } from "./Tool.js";
 import { Panel } from "../ui/Panel.js";
+import { Bundle } from "../i18n/Bundle.js";
+
+const bundle = Bundle.getBundle("main");
 
 class MeasureLengthTool extends Tool
 {
   constructor(options)
   {
     super({...{ 
-            "title": "Export length", 
+            "title": bundle.get("MeasureLengthTool.title"), 
             "iconClass": "fa fa-ruler-horizontal",
             "position" : "right"
           }, ...options});    
@@ -120,7 +123,7 @@ class MeasureLengthTool extends Tool
 
   updateLength()
   {
-    let distance = 0;
+    let length = 0;
     for (let i = 0; i < this.data.geometry.coordinates.length - 1; i++)
     {
       let c1 = this.data.geometry.coordinates[i];
@@ -128,10 +131,27 @@ class MeasureLengthTool extends Tool
 
       let lngLat1 =  new maplibregl.LngLat(c1[0], c1[1]);
       let lngLat2 =  new maplibregl.LngLat(c2[0], c2[1]);
-      distance += lngLat1.distanceTo(lngLat2);
+      length += lngLat1.distanceTo(lngLat2);
     }
-    this.resultDiv.textContent = "Length: " + distance.toFixed(3) + " m";
-    this.resultDiv.className = "p-4";
+
+    let units;
+    if (length > 1000)
+    {
+      length /= 1000;
+      units = "km";      
+    }
+    else
+    {
+      units = "m2";
+    }
+    
+    let value = new Intl.NumberFormat('es-ES', 
+     { minimumFractionDigits: 3, useGrouping: true })
+     .format(length);    
+    
+    this.resultDiv.textContent = 
+      bundle.get("MeasureLengthTool.length", value, units);
+    this.resultDiv.className = "p-4 pl-1";
   }
 
   createPanel(map)
@@ -140,12 +160,18 @@ class MeasureLengthTool extends Tool
     this.panel.onHide = () => this.deactivateTool(this);
 
     const bodyDiv = this.panel.bodyDiv;
+
+    const helpDiv = document.createElement("div");
+    helpDiv.className = "p-1";
+    helpDiv.textContent = bundle.get("MeasureLengthTool.help");
+    bodyDiv.appendChild(helpDiv);    
+    
     const buttonBar = document.createElement("div");
     buttonBar.className = "button_bar";
     bodyDiv.appendChild(buttonBar);
 
     const clearButton = document.createElement("button");
-    clearButton.textContent = "Reset";
+    clearButton.textContent = bundle.get("button.reset");
     clearButton.addEventListener("click", (e) => {
       e.preventDefault();
       this.startData.geometry.coordinates = [];
@@ -159,7 +185,7 @@ class MeasureLengthTool extends Tool
     buttonBar.appendChild(clearButton);
 
     const undoButton = document.createElement("button");
-    undoButton.textContent = "Undo";
+    undoButton.textContent = bundle.get("button.undo");
     undoButton.addEventListener("click", (e) => {
       e.preventDefault();
       if (this.data.geometry.coordinates.length > 0)
