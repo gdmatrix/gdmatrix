@@ -44,6 +44,7 @@ import org.matrix.news.NewsFilter;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.util.enc.Unicode;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -79,7 +80,7 @@ public class NewFinderBean extends FinderBean
   }
 
   public List<NewView> getRows()
-  {
+  {    
     return rows;
   }
 
@@ -262,8 +263,13 @@ public class NewFinderBean extends FinderBean
               filter.getSectionId().addAll(sections);
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              List results = 
+              List<NewView> results = 
                 NewsModuleBean.getPort(false).findNewViews(filter);
+              if (!results.isEmpty())
+              {
+                results.stream()
+                  .forEach(n -> n.setHeadline(Unicode.decode(n.getHeadline())));
+              }              
               resetWildcards(filter);
               return results;
               

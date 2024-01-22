@@ -49,6 +49,7 @@ import org.matrix.news.NewStoreOptions;
 import org.matrix.news.Source;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.util.enc.Unicode;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -266,7 +267,10 @@ public class NewObjectBean extends ObjectBean
   public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
+    {
       newObject = NewsModuleBean.getPort(false).loadNew(objectId);
+      decodeNewContent(newObject);
+    }
     else
       newObject = new New();
   }
@@ -281,9 +285,11 @@ public class NewObjectBean extends ObjectBean
     newObject.setUserId(UserSessionBean.getCurrentInstance().getUsername()); 
     newObject.setCustomUrl(newObject.getCustomUrl().trim());
     
+    encodeNewContent(newObject);
     newObject = 
       NewsModuleBean.getPort(false).storeNew(newObject, newStoreOptions);
-    setObjectId(newObject.getNewId());
+    setObjectId(newObject.getNewId());   
+    decodeNewContent(newObject);
     
     newFinderBean.outdate();
   }
@@ -311,6 +317,26 @@ public class NewObjectBean extends ObjectBean
   {
     String dateTime = TextUtils.concatDateAndTime(date, time);
     return TextUtils.parseInternalDate(dateTime);
-  }  
+  }
+  
+  private void encodeNewContent(New newObject)
+  {
+    String headline = Unicode.encode(newObject.getHeadline());
+    newObject.setHeadline(headline.length() > 1000 ?
+      headline.substring(0, 1000) : headline);
+    
+    String summary = Unicode.encode(newObject.getSummary());
+    newObject.setSummary(summary.length() > 4000 ?
+      summary.substring(0, 4000) : summary);  
+    
+    newObject.setText(Unicode.encode(newObject.getText()));
+  }
+  
+  private void decodeNewContent(New newObject)
+  {
+    newObject.setHeadline(Unicode.decode(newObject.getHeadline()));      
+    newObject.setSummary(Unicode.decode(newObject.getSummary()));
+    newObject.setText(Unicode.decode(newObject.getText()));   
+  }
 
 }
