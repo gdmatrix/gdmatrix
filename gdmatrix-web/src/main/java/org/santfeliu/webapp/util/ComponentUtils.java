@@ -61,20 +61,29 @@ public class ComponentUtils
     }
   }
 
-  public static void includeFormComponents(UIComponent parent, String selector,
-    String propertyPath, Map context) throws Exception
+  public static void includeFormComponents(UIComponent parent,
+    String formSelector, String propertyPath, Map context) throws Exception
   {
-    includeFormComponents(parent, selector, propertyPath, propertyPath + "s", 
+    includeFormComponents(parent, formSelector, propertyPath, propertyPath + "s",
       context, null);
   }
 
-  public static void includeFormComponents(UIComponent parent, String selector,
-    String propertyPathUni, String propertyPathMulti, 
+  public static void includeFormComponents(UIComponent parent,
+    String formSelector, String propertyPathUni, String propertyPathMulti,
     Map context, Map<String, Object> options) throws Exception
   {
+    includeFormComponents(parent, formSelector,
+      propertyPathUni, propertyPathMulti, context, options, true);
+  }
+
+  public static void includeFormComponents(UIComponent parent,
+    String formSelector, String propertyPathUni, String propertyPathMulti,
+    Map context, Map<String, Object> options, boolean updateForm)
+    throws Exception
+  {
     FormFactory formFactory = FormFactory.getInstance();
-    formFactory.clearForm(selector);
-    Form form = formFactory.getForm(selector, context, false);
+    if (updateForm) formFactory.clearForm(formSelector);
+    Form form = formFactory.getForm(formSelector, context, false);
 
     FormImporter formImporter = new FormImporter();
     if (options != null)

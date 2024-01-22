@@ -204,7 +204,7 @@ public class DynamicPropertiesBean implements Serializable
     return selectItems;
   }
 
-  public void onItemSelect(FacesEvent event)
+  public void onSelectForm(FacesEvent event)
   {
     UIComponent component = event.getComponent();
     UIComponent panel = component.findComponent("dyn_form");
@@ -212,6 +212,23 @@ public class DynamicPropertiesBean implements Serializable
     {
       updateComponents(panel);
     }
+  }
+
+  public void onRefreshForm(FacesEvent event)
+  {
+    String formSelector = getFormSelector();
+    FormFactory formFactory = FormFactory.getInstance();
+    formFactory.clearForm(formSelector);
+
+    UIComponent component = event.getComponent();
+
+    // reset currentFormSelector
+    HtmlOutputText hidden =
+      (HtmlOutputText)component.findComponent("form_selector");
+    hidden.setStyleClass(null);
+
+    UIComponent panel = component.findComponent("dyn_form");
+    updateComponents(panel);
   }
 
   public void loadDynamicComponents(ComponentSystemEvent event)
@@ -246,12 +263,12 @@ public class DynamicPropertiesBean implements Serializable
         setFormSelector(formSelector);
       }
 
-      // save formSelector in styleClass property of outputText component
+      // save current formSelector in styleClass property of outputText component
       HtmlOutputText hidden =
         (HtmlOutputText)panel.findComponent("form_selector");
-      String actualFormSelector = (String)hidden.getStyleClass();
+      String currentFormSelector = (String)hidden.getStyleClass();
 
-      if (!formSelector.equals(actualFormSelector))
+      if (!formSelector.equals(currentFormSelector))
       {
         hidden.setStyleClass(formSelector);
 
@@ -291,8 +308,8 @@ public class DynamicPropertiesBean implements Serializable
 
           ComponentUtils.includeFormComponents(panel, formSelector,
              "dynamicPropertiesBean.propertyHelper.value",
-             "dynamicPropertiesBean.propertyHelper.values",             
-            propertyHelper.getValue(), getOptions());
+             "dynamicPropertiesBean.propertyHelper.values",
+            propertyHelper.getValue(), getOptions(), false);
         }
       }
     }

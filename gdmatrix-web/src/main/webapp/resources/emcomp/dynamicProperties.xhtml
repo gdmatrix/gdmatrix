@@ -21,12 +21,21 @@
       <div class="ui-fluid formgrid grid">
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{objectBundle.forms}:" />
-          <p:selectOneMenu value="#{cc.attrs.formSelector}" autoWidth="false" touchable="true">
-            <p:ajax event="itemSelect" listener="#{dynamicPropertiesBean.onItemSelect}"
-                    process="@this dyn_form" update="dyn_form"
-                    oncomplete="#{cc.attrs.oncomplete}" />
-            <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
-          </p:selectOneMenu>
+          <div class="ui-inputgroup">
+            <p:selectOneMenu value="#{cc.attrs.formSelector}" 
+                             styleClass="min-w-0"
+                             autoWidth="false" touchable="true">
+              <p:ajax event="itemSelect" 
+                      listener="#{dynamicPropertiesBean.onSelectForm}"
+                      process="@this dyn_form" update="dyn_form"
+                      oncomplete="#{cc.attrs.oncomplete}" />
+              <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
+            </p:selectOneMenu>
+            <p:commandButton icon="pi pi-refresh"
+                             actionListener="#{dynamicPropertiesBean.onRefreshForm}" 
+                             title="#{objectBundle.update}"
+                             process="@this" update="dyn_form" />
+          </div>
         </div>
       </div>
       <h:panelGroup id="dyn_form" 
