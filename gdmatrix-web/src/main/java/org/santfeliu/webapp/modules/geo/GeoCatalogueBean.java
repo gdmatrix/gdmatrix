@@ -37,9 +37,11 @@ import javax.inject.Named;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
+import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapFilter;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapGroup;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapView;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 
 /**
  *
@@ -52,6 +54,8 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   MapGroup mapGroup;
   MapFilter filter = new MapFilter();
   MapView currentMapView;
+
+  transient MapDocument currentMapDocument;
 
   public MapGroup getMapGroup()
   {
@@ -76,13 +80,30 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   {
     try
     {
-      return getMapStore().getMapSummary(currentMapView.getMapName());
+      MapDocument mapDocument = getCurrentMapDocument();
+      return mapDocument.getMergedSummary();
     }
     catch (Exception ex)
     {
       error(ex);
-      return null;
     }
+    return null;
+  }
+
+  public boolean isCurrentMapEditable()
+  {
+    try
+    {
+      MapDocument mapDocument = getCurrentMapDocument();
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      return  userSessionBean.isUserInRole(GEO_ADMIN_ROLE) ||
+        userSessionBean.isUserInRole(mapDocument.getWriteRoles());
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return false;
   }
 
   public MapFilter getFilter()
@@ -105,6 +126,15 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     {
       error(ex);
     }
+  }
+
+  private MapDocument getCurrentMapDocument() throws Exception
+  {
+    if (currentMapDocument == null && currentMapView != null)
+    {
+      currentMapDocument = getMapStore().loadMap(currentMapView.getMapName());
+    }
+    return currentMapDocument;
   }
 
   private MapStore getMapStore()

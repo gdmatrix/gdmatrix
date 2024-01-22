@@ -23,54 +23,54 @@
       </div>
       <div class="buttons flex flex-grow-1 justify-content-end gap-2">
         <div class="ui-inputgroup">
-          <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="Catalogue"
-                           icon="pi pi-th-large" title="Catalogue" styleClass="mini"
+          <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="#{geoBundle.catalogue_short}"
+                           icon="pi pi-th-large" title="#{geoBundle.catalogue_short}" styleClass="mini"
                            widgetVar="showCatalogueButton"
                            process="@form:cnt" update="@form:cnt" />
 
-          <p:commandButton action="#{geoMapBean.setView('map_viewer')}" value="View"
-                           icon="pi pi-eye" title="View" styleClass="mini"
+          <p:commandButton action="#{geoMapBean.setView('map_viewer')}" value="#{objectBundle.show}"
+                           icon="pi pi-eye" title="#{objectBundle.show}" styleClass="mini"
                            process="@form:cnt" update="@form:cnt"
                            oncomplete="if (isFacesError()) objectScrollUp()" />
 
-          <p:commandButton action="#{geoMapBean.setViewAndMode('map_editor', 'visual')}" value="Edit"
-                           icon="pi pi-pencil" title="Edit" styleClass="mini"
+          <p:commandButton action="#{geoMapBean.setViewAndMode('map_editor', 'visual')}" value="#{objectBundle.edit}"
+                           icon="pi pi-pencil" title="#{objectBundle.edit}" styleClass="mini"
                            process="@form:cnt" update="@form:cnt"
                            oncomplete="if (isFacesError()) objectScrollUp()" />
         </div>
 
         <div class="ui-inputgroup">
-          <p:commandButton action="#{geoMapBean.setMode('visual')}" value="Visual"
-                           icon="pi pi-credit-card" title="Visual"
+          <p:commandButton action="#{geoMapBean.setMode('visual')}" value="#{geoBundle.visual}"
+                           icon="pi pi-credit-card" title="#{geoBundle.visual}"
                            styleClass="mini #{geoMapBean.mode == 'visual' ? 'ui-button-outlined' : ''}"
                            process="@form:cnt" update="@form:cnt" />
 
-          <p:commandButton action="#{geoMapBean.setMode('code')}" value="Code"
-                           icon="pi pi-code" title="Code"
+          <p:commandButton action="#{geoMapBean.setMode('code')}" value="#{geoBundle.code}"
+                           icon="pi pi-code" title="#{geoBundle.code}"
                            process="@form:cnt" update="@form:cnt"
                            styleClass="mini #{geoMapBean.mode == 'code' ? 'ui-button-outlined' : ''}"
                            oncomplete="if (isFacesError()) objectScrollUp()" />
         </div>
         
         <div class="ui-inputgroup">
-          <p:commandButton action="#{geoSldBean.newSld}" value="New"
-                           icon="pi pi-plus-circle" title="New" styleClass="mini"
+          <p:commandButton action="#{geoSldBean.newSld}" value="#{objectBundle.create}"
+                           icon="pi pi-plus-circle" title="#{objectBundle.create}" styleClass="mini"
                            resetValues="true"
                            process="@this" update="@form:cnt" />
 
-          <p:commandButton action="#{geoSldBean.reloadSld}" value="Reload"
-                           icon="pi pi-refresh" title="Reload" styleClass="mini"
+          <p:commandButton action="#{geoSldBean.reloadSld}" value="#{objectBundle.reload}"
+                           icon="pi pi-refresh" title="#{objectBundle.reload}" styleClass="mini"
                            resetValues="true"
                            process="@this @form:cnt:sld_name" update="@form:cnt"
                            oncomplete="if (isFacesError()) objectScrollUp()" />
 
-          <p:commandButton action="#{geoSldBean.saveSld}" value="Save"
-                           icon="pi pi-save" title="Save" styleClass="mini"
+          <p:commandButton action="#{geoSldBean.saveSld}" value="#{objectBundle.store}"
+                           icon="pi pi-save" title="#{objectBundle.store}" styleClass="mini"
                            process="@form:cnt" update="@none"
                            oncomplete="if (isFacesError()) objectScrollUp()" />
 
-          <p:commandButton action="#{geoSldBean.removeSld}" value="Delete"
-                           icon="pi pi-trash" title="Delete" styleClass="mini"
+          <p:commandButton action="#{geoSldBean.removeSld}" value="#{objectBundle.delete}"
+                           icon="pi pi-trash" title="#{objectBundle.delete}" styleClass="mini"
                            process="@form:cnt" update="@form:cnt"
                            oncomplete="if (isFacesError()) objectScrollUp()">
                           <p:confirm header="Remove"

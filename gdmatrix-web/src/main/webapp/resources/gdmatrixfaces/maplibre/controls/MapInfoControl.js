@@ -12,7 +12,8 @@ class MapInfoControl
     this.options = {...{
         "position" : "right",
         "title" : bundle.get("MapInfoControl.title"),
-        "iconClass" : "pi pi-info-circle"
+        "iconClass" : "pi pi-info-circle",
+        "infoId" : "map_info"
       }, ...options};
   }
 
@@ -21,11 +22,15 @@ class MapInfoControl
     this.panel = new Panel(map, this.options);
 
     const bodyDiv = this.panel.bodyDiv;
-    for (let i = 0; i < 20; i++)
+    if (this.options.infoId)
     {
-      let div = document.createElement("div");
-      div.innerHTML = `<span>bla bla bla bla bla</span>`;
-      bodyDiv.appendChild(div);
+      let mapInfoElem = document.getElementById(this.options.infoId);
+      if (mapInfoElem)
+      {
+        mapInfoElem.style.display = "";
+        mapInfoElem.removeAttribute("aria-hidden");
+        bodyDiv.appendChild(mapInfoElem);
+      }
     }
   }
 

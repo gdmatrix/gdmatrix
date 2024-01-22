@@ -143,6 +143,7 @@ class PanelManager
     topStyle.left = leftSize;
     topStyle.right = rightSize;
     topStyle.height = topSize;
+    topStyle.display = topContainer.size === 0 ? "none" : "";
 
     const bottomStyle = bottomContainer.containerDiv.style;
     bottomStyle.top = "auto";
@@ -150,6 +151,7 @@ class PanelManager
     bottomStyle.left = leftSize;
     bottomStyle.right = rightSize;
     bottomStyle.height = bottomSize;
+    bottomStyle.display = bottomContainer.size === 0 ? "none" : "";
 
     const leftStyle = leftContainer.containerDiv.style;
     leftStyle.left = 0;
@@ -157,6 +159,7 @@ class PanelManager
     leftStyle.top = 0;
     leftStyle.bottom = 0;
     leftStyle.width = leftSize;
+    leftStyle.display = leftContainer.size === 0 ? "none" : "";
 
     const rightStyle = rightContainer.containerDiv.style;
     rightStyle.left = "auto";
@@ -164,6 +167,7 @@ class PanelManager
     rightStyle.top = 0;
     rightStyle.bottom = 0;
     rightStyle.width = rightSize;
+    rightStyle.display = rightContainer.size === 0 ? "none" : "";
 
     const HANDLER_SIZE = PanelManager.HANDLER_SIZE;
     const handlerSize = HANDLER_SIZE + "px";

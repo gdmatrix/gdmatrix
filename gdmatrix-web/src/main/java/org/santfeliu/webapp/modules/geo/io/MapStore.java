@@ -42,7 +42,6 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
@@ -53,10 +52,11 @@ import org.matrix.security.AccessControl;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
+import org.santfeliu.util.template.WebTemplate;
 import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import static org.matrix.dic.DictionaryConstants.WRITE_ACTION;
-import org.santfeliu.util.template.WebTemplate;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -75,6 +75,7 @@ public class MapStore
   public static final String MAP_CATEGORY_NAME_PROPERTY = "category";
   public static final String MAP_CATEGORY_POSITION_PROPERTY = "position";
   public static final String MAP_CATEGORY_PARENT_PROPERTY = "parentCategory";
+  public static final String GEO_ADMIN_ROLE = "GIS_ADMIN";
 
   public static List<MapCategory> categoryList;
   public static HashMap<String, MapCategory> categoryCache = new HashMap<>();
@@ -260,34 +261,13 @@ public class MapStore
   public String getMapSummary(String mapName) throws Exception
   {
     MapStore.MapDocument mapDocument = loadMap(mapName);
-    String summary = mapDocument.getSummary();
-    return mergeMapTemplate(mapDocument, summary);
+    return mapDocument.getMergedSummary();
   }
 
-  public String getMapDescription(String mapName) throws Exception
+  public String getMapSummaryAndDescription(String mapName) throws Exception
   {
     MapStore.MapDocument mapDocument = loadMap(mapName);
-    String summary = mapDocument.getSummary();
-    String description = mapDocument.getDescription();
-    return mergeMapTemplate(mapDocument, summary + description);
-  }
-
-  public String mergeMapTemplate(MapDocument mapDocument, String templateSource)
-    throws Exception
-  {
-    WebTemplate template = WebTemplate.create(templateSource);
-    HashMap<String, Object> variables = new HashMap<>();
-    for (Property property : mapDocument.getProperty())
-    {
-      variables.put(property.getName(), property.getValue().get(0));
-    }
-    variables.put("title", mapDocument.getTitle());
-    variables.put("creationDate", mapDocument.getCreationDate());
-    variables.put("captureDateTime", mapDocument.getCaptureDateTime());
-    variables.put("changeDateTime", mapDocument.getChangeDateTime());
-    variables.put("captureUserId", mapDocument.getCaptureUserId());
-    variables.put("changeUserId", mapDocument.getChangeUserId());
-    return template.merge(variables);
+    return mapDocument.getMergedSummaryAndDescription();
   }
 
   // Categories
@@ -553,6 +533,19 @@ public class MapStore
       this.description = description;
     }
 
+    public String getMergedSummary()
+    {
+      String sum = summary == null ? "" : summary;
+      return mergeMapTemplate(sum);
+    }
+
+    public String getMergedSummaryAndDescription()
+    {
+      String sum = summary == null ? "" : summary;
+      String desc = description == null ? "" : description;
+      return mergeMapTemplate(sum + desc);
+    }
+
     public String getKeywords()
     {
       return keywords;
@@ -681,6 +674,37 @@ public class MapStore
       }
       this.accessControl.clear();
       this.accessControl.addAll(roles.values());
+    }
+
+    public List<String> getWriteRoles()
+    {
+      List<String> roles = new ArrayList<>();
+      for (AccessControl ac : accessControl)
+      {
+        if (WRITE_ACTION.equals(ac.getAction()) ||
+            DELETE_ACTION.equals(ac.getAction()))
+        {
+          roles.add(ac.getRoleId());
+        }
+      }
+      return roles;
+    }
+
+    public String mergeMapTemplate(String templateSource)
+    {
+      WebTemplate template = WebTemplate.create(templateSource);
+      HashMap<String, Object> variables = new HashMap<>();
+      for (Property prop : getProperty())
+      {
+        variables.put(prop.getName(), prop.getValue().get(0));
+      }
+      variables.put("title", getTitle());
+      variables.put("creationDate", getCreationDate());
+      variables.put("captureDateTime", getCaptureDateTime());
+      variables.put("changeDateTime", getChangeDateTime());
+      variables.put("captureUserId", getCaptureUserId());
+      variables.put("changeUserId", getChangeUserId());
+      return template.merge(variables);
     }
 
     public final void readProperties(Document document)

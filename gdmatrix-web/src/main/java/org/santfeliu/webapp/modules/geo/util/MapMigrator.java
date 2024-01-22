@@ -443,6 +443,7 @@ public class MapMigrator
         {
           newDesc = newDesc.trim();
         }
+        newDesc = fixHtml(newDesc);
         DictionaryUtils.setProperty(styleDocument, "description", newDesc);
       }
       styleDocument.setAccessControl(document.getAccessControl());
@@ -505,6 +506,16 @@ public class MapMigrator
       }
     }
     return buffer.toString();
+  }
+
+  private String fixHtml(String html)
+  {
+    if (html != null)
+    {
+      html = html.trim().replaceAll(" +", " ");
+      html = html.trim().replaceAll("</div> <div", "</div>\n<div");
+    }
+    return html;
   }
 
   public static void main(String[] args)

@@ -6,10 +6,7 @@
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
-  
-  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
-                var="objectBundle" />
-
+    
   <h:outputStylesheet library="css" name="geo.css" />
   
   <div class="flex flex-column h-full">
@@ -17,25 +14,34 @@
          style="border-color:var(--surface-border)">
       <div class="flex-grow-0 align-items-center" style="color:var(--text-color)">
         <span class="pi pi-map"/>
-        <strong>#{geoMapBean.mapDocument.title}</strong>
+        <strong>#{applicationBean.translate(geoMapBean.mapDocument.title, 'geo')}</strong>
       </div>      
       <div class="flex-grow-1 flex justify-content-end">
         <div class="ui-inputgroup">
-          <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="Catalogue" 
+          <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="#{geoBundle.catalogue_short}" 
                            icon="pi pi-th-large" widgetVar="showCatalogueButton"
+                           title="#{geoBundle.catalogue}" styleClass="mini"
                            process="@this" update="@form:cnt" />
 
-          <p:commandButton action="#{geoMapBean.setView('map_editor')}" value="Edit" 
-                           icon="pi pi-pencil"
+          <p:commandButton action="#{geoMapBean.setView('map_editor')}" value="#{objectBundle.edit}" 
+                           icon="pi pi-pencil" rendered="#{geoMapBean.isEditorUser()}"
+                           title="#{objectBundle.edit}" styleClass="mini"
                            process="@this" update="@form:cnt" />
 
           <p:commandButton action="#{geoMapBean.setView('sld_editor')}" value="SLD" 
-                           icon="pi pi-palette"
+                           icon="pi pi-palette" rendered="#{geoMapBean.isEditorUser()}"
+                           title="SLD" styleClass="mini"
                            process="@this" update="@form:cnt" />
         </div>
       </div>      
     </div>
-    <gdm:maplibre value="#{geoMapBean.style}" class="flex-grow-1 h-full" />    
+    <gdm:maplibre value="#{geoMapBean.style}" class="flex-grow-1 h-full" />
+  </div>
+
+  <div id="map_info" style="display:none" aria-hidden="true">
+    <sf:outputText value="#{geoMapBean.mapDocument.mergedSummaryAndDescription}"
+                   translator="#{userSessionBean.translator}"  
+                   translationGroup="geo" escape="false" />
   </div>
   
   <gdm:saveBean value="geoMapBean" />

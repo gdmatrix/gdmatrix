@@ -6,6 +6,7 @@
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <div class="ui-fluid formgrid grid">
@@ -46,17 +47,20 @@
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel value="Summary" for="@next" />
-              <p:inputTextarea value="#{geoMapBean.mapDocument.summary}" styleClass="code" />
+              <p:inputTextarea value="#{geoMapBean.mapDocument.summary}" styleClass="code" 
+                               pt:spellcheck="false" />
             </div>
 
             <div class="field col-12">
               <p:outputLabel value="Description" for="@next" />
-              <p:inputTextarea value="#{geoMapBean.mapDocument.description}" styleClass="code" />
+              <p:inputTextarea value="#{geoMapBean.mapDocument.description}" styleClass="code" 
+                               pt:spellcheck="false" />
             </div>
 
             <div class="field col-12">
               <p:outputLabel value="Keywords" for="@next" />
-              <p:inputTextarea value="#{geoMapBean.mapDocument.keywords}" styleClass="code" />
+              <p:inputTextarea value="#{geoMapBean.mapDocument.keywords}" styleClass="code" 
+                               pt:spellcheck="false" />
             </div>            
 
             <div class="field col-12">

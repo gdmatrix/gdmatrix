@@ -86,7 +86,8 @@
       /WEB-INF/test-config.xml,
       /WEB-INF/mobile-config.xml,
       /WEB-INF/feed-config.xml,
-      /WEB-INF/assistant-config.xml
+      /WEB-INF/assistant-config.xml,
+      /WEB-INF/geo-config.xml
     </param-value>
   </context-param>
   <context-param>

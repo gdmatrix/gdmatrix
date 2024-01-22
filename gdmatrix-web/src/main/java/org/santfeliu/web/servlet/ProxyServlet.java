@@ -314,7 +314,6 @@ public class ProxyServlet extends HttpServlet
     resp.setContentLength(contentLength);
     resp.setContentType(contentType);
     resp.setDateHeader("Last-Modified", lastModified);
-    resp.setDateHeader("Expires", System.currentTimeMillis() + 5000);
     IOUtils.writeToStream(dataStream, resp.getOutputStream());
   }
 

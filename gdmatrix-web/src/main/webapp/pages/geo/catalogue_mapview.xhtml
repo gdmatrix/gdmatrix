@@ -10,7 +10,7 @@
   <li class="pt-1 pb-1">
     <span class="pi pi-map mr-2" />
     <p:commandLink action="#{geoMapBean.loadMap(mapView.mapName, 'map_viewer')}"
-                   value="#{mapView.title}" 
+                   value="#{applicationBean.translate(mapView.title, 'geo')}" 
                    process="@this" update="@form:cnt" />
 
     <p:commandButton title="#{objectBundle.edit}"

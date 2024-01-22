@@ -275,7 +275,8 @@ function getSourceUrl(sourceId, style)
   if (service.useProxy)
   {
     url = "https://" + document.location.host + "/proxy?url=" +
-          serviceUrl + "&" + urlParams;
+          serviceUrl + "&" + urlParams + 
+          "&_CHG=" + sourceId + "&_CHF=image&_CHR=_seed";
   }
   else
   {

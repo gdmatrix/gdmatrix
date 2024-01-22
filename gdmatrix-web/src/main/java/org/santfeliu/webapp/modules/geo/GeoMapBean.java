@@ -61,6 +61,7 @@ import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapCategory;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 
 /**
  *
@@ -132,6 +133,13 @@ public class GeoMapBean extends WebBean implements Serializable
   public MapDocument getMapDocument()
   {
     return mapDocument;
+  }
+
+  public boolean isEditorUser()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    return userSessionBean.isUserInRole(GEO_ADMIN_ROLE) ||
+      userSessionBean.isUserInRole(mapDocument.getWriteRoles());
   }
 
   public MapCategory getCategory(String categoryName)
