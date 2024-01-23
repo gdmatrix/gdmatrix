@@ -35,7 +35,7 @@
         <!-- Document -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="#{newsBundle.newDocuments_document}"
+                         value="#{newsBundle.new_documents_documentName}"
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{newDocumentsTabBean.editing.documentId}"
@@ -56,7 +56,7 @@
         <!-- Type -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="#{newsBundle.newDocuments_type}"
+                         value="#{newsBundle.new_documents_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{newDocumentsTabBean.newDocTypeId}"
                                 process="@form:cnt:search_tabs:new_documents_dialog"

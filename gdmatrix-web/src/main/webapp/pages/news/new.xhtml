@@ -26,7 +26,7 @@
           
           <div class="ui-fluid formgrid grid"> 
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:outputLabel for="@next" value="#{newsBundle.new_search_content}" />
               <emcomp:tipInputText id="smartFilter"
                                    value="#{newFinderBean.smartFilter}"
                                    tipContent="#{newFinderBean.smartSearchTip}" />
@@ -87,7 +87,7 @@
             </div>
 
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{newsBundle.new_search_startDay}" />
+              <p:outputLabel for="@next" value="#{newsBundle.new_search_endDay}" />
               <p:datePicker value="#{newFinderBean.filter.endDateTime}"
                             autocomplete="off"
                             placeholder="dd/MM/yyyy HH:mm:ss"

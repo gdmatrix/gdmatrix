@@ -21,29 +21,29 @@
     <div class="field col-12 lg:col-4">
       <p:outputLabel for="@next" value="#{translationBundle.editor_creation_date}" />
       <p:inputText value="#{translationObjectBean.translation.creationDateTime}" 
-                   readonly="true" disabled="true" converter="DateTimeConverter"/>
+                   readonly="true" converter="DateTimeConverter"/>
     </div> 
 
     <div class="field col-12 lg:col-4">
       <p:outputLabel for="@next" value="#{translationBundle.editor_last_read}" />
       <p:inputText value="#{translationObjectBean.translation.readDateTime}" 
-                   readonly="true" disabled="true" converter="DateTimeConverter"/>
+                   readonly="true" converter="DateTimeConverter"/>
     </div>    
 
     <div class="field col-12 lg:col-4">
       <p:outputLabel for="@next" value="#{translationBundle.editor_last_mod}" />
       <p:inputText value="#{translationObjectBean.translation.modifyDateTime}"
-                   readonly="true" disabled="true" converter="DateTimeConverter" />
+                   readonly="true" converter="DateTimeConverter" />
     </div>     
 
     <div class="field col-12 lg:col-2">
       <p:outputLabel for="@next" value="#{translationBundle.language}" />
-      <p:inputText value="#{translationObjectBean.displayLanguage}" readonly="true" disabled="true"/>
+      <p:inputText value="#{translationObjectBean.displayLanguage}" readonly="true"/>
     </div>   
     
     <div class="field col-12 lg:col-4">
       <p:outputLabel for="@next" value="#{translationBundle.group}" />
-      <p:inputText value="#{translationObjectBean.translation.group}" readonly="true" disabled="true"/>
+      <p:inputText value="#{translationObjectBean.translation.group}" readonly="true"/>
     </div>      
 
     <div class="field col-12">
@@ -53,7 +53,7 @@
     
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{translationBundle.editor_closed}" />
-      <p:toggleSwitch styleClass="block" value="#{translationObjectBean.translationClosed}"  />
+      <p:toggleSwitch value="#{translationObjectBean.translationClosed}" styleClass="ml-2 vertical-align-middle" />
     </div>     
 
   </div>   

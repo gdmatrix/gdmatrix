@@ -265,9 +265,14 @@ public class NewSectionsTabBean extends TabBean
       String sectionId = nodeMic.getDirectProperty(SECTIONID_PROPERTY);
       if (sectionId == null)
       {
-        TreeNode node = createTreeNode(nodeMic);
-        if (node != null)
-          node.setType(SELECTABLE);
+        List<String> editRoles = 
+          nodeMic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
+        
+        if (UserSessionBean.getCurrentInstance().isUserInRole(editRoles))
+        {
+          TreeNode node = createTreeNode(nodeMic);
+          node.setType(SELECTABLE);        
+        }
       }
     }
   }
@@ -288,23 +293,18 @@ public class NewSectionsTabBean extends TabBean
       node = nodeMap.get(mid);
       if (node == null && parentNode != null)
       {
-        List<String> editRoles
-          = mic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
-        if (UserSessionBean.getCurrentInstance().isUserInRole(editRoles))
-        {
-          String value = mic.getDirectProperty(NEWSECTION_PROPERTY);
-          if (value == null)
-            value = mic.getDirectProperty("description");
-          if (value == null)
-            value = mic.getDirectProperty("label");
-          if (value == null)
-            value = mid;
+        String section = mic.getDirectProperty(NEWSECTION_PROPERTY);
+        if (section == null)
+          section = mic.getDirectProperty("description");
+        if (section == null)
+          section = mic.getDirectProperty("label");
+        if (section == null)
+          section = mid;
 
-          node = new SectionTreeNode(mid, value, false, parentNode);
-          node.setType(UNSELECTABLE);
-
-          nodeMap.put(mid, node);
-        }
+        node = new SectionTreeNode(mid, section, false, parentNode);
+        node.setType(UNSELECTABLE);
+      
+        nodeMap.put(mid, node);
       }
     }
 
