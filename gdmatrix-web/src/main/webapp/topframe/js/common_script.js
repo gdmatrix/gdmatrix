@@ -522,9 +522,9 @@ function closePFDialog(widgetVar)
   var dialog = PF(widgetVar);
   if (dialog)
   {
-    if (isFacesError())
+    var elem = dialog.jq[0];
+    if (elem.getElementsByClassName('ui-messages-error').length > 0)
     {
-      var elem = dialog.jq[0];      
       elem.scroll({
         top: 0,
         left: 0,
