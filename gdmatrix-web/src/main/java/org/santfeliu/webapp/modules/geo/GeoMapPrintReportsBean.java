@@ -177,4 +177,5 @@ public class GeoMapPrintReportsBean extends WebBean implements Serializable
       return Collections.EMPTY_LIST;
     }
   }
+  
 }

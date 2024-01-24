@@ -133,6 +133,11 @@
       <type>java.lang.String</type>
       <description>The component CSS class name</description>
     </attribute>
+    <attribute>
+      <name>encoder</name>
+      <type>java.lang.Object</type>
+      <description>The style encoder</description>
+    </attribute>
   </tag>                                                                
                                                                                                                                                                                                                         
 </facelet-taglib>

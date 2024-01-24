@@ -61,6 +61,8 @@ import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapCategory;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
+import org.santfeliu.faces.maplibre.encoder.TranslateStyleEncoder;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 
 /**
@@ -78,6 +80,8 @@ public class GeoMapBean extends WebBean implements Serializable
   private boolean mapNameChanged;
   private int activeTabIndex;
   private boolean dialogVisible;
+
+  private transient StyleEncoder encoder;
 
   @PostConstruct
   public void init()
@@ -128,6 +132,17 @@ public class GeoMapBean extends WebBean implements Serializable
   public Style getStyle()
   {
     return mapDocument.getStyle();
+  }
+
+  public StyleEncoder getEncoder()
+  {
+    if (encoder == null)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      String language = userSessionBean.getViewLanguage();
+      encoder = new TranslateStyleEncoder(language, mapDocument.getName());
+    }
+    return encoder;
   }
 
   public MapDocument getMapDocument()

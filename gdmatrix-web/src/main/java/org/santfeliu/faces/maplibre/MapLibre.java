@@ -39,6 +39,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.maplibre.model.Style;
+import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
 
 /**
  *
@@ -57,16 +58,12 @@ public class MapLibre extends UIOutput
 
   private String _style;
   private String _styleClass;
+  private StyleEncoder _encoder;
 
   @Override
   public String getFamily()
   {
     return COMPONENT_FAMILY;
-  }
-
-  public void setStyle(String style)
-  {
-    this._style = style;
   }
 
   public String getStyle()
@@ -88,6 +85,24 @@ public class MapLibre extends UIOutput
     ValueExpression ve = getValueExpression("styleClass");
     return ve != null ?
       (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setEncoder(StyleEncoder encoder)
+  {
+    this._encoder = encoder;
+  }
+
+  public StyleEncoder getEncoder()
+  {
+    if (_encoder != null) return _encoder;
+    ValueExpression ve = getValueExpression("encoder");
+    return ve != null ?
+      (StyleEncoder)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setStyle(String style)
+  {
+    this._style = style;
   }
 
   @Override
@@ -118,18 +133,24 @@ public class MapLibre extends UIOutput
     Style mapStyle = (Style)getValue();
 
     writer.startElement("script", this);
-    writer.writeText("maplibreInit('" + clientId + "', " +
-      mapStyle + ", '" + language + "');", null);
+    writer.writeText("maplibreInit('" + clientId + "', ", null);
+
+    StyleEncoder encoder = getEncoder();
+    if (encoder == null) encoder = new StyleEncoder();
+    encoder.write(mapStyle, writer);
+
+    writer.writeText(", '" + language + "');", null);
     writer.endElement("script");
   }
 
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[6];
+    Object values[] = new Object[4];
     values[0] = super.saveState(context);
     values[1] = _style;
     values[2] = _styleClass;
+    values[3] = _encoder;
     return values;
   }
 
@@ -140,5 +161,6 @@ public class MapLibre extends UIOutput
     super.restoreState(context, values[0]);
     _style = (String)values[1];
     _styleClass = (String)values[2];
+    _encoder = (StyleEncoder)values[3];
   }
 }

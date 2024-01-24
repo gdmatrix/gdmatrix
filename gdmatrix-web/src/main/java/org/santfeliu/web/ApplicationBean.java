@@ -54,6 +54,7 @@ import javax.faces.el.ValueBinding;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cms.CMSManagerPort;
 import org.matrix.cms.Node;
 import org.matrix.cms.Property;
@@ -319,7 +320,7 @@ public class ApplicationBean
   {
     try
     {
-      if (text != null && !text.trim().isEmpty())
+      if (!StringUtils.isBlank(text))
       {
         if (text.startsWith(BUNDLE_TRANSLATION_PREFIX))
         {
@@ -342,6 +343,25 @@ public class ApplicationBean
     catch (Exception ex)
     {
       return text;
+    }
+  }
+
+  public String translateHtml(String html, String group)
+  {
+    try
+    {
+      if (!StringUtils.isBlank(html))
+      {
+        StringWriter sw = new StringWriter();
+        getTranslator().translate(new StringReader(html), sw, "text/html",
+          FacesUtils.getViewLanguage(), group);
+        return sw.toString();
+      }
+      else return "";
+    }
+    catch (Exception ex)
+    {
+      return html;
     }
   }
 

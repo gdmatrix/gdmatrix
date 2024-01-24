@@ -4,19 +4,20 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
-                xmlns:pe="http://primefaces.org/ui/extensions"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:pe="http://primefaces.org/ui/extensions">
 
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
                 var="objectBundle" />
   <h:outputStylesheet library="css" name="geo.css" />
 
-  <div class="flex flex-column h-full" style="color:var(--text-color)">
-
-    <div class="flex align-items-center flex-grow-0 border-none border-solid border-bottom-1"
+  <div class="flex flex-column h-full overflow-hidden" style="color:var(--text-color)">
+    <div class="p-2 flex align-items-center flex-grow-0 border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
-      <div class="flex-grow-0 p-2">#{applicationBean.translate(userSessionBean.selectedMenuItem.label, 'geo')}</div>
-      <div class="flex-grow-1 p-2">
+      <div class="flex-grow-0 align-items-center" style="color:var(--text-color)">
+        <span class="pi pi-th-large"/>
+        <strong>#{applicationBean.translate(userSessionBean.selectedMenuItem.label, 'geo')}</strong>
+      </div>      
+      <div class="flex-grow-1">
         <div class="ui-inputgroup justify-content-end">
           <p:inputText value="#{geoCatalogueBean.filter.keyword}"
                        autocomplete="off" placeholder="#{objectBundle.search}" />
@@ -86,11 +87,9 @@
       </div>
     </f:facet>
 
-    <sf:outputText value="#{geoCatalogueBean.currentMapSummary}"
-                   translationGroup="geo"
-                   translator="#{userSessionBean.translator}"
-                   rendered="#{geoCatalogueBean.currentMapView != null}"
-                   escape="false" />
+    <h:outputText value="#{applicationBean.translateHtml(geoCatalogueBean.currentMapSummary, 'geo')}"
+                  rendered="#{geoCatalogueBean.currentMapView != null}"
+                  escape="false" />
 
     <f:facet name="footer">
         <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_viewer')}"
