@@ -118,11 +118,13 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
                          update="person_addresses_table person_addresses_panel" 
-                         oncomplete="closePFDialog('personAddressesDialog')"/>
+                         oncomplete="closePFDialog('personAddressesDialog')"
+                         icon="pi pi-save"/>
         <p:commandButton action="#{personAddressesTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}" 
                          process="@this" update="person_addresses_panel" global="false" 
-                         onclick="PF('personAddressesDialog').hide()"/>
+                         onclick="PF('personAddressesDialog').hide()"
+                         icon="pi pi-times" />
       </div>          
     </f:facet>
 

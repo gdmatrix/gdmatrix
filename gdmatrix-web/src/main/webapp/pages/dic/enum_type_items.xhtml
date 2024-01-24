@@ -171,11 +171,13 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          disabled="#{!enumTypeObjectBean.editable}"
                          update="enum_type_items_table enum_type_items_panel"
-                         oncomplete="closePFDialog('enumTypeItemsDialog')"/>
+                         oncomplete="closePFDialog('enumTypeItemsDialog')"
+                         icon="pi pi-save"/>
         <p:commandButton action="#{enumTypeItemsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          immediate="true" update="enum_type_items_panel" global="false"
-                         onclick="PF('enumTypeItemsDialog').hide()"/>
+                         onclick="PF('enumTypeItemsDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

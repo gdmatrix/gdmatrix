@@ -177,12 +177,14 @@
                          process="case_acl_dialog"
                          update="case_acl_table case_acl_panel"
                          oncomplete="closePFDialog('caseACLDialog')"
-                         disabled="#{!caseObjectBean.editable}"/>
+                         disabled="#{!caseObjectBean.editable}"
+                         icon="pi pi-check"/>
         <p:commandButton action="#{caseACLTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="case_acl_dialog" global="false" 
-                         onclick="PF('caseACLDialog').hide()"/>
+                         onclick="PF('caseACLDialog').hide()"
+                         icon="pi pi-times" />
       </div>      
     </f:facet>
 

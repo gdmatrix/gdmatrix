@@ -148,13 +148,15 @@
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="type_acl_dialog"
                          update="type_acl_table type_acl_panel"
-                         oncomplete="closePFDialog('typeACLDialog')" />
+                         oncomplete="closePFDialog('typeACLDialog')" 
+                         icon="pi pi-check"/>
 
         <p:commandButton action="#{typeACLTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="type_acl_dialog" global="false" 
-                         onclick="PF('typeACLDialog').hide()"/>
+                         onclick="PF('typeACLDialog').hide()"
+                         icon="pi pi-times" />
       </div> 
 
     </f:facet>

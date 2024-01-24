@@ -182,12 +182,14 @@
                          process="document_acl_dialog"
                          update="document_acl_table document_acl_panel"
                          oncomplete="closePFDialog('documentACLDialog')"
-                         disabled="#{!documentObjectBean.editable}"/>
+                         disabled="#{!documentObjectBean.editable}"
+                         icon="pi pi-check"/>
         <p:commandButton action="#{documentACLTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="document_acl_dialog" global="false" 
-                         onclick="PF('documentACLDialog').hide()"/>
+                         onclick="PF('documentACLDialog').hide()"
+                         icon="pi pi-times" />
       </div>      
     </f:facet>
 

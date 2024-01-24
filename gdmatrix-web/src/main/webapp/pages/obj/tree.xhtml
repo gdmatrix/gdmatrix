@@ -61,9 +61,11 @@
     
     <p:confirmPopup global="true">
       <p:commandButton value="#{objectBundle.cancel}" type="button" 
-                       styleClass="ui-confirm-popup-no ui-button-flat"/>
+                       styleClass="ui-confirm-popup-no ui-button-flat"
+                       icon="pi pi-times" />
       <p:commandButton value="#{objectBundle.accept}" type="button" 
-                       styleClass="ui-confirm-popup-yes" />
+                       styleClass="ui-confirm-popup-yes"
+                       icon="pi pi-check"/>
     </p:confirmPopup>    
     
     <p:commandButton action="#{contextTreeBean.update}"

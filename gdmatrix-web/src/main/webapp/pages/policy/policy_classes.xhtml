@@ -165,12 +165,14 @@
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="policy_classes_dialog"
                          update="policy_classes_table policy_classes_panel"
-                         oncomplete="closePFDialog('policyClassesDialog')" />
+                         oncomplete="closePFDialog('policyClassesDialog')"
+                         icon="pi pi-save" />
         <p:commandButton action="#{policyClassesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="policy_classes_dialog" global="false"
-                         onclick="PF('policyClassesDialog').hide()" />
+                         onclick="PF('policyClassesDialog').hide()" 
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

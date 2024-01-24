@@ -224,12 +224,13 @@
                          process="case_policies_dialog"
                          update="case_policies_table case_policies_panel"
                          oncomplete="closePFDialog('casePoliciesDialog')"
-                         />
+                         icon="pi pi-save" />
         <p:commandButton action="#{casePoliciesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="case_policies_dialog" global="false"
-                         onclick="PF('casePoliciesDialog').hide()"/>
+                         onclick="PF('casePoliciesDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

@@ -118,12 +118,13 @@
                          process="role_roles_dialog"
                          update="role_roles_table role_roles_panel"
                          oncomplete="closePFDialog('roleRolesDialog')"
-                         />
+                         icon="pi pi-save" />
         <p:commandButton action="#{roleRolesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="role_roles_dialog" global="false"
-                         onclick="PF('roleRolesDialog').hide()"/>
+                         onclick="PF('roleRolesDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

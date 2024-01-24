@@ -118,12 +118,13 @@
                          process="role_containers_dialog"
                          update="role_containers_table role_containers_panel"
                          oncomplete="closePFDialog('roleContainersDialog')"
-                         />
+                         icon="pi pi-save" />
         <p:commandButton action="#{roleContainersTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="role_containers_dialog" global="false"
-                         onclick="PF('roleContainersDialog').hide()"/>
+                         onclick="PF('roleContainersDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

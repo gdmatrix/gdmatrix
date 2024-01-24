@@ -105,12 +105,14 @@
                          process="event_cases_dialog"
                          update="@form:cnt:search_tabs:tabs event_cases_panel"
                          oncomplete="closePFDialog('eventCasesDialog')"
-                         disabled="#{!eventObjectBean.editable}" />
+                         disabled="#{!eventObjectBean.editable}" 
+                         icon="pi pi-save" />
         <p:commandButton action="#{eventCasesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="event_cases_dialog" global="false"
-                         onclick="PF('eventCasesDialog').hide()"/>
+                         onclick="PF('eventCasesDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

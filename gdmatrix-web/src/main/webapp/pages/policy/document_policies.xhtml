@@ -223,12 +223,13 @@
                          process="document_policies_dialog"
                          update="document_policies_table document_policies_panel"
                          oncomplete="closePFDialog('documentPoliciesDialog')"
-                         />
+                         icon="pi pi-save" />
         <p:commandButton action="#{documentPoliciesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="document_policies_dialog" global="false"
-                         onclick="PF('documentPoliciesDialog').hide()"/>
+                         onclick="PF('documentPoliciesDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

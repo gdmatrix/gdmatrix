@@ -155,12 +155,13 @@
                          process="role_users_dialog"
                          update="role_users_table role_users_panel"
                          oncomplete="closePFDialog('roleUsersDialog')"
-                         />
+                         icon="pi pi-save" />
         <p:commandButton action="#{roleUsersTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="role_users_dialog" global="false"
-                         onclick="PF('roleUsersDialog').hide()"/>
+                         onclick="PF('roleUsersDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

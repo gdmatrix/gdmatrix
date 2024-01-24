@@ -373,12 +373,14 @@
                          process="case_persons_dialog"
                          update="@form:cnt:search_tabs:tabs case_persons_panel"
                          oncomplete="closePFDialog('casePersonsDialog')"
-                         disabled="#{!caseObjectBean.editable}" />
+                         disabled="#{!caseObjectBean.editable}"
+                         icon="pi pi-save"/>
         <p:commandButton action="#{casePersonsTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="case_persons_dialog" global="false" 
-                         onclick="PF('casePersonsDialog').hide()"/>
+                         onclick="PF('casePersonsDialog').hide()"
+                         icon="pi pi-times" />
       </div>  
 
     </f:facet>

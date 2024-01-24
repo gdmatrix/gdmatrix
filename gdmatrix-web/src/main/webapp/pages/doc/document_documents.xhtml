@@ -171,12 +171,14 @@
                          process="document_documents_dialog"
                          update="document_documents_table document_documents_panel"
                          oncomplete="closePFDialog('documentDocumentsDialog')"
-                         disabled="#{!documentObjectBean.editable}"/>
+                         disabled="#{!documentObjectBean.editable}"
+                         icon="pi pi-check"/>
         <p:commandButton action="#{documentDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="document_documents_dialog" global="false"
-                         onclick="PF('documentDocumentsDialog').hide()"/>
+                         onclick="PF('documentDocumentsDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

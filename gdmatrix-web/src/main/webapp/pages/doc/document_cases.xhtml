@@ -154,12 +154,14 @@
                          process="document_cases_dialog"
                          update="document_cases_table document_cases_panel"
                          oncomplete="closePFDialog('documentCasesDialog')"
-                         disabled="#{!documentObjectBean.editable}" />
+                         disabled="#{!documentObjectBean.editable}"
+                         icon="pi pi-save" />
         <p:commandButton action="#{documentCasesTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="document_cases_dialog" global="false" 
-                         onclick="PF('documentCasesDialog').hide()"/>
+                         onclick="PF('documentCasesDialog').hide()"
+                         icon="pi pi-times" />
       </div>      
     </f:facet>
 

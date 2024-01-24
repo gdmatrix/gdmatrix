@@ -97,12 +97,14 @@
                          process="event_documents_dialog"
                          update="@form:cnt:search_tabs:tabs event_documents_panel"
                          oncomplete="closePFDialog('eventDocumentsDialog')"
-                         disabled="#{!eventObjectBean.editable}" />
+                         disabled="#{!eventObjectBean.editable}"
+                         icon="pi pi-save"/>
         <p:commandButton action="#{eventDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="event_documents_dialog" global="false"
-                         onclick="PF('eventDocumentsDialog').hide()"/>
+                         onclick="PF('eventDocumentsDialog').hide()"
+                         icon="pi pi-times" />
       </div>
     </f:facet>
 

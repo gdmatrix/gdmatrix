@@ -41,7 +41,7 @@
                              process="@form:cnt:find_selector"
                              update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
                              resetValues="true"
-                             />
+                             icon="fa fa-broom" />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
                              action="#{caseFinderBean.smartFind}"
@@ -49,7 +49,8 @@
                              update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
                              resetValues="true"
                              styleClass="m-1"
-                             oncomplete="endPanel('leftPanel');"/>
+                             oncomplete="endPanel('leftPanel');"
+                             icon="pi pi-search" />
           </div>
 
         </p:tab>
@@ -173,7 +174,7 @@
                              styleClass="m-1"
                              update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
                              resetValues="true"
-                             />
+                             icon="fa fa-broom"/>
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
                              action="#{caseFinderBean.find}"
@@ -182,7 +183,7 @@
                              styleClass="m-1"
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"
-                             />
+                             icon="pi pi-search" />
           </div>
         </p:tab>
 
