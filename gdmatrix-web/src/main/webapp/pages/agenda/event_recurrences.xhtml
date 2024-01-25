@@ -56,7 +56,7 @@
 
       <p:column styleClass="eventActions col-1 text-right white-space-nowrap" exportable="false"
                 rendered="#{row.eventId != eventObjectBean.objectId}">
-        <p:commandButton icon="pi pi-external-link"
+        <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.view(row.eventId)}"
                          onclick="PF('objectTabs').select(0);"

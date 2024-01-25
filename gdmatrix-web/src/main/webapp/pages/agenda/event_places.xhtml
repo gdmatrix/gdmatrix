@@ -45,14 +45,14 @@
       </p:column>
 
       <p:column styleClass="col-2 text-right white-space-nowrap" exportable="false">
-        <p:commandButton icon="pi pi-external-link"
+        <p:commandButton icon="pi pi-arrow-circle-right"
                          action="#{navigatorBean.show('Room', row.roomView.roomId)}"
                          process="@this"
                          update="@form:cnt"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          rendered="#{row.roomView != null}"
                          styleClass="rounded-button ui-button-flat" />
-        <p:commandButton icon="pi pi-external-link"
+        <p:commandButton icon="pi pi-arrow-circle-right"
                          action="#{navigatorBean.show('Address', row.addressView.addressId)}"
                          process="@this"
                          update="@form:cnt"
