@@ -78,7 +78,7 @@ body .ui-paginator .ui-paginator-current
 div, ul
 {
   scrollbar-width: thin;
-  scrollbar-color: var(--surface-ground) transparent;
+  scrollbar-color: var(--surface-200) transparent;
 }
 
 ::-webkit-scrollbar
@@ -87,11 +87,9 @@ div, ul
   height: 8px;
 }
 
-
-
 ::-webkit-scrollbar-thumb
 {
-  background: var(--surface-100);
+  background: var(--surface-200);
   border-radius: 0;
 }
 
