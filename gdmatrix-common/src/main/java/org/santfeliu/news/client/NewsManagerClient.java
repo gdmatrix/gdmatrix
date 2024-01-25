@@ -44,6 +44,7 @@ import org.matrix.news.NewsManagerService;
 import org.matrix.news.SectionFilter;
 import org.matrix.news.SectionView;
 import org.matrix.news.Source;
+import org.matrix.news.SourceFilter;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.ws.WSCallCache;
@@ -223,9 +224,37 @@ public class NewsManagerClient implements NewsManagerPort
   }
 
   @Override
-  public List<Source> findSources()
+  public Source loadSource(String sourceId)
   {
-    return port.findSources();    
+    return port.loadSource(sourceId);
+  }
+
+  @Override
+  public Source storeSource(Source source)
+  {
+    Source s = port.storeSource(source);
+    getCache().clear();
+    return s;    
+  }
+
+  @Override
+  public boolean removeSource(String sourceId)
+  {
+    boolean r = port.removeSource(sourceId);
+    getCache().clear();
+    return r;
+  }
+
+  @Override
+  public int countSources(SourceFilter filter)
+  {
+    return port.countSources(filter);
+  }
+
+  @Override
+  public List<Source> findSources(SourceFilter filter)
+  {
+    return port.findSources(filter);    
   }
 
   //CACHED METHODS
@@ -291,10 +320,22 @@ public class NewsManagerClient implements NewsManagerPort
       new Object[]{newId, docType});
   }
 
-  public List<Source> findSourcesFromCache()
+  public Source loadSourceFromCache(String sourceId)
+  {
+    return (Source)getCache().getCallResult(port, "loadSource", 
+      new Object[]{sourceId});
+  }  
+  
+  public int countSourcesFromCache(SourceFilter filter)
+  {
+    return (Integer)getCache().getCallResult(port, "countSources", 
+      new Object[]{filter}, new Object[]{getModifiedFilter(filter)});    
+  }
+
+  public List<Source> findSourcesFromCache(SourceFilter filter)
   {
     return (List<Source>)getCache().getCallResult(port, "findSources", 
-      new Object[]{});
+      new Object[]{filter}, new Object[]{getModifiedFilter(filter)});    
   }
 
   private void init(WSDirectory wsDirectory, String userId, String password)
@@ -303,6 +344,11 @@ public class NewsManagerClient implements NewsManagerPort
     port = endpoint.getPort(NewsManagerPort.class, userId, password);
   }  
   
+  private SourceFilter getModifiedFilter(SourceFilter filter)
+  {
+    return filter;
+  }
+
   private NewsFilter getModifiedFilter(NewsFilter filter)
   {
     NewsFilter auxFilter = new NewsFilter();

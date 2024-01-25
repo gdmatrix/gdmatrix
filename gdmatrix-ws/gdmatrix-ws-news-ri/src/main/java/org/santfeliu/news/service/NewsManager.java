@@ -61,6 +61,7 @@ import org.matrix.news.NewsManagerMetaData;
 import org.matrix.news.SectionFilter;
 import org.matrix.news.SectionView;
 import org.matrix.news.Source;
+import org.matrix.news.SourceFilter;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.doc.client.DocumentManagerClient;
@@ -87,6 +88,8 @@ public class NewsManager implements NewsManagerPort
   private static final int NEW_KEYWORDS_MAX_SIZE = 1000;
   private static final int NEW_CUSTOM_URL_MAX_SIZE = 1000;
   private static final int NEW_SECTION_PRIORITY_MAX_SIZE = 6;
+  private static final int SOURCE_NAME_MAX_SIZE = 100;
+  private static final int SOURCE_URL_MAX_SIZE = 1000;
 
   static final String PK_SEPARATOR = ";";
 
@@ -268,6 +271,14 @@ public class NewsManager implements NewsManagerPort
         {
           n.setCustomUrlTarget((String)newArray[14]);
         }
+        if (newArray[15] != null)
+        {
+          n.setHash((String)newArray[15]);
+        }        
+        if (newArray[16] != null)
+        {
+          n.setIconUrl((String)newArray[16]);
+        }
         result.add(n);
       }
     }
@@ -315,6 +326,18 @@ public class NewsManager implements NewsManagerPort
         if (newArray[14] != null)
         {
           nv.setCustomUrlTarget((String)newArray[14]);
+        }
+        if (newArray[15] != null)
+        {
+          nv.setHash((String)newArray[15]);
+        }
+        if (newArray[16] != null)
+        {
+          nv.setIconUrl((String)newArray[16]);
+        }
+        if (newArray[17] != null)
+        {
+          nv.setNewSource((Source)newArray[17]);
         }
         result.add(nv);
       }
@@ -448,20 +471,80 @@ public class NewsManager implements NewsManagerPort
   }
 
   @Override
-  public List<Source> findSources()
+  public Source loadSource(String sourceId)
+  {
+    LOGGER.log(Level.INFO, "loadSource {0}", sourceId);        
+    Source source = new Source();
+    DBSource dbSource = entityManager.find(DBSource.class, sourceId);
+    if (dbSource == null) 
+      throw new WebServiceException("news:SOURCE_NOT_FOUND");
+    dbSource.copyTo(source);
+    return source;
+  }
+
+  @Override
+  public Source storeSource(Source source)
+  {
+    LOGGER.log(Level.INFO, "storeSource {0}", source.getId());
+    validateSource(source);
+
+    DBSource dbSource = new DBSource(source);
+    if (source.getId() == null) //Insert
+    {
+      entityManager.persist(dbSource);
+      source.setId(dbSource.getId());
+    }
+    else //Update
+    {
+      entityManager.merge(dbSource);
+    }
+    return source;
+  }
+
+  @Override
+  public int countSources(SourceFilter filter)
+  {
+    LOGGER.log(Level.INFO, "countSources");
+    Query query = entityManager.createNamedQuery("countSources");
+    setSourceFilterParameters(query, filter);
+    return ((Number)query.getSingleResult()).intValue();
+  }
+
+  @Override
+  public List<Source> findSources(SourceFilter filter)
   {
     LOGGER.log(Level.INFO, "findSources");
     Query query = entityManager.createNamedQuery("listSources");
+    setSourceFilterParameters(query, filter);
+    query.setFirstResult(filter.getFirstResult());
+    int maxRows = filter.getMaxResults();
+    query.setMaxResults(maxRows == 0 ? Integer.MAX_VALUE : maxRows);
     List<DBSource> list = query.getResultList();
-    List<Source> resultList = new ArrayList<Source>();
-    for (DBSource dbS : list) 
+    List<Source> resultList = new ArrayList();
+    for (DBSource dbSource : list)
     {
-      Source s = new Source();
-      dbS.copyTo(s);
-      resultList.add(s);
+      Source source = new Source();
+      dbSource.copyTo(source);
+      resultList.add(source);
     }
     return resultList;
   }
+
+  @Override
+  public boolean removeSource(String sourceId)
+  {
+    try
+    {
+      LOGGER.log(Level.INFO, "removeSource {0}", sourceId);
+      DBSource dbSource = entityManager.getReference(DBSource.class, sourceId);
+      entityManager.remove(dbSource);
+      return true;
+    }
+    catch (EntityNotFoundException ex)
+    {
+      return false;
+    }
+  }  
 
   @Override
   public int countNewsBySection(SectionFilter filter)
@@ -496,7 +579,7 @@ public class NewsManager implements NewsManagerPort
     if (result.size() > 0) fillDocumentFields(result);
     return result;
   }
-  
+
   /**** private methods ****/
   
   private int increaseSectionReadCount(String newId, String sectionId)
@@ -552,6 +635,24 @@ public class NewsManager implements NewsManagerPort
       (filter.isExcludeNotPublished() ? "Y" : "N"));
     query.setParameter("minPubDate", filter.getMinPubDateTime());
     query.setParameter("userId", filter.getUserId());
+  }
+
+  private void setSourceFilterParameters(Query query, SourceFilter filter)
+  {
+    String sourceIds = null;
+    if (!filter.getSourceId().isEmpty())
+    {
+      sourceIds = " ";
+      for (String sourceId : filter.getSourceId())
+      {
+        sourceIds += (sourceId + " ");
+      }
+    }
+    query.setParameter("sourceIds", sourceIds);
+    query.setParameter("name", (filter.getName() == null ? null : 
+      "%" + filter.getName().toLowerCase() + "%"));
+    query.setParameter("url", (filter.getUrl() == null ? null : 
+      "%" + filter.getUrl() + "%"));
   }
 
   private void setSectionFilterParameters(Query query, SectionFilter filter, 
@@ -687,6 +788,18 @@ public class NewsManager implements NewsManagerPort
         {
           nv.setCustomUrlTarget((String)newArray[16]);
         }
+        if (newArray[17] != null)
+        {
+          nv.setHash((String)newArray[17]);
+        }        
+        if (newArray[18] != null)
+        {
+          nv.setIconUrl((String)newArray[18]);
+        }
+        if (newArray[19] != null)
+        {
+          nv.setNewSource((Source)newArray[19]);
+        }
         result.getNewView().add(nv);
         newIdString += nv.getNewId() + " ";
         newViewMap.put(nv.getNewId(), nv);
@@ -810,6 +923,24 @@ public class NewsManager implements NewsManagerPort
     }
     if (newObject.getCustomUrl() != null &&
       newObject.getCustomUrl().length() > NEW_CUSTOM_URL_MAX_SIZE)
+    {
+      throw new WebServiceException("VALUE_TOO_LARGE");
+    }
+  }
+
+  private void validateSource(Source source)
+  {
+    if (source.getName() == null ||
+      source.getName().trim().length() == 0)
+    {
+      throw new WebServiceException("VALUE_IS_MANDATORY");
+    }
+    else if (source.getName().length() > SOURCE_NAME_MAX_SIZE)
+    {
+      throw new WebServiceException("VALUE_TOO_LARGE");
+    }
+    if (source.getUrl() != null &&
+      source.getUrl().length() > SOURCE_URL_MAX_SIZE)
     {
       throw new WebServiceException("VALUE_TOO_LARGE");
     }

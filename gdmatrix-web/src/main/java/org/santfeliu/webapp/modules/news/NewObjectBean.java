@@ -47,6 +47,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.news.New;
 import org.matrix.news.NewStoreOptions;
 import org.matrix.news.Source;
+import org.matrix.news.SourceFilter;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.enc.Unicode;
@@ -82,8 +83,8 @@ public class NewObjectBean extends ObjectBean
   public void init()
   {
     try
-    {
-      sources = NewsModuleBean.getPort(true).findSources();
+    {      
+      sources = NewsModuleBean.getPort(true).findSources(new SourceFilter());
     }
     catch (Exception ex)
     {

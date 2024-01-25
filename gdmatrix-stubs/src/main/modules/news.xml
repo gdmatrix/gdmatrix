@@ -205,6 +205,16 @@
           Tipus d'enllaç a utilitzar a l'adreça URL externa.
         </documentation>
       </property>
+      <property name="hash" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Hash del contingut de la notícia
+        </documentation>
+      </property>
+      <property name="iconUrl" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Adreça URL de la icona per defecte de la notícia.
+        </documentation>
+      </property>
     </entity>
 
     <entity name="NewSection">
@@ -487,7 +497,22 @@
         <documentation language="ca">
           Tipus d'enllaç a utilitzar a l'adreça URL externa.
         </documentation>
-      </property>      
+      </property>
+      <property name="hash" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Hash del contingut de la notícia
+        </documentation>
+      </property>
+      <property name="iconUrl" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Adreça URL de la icona per defecte de la notícia.
+        </documentation>
+      </property>
+      <property name="newSource" type="news:Source" minOccurs="0">
+        <documentation language="ca">
+          Font de la notícia.
+        </documentation>
+      </property>                  
     </struct>
 
     <struct name="NewsFilter">
@@ -570,7 +595,50 @@
           Nom de la font.
         </documentation>
       </property>
+      <property name="url" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Adreça URL de la font.
+        </documentation>
+      </property>
     </struct>
+    
+    <struct name="SourceFilter">
+      <documentation language="ca">
+        Filtre per cercar fonts a través de les operacions 
+        <a href="#oper-countSources">countSources</a> i 
+        <a href="#oper-findSources">findSources</a>.
+      </documentation>
+      <property name="sourceId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de codis de fonts a cercar.
+        </documentation>
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Text que ha de contenir el nom de la font, sense distingir entre 
+          majúscules i minúscules.
+        </documentation>
+      </property>
+      <property name="url" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Text que ha de contenir l'adreça URL de la font.
+        </documentation>
+      </property>
+      <property name="firstResult" type="xs:int">
+        <documentation language="ca">
+          Índex de la primera font a retornar dins del total de resultats de 
+          l'operació <a href="#oper-findSources">findSources</a>.
+        </documentation>
+      </property>
+      <property name="maxResults" type="xs:int">
+        <documentation language="ca">
+          Nombre màxim de fonts a retornar dins del total de resultats de 
+          l'operació <a href="#oper-findSources">findSources</a>.
+        </documentation>
+      </property>
+    </struct>    
+    
   </types>
 
   <operations>
@@ -915,10 +983,100 @@
       </response>
     </operation>
 
+    <operation name="loadSource">
+      <documentation language="ca">
+        Recupera una font a partir del seu identificador.
+      </documentation>
+      <parameter name="sourceId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la font a recuperar.
+        </documentation>
+      </parameter>
+      <response name="source" type="news:Source">
+        <documentation language="ca">
+          L'objecte <a href="#type-Source">Source</a> que correspon a 
+          l'identificador <i>sourceId</i>.
+        </documentation>
+      </response>
+      <error name="SOURCE_NOT_FOUND" message="Font no trobada">
+        <documentation language="ca">
+          La font no existeix.
+        </documentation>
+      </error>
+    </operation>
+    
+    <operation name="storeSource">
+      <documentation language="ca">
+        Crea o modifica una font.
+      </documentation>
+      <parameter name="source" type="news:Source">
+        <documentation language="ca">
+          Objecte <a href="#type-Source">Source</a> que es vol desar. Si el 
+          camp <i>sourceId</i> té valor nul es crearà una nova font. En canvi, 
+          si té un valor definit, es modificarà la font indicada.
+        </documentation>
+      </parameter>
+      <response name="storedSource" type="news:Source">
+        <documentation language="ca">
+          Objecte <a href="#type-Source">Source</a> que ha estat desat.
+        </documentation>
+      </response>
+      <error name="VALUE_IS_MANDATORY" message="Valor de camp obligatori">
+        <documentation language="ca">
+          El nom de la font no té valor o és buit.
+        </documentation>
+      </error>
+      <error name="VALUE_TOO_LARGE" message="Valor de camp massa gran">
+        <documentation language="ca">
+          Valor massa llarg al nom o a l'adreça URL de la font.
+        </documentation>
+      </error>
+    </operation>    
+
+    <operation name="removeSource">
+      <documentation language="ca">
+        Elimina una font.
+      </documentation>
+      <parameter name="sourceId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la font a eliminar.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la font ha estat esborrada.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="countSources">
+      <documentation language="ca">
+        Recupera el nombre de fonts que satisfan unes determinades condicions 
+        expressades mitjançant un filtre 
+        <a href="#type-SourceFilter">SourceFilter</a>.
+      </documentation>
+      <parameter name="filter" type="news:SourceFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>      
+      <response name="sourceCount" type="xs:int">
+        <documentation language="ca">
+          Nombre de fonts que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
     <operation name="findSources">
       <documentation language="ca">
-        Llista les possibles fonts d'una notícia del sistema.
+        Cerca fonts que satisfacin unes determinades condicions expressades 
+        mitjançant un filtre <a href="#type-SourceFilter">SourceFilter</a>.        
       </documentation>
+      <parameter name="filter" type="news:SourceFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>      
       <response name="source" type="news:Source" minOccurs="0"
         maxOccurs="unbounded" nillable="true">
         <documentation language="ca">

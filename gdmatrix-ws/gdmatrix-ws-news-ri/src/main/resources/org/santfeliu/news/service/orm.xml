@@ -37,10 +37,54 @@
       </query>
     </named-query>
 
+    <named-query name="countSources">
+      <query>
+        SELECT COUNT(s)
+        FROM Source s
+        WHERE           
+          (
+            (
+              (:sourceIds IS NOT NULL)
+              AND
+              (locate(concat(' ', concat(s.id, ' ')), :sourceIds) > 0)
+            )
+            OR
+            (:sourceIds IS NULL)
+          )
+          AND        
+          (
+            :name IS NULL OR lower(s.name) LIKE :name
+          )
+          AND        
+          (
+            :url IS NULL OR s.url LIKE :url
+          )
+        ORDER BY s.name
+      </query>
+    </named-query>
+
     <named-query name="listSources">
       <query>
         SELECT s
         FROM Source s
+        WHERE           
+          (
+            (
+              (:sourceIds IS NOT NULL)
+              AND
+              (locate(concat(' ', concat(s.id, ' ')), :sourceIds) > 0)
+            )
+            OR
+            (:sourceIds IS NULL)
+          )
+          AND        
+          (
+            :name IS NULL OR lower(s.name) LIKE :name
+          )
+          AND        
+          (
+            :url IS NULL OR s.url LIKE :url
+          )
         ORDER BY s.name
       </query>
     </named-query>
@@ -64,8 +108,10 @@
         SELECT DISTINCT n.newId,n.headline,n.summary,n.registerDate,
           n.registerTime,n.startDate,n.startTime,n.endDate,
           n.endTime,n.strDraft,n.source,n.userId,n.keywords,n.customUrl,
-          n.customUrlTarget
-        FROM New n LEFT JOIN n.newSections ns 
+          n.customUrlTarget,n.hash,n.iconUrl,s
+        FROM New n 
+          LEFT JOIN n.newSections ns
+          LEFT JOIN Source s ON (n.source = s.id)        
         WHERE          
           (
             (
@@ -339,8 +385,11 @@
           n.newId,n.headline,n.summary,n.registerDate,
           n.registerTime,n.startDate,n.startTime,n.endDate,
           n.endTime,n.strDraft,ns.sectionId,ns.priority,
-          ns.readingCount,n.keywords,ns.strSticky,n.customUrl,n.customUrlTarget
-        FROM New n LEFT JOIN n.newSections ns 
+          ns.readingCount,n.keywords,ns.strSticky,n.customUrl,n.customUrlTarget,
+          n.hash,n.iconUrl,s
+        FROM New n 
+          LEFT JOIN n.newSections ns
+          LEFT JOIN Source s ON (n.source = s.id)         
         WHERE 
           (
             (
@@ -476,6 +525,12 @@
         <basic name="customUrlTarget">
           <column name="CUSTOMURLTARGET" length="10" />
         </basic>
+        <basic name="hash">
+          <column name="HASH" length="32" />
+        </basic>
+        <basic name="iconUrl">
+          <column name="ICONURL" length="1000" />
+        </basic>
         <one-to-many name="newSections" mapped-by="nsNew" />
         <one-to-many name="newDocuments" mapped-by="ndNew" />
       </attributes>      
@@ -538,6 +593,9 @@
         </id>
         <basic name="name">
           <column name="NAME" length="100" />
+        </basic>
+        <basic name="url">
+          <column name="URL" length="1000" />
         </basic>
       </attributes>
     </entity>

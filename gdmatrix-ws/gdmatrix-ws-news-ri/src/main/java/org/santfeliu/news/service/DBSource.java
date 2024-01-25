@@ -51,11 +51,13 @@ public class DBSource extends Source
   {
     source.setId(this.id);
     source.setName(this.name);
+    source.setUrl(this.getUrl());
   }
   
   public void copyFrom(Source source)
   {
     this.id = source.getId();
     this.name = source.getName();
+    this.url = source.getUrl();
   }
 }

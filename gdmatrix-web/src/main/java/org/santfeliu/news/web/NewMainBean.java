@@ -44,6 +44,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.news.New;
 import org.matrix.news.NewStoreOptions;
 import org.matrix.news.Source;
+import org.matrix.news.SourceFilter;
 import org.santfeliu.doc.util.HtmlFixer;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.util.MatrixConfig;
@@ -229,7 +230,8 @@ public class NewMainBean extends TypifiedPageBean
       editingSummary = true;
       cleanSummary = true;
       cleanText = true;
-      List<Source> sources = NewsConfigBean.getPort().findSourcesFromCache();
+      List<Source> sources = 
+        NewsConfigBean.getPort().findSourcesFromCache(new SourceFilter());
       sourceItems = FacesUtils.getListSelectItems(sources, "id", "name", true);
       if (isNew())
       {
