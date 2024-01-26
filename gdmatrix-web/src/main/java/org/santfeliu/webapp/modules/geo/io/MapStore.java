@@ -39,6 +39,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -68,6 +71,8 @@ import org.santfeliu.util.keywords.KeywordsManager;
 @RequestScoped
 public class MapStore
 {
+  static final Logger LOGGER = Logger.getLogger("MapStore");
+
   public static final String MAP_TYPEID = "GMAP";
   public static final String MAP_CATEGORY_TYPEID = "XMAPCAT";
   public static final String MAP_NAME_PROPERTY = "mapName";
@@ -79,9 +84,11 @@ public class MapStore
   public static final String MAP_CATEGORY_PARENT_PROPERTY = "parentCategory";
   public static final String GEO_ADMIN_ROLE = "GIS_ADMIN";
 
-  public static List<MapCategory> categoryList;
-  public static HashMap<String, MapCategory> categoryCache = new HashMap<>();
-  public static long lastPurgeMillis;
+  private static List<MapCategory> categoryList;
+  private static Map<String, MapCategory> categoryCache =
+    Collections.synchronizedMap(new HashMap<>());
+  private static long lastPurgeMillis;
+  private static final long CATEGORY_CACHE_REFRESH_TIME = 300000; // 5 minutes
 
   private DocumentManagerPort documentManagerPort;
 
@@ -92,6 +99,9 @@ public class MapStore
 
   public MapGroup findMaps(MapFilter mapFilter)
   {
+    LOGGER.log(Level.INFO, "Finding maps with keywords {0}",
+      mapFilter.getKeywords());
+
     HashMap<String, MapGroup> mapGroupMap = new HashMap<>();
     MapGroup rootGroup = new MapGroup();
     mapGroupMap.put(null, rootGroup);
@@ -151,6 +161,7 @@ public class MapStore
 
   public MapDocument loadMap(String mapName) throws Exception
   {
+    LOGGER.log(Level.INFO, "Loading map {0}", mapName);
     String docId = getMapDocId(mapName);
     if (docId != null)
     {
@@ -163,6 +174,8 @@ public class MapStore
   public boolean storeMap(MapDocument mapDocument, boolean isNewMap)
     throws Exception
   {
+    LOGGER.log(Level.INFO, "Storing map {0}", mapDocument.getName());
+
     Style style = mapDocument.getStyle();
     String mapName = mapDocument.getName();
     String docId = getMapDocId(mapName);
@@ -261,6 +274,8 @@ public class MapStore
 
   public void removeMap(String mapName)
   {
+    LOGGER.log(Level.INFO, "Removing map {0}", mapName);
+
     String docId = getMapDocId(mapName);
 
     getPort().removeDocument(docId, 0);
@@ -288,7 +303,7 @@ public class MapStore
   public java.util.Map<String, MapCategory> getCategoryCache()
   {
     long now = System.currentTimeMillis();
-    if (now - lastPurgeMillis > 300000) // 5 minutes
+    if (now - lastPurgeMillis > CATEGORY_CACHE_REFRESH_TIME)
     {
       lastPurgeMillis = now;
       HashMap<String, MapCategory> cache = new HashMap<>();

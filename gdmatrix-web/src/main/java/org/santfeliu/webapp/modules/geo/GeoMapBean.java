@@ -43,7 +43,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
@@ -58,12 +57,11 @@ import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
 import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapCategory;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
 import org.santfeliu.faces.maplibre.encoder.TranslateStyleEncoder;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *

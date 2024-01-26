@@ -34,9 +34,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
@@ -62,6 +65,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @RequestScoped
 public class SldStore
 {
+  static final Logger LOGGER = Logger.getLogger("SldStore");
+
   public static final String SLD_TYPEID = "SLD";
   public static final String SLD_PROPERTY_NAME = "sld_name";
   public static final String SLD_ENCODING = "ISO-8859-1";
@@ -69,7 +74,10 @@ public class SldStore
 
   private DocumentManagerPort documentManagerPort;
 
-  final private Map<String, String> sldUrlCache = new HashMap<>();
+  private static final Map<String, String> sldUrlCache =
+    Collections.synchronizedMap(new HashMap<>());
+  private static long lastPurgeMillis;
+  private static final long SLD_CACHE_REFRESH_TIME = 300000; // 5 minutes
 
   public void setCredentials(String userId, String password)
   {
@@ -78,6 +86,8 @@ public class SldStore
 
   public List<String> findSld(String sldName)
   {
+    LOGGER.log(Level.INFO, "Finding SLD like {0}", sldName);
+
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(SLD_TYPEID);
     filter.setTitle(SLD_TITLE + "%");
@@ -104,6 +114,8 @@ public class SldStore
 
   public SldRoot loadSld(String sldName) throws Exception
   {
+    LOGGER.log(Level.INFO, "Loading SLD {0}", sldName);
+
     Document document = getSldDocument(sldName, true);
     if (document == null) return null;
     InputStream is = document.getContent().getData().getInputStream();
@@ -114,6 +126,8 @@ public class SldStore
   public boolean storeSld(String sldName, SldRoot sld, boolean isNewSld)
     throws Exception
   {
+    LOGGER.log(Level.INFO, "Storing SLD {0}", sldName);
+
     Document document = getSldDocument(sldName, true);
     if (document == null)
     {
@@ -173,6 +187,13 @@ public class SldStore
 
   public String getSldUrl(String sldName)
   {
+    long now = System.currentTimeMillis();
+    if (now - lastPurgeMillis > SLD_CACHE_REFRESH_TIME)
+    {
+      lastPurgeMillis = now;
+      sldUrlCache.clear();
+    }
+
     String sldUrl = sldUrlCache.get(sldName);
     if (sldUrl == null)
     {
@@ -198,6 +219,8 @@ public class SldStore
 
   private String buildSldUrl(String sldName)
   {
+    LOGGER.log(Level.INFO, "Build url for SLD {0}", sldName);
+
     if (!isBlank(sldName))
     {
       Document document = getSldDocument(sldName, false);
