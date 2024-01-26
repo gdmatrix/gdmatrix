@@ -61,16 +61,20 @@
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_draft}" />
       <p:toggleSwitch value="#{newObjectBean.newObject.draft}" 
-                       styleClass="ml-2 vertical-align-middle">
+                      styleClass="ml-2 vertical-align-middle">
       </p:toggleSwitch>
     </div> 
 
     <div class="field col-12 xl:col-5">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_source}" />
-      <p:selectOneMenu value="#{newObjectBean.newObject.source}" >
-        <f:selectItem itemLabel="" itemValue="" />
-        <f:selectItems value="#{newObjectBean.sources}" var="source" itemLabel="#{source.name}" itemValue="#{source.id}" />
-      </p:selectOneMenu>
+      <emcomp:objectReference value="#{newObjectBean.newObject.source}" 
+                                type="Source"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                process="@form:cnt:search_tabs:tabs"
+                                showNavigatorItems="false"/>                            
     </div>
 
     <div class="field col-12 xl:col-7">
@@ -80,10 +84,10 @@
         <p:selectBooleanButton value="#{newObjectBean.customUrlTargetBlank}" 
                                onIcon="mi-outlined mi-open-in-new" offIcon="mi-outlined mi-open-in-new-off" 
                                title="#{newsBundle.new_main_customUrlTargetBlank}"
-                               />
+                               />    
       </div>
     </div>   
-   
+
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_keywords}" />
       <div class="ui-inputgroup">

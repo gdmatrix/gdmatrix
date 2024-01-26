@@ -519,8 +519,9 @@ body .mi
   min-height: 150px;  
 }
 
-/* ui-inputgorup components */
-body .ui-inputgroup div:last-child
+/* ui-inputgroup components */
+body .ui-inputgroup div:last-child,
+body .ui-inputgroup span:last-child
 {
   border-top-right-radius:4px;
   border-bottom-right-radius:4px

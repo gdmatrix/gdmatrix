@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
+                template="/pages/obj/object_3col.xhtml">
+
+  <ui:param name="objectBean" value="#{sourceObjectBean}" />
+  <ui:param name="searchLabel" value="#{newsBundle.source_searchLabel}" />  
+  
+  <ui:define name="filter">
+
+    <p:outputPanel id="filter_panel">
+
+      <p:tabView id="find_selector" dynamic="true"
+                 activeIndex="#{sourceFinderBean.filterTabSelector}">
+
+        <p:tab id="smart_search">
+          <f:facet name="title">
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+
+          <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />              
+              <emcomp:tipInputText id="smartFilter"
+                                   value="#{sourceFinderBean.smartFilter}"
+                                   tipContent="#{sourceFinderBean.smartSearchTip}" />
+            </div>
+          </div>  
+
+          <div class="buttons text-right">
+            <p:commandButton value="#{objectBundle.clear}"
+                             action="#{sourceFinderBean.clear}"
+                             styleClass="m-1"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                             resetValues="true"
+                             icon="fa fa-broom" />
+            <p:commandButton id="smart_search_button"
+                             value="#{objectBundle.search}"
+                             action="#{sourceFinderBean.smartFind}"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
+                             resetValues="true"
+                             styleClass="m-1"
+                             oncomplete="endPanel('leftPanel');"
+                             icon="pi pi-search" />
+          </div>
+
+        </p:tab>
+
+        <p:tab id="advanced_search">
+          <f:facet name="title">
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
+          </f:facet>
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+
+          <div class="ui-fluid formgrid grid">          
+          
+            <!-- Name -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{newsBundle.source_name}" />
+              <p:inputText id="name" value="#{sourceFinderBean.filter.name}" />
+            </div>
+            
+            <!-- Name -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{newsBundle.source_url}" />
+              <p:inputText id="url" value="#{sourceFinderBean.filter.url}" />
+            </div>            
+
+          </div>
+          
+          <div class="buttons text-right">
+            <p:commandButton value="#{objectBundle.clear}"
+                             action="#{sourceFinderBean.clear}"
+                             styleClass="m-1"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                             resetValues="true"
+                             icon="fa fa-broom" />
+            <p:commandButton id="advanced_search_button"
+                             value="#{objectBundle.search}"
+                             action="#{sourceFinderBean.find}"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
+                             styleClass="m-1"
+                             resetValues="true"
+                             oncomplete="endPanel('leftPanel');"
+                             icon="pi pi-search" />
+          </div>
+        </p:tab>
+
+      </p:tabView>
+    </p:outputPanel>
+  </ui:define>
+
+  <ui:define name="object">
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0)
+        {
+          updateResults();
+        }
+      }
+    </script>
+    <p:remoteCommand name="updateResults"
+                     action="#{sourceFinderBean.update}"
+                     process="@this"
+                     update="@form:cnt:search_tabs:result_list" />
+
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
+               activeIndex="#{sourceObjectBean.searchTabSelector}"
+               touchable="false"
+               onTabShow="onTabShow()">
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list mr-2"></i>
+          <h:outputText value="#{objectBundle.list}"/>
+        </f:facet>
+        <h:panelGroup id="result_list">
+          <ui:include src="source_list.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-pencil mr-2"></i>
+          <h:outputText value="#{objectBundle.edition}"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">
+          <ui:include src="/pages/obj/object_standard.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+
+    </p:tabView>
+
+  </ui:define>
+
+</ui:composition>

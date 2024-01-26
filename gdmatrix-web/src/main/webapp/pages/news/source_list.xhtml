@@ -1,0 +1,45 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:p="http://primefaces.org/ui">
+
+  <p:dataTable value="#{sourceFinderBean.rows}" var="row"
+               stripedRows="true" paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               rows="10" first="#{sourceFinderBean.firstRow}"
+               rowStyleClass="#{row.id == sourceObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+               rowIndexVar="rowIndex"
+               rendered="true">
+    <p:column headerText="#{newsBundle.source_id}" styleClass="col-1">
+      <h:outputText value="#{row.id}" />
+    </p:column>
+    <p:column headerText="#{newsBundle.source_name}" styleClass="col-4">
+      <h:outputText value="#{row.name}" />
+    </p:column>
+    <p:column headerText="#{newsBundle.source_url}" styleClass="col-6">
+      <p:link href="#{row.url}" target="_blank" rendered="#{row.url != null and not empty row.url}"> <h:outputText value="#{row.url}" /> </p:link>
+    </p:column>    
+    <p:column styleClass="col-1 text-right white-space-nowrap">
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.id)}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       process="@this"
+                       update="@form:cnt"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}" />
+      <p:commandButton icon="pi pi-arrow-circle-right"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{sourceFinderBean.view(rowIndex)}"
+                       resetValues="true"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}" />
+    </p:column>
+  </p:dataTable>
+
+</ui:composition>
+

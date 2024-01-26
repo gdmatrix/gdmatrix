@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+  <div class="ui-fluid formgrid grid">
+
+    <p:outputPanel styleClass="field col-12 md:col-2"
+                   rendered="true">
+      <p:outputLabel for="@next" value="#{newsBundle.source_id}"
+                     indicateRequired="true"/>
+      <p:inputText id="id" value="#{sourceObjectBean.source.id}"
+                   required="#{not empty param['mainform:search_tabs:store']}"
+                   requiredMessage="#{newsBundle.source_id} #{messageBundle.IS_REQUIRED}"                     
+                   styleClass="inputfield w-full"
+                   readonly="#{!sourceObjectBean.editable}" />
+    </p:outputPanel>         
+
+    <p:outputPanel styleClass="field col-12 md:col-10"
+                   rendered="true">
+      <p:outputLabel for="@next" value="#{newsBundle.source_name}" 
+                     indicateRequired="true" />
+      <p:inputText id="name" value="#{sourceObjectBean.source.name}"
+                   required="#{not empty param['mainform:search_tabs:store']}"
+                   requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}"
+                   styleClass="inputfield w-full"
+                   readonly="#{!sourceObjectBean.editable}" />
+    </p:outputPanel>
+
+    <p:outputPanel styleClass="field col-12"
+                   rendered="true">
+      <p:outputLabel for="@next" value="#{newsBundle.source_url}" />
+
+      <div class="ui-inputgroup">
+        <p:inputText id="url" value="#{sourceObjectBean.source.url}"
+                     styleClass="inputfield w-full"
+                     readonly="#{!sourceObjectBean.editable}" />
+        <p:linkButton icon="pi pi-external-link" href="#{sourceObjectBean.source.url}" target="_blank" rendered="#{sourceObjectBean.source.url != null}" />         
+      </div>
+    </p:outputPanel>      
+
+  </div>
+
+</ui:composition>
