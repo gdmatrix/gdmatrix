@@ -226,7 +226,7 @@ public class GeoMapLegendBean extends WebBean implements Serializable
 
   public void removeLegendLayerNode(String layerId)
   {
-    removeLegendLayerNode(legendTreeRoot, layerId);
+    removeLegendLayerNode(getLegendTreeRoot(), layerId);
   }
 
   public void removeLegendLayerNode(TreeNode<LegendItem> node, String layerId)

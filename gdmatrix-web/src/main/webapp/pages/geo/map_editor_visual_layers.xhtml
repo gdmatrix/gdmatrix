@@ -221,6 +221,12 @@
                   </p:autoComplete>
                 </div>
                 <div class="field col-12">
+                  <p:outputLabel for="@next" value="Styles (separated by ,) " />
+                  <p:inputText value="#{geoMapLayersBean.editingLayer.styles}" 
+                               pt:spellcheck="false"                               
+                               styleClass="code" />
+                </div>
+                <div class="field col-12">
                   <p:outputLabel for="@next" value="CQL filter (separated by ;)" />
                   <div class="ui-inputgroup">
                     <p:inputText id="cql_filter"
@@ -231,12 +237,6 @@
                                  styleClass="code" />
                     <div class="ui-inputgroup-addon"><span class="fa fa-calculator"/></div>
                   </div>
-                </div>
-                <div class="field col-12">
-                  <p:outputLabel for="@next" value="Styles (separated by ,) " />
-                  <p:inputText value="#{geoMapLayersBean.editingLayer.styles}" 
-                               pt:spellcheck="false"                               
-                               styleClass="code" />
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="SLD" />

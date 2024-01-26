@@ -39,7 +39,7 @@ class LegendControl
       e.preventDefault();
       this.panel.show();
     });
-    
+
     this.createPanel(map);
     this.populateTree();
 
@@ -82,6 +82,12 @@ class LegendControl
     }
     else // group node
     {
+      if (node.children === undefined || node.children.length === 0)
+      {
+        li.style.display = "none";
+        li.ariaHidden = "true";
+      }
+
       const button = document.createElement("button");
       liDiv.appendChild(button);
       node.button = button;

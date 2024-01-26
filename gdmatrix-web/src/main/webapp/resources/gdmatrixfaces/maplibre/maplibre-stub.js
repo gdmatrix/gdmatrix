@@ -60,7 +60,7 @@ async function importControls(map, style, language)
     console.info(`importing module ${modulePath}`);
     modules.push(import(modulePath));
   }
-  
+
   const loadedModules = await Promise.all(modules);
 
   const { Bundle } = await import(MAPLIBRE_BASE_PATH + "i18n/Bundle.js");
@@ -85,6 +85,8 @@ async function importControls(map, style, language)
 
 function initSources(style)
 {
+  duplicateSources(style);
+
   for (let sourceId in style.sources)
   {
     let source = style.sources[sourceId];
@@ -155,6 +157,56 @@ function initLayers(style)
   }
 }
 
+function duplicateSources(style)
+{
+  if (style.metadata.services === undefined) return;
+  if (style.metadata.serviceParameters === undefined) return;
+
+  let prevSourceId = null;
+  const lastSourceIds = {};
+
+  for (let layer of style.layers)
+  {
+    let sourceId = layer.source;
+
+    let serviceParameters = style.metadata.serviceParameters[sourceId];
+    if (serviceParameters && layer.type === "raster")
+    {
+      if (serviceParameters.masterLayer === undefined)
+      {
+        serviceParameters.masterLayer = layer.id;
+        prevSourceId = sourceId;
+      }
+      else
+      {
+        let lastSourceId = lastSourceIds[sourceId] || sourceId;
+        if (lastSourceId !== prevSourceId) // create new source
+        {
+          let parts = lastSourceId.split("$");
+          if (parts.length === 2)
+          {
+            lastSourceId = sourceId + "$" + (parseInt(parts[1]) + 1);
+          }
+          else
+          {
+            lastSourceId = lastSourceId + "$2";
+          }
+          style.sources[lastSourceId] = {...style.sources[sourceId]};
+          style.metadata.serviceParameters[lastSourceId] = {...serviceParameters};
+          style.metadata.serviceParameters[lastSourceId].masterLayer = layer.id;
+          lastSourceIds[sourceId] = lastSourceId;
+          prevSourceId = lastSourceId;
+        }
+        layer.source = lastSourceId;
+      }
+    }
+    else
+    {
+      prevSourceId = sourceId;
+    }
+  }
+}
+
 function extendArray(array, length)
 {
   while (array.length < length) array.push("");
@@ -183,11 +235,11 @@ function getSourceUrl(sourceId, style)
   }
   if (serviceParameters.styles?.length > 0)
   {
-    layersArray.push(...serviceParameters.styles.split(","));
+    stylesArray.push(...serviceParameters.styles.split(","));
   }
   if (serviceParameters.cqlFilter?.length > 0)
   {
-    layersArray.push(...serviceParameters.cqlFilter.split(";"));
+    cqlFilterArray.push(...serviceParameters.cqlFilter.split(";"));
   }
   extendArray(stylesArray, layersArray.length);
   extendArray(cqlFilterArray, layersArray.length);
@@ -196,11 +248,6 @@ function getSourceUrl(sourceId, style)
   {
     if (layer.source === sourceId && layer.metadata)
     {
-      if (serviceParameters.masterLayer === undefined)
-      {
-        serviceParameters.masterLayer = layer.id;
-      }
-
       if (layer.metadata.visible)
       {
         if (layer.metadata.layers?.length > 0)
@@ -226,6 +273,17 @@ function getSourceUrl(sourceId, style)
   if (stylesArray.join("").trim().length === 0) stylesArray = [];
   if (cqlFilterArray.join("").trim().length === 0) cqlFilterArray = [];
 
+  if (cqlFilterArray.length > 0)
+  {
+    cqlFilterArray.forEach((cqlFilter, index) => 
+    {
+      if (cqlFilter === "")
+      {
+        cqlFilterArray[index] = "1=1";
+      }
+    });
+  }
+
   let serviceUrl = service.url;
   let urlParams;
   if (service.type === "wms")
@@ -249,7 +307,8 @@ function getSourceUrl(sourceId, style)
     }
     if (cqlFilterArray.length > 0)
     {
-      urlParams += "&cql_filter=" + cqlFilterArray.join(";");
+      let cqlFilter = cqlFilterArray.join(";");
+      urlParams += "&cql_filter=" + cqlFilter;
     }
     if (serviceParameters.sldUrl)
     {
@@ -266,7 +325,8 @@ function getSourceUrl(sourceId, style)
     "&srsName=EPSG:4326";
     if (cqlFilterArray.length > 0)
     {
-      urlParams += "&cql_filter=" + cqlFilterArray.join(";");
+      let cqlFilter = cqlFilterArray.join(";");
+      urlParams += "&cql_filter=" + cqlFilter;
     }
   }
   else return null;
@@ -275,7 +335,7 @@ function getSourceUrl(sourceId, style)
   if (service.useProxy)
   {
     url = "https://" + document.location.host + "/proxy?url=" +
-          serviceUrl + "&" + urlParams + 
+          serviceUrl + "&" + urlParams +
           "&_CHG=" + sourceId + "&_CHF=image&_CHR=_seed";
   }
   else

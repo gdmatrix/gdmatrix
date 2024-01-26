@@ -9,7 +9,7 @@
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
                 var="objectBundle" />
   <h:outputStylesheet library="css" name="geo.css" />
-
+  
   <div class="flex flex-column h-full overflow-hidden" style="color:var(--text-color)">
     <div class="p-2 flex align-items-center flex-grow-0 border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
@@ -19,18 +19,26 @@
       </div>      
       <div class="flex-grow-1">
         <div class="ui-inputgroup justify-content-end">
-          <p:inputText value="#{geoCatalogueBean.filter.keyword}"
+          <p:inputText value="#{geoCatalogueBean.filter.keywords}"
                        autocomplete="off" placeholder="#{objectBundle.search}" />
-          <p:commandButton id="find_maps"
+          <p:commandButton id="find_maps" widgetVar="findButton"
                            action="#{geoCatalogueBean.findMaps}"
                            icon="pi pi-search"
+                           title="#{objectBundle.search}"
                            process="@form:cnt" update="@form:cnt:maps" />
           <p:defaultCommand target="find_maps" />
         </div>
       </div>
     </div>
-
+    
     <h:panelGroup id="maps" styleClass="flex-grow-1 overflow-auto pl-3 pr-3">
+
+      <div class="pt-1">
+        <h:outputFormat value="#{geoCatalogueBean.mapGroup.mapCount == 1 ? geoBundle.mapFound : geoBundle.mapsFound}">
+          <f:param value="#{geoCatalogueBean.mapGroup.mapCount}" />
+        </h:outputFormat>
+      </div>
+
       <ul class="list-none pl-0">
         <ui:repeat value="#{geoCatalogueBean.mapGroup.mapViews}" var="mapView0">
           <ui:param name="mapView" value="#{mapView0}" />
@@ -39,7 +47,7 @@
         <ui:repeat value="#{geoCatalogueBean.mapGroup.mapGroups}" var="mapGroup1">
           <li class="pt-1">
             <span><strong>#{applicationBean.translate(mapGroup1.category.title, 'geo')}</strong> 
-              (#{mapGroup1.mapCount} mapes)</span>
+              (#{mapGroup1.mapCount} #{geoBundle.maps})</span>
             <ul class="list-none pl-4 pt-2 pb-2">
               <ui:repeat value="#{mapGroup1.mapViews}" var="mapView1">
                 <ui:param name="mapView" value="#{mapView1}" />
@@ -48,7 +56,7 @@
               <ui:repeat value="#{mapGroup1.mapGroups}" var="mapGroup2">
                 <li class="pt-1">
                   <span><strong>#{applicationBean.translate(mapGroup2.category.title, 'geo')}</strong> 
-                    (#{mapGroup2.mapCount} mapes)</span>
+                    (#{mapGroup2.mapCount} #{geoBundle.maps})</span>
                   <ul class="list-none pl-4 pt-2">
                     <ui:repeat value="#{mapGroup2.mapViews}" var="mapView2">
                       <ui:param name="mapView" value="#{mapView2}" />
@@ -57,7 +65,7 @@
                     <ui:repeat value="#{mapGroup3.mapGroups}" var="mapGroup3">
                       <li class="pt-1">
                         <span><strong>#{applicationBean.translate(mapGroup3.category.title, 'geo')}</strong> 
-                          (#{mapGroup3.mapCount} mapes)</span>
+                          (#{mapGroup3.mapCount} #{geoBundle.maps})</span>
                         <ul class="list-none pl-4 pt-2">
                           <ui:repeat value="#{mapGroup3.mapViews}" var="mapView3">
                             <ui:param name="mapView" value="#{mapView3}" />
@@ -114,7 +122,7 @@
   <p:growl id="growl" life="1000">
     <p:autoUpdate />
   </p:growl>
-
+  
   <script>
     window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
     document.title = "#{userSessionBean.selectedMenuItem.label}";

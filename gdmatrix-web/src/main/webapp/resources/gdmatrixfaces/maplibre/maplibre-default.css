@@ -84,7 +84,6 @@ div.maplibre_panel_container .scroller
   bottom:0;
   overflow: auto;
   padding: 4px;
-  padding-bottom: 500px;
 }
 
 div.maplibre_panel_container .scroller .panel
@@ -134,11 +133,6 @@ div.maplibre_panel_container .scroller .panel ul.legend
 {
   padding-left: 4px;
   list-style: none;
-}
-
-div.maplibre_panel_container .scroller .panel ul.legend li
-{
-  position: relative;
 }
 
 div.maplibre_panel_container .scroller .panel ul.legend ul
@@ -195,6 +189,7 @@ div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic
   height: 16px;
   display: inline-block;
   margin-right: 4px;
+  flex-shrink: 0;
 }
 
 div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic.circle

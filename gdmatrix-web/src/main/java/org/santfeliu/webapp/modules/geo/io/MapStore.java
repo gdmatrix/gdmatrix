@@ -57,6 +57,8 @@ import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import static org.matrix.dic.DictionaryConstants.WRITE_ACTION;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.keywords.KeywordsManager;
 
 /**
  *
@@ -110,11 +112,17 @@ public class MapStore
       filter.getProperty().add(property);
     }
 
-    if (!isBlank(mapFilter.getKeyword()))
+    if (!isBlank(mapFilter.getKeywords()))
     {
+      String keywords = mapFilter.getKeywords();
+
       Property property = new Property();
-      property.setName(MAP_KEYWORDS_PROPERTY);
-      property.getValue().add("%" + mapFilter.getKeyword().toLowerCase() + "%");
+      property.setName(MAP_NAME_PROPERTY);
+      property.getValue().add("%");
+      filter.getProperty().add(property);
+
+      KeywordsManager keywordsManager = new KeywordsManager(keywords);
+      property = keywordsManager.getDisjointKeywords();
       filter.getProperty().add(property);
     }
 
@@ -280,7 +288,7 @@ public class MapStore
   public java.util.Map<String, MapCategory> getCategoryCache()
   {
     long now = System.currentTimeMillis();
-    if (now - lastPurgeMillis > 60000)
+    if (now - lastPurgeMillis > 300000) // 5 minutes
     {
       lastPurgeMillis = now;
       HashMap<String, MapCategory> cache = new HashMap<>();
@@ -290,7 +298,7 @@ public class MapStore
       filter.getOutputProperty().add(MAP_CATEGORY_NAME_PROPERTY);
       filter.getOutputProperty().add(MAP_CATEGORY_PARENT_PROPERTY);
       filter.getOutputProperty().add(MAP_CATEGORY_POSITION_PROPERTY);
-      List<Document> documents = getPort().findDocuments(filter);
+      List<Document> documents = getPortAsAdmin().findDocuments(filter);
       for (Document document : documents)
       {
         MapCategory category = new MapCategory();
@@ -418,6 +426,13 @@ public class MapStore
       documentManagerPort = DocModuleBean.getPort("anonymous", null);
     }
     return documentManagerPort;
+  }
+
+  public DocumentManagerPort getPortAsAdmin()
+  {
+    String adminUserId = MatrixConfig.getProperty("adminCredentials.userId");
+    String adminPassword = MatrixConfig.getProperty("adminCredentials.password");
+    return documentManagerPort = DocModuleBean.getPort(adminUserId, adminPassword);
   }
 
   private MapGroup getMapGroup(String categoryName,
@@ -940,7 +955,7 @@ public class MapStore
   {
     String title;
     String categoryName;
-    String keyword;
+    String keywords;
 
     public String getTitle()
     {
@@ -962,14 +977,14 @@ public class MapStore
       this.categoryName = categoryName;
     }
 
-    public String getKeyword()
+    public String getKeywords()
     {
-      return keyword;
+      return keywords;
     }
 
-    public void setKeyword(String keyword)
+    public void setKeywords(String keywords)
     {
-      this.keyword = keyword;
+      this.keywords = keywords;
     }
   }
 }

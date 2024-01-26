@@ -157,24 +157,6 @@ public class GeoMapBean extends WebBean implements Serializable
       userSessionBean.isUserInRole(mapDocument.getWriteRoles());
   }
 
-  public MapCategory getCategory(String categoryName)
-  {
-    return getMapStore().getCategory(categoryName);
-  }
-
-  public List<SelectItem> getCategorySelectItems()
-  {
-    List<SelectItem> selectItems = new ArrayList<>();
-
-    for (MapCategory category : getMapStore().getCategoryList())
-    {
-      SelectItem selectItem =
-        new SelectItem(category.getName(), category.getTitle());
-      selectItems.add(selectItem);
-    }
-    return selectItems;
-  }
-
   public String getMetadataFormSelector()
   {
     return metadataFormSelector;
@@ -528,7 +510,11 @@ public class GeoMapBean extends WebBean implements Serializable
       if (serviceParameters != null)
       {
         String sldName = serviceParameters.getSldName();
-        if (!isBlank(sldName))
+        if (isBlank(sldName))
+        {
+          serviceParameters.setSldUrl(null);
+        }
+        else
         {
           String sldUrl = sldStore.getSldUrl(sldName);
           serviceParameters.setSldUrl(sldUrl);

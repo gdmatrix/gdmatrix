@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import java.io.FileReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,11 +65,13 @@ import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.misc.mapviewer.Bounds;
 
 public class MapMigrator
 {
   DocumentManagerClient oldPort;
   DocumentManagerClient newPort;
+  Collection excludedCategories;
 
   public MapMigrator(DocumentManagerClient oldPort, DocumentManagerClient newPort)
   {
@@ -84,6 +87,16 @@ public class MapMigrator
   public DocumentManagerClient getNewPort()
   {
     return newPort;
+  }
+
+  public Collection getExcludedCategories()
+  {
+    return excludedCategories;
+  }
+
+  public void setExcludedCategories(Collection excludedCategories)
+  {
+    this.excludedCategories = excludedCategories;
   }
 
   public void migrateSvgReports() throws Exception
@@ -195,6 +208,7 @@ public class MapMigrator
   {
     org.santfeliu.misc.mapviewer.MapStore oldMapStore =
       new org.santfeliu.misc.mapviewer.MapStore(oldPort);
+
     MapStore styleStore = new MapStore();
     styleStore.setPort((DocumentManagerPort) newPort);
     DocumentFilter filter = new DocumentFilter();
@@ -208,13 +222,28 @@ public class MapMigrator
 
       document = oldPort.loadDocument(document.getDocId(), 0, ContentInfo.METADATA);
       String mapName = DictionaryUtils.getPropertyValue(document.getProperty(), "mapName");
+      String mapCategory = DictionaryUtils.getPropertyValue(document.getProperty(),
+        MapStore.MAP_CATEGORY_NAME_PROPERTY);
+
+      if (excludedCategories != null && excludedCategories.contains(mapCategory))
+        continue;
+
       MapDocument mapDoc = oldMapStore.loadMap(mapName);
+      Bounds bounds = mapDoc.getBounds();
+      double cx = 0.5 * (bounds.getMinX() + bounds.getMaxX());
+      double cy = 0.5 * (bounds.getMinY() + bounds.getMaxY());
+      double size = (bounds.getMaxX() - bounds.getMinX());
+
+      UTMConverter.LatLng pos = UTMConverter.convertToLatLng(cx, cy, 31, false);
+      double zoom = 25 - (int)Math.round(Math.log(size) / Math.log(2));
+      System.out.println(pos + " " + zoom);
+
       String mapTitle = mapDoc.getTitle();
       System.out.println(i + ":" + mapName + ": " + mapTitle);
       Style style = new Style();
-      style.getCenter()[0] = 2.045D;
-      style.getCenter()[1] = 41.384D;
-      style.setZoom(14.0D);
+      style.getCenter()[0] = pos.lng;
+      style.getCenter()[1] = pos.lat;
+      style.setZoom(zoom);
       style.getMetadata().put("maxZoom", 20.0);
 
       // services
@@ -567,6 +596,11 @@ public class MapMigrator
 
       MapMigrator migrator = new MapMigrator(oldPort, newPort);
       List<String> migrate = (List<String>)config.get("migrate");
+      Object ec = config.get("excludedCategories");
+      if (ec instanceof Collection)
+      {
+        migrator.setExcludedCategories((Collection)ec);
+      }
       if (migrate == null)
       {
         System.out.println("\"migrate\" property not defined. It's a list of [\"map\", \"cat\", \"sld\", \"svg\"].");

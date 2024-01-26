@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
@@ -53,7 +52,7 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MemoryDataSource;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.geo.sld.SldRoot;
-
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -66,6 +65,7 @@ public class SldStore
   public static final String SLD_TYPEID = "SLD";
   public static final String SLD_PROPERTY_NAME = "sld_name";
   public static final String SLD_ENCODING = "ISO-8859-1";
+  public static final String SLD_TITLE = "Styled Layer Descriptor: ";
 
   private DocumentManagerPort documentManagerPort;
 
@@ -80,6 +80,7 @@ public class SldStore
   {
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(SLD_TYPEID);
+    filter.setTitle(SLD_TITLE + "%");
     Property property = new Property();
     property.setName(SLD_PROPERTY_NAME);
     property.getValue().add("%" + sldName + "%");
@@ -127,7 +128,7 @@ public class SldStore
     {
       if (isNewSld) return false;
     }
-    document.setTitle("Styled Layer Descriptor: " + sldName);
+    document.setTitle(SLD_TITLE + sldName);
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     SldWriter writer = new SldWriter();
     writer.write(sld, bos);
