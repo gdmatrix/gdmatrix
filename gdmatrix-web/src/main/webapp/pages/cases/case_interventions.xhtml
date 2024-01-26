@@ -51,9 +51,9 @@
                  filterable="false" sortable="true" resizable="false"
                  headerText="#{applicationBean.translate(column.label)}" 
                  field="#{column.name}" styleClass="#{column.styleClass}"
-                 sortBy="#{row.values[i]}" >
+                 sortBy="#{row.values[i].sorted}" >
         <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
-        <h:outputText value="#{row.values[i]}" />
+        <h:outputText value="#{row.values[i].label}" />
       </p:columns>
 
       <p:column styleClass="col-1 text-right white-space-nowrap">

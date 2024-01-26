@@ -599,20 +599,20 @@ public class CaseCasesTabBean extends TabBean
     }
 
     @Override
-    protected Object getDefaultValue(String columnName)
+    protected Value getDefaultValue(String columnName)
     {
       if (columnName != null)
       {
         switch (columnName)
         {
           case "caseId":
-            return getCaseId();
+            return new DefaultValue(getCaseId());
           case "caseTitle":
-            return getTitle();
+            return new DefaultValue(getTitle());
           case "caseTypeId":
-            return getCaseTypeId();
+            return new TypeValue(getCaseTypeId());
           case "person":
-            return getPerson();
+            return new DefaultValue(getPerson());
           default:
             break;
         }

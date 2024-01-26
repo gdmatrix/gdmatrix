@@ -57,7 +57,7 @@ public class DataTableRow implements Serializable
 {
   protected String rowId;
   protected String typeId;
-  protected Object[] values;
+  protected Value[] values;
   protected String[] icons;
   
   public DataTableRow(String rowId, String typeId)
@@ -96,12 +96,12 @@ public class DataTableRow implements Serializable
     this.icons = icons;
   }
   
-  public Object[] getValues()
+  public Value[] getValues()
   {
     return values;
   }
   
-  public void setValues(Object[] values)
+  public void setValues(Value[] values)
   {
     this.values = values;
   }
@@ -109,7 +109,7 @@ public class DataTableRow implements Serializable
   public void setValues(BaseBean baseBean, Object row, List<Column> columns) 
     throws Exception
   {   
-    values = new Object[columns.size()];
+    values = new Value[columns.size()];
     icons = new String[columns.size()];
     for (int i = 0; i < columns.size(); i++)
     {
@@ -120,7 +120,7 @@ public class DataTableRow implements Serializable
         scriptClient = newScriptClient();
         scriptClient.put("row", row);
         scriptClient.put("baseBean", baseBean);    
-        values[i] = scriptClient.execute(column.getExpression());
+        values[i] = new DefaultValue(scriptClient.execute(column.getExpression()));
       }
       else
       {
@@ -163,18 +163,18 @@ public class DataTableRow implements Serializable
     return scriptClient;
   }
       
-  protected Object getDefaultValue(String columnName)
+  protected Value getDefaultValue(String columnName)
   {
-    return "";
+    return new DefaultValue("");
   }
   
-  protected Object formatValue(String rowTypeId, Object key, 
+  protected Value formatValue(String rowTypeId, Object key, 
     List<String> values) throws Exception
   {
-    Object fValue = "";  
+    Value rowValue = null;   
     
     if (values == null || values.isEmpty())
-      return fValue;
+      return new DefaultValue("");
 
     String skey = String.valueOf(key);
     
@@ -188,66 +188,105 @@ public class DataTableRow implements Serializable
         {    
           if (pd.getMaxOccurs() > 1)
           {
-            fValue = values.toString();
+            rowValue = new DefaultValue(values.toString());
           }
           else
           {
-            fValue = values.get(0);
-            PropertyType propType = pd.getType();
-            if (propType.equals(PropertyType.DATE))
-              fValue = formatDate(fValue);
-            else if (pd.getEnumTypeId() != null)
-              fValue = formatEnumType(pd.getEnumTypeId(), fValue);
-            else if (skey.endsWith("TypeId"))
+            Object value = values.get(0);
+            if (value != null)
             {
-              String svalue = String.valueOf(fValue);
-              Type keyType = TypeCache.getInstance().getType(svalue); 
-              if (keyType != null)                
-                fValue = keyType.getDescription();            
+              PropertyType propType = pd.getType();
+              if (propType.equals(PropertyType.DATE))
+                rowValue = new DateValue((String) value);
+              else if (pd.getEnumTypeId() != null)
+                rowValue = new EnumTypeValue(pd.getEnumTypeId(), value);
+              else if (skey.endsWith("TypeId"))
+                rowValue = new TypeValue((String) value);
+              else 
+                rowValue = new DefaultValue(value);
             }
-
-            return fValue;
+            return rowValue;
           }
         }
         else
-          fValue = values.get(0);
+          rowValue = new DefaultValue(values.get(0));
       }
       else
-        fValue = values.get(0);
+        rowValue = new DefaultValue(values.get(0));
     }
     
-    return fValue != null ? fValue : values;
+    return rowValue != null ? rowValue : new DefaultValue("");
   }
 
-  private Object formatEnumType(String enumTypeId, Object value) 
-    throws Exception
+  public abstract class Value
   {
-    Object result = value;
+    protected Object sorted;
+    protected String label;
 
-    DataProviderFactory factory = DataProviderFactory.getInstance();
-    String ref = "enumtype:" + enumTypeId;
-    DataProvider provider;
-
-    provider = factory.createProvider(ref);
-    HashMap context = new HashMap();
-    context.put("value", value);
-    Table data = provider.getData(context);
-    if (data != null && !data.isEmpty())
+    public String getLabel()
     {
-      result = data.getElementAt(0, 1); //Label column of first value
-    }
+      return label;
+    } 
 
-    return result;
+    public Object getSorted()
+    {
+      return sorted;
+    } 
   }
-
-  private Object formatDate(Object value)
+  
+  public class DefaultValue extends Value
   {
-    if (value == null) return null;
+    public DefaultValue(Object value)
+    {
+      if (value != null)
+        this.label = value.toString();
+      this.sorted = label;
+    }  
+  }
+  
+  public class DateValue extends Value
+  {
+    public DateValue(String value)
+    {
+      String pattern = (value != null && value.length() == 14 ? 
+        "dd/MM/yyyy HH:mm:ss" : "dd/MM/yyyy");
+      label = TextUtils.formatInternalDate(value, pattern);
+      sorted = value;
+    }  
+  }
+  
+  public class EnumTypeValue extends Value
+  {  
+    public EnumTypeValue(String enumTypeId, Object value) 
+      throws Exception
+    {    
+      DataProviderFactory factory = DataProviderFactory.getInstance();
+      String ref = "enumtype:" + enumTypeId;
+      DataProvider provider;
 
-    String sValue = (String)value;        
-    String pattern = (sValue.length() == 14 ? "dd/MM/yyyy HH:mm:ss" : 
-      "dd/MM/yyyy");
-    return TextUtils.formatInternalDate(sValue, pattern);
+      provider = factory.createProvider(ref);
+      HashMap context = new HashMap();
+      context.put("value", value);
+      Table data = provider.getData(context);
+      if (data != null && !data.isEmpty())
+      {
+        label = (String) data.getElementAt(0, 1); //Label column of first value
+      }    
+      sorted = label;
+    }
   }   
+
+  public class TypeValue extends Value
+  {
+    public TypeValue(String value)
+    {
+      label = value;
+      Type keyType = TypeCache.getInstance().getType(value); 
+      if (keyType != null)
+        label = keyType.getDescription();
+
+      sorted = label;         
+    }
+  }  
   
 }

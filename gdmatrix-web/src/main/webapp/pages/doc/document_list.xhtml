@@ -21,7 +21,7 @@
                headerText="#{applicationBean.translate(column.label)}" 
                field="#{column.name}" styleClass="#{column.styleClass}">
       <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />
-      <h:outputText value="#{row.values[i]}" />
+      <h:outputText value="#{row.values[i].label}" />
     </p:columns>
 
     <p:column styleClass="w-2 text-right white-space-nowrap">
