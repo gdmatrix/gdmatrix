@@ -224,7 +224,7 @@ public class ProxyServlet extends HttpServlet
     URL url = new URL(surl);
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     prepareConnection(conn, req);
-    if (!connect(conn, resp)) return;
+    connect(conn, resp);
 
     // read response
     String contentDisposition = conn.getHeaderField("Content-Disposition");
@@ -236,7 +236,16 @@ public class ProxyServlet extends HttpServlet
     resp.setContentType(contentType);
     long expiration = conn.getExpiration();
     resp.setDateHeader("Expires", expiration);
-    IOUtils.writeToStream(conn.getInputStream(), resp.getOutputStream());
+    InputStream is;
+    try
+    {
+      is = conn.getInputStream();
+    }
+    catch (IOException ex)
+    {
+      is = conn.getErrorStream();
+    }
+    IOUtils.writeToStream(is, resp.getOutputStream());
   }
 
   private void sendResponseFromCache(String surl, String cacheFormat,
