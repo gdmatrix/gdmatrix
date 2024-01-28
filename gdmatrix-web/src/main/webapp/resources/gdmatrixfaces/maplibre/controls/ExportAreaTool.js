@@ -280,10 +280,13 @@ class ExportAreaTool extends Tool
       for (let format of formats)
       {
         let url = "/proxy?url=" + serviceUrl +
-          "&service=WFS&version=2.0.0&request=GetFeature&typeName=" +
-            layerName + "&outputFormat=" + format[1] +
-            "&srsName=EPSG:25831" +
-            "&cql_filter=" + encodeURIComponent(cqlFilter);
+          "&service=WFS&version=2.0.0 " +
+          "&request=GetFeature" + 
+          "&typeName=" + layerName + 
+          "&outputFormat=" + format[1] +
+          "&exceptions=application/json" +
+          "&srsName=EPSG:25831" + 
+          "&cql_filter=" + encodeURIComponent(cqlFilter);
         let anchor = document.createElement("a");
         anchor.target= "_blank";
         anchor.href = url;

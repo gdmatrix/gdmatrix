@@ -2,6 +2,7 @@
 
 import { Tool } from "./Tool.js";
 import { Panel } from "../ui/Panel.js";
+import { FeatureForm } from "../ui/FeatureForm.js";
 import { toUtm } from "../utm-latlng.js";
 import { Bundle } from "../i18n/Bundle.js";
 
@@ -18,6 +19,7 @@ class GetFeatureInfoTool extends Tool
           }, ...options});
 
     this.highlightCount = 0;
+    this.inProgress = false;
     this._onMapClick = (event) => this.getFeatureInfo(event.lngLat);
   }
 
@@ -58,59 +60,6 @@ class GetFeatureInfoTool extends Tool
 
     this.infoDiv = document.createElement("div");
     bodyDiv.appendChild(this.infoDiv);
-  }
-
-  showInfo(data)
-  {
-    const map = this.map;
-    const infoDiv = this.infoDiv;
-    infoDiv.innerHTML = "";
-
-    const ul = document.createElement("ul");
-    ul.className = "feature_info";
-    infoDiv.appendChild(ul);
-
-    let featureCount = 0;
-    for (let layerData of data)
-    {
-      if (layerData)
-      {
-        let geojson = layerData.geojson;
-        let features = geojson.features;
-        if (features && features.length > 0)
-        {
-          for (let feature of features)
-          {
-            featureCount++;
-            const li = document.createElement("li");
-            ul.appendChild(li);
-
-            const liDiv = document.createElement("div");
-            let featureId = feature.id;
-            let index = featureId.lastIndexOf(".");
-            if (index !== -1) featureId = featureId.substring(0, index);
-
-            liDiv.textContent = featureId;
-            li.appendChild(liDiv);
-
-            const subUl = document.createElement("ul");
-            li.appendChild(subUl);
-
-            for (let propertyName in feature.properties)
-            {
-              let propLi = document.createElement("li");
-              propLi.textContent = propertyName + ": " + feature.properties[propertyName];
-              subUl.appendChild(propLi);
-            }
-          }
-        }
-      }
-    }
-    if (featureCount === 0)
-    {
-      infoDiv.innerHTML = `<div class="pt-4 pb-4">${bundle.get("GetFeatureInfoTool.noDataFound")}</div>`;
-    }
-    this.panel.show();
   }
 
   clearHighlight()
@@ -212,95 +161,140 @@ class GetFeatureInfoTool extends Tool
 
   async getFeatureInfo(lngLat)
   {
-    const map = this.map;
+    if (this.inProgress) return; // operation in progress
 
-    this.panel.show();
-
-    this.clearHighlight();
-    this.addPointer(lngLat);
-
-    const headerDiv = this.headerDiv;
-    headerDiv.innerHTML = "";
-    const lngLatDiv = document.createElement("div");
-    headerDiv.appendChild(lngLatDiv);
-    lngLatDiv.innerHTML = `Lon/Lat: ${lngLat.lng.toFixed(5)}, ${lngLat.lat.toFixed(5)}`;
-
-    if (toUtm)
+    this.inProgress = true;
+    try
     {
+      const map = this.map;
+
+      this.panel.show();
+
+      this.clearHighlight();
+      this.addPointer(lngLat);
+
+      const headerDiv = this.headerDiv;
+      headerDiv.innerHTML = "";
+      const lngLatDiv = document.createElement("div");
+      headerDiv.appendChild(lngLatDiv);
+      lngLatDiv.innerHTML = `Lon/Lat: ${lngLat.lng.toFixed(5)}, ${lngLat.lat.toFixed(5)}`;
+
       const utm = toUtm(lngLat.lat, lngLat.lng, 7, 'ETRS89');
       const utmDiv = document.createElement("div");
       headerDiv.appendChild(utmDiv);
       utmDiv.innerHTML = `UTM: ${utm.easting.toFixed(3)}, ${utm.northing.toFixed(3)}`;
-    }
 
-    this.infoDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
+      this.infoDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
 
-    const services = map.getStyle().metadata?.services;
-    const serviceParameters = map.getStyle().metadata?.serviceParameters;
-    if (services === undefined) return;
-    if (serviceParameters === undefined) return;
+      const services = map.getStyle().metadata?.services;
+      const serviceParameters = map.getStyle().metadata?.serviceParameters;
+      if (services === undefined) return;
+      if (serviceParameters === undefined) return;
 
-    const promises = [];
-    const layers = map.getStyle().layers;
-    for (let lay of layers)
-    {
-      let layer = map.getLayer(lay.id);
-      if (layer.metadata?.visible && layer.metadata?.locatable)
+      const formPromises = [];
+
+      const layers = map.getStyle().layers;
+      for (let lay of layers)
       {
-        let sourceId = layer.source;
-        let params = serviceParameters[sourceId];
-        if (params)
+        let layer = map.getLayer(lay.id);
+        if (layer.metadata?.visible && layer.metadata?.locatable)
         {
-          let serviceId = params.service;
-          if (serviceId)
+          let sourceId = layer.source;
+          let params = serviceParameters[sourceId];
+          if (params)
           {
-            let service = services[serviceId];
-            let layerNameArray = [];
-            let cqlFilterArray = [];
-            if (layer.metadata?.layers)
+            let serviceId = params.service;
+            if (serviceId)
             {
-              layerNameArray.push(...layer.metadata.layers.split(","));
-            }
-            if (layer.metadata?.cqlFilter)
-            {
-              cqlFilterArray.push(...layer.metadata.cqlFilter.split(";"));
-            }
-            extendArray(cqlFilterArray, layerNameArray.length);
-
-            if (params.layers)
-            {
-              layerNameArray.push(...params.layers.split(","));
-            }
-            if (params.cqlFilter)
-            {
-              cqlFilterArray.push(...params.cqlFilter.split(";"));
-            }
-            extendArray(cqlFilterArray, layerNameArray.length);
-
-            if (layerNameArray.length > 0)
-            {
-              for (let i = 0; i < layerNameArray.length; i++)
+              let service = services[serviceId];
+              let layerNameArray = [];
+              let cqlFilterArray = [];
+              if (layer.metadata?.layers)
               {
-                let layerName = layerNameArray[i];
-                let cqlFilter = cqlFilterArray[i];
-                let promise = this.getFeatures(
-                  lngLat, layer.id, service, layerName, cqlFilter);
-                promises.push(promise);
+                layerNameArray.push(...layer.metadata.layers.split(","));
+              }
+              if (layer.metadata?.cqlFilter)
+              {
+                cqlFilterArray.push(...layer.metadata.cqlFilter.split(";"));
+              }
+              extendArray(cqlFilterArray, layerNameArray.length);
+
+              if (params.layers)
+              {
+                layerNameArray.push(...params.layers.split(","));
+              }
+              if (params.cqlFilter)
+              {
+                cqlFilterArray.push(...params.cqlFilter.split(";"));
+              }
+              extendArray(cqlFilterArray, layerNameArray.length);
+
+              if (layerNameArray.length > 0)
+              {
+                for (let i = 0; i < layerNameArray.length; i++)
+                {
+                  let layerName = layerNameArray[i];
+                  let cqlFilter = cqlFilterArray[i];
+
+                  formPromises.push(this.getForms(
+                    lngLat, layer, service, layerName, cqlFilter));
+                }
               }
             }
           }
         }
       }
+      let forms = (await Promise.all(formPromises)).flat();
+      this.showForms(forms);
     }
-    let data = await Promise.all(promises);
-    this.showInfo(data);
+    catch (ex)
+    {
+      console.error(ex);
+    }
+    finally
+    {
+      this.inProgress = false;
+    }
+  }
+  
+  async getForms(lngLat, layer, service, layerName, cqlFilter = "")
+  {
+    const map = this.map;
+    
+    const geojson = await this.getFeatures(lngLat, service, layerName, cqlFilter);
+      
+    const formPromises = [];
+    
+    if (geojson && geojson.features)
+    {
+      // highlight
+      if (layer.metadata.highlight)
+      {
+        this.highlight(geojson);
+      }
+      
+      // get forms
+      let features = geojson.features;
+      if (features && features.length > 0)
+      {
+        for (let feature of features)
+        {
+          const form = new FeatureForm(map, service, layerName, feature);            
+          formPromises.push(form.render());            
+        }
+      }
+    }
+
+    const forms = await Promise.all(formPromises);
+    return forms;
   }
 
-  async getFeatures(lngLat, layerId, service, layerName, cqlFilter = "")
+  async getFeatures(lngLat, service, layerName, cqlFilter = "")
   {
-    return FeatureTypeInspector.getInfo(service.url, layerName).then(info =>
+    try
     {
-      if (info.geometryColumn)
+      const info = await FeatureTypeInspector.getInfo(service.url, layerName);
+      if (info?.geometryColumn)
       {
         const map = this.map;
         const isSurface = info.geometryType.indexOf("Surface") !== -1;
@@ -314,6 +308,7 @@ class GetFeatureInfoTool extends Tool
           "&typeNames=" + layerName +
           "&srsName=EPSG:4326" +
           "&outputFormat=application/json" +
+          "&exceptions=application/json" +
           "&cql_filter=" + "DISTANCE(" + info.geometryColumn +
             ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))<=" + dist;
 
@@ -322,25 +317,46 @@ class GetFeatureInfoTool extends Tool
           url += " and " + cqlFilter;
         }
 
-        return fetch(url).then(response => response.json()).then(geojson =>
-        {
-          let layer = map.getLayer(layerId);
-          if (layer.metadata.highlight)
-          {
-            this.highlight(geojson);
-          }
-          return {
-            "layerId": layerId,
-            "geojson": geojson
-          };
-        })
-        .catch(error => error);
+        const response = await fetch(url);
+        const geojson = await response.json();
+        return geojson;
       }
       else
       {
-        return Promise.resolve();
+        return {};
       }
-    });
+    }
+    catch (ex)
+    {
+      return { error: ex };
+    }
+  }
+
+  showForms(forms)
+  {
+    const map = this.map;
+    const infoDiv = this.infoDiv;
+
+    const ul = document.createElement("ul");
+    ul.className = "feature_info";
+    infoDiv.appendChild(ul);
+
+    if (forms.length === 0)
+    {
+      infoDiv.innerHTML = `<div class="pt-4 pb-4">${bundle.get("GetFeatureInfoTool.noDataFound")}</div>`;
+    }
+    else
+    {
+      forms.sort((a, b) => a.priority - b.priority);
+      infoDiv.innerHTML = "";
+      for (let form of forms)
+      {
+        let featureDiv = document.createElement("div");
+        featureDiv.innerHTML = form.html;
+        infoDiv.appendChild(featureDiv);
+      }
+    }
+    this.panel.show();
   }
 }
 

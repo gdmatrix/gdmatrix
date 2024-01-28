@@ -7,21 +7,25 @@ if (window.ogcLoaded === undefined)
   {
     static cache = {};
 
-    static getInfo(serviceUrl, typeName)
+    static async getInfo(serviceUrl, typeName)
     {
       const key = serviceUrl + " {" + typeName + "}";
       let featureInfo = this.cache[key];
       if (!featureInfo)
       {
         const layerUrl = "/proxy?url=" + serviceUrl +
-          "&service=wfs&version=1.1.0&request=DescribeFeatureType&typeName=" +
-          typeName;
+          "&service=wfs" +
+          "&version=1.1.0" + 
+          "&request=DescribeFeatureType" + 
+          "&typeName=" + typeName + 
+          "&exceptions=application/json";
 
-        return fetch(layerUrl)
-          .then(response => response.text())
-          .then(text => this.parseFeatureInfo(typeName, text))
-          .catch(console.error);
+        const response = await fetch(layerUrl);
+        const xml = await response.text();
+        featureInfo = this.parseFeatureInfo(typeName, xml);
+        this.cache[key] = featureInfo;
       }
+      return featureInfo;
     }
 
     static parseFeatureInfo(typeName, responseText)
@@ -203,8 +207,8 @@ if (window.ogcLoaded === undefined)
 
       if (this.serviceUrl)
       {
-        const infoPromise = FeatureTypeInspector.getInfo(this.serviceUrl, typeName);
-        infoPromise.then(info => this.showPanel(element, info));
+        FeatureTypeInspector.getInfo(this.serviceUrl, typeName)
+          .then(info => this.showPanel(element, info));
       }
       else
       {

@@ -9,6 +9,7 @@ class PanelManager
   constructor(map)
   {
     this.map = map;
+
     const panelContainers = {};
     const resizeHandlers = {};
     const mapContainerElem = map.getContainer();
@@ -19,10 +20,10 @@ class PanelManager
     this.resizeHandlers = resizeHandlers;
     this.controlsElem = controlsElem;
 
-    panelContainers.top = new PanelContainer(this, "top");
-    panelContainers.bottom = new PanelContainer(this, "bottom");
-    panelContainers.left = new PanelContainer(this, "left");
-    panelContainers.right = new PanelContainer(this, "right");
+    panelContainers.top = new PanelContainer(this, "top", 200);
+    panelContainers.bottom = new PanelContainer(this, "bottom", 200);
+    panelContainers.left = new PanelContainer(this, "left", 270);
+    panelContainers.right = new PanelContainer(this, "right", 270);
 
     resizeHandlers.top = new ResizeHandler(this, "top");
     resizeHandlers.bottom = new ResizeHandler(this, "bottom");
@@ -121,6 +122,17 @@ class PanelManager
     this.setContainerSize("top", panelContainers.top.size, false);
     this.setContainerSize("bottom", panelContainers.bottom.size, false);
     this.doLayout();
+  }
+  
+  getPadding()
+  {
+    const panelContainers = this.panelContainers;
+    const left = panelContainers.left.size;
+    const right = panelContainers.right.size;
+    const top = panelContainers.top.size;
+    const bottom = panelContainers.bottom.size;
+
+    return { top: top, bottom: bottom, left: left, right: right };
   }
 
   doLayout()
@@ -367,7 +379,7 @@ class PanelManager
 
 class PanelContainer
 {
-  constructor(panelManager, position)
+  constructor(panelManager, position, size = 240)
   {
     this.panelManager = panelManager;
     const controlsElem = panelManager.controlsElem;
@@ -381,7 +393,7 @@ class PanelContainer
     this.position = position;
     this.panels = [];
     this.size = 0;
-    this.preferredSize = position === "left" || position === "right" ? 260 : 200;
+    this.preferredSize = size;
     this.animationTimerId = null;
   }
 

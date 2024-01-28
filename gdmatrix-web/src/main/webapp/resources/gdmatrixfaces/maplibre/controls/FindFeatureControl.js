@@ -1,4 +1,4 @@
-/* FindControl.js */
+/* FindFeatureControl.js */
 
 import { Panel } from "../ui/Panel.js";
 import { Bundle } from "../i18n/Bundle.js";
@@ -6,13 +6,13 @@ import "../turf.js";
 
 const bundle = Bundle.getBundle("main");
 
-class FindControl
+class FindFeatureControl
 {
   constructor(options)
   {
     this.options = {...{
         "position" : "right",
-        "title" : bundle.get("FindControl.title"),
+        "title" : bundle.get("FindFeatureControl.title"),
         "iconClass" : "pi pi-search"
       }, ...options};
 
@@ -22,6 +22,7 @@ class FindControl
       type: "FeatureCollection",
       features: []
     };
+    this.markers = [];
   }
 
   addFinder(finder)
@@ -151,29 +152,49 @@ class FindControl
   {
     if (this.activeFinder)
     {
+      const map = this.map;
       this.resultDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
       try
       {
         this.data.features = await this.activeFinder.find();
-        this.map.getSource("finder_results").setData(this.data);
+        map.getSource("finder_results").setData(this.data);
+
         if (this.data.features.length > 0)
         {
           let bbox = turf.bbox(this.data);
-          console.info(bbox);
           let bounds = new maplibregl.LngLatBounds(
             [bbox[0], bbox[1]], [bbox[2], bbox[3]]);
-          console.info(bounds);
-          this.map.fitBounds(bounds, 
+          const panelManager = map.panelManager;
+          this.map.fitBounds(bounds,
           {
-            padding: 20
+            maxZoom: this.activeFinder.getMaxZoom(),
+            padding: panelManager.getPadding()
           });
         }
         this.listFeatures();
+        this.clearMarkers();
+        this.addMarkers();
       }
       catch (ex)
       {
-        console.error(ex);
-        this.resultDiv.textContent = "" + ex;
+        const ul = document.createElement("ul");
+        ul.className = "error";
+        this.resultDiv.innerHTML = "";
+        this.resultDiv.append(ul);
+
+        if (ex?.exceptions instanceof Array)
+        {
+          for (let iex of ex.exceptions)
+          {
+            let li = document.createElement("li");
+            li.textContent = iex.text;
+            ul.appendChild(li);
+          }
+        }
+        else
+        {
+          ul.innerHTML = `<li>${String(ex)}</li>`;
+        }
       }
     }
   }
@@ -183,29 +204,50 @@ class FindControl
     this.data.features = [];
     this.map.getSource("finder_results").setData(this.data);
     this.setActiveFinder(this.activeFinder);
+    this.clearMarkers();
   }
 
   listFeatures()
   {
     const finder = this.activeFinder;
-    this.resultDiv.innerHTML = "";
     const features = this.data.features;
+    this.resultDiv.innerHTML = "";
 
     const countDiv = document.createElement("div");
     this.resultDiv.appendChild(countDiv);
     countDiv.className = "mt-2";
-    countDiv.textContent = bundle.get("FindControl.featureCount", features.length) +
+    countDiv.textContent = 
+      bundle.get("FindFeatureControl.featureCount", features.length) +
       (features.length === 0 ? "." : ":");
-    
+
     const ul = document.createElement("ul");
-    ul.className = "pl-4 mt-1";
+    ul.className = "finder_results";
     this.resultDiv.appendChild(ul);
     for (let feature of features)
     {
       let li = document.createElement("li");
       ul.appendChild(li);
+      let iconUrl = finder.getListIconUrl(feature);
+      if (iconUrl)
+      {
+        let img = document.createElement("img");
+        img.src = iconUrl;
+        img.alt = "";
+        img.style.width = "16px";
+        img.style.height = "16px";
+        li.appendChild(img);
+      }
+      else
+      {
+        let icon = finder.getListIcon(feature) || "pi pi-map-marker";
+        let span = document.createElement("i");
+        span.className = icon;
+        li.appendChild(span);
+      }
+      
       let anchor = document.createElement("a");
       anchor.href = "#";
+      anchor.className = "pl-1";
       li.appendChild(anchor);
       anchor.textContent = finder.getFeatureLabel(feature);
       anchor.addEventListener("click", (event) => {
@@ -214,18 +256,54 @@ class FindControl
       });
     }
   }
-
-  selectFeature(feature)
+  
+  addMarkers()
   {
     const map = this.map;
+    const finder = this.activeFinder;
+    const features = this.data.features;
+
+    for (let feature of features)
+    {
+      let marker = finder.getMarker(feature);
+      if (marker)
+      {
+        marker.addTo(map);
+        this.markers.push(marker);
+
+        marker.getElement().addEventListener("click", (event) => 
+        {
+          event.preventDefault();
+          this.selectFeature(feature, Math.round(map.getZoom()));
+        });
+        marker.getElement().style.cursor = "pointer";
+      }
+    }
+  }
+  
+  clearMarkers()
+  {
+    for (let marker of this.markers)
+    {
+      marker.remove();
+    }
+    this.markers = [];
+  }
+
+  selectFeature(feature, maxZoom)
+  {
+    const map = this.map;
+    if (maxZoom === undefined) maxZoom = this.activeFinder.getMaxZoom();
     
-    let position = {
-      center: turf.centroid(feature).geometry.coordinates,
-      speed: 1,
-      curve: 1,
-      easing(t) { return t; }
-    };
-    map.flyTo(position);
+    let bbox = turf.bbox(feature);
+    let bounds = new maplibregl.LngLatBounds(
+      [bbox[0], bbox[1]], [bbox[2], bbox[3]]);
+    const panelManager = map.panelManager;
+    this.map.fitBounds(bounds,
+    {
+      maxZoom: maxZoom,
+      padding: panelManager.getPadding()
+    });
   }
 
   onAdd(map)
@@ -262,7 +340,7 @@ class FindControl
   }
 }
 
-class Finder
+class FeatureFinder
 {
   constructor(params)
   {
@@ -289,7 +367,7 @@ class Finder
 
   async find()
   {
-    return Promise.resolve([]); // geojson features
+    return []; // geojson features
   }
 
   getFeatureLabel(feature)
@@ -297,13 +375,32 @@ class Finder
     return "?";
   }
 
-  getMarker(feature)
+  getListIcon(feature)
+  {
+    return "pi pi-map-marker";
+  }
+  
+  getListIconUrl(feature)
   {
     return null;
   }
+
+  getMarker(feature)
+  {
+    let centroid = turf.centroid(feature);
+    let marker = new maplibregl.Marker()
+     .setLngLat(centroid.geometry.coordinates);
+    
+    return marker;
+  }
+    
+  getMaxZoom()
+  {
+    return 18;
+  }
 }
 
-class WfsFinder extends Finder
+class WfsFinder extends FeatureFinder
 {
   getTitle()
   {
@@ -315,11 +412,11 @@ class WfsFinder extends Finder
     return `
       <div class="formgrid grid">
         <div class="field col-12">
-          <label for="layer_name">${bundle.get("FindControl.layer")}:</label>
+          <label for="layer_name">${bundle.get("FindFeatureControl.layer")}:</label>
           <input id="layer_name" type="text" class="code ui-widget text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full" />
         </div>
         <div class="field col-12">
-          <label for="cql_filter">${bundle.get("FindControl.filter")}:</label>
+          <label for="cql_filter">${bundle.get("FindFeatureControl.filter")}:</label>
           <textarea id="cql_filter" class="code text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
         </div>
       </div>
@@ -332,12 +429,12 @@ class WfsFinder extends Finder
     let cqlFilter = document.getElementById("cql_filter").value;
     if (layerName)
     {
-      return this.findWfs("https://gis.santfeliu.cat/geoserver/wfs", 
+      return await this.findWfs("https://gis.santfeliu.cat/geoserver/wfs", 
         layerName, cqlFilter);
     }
     else
     {
-      return Promise.resolve([]);
+      return [];
     }
   }
 
@@ -349,29 +446,25 @@ class WfsFinder extends Finder
       "&version=2.0.0" +
       "&typeNames=" + layerName +
       "&srsName=EPSG:4326" +
-      "&outputFormat=application/json";
+      "&outputFormat=application/json" +
+      "&exceptions=application/json";
 
     if (cqlFilter)
     {
       url += "&cql_filter=" + cqlFilter;
     }
-    return fetch(url).then(response => response.json()).then(json => 
-    {
-      console.info(json);
-      return json.features;
-    });
+    const response = await fetch(url);
+    const json = await response.json();
+    if (json.exceptions) throw json;
+    
+    return json.features;
   }
 
   getFeatureLabel(feature)
   {
-    return JSON.stringify(feature.properties);
-  }
-
-  getMarker(feature)
-  {
-    return null;
+    return feature.id;
   }
 }
 
-export { FindControl, Finder, WfsFinder };
+export { FindFeatureControl, FeatureFinder, WfsFinder };
 

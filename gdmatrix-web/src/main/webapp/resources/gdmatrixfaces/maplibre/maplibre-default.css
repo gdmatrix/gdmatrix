@@ -127,6 +127,44 @@ div.maplibregl-ctrl.active
   background-color: yellow;
 }
 
+div.maplibre_panel_container .scroller .panel .finder_results
+{
+  list-style-type: none;
+  padding-left: 0;
+  width:100%;
+}
+
+div.maplibre_panel_container .scroller .panel .finder_results li
+{
+  display: flex;
+  align-items: start;
+  margin-bottom: 0.25rem;
+}
+
+div.maplibre_panel_container .scroller .panel .finder_results li i,
+div.maplibre_panel_container .scroller .panel .finder_results li img
+{
+  padding-top: 4px;
+}
+
+div.maplibre_panel_container .scroller .panel .finder_results li a
+{
+  text-wrap: wrap;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+div.maplibre_panel_container .scroller .panel ul.error
+{
+  list-style-type: none;
+  padding-left: 0;
+}
+
+div.maplibre_panel_container .scroller .panel ul.error li
+{
+  color: red;
+}
+
 /* Legend */
 
 div.maplibre_panel_container .scroller .panel ul.legend

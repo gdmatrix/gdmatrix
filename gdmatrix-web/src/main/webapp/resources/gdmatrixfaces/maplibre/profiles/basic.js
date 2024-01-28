@@ -1,7 +1,7 @@
 /* basic profile */
 
 import { init as initMinimal } from "./minimal.js";
-import { FindControl, WfsFinder } from "../controls/FindControl.js";
+import { FindFeatureControl, WfsFinder } from "../controls/FindFeatureControl.js";
 import { GetFeatureInfoTool } from "../controls/GetFeatureInfoTool.js";
 import { LegendControl } from "../controls/LegendControl.js";
 import { MapInfoControl } from "../controls/MapInfoControl.js";
@@ -12,7 +12,7 @@ function init(map)
   
   const style = map.getStyle();
 
-  map.addControl(new FindControl({
+  map.addControl(new FindFeatureControl({
     position: "left", 
     insertTop: false
   }), "top-left");

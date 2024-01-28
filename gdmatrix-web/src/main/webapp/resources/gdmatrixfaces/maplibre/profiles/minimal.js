@@ -1,6 +1,7 @@
 /* minimal profile */
 
 import { GoHomeControl } from "../controls/GoHomeControl.js";
+import { ZoomControl } from "../controls/ZoomControl.js";
 import { LoadingIndicatorControl } from "../controls/LoadingIndicatorControl.js";
 
 function init(map)
@@ -13,6 +14,8 @@ function init(map)
       showCompass: true
     })
   );
+
+  map.addControl(new ZoomControl(), "bottom-left");
 
   map.addControl(new maplibregl.ScaleControl({
     maxWidth: 80,
