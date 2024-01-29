@@ -192,17 +192,22 @@ public class DataTableRow implements Serializable
           }
           else
           {
-            Object value = values.get(0);
+            String value = values.get(0);
             if (value != null)
             {
               PropertyType propType = pd.getType();
               if (propType.equals(PropertyType.DATE))
-                rowValue = new DateValue((String) value);
+                rowValue = new DateValue(value);
               else if (pd.getEnumTypeId() != null)
-                rowValue = new EnumTypeValue(pd.getEnumTypeId(), value);
+              {
+                rowValue = 
+                  new EnumTypeValue(pd.getEnumTypeId(), value, propType);
+              }
               else if (skey.endsWith("TypeId"))
-                rowValue = new TypeValue((String) value);
-              else 
+                rowValue = new TypeValue(value);
+              else if (propType.equals(PropertyType.NUMERIC))
+                rowValue = new NumericValue(value);
+              else
                 rowValue = new DefaultValue(value);
             }
             return rowValue;
@@ -257,7 +262,7 @@ public class DataTableRow implements Serializable
   
   public class EnumTypeValue extends Value
   {  
-    public EnumTypeValue(String enumTypeId, Object value) 
+    public EnumTypeValue(String enumTypeId, Object value, PropertyType propType) 
       throws Exception
     {    
       DataProviderFactory factory = DataProviderFactory.getInstance();
@@ -272,7 +277,20 @@ public class DataTableRow implements Serializable
       {
         label = (String) data.getElementAt(0, 1); //Label column of first value
       }    
-      sorted = label;
+      if (!propType.equals(PropertyType.NUMERIC))
+        sorted = label;
+      else
+      {
+        try
+        {
+          Double dvalue = Double.valueOf(label);
+          sorted = dvalue;
+        }
+        catch(NumberFormatException ex)
+        {
+          sorted = label;
+        }        
+      }
     }
   }   
 
@@ -288,5 +306,22 @@ public class DataTableRow implements Serializable
       sorted = label;         
     }
   }  
+  
+  public class NumericValue extends Value
+  {
+    public NumericValue(String value)
+    {
+      label = value;
+      try
+      {
+        Double dvalue = Double.valueOf(value);
+        sorted = dvalue;
+      }
+      catch(NumberFormatException ex)
+      {
+        sorted = value;
+      }
+    }
+  }
   
 }
