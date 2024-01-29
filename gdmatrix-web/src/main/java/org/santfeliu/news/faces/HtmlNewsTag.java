@@ -48,8 +48,12 @@ public class HtmlNewsTag extends UIComponentTag
   private String translationGroup;
   private String style;
   private String styleClass;
+  private String row1StyleClass;
+  private String row2StyleClass;
   private String dateStyle;
   private String dateStyleClass;
+  private String sourceStyle;
+  private String sourceStyleClass;  
   private String headLineStyle;
   private String headLineStyleClass;
   private String imageStyle;
@@ -68,8 +72,18 @@ public class HtmlNewsTag extends UIComponentTag
   private String renderSummary;
   private String excludeDrafts;
   private String renderDate;
+  private String renderSource;
   private String urlSeparator;
+  private String maxHeadlineChars;
   private String maxSummaryChars;
+  private String decodeText;
+  private String mixSections;
+  private String invalidSummaryStrings;
+  private String oneEntrySourceUrls;
+  private String renderImage;
+  private String renderHeadline;
+  private String enableTranslation;
+  
 
   public String getRows()
   {
@@ -89,6 +103,16 @@ public class HtmlNewsTag extends UIComponentTag
   public void setSection(String section)
   {
     this.section = section;
+  }
+
+  public String getMaxHeadlineChars()
+  {
+    return maxHeadlineChars;
+  }
+
+  public void setMaxHeadlineChars(String maxHeadlineChars)
+  {
+    this.maxHeadlineChars = maxHeadlineChars;
   }
 
   public String getMaxSummaryChars()
@@ -141,6 +165,26 @@ public class HtmlNewsTag extends UIComponentTag
     this.styleClass = styleClass;
   }
 
+  public String getRow1StyleClass()
+  {
+    return row1StyleClass;
+  }
+
+  public void setRow1StyleClass(String row1StyleClass)
+  {
+    this.row1StyleClass = row1StyleClass;
+  }
+
+  public String getRow2StyleClass()
+  {
+    return row2StyleClass;
+  }
+
+  public void setRow2StyleClass(String row2StyleClass)
+  {
+    this.row2StyleClass = row2StyleClass;
+  }
+
   public String getDateStyle()
   {
     return dateStyle;
@@ -159,6 +203,26 @@ public class HtmlNewsTag extends UIComponentTag
   public void setDateStyleClass(String dateStyleClass)
   {
     this.dateStyleClass = dateStyleClass;
+  }
+
+  public String getSourceStyle()
+  {
+    return sourceStyle;
+  }
+
+  public void setSourceStyle(String sourceStyle)
+  {
+    this.sourceStyle = sourceStyle;
+  }
+
+  public String getSourceStyleClass()
+  {
+    return sourceStyleClass;
+  }
+
+  public void setSourceStyleClass(String sourceStyleClass)
+  {
+    this.sourceStyleClass = sourceStyleClass;
   }
 
   public String getHeadLineStyleClass()
@@ -321,6 +385,26 @@ public class HtmlNewsTag extends UIComponentTag
     this.renderDate = renderDate;
   }
 
+  public String getRenderSource()
+  {
+    return renderSource;
+  }
+
+  public void setRenderSource(String renderSource)
+  {
+    this.renderSource = renderSource;
+  }
+
+  public String getDecodeText()
+  {
+    return decodeText;
+  }
+
+  public void setDecodeText(String decodeText)
+  {
+    this.decodeText = decodeText;
+  }
+
   public String getUrlSeparator()
   {
     return urlSeparator;
@@ -349,6 +433,66 @@ public class HtmlNewsTag extends UIComponentTag
   public void setShowMoreUrl(String showMoreUrl)
   {
     this.showMoreUrl = showMoreUrl;
+  }
+
+  public String getMixSections()
+  {
+    return mixSections;
+  }
+
+  public void setMixSections(String mixSections)
+  {
+    this.mixSections = mixSections;
+  }
+
+  public String getInvalidSummaryStrings()
+  {
+    return invalidSummaryStrings;
+  }
+
+  public void setInvalidSummaryStrings(String invalidSummaryStrings)
+  {
+    this.invalidSummaryStrings = invalidSummaryStrings;
+  }
+
+  public String getOneEntrySourceUrls()
+  {
+    return oneEntrySourceUrls;
+  }
+
+  public void setOneEntrySourceUrls(String oneEntrySourceUrls)
+  {
+    this.oneEntrySourceUrls = oneEntrySourceUrls;
+  }
+
+  public String getRenderImage()
+  {
+    return renderImage;
+  }
+
+  public void setRenderImage(String renderImage)
+  {
+    this.renderImage = renderImage;
+  }
+
+  public String getRenderHeadline()
+  {
+    return renderHeadline;
+  }
+
+  public void setRenderHeadline(String renderHeadline)
+  {
+    this.renderHeadline = renderHeadline;
+  }
+
+  public String getEnableTranslation()
+  {
+    return enableTranslation;
+  }
+
+  public void setEnableTranslation(String enableTranslation)
+  {
+    this.enableTranslation = enableTranslation;
   }
 
   @Override
@@ -388,9 +532,17 @@ public class HtmlNewsTag extends UIComponentTag
       UIComponentTagUtils.setStringProperty(
         context, component, "styleClass", styleClass);
       UIComponentTagUtils.setStringProperty(
+        context, component, "row1StyleClass", row1StyleClass);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "row2StyleClass", row2StyleClass);
+      UIComponentTagUtils.setStringProperty(
         context, component, "dateStyle", dateStyle);
       UIComponentTagUtils.setStringProperty(
         context, component, "dateStyleClass", dateStyleClass);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "sourceStyle", sourceStyle);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "sourceStyleClass", sourceStyleClass);
       UIComponentTagUtils.setStringProperty(
         context, component, "headLineStyle", headLineStyle);
       UIComponentTagUtils.setStringProperty(
@@ -427,10 +579,28 @@ public class HtmlNewsTag extends UIComponentTag
         context, component, "excludeDrafts", excludeDrafts);
       UIComponentTagUtils.setBooleanProperty(
         context, component, "renderDate", renderDate);
+      UIComponentTagUtils.setBooleanProperty(
+        context, component, "renderSource", renderSource);
       UIComponentTagUtils.setStringProperty(
         context, component, "urlSeparator", urlSeparator);
       UIComponentTagUtils.setIntegerProperty(
+        context, component, "maxHeadlineChars", maxHeadlineChars);
+      UIComponentTagUtils.setIntegerProperty(
         context, component, "maxSummaryChars", maxSummaryChars);      
+      UIComponentTagUtils.setBooleanProperty(
+        context, component, "decodeText", decodeText);
+      UIComponentTagUtils.setBooleanProperty(
+        context, component, "mixSections", mixSections);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "invalidSummaryStrings", invalidSummaryStrings);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "oneEntrySourceUrls", oneEntrySourceUrls);
+      UIComponentTagUtils.setBooleanProperty(
+        context, component, "renderHeadline", renderHeadline);
+      UIComponentTagUtils.setBooleanProperty(
+        context, component, "renderImage", renderImage);
+      UIComponentTagUtils.setBooleanProperty(
+        context, component, "enableTranslation", enableTranslation);
     }
     catch (Exception ex)
     {

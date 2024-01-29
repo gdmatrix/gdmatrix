@@ -33,28 +33,37 @@ package org.santfeliu.news.faces;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.myfaces.shared_tomahawk.renderkit.JSFAttr;
 import org.matrix.doc.Content;
 import org.matrix.news.NewView;
 import org.matrix.news.SectionFilter;
 import org.matrix.news.SectionView;
+import org.santfeliu.cms.CNode;
+import org.santfeliu.cms.CWorkspace;
 import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
-import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.news.web.NewsConfigBean;
 import org.santfeliu.util.HTMLNormalizer;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.util.enc.Unicode;
 import org.santfeliu.web.UserSessionBean;
 
 /**
@@ -73,6 +82,10 @@ public class HtmlNews extends UIComponentBase
   private String _translationGroup;
   private String _style;
   private String _styleClass;
+  private String _row1StyleClass;
+  private String _row2StyleClass;
+  private String _sourceStyle;
+  private String _sourceStyleClass;
   private String _dateStyle;
   private String _dateStyleClass;
   private String _headLineStyle;
@@ -92,10 +105,19 @@ public class HtmlNews extends UIComponentBase
   private String _draftText;
   private String _sectionStyle;
   private String _sectionStyleClass;
-  private Boolean _renderDate;  
+  private Boolean _renderDate;
+  private Boolean _renderSource;  
   private String _urlSeparator;
-  private Integer _maxSummaryChars;  
-  
+  private Integer _maxHeadlineChars;  
+  private Integer _maxSummaryChars;
+  private Boolean _decodeText;
+  private Boolean _mixSections;
+  private List _invalidSummaryStrings;
+  private List _oneEntrySourceUrls;
+  private Boolean _renderImage;
+  private Boolean _renderHeadline;
+  private Boolean _enableTranslation;
+
   public HtmlNews()
   {
     setRendererType(null);
@@ -144,6 +166,20 @@ public class HtmlNews extends UIComponentBase
   {
     this._maxSummaryChars = _maxSummaryChars;
   }  
+
+  public int getMaxHeadlineChars()
+  {
+    if (_maxHeadlineChars != null) return _maxHeadlineChars.intValue();
+    ValueExpression ve = getValueExpression("maxHeadlineChars");
+    Integer v = ve != null ? 
+      (Integer)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v.intValue() : 0;
+  }
+
+  public void setMaxHeadlineChars(int _maxHeadlineChars)
+  {
+    this._maxHeadlineChars = _maxHeadlineChars;
+  }
   
   public Translator getTranslator()
   {
@@ -208,6 +244,32 @@ public class HtmlNews extends UIComponentBase
     this._styleClass = _styleClass;
   }
 
+  public String getRow1StyleClass()
+  {
+    if (_row1StyleClass != null) return _row1StyleClass;
+    ValueExpression ve = getValueExpression("row1StyleClass");
+    return ve != null ? 
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setRow1StyleClass(String _row1StyleClass)
+  {
+    this._row1StyleClass = _row1StyleClass;
+  }
+
+  public String getRow2StyleClass()
+  {
+    if (_row2StyleClass != null) return _row2StyleClass;
+    ValueExpression ve = getValueExpression("row2StyleClass");
+    return ve != null ? 
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setRow2StyleClass(String _row2StyleClass)
+  {
+    this._row2StyleClass = _row2StyleClass;
+  }
+
   public String getDateStyle()
   {
     if (_dateStyle != null) return _dateStyle;
@@ -225,7 +287,6 @@ public class HtmlNews extends UIComponentBase
     if (_dateStyleClass != null) return _dateStyleClass;
     ValueExpression ve = getValueExpression("dateStyleClass");
     return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
-
   }
 
   public void setDateStyleClass(String _dateStyleClass)
@@ -233,6 +294,32 @@ public class HtmlNews extends UIComponentBase
     this._dateStyleClass = _dateStyleClass;
   }
 
+  public String getSourceStyle()
+  {
+    if (_sourceStyle != null) return _sourceStyle;
+    ValueExpression ve = getValueExpression("sourceStyle");
+    return ve != null ? 
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setSourceStyle(String _sourceStyle)
+  {
+    this._sourceStyle = _sourceStyle;
+  }
+
+  public String getSourceStyleClass()
+  {
+    if (_sourceStyleClass != null) return _sourceStyleClass;
+    ValueExpression ve = getValueExpression("sourceStyleClass");
+    return ve != null ? 
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setSourceStyleClass(String _sourceStyleClass)
+  {
+    this._sourceStyleClass = _sourceStyleClass;
+  }  
+  
   public String getHeadLineStyle()
   {
      if (_headLineStyle != null) return _headLineStyle;
@@ -409,7 +496,7 @@ public class HtmlNews extends UIComponentBase
     if (_renderSummary != null) return _renderSummary.booleanValue();
     ValueExpression ve = getValueExpression("renderSummary");
     Boolean v = ve != null ? (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
-    return v != null ? v.booleanValue() : Boolean.TRUE.booleanValue();
+    return v != null ? v.booleanValue() : Boolean.FALSE.booleanValue();
   }
 
   public void setRenderSummary(boolean _renderSummary)
@@ -430,6 +517,34 @@ public class HtmlNews extends UIComponentBase
     this._renderDate = _renderDate;
   }
 
+  public boolean isRenderSource()
+  {
+    if (_renderSource != null) return _renderSource;
+    ValueExpression ve = getValueExpression("renderSource");
+    Boolean v = ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v.booleanValue() : Boolean.FALSE.booleanValue();
+  }
+
+  public void setRenderSource(Boolean _renderSource)
+  {
+    this._renderSource = _renderSource;
+  }  
+  
+  public boolean isDecodeText()
+  {
+    if (_decodeText != null) return _decodeText;
+    ValueExpression ve = getValueExpression("decodeText");
+    Boolean v = ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v.booleanValue() : Boolean.FALSE.booleanValue();
+  }
+
+  public void setDecodeText(Boolean _decodeText)
+  {
+    this._decodeText = _decodeText;
+  }  
+  
   public List getExcludeDrafts()
   {
     if (_excludeDrafts != null) return _excludeDrafts;
@@ -454,6 +569,89 @@ public class HtmlNews extends UIComponentBase
     this._draftText = _draftText;
   }
 
+  public boolean isMixSections()
+  {
+    if (_mixSections != null) return _mixSections;
+    ValueExpression ve = getValueExpression("mixSections");
+    Boolean v = (ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : 
+      null);
+    return v != null ? v.booleanValue() : Boolean.TRUE.booleanValue();
+  }
+
+  public void setMixSections(Boolean _mixSections)
+  {
+    this._mixSections = _mixSections;
+  }
+  
+  public List getInvalidSummaryStrings()
+  {
+    if (_invalidSummaryStrings != null) return _invalidSummaryStrings;
+    ValueExpression ve = getValueExpression("invalidSummaryStrings");
+    return ve != null ? (List)ve.getValue(getFacesContext().getELContext()) : 
+      null;
+  }
+
+  public void setInvalidSummaryStrings(List _invalidSummaryStrings)
+  {
+    this._invalidSummaryStrings = _invalidSummaryStrings;
+  }
+
+  public List getOneEntrySourceUrls()
+  {
+    if (_oneEntrySourceUrls != null) return _oneEntrySourceUrls;
+    ValueExpression ve = getValueExpression("oneEntrySourceUrls");
+    return ve != null ? (List)ve.getValue(getFacesContext().getELContext()) : 
+      null;
+  }
+
+  public void setOneEntrySourceUrls(List _oneEntrySourceUrls)
+  {
+    this._oneEntrySourceUrls = _oneEntrySourceUrls;
+  }
+  
+  public boolean isRenderImage()
+  {
+    if (_renderImage != null) return _renderImage.booleanValue();
+    ValueExpression ve = getValueExpression("renderImage");
+    Boolean v = ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v.booleanValue() : Boolean.TRUE.booleanValue();
+  }
+
+  public void setRenderImage(Boolean _renderImage)
+  {
+    this._renderImage = _renderImage;
+  }
+
+  public boolean isRenderHeadline()
+  {
+    if (_renderHeadline != null) return _renderHeadline.booleanValue();
+    ValueExpression ve = getValueExpression("renderHeadline");
+    Boolean v = ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v.booleanValue() : Boolean.TRUE.booleanValue();
+  }
+
+  public void setRenderHeadline(Boolean _renderHeadline)
+  {
+    this._renderHeadline = _renderHeadline;
+  }  
+  
+  public boolean isEnableTranslation()
+  {
+    if (_enableTranslation != null) return _enableTranslation.booleanValue();
+    ValueExpression ve = getValueExpression("enableTranslation");
+    Boolean v = ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v.booleanValue() : Boolean.TRUE.booleanValue();
+  }
+
+  public void setEnableTranslation(boolean _enableTranslation)
+  {
+    this._enableTranslation = _enableTranslation;
+  }
+  
   @Override
   public void processValidators(FacesContext context)
   {
@@ -499,7 +697,6 @@ public class HtmlNews extends UIComponentBase
   public void encodeBegin(FacesContext context) throws IOException
   {
     if (!isRendered()) return;
-    String clientId = getClientId(context);
     ResponseWriter writer = context.getResponseWriter();
     try
     {
@@ -520,12 +717,18 @@ public class HtmlNews extends UIComponentBase
 
       filter.getExcludeDrafts().clear();
       filter.getExcludeDrafts().addAll(getExcludeDrafts());
-               
+
       List<SectionView> sections = 
         NewsConfigBean.getPort().findNewsBySectionFromCache(filter);
-      Translator translator = getTranslator();
+
+      Translator translator = null;
+      if (isEnableTranslation())
+      {
+        translator = getTranslator();
+      }
+
       if (sections != null && sections.size() > 0)
-        encodeSections(sections, writer, translator, clientId);
+        encodeSections(sections, writer, translator);
 
     }
     catch (Exception ex)
@@ -539,7 +742,7 @@ public class HtmlNews extends UIComponentBase
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[29];
+    Object values[] = new Object[42];
     values[0] = super.saveState(context);
     values[1] = _section;
     values[2] = _rows;
@@ -569,6 +772,19 @@ public class HtmlNews extends UIComponentBase
     values[26] = _renderDate;
     values[27] = _urlSeparator;
     values[28] = _maxSummaryChars;
+    values[29] = _row1StyleClass;
+    values[30] = _row2StyleClass;
+    values[31] = _sourceStyle;
+    values[32] = _sourceStyleClass;
+    values[33] = _renderSource; 
+    values[34] = _maxHeadlineChars;
+    values[35] = _decodeText;
+    values[36] = _mixSections;
+    values[37] = _invalidSummaryStrings;
+    values[38] = _oneEntrySourceUrls;
+    values[39] = _renderImage;
+    values[40] = _renderHeadline;
+    values[41] = _enableTranslation;
     return values;
   }
 
@@ -604,72 +820,118 @@ public class HtmlNews extends UIComponentBase
     _sectionStyleClass = (String)values[25];
     _renderDate = (Boolean)values[26];
     _urlSeparator = (String)values[27];    
-    _maxSummaryChars = (Integer)values[28];    
+    _maxSummaryChars = (Integer)values[28];
+    _row1StyleClass = (String)values[29];
+    _row2StyleClass = (String)values[30];
+    _sourceStyle = (String)values[31];
+    _sourceStyleClass = (String)values[32];
+    _renderSource = (Boolean)values[33];
+    _maxHeadlineChars = (Integer)values[34];
+    _decodeText = (Boolean)values[35];
+    _mixSections = (Boolean)values[36];
+    _invalidSummaryStrings = (List)values[37];
+    _oneEntrySourceUrls = (List)values[38];
+    _renderImage = (Boolean)values[39];
+    _renderHeadline = (Boolean)values[40];
+    _enableTranslation = (Boolean)values[41];    
   }
 
 //Private
   private void encodeSections(List<SectionView> sections,
-    ResponseWriter writer, Translator translator, String clientId)
+    ResponseWriter writer, Translator translator)
     throws IOException
   {
-    boolean onlyOneSection = (sections.size() == 1);
-    for (SectionView section : sections)
+    List<NewView> news = new ArrayList();   
+    if (sections.size() > 1)
     {
-      List<NewView> news = section.getNewView();
-      if (news != null && news.size() > 0)
+      if (isMixSections())
       {
-        if (!onlyOneSection)
+        for (SectionView section : sections)
         {
-          writer.startElement("div", this);
-
-          String sectionStyle = getSectionStyle();
-          if (sectionStyle != null)
-            writer.writeAttribute("style", sectionStyle, null);
-          String sectionStyleClass = getSectionStyleClass();
-          if (sectionStyleClass != null)
-            writer.writeAttribute("class", sectionStyleClass, null);
-          writer.startElement("div", this);
-          writer.writeAttribute("class", "title", null);
-          writer.write(getSectionDesc(section.getSectionId()));
-          writer.endElement("div");
+          news.addAll(section.getNewView());
         }
-        encodeNews(news, writer, translator, clientId);
-        if (!onlyOneSection)
+        Collections.sort(news, new Comparator<NewView>() 
         {
-          writer.endElement("div");
-        }
+          @Override
+          public int compare(NewView o1, NewView o2)
+          {
+            return (o2.getStartDate() + o2.getStartTime()).compareTo(
+              o1.getStartDate() + o1.getStartTime());
+          }        
+        });        
+        encodeNews(news, writer, translator);
       }
+      else
+      {
+        for (SectionView section : sections)
+        {
+          if (!section.getNewView().isEmpty())
+          {
+            writer.startElement("div", this);
+            String sectionStyle = getSectionStyle();
+            if (sectionStyle != null)
+              writer.writeAttribute("style", sectionStyle, null);
+            String sectionStyleClass = getSectionStyleClass();
+            if (sectionStyleClass != null)
+              writer.writeAttribute("class", sectionStyleClass, null);
+            writer.startElement("div", this);
+            writer.writeAttribute("class", "title", null);
+            writer.write(getSectionDesc(section.getSectionId()));
+            writer.endElement("div");
+            encodeNews(section.getNewView(), writer, translator);
+            writer.endElement("div");
+          }
+        }                
+      }    
+    }
+    else if (sections.size() == 1)
+    {
+      news.addAll(sections.get(0).getNewView());
+      encodeNews(news, writer, translator);      
     }
   }
 
   private void encodeNews(List<NewView> news, ResponseWriter writer,
-    Translator translator, String clientId)
+    Translator translator)
     throws IOException
   {
-    writer.startElement("ul", this);
-    String style = getStyle();
-    if (style != null)
-      writer.writeAttribute("style", style, null);
-    String styleClass = getStyleClass();
-    if (styleClass != null)
-      writer.writeAttribute("class", styleClass, null);
-
-    int count = 0;
-    for (NewView _new : news)
+    if (news != null && news.size() > 0)
     {
-      writer.startElement("li", this);
-      String rowClass = (count % 2 == 0) ? "new1" : "new2";
-      writer.writeAttribute("class", rowClass, null);
-      encodeNew(_new, writer, translator, clientId);
-      writer.endElement("li");
-      count++;
+      Set<String> sourceUrlSet = new HashSet();      
+      writer.startElement("ul", this);
+      String style = getStyle();
+      if (style != null)
+        writer.writeAttribute("style", style, null);
+      String styleClass = getStyleClass();
+      if (styleClass != null)
+        writer.writeAttribute("class", styleClass, null);
+
+      int count = 0;
+      for (NewView _new : news)
+      {
+        if (count == getRows()) break;
+        
+        if (checkSourceLimit(sourceUrlSet, _new))
+        {
+          writer.startElement("li", this);
+          String row1Class = getRow1StyleClass();
+          if (row1Class == null) row1Class = "new1";
+          String row2Class = getRow2StyleClass();
+          if (row2Class == null) row2Class = "new2";
+          String rowClass = (count % 2 == 0) ? row1Class : row2Class;
+          writer.writeAttribute("class", rowClass, null);
+          encodeNew(_new, writer, translator);
+          writer.endElement("li");
+          count++;
+        }
+      }
+      writer.endElement("ul");
     }
-    writer.endElement("ul");
   }
 
   private void encodeNew(NewView newView, ResponseWriter writer,
-    Translator translator, String clientId) throws IOException
-  {
+    Translator translator) throws IOException
+  { 
     if (_var != null)
     {
       Map requestMap =
@@ -700,6 +962,38 @@ public class HtmlNews extends UIComponentBase
       }
     }
 
+    //Source
+    if (isRenderSource() && newView.getNewSource() != null)
+    {
+      String sourceUrl = newView.getNewSource().getUrl();
+      String sourceName = newView.getNewSource().getName();
+      if (sourceUrl != null && sourceName != null)
+      {
+        writer.startElement("div", this);
+        String style = getSourceStyle();
+        if (style != null)
+          writer.writeAttribute("style", style, null);
+        String styleClass = getSourceStyleClass();
+        if (styleClass != null)
+          writer.writeAttribute("class", styleClass, null);        
+        writer.startElement("a", this);
+        writer.writeAttribute("href", sourceUrl, null);
+        writer.writeAttribute("target", "_blank", null);      
+        if (sourceName != null)
+        {
+          String openNewWindowLabel = 
+            MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");        
+          String translatedLabel = 
+            translateText(openNewWindowLabel, translator, null);
+          writer.writeAttribute("aria-label", 
+            (sourceName + " (" + translatedLabel + ")"), null);
+        }
+        renderPlainText(sourceName, writer, null, null);
+        writer.endElement("a");        
+        writer.endElement("div");
+      }
+    }    
+    
     if (url != null)
     {
       writer.startElement("a", this);
@@ -721,63 +1015,75 @@ public class HtmlNews extends UIComponentBase
     }
     
     //LEFT column
-    String contentId = NewsConfigBean.getListImageContentId(newView);
-    boolean hasImage = (contentId != null) && (contentId.length() != 0);
-    if (hasImage)
+    boolean hasImage = false;
+    if (isRenderImage())
     {
-      writer.startElement("div", this);
-      writer.writeAttribute("class", "leftColumn", null);
-      
-      writer.startElement("img", this);
+      String contentId = NewsConfigBean.getListImageContentId(newView);
+      hasImage = ((contentId != null && contentId.length() != 0) || 
+        newView.getIconUrl() != null);
+      if (hasImage)
+      {
+        writer.startElement("div", this);
+        writer.writeAttribute("class", "leftColumn", null);
 
-      String imageStyle = getImageStyle();
-      if (imageStyle != null)
-        writer.writeAttribute("style", imageStyle, null);
-      String imageStyleClass = getImageStyleClass();
-      if (imageStyleClass != null)
-        writer.writeAttribute("class", imageStyleClass, null);
+        writer.startElement("img", this);
 
-      String imageUrl = "";
-      String imageWidth = getImageWidth();
-      String imageHeight = getImageHeight();
-      String extension = null;
-      try
-      {
-        Content content = 
-          DocumentConfigBean.getClientAsAdmin().loadContent(contentId);
-        extension =
-          MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());        
+        String imageStyle = getImageStyle();
+        if (imageStyle != null)
+          writer.writeAttribute("style", imageStyle, null);
+        String imageStyleClass = getImageStyleClass();
+        if (imageStyleClass != null)
+          writer.writeAttribute("class", imageStyleClass, null);
+
+        String imageUrl = "";
+        String imageWidth = getImageWidth();
+        String imageHeight = getImageHeight();
+        if (newView.getIconUrl() == null) //Image stored in GDMatrix
+        {  
+          String extension = null;
+          try
+          {
+            Content content = 
+              DocumentConfigBean.getClientAsAdmin().loadContent(contentId);
+            extension =
+              MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());        
+          }
+          catch (Exception ex) { }
+          if ("svg".equals(extension))
+          {
+            StringBuilder sbStyle = new StringBuilder();
+            sbStyle.append("width:").
+              append(imageWidth != null ? imageWidth : DEFAULT_SVG_IMAGE_WIDTH).
+              append("px;");
+            sbStyle.append("height:").
+              append(imageHeight != null ? imageHeight : DEFAULT_SVG_IMAGE_HEIGHT).
+              append("px;");
+            writer.writeAttribute("style", sbStyle.toString(), null);
+            imageUrl = MatrixConfig.getProperty("contextPath") + 
+              "/documents/" + contentId;
+          }
+          else
+          {
+            imageUrl = MatrixConfig.getProperty("contextPath") +
+              IMAGE_SERVLET_PATH + contentId;
+            if (imageWidth != null && imageHeight != null)
+              imageUrl = imageUrl + "?width=" +  String.valueOf(imageWidth)
+                + "&height=" + String.valueOf(imageHeight);
+            String imageCrop = getImageCrop();
+            if (imageCrop != null)
+              imageUrl = imageUrl + "&crop=" + imageCrop;
+          }
+        }
+        else //External image
+        {
+          imageUrl = getProxyUrl(newView.getIconUrl());
+        }
+        writer.writeAttribute("src", imageUrl, null);
+        writer.writeAttribute("alt", "", null);      
+        writer.endElement("img");
+
+        writer.endElement("div");
       }
-      catch (Exception ex) { }
-      if ("svg".equals(extension))
-      {
-        StringBuilder sbStyle = new StringBuilder();
-        sbStyle.append("width:").
-          append(imageWidth != null ? imageWidth : DEFAULT_SVG_IMAGE_WIDTH).
-          append("px;");
-        sbStyle.append("height:").
-          append(imageHeight != null ? imageHeight : DEFAULT_SVG_IMAGE_HEIGHT).
-          append("px;");
-        writer.writeAttribute("style", sbStyle.toString(), null);
-        imageUrl = MatrixConfig.getProperty("contextPath") + 
-          "/documents/" + contentId;
-      }
-      else
-      {
-        imageUrl = MatrixConfig.getProperty("contextPath") +
-          IMAGE_SERVLET_PATH + contentId;
-        if (imageWidth != null && imageHeight != null)
-          imageUrl = imageUrl + "?width=" +  String.valueOf(imageWidth)
-            + "&height=" + String.valueOf(imageHeight);
-        String imageCrop = getImageCrop();
-        if (imageCrop != null)
-          imageUrl = imageUrl + "&crop=" + imageCrop;
-      }
-      writer.writeAttribute("src", imageUrl, null);
-      writer.writeAttribute("alt", "", null);      
-      writer.endElement("img");
-      
-      writer.endElement("div");
     }
 
     //RIGHT column
@@ -797,9 +1103,9 @@ public class HtmlNews extends UIComponentBase
 
       String dateFormat = getDateFormat() != null ? getDateFormat() : "dd/MM/yyyy";
 
-      String newDate =
-        TextUtils.formatDate(TextUtils.parseInternalDate(newView.getStartDate()),
-          dateFormat);
+      String newDate = TextUtils.formatDate(TextUtils.parseInternalDate(
+        newView.getStartDate() + newView.getStartTime()), 
+        dateFormat);
 
       if (newView.isDraft())
         newDate = newDate + " (" + getDraftText() + ")";
@@ -809,38 +1115,60 @@ public class HtmlNews extends UIComponentBase
     }
 
     //Headline division
-    writer.startElement("p", this);
-    String headLineStyle = getHeadLineStyle();
-    if (headLineStyle != null)
-      writer.writeAttribute("style", headLineStyle, null);
-    String headLineStyleClass = getHeadLineStyleClass();
-    if (headLineStyleClass != null)
-      writer.writeAttribute("class", headLineStyleClass, null);
+    if (isRenderHeadline())
+    {
+      writer.startElement("p", this);
+      String headLineStyle = getHeadLineStyle();
+      if (headLineStyle != null)
+        writer.writeAttribute("style", headLineStyle, null);
+      String headLineStyleClass = getHeadLineStyleClass();
+      if (headLineStyleClass != null)
+        writer.writeAttribute("class", headLineStyleClass, null);
 
-    renderPlainText(headline, writer, translator, null);
+      if (headline != null && getMaxHeadlineChars() > 0)
+      {
+        if (isDecodeText())
+        {
+          headline = decodeText(headline);        
+        }
+        int limit = getMaxHeadlineChars();
+        if (headline.length() <= limit) limit = Integer.MAX_VALUE;
+        headline = TextUtils.wordWrap(headline, limit, null);      
+        renderPlainText(headline, writer, translator, null);      
+      }
+      writer.endElement("p"); // headline
+    }
     
-    writer.endElement("p"); // headline
-
     //Summary division
     if (isRenderSummary())
     {
-      writer.startElement("p", this);
-      String summaryStyle = getSummaryStyle();
-      if (summaryStyle != null)
-        writer.writeAttribute("style", summaryStyle, null);
-      String summaryStyleClass = getSummaryStyleClass();
-      if (summaryStyleClass != null)
-        writer.writeAttribute("class", summaryStyleClass, null);
       String summary = newView.getSummary();
-      if (summary != null && getMaxSummaryChars() > 0)
-      {
-        summary = HTMLNormalizer.cleanHTML(summary, true);
-        int limit = getMaxSummaryChars();
-        if (summary.length() <= limit) limit = Integer.MAX_VALUE;
-        summary = TextUtils.wordWrap(summary, limit, null);
-        renderHtmlText(summary, writer, translator, null);
+      if (isValidSummary(summary))
+      {      
+        writer.startElement("p", this);
+        String summaryStyle = getSummaryStyle();
+        if (summaryStyle != null)
+          writer.writeAttribute("style", summaryStyle, null);
+        String summaryStyleClass = getSummaryStyleClass();
+        if (summaryStyleClass != null)
+          writer.writeAttribute("class", summaryStyleClass, null);
+        if (summary != null && getMaxSummaryChars() > 0)
+        {
+          if (isDecodeText())
+          {
+            summary = decodeText(summary);
+          }
+          else
+          {
+            summary = HTMLNormalizer.cleanHTML(summary, true);
+          }
+          int limit = getMaxSummaryChars();
+          if (summary.length() <= limit) limit = Integer.MAX_VALUE;
+          summary = TextUtils.wordWrap(summary, limit, null);        
+          renderHtmlText(summary, writer, translator, null);
+        }
+        writer.endElement("p");
       }
-      writer.endElement("p");
     }
     
     writer.endElement("div"); //right column
@@ -922,10 +1250,10 @@ public class HtmlNews extends UIComponentBase
     String result = null;
     try
     {
-      MenuItemCursor mic = UserSessionBean.getCurrentInstance().getMenuModel().
-        getMenuItemByMid(mid);
-      Map nodeProperties = (Map)mic.getDirectProperties();
-      result = (String)nodeProperties.get("label");
+      CWorkspace cWorkspace =
+        UserSessionBean.getCurrentInstance().getMenuModel().getCWorkspace();
+      CNode cNode = cWorkspace.getNode(mid);
+      result = cNode.getSinglePropertyValue("label");
     }
     catch (Exception ex)
     {
@@ -939,4 +1267,74 @@ public class HtmlNews extends UIComponentBase
     String headline = newView.getHeadline();
     return (headline != null && headline.contains(getUrlSeparator()));
   }
+  
+  private String decodeText(String text)
+  {
+    return Unicode.decode(text);
+  }
+
+  private String getProxyUrl(String url)
+  {
+    HttpServletRequest request = (HttpServletRequest)FacesContext.
+      getCurrentInstance().getExternalContext().getRequest();
+    if (request.isSecure())
+    {
+      String encodedUrl;
+      try
+      {
+        encodedUrl = URLEncoder.encode(url, "UTF-8");
+      }
+      catch (Exception ex)
+      {
+        encodedUrl = url;
+      }
+      return ("/proxy?url=" + encodedUrl);
+    }
+    else
+    {
+      return url;
+    }
+  }
+  
+  private boolean isValidSummary(String summary)
+  {
+    List invalidStringList = getInvalidSummaryStrings();
+    if (summary != null && invalidStringList != null)
+    {
+      for (Object invalidString : invalidStringList)
+      {
+        if (summary.toLowerCase().contains(
+          ((String)invalidString).toLowerCase())) return false; 
+      }
+    }
+    return true;
+  }
+  
+  private boolean checkSourceLimit(Set<String> sourceUrlSet, NewView newView)
+  {
+    if (getOneEntrySourceUrls() != null)
+    {
+      if (newView.getNewSource() != null)
+      {
+        String sourceUrl = newView.getNewSource().getUrl();
+        if (sourceUrl != null)
+        {
+          if (getOneEntrySourceUrls().contains(sourceUrl)) 
+          {
+            //source must be checked
+            if (sourceUrlSet.contains(sourceUrl)) //already used
+            {
+              return false;
+            }
+            else
+            {
+              sourceUrlSet.add(sourceUrl);
+            }
+          }
+        }      
+      }
+    }
+    return true;
+  }  
+  
 }

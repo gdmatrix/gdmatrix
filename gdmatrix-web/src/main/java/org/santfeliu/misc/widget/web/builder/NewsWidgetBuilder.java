@@ -50,7 +50,9 @@ import org.santfeliu.web.UserSessionBean;
  */
 public class NewsWidgetBuilder extends WidgetBuilder
 {
-  private static final int DEFAULT_MAX_SUMMARY_CHARS = 0;  
+  private static final int DEFAULT_ROWS = 5;  
+  private static final int DEFAULT_MAX_HEADLINE_CHARS = 200;
+  private static final int DEFAULT_MAX_SUMMARY_CHARS = 400;    
   
   public NewsWidgetBuilder()
   {
@@ -86,6 +88,15 @@ public class NewsWidgetBuilder extends WidgetBuilder
       String rows = (String)properties.get("rows");
       if (rows != null)
         component.setRows(Integer.valueOf(rows).intValue());
+      else
+        component.setRows(DEFAULT_ROWS);
+
+      //maxHeadlineChars
+      String maxHeadlineChars = (String)properties.get("maxHeadlineChars");
+      if (maxHeadlineChars != null)
+        component.setMaxHeadlineChars(Integer.valueOf(maxHeadlineChars));
+      else
+        component.setMaxHeadlineChars(DEFAULT_MAX_HEADLINE_CHARS);      
 
       //maxSummaryChars
       String maxSummaryChars = (String)properties.get("maxSummaryChars");
@@ -101,12 +112,26 @@ public class NewsWidgetBuilder extends WidgetBuilder
         newStyleClass = "news";
       component.setStyleClass(newStyleClass);
 
+      String row1StyleClass = (String)properties.get("row1StyleClass");
+      if (row1StyleClass == null) row1StyleClass = "new1";
+      component.setRow1StyleClass(row1StyleClass);
+
+      String row2StyleClass = (String)properties.get("row2StyleClass");
+      if (row2StyleClass == null) row2StyleClass = "new2";
+      component.setRow2StyleClass(row2StyleClass);      
+      
       component.setDateStyle((String)properties.get("dateStyle"));
       String dateStyleClass = (String)properties.get("dateStyleClass");
       if (dateStyleClass == null)
         dateStyleClass = "newDate";
       component.setDateStyleClass(dateStyleClass);
 
+      component.setSourceStyle((String)properties.get("sourceStyle"));
+      String sourceStyleClass = (String)properties.get("sourceStyleClass");
+      if (sourceStyleClass == null)
+        sourceStyleClass = "newSource";
+      component.setSourceStyleClass(sourceStyleClass);      
+      
       component.setHeadLineStyle((String)properties.get("headLineStyle"));
       String headLineStyleClass = (String)properties.get("headLineStyleClass");
       if (headLineStyleClass == null)
@@ -159,6 +184,10 @@ public class NewsWidgetBuilder extends WidgetBuilder
       if (renderDate != null)
         component.setRenderDate(Boolean.valueOf(renderDate));
 
+      String renderSource = (String)properties.get("renderSource");
+      if (renderSource != null)
+        component.setRenderSource(Boolean.valueOf(renderSource));
+      
       String urlSeparator = (String)properties.get("urlSeparator");
       if (urlSeparator == null) urlSeparator = "###";
       component.setUrlSeparator(urlSeparator);
@@ -197,6 +226,36 @@ public class NewsWidgetBuilder extends WidgetBuilder
         ResourceBundle.getBundle("org.santfeliu.news.web.resources.NewsBundle",
         locale);
       component.setDraftText(bundle.getString("new_search_draft"));
+      
+      String decodeText = (String)properties.get("decodeText");
+      if (decodeText != null)
+        component.setDecodeText(Boolean.valueOf(decodeText));
+      
+      String mixSections = (String)properties.get("mixSections");
+      if (mixSections != null)
+        component.setMixSections(Boolean.valueOf(mixSections));
+      
+      //Invalid summary strings
+      List<String> invalidSummaryStrings = 
+        widgetDef.getMultivaluedProperty("invalidSummaryStrings");
+      component.setInvalidSummaryStrings(invalidSummaryStrings);
+
+      //One entry source URLs
+      List<String> oneEntrySourceUrls = 
+        widgetDef.getMultivaluedProperty("oneEntrySourceUrls");
+      component.setOneEntrySourceUrls(oneEntrySourceUrls);
+      
+      String renderImage = (String)properties.get("renderImage");
+      if (renderImage != null)
+        component.setRenderImage(Boolean.valueOf(renderImage));
+
+      String renderHeadline = (String)properties.get("renderHeadline");
+      if (renderHeadline != null)
+        component.setRenderHeadline(Boolean.valueOf(renderHeadline));
+
+      String enableTranslation = (String)properties.get("enableTranslation");
+      if (enableTranslation != null)
+        component.setEnableTranslation(Boolean.valueOf(enableTranslation));      
     }
 
     return component;
