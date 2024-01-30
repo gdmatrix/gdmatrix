@@ -1,6 +1,7 @@
 /* FindFeatureControl.js */
 
 import { Panel } from "../ui/Panel.js";
+import { FeatureForm } from "../ui/FeatureForm.js";
 import { Bundle } from "../i18n/Bundle.js";
 import "../turf.js";
 
@@ -13,7 +14,8 @@ class FindFeatureControl
     this.options = {...{
         "position" : "right",
         "title" : bundle.get("FindFeatureControl.title"),
-        "iconClass" : "pi pi-search"
+        "iconClass" : "pi pi-search",
+        "paddingOffset": 32
       }, ...options};
 
     this.finders = [];
@@ -22,32 +24,32 @@ class FindFeatureControl
       type: "FeatureCollection",
       features: []
     };
-    this.markers = [];
+    this.markers = new Map(); // feature -> Marker
+    this.selectedMarker = null;
   }
 
-  addFinder(finder)
+  createPanels(map)
   {
-    this.finders.push(finder);
-    this.updateFinderSelector();
-
-    if (this.activeFinder === null) this.setActiveFinder(finder);
-    this.div.style.display = "";
-  }
-
-  createPanel(map)
-  {
-    this.panel = new Panel(map, this.options);
+    const findPanel = new Panel(map, this.options);
+    this.findPanel = findPanel;
 
     this.finderSelectorDiv = document.createElement("div");
-    this.panel.bodyDiv.appendChild(this.finderSelectorDiv);
+    findPanel.bodyDiv.appendChild(this.finderSelectorDiv);
 
     this.formDiv = document.createElement("div");
     this.formDiv.className = "overflow-hidden";
-    this.panel.bodyDiv.appendChild(this.formDiv);
+    findPanel.bodyDiv.appendChild(this.formDiv);
+
+    const clearDiv = document.createElement("div");
+    findPanel.bodyDiv.appendChild(clearDiv);
+    clearDiv.innerHTML = `<input id="clear_markers" type="checkbox" checked>
+      <label for="clear_markers">${bundle.get("FindFeatureControl.clearMarkers")}</label>`;
+    this.clearMarkersCheckbox = document.getElementById("clear_markers");
+    clearDiv.className = "flex mb-3";
 
     this.buttonsDiv = document.createElement("div");
     this.buttonsDiv.className = "button_bar text-right";
-    this.panel.bodyDiv.appendChild(this.buttonsDiv);
+    findPanel.bodyDiv.appendChild(this.buttonsDiv);
 
     this.findButton = document.createElement("button");
     this.findButton.textContent = bundle.get("button.find");
@@ -67,7 +69,13 @@ class FindFeatureControl
 
     this.resultDiv = document.createElement("div");
     this.resultDiv.className = "overflow-auto";
-    this.panel.bodyDiv.appendChild(this.resultDiv);
+    findPanel.bodyDiv.appendChild(this.resultDiv);
+
+    const infoPanel = new Panel(map, {
+      title: bundle.get("FindFeatureControl.title"),
+      position: "right"
+    });
+    this.infoPanel = infoPanel;
   }
 
   initSourceAndLayers()
@@ -120,15 +128,31 @@ class FindFeatureControl
     });
   }
 
+  addFinder(finder)
+  {
+    this.finders.push(finder);
+    finder.onAdd(this);
+
+    if (this.activeFinder === null) this.setActiveFinder(finder);
+    this.div.style.display = "";
+
+    this.updateFinderSelector();
+  }
+
   updateFinderSelector()
   {
     this.finderSelectorDiv.innerHTML = "";
     const ul = document.createElement("ul");
+    ul.className = "finder_selector";
     this.finderSelectorDiv.appendChild(ul);
     for (let finder of this.finders)
     {
       let li = document.createElement("li");
       ul.appendChild(li);
+      let icon = document.createElement("i");
+      icon.className = "pi pi-arrow-right mr-1";
+      li.appendChild(icon);
+      
       let anchor = document.createElement("a");
       anchor.href = "#";
       li.appendChild(anchor);
@@ -136,8 +160,20 @@ class FindFeatureControl
       anchor.addEventListener("click", (event) => {
         event.preventDefault();
         this.setActiveFinder(finder);
+        this.highlightFinderSelector();
       });
     }
+    this.highlightFinderSelector();
+  }
+  
+  highlightFinderSelector()
+  {
+    const ul = this.finderSelectorDiv.firstElementChild;
+    const elems = ul.getElementsByClassName("selected");
+    if (elems.length > 0) elems[0].classList.remove("selected");
+    let index = this.finders.indexOf(this.activeFinder);
+    let li = ul.children[index];
+    li.classList.add("selected");
   }
 
   setActiveFinder(finder)
@@ -161,6 +197,7 @@ class FindFeatureControl
 
         if (this.data.features.length > 0)
         {
+          let paddingOffset = this.options.paddingOffset || 0;
           let bbox = turf.bbox(this.data);
           let bounds = new maplibregl.LngLatBounds(
             [bbox[0], bbox[1]], [bbox[2], bbox[3]]);
@@ -168,11 +205,11 @@ class FindFeatureControl
           this.map.fitBounds(bounds,
           {
             maxZoom: this.activeFinder.getMaxZoom(),
-            padding: panelManager.getPadding()
+            padding: panelManager.getPadding(paddingOffset)
           });
         }
         this.listFeatures();
-        this.clearMarkers();
+        if (this.clearMarkersCheckbox.checked) this.clearMarkers();
         this.addMarkers();
       }
       catch (ex)
@@ -205,18 +242,21 @@ class FindFeatureControl
     this.map.getSource("finder_results").setData(this.data);
     this.setActiveFinder(this.activeFinder);
     this.clearMarkers();
+    this.infoPanel.hide();
   }
 
   listFeatures()
   {
     const finder = this.activeFinder;
     const features = this.data.features;
+    const maxZoom = finder.getMaxZoom();
+
     this.resultDiv.innerHTML = "";
 
     const countDiv = document.createElement("div");
     this.resultDiv.appendChild(countDiv);
     countDiv.className = "mt-2";
-    countDiv.textContent = 
+    countDiv.textContent =
       bundle.get("FindFeatureControl.featureCount", features.length) +
       (features.length === 0 ? "." : ":");
 
@@ -244,7 +284,7 @@ class FindFeatureControl
         span.className = icon;
         li.appendChild(span);
       }
-      
+
       let anchor = document.createElement("a");
       anchor.href = "#";
       anchor.className = "pl-1";
@@ -252,16 +292,18 @@ class FindFeatureControl
       anchor.textContent = finder.getFeatureLabel(feature);
       anchor.addEventListener("click", (event) => {
         event.preventDefault();
-        this.selectFeature(feature);
+        const finder = this.activeFinder;
+        this.selectFeature(feature, true, maxZoom);
       });
     }
   }
-  
+
   addMarkers()
   {
     const map = this.map;
     const finder = this.activeFinder;
     const features = this.data.features;
+    const maxZoom = finder.getMaxZoom();
 
     for (let feature of features)
     {
@@ -269,50 +311,93 @@ class FindFeatureControl
       if (marker)
       {
         marker.addTo(map);
-        this.markers.push(marker);
-
-        marker.getElement().addEventListener("click", (event) => 
+        this.markers.set(feature, marker);
+        if (typeof marker.select === "function")
         {
-          event.preventDefault();
-          this.selectFeature(feature, Math.round(map.getZoom()));
-        });
-        marker.getElement().style.cursor = "pointer";
+          marker.getElement().addEventListener("click", (event) => 
+          {
+            event.stopPropagation();
+            this.selectFeature(feature, false, maxZoom);
+          });
+        }
       }
     }
   }
-  
+
   clearMarkers()
   {
-    for (let marker of this.markers)
+    if (this.selectedMarker && this.selectedMarker.unselect)
+    {
+      this.selectedMarker.unselect();
+      this.selectedMarker = null;
+    }
+    
+    for (let marker of this.markers.values())
     {
       marker.remove();
     }
-    this.markers = [];
+    this.markers.clear();
   }
 
-  selectFeature(feature, maxZoom)
+  selectFeature(feature, center = false, maxZoom)
   {
     const map = this.map;
-    if (maxZoom === undefined) maxZoom = this.activeFinder.getMaxZoom();
-    
-    let bbox = turf.bbox(feature);
-    let bounds = new maplibregl.LngLatBounds(
-      [bbox[0], bbox[1]], [bbox[2], bbox[3]]);
-    const panelManager = map.panelManager;
-    this.map.fitBounds(bounds,
+
+    if (center)
     {
-      maxZoom: maxZoom,
-      padding: panelManager.getPadding()
-    });
+      let paddingOffset = this.options.paddingOffset || 0;
+      let bbox = turf.bbox(feature);
+      let bounds = new maplibregl.LngLatBounds(
+        [bbox[0], bbox[1]], [bbox[2], bbox[3]]);
+      const panelManager = map.panelManager;
+      map.fitBounds(bounds,
+      {
+        maxZoom: maxZoom || 18,
+        padding: panelManager.getPadding(paddingOffset)
+      });
+    }
+    
+    if (this.selectedMarker && this.selectedMarker.unselect)
+    {
+      this.selectedMarker.unselect();
+    }
+    this.selectedMarker = this.markers.get(feature);
+    if (this.selectedMarker && this.selectedMarker.select)
+    {
+      this.selectedMarker.select();
+    }
+  }
+
+  async showForm(form)
+  {
+    this.infoPanel.bodyDiv.innerHTML =
+      `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
+
+    form = await form.render();
+    if (form)
+    {
+      this.infoPanel.bodyDiv.innerHTML = "";
+      this.infoPanel.bodyDiv.appendChild(form.div);
+      this.infoPanel.show();
+    }
+    else
+    {
+      this.infoPanel.bodyDiv.innerHTML = "";
+    }
+  }
+  
+  hideForm()
+  {
+    this.infoPanel.bodyDiv.innerHTML = "";
   }
 
   onAdd(map)
   {
     this.map = map;
-    map.findControl = this;
+    map.findFeatureControl = this;
 
     this.initSourceAndLayers();
-    
+
     const div = document.createElement("div");
     this.div = div;
     div.innerHTML = `<button><span class="${this.options.iconClass}"/></button>`;
@@ -326,15 +411,15 @@ class FindFeatureControl
     div.addEventListener("click", (e) =>
     {
       e.preventDefault();
-      this.panel.show();
+      this.findPanel.show();
     });
 
     if (this.finders.length > 0)
     {
       this.setActiveFinder(this.finders[0]);
     }
-    
-    this.createPanel(map);
+
+    this.createPanels(map);
 
     return div;
   }
@@ -344,6 +429,11 @@ class FeatureFinder
 {
   constructor(params)
   {
+  }
+
+  onAdd(findFeatureControl)
+  {
+    this.findFeatureControl = findFeatureControl;
   }
 
   getTitle()
@@ -379,7 +469,7 @@ class FeatureFinder
   {
     return "pi pi-map-marker";
   }
-  
+
   getListIconUrl(feature)
   {
     return null;
@@ -387,21 +477,76 @@ class FeatureFinder
 
   getMarker(feature)
   {
-    let centroid = turf.centroid(feature);
-    let marker = new maplibregl.Marker()
+    const control = this.findFeatureControl;
+    const map = control.map;
+    const centroid = turf.centroid(feature);
+    const marker = new maplibregl.Marker({ color: this.getMarkerColor() })
      .setLngLat(centroid.geometry.coordinates);
-    
+
+    const element = marker.getElement();
+    element.style.cursor = "pointer";
+
+    const form = this.getForm(feature);
+
+    marker.select = () => {
+      marker.remove();
+      marker.selectedMarker = this.getSelectedMarker(feature);
+      marker.selectedMarker.addTo(map);      
+      if (form) control.showForm(form);
+    };
+
+    marker.unselect = () => {
+      marker.selectedMarker.remove();
+      marker.addTo(map);
+    };
+
     return marker;
   }
-    
+
+  getSelectedMarker(feature)
+  {
+    const centroid = turf.centroid(feature);
+    const marker = new maplibregl.Marker({ color: this.getSelectedMarkerColor() })
+     .setLngLat(centroid.geometry.coordinates);
+
+    return marker;
+  }
+
+  getMarkerColor()
+  {
+    return "#3FB1CE";
+  }
+
+  getSelectedMarkerColor()
+  {
+    return "#FF0000";
+  }
+
   getMaxZoom()
   {
     return 18;
+  }
+
+  getForm(feature)
+  {
+    return null;
   }
 }
 
 class WfsFinder extends FeatureFinder
 {
+  constructor(params)
+  {
+    super(params);
+
+    this.service = params?.service || {
+      url: "https://gis.santfeliu.cat/geoserver/wfs",
+      useProxy: true
+    };
+    
+    this.layerName = null;
+  }
+
   getTitle()
   {
     return "Generic WFS finder";
@@ -425,12 +570,11 @@ class WfsFinder extends FeatureFinder
 
   async find()
   {
-    let layerName = document.getElementById("layer_name").value;
+    this.layerName = document.getElementById("layer_name").value;
     let cqlFilter = document.getElementById("cql_filter").value;
-    if (layerName)
+    if (this.layerName)
     {
-      return await this.findWfs("https://gis.santfeliu.cat/geoserver/wfs", 
-        layerName, cqlFilter);
+      return await this.findWfs(this.service.url, this.layerName, cqlFilter);
     }
     else
     {
@@ -456,13 +600,26 @@ class WfsFinder extends FeatureFinder
     const response = await fetch(url);
     const json = await response.json();
     if (json.exceptions) throw json;
-    
+
     return json.features;
   }
 
   getFeatureLabel(feature)
   {
     return feature.id;
+  }
+
+  getForm(feature)
+  {
+    const map = this.findFeatureControl.map;
+
+    const service = this.service;
+    const form = new FeatureForm(feature);
+    form.service = service;
+    form.layerName = this.layerName;
+    form.setFormSelectorAndPriority(map);
+
+    return form;
   }
 }
 

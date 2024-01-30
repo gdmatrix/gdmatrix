@@ -272,15 +272,18 @@ class GetFeatureInfoTool extends Tool
       {
         this.highlight(geojson);
       }
-      
+
       // get forms
       let features = geojson.features;
       if (features && features.length > 0)
       {
         for (let feature of features)
         {
-          const form = new FeatureForm(map, service, layerName, feature);            
-          formPromises.push(form.render());            
+          const form = new FeatureForm(feature);
+          form.service = service;
+          form.layerName = layerName;
+          form.setFormSelectorAndPriority(map);
+          formPromises.push(form.render());
         }
       }
     }
@@ -351,9 +354,7 @@ class GetFeatureInfoTool extends Tool
       infoDiv.innerHTML = "";
       for (let form of forms)
       {
-        let featureDiv = document.createElement("div");
-        featureDiv.innerHTML = form.html;
-        infoDiv.appendChild(featureDiv);
+        infoDiv.appendChild(form.div);
       }
     }
     this.panel.show();

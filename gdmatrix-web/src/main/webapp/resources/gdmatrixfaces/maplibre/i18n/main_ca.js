@@ -17,6 +17,7 @@ Bundle.getBundle("main").setTranslations("ca", {
   "FindFeatureControl.title": "Cerca",
   "FindFeatureControl.layer": "Capa",
   "FindFeatureControl.filter": "Filtre",
+  "FindFeatureControl.clearMarkers": "Neteja marcadors anteriors",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} entitat trobada` : `${count} entitats trobades`,
   
   "GetFeatureInfoTool.title": "Obtenir informació",

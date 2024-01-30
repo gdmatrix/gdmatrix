@@ -127,6 +127,33 @@ div.maplibregl-ctrl.active
   background-color: yellow;
 }
 
+div.maplibre_panel_container .scroller .panel .finder_selector
+{
+  list-style: none;
+  padding-left: 0;
+}
+
+div.maplibre_panel_container .scroller .panel .finder_selector li a
+{
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+div.maplibre_panel_container .scroller .panel .finder_selector li.selected a
+{
+  font-weight: bold;
+}
+
+div.maplibre_panel_container .scroller .panel .finder_selector li i
+{
+  visibility: hidden;
+}
+
+div.maplibre_panel_container .scroller .panel .finder_selector li.selected i
+{
+  visibility:visible;
+}
+
 div.maplibre_panel_container .scroller .panel .finder_results
 {
   list-style-type: none;

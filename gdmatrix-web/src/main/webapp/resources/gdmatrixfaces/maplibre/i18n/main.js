@@ -17,6 +17,7 @@ Bundle.getBundle("main").setTranslations("", {
   "FindFeatureControl.title": "Find",
   "FindFeatureControl.layer": "Layer",
   "FindFeatureControl.filter": "Filter",
+  "FindFeatureControl.clearMarkers": "Clear previous markers",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} feature found:` : `${count} features found:`,
   
   "GetFeatureInfoTool.title": "Get feature information",

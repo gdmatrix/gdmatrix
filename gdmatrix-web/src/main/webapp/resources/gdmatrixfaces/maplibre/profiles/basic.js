@@ -32,7 +32,7 @@ function init(map)
     insertTop: true
   }), "top-left");  
   
-  map.findControl.addFinder(new WfsFinder());  
+  map.findFeatureControl.addFinder(new WfsFinder());  
 }
 
 export { init };

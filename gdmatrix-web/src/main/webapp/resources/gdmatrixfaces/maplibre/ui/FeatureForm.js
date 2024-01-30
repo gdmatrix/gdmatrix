@@ -2,41 +2,26 @@
 
 class FeatureForm
 {
-  constructor(map, service, layerName, feature)
+  constructor(feature)
   {
-    this.map = map;
-    this.service = service;
-    this.layerName = layerName;
     this.feature = feature; // geojson feature;
-    this.initFormSelectorAndPriority();
+    this.formSelector = null;
+    this.priority = 0;
+    this.service = null; // optional
+    this.layerName = null; // optional
+    this.forEdit = false;
+
+    this.div = document.createElement("div");
   }
 
-  async render(forEdit = false)
+  setFormSelectorAndPriority(map)
   {
-    const feature = this.feature;
-    const properties = feature.properties;
-    const params = {
-      entity: this.layerName,
-      formseed: Math.random(),
-      selector: this.formSelector,
-      forEdit: forEdit,
-      renderer: forEdit ?
-        "org.santfeliu.web.servlet.form.EditableFormRenderer" :
-        "org.santfeliu.web.servlet.form.ReadOnlyFormRenderer",
-      ...properties
-    };
-    
-    const response = await fetch("/form?" + new URLSearchParams(params));
-    this.html = await response.text();
-    
-    return this;
-  }
-  
-  initFormSelectorAndPriority()
-  {
-    const map = this.map;
     const layerForms = map.getStyle().metadata?.layerForms;
+    if (layerForms === undefined) return;
+
     const layerName = this.layerName;
+    if (layerName === undefined) return;
+    
     const normLayerName = this.normalizeLayerName(layerName);
  
     let formSelector = null;
@@ -61,7 +46,29 @@ class FeatureForm
     this.formSelector = formSelector || "form:" + normLayerName;
     this.priority = priority;
   }
-  
+
+  async render()
+  {
+    const feature = this.feature;
+    const forEdit = this.forEdit;
+    const properties = feature.properties;
+    const params = {
+      entity: this.layerName,
+      formseed: Math.random(),
+      selector: this.formSelector,
+      forEdit: forEdit,
+      renderer: forEdit ?
+        "org.santfeliu.web.servlet.form.EditableFormRenderer" :
+        "org.santfeliu.web.servlet.form.ReadOnlyFormRenderer",
+      ...properties
+    };
+
+    const response = await fetch("/form?" + new URLSearchParams(params));
+    this.div.innerHTML = await response.text();
+    
+    return this;
+  }
+
   normalizeLayerName(layerName)
   {
     layerName = layerName.toUpperCase();

@@ -124,7 +124,7 @@ class PanelManager
     this.doLayout();
   }
   
-  getPadding()
+  getPadding(offset = 0)
   {
     const panelContainers = this.panelContainers;
     const left = panelContainers.left.size;
@@ -132,7 +132,12 @@ class PanelManager
     const top = panelContainers.top.size;
     const bottom = panelContainers.bottom.size;
 
-    return { top: top, bottom: bottom, left: left, right: right };
+    return {
+      top: top + offset, 
+      bottom: bottom + offset, 
+      left: left + offset, 
+      right: right + offset
+    };
   }
 
   doLayout()
