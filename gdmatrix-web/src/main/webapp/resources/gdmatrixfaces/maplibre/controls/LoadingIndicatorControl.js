@@ -54,11 +54,11 @@ class LoadingIndicatorControl
     }
     if (this.errorCount > 0)
     {
-      this.div.style.color = "red";
+      this.div.classList.add("error");
     }
     else
     {
-      this.div.style.color = "black";
+      this.div.classList.remove("error");
     }
   }
 

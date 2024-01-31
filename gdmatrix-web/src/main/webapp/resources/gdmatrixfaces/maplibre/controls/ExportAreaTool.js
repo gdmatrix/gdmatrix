@@ -17,14 +17,24 @@ class ExportAreaTool extends Tool
           }, ...options});
     
     this._onMapClick = (event) => this.addPoint(event.lngLat);
-    this.startData = {
+    
+    this.points = [];
+    
+    this.startPoint = {
       "type": "Feature",
       "geometry": { "type": "Point", "coordinates": [] }
     };
-    this.data = {
+
+    this.polygon = {
       "type": "Feature",
       "geometry": { "type": "Polygon", "coordinates": [[]] }
     };
+
+    this.linestring = {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [] }
+    };
+
     this.formats = [
       ["GEOJSON", "application/json", "geojson"],
       ["GML3", "gml3", "xml"],
@@ -44,49 +54,72 @@ class ExportAreaTool extends Tool
     map.getCanvas().style.cursor = "crosshair";
     this.panel.show();
 
-    map.addSource("measured_polygon_start", {
+    // sources
+
+    map.addSource("export_polygon_start", {
       type: 'geojson',
-      data: this.startData
+      data: this.startPoint
     });
 
-    map.addLayer({
-      "id": "measured_polygon_start",
-      "type": 'circle',
-      "source": "measured_polygon_start",
-      "layout": {},
-      "paint":
-      {
-        "circle-color": "#000000",
-        "circle-radius": 4
-      }
-    });
-
-    map.addSource("measured_polygon", {
+    map.addSource("export_linestring", {
       type: 'geojson',
-      data: this.data
+      data: this.linestring
     });
 
+    map.addSource("export_polygon", {
+      type: 'geojson',
+      data: this.polygon
+    });
+    
+    // layers
+    
     map.addLayer({
-      "id": "measured_polygon",
+      "id": "export_polygon",
       "type": 'fill',
-      "source": "measured_polygon",
+      "source": "export_polygon",
       "layout": {},
       "paint":
       {
         "fill-color": "#0000ff",
-        "fill-opacity": 0.2
+        "fill-opacity": 0.1
+      }
+    });    
+
+    map.addLayer({
+      "id": "export_linestring",
+      "type": 'line',
+      "source": "export_linestring",
+      "layout": {},
+      "paint":
+      {
+        "line-color": "#0000ff",
+        "line-width": 2
       }
     });
 
     map.addLayer({
-      "id": "measured_polygon_points",
+      "id": "export_polygon_points",
       "type": 'circle',
-      "source": "measured_polygon",
+      "source": "export_linestring",
+      "layout": {},
+      "paint":
+      {
+        "circle-color": "#ffffff",
+        "circle-radius": 2,
+        "circle-stroke-color" : "#000000",
+        "circle-stroke-width" : 2
+      }
+    });
+
+    map.addLayer({
+      "id": "export_polygon_start",
+      "type": 'circle',
+      "source": "export_polygon_start",
       "layout": {},
       "paint":
       {
         "circle-color": "#000000",
-        "circle-radius": 3
+        "circle-radius": 5
       }
     });
   }
@@ -98,12 +131,15 @@ class ExportAreaTool extends Tool
     map.getCanvas().style.cursor = "grab";
     this.panel.hide();
 
-    map.removeLayer("measured_polygon_start");
-    map.removeSource("measured_polygon_start");
+    map.removeLayer("export_polygon");
+    map.removeLayer("export_polygon_points");
+    map.removeSource("export_polygon");
 
-    map.removeLayer("measured_polygon");
-    map.removeLayer("measured_polygon_points");
-    map.removeSource("measured_polygon");
+    map.removeLayer("export_linestring");
+    map.removeSource("export_linestring");  
+
+    map.removeLayer("export_polygon_start");
+    map.removeSource("export_polygon_start");
   }
   
   reactivate()
@@ -114,18 +150,74 @@ class ExportAreaTool extends Tool
   addPoint(lngLat)
   {
     const map = this.map;
+    const points = this.points;
+    
+    const point = [lngLat.lng, lngLat.lat];
 
-    if (this.startData.geometry.coordinates.length === 0)
+    if (points.length === 0)
     {
-      this.startData.geometry.coordinates = [lngLat.lng, lngLat.lat];
-      map.getSource("measured_polygon_start").setData(this.startData);
-    }
+      this.startPoint.geometry.coordinates = point;
+      map.getSource("export_polygon_start").setData(this.startPoint);
+    }    
+    
+    if (points.length > 0) points.pop();
+    points.push(point);
+    points.push(points[0]);
+      
+    this.polygon.geometry.coordinates[0] = points;
+    this.linestring.geometry.coordinates = points;
 
-    this.data.geometry.coordinates[0].push([lngLat.lng, lngLat.lat]);
-    map.getSource("measured_polygon").setData(this.data);
+    map.getSource("export_polygon").setData(this.polygon);
+    map.getSource("export_linestring").setData(this.linestring);
 
     this.panel.show();
     this.resultDiv.innerHTML = "";
+  }
+  
+  removePoint()
+  {
+    const map = this.map;
+    const points = this.points;
+    
+    if (points.length > 0)
+    {
+      points.pop();
+      points.pop();
+
+      if (points.length > 0)
+      {
+        points.push(points[0]);
+        this.polygon.geometry.coordinates[0] = points;
+        this.linestring.geometry.coordinates = points;
+      }
+      else
+      {
+        this.polygon.geometry.coordinates[0] = [];        
+        this.linestring.geometry.coordinates = [];        
+      }
+      this.map.getSource("export_polygon").setData(this.polygon);
+      this.map.getSource("export_linestring").setData(this.linestring);
+
+      if (points.length === 0)
+      {
+        this.startPoint.geometry.coordinates = [];
+        this.map.getSource("export_polygon_start").setData(this.startPoint);
+      }
+    }    
+  }
+  
+  clearLayers()
+  {
+    this.points = [];
+    
+    this.startPoint.geometry.coordinates = [];
+    this.map.getSource("export_polygon_start").setData(this.startPoint);
+
+    this.polygon.geometry.coordinates[0] = [];
+    this.map.getSource("export_polygon").setData(this.polygon);
+
+    this.linestring.geometry.coordinates = [];
+    this.map.getSource("export_linestring").setData(this.linestring);
   }
 
   createPanel(map)
@@ -148,11 +240,7 @@ class ExportAreaTool extends Tool
     clearButton.textContent = bundle.get("button.reset");
     clearButton.addEventListener("click", (e) => {
       e.preventDefault();
-      this.startData.geometry.coordinates = [];
-      this.map.getSource("measured_polygon_start").setData(this.startData);
-
-      this.data.geometry.coordinates[0] = [];
-      this.map.getSource("measured_polygon").setData(this.data);
+      this.clearLayers();      
       this.resultDiv.innerHTML = "";
     });
     buttonBar.appendChild(clearButton);
@@ -161,17 +249,7 @@ class ExportAreaTool extends Tool
     undoButton.textContent = bundle.get("button.undo");
     undoButton.addEventListener("click", (e) => {
       e.preventDefault();
-      if (this.data.geometry.coordinates[0].length > 0)
-      {
-        this.data.geometry.coordinates[0].pop();
-        this.map.getSource("measured_polygon").setData(this.data);
-
-        if (this.data.geometry.coordinates[0].length === 0)
-        {
-          this.startData.geometry.coordinates = [];
-          this.map.getSource("measured_polygon_start").setData(this.startData);
-        }
-      }
+      this.removePoint();
       this.resultDiv.innerHTML = "";
     });
     buttonBar.appendChild(undoButton);
@@ -191,6 +269,12 @@ class ExportAreaTool extends Tool
   exportLayers()
   {
     const map = this.map;
+    const points = this.points;
+    const resultDiv = this.resultDiv;
+    resultDiv.innerHTML = "";
+    
+    if (points.length < 4) return;
+    
     const services = map.getStyle().metadata?.services;
     const serviceParameters = map.getStyle().metadata?.serviceParameters;
     if (services === undefined) return;
@@ -243,7 +327,7 @@ class ExportAreaTool extends Tool
   showLinks(layerInfo)
   {
     let cqlPolygon = "SRID=4326;POLYGON((";
-    let ring = this.data.geometry.coordinates[0];
+    let ring = this.polygon.geometry.coordinates[0];
     if (ring.length < 3) return;
 
     for (let i = 0; i < ring.length; i++)
@@ -292,7 +376,15 @@ class ExportAreaTool extends Tool
         anchor.href = url;
         anchor.className = "export_link";
         anchor.download = layerId + "." + format[2];
-        anchor.textContent = format[0];
+        
+        let icon = document.createElement("i");
+        icon.className = "pi pi-download mr-1";
+        anchor.append(icon);
+
+        let span = document.createElement("span");
+        span.textContent = format[0];
+        anchor.append(span);
+        
         layerDiv.append(anchor);
       }
     }

@@ -18,14 +18,23 @@ class MeasureAreaTool extends Tool
           }, ...options});
     
     this._onMapClick = (event) => this.addPoint(event.lngLat);
-    this.startData = {
+
+    this.points = [];
+
+    this.startPoint = {
       "type": "Feature",
       "geometry": { "type": "Point", "coordinates": [] }
     };
-    this.data = {
+
+    this.polygon = {
       "type": "Feature",
       "geometry": { "type": "Polygon", "coordinates": [[]] }
     };
+
+    this.linestring = {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [] }
+    };  
   }
 
   activate()
@@ -36,9 +45,61 @@ class MeasureAreaTool extends Tool
     this.updateArea();
     this.panel.show();
 
+    // sources
+
     map.addSource("measured_polygon_start", {
       type: 'geojson',
-      data: this.startData
+      data: this.startPoint
+    });
+
+    map.addSource("measured_linestring", {
+      type: 'geojson',
+      data: this.linestring
+    });
+
+    map.addSource("measured_polygon", {
+      type: 'geojson',
+      data: this.polygon
+    });
+    
+    // layers
+    
+    map.addLayer({
+      "id": "measured_polygon",
+      "type": 'fill',
+      "source": "measured_polygon",
+      "layout": {},
+      "paint":
+      {
+        "fill-color": "#0000ff",
+        "fill-opacity": 0.1
+      }
+    });    
+
+    map.addLayer({
+      "id": "measured_linestring",
+      "type": 'line',
+      "source": "measured_linestring",
+      "layout": {},
+      "paint":
+      {
+        "line-color": "#0000ff",
+        "line-width": 2
+      }
+    });
+
+    map.addLayer({
+      "id": "measured_polygon_points",
+      "type": 'circle',
+      "source": "measured_linestring",
+      "layout": {},
+      "paint":
+      {
+        "circle-color": "#ffffff",
+        "circle-radius": 2,
+        "circle-stroke-color" : "#000000",
+        "circle-stroke-width" : 2
+      }
     });
 
     map.addLayer({
@@ -49,36 +110,7 @@ class MeasureAreaTool extends Tool
       "paint":
       {
         "circle-color": "#000000",
-        "circle-radius": 4
-      }
-    });
-
-    map.addSource("measured_polygon", {
-      type: 'geojson',
-      data: this.data
-    });
-
-    map.addLayer({
-      "id": "measured_polygon",
-      "type": 'fill',
-      "source": "measured_polygon",
-      "layout": {},
-      "paint":
-      {
-        "fill-color": "#0000ff",
-        "fill-opacity": 0.2
-      }
-    });
-
-    map.addLayer({
-      "id": "measured_polygon_points",
-      "type": 'circle',
-      "source": "measured_polygon",
-      "layout": {},
-      "paint":
-      {
-        "circle-color": "#000000",
-        "circle-radius": 3
+        "circle-radius": 5
       }
     });
   }
@@ -90,12 +122,15 @@ class MeasureAreaTool extends Tool
     map.getCanvas().style.cursor = "grab";
     this.panel.hide();
 
-    map.removeLayer("measured_polygon_start");
-    map.removeSource("measured_polygon_start");
-
     map.removeLayer("measured_polygon");
     map.removeLayer("measured_polygon_points");
     map.removeSource("measured_polygon");
+
+    map.removeLayer("measured_linestring");
+    map.removeSource("measured_linestring");  
+
+    map.removeLayer("measured_polygon_start");
+    map.removeSource("measured_polygon_start");
   }
 
   reactivate()
@@ -106,29 +141,85 @@ class MeasureAreaTool extends Tool
   addPoint(lngLat)
   {
     const map = this.map;
+    const points = this.points;
+    
+    const point = [lngLat.lng, lngLat.lat];
 
-    if (this.startData.geometry.coordinates.length === 0)
+    if (points.length === 0)
     {
-      this.startData.geometry.coordinates = [lngLat.lng, lngLat.lat];
-      map.getSource("measured_polygon_start").setData(this.startData);
-    }
+      this.startPoint.geometry.coordinates = point;
+      map.getSource("measured_polygon_start").setData(this.startPoint);
+    }    
+    
+    if (points.length > 0) points.pop();
+    points.push(point);
+    points.push(points[0]);
+      
+    this.polygon.geometry.coordinates[0] = points;
+    this.linestring.geometry.coordinates = points;
 
-    this.data.geometry.coordinates[0].push([lngLat.lng, lngLat.lat]);
-    map.getSource("measured_polygon").setData(this.data);
+    map.getSource("measured_polygon").setData(this.polygon);
+    map.getSource("measured_linestring").setData(this.linestring);
 
     this.updateArea();
 
     this.panel.show();
   }
+  
+  removePoint()
+  {
+    const map = this.map;
+    const points = this.points;
+    
+    if (points.length > 0)
+    {
+      points.pop();
+      points.pop();
+
+      if (points.length > 0)
+      {
+        points.push(points[0]);
+        this.polygon.geometry.coordinates[0] = points;
+        this.linestring.geometry.coordinates = points;
+      }
+      else
+      {
+        this.polygon.geometry.coordinates[0] = [];        
+        this.linestring.geometry.coordinates = [];        
+      }
+      this.map.getSource("measured_polygon").setData(this.polygon);
+      this.map.getSource("measured_linestring").setData(this.linestring);
+
+      if (points.length === 0)
+      {
+        this.startPoint.geometry.coordinates = [];
+        this.map.getSource("measured_polygon_start").setData(this.startPoint);
+      }
+    }    
+  }
+  
+  clearLayers()
+  {
+    this.points = [];
+    
+    this.startPoint.geometry.coordinates = [];
+    this.map.getSource("measured_polygon_start").setData(this.startPoint);
+
+    this.polygon.geometry.coordinates[0] = [];
+    this.map.getSource("measured_polygon").setData(this.polygon);
+
+    this.linestring.geometry.coordinates = [];
+    this.map.getSource("measured_linestring").setData(this.linestring);
+  }  
 
   updateArea()
   {
     let area = 0;
-    const coordinates = this.data.geometry.coordinates[0];
-    for (let i = 0; i < coordinates.length; i++)
+    const coordinates = this.points;
+    for (let i = 0; i < coordinates.length - 1; i++)
     {
       let c1 = coordinates[i];
-      let c2 = coordinates[(i + 1) % coordinates.length];
+      let c2 = coordinates[i + 1];
 
       let utm1 = toUtm(c1[1], c1[0], 7, 'ETRS89');
       let utm2 = toUtm(c2[1], c2[0], 7, 'ETRS89');
@@ -188,12 +279,7 @@ class MeasureAreaTool extends Tool
     clearButton.textContent = bundle.get("button.reset");
     clearButton.addEventListener("click", (e) => {
       e.preventDefault();
-      this.startData.geometry.coordinates = [];
-      this.map.getSource("measured_polygon_start").setData(this.startData);
-
-      this.data.geometry.coordinates[0] = [];
-      this.map.getSource("measured_polygon").setData(this.data);
-
+      this.clearLayers();
       this.updateArea();
     });
     buttonBar.appendChild(clearButton);
@@ -202,18 +288,8 @@ class MeasureAreaTool extends Tool
     undoButton.textContent = bundle.get("button.undo");
     undoButton.addEventListener("click", (e) => {
       e.preventDefault();
-      if (this.data.geometry.coordinates[0].length > 0)
-      {
-        this.data.geometry.coordinates[0].pop();
-        this.map.getSource("measured_polygon").setData(this.data);
-
-        if (this.data.geometry.coordinates[0].length === 0)
-        {
-          this.startData.geometry.coordinates = [];
-          this.map.getSource("measured_polygon_start").setData(this.startData);
-        }
-        this.updateArea();
-      }
+      this.removePoint();
+      this.updateArea();
     });
     buttonBar.appendChild(undoButton);
 

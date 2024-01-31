@@ -65,7 +65,7 @@ class MeasureLengthTool extends Tool
       "paint":
       {
         "line-color": "#0000ff",
-        "line-width": 4,
+        "line-width": 3,
         "line-opacity": 0.5
       }
     });
@@ -77,8 +77,10 @@ class MeasureLengthTool extends Tool
       "layout": {},
       "paint":
       {
-        "circle-color": "#000000",
-        "circle-radius": 3
+        "circle-color": "#ffffff",
+        "circle-radius": 2,
+        "circle-stroke-color" : "#000000",
+        "circle-stroke-width" : 2
       }
     });
   }
@@ -119,6 +121,33 @@ class MeasureLengthTool extends Tool
     this.updateLength();
 
     this.panel.show();
+  }
+  
+  removePoint()
+  {
+    if (this.data.geometry.coordinates.length > 0)
+    {
+      this.data.geometry.coordinates.pop();
+      this.map.getSource("measured_linestring").setData(this.data);
+
+      if (this.data.geometry.coordinates.length === 0)
+      {
+        this.startData.geometry.coordinates = [];
+        this.map.getSource("measured_linestring_start").setData(this.startData);
+      }
+      this.updateLength();
+    }    
+  }
+  
+  clearLayers()
+  {
+    this.startData.geometry.coordinates = [];
+    this.map.getSource("measured_linestring_start").setData(this.startData);
+
+    this.data.geometry.coordinates = [];
+    this.map.getSource("measured_linestring").setData(this.data);    
+ 
+    this.updateLength();
   }
 
   updateLength()
@@ -174,13 +203,7 @@ class MeasureLengthTool extends Tool
     clearButton.textContent = bundle.get("button.reset");
     clearButton.addEventListener("click", (e) => {
       e.preventDefault();
-      this.startData.geometry.coordinates = [];
-      this.map.getSource("measured_linestring_start").setData(this.startData);
-
-      this.data.geometry.coordinates = [];
-      this.map.getSource("measured_linestring").setData(this.data);
-
-      this.updateLength();
+      this.clearLayers();
     });
     buttonBar.appendChild(clearButton);
 
@@ -188,18 +211,7 @@ class MeasureLengthTool extends Tool
     undoButton.textContent = bundle.get("button.undo");
     undoButton.addEventListener("click", (e) => {
       e.preventDefault();
-      if (this.data.geometry.coordinates.length > 0)
-      {
-        this.data.geometry.coordinates.pop();
-        this.map.getSource("measured_linestring").setData(this.data);
-
-        if (this.data.geometry.coordinates.length === 0)
-        {
-          this.startData.geometry.coordinates = [];
-          this.map.getSource("measured_linestring_start").setData(this.startData);
-        }
-        this.updateLength();
-      }
+      this.removePoint();
     });
     buttonBar.appendChild(undoButton);
 

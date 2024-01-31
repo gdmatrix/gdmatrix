@@ -131,19 +131,6 @@ div.ui-growl {
   text-decoration: underline;  
 }
 
-@keyframes flash 
-{
-  0% { background: yellow; }
-  50% { background: white; }
-  100% { background: yellow; }
-}
-
-.flash
-{
-  background: yellow;
-  animation: flash 1s infinite;
-}
-
 .legend_cut_node
 {
   font-style: italic;

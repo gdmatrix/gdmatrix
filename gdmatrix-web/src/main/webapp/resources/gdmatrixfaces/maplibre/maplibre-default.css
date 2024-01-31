@@ -1,6 +1,11 @@
 /* maplibre-default.css */
 
-div.maplibre_panel_container
+.maplibregl-map
+{
+  background-color: var(--surface-200);
+}
+
+.maplibre_panel_container
 {
   background-color: var(--surface-ground);
   position:absolute;
@@ -9,26 +14,26 @@ div.maplibre_panel_container
   overflow-y:hidden;
 }
 
-div.maplibre_handler
+.maplibre_handler
 {
   position:absolute;
   z-index: 2;
   overflow: hidden;
 }
 
-div.maplibre_handler div
+.maplibre_handler div
 {
   position: absolute;
   background-color: var(--surface-300);
   border-radius: 2px;
 }
 
-div.maplibre_handler.right
+.maplibre_handler.right
 {
   cursor: ew-resize;
 }
 
-div.maplibre_handler.right div
+.maplibre_handler.right div
 {
   right: 1px;
   width: 4px;
@@ -36,12 +41,12 @@ div.maplibre_handler.right div
   height: 60px;
 }
 
-div.maplibre_handler.left
+.maplibre_handler.left
 {
   cursor: ew-resize;
 }
 
-div.maplibre_handler.left div
+.maplibre_handler.left div
 {
   left: 1px;
   width: 4px;
@@ -49,12 +54,12 @@ div.maplibre_handler.left div
   height: 60px;
 }
 
-div.maplibre_handler.top
+.maplibre_handler.top
 {
   cursor: ns-resize;
 }
 
-div.maplibre_handler.top div
+.maplibre_handler.top div
 {
   top: 1px;
   height: 4px;
@@ -62,12 +67,12 @@ div.maplibre_handler.top div
   width: 60px;
 }
 
-div.maplibre_handler.bottom
+.maplibre_handler.bottom
 {
   cursor: ns-resize;
 }
 
-div.maplibre_handler.bottom div
+.maplibre_handler.bottom div
 {
   bottom: 1px;
   height: 4px;
@@ -75,7 +80,58 @@ div.maplibre_handler.bottom div
   width: 60px;
 }
 
-div.maplibre_panel_container .scroller
+/* buttons */
+
+.maplibregl-ctrl.maplibregl-ctrl-group
+{
+  background-color: var(--surface-50);
+  color: var(--text-color);
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-group > button > span
+{
+  color: var(--text-color);
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-group.active
+{
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-group.active > button > span
+{
+  color: var(--primary-color-text);  
+}
+
+.maplibregl-ctrl-icon
+{
+  background-color: var(--text-color);
+}
+
+@keyframes flash 
+{
+  0% { background: yellow; }
+  50% { background: white; }
+  100% { background: yellow; }
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-group.flash
+{
+  background: yellow;
+  animation: flash 1s infinite;
+  color: black;
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-group.flash.error
+{
+  color: red;
+  font-weight: bold;
+}
+
+/* panels */
+
+.maplibre_panel_container .scroller
 {
   position:absolute;
   left:0;
@@ -86,7 +142,7 @@ div.maplibre_panel_container .scroller
   padding: 4px;
 }
 
-div.maplibre_panel_container .scroller .panel
+.maplibre_panel_container .scroller .panel
 {
   width: 100%;
   padding: 4px;
@@ -96,18 +152,18 @@ div.maplibre_panel_container .scroller .panel
   color: var(--text-color);
 }
 
-div.maplibre_panel_container .scroller .panel > .header
+.maplibre_panel_container .scroller .panel > .header
 {
   font-weight: bold;
 }
 
-div.maplibre_panel_container .scroller .panel > .header a
+.maplibre_panel_container .scroller .panel > .header a
 {
   color: var(--text-color);
   text-decoration: none;
 }
 
-div.maplibre_panel_container .scroller .panel .panel_button
+.maplibre_panel_container .scroller .panel .panel_button
 {
   width:16px;
   height:16px;
@@ -116,91 +172,86 @@ div.maplibre_panel_container .scroller .panel .panel_button
   color: var(--text-color);
 }
 
-div.maplibre_panel_container .scroller .panel .body
+.maplibre_panel_container .scroller .panel .body
 {
   color: var(--text-color);
   background: var(--surface-ground);  
 }
 
-div.maplibregl-ctrl.active
-{
-  background-color: yellow;
-}
-
-div.maplibre_panel_container .scroller .panel .finder_selector
+.maplibre_panel_container .scroller .panel .finder_selector
 {
   list-style: none;
   padding-left: 0;
 }
 
-div.maplibre_panel_container .scroller .panel .finder_selector li a
+.maplibre_panel_container .scroller .panel .finder_selector li a
 {
   text-decoration: none;
   color: var(--text-color);
 }
 
-div.maplibre_panel_container .scroller .panel .finder_selector li.selected a
+.maplibre_panel_container .scroller .panel .finder_selector li.selected a
 {
   font-weight: bold;
 }
 
-div.maplibre_panel_container .scroller .panel .finder_selector li i
+.maplibre_panel_container .scroller .panel .finder_selector li i
 {
   visibility: hidden;
 }
 
-div.maplibre_panel_container .scroller .panel .finder_selector li.selected i
+.maplibre_panel_container .scroller .panel .finder_selector li.selected i
 {
   visibility:visible;
 }
 
-div.maplibre_panel_container .scroller .panel .finder_results
+.maplibre_panel_container .scroller .panel .finder_results
 {
   list-style-type: none;
   padding-left: 0;
   width:100%;
 }
 
-div.maplibre_panel_container .scroller .panel .finder_results li
+.maplibre_panel_container .scroller .panel .finder_results li
 {
   display: flex;
   align-items: start;
   margin-bottom: 0.25rem;
 }
 
-div.maplibre_panel_container .scroller .panel .finder_results li i,
-div.maplibre_panel_container .scroller .panel .finder_results li img
+.maplibre_panel_container .scroller .panel .finder_results li i,
+.maplibre_panel_container .scroller .panel .finder_results li img
 {
   padding-top: 4px;
 }
 
-div.maplibre_panel_container .scroller .panel .finder_results li a
+.maplibre_panel_container .scroller .panel .finder_results li a
 {
   text-wrap: wrap;
   overflow-wrap: anywhere;
   text-decoration: none;
 }
 
-div.maplibre_panel_container .scroller .panel ul.error
+.maplibre_panel_container .scroller .panel ul.error
 {
   list-style-type: none;
   padding-left: 0;
 }
 
-div.maplibre_panel_container .scroller .panel ul.error li
+.maplibre_panel_container .scroller .panel ul.error li
 {
   color: red;
 }
 
 /* Legend */
 
-div.maplibre_panel_container .scroller .panel ul.legend
+.maplibre_panel_container .scroller .panel ul.legend
 {
   padding-left: 4px;
   list-style: none;
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend ul
+.maplibre_panel_container .scroller .panel ul.legend ul
 {
   list-style: none;
   padding-left: 16px;
@@ -208,7 +259,7 @@ div.maplibre_panel_container .scroller .panel ul.legend ul
   transition: max-height 0.3s linear;
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend li > div
+.maplibre_panel_container .scroller .panel ul.legend li > div
 {
   display: flex;
   align-items: center;
@@ -216,7 +267,7 @@ div.maplibre_panel_container .scroller .panel ul.legend li > div
   padding-bottom: 3px;  
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend li > div > button
+.maplibre_panel_container .scroller .panel ul.legend li > div > button
 {
   border: none;
   background-color: transparent;
@@ -226,29 +277,29 @@ div.maplibre_panel_container .scroller .panel ul.legend li > div > button
   cursor: pointer;
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend li > div > button > span
+.maplibre_panel_container .scroller .panel ul.legend li > div > button > span
 {
   transition: transform 0.3s linear;
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend > li > div
+.maplibre_panel_container .scroller .panel ul.legend > li > div
 {
   font-weight: bold;
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend a
+.maplibre_panel_container .scroller .panel ul.legend a
 {
   text-decoration: none;
   color: var(--text-color);
   white-space: nowrap; 
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend .hidden_layer
+.maplibre_panel_container .scroller .panel ul.legend .hidden_layer
 {
   color: #888888;
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic
+.maplibre_panel_container .scroller .panel ul.legend li > div .graphic
 {
   width: 16px;
   height: 16px;
@@ -257,12 +308,12 @@ div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic
   flex-shrink: 0;
 }
 
-div.maplibre_panel_container .scroller .panel ul.legend li > div .graphic.circle
+.maplibre_panel_container .scroller .panel ul.legend li > div .graphic.circle
 {
   border-radius: 50%;
 }
 
-div.maplibre_panel_container .scroller .panel ul.feature_info
+.maplibre_panel_container .scroller .panel ul.feature_info
 {
   list-style-type: none;  
   margin-top: 0;
@@ -270,30 +321,30 @@ div.maplibre_panel_container .scroller .panel ul.feature_info
   padding-left: 0;
 }
 
-div.maplibre_panel_container .scroller .panel ul.feature_info ul
+.maplibre_panel_container .scroller .panel ul.feature_info ul
 {
   padding-left: 20px;  
 }
 
-div.maplibre_panel_container .scroller .panel ul.feature_info > li
+.maplibre_panel_container .scroller .panel ul.feature_info > li
 {
   padding-bottom: 4px;  
 }
 
-div.maplibre_panel_container .scroller .panel ul.feature_info > li > div
+.maplibre_panel_container .scroller .panel ul.feature_info > li > div
 {
   padding-top: 4px; 
   padding-bottom: 4px; 
   font-weight: bold;
 }
 
-div.maplibre_panel_container .scroller .panel ul.feature_info li
+.maplibre_panel_container .scroller .panel ul.feature_info li
 {
   list-style-type: disc;  
   padding-left: 0px;
 }
 
-div.maplibre_panel_container .button_bar button
+.maplibre_panel_container .button_bar button
 {
   font-family: var(--font-family);
   font-size: 13px;
@@ -305,10 +356,10 @@ div.maplibre_panel_container .button_bar button
   margin: 2px;
 }
 
-.export_link
+.maplibregl-map .export_link
 {
   text-decoration: none;
-  background-color: var(--surface-200);
+  background-color: var(--surface-100);
   color: var(--text-color);
   border-color: var(--surface-400);
   border-width: 1px;
@@ -319,15 +370,8 @@ div.maplibre_panel_container .button_bar button
   display:inline-block;
 }
 
-.export_link:hover
+.maplibregl-map .export_link:hover
 {
   border-color: var(--surface-500);  
   background-color: var(--surface-300);
 }
-
-
-.maplibregl-ctrl.maplibregl-ctrl-group > button > span
-{
-  color: #202020;
-}
-
