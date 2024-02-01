@@ -32,6 +32,8 @@ function maplibreInit(clientId, style, language)
     style: style,
     antialias: true
   });
+  
+  window.map = map;
 
   map.setPixelRatio(window.devicePixelRatio);
   map.getContainer().style.touchAction = "none";
@@ -91,7 +93,14 @@ function initSources(style)
   {
     let source = style.sources[sourceId];
     let url = getSourceUrl(sourceId, style);
-    if (source.type === "raster")
+    if (source.type === "vector")
+    {
+      if (url)
+      {
+        source.tiles = [url];
+      }
+    }
+    else if (source.type === "raster")
     {
       if (url)
       {
@@ -317,7 +326,7 @@ function getSourceUrl(sourceId, style)
   }
   else if (service.type === "wfs")
   {
-    urlParams = "SERVICE=WFS" +
+    urlParams = "service=WFS" +
     "&VERSION=1.0.0" +
     "&REQUEST=GetFeature" +
     "&typeName=" + layersArray.join(",") +
@@ -328,6 +337,22 @@ function getSourceUrl(sourceId, style)
       let cqlFilter = cqlFilterArray.join(";");
       urlParams += "&cql_filter=" + cqlFilter;
     }
+  }
+  else if (service.type === "wmts")
+  {
+    let tileSize = source.tileSize || 256;
+    urlParams = "SERVICE=WMTS" +
+    "&REQUEST=GetTile" +
+    "&VERSION=1.0.0" +
+    "&HEIGHT=" + tileSize +
+    "&WIDTH=" + tileSize +
+    "&FORMAT=" + serviceParameters.format +
+    "&STYLES=" + stylesArray.join(",") +
+    "&LAYER=" + layersArray.join(",") +
+    "&tileMatrixSet=EPSG:3587" +
+    "&tileMatrix={z}" +
+    "&tileRow={y}" +
+    "&tileCol={x}";
   }
   else return null;
 
@@ -341,6 +366,6 @@ function getSourceUrl(sourceId, style)
   else
   {
     url = serviceUrl + "?" + urlParams;
-  }
+  }  
   return url;
 }

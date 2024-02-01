@@ -30,6 +30,7 @@
  */
 package org.santfeliu.faces.maplibre.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,8 @@ public class Layer implements Serializable
   String id;
   String type;
   String source;
+  @SerializedName("source-layer")
+  String sourceLayer;
   Map<String, Object> paint = new HashMap<>();
   Map<String, Object> layout = new HashMap<>();
   Object filter;
@@ -86,6 +89,16 @@ public class Layer implements Serializable
   public void setSource(String source)
   {
     this.source = source;
+  }
+
+  public String getSourceLayer()
+  {
+    return sourceLayer;
+  }
+
+  public void setSourceLayer(String sourceLayer)
+  {
+    this.sourceLayer = sourceLayer;
   }
 
   public String getLayers()

@@ -197,6 +197,20 @@
               </gdm:codemirror>            
             </p:tab>
 
+            <p:tab disabled="#{geoMapLayersBean.editingLayer.type == 'raster'}">
+              <f:facet name="title">
+                <span class="fa fa-vector-square mr-2"/>Vector
+              </f:facet> 
+              <div class="ui-fluid formgrid grid">
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="Source layer" />
+                  <p:inputText value="#{geoMapLayersBean.editingLayer.sourceLayer}" 
+                               pt:spellcheck="false"
+                               styleClass="code" />
+                </div>
+              </div>
+            </p:tab>            
+            
             <p:tab disabled="#{geoMapLayersBean.editingLayer.type != 'raster'}">
               <f:facet name="title">
                 <span class="pi pi-image mr-2"/>Raster
