@@ -59,6 +59,7 @@ class GetFeatureInfoTool extends Tool
     this.headerDiv.textContent = bundle.get("GetFeatureInfoTool.help");    
 
     this.infoDiv = document.createElement("div");
+    this.infoDiv.className = "custom_form";
     bodyDiv.appendChild(this.infoDiv);
   }
 

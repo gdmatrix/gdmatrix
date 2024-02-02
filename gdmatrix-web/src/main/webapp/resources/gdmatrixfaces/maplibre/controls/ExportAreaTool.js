@@ -326,6 +326,18 @@ class ExportAreaTool extends Tool
 
   showLinks(layerInfo)
   {
+    const resultDiv = this.resultDiv;
+    
+    if (layerInfo.length === 0)
+    {
+      resultDiv.innerHTML = `<div class="mt-2">${bundle.get("ExportAreaTool.noLayersToExport")}</div>`;    
+      return;
+    }
+    else
+    {
+      resultDiv.innerHTML = "";
+    }
+    
     let cqlPolygon = "SRID=4326;POLYGON((";
     let ring = this.polygon.geometry.coordinates[0];
     if (ring.length < 3) return;
@@ -340,9 +352,6 @@ class ExportAreaTool extends Tool
     cqlPolygon += "))";
 
     const formats = this.formats;
-
-    const resultDiv = this.resultDiv;
-    resultDiv.innerHTML = "";
 
     for (let info of layerInfo)
     {

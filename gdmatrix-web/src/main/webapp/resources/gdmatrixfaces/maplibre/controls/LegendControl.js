@@ -74,6 +74,10 @@ class LegendControl
     const li = document.createElement("li");
     ul.appendChild(li);
     const liDiv = document.createElement("div");
+    if (node.graphic && node.graphic.startsWith("image:"))
+    {
+      liDiv.classList.add("flex-column-reverse");
+    }
     li.appendChild(liDiv);
     if (node.layerId) // layer node
     {
@@ -92,6 +96,8 @@ class LegendControl
       liDiv.appendChild(button);
       node.button = button;
       button.innerHTML = `<span class="pi pi-angle-right"></span>`;
+      button.firstElementChild.style.transform = node.expanded ? 
+        "rotate(90deg)" : "rotate(0deg)";
 
       if (node.mode === "block")
       {
@@ -102,8 +108,7 @@ class LegendControl
         button.addEventListener("click", (event) =>
         {
           event.preventDefault();
-          node.expanded = !node.expanded;
-          this.updateListVisibility(node);
+          this.toogleNodeExpand(node);
         });
       }
     }
@@ -111,7 +116,7 @@ class LegendControl
     liDiv.appendChild(link);
 
     link.href = "#";
-    link.innerHTML = `<span></span> <span>${node.label}</span>`;
+    link.innerHTML = `<i></i> <span>${node.label}</span>`;
     node.link = link;
     link.addEventListener("click", (event) =>
     {
@@ -167,6 +172,7 @@ class LegendControl
     {
       const subul = document.createElement("ul");
       node.ul = subul;
+      node.ul.style.height = node.expanded ? "auto" : "0";
 
       li.appendChild(subul);
       for (let childNode of node.children)
@@ -175,7 +181,6 @@ class LegendControl
         childNode.parent = node;
       }
     }
-    this.updateListVisibility(node);
   }
 
   getNodeGraphic(node)
@@ -232,19 +237,49 @@ class LegendControl
       return img;
     }
   }
-
-  updateListVisibility(node)
+  
+  toogleNodeExpand(node)
   {
-    if (node.expanded && node.mode !== "block")
+    const ul = node.ul;
+    const button = node.button;
+    const height = Math.max(ul.offsetHeight, ul.scrollHeight);
+
+    node.expanded = !node.expanded;
+
+    if (node.expanded) // expand
     {
-      if (node.ul) node.ul.style.maxHeight = (node.children.length * 30) + "px";
-      if (node.button) node.button.firstElementChild.style.transform = "rotate(90deg)";
+      if (button) button.firstElementChild.style.transform = "rotate(90deg)";
+      this.animateList(ul, 0, height, Math.round(height / 20));
     }
-    else
+    else // collapse
     {
-      if (node.ul) node.ul.style.maxHeight = "0";
-      if (node.button) node.button.firstElementChild.style.transform = "rotate(0)";
+      if (button) button.firstElementChild.style.transform = "rotate(0)";
+      this.animateList(ul, height, 0, -Math.round(height / 20));
     }
+  }
+  
+  animateList(ul, height, endHeight, step)
+  { 
+    ul.style.height = height + "px";
+    height += step;
+
+    if (step > 0)
+    {
+      if (height >= endHeight)
+      {
+        ul.style.height = "auto";
+        return;
+      }
+    }
+    else // step < 0
+    {
+      if (height <= 0)
+      {
+        ul.style.height = "0";        
+        return;
+      }
+    }
+    setTimeout(() => this.animateList(ul, height, endHeight, step), 10);
   }
 
   updateLegendStyle()
@@ -290,12 +325,12 @@ class LegendControl
 
     if (nodeVisible === false)
     {
-      textSpan.classList.add("hidden_layer");
+      link.classList.add("hidden_layer");
       iconSpan.className = "pi pi-eye-slash";
     }
     else
     {
-      textSpan.classList.remove("hidden_layer");
+      link.classList.remove("hidden_layer");
       iconSpan.className = "pi pi-eye";
     }
     return nodeVisible;
@@ -365,7 +400,7 @@ class LegendControl
       setTimeout(() =>
         map.setLayoutProperty(masterLayerId, "visibility", visibility), 100);
     }
-  }
+  }  
 }
 
 export { LegendControl };

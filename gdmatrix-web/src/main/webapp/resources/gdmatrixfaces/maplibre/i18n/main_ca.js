@@ -13,6 +13,7 @@ Bundle.getBundle("main").setTranslations("ca", {
 
   "ExportAreaTool.title": "Exporta àrea",
   "ExportAreaTool.help": "Dibuixa els vèrtexs de l'àrea d'exportació i prem el botó Exporta.",
+  "ExportAreaTool.noLayersToExport": "Cap de les capes visibles és exportable.",
 
   "FindFeatureControl.title": "Cerca",
   "FindFeatureControl.layer": "Capa",

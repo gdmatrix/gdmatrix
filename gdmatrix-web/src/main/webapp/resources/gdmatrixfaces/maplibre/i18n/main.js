@@ -13,6 +13,7 @@ Bundle.getBundle("main").setTranslations("", {
 
   "ExportAreaTool.title": "Export area",
   "ExportAreaTool.help": "Draw the vertices of the export area and press the Export button.",
+  "ExportAreaTool.noLayersToExport": "None of the visible layers can be exported.",
   
   "FindFeatureControl.title": "Find",
   "FindFeatureControl.layer": "Layer",

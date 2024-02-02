@@ -80,7 +80,7 @@
   width: 60px;
 }
 
-/* buttons */
+/* Buttons */
 
 .maplibregl-ctrl.maplibregl-ctrl-group
 {
@@ -129,7 +129,7 @@
   font-weight: bold;
 }
 
-/* panels */
+/* Panels */
 
 .maplibre_panel_container .scroller
 {
@@ -256,13 +256,12 @@
   list-style: none;
   padding-left: 16px;
   overflow: hidden;
-  transition: max-height 0.3s linear;
 }
 
 .maplibre_panel_container .scroller .panel ul.legend li > div
 {
   display: flex;
-  align-items: center;
+  align-items: start;
   padding-top: 3px;
   padding-bottom: 3px;  
 }
@@ -274,12 +273,13 @@
   color: var(--text-color);
   padding: 0;
   margin-right: 8px;
+  margin-top: 3px;
   cursor: pointer;
 }
 
 .maplibre_panel_container .scroller .panel ul.legend li > div > button > span
 {
-  transition: transform 0.3s linear;
+  transition: transform 0.2s linear;
 }
 
 .maplibre_panel_container .scroller .panel ul.legend > li > div
@@ -291,12 +291,24 @@
 {
   text-decoration: none;
   color: var(--text-color);
-  white-space: nowrap; 
+  display: flex;
+  align-items: start;
 }
 
-.maplibre_panel_container .scroller .panel ul.legend .hidden_layer
+.maplibre_panel_container .scroller .panel ul.legend a > i
 {
-  color: #888888;
+  padding-top: 4px;
+  padding-right: 4px;  
+}
+
+.maplibre_panel_container .scroller .panel ul.legend a.hidden_layer > i
+{
+  color: var(--surface-400);
+}
+
+.maplibre_panel_container .scroller .panel ul.legend a.hidden_layer > span
+{
+  color: var(--surface-600);
 }
 
 .maplibre_panel_container .scroller .panel ul.legend li > div .graphic
@@ -304,6 +316,7 @@
   width: 16px;
   height: 16px;
   display: inline-block;
+  margin-top: 2px;
   margin-right: 4px;
   flex-shrink: 0;
 }
@@ -374,4 +387,50 @@
 {
   border-color: var(--surface-500);  
   background-color: var(--surface-300);
+}
+
+/* Form controls */
+
+.maplibregl-map .custom_form input,
+.maplibregl-map .custom_form textarea,
+.maplibregl-map .custom_form select
+{
+  font-family: var(--font-family);
+  font-size: 12px;
+  padding: 0.3rem 0.3rem !important;
+  color: var(--text-color);
+  background-color: var(--surface-ground);
+  outline: 0 none;
+  border-color: var(--surface-border);
+  border-radius: var(--border-radius);
+  border-style: solid;
+  border-width: 1px;
+  box-sizing: border-box;
+  transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+}
+
+.maplibregl-map .custom_form select
+{
+  padding: 0 !important;  
+}
+
+.maplibregl-map .custom_form input[type=submit]
+{
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
+}
+
+.maplibregl-map .custom_form input:hover,
+.maplibregl-map .custom_form textarea:hover,
+.maplibregl-map .custom_form select:hover
+{
+  border-color: var(--primary-color);
+}
+
+.maplibregl-map .custom_form input:focus,
+.maplibregl-map .custom_form textarea:focus,
+.maplibregl-map .custom_form select:focus
+{
+  border-color: var(--primary-color);
+  box-shadow: var(--focus-ring);
 }
