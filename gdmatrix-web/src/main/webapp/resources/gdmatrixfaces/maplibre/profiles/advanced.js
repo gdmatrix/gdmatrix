@@ -9,8 +9,6 @@ function init(map)
 {
   initBasic(map);
   
-  const style = map.getStyle();
-
   map.addControl(new MeasureLengthTool({
     position: "right", 
     insertTop: true}
@@ -33,9 +31,9 @@ function init(map)
     trackUserLocation: true
   }));
 
-  if (style.terrain)
+  const terrain = map.getTerrain();
+  if (terrain)
   {
-    const terrain = style.terrain;
     map.addControl(
       new maplibregl.TerrainControl({
         source: terrain.source,

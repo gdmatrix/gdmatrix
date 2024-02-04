@@ -178,10 +178,19 @@
   background: var(--surface-ground);  
 }
 
+/* FindFetureControl */
+
 .maplibre_panel_container .scroller .panel .finder_selector
 {
   list-style: none;
   padding-left: 0;
+}
+
+.maplibre_panel_container .scroller .panel .finder_selector li
+{
+  display: flex;
+  align-items: start;
+  padding-bottom: 4px;
 }
 
 .maplibre_panel_container .scroller .panel .finder_selector li a
@@ -197,6 +206,7 @@
 
 .maplibre_panel_container .scroller .panel .finder_selector li i
 {
+  padding-top: 4px;
   visibility: hidden;
 }
 
@@ -230,6 +240,12 @@
   text-wrap: wrap;
   overflow-wrap: anywhere;
   text-decoration: none;
+  color: var(--text-color);
+}
+
+.maplibre_panel_container .scroller .panel .finder_results li a:hover
+{
+  color: var(--primary-color);  
 }
 
 .maplibre_panel_container .scroller .panel ul.error
@@ -243,7 +259,7 @@
   color: red;
 }
 
-/* Legend */
+/* LegendControl */
 
 .maplibre_panel_container .scroller .panel ul.legend
 {
@@ -326,36 +342,7 @@
   border-radius: 50%;
 }
 
-.maplibre_panel_container .scroller .panel ul.feature_info
-{
-  list-style-type: none;  
-  margin-top: 0;
-  padding-top: 0;
-  padding-left: 0;
-}
-
-.maplibre_panel_container .scroller .panel ul.feature_info ul
-{
-  padding-left: 20px;  
-}
-
-.maplibre_panel_container .scroller .panel ul.feature_info > li
-{
-  padding-bottom: 4px;  
-}
-
-.maplibre_panel_container .scroller .panel ul.feature_info > li > div
-{
-  padding-top: 4px; 
-  padding-bottom: 4px; 
-  font-weight: bold;
-}
-
-.maplibre_panel_container .scroller .panel ul.feature_info li
-{
-  list-style-type: disc;  
-  padding-left: 0px;
-}
+/* Measure controls */
 
 .maplibre_panel_container .button_bar button
 {
@@ -383,13 +370,15 @@
   display:inline-block;
 }
 
+/* ExportAreaControl */
+
 .maplibregl-map .export_link:hover
 {
   border-color: var(--surface-500);  
   background-color: var(--surface-300);
 }
 
-/* Form controls */
+/* GetFeatureInfoControl */
 
 .maplibregl-map .custom_form input,
 .maplibregl-map .custom_form textarea,

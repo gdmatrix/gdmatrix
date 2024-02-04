@@ -1,6 +1,9 @@
 /* Panel.js */
 
 import { PanelManager } from "./PanelManager.js";
+import { Bundle } from "../i18n/Bundle.js";
+
+const bundle = Bundle.getBundle("main");
 
 class Panel
 {
@@ -80,8 +83,9 @@ class Panel
     this.createTitle(titleDiv);
 
     const closeButton = document.createElement("button");
-    closeButton.className = "panel_button flex-grow-0";
-    closeButton.innerHTML = `<span class="pi pi-times-circle"></span>`;
+    closeButton.className = "panel_button flex-grow-0 cursor-pointer";
+    closeButton.title = bundle.get("button.close");
+    closeButton.innerHTML = `<span class="pi pi-times"></span>`;
     headerDiv.appendChild(closeButton);
 
     closeButton.addEventListener("click", (event) =>

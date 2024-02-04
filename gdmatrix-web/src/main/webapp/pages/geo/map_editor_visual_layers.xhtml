@@ -29,19 +29,19 @@
     </p:column>
     <p:column headerText="Flags" styleClass="white-space-nowrap">
       <p:commandButton action="#{geoMapLayersBean.toggleLayerVisibility(layer)}"
-                       icon="pi #{geoMapLayersBean.isLayerVisible(layer) ? 'pi-eye' : 'pi-eye-slash'}" 
+                       icon="#{geoMapLayersBean.isLayerVisible(layer) ? 'pi pi-eye' : 'pi pi-eye-slash'}" 
                        styleClass="rounded-button ui-button-flat"
                        title="#{geoMapLayersBean.isLayerVisible(layer) ? 'Visible' : 'Hidden'}"
                        process="@this"
                        update="@this" />
       <p:commandButton action="#{geoMapLayersBean.toggleLayerLocatability(layer)}"
-                       icon="pi #{geoMapLayersBean.isLayerLocatable(layer) ? 'pi-arrow-up-left' : 'pi-times'}" 
+                       icon="#{geoMapLayersBean.isLayerLocatable(layer) ? 'fa fa-arrow-pointer pl-1' : 'pi pi-times'}" 
                        styleClass="rounded-button ui-button-flat"
                        title="#{geoMapLayersBean.isLayerLocatable(layer) ? 'Locatable' : 'No locatable'}"
                        process="@this"
                        update="@this" />
       <p:commandButton action="#{geoMapLayersBean.toggleLayerHighlight(layer)}"
-                       icon="pi #{geoMapLayersBean.isLayerHighlightEnabled(layer) ? 'pi-sun' : 'pi-minus'}" 
+                       icon="#{geoMapLayersBean.isLayerHighlightEnabled(layer) ? 'pi pi-sun' : 'pi pi-minus'}" 
                        styleClass="rounded-button ui-button-flat"
                        title="#{geoMapLayersBean.isLayerHighlightEnabled(layer) ? 'Highlighted' : 'Not highlighted'}"
                        process="@this"

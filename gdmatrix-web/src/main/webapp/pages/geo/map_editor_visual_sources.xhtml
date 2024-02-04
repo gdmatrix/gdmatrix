@@ -201,9 +201,9 @@
                   <p:outputLabel for="@next" value="Format" />
                   <p:selectOneMenu value="#{geoMapSourcesBean.editingServiceParameters.format}">
                     <f:selectItem itemValue="" itemLabel="" />
-                    <f:selectItem itemValue="image/png" itemLabel="PNG" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'raster'}" />
-                    <f:selectItem itemValue="image/jpeg" itemLabel="JPEG" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'raster'}" />
-                    <f:selectItem itemValue="image/gif" itemLabel="GIF" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'raster'}" />
+                    <f:selectItem itemValue="image/png" itemLabel="PNG" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'raster' and geoMapSourcesBean.editingSource.type != 'raster-dem'}" />
+                    <f:selectItem itemValue="image/jpeg" itemLabel="JPEG" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'raster' and geoMapSourcesBean.editingSource.type != 'raster-dem'}" />
+                    <f:selectItem itemValue="image/gif" itemLabel="GIF" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'raster' and geoMapSourcesBean.editingSource.type != 'raster-dem'}" />
                     <f:selectItem itemValue="application/json" itemLabel="GEOJSON" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'geojson'}" />
                     <f:selectItem itemValue="application/vnd.mapbox-vector-tile" itemLabel="Mapbox vector tile" itemDisabled="#{geoMapSourcesBean.editingSource.type != 'vector'}" />
                   </p:selectOneMenu>

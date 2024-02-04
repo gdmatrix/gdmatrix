@@ -100,7 +100,7 @@ function initSources(style)
         source.tiles = [url];
       }
     }
-    else if (source.type === "raster")
+    else if (source.type === "raster" || source.type === "raster-dem")
     {
       if (url)
       {

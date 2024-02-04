@@ -543,8 +543,8 @@ class WfsFinder extends FeatureFinder
       url: "https://gis.santfeliu.cat/geoserver/wfs",
       useProxy: true
     };
-    
-    this.layerName = null;
+
+    this.layerName = params?.layerName;
   }
 
   getTitle()
@@ -572,9 +572,9 @@ class WfsFinder extends FeatureFinder
   {
     this.layerName = document.getElementById("layer_name").value;
     let cqlFilter = document.getElementById("cql_filter").value;
-    if (this.layerName)
+    if (this.service?.url && this.layerName)
     {
-      return await this.findWfs(this.service.url, this.layerName, cqlFilter);
+      return await this.findWfs(cqlFilter);
     }
     else
     {
@@ -582,13 +582,13 @@ class WfsFinder extends FeatureFinder
     }
   }
 
-  async findWfs(serviceUrl, layerName, cqlFilter)
+  async findWfs(cqlFilter, viewparams)
   {
-    let url = "/proxy?url=" + serviceUrl + "&" +
+    let url = "/proxy?url=" + this.service.url + "&" +
       "request=GetFeature" +
       "&service=WFS" +
       "&version=2.0.0" +
-      "&typeNames=" + layerName +
+      "&typeNames=" + this.layerName +
       "&srsName=EPSG:4326" +
       "&outputFormat=application/json" +
       "&exceptions=application/json";
@@ -597,6 +597,12 @@ class WfsFinder extends FeatureFinder
     {
       url += "&cql_filter=" + cqlFilter;
     }
+
+    if (viewparams)
+    {
+      url += "&viewparams=" + viewparams;
+    }
+    
     const response = await fetch(url);
     const json = await response.json();
     if (json.exceptions) throw json;

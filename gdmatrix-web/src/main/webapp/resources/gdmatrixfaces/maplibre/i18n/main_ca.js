@@ -10,6 +10,7 @@ Bundle.getBundle("main").setTranslations("ca", {
   "button.reset": "Inicialitza",
   "button.undo": "Desfer",
   "button.export": "Exporta",
+  "button.close": "Tanca",
 
   "ExportAreaTool.title": "Exporta àrea",
   "ExportAreaTool.help": "Dibuixa els vèrtexs de l'àrea d'exportació i prem el botó Exporta.",

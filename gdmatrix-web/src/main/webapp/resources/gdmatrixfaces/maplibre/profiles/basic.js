@@ -9,8 +9,6 @@ import { MapInfoControl } from "../controls/MapInfoControl.js";
 function init(map)
 {
   initMinimal(map);
-  
-  const style = map.getStyle();
 
   map.addControl(new FindFeatureControl({
     position: "left", 
@@ -30,9 +28,7 @@ function init(map)
   map.addControl(new GetFeatureInfoTool({
     position: "right", 
     insertTop: true
-  }), "top-left");  
-  
-  map.findFeatureControl.addFinder(new WfsFinder());  
+  }), "top-left");    
 }
 
 export { init };
