@@ -46,6 +46,7 @@ public class JavaScriptDocument extends HighlightedDocument
   public static final int STRING = 4;
   public static final int OPERATOR = 5;
   public static final int COMMENT = 6;
+  public static final int TEMPLATE = 7;
 
   public static final Set keywordsSet = new HashSet();
 
@@ -53,6 +54,7 @@ public class JavaScriptDocument extends HighlightedDocument
   {
     keywordsSet.add("abstract");
     keywordsSet.add("await");
+    keywordsSet.add("async");
     keywordsSet.add("boolean");
     keywordsSet.add("break");
     keywordsSet.add("byte");
@@ -164,6 +166,11 @@ public class JavaScriptDocument extends HighlightedDocument
             {
               state = 5;
               token = newToken(index++, UNKNOW);
+            }
+            else if (ch == '`')
+            {
+              state = 10;
+              token = newToken(index++, TEMPLATE);
             }
             else
             {
@@ -316,6 +323,19 @@ public class JavaScriptDocument extends HighlightedDocument
             else
             {
               state = 8;
+              index++;
+            }
+            break;
+
+          case 10: // process template
+            if (ch == '`')
+            {
+              state = 0;
+              index++;
+            }
+            else
+            {
+              token.append(ch);
               index++;
             }
             break;

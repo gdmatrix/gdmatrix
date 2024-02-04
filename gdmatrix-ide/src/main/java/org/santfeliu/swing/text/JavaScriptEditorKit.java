@@ -49,6 +49,7 @@ public class JavaScriptEditorKit extends HighlightedEditorKit
     register(JavaScriptDocument.STRING, Color.BLUE, PLAIN);
     register(JavaScriptDocument.OPERATOR, Color.BLACK, PLAIN);
     register(JavaScriptDocument.COMMENT, Color.GRAY, ITALIC);
+    register(JavaScriptDocument.TEMPLATE, new Color(128, 0, 192), PLAIN);
   }
 
   @Override
