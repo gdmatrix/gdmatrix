@@ -107,8 +107,8 @@
           </p:selectOneMenu>
 
           <p:commandButton rendered="#{not empty objectBean.country.countryId}"
-                           icon="pi pi-pencil"
-                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                           icon="pi pi-arrow-circle-right"
+                           alt="#{objectBundle.show}" title="#{objectBundle.show}"
                            action="#{navigatorBean.show('Country', objectBean.country.countryId)}" 
                            process="@this" update="@form:cnt"
                            />
@@ -151,8 +151,8 @@
           </p:selectOneMenu>
 
           <p:commandButton rendered="#{not empty objectBean.province.provinceId}"
-                           icon="pi pi-pencil"
-                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                           icon="pi pi-arrow-circle-right"
+                           alt="#{objectBundle.show}" title="#{objectBundle.show}"
                            action="#{navigatorBean.show('Province', objectBean.province.provinceId)}" 
                            process="@this" update="@form:cnt"
                            />
@@ -183,8 +183,8 @@
           </p:selectOneMenu>
 
           <p:commandButton rendered="#{not empty objectBean.city.cityId}"
-                           icon="pi pi-pencil"
-                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                           icon="pi pi-arrow-circle-right"
+                           alt="#{objectBundle.show}" title="#{objectBundle.show}"
                            action="#{navigatorBean.show('City', objectBean.city.cityId)}" 
                            process="@this" update="@form:cnt"
                            />
