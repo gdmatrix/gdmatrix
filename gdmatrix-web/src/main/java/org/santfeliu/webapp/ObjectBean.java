@@ -496,7 +496,7 @@ public abstract class ObjectBean extends BaseBean
   {
     setEditTabSelector(0);
     load();
-    growl("CANCEL_OBJECT");
+    growl("RELOAD_OBJECT");
   }
 
   public void selectTabWithErrors()

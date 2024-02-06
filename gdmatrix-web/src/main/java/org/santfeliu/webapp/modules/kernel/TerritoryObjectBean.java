@@ -101,7 +101,7 @@ public abstract class TerritoryObjectBean extends ObjectBean
   public void cancel()
   {
     load();
-    growl("CANCEL_OBJECT");    
+    growl("RELOAD_OBJECT");
   }
       
   @Override
