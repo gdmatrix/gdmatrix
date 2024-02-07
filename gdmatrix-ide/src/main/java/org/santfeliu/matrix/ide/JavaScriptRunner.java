@@ -117,8 +117,25 @@ public class JavaScriptRunner extends Thread
         {
           outputTextArea.append("\n" + result);
         }
-        outputTextArea.append("\nExecution time: " +
-          executionTime + " ms.");
+        String time;
+        if (executionTime > 3600000)
+        {
+          time = (executionTime / 3600000.0) + " hours.";
+        }
+        else if (executionTime > 60000)
+        {
+          time = (executionTime / 60000.0) + " min.";
+        }
+        else if (executionTime > 1000)
+        {
+          time = (executionTime / 1000.0) + " sec.";
+        }
+        else
+        {
+          time = executionTime + " ms.";
+        }
+
+        outputTextArea.append("\nExecution time: " + time);
 
         if (resultConsumer != null)
         {
