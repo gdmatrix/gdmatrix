@@ -11,6 +11,7 @@ Bundle.getBundle("main").setTranslations("", {
   "button.undo": "Undo",
   "button.export": "Export",
   "button.close": "Close",
+  "button.print": "Print",
 
   "ExportAreaTool.title": "Export area",
   "ExportAreaTool.help": "Draw the vertices of the export area and press the Export button.",
@@ -41,7 +42,11 @@ Bundle.getBundle("main").setTranslations("", {
   "MeasureLengthTool.length": (length, units) => `Length: ${length} ${units}.`,
   
   "ZoomControl.title": "Zoom",
-  "ZoomControl.zoom": (zoom) => `Zoom: ${zoom}`
+  "ZoomControl.zoom": (zoom) => `Zoom: ${zoom}`,
+  
+  "PrintControl.title": "Print",
+  
+  "RefreshControl.title": "Refresh"
 
 });
 

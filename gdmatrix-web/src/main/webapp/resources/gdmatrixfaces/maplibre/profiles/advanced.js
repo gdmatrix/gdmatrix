@@ -4,6 +4,7 @@ import { init as initBasic } from "./basic.js";
 import { MeasureLengthTool } from "../controls/MeasureLengthTool.js";
 import { MeasureAreaTool } from "../controls/MeasureAreaTool.js";
 import { ExportAreaTool } from "../controls/ExportAreaTool.js";
+import { RefreshControl } from "../controls/RefreshControl.js";
 
 function init(map)
 {
@@ -23,6 +24,8 @@ function init(map)
     position: "right", 
     insertTop: true}
   ), "top-left");
+
+  map.addControl(new RefreshControl(), "top-left");
 
   map.addControl(new maplibregl.GeolocateControl({
     positionOptions: {

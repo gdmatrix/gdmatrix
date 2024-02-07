@@ -41,5 +41,10 @@ Bundle.getBundle("main").setTranslations("ca", {
   "MeasureLengthTool.length": (length, units) => `Longitud: ${length} ${units}.`,
   
   "ZoomControl.title": "Zoom",
-  "ZoomControl.zoom": (zoom) => `Zoom: ${zoom}`  
+  "ZoomControl.zoom": (zoom) => `Zoom: ${zoom}`,
+  
+  "PrintControl.title": "Imprimir",
+  
+  "RefreshControl.title": "Actualitza"
+
 });

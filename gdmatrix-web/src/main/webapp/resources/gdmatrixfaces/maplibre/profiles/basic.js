@@ -5,6 +5,7 @@ import { FindFeatureControl, WfsFinder } from "../controls/FindFeatureControl.js
 import { GetFeatureInfoTool } from "../controls/GetFeatureInfoTool.js";
 import { LegendControl } from "../controls/LegendControl.js";
 import { MapInfoControl } from "../controls/MapInfoControl.js";
+import { PrintControl } from "../controls/PrintControl.js";
 
 function init(map)
 {
@@ -14,6 +15,10 @@ function init(map)
     position: "left", 
     insertTop: false
   }), "top-left");
+  
+  map.addControl(new PrintControl({
+    insertTop: true}
+  ), "top-left");  
   
   map.addControl(new LegendControl({
     position: "right", 
@@ -28,7 +33,7 @@ function init(map)
   map.addControl(new GetFeatureInfoTool({
     position: "right", 
     insertTop: true
-  }), "top-left");    
+  }), "top-left");
 }
 
 export { init };
