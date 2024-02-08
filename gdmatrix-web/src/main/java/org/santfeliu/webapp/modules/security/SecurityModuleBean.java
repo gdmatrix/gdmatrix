@@ -30,11 +30,8 @@
  */
 package org.santfeliu.webapp.modules.security;
 
-import org.santfeliu.webapp.modules.doc.*;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import org.matrix.doc.DocumentManagerPort;
-import org.matrix.doc.DocumentManagerService;
 import org.matrix.security.SecurityManagerPort;
 import org.matrix.security.SecurityManagerService;
 import org.matrix.util.WSDirectory;

@@ -31,12 +31,16 @@
 package org.santfeliu.webapp.modules.security;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.security.SecurityMetaData;
 import org.matrix.security.User;
+import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
@@ -50,7 +54,9 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
 public class UserObjectBean extends ObjectBean
 {
   private User user = new User();
-
+  private Boolean renderUserLockPanel;
+  private SecurityMetaData metaData;
+  
   @Inject
   UserTypeBean userTypeBean;
 
@@ -111,9 +117,15 @@ public class UserObjectBean extends ObjectBean
   public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
+    {
       user = getPort(false).loadUser(objectId);
+      renderUserLockPanel = null;
+    }
     else
+    {
       user = new User();
+      renderUserLockPanel = false;
+    }
   }
 
   @Override
@@ -122,14 +134,15 @@ public class UserObjectBean extends ObjectBean
     user = getPort(false).storeUser(user);
     setObjectId(user.getUserId());
     userFinderBean.outdate();
+    renderUserLockPanel = null;
   }
 
   @Override
   public void removeObject() throws Exception
   {
     getPort(false).removeUser(user.getUserId());
-
     userFinderBean.outdate();
+    renderUserLockPanel = null;
   }
 
   public boolean isLocked()
@@ -142,15 +155,169 @@ public class UserObjectBean extends ObjectBean
     user.setLocked(locked);
   }
 
+  public Boolean getRenderUserLockPanel()
+  {
+    if (renderUserLockPanel == null)
+    {
+      renderUserLockPanel = false;
+      if (!isNew())
+      {
+        try
+        {
+          renderUserLockPanel =
+            getPort(false).isUserLockControlEnabled(getObjectId());
+        }
+        catch (Exception ex)
+        {
+        }
+      }
+    }
+    return renderUserLockPanel;
+  }
+
+  public void setRenderUserLockPanel(Boolean renderUserLockPanel)
+  {
+    this.renderUserLockPanel = renderUserLockPanel;
+  }
+
+  public boolean isUserLocked()
+  {
+    return "locked".equals(getUserState());
+  }
+
+  public boolean isUserUnlocked()
+  {
+    return "unlocked".equals(getUserState());
+  }
+
+  public boolean isUserUnlockedAuto()
+  {
+    return "unlocked_auto".equals(getUserState());
+  }
+
+  public Integer getAttemptsToLock()
+  {
+    try
+    {
+      int maxFailedLoginAttempts = 
+        getSecurityMetaData().getMaxFailedLoginAttempts();
+      int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+        user.getFailedLoginAttempts());
+      return (maxFailedLoginAttempts - failedLoginAttempts);
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
+  public String getAutoUnlockDateTime()
+  {
+    try
+    {
+      return TextUtils.formatDate(getAutoUnlockDate(), "dd/MM/yyyy HH:mm:ss");
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
+  public Integer getAttemptsToIntrusion()
+  {
+    try
+    {
+      int minIntrusionAttempts = 
+        getSecurityMetaData().getMinIntrusionAttempts();
+      int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+        user.getFailedLoginAttempts());
+      return (minIntrusionAttempts - failedLoginAttempts);
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
   @Override
   public Serializable saveState()
   {
-    return user;
+    return new Object[] { user, renderUserLockPanel, metaData };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
-    this.user = (User)state;
+    Object[] array = (Object[])state;
+    this.user = (User)array[0];
+    this.renderUserLockPanel = (Boolean)array[1];
+    this.metaData = (SecurityMetaData)array[2];
   }
+
+  private String getUserState()
+  {
+    try
+    {
+      int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+        user.getFailedLoginAttempts());
+      int maxFailedLoginAttempts = 
+        getSecurityMetaData().getMaxFailedLoginAttempts();
+      if (failedLoginAttempts < maxFailedLoginAttempts)
+      {
+        return "unlocked";
+      }
+      else
+      {
+        Date autoUnlockDate = getAutoUnlockDate();
+        if (autoUnlockDate != null)
+        {
+          Date now = new java.util.Date();
+          if (now.after(autoUnlockDate))
+          {
+            return "unlocked_auto";
+          }
+          else
+          {
+            return "locked";
+          }
+        }
+        else
+        {
+          return null;
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
+  private Date getAutoUnlockDate()
+  {
+    try
+    {
+      int autoUnlockMarginTime = 
+        getSecurityMetaData().getAutoUnlockMarginTime();
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(TextUtils.parseInternalDate(
+        user.getLastFailedLoginDateTime()));
+      calendar.add(Calendar.SECOND, autoUnlockMarginTime);
+      return calendar.getTime();
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+  
+  private SecurityMetaData getSecurityMetaData() throws Exception
+  {
+    if (metaData == null)
+    {
+      metaData = getPort(false).getSecurityMetaData();
+    }
+    return metaData;
+  }  
+
 }

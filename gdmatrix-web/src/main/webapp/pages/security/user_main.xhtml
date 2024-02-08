@@ -51,6 +51,85 @@
                         changeUserId="#{userObjectBean.user.changeUserId}" 
                         changeDateTime="#{userObjectBean.user.changeDateTime}" />
       
+      <div class="col-12"></div>
+      
+      <p:outputPanel styleClass="field col-12 md:col-6"
+                     rendered="#{!userObjectBean.new}">
+        <p:outputLabel for="@next" value="#{securityBundle.user_lastSuccessLoginDateTime}" />
+        <p:datePicker value="#{userObjectBean.user.lastSuccessLoginDateTime}"
+                      pattern="dd/MM/yyyy HH:mm:ss"
+                      locale="#{userObjectBean.language}" 
+                      converter="datePickerConverter"
+                      showIcon="false" disabled="true"
+                      showTime="false" />
+      </p:outputPanel>
+
+      <p:outputPanel styleClass="field col-12 md:col-6" 
+                     rendered="#{!userObjectBean.new}">
+        <p:outputLabel for="@next" value="#{securityBundle.user_lastFailedLoginDateTime}" />
+        <p:datePicker value="#{userObjectBean.user.lastFailedLoginDateTime}"
+                      pattern="dd/MM/yyyy HH:mm:ss"
+                      locale="#{userObjectBean.language}" 
+                      converter="datePickerConverter"
+                      showIcon="false" disabled="true"
+                      showTime="false" />
+      </p:outputPanel>
+      
+      <p:outputPanel styleClass="field col-12"
+                     rendered="#{userObjectBean.renderUserLockPanel}">
+        <p:outputLabel for="@next"
+                       value="#{securityBundle.user_state}" />
+        <p:inputText rendered="#{userObjectBean.userLocked}" 
+                     value="#{securityBundle.user_state_locked}" 
+                     readonly="true"
+                     styleClass="inputfield w-full text-red-700" />          
+        <p:inputText rendered="#{userObjectBean.userUnlocked}" 
+                     value="#{securityBundle.user_state_unlocked}" 
+                     readonly="true"
+                     styleClass="inputfield w-full text-green-700" />          
+        <p:inputText rendered="#{userObjectBean.userUnlockedAuto}" 
+                     value="#{securityBundle.user_state_unlocked_auto}" 
+                     readonly="true"
+                     styleClass="inputfield w-full text-green-700" />
+      </p:outputPanel>
+      
+      <p:outputPanel styleClass="field col-12 md:col-6"
+                     rendered="#{userObjectBean.renderUserLockPanel}">
+        <p:outputLabel for="@next"
+                      value="#{securityBundle.user_failedLoginAttempts}" />
+        <p:inputText value="#{userObjectBean.user.failedLoginAttempts}"
+                     readonly="true"
+                     styleClass="inputfield w-full" />
+        <h:outputFormat rendered="#{userObjectBean.userUnlocked}"
+                        value="#{securityBundle.user_attemptsToLock}"
+                        styleClass="text-xs">
+          <f:param value="#{userObjectBean.attemptsToLock}" />
+        </h:outputFormat>
+        <h:outputFormat rendered="#{userObjectBean.userLocked}"
+                        value="#{securityBundle.user_autoUnlockDateTime}"
+                        styleClass="text-xs">
+          <f:param value="#{userObjectBean.autoUnlockDateTime}" />
+        </h:outputFormat>          
+      </p:outputPanel>
+
+      <p:outputPanel styleClass="field col-12 md:col-6"
+                     rendered="#{userObjectBean.renderUserLockPanel}">
+        <p:outputLabel for="@next" 
+                       value="#{securityBundle.user_lastIntrusionDateTime}:" />
+        <p:datePicker value="#{userObjectBean.user.lastIntrusionDateTime}"
+                      pattern="dd/MM/yyyy HH:mm:ss"
+                      locale="#{userObjectBean.language}" 
+                      converter="datePickerConverter"
+                      showIcon="false" disabled="true"
+                      showTime="false" />
+        <h:outputFormat rendered="#{userObjectBean.userLocked and 
+                                    userObjectBean.attemptsToIntrusion > 0}"
+                        value="#{securityBundle.user_attemptsToIntrusion}"
+                        styleClass="text-xs">
+          <f:param value="#{userObjectBean.attemptsToIntrusion}" />
+        </h:outputFormat>
+      </p:outputPanel>
+        
     </div>
     
 </ui:composition>
