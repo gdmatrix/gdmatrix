@@ -411,3 +411,12 @@ body .fc .fc-event.fc-timegrid-event
   font-weight: normal;
 }
 
+.ui-tooltip:not([role])
+{
+  background: #fff;
+}
+
+body .fc th > .fc-scrollgrid-sync-inner
+{
+  padding: 0.5rem;
+}

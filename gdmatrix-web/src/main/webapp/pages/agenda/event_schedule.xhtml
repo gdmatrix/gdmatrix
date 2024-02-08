@@ -39,7 +39,7 @@
               clientTimeZone="#{eventFinderBean.serverTimeZone}"
               view="#{eventFinderBean.scheduleView}"
               initialDate="#{eventFinderBean.scheduleInitialDate}"
-              tooltip="true">
+              tooltip="#{userSessionBean.menuModel.browserType == 'desktop' ? 'true' : 'false'}">
     <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}"
             process="@this"
             delay="500" />
