@@ -55,16 +55,17 @@
       <p:inputText value="#{queryEditBean.editingParameter.defaultValue}" 
                    styleClass="input_text"  />
     </div>
-    <div class="property">
-      <p:outputLabel value="#{queryBundle.sql_statement}:" styleClass="output_label" for="@next" />
-      <div class="codemirror_container">
-        <gdm:codemirror language="sql" 
-                        value="#{queryEditBean.editingParameter.sql}"
-                        lineNumbers="false"
-                        style="font-size:14px" />          
-      </div>
-    </div>
     
+  </ui:define>
+  
+  <ui:define name="sqlCode">
+    <p:outputLabel value="#{queryBundle.sql_statement}:" styleClass="output_label" for="@next" />
+    <div class="codemirror_container">
+      <gdm:codemirror language="sql" 
+                      value="#{queryEditBean.editingParameter.sql}"
+                      lineNumbers="false"
+                      style="font-size:14px" />          
+    </div>    
   </ui:define>    
   
 </ui:composition>

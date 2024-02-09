@@ -8,7 +8,7 @@
                 xmlns:gdm="http://gdmatrix.org/faces">
   
   <p:outputPanel id="#{componentRef}_panel" styleClass="edit_panel #{componentRef}">
-    
+            
     <div class="left">
       
       <div class="item_list #{componentRef}" onscroll="changeItemListScroll('#{componentRef}')">
@@ -17,7 +17,7 @@
                      selectionMode="single" selection="#{componentSelectedItem}" 
                      emptyMessage="#{componentNoElementsLabel}">
           <p:ajax event="rowSelect" listener="#{queryEditBean[componentOnItemSelectMethod]}" 
-                  process="@this @parent:#{componentRef}_properties" 
+                  process="@this @parent:#{componentRef}_properties @parent:#{componentRef}_sql" 
                   update="@parent:#{componentRef}_panel" oncomplete="updateItemListScroll('#{componentRef}')" />        
           <p:ajax event="rowReorder" listener="#{queryEditBean[componentOnItemReorderMethod]}" 
                   process="@this" update="@parent:#{componentRef}_panel:#{componentRef}_buttons" />
@@ -30,7 +30,7 @@
       </div>
       
       <p:outputPanel id="#{componentRef}_buttons" styleClass="edit_panel_buttons">
-        <p:commandButton icon="pi pi-plus-circle" update="#{componentRef}_panel" process="@this,#{componentRef}_properties"
+        <p:commandButton icon="pi pi-plus-circle" update="#{componentRef}_panel" process="@this,#{componentRef}_properties,#{componentRef}_sql"
                          action="#{queryEditBean[componentAddItemMethod]}" styleClass="small_button" 
                          alt="#{objectBundle.add}" title="#{objectBundle.add}"
                          oncomplete="updateItemListScroll('#{componentRef}')" />
@@ -54,7 +54,7 @@
 
     </div>
     
-    <p:outputPanel id="#{componentRef}_properties" class="right">
+    <p:outputPanel id="#{componentRef}_properties" styleClass="right">
       
       <p:outputPanel rendered="#{componentEditingItem != null}">
         <ui:insert name="properties"></ui:insert>
@@ -65,6 +65,12 @@
         <p:outputLabel value="#{componentNotSelectedLabel}" />
       </p:outputPanel>
       
+    </p:outputPanel>
+
+    <p:outputPanel id="#{componentRef}_sql" 
+                   styleClass="bottom" 
+                   rendered="#{componentEditingItem != null}">
+      <ui:insert name="sqlCode"></ui:insert>
     </p:outputPanel>
     
   </p:outputPanel>

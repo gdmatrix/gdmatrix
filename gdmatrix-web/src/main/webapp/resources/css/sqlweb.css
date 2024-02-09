@@ -6,11 +6,6 @@
   font-style: italic;
 }
 
-.sqlweb .switchToggle
-{
-  top: 4px; 
-}
-
 .sqlweb .switchLabel
 {
   cursor: pointer;

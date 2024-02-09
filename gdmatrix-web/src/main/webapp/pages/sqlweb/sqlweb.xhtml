@@ -119,7 +119,7 @@
             <div class="flex flex-wrap justify-content-start flex-grow-0">
               <div class="mr-4">              
                 <p:toggleSwitch value="#{sqlwebBean.showRowNumbers}" 
-                              styleClass="mr-2 switchToggle">
+                              styleClass="mr-2 vertical-align-middle">
                   <p:ajax process="@this" update="result_table" />            
                 </p:toggleSwitch>
                 <p:outputLabel for="@previous" value="#{sqlWebBundle.show_row_numbers}"
@@ -127,7 +127,7 @@
               </div>
               <div class="mr-4">
                 <p:toggleSwitch value="#{sqlwebBean.showLobValues}" 
-                                styleClass="mr-2 switchToggle">
+                                styleClass="mr-2 vertical-align-middle">
                   <p:ajax process="@this" update="result_table" />
                 </p:toggleSwitch>
                 <p:outputLabel for="@previous" value="#{sqlWebBundle.show_lob_content}"
@@ -135,7 +135,7 @@
               </div>
               <div>              
                 <p:toggleSwitch value="#{sqlwebBean.showNullAsEmpty}" 
-                              styleClass="mr-2 switchToggle">
+                              styleClass="mr-2 vertical-align-middle">
                   <p:ajax process="@this" update="result_table" />            
                 </p:toggleSwitch>
                 <p:outputLabel for="@previous" value="#{sqlWebBundle.show_null_as_empty}"

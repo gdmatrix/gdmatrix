@@ -25,7 +25,7 @@
 
 .query_body .data_list li a
 {
-  color: black;
+  color: var(--text-color);
   text-decoration: none;
   opacity: 1;
 }
@@ -126,6 +126,12 @@
   
 }
 
+.query_view .instance_editor > div
+{
+  border: 0;
+  padding: 0;
+}
+
 .query_view .output_selector
 {
   
@@ -159,15 +165,18 @@
 
 .operator
 {
-  color: black;
+  color: var(--text-color);
   border:none;
   background-color: transparent;
 }
 
 .expression.predicate
 {
-  color: black;
+  color: var(--text-color);
   line-height: 20px;
+  border-color: var(--surface-500);
+  background-color: var(--surface-0);
+  border-width: 1px;  
 }
 
 .expression.predicate > div > div:first-child
@@ -218,8 +227,8 @@
 
 .expression .ui-button.ui-button-flat,
 .expression .ui-button.ui-button-flat:hover
-{
-  color: #333;
+{  
+  color: var(--text-color);  
 }
 
 .expression .operator_link
@@ -229,26 +238,26 @@
 
 .expression.ROOT
 {
-  border-color: orange;
-  background-color: #FFFFE0;
+  border-color: var(--surface-800);
+  background-color: var(--surface-0);
 }
 
 .expression.AND
 {
-  border-color: red;
-  background-color: #FFE0E0;
+  border-color: var(--surface-500);
+  background-color: var(--surface-0);
 }
 
 .expression.OR
 {
-  border-color: green;
-  background-color: #E0FFE0;
+  border-color: var(--surface-500);
+  background-color: var(--surface-0);
 }
 
 .expression.NOR
 {
-  border-color: blue;    
-  background-color: #E0E0FF;
+  border-color: var(--surface-500);
+  background-color: var(--surface-0);
 }
 
 /* query_edit */
@@ -278,7 +287,7 @@
 
 .query_edit .tabbed_panel .output_label
 {
-  min-width: 90px;
+  min-width: 110px;
 }
 
 .query_edit .tabbed_panel .output_label.role
@@ -296,13 +305,15 @@
 {
   flex-grow: 0;
   width: 200px;
-  padding: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .query_edit .tabbed_panel .edit_panel .right
 {  
   flex-grow: 1;
-  padding: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
   min-width: 200px;
 }
 
@@ -359,8 +370,9 @@
 .query_edit .tabbed_panel .edit_panel .left .item_list
 {
   min-height: 200px;
-  max-height: 400px;
+  max-height: 280px;
   overflow: auto;
+  border: 1px solid #DEE2E6;
 }
 
 .query_edit .tabbed_panel .edit_panel .left .item_list .item
@@ -375,12 +387,13 @@
 
 .query_edit .tabbed_panel .edit_panel .left .item_list .item .row1
 {
+  font-size: 10px;
   word-break: break-all;
 }
 
 .query_edit .tabbed_panel .edit_panel .left .item_list .item .row2
 { 
-  font-size: 10px;
+  font-size: 9px;
   word-break: break-word;
 }
 
@@ -418,4 +431,11 @@
 
 .query_edit .tabbed_panel .edit_panel .left .list_entry:hover
 {
+}
+
+.query_edit .tabbed_panel .edit_panel .bottom
+{
+  width: 100%;  
+  padding-left: 8px;
+  padding-right: 8px;  
 }

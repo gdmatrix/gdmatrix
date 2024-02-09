@@ -116,11 +116,13 @@
                      value="#{agendaBundle.eventCopy_preview}"
                      styleClass="showButton"
                      update="event_copy_preview"
-                     oncomplete="PF('eventCopyPanel').select(1);" />
+                     oncomplete="PF('eventCopyPanel').select(1);"
+                     icon="pi pi-eye" />
     <p:commandButton action="#{eventCopyTabBean.reset}"
                      value="#{agendaBundle.eventCopy_reset}"
                      styleClass="cancelButton"
-                     update="event_copy_settings event_copy_preview" />
+                     update="event_copy_settings event_copy_preview"
+                     icon="fa fa-broom" />
   </p:outputPanel>
 
 </html>
