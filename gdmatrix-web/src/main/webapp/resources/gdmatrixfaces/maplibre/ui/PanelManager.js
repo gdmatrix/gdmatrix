@@ -22,8 +22,8 @@ class PanelManager
 
     panelContainers.top = new PanelContainer(this, "top", 200);
     panelContainers.bottom = new PanelContainer(this, "bottom", 200);
-    panelContainers.left = new PanelContainer(this, "left", 270);
-    panelContainers.right = new PanelContainer(this, "right", 270);
+    panelContainers.left = new PanelContainer(this, "left", 280);
+    panelContainers.right = new PanelContainer(this, "right", 280);
 
     resizeHandlers.top = new ResizeHandler(this, "top");
     resizeHandlers.bottom = new ResizeHandler(this, "bottom");

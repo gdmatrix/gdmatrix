@@ -58,7 +58,9 @@ import org.santfeliu.webapp.modules.doc.DocModuleBean;
 public class SvgStore
 {
   public static final String SVG_TYPEID = "SVGTEMPLATE";
-  public static final String SVG_PROPERTY_NAME = "report";
+  public static final String SVG_REPORT_NAME_PROPERTY = "report";
+  public static final String SVG_TECHNOLOGY_PROPERTY = "technology";
+  public static final String SVG_TECHNOLOGY_VALUE = "svg";
   public static final String SVG_MIMETYPE = "image/svg+xml";
 
   private DocumentManagerPort documentManagerPort;
@@ -74,29 +76,46 @@ public class SvgStore
   {
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(SVG_TYPEID);
-    Property property = new Property();
-    property.setName(SVG_PROPERTY_NAME);
+
+    Property property;
+    property = new Property();
+    property.setName(SVG_TECHNOLOGY_PROPERTY);
+    property.getValue().add(SVG_TECHNOLOGY_VALUE);
+    filter.getProperty().add(property);
+
+    property = new Property();
+    property.setName(SVG_REPORT_NAME_PROPERTY);
     property.getValue().add("%" + svgName + "%");
     filter.getProperty().add(property);
-    filter.getOutputProperty().add(SVG_PROPERTY_NAME);
+
+    filter.getOutputProperty().add(SVG_REPORT_NAME_PROPERTY);
     List<Document> documents = getPort().findDocuments(filter);
     return documents.stream()
-      .map(d -> DictionaryUtils.getPropertyValue(d.getProperty(), SVG_PROPERTY_NAME))
+      .map(d -> DictionaryUtils.getPropertyValue(d.getProperty(), SVG_REPORT_NAME_PROPERTY))
       .collect(Collectors.toList());
   }
 
-  public void storeSvg(String svgName, File svgFile)
+  public void storeSvg(String svgName, String title, File svgFile)
   {
     Document document = getSvgDocument(svgName, true);
     if (document == null)
     {
       document = new Document();
       document.setDocTypeId(SVG_TYPEID);
-      Property property = new Property();
-      property.setName(SVG_PROPERTY_NAME);
+
+      if (title == null) title = svgName;
+      document.setTitle(title);
+
+      Property property;
+      property = new Property();
+      property.setName(SVG_TECHNOLOGY_PROPERTY);
+      property.getValue().add(SVG_TECHNOLOGY_VALUE);
+      document.getProperty().add(property);
+
+      property = new Property();
+      property.setName(SVG_REPORT_NAME_PROPERTY);
       property.getValue().add(svgName);
       document.getProperty().add(property);
-      document.setTitle("SVG TEMPLATE: " + svgName);
     }
     FileDataSource ds = new FileDataSource(svgFile, SVG_MIMETYPE);
     DataHandler dh = new DataHandler(ds);
@@ -123,7 +142,7 @@ public class SvgStore
       DocumentFilter filter = new DocumentFilter();
       filter.setDocTypeId(type);
       Property property = new Property();
-      property.setName(SVG_PROPERTY_NAME);
+      property.setName(SVG_REPORT_NAME_PROPERTY);
       property.getValue().add(reportName);
       filter.getProperty().add(property);
       List<Document> documents = getPort().findDocuments(filter);

@@ -148,3 +148,13 @@ body .map_summary_button.ui-button.ui-button-icon-only .ui-button-text
 {
   padding: 0;
 }
+
+.geo_catalogue
+{
+  color: var(--text-color);
+}
+
+.geo_catalogue .current_map > a
+{
+  color: var(--surface-800);
+}

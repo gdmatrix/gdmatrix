@@ -1,7 +1,6 @@
 /* FindFeatureControl.js */
 
 import { Panel } from "../ui/Panel.js";
-import { FeatureForm } from "../ui/FeatureForm.js";
 import { Bundle } from "../i18n/Bundle.js";
 import "../turf.js";
 
@@ -15,7 +14,9 @@ class FindFeatureControl
         "position" : "right",
         "title" : bundle.get("FindFeatureControl.title"),
         "iconClass" : "pi pi-search",
-        "paddingOffset": 32
+        "paddingOffset": 32,
+        "selectedFinderIconClass": "pi pi-arrow-right",
+        "unselectedFinderIconClass": "pi pi-minus"        
       }, ...options};
 
     this.finders = [];
@@ -33,11 +34,15 @@ class FindFeatureControl
     const findPanel = new Panel(map, this.options);
     this.findPanel = findPanel;
 
+    this.finderLabelDiv = document.createElement("div");
+    findPanel.bodyDiv.appendChild(this.finderLabelDiv);
+    this.finderLabelDiv.textContent = bundle.get("FindFeatureControl.finderLabel");
+
     this.finderSelectorDiv = document.createElement("div");
     findPanel.bodyDiv.appendChild(this.finderSelectorDiv);
+    this.finderSelectorDiv.className = "finder_selector";
 
     this.formDiv = document.createElement("div");
-    this.formDiv.className = "overflow-hidden";
     findPanel.bodyDiv.appendChild(this.formDiv);
 
     const clearDiv = document.createElement("div");
@@ -45,7 +50,7 @@ class FindFeatureControl
     clearDiv.innerHTML = `<input id="clear_markers" type="checkbox" checked>
       <label for="clear_markers">${bundle.get("FindFeatureControl.clearMarkers")}</label>`;
     this.clearMarkersCheckbox = document.getElementById("clear_markers");
-    clearDiv.className = "flex mb-3";
+    clearDiv.className = "flex align-items-center mb-3";
 
     this.buttonsDiv = document.createElement("div");
     this.buttonsDiv.className = "button_bar text-right";
@@ -143,14 +148,13 @@ class FindFeatureControl
   {
     this.finderSelectorDiv.innerHTML = "";
     const ul = document.createElement("ul");
-    ul.className = "finder_selector";
     this.finderSelectorDiv.appendChild(ul);
     for (let finder of this.finders)
     {
       let li = document.createElement("li");
       ul.appendChild(li);
       let icon = document.createElement("i");
-      icon.className = "pi pi-arrow-right mr-1";
+      icon.className = this.options.unselectedFinderIconClass;
       li.appendChild(icon);
       
       let anchor = document.createElement("a");
@@ -169,11 +173,21 @@ class FindFeatureControl
   highlightFinderSelector()
   {
     const ul = this.finderSelectorDiv.firstElementChild;
+    let li;
+    let icon;
     const elems = ul.getElementsByClassName("selected");
-    if (elems.length > 0) elems[0].classList.remove("selected");
+    if (elems.length > 0)
+    {
+      li = elems[0];
+      li.classList.remove("selected");
+      icon = li.firstElementChild;
+      icon.className = this.options.unselectedFinderIconClass;
+    }
     let index = this.finders.indexOf(this.activeFinder);
-    let li = ul.children[index];
+    li = ul.children[index];
     li.classList.add("selected");
+    icon = li.firstElementChild;
+    icon.className = this.options.selectedFinderIconClass;
   }
 
   setActiveFinder(finder)
@@ -425,209 +439,5 @@ class FindFeatureControl
   }
 }
 
-class FeatureFinder
-{
-  constructor(params)
-  {
-  }
-
-  onAdd(findFeatureControl)
-  {
-    this.findFeatureControl = findFeatureControl;
-  }
-
-  getTitle()
-  {
-    return "title";
-  }
-
-  addFormFields(elem)
-  {
-    // create form fields into elem
-    if (this.createFormFields)
-    {
-      elem.innerHTML = this.createFormFields();
-    }
-  }
-
-  createFormFields()
-  {
-    return `<input type="text" name="name" />`; // legacy method
-  }
-
-  async find()
-  {
-    return []; // geojson features
-  }
-
-  getFeatureLabel(feature)
-  {
-    return "?";
-  }
-
-  getListIcon(feature)
-  {
-    return "pi pi-map-marker";
-  }
-
-  getListIconUrl(feature)
-  {
-    return null;
-  }
-
-  getMarker(feature)
-  {
-    const control = this.findFeatureControl;
-    const map = control.map;
-    const centroid = turf.centroid(feature);
-    const marker = new maplibregl.Marker({ color: this.getMarkerColor() })
-     .setLngLat(centroid.geometry.coordinates);
-
-    const element = marker.getElement();
-    element.style.cursor = "pointer";
-
-    const form = this.getForm(feature);
-
-    marker.select = () => {
-      marker.remove();
-      marker.selectedMarker = this.getSelectedMarker(feature);
-      marker.selectedMarker.addTo(map);      
-      if (form) control.showForm(form);
-    };
-
-    marker.unselect = () => {
-      marker.selectedMarker.remove();
-      marker.addTo(map);
-    };
-
-    return marker;
-  }
-
-  getSelectedMarker(feature)
-  {
-    const centroid = turf.centroid(feature);
-    const marker = new maplibregl.Marker({ color: this.getSelectedMarkerColor() })
-     .setLngLat(centroid.geometry.coordinates);
-
-    return marker;
-  }
-
-  getMarkerColor()
-  {
-    return "#3FB1CE";
-  }
-
-  getSelectedMarkerColor()
-  {
-    return "#FF0000";
-  }
-
-  getMaxZoom()
-  {
-    return 18;
-  }
-
-  getForm(feature)
-  {
-    return null;
-  }
-}
-
-class WfsFinder extends FeatureFinder
-{
-  constructor(params)
-  {
-    super(params);
-
-    this.service = params?.service || {
-      url: "https://gis.santfeliu.cat/geoserver/wfs",
-      useProxy: true
-    };
-
-    this.layerName = params?.layerName;
-  }
-
-  getTitle()
-  {
-    return "Generic WFS finder";
-  }
-
-  createFormFields()
-  {
-    return `
-      <div class="formgrid grid">
-        <div class="field col-12">
-          <label for="layer_name">${bundle.get("FindFeatureControl.layer")}:</label>
-          <input id="layer_name" type="text" class="code ui-widget text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full" />
-        </div>
-        <div class="field col-12">
-          <label for="cql_filter">${bundle.get("FindFeatureControl.filter")}:</label>
-          <textarea id="cql_filter" class="code text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
-        </div>
-      </div>
-    `;
-  }
-
-  async find()
-  {
-    this.layerName = document.getElementById("layer_name").value;
-    let cqlFilter = document.getElementById("cql_filter").value;
-    if (this.service?.url && this.layerName)
-    {
-      return await this.findWfs(cqlFilter);
-    }
-    else
-    {
-      return [];
-    }
-  }
-
-  async findWfs(cqlFilter, viewparams)
-  {
-    let url = "/proxy?url=" + this.service.url + "&" +
-      "request=GetFeature" +
-      "&service=WFS" +
-      "&version=2.0.0" +
-      "&typeNames=" + this.layerName +
-      "&srsName=EPSG:4326" +
-      "&outputFormat=application/json" +
-      "&exceptions=application/json";
-
-    if (cqlFilter)
-    {
-      url += "&cql_filter=" + cqlFilter;
-    }
-
-    if (viewparams)
-    {
-      url += "&viewparams=" + viewparams;
-    }
-    
-    const response = await fetch(url);
-    const json = await response.json();
-    if (json.exceptions) throw json;
-
-    return json.features;
-  }
-
-  getFeatureLabel(feature)
-  {
-    return feature.id;
-  }
-
-  getForm(feature)
-  {
-    const map = this.findFeatureControl.map;
-
-    const service = this.service;
-    const form = new FeatureForm(feature);
-    form.service = service;
-    form.layerName = this.layerName;
-    form.setFormSelectorAndPriority(map);
-
-    return form;
-  }
-}
-
-export { FindFeatureControl, FeatureFinder, WfsFinder };
+export { FindFeatureControl };
 

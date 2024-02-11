@@ -37,10 +37,11 @@ package org.santfeliu.webapp.modules.geo.util;
 public class UTMConverter
 {
 
-  /* Ellipsoid model constants (actual values here are for WGS84) */
+  /* Ellipsoid model constants (actual values here are for WGS84 / ETSR89) */
   private static final double MAJOR_RADIUS = 6378137.0;
   private static final double MINOR_RADIUS = 6356752.314;
   private static final double SCALE_FACTOR = 0.9996;
+
 
   /**
    * Converts x and y coordinates in the Universal Transverse Mercator
@@ -51,6 +52,7 @@ public class UTMConverter
    * @param zone The UTM zone in which the point lies.
    * @param southhemi True if the point is in the southern hemisphere; false
    * otherwise.
+   * @return LatLng
    */
   public static LatLng convertToLatLng(double x, double y, int zone, boolean southhemi)
   {

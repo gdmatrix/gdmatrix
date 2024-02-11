@@ -71,7 +71,7 @@ class Panel
 
     const bodyDiv = document.createElement("div");
     this.bodyDiv = bodyDiv;
-    bodyDiv.className = "body flex-grow-1 overflow-auto body";
+    bodyDiv.className = "body p-1 flex-grow-1 overflow-hidden";
     panelDiv.appendChild(bodyDiv);
   }
 

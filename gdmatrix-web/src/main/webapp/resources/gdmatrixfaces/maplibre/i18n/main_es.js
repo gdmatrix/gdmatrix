@@ -11,17 +11,22 @@ Bundle.getBundle("main").setTranslations("es", {
   "button.undo": "Deshacer",
   "button.export": "Exportar",
   "button.close": "Cerrar",
+  "button.print": "Imprimir",
 
   "ExportAreaTool.title": "Exportar area",
   "ExportAreaTool.help": "Dibuja los vértices del area de exportación i pulsa el botón Exportar.",
   "ExportAreaTool.noLayersToExport": "Ninguna de las capas visibles es exportable.",
 
   "FindFeatureControl.title": "Buscar",
+  "FindFeatureControl.finderLabel": "Selecciona buscador:",
   "FindFeatureControl.layer": "Capa",
-  "FindFeatureControl.filter": "Filtro", 
-  "FindFeatureControl.clearMarkers": "Limpia marcadores anteriores",
+  "FindFeatureControl.filter": "Filtro (CQL)", 
+  "FindFeatureControl.addMarkers": "Añadir marcadores",
+  "FindFeatureControl.clearMarkers": "Limpiar marcadores anteriores",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} entitad encontrada` : `${count} entitades encontradas`,
-  
+  "FindFeatureControl.outputExpression" : "Expresión de salida (JS)",
+  "FindFeatureControl.sortBy" : "Ordenar por",
+
   "GetFeatureInfoTool.title": "Obtener información",
   "GetFeatureInfoTool.help": "Pulsa sobre el mapa para obtener información de las entitades.",
   "GetFeatureInfoTool.noDataFound": "Datos no encontrados.",
@@ -44,6 +49,10 @@ Bundle.getBundle("main").setTranslations("es", {
   "ZoomControl.zoom": (zoom) => `Zoom: ${zoom}`,
   
   "PrintControl.title": "Imprimir",
+  "PrintControl.reportName": "Plantilla",
+  "PrintControl.reportTitle": "Título",
+  "PrintControl.scale": "Escala de impresión",
+  "PrintControl.currentWindow": "Ventana actual",
   
   "RefreshControl.title": "Refrescar"
 

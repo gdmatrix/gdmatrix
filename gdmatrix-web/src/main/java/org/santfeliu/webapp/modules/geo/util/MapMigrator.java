@@ -111,7 +111,7 @@ public class MapMigrator
       doc.setDocId(null);
       doc.setVersion(0);
       doc.setIncremental(false);
-      String reportName = DictionaryUtils.getPropertyValue(doc.getProperty(), SvgStore.SVG_PROPERTY_NAME);
+      String reportName = DictionaryUtils.getPropertyValue(doc.getProperty(), SvgStore.SVG_REPORT_NAME_PROPERTY);
       System.out.println(doc.getDocId() + ", " + reportName + ": " + doc.getTitle());
       DocumentFilter filter2 = new DocumentFilter();
       filter2.setDocTypeId(SvgStore.SVG_TYPEID);

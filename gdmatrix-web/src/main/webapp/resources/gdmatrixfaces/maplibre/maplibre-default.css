@@ -146,6 +146,8 @@
 {
   width: 100%;
   padding: 4px;
+  padding-left: 2px;
+  padding-right: 2px;
   font-family: var(--font-family);
   display: flex;
   flex-direction: column;
@@ -180,10 +182,12 @@
 
 /* FindFetureControl */
 
-.maplibre_panel_container .scroller .panel .finder_selector
+.maplibre_panel_container .scroller .panel .finder_selector ul
 {
   list-style: none;
-  padding-left: 0;
+  padding: 0;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .maplibre_panel_container .scroller .panel .finder_selector li
@@ -197,6 +201,7 @@
 {
   text-decoration: none;
   color: var(--text-color);
+  padding-left: 0.5rem;
 }
 
 .maplibre_panel_container .scroller .panel .finder_selector li.selected a
@@ -207,12 +212,6 @@
 .maplibre_panel_container .scroller .panel .finder_selector li i
 {
   padding-top: 4px;
-  visibility: hidden;
-}
-
-.maplibre_panel_container .scroller .panel .finder_selector li.selected i
-{
-  visibility:visible;
 }
 
 .maplibre_panel_container .scroller .panel .finder_results
@@ -263,7 +262,7 @@
 
 .maplibre_panel_container .scroller .panel ul.legend
 {
-  padding-left: 4px;
+  padding-left: 2px;
   list-style: none;
 }
 
@@ -378,17 +377,17 @@
   background-color: var(--surface-300);
 }
 
-/* GetFeatureInfoControl */
+/* html controls */
 
-.maplibregl-map .custom_form input,
-.maplibregl-map .custom_form textarea,
-.maplibregl-map .custom_form select
+.maplibregl-map .panel input,
+.maplibregl-map .panel textarea,
+.maplibregl-map .panel select
 {
   font-family: var(--font-family);
   font-size: 12px;
-  padding: 0.3rem 0.3rem !important;
+  padding: 0.5rem 0.5rem;
   color: var(--text-color);
-  background-color: var(--surface-ground);
+  background-color: var(--surface-overlay);
   outline: 0 none;
   border-color: var(--surface-border);
   border-radius: var(--border-radius);
@@ -398,27 +397,29 @@
   transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
 }
 
-.maplibregl-map .custom_form select
+.maplibregl-map .panel .custom_form input,
+.maplibregl-map .panel .custom_form textarea,
+.maplibregl-map .panel .custom_form select
 {
-  padding: 0 !important;  
+  padding: 0.3rem 0.3rem !important;  
 }
 
-.maplibregl-map .custom_form input[type=submit]
+.maplibregl-map .panel input[type=submit]
 {
   background-color: var(--primary-color);
   color: var(--primary-color-text);
 }
 
-.maplibregl-map .custom_form input:hover,
-.maplibregl-map .custom_form textarea:hover,
-.maplibregl-map .custom_form select:hover
+.maplibregl-map .panel input:hover,
+.maplibregl-map .panel textarea:hover,
+.maplibregl-map .panel select:hover
 {
   border-color: var(--primary-color);
 }
 
-.maplibregl-map .custom_form input:focus,
-.maplibregl-map .custom_form textarea:focus,
-.maplibregl-map .custom_form select:focus
+.maplibregl-map .panel input:focus,
+.maplibregl-map .panel textarea:focus,
+.maplibregl-map .panel select:focus
 {
   border-color: var(--primary-color);
   box-shadow: var(--focus-ring);

@@ -54,14 +54,14 @@ import org.santfeliu.webapp.modules.geo.io.MapStore;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.io.SvgStore;
-import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
-import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
-import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
 import org.santfeliu.faces.maplibre.encoder.TranslateStyleEncoder;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICES;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICE_PARAMETERS;
 
 /**
  *
@@ -202,11 +202,11 @@ public class GeoMapBean extends WebBean implements Serializable
     Map<String, Object> metadata = getStyle().getMetadata();
 
     Map<String, Service> services =
-      (Map<String, Service>)metadata.get("services");
+      (Map<String, Service>)metadata.get(SERVICES);
     if (services == null && neverNull)
     {
       services = new HashMap<>();
-      metadata.put("services", services);
+      metadata.put(SERVICES, services);
     }
     return services;
   }
@@ -218,11 +218,11 @@ public class GeoMapBean extends WebBean implements Serializable
     Map<String, Object> metadata = getStyle().getMetadata();
 
     Map<String, ServiceParameters> map =
-      (Map<String, ServiceParameters>)metadata.get("serviceParameters");
+      (Map<String, ServiceParameters>)metadata.get(SERVICE_PARAMETERS);
     if (map == null)
     {
       map = new HashMap<>();
-      metadata.put("serviceParameters", map);
+      metadata.put(SERVICE_PARAMETERS, map);
     }
     return map;
   }
@@ -554,50 +554,8 @@ public class GeoMapBean extends WebBean implements Serializable
 
   private void convertMetadata()
   {
-    Map<String, Object> services =
-      (Map<String, Object>)getStyle().getMetadata().get("services");
-    if (services != null)
-    {
-      for (String serviceId : services.keySet())
-      {
-        services.put(serviceId, new Service((Map)services.get(serviceId)));
-      }
-    }
+    StyleMetadata.convert(getStyle());
 
-    Map<String, Object> params =
-      (Map<String, Object>)getStyle().getMetadata().get("serviceParameters");
-    if (params != null)
-    {
-      for (String sourceId : params.keySet())
-      {
-        params.put(sourceId, new ServiceParameters((Map)params.get(sourceId)));
-      }
-    }
-
-    List list = (List)getStyle().getMetadata().get("layerForms");
-    if (list != null)
-    {
-      for (int i = 0; i < list.size(); i++)
-      {
-        list.set(i, new LayerForm((Map)list.get(i)));
-      }
-    }
-
-    list = (List)getStyle().getMetadata().get("printReports");
-    if (list != null)
-    {
-      for (int i = 0; i < list.size(); i++)
-      {
-        list.set(i, new PrintReport((Map)list.get(i)));
-      }
-    }
-
-    Map legendProperties = (Map)getStyle().getMetadata().get("legend");
-    if (legendProperties != null &&
-        "group".equals(legendProperties.get("type")))
-    {
-      getStyle().getMetadata().put("legend", new LegendGroup(legendProperties));
-    }
     GeoMapLegendBean geoMapLegendBean =
       CDI.current().select(GeoMapLegendBean.class).get();
 

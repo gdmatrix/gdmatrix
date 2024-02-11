@@ -60,12 +60,12 @@ import org.w3c.dom.svg.SVGDocument;
 public class PdfGenerator
 {
   static SAXSVGDocumentFactory factory;
-  static ArrayList<Class> bridgeRegistry = new ArrayList<>();
   static ThreadLocal<PdfGenerator> generatorThreadLocal = new ThreadLocal<>();
 
   private Document document;
   private PdfWriter writer;
   private final HashMap context = new HashMap();
+  private final ArrayList<Class> bridgeRegistry = new ArrayList<>();
 
   static
   {
@@ -75,7 +75,6 @@ public class PdfGenerator
 
   public PdfGenerator()
   {
-    generatorThreadLocal.set(this);
   }
 
   public Map getContext()
@@ -85,20 +84,26 @@ public class PdfGenerator
 
   public static PdfGenerator getCurrentInstance()
   {
-    return generatorThreadLocal.get();
+    PdfGenerator gen = generatorThreadLocal.get();
+    if (gen == null)
+    {
+      gen = new PdfGenerator();
+      generatorThreadLocal.set(gen);
+    }
+    return gen;
   }
 
-  public static void registerBridge(Class cls)
+  public void registerBridge(Class cls)
   {
     bridgeRegistry.add(cls);
   }
 
-  public static void unregisterBridge(Class cls)
+  public void unregisterBridge(Class cls)
   {
     bridgeRegistry.add(cls);
   }
 
-  public static void registerBridge(String className)
+  public void registerBridge(String className)
     throws ClassNotFoundException
   {
     Class cls = Class.forName(className);

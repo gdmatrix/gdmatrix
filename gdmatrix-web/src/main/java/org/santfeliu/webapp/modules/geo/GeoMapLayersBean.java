@@ -152,7 +152,9 @@ public class GeoMapLayersBean extends WebBean implements Serializable
 
   public String getJsonPaint()
   {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder()
+      .setPrettyPrinting()
+      .disableHtmlEscaping().create();
     return gson.toJson(editingLayer.getPaint());
   }
 
@@ -164,7 +166,9 @@ public class GeoMapLayersBean extends WebBean implements Serializable
 
   public String getJsonLayout()
   {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder()
+      .setPrettyPrinting()
+      .disableHtmlEscaping().create();
     return gson.toJson(editingLayer.getLayout());
   }
 
@@ -176,7 +180,9 @@ public class GeoMapLayersBean extends WebBean implements Serializable
 
   public String getJsonFilter()
   {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder()
+      .setPrettyPrinting()
+      .disableHtmlEscaping().create();
     return gson.toJson(editingLayer.getFilter());
   }
 

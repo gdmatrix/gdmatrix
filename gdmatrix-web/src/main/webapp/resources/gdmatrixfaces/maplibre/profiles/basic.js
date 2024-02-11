@@ -1,7 +1,7 @@
 /* basic profile */
 
 import { init as initMinimal } from "./minimal.js";
-import { FindFeatureControl, WfsFinder } from "../controls/FindFeatureControl.js";
+import { FindFeatureControl } from "../controls/FindFeatureControl.js";
 import { GetFeatureInfoTool } from "../controls/GetFeatureInfoTool.js";
 import { LegendControl } from "../controls/LegendControl.js";
 import { MapInfoControl } from "../controls/MapInfoControl.js";

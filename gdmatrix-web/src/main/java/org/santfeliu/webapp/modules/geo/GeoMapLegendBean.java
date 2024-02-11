@@ -46,6 +46,7 @@ import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
 import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.LEGEND;
 
 /**
  *
@@ -73,13 +74,13 @@ public class GeoMapLegendBean extends WebBean implements Serializable
 
       Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
 
-      LegendGroup legendGroup = (LegendGroup)metadata.get("legend");
+      LegendGroup legendGroup = (LegendGroup)metadata.get(LEGEND);
 
       if (legendGroup == null)
       {
         legendGroup = new LegendGroup();
         legendGroup.setLabel("Legend");
-        metadata.put("legend", legendGroup);
+        metadata.put(LEGEND, legendGroup);
       }
       populateLegendItem(legendGroup, legendTreeRoot);
     }

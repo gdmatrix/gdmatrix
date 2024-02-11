@@ -59,7 +59,6 @@ public class SvgReportEngine implements ReportEngine
 
   public SvgReportEngine()
   {
-    init();
   }
 
   @Override
@@ -82,13 +81,26 @@ public class SvgReportEngine implements ReportEngine
   {
     try
     {
-      PdfGenerator gen = new PdfGenerator();
+      PdfGenerator gen = PdfGenerator.getCurrentInstance();
+
+      String bridges = "mapviewer"; // default
       Map context = gen.getContext();
       context.put("credentials", credentials);
       for (Parameter parameter : parameters)
       {
-        context.put(parameter.getName(), parameter.getValue());
+        String parameterName = parameter.getName();
+        if ("bridges".equals(parameterName))
+        {
+          bridges = parameter.getValue();
+        }
+        else
+        {
+          context.put(parameterName, parameter.getValue());
+        }
       }
+
+      registerBridges(gen, bridges);
+
       if (connectionName != null)
       {
         context.put("connectionName", connectionName);
@@ -128,16 +140,21 @@ public class SvgReportEngine implements ReportEngine
     return templateFile;
   }
 
-  private void init()
+  private void registerBridges(PdfGenerator gen, String bridges)
+    throws Exception
   {
-    // register components
-    try
+    // TODO: set bridge class names in config file.
+    if ("geo".equals(bridges))
     {
-      PdfGenerator.registerBridge("org.santfeliu.misc.mapviewer.pdfgen.MapRectElementBridge");
-      PdfGenerator.registerBridge("org.santfeliu.misc.mapviewer.pdfgen.MapTextElementBridge");
+      System.out.println("Registering geo bridges");
+      gen.registerBridge("org.santfeliu.webapp.modules.geo.pdfgen.MapRectElementBridge");
+      gen.registerBridge("org.santfeliu.webapp.modules.geo.pdfgen.MapTextElementBridge");
     }
-    catch (Exception ex)
+    else
     {
+      System.out.println("Registering mapviewer bridges");
+      gen.registerBridge("org.santfeliu.misc.mapviewer.pdfgen.MapRectElementBridge");
+      gen.registerBridge("org.santfeliu.misc.mapviewer.pdfgen.MapTextElementBridge");
     }
   }
 }

@@ -28,11 +28,10 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.misc.mapviewer.pdfgen;
+package org.santfeliu.webapp.modules.geo.pdfgen;
 
 import com.lowagie.text.pdf.PdfGraphics2D;
 import com.lowagie.text.Document;
-import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfImportedPage;
@@ -48,22 +47,25 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
-import org.santfeliu.misc.mapviewer.Bounds;
-import org.santfeliu.misc.mapviewer.Map.Layer;
-import org.santfeliu.misc.mapviewer.MapDocument;
-import org.santfeliu.misc.mapviewer.SLDStore;
-import org.santfeliu.misc.mapviewer.ServiceCache;
-import org.santfeliu.misc.mapviewer.ServiceCapabilities;
-import org.santfeliu.misc.mapviewer.util.LayerMerger;
+import org.santfeliu.faces.maplibre.model.Layer;
+import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.pdfgen.PdfGenerator;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.security.util.URLCredentialsCipher;
 import org.santfeliu.util.MatrixConfig;
-
+import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
+import org.santfeliu.webapp.modules.geo.io.SldStore;
+import org.santfeliu.webapp.modules.geo.metadata.Service;
+import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICES;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICE_PARAMETERS;
+import static org.santfeliu.webapp.modules.geo.pdfgen.MapContext.*;
 /**
  *
  * @author realor
@@ -82,17 +84,19 @@ public class MapViewNode extends MapRectNode
   {
     try
     {
-      PdfGenerator pdfgen = PdfGenerator.getCurrentInstance();
-      Map context = pdfgen.getContext();
+      System.out.println("\n\n>>>> MapViewNode paint");
+      PdfGenerator gen = PdfGenerator.getCurrentInstance();
+      Map context = gen.getContext();
       MapContext.init(context);
 
-      MapDocument map = (MapDocument)context.get(MapContext.MAP);
-      Bounds mapBounds = (Bounds)context.get(MapContext.BOUNDS);
-      List<Layer> layers = map.getLayers();
-      String layerVisibility = (String)context.get(MapContext.LAYER_VISIBILITY);
-      Credentials credentials = (Credentials)context.get(MapContext.CREDENTIALS);
+      MapDocument map = (MapDocument)context.get(MAP);
+      Bounds mapBounds = (Bounds)context.get(BOUNDS);
+      Style style = map.getStyle();
 
-      double scale = (Double)pdfgen.getContext().get(MapContext.SCALE);
+      String layerVisibility = (String)context.get(LAYER_VISIBILITY);
+      Credentials credentials = (Credentials)context.get(CREDENTIALS);
+
+      double scale = (Double)gen.getContext().get(SCALE);
 
       Rectangle2D svgBounds = getBounds();
       double svgWidth = svgBounds.getWidth();
@@ -112,48 +116,41 @@ public class MapViewNode extends MapRectNode
         System.out.println("scaleFactor: " + scaleFactor);
         mapBounds = mapBounds.getScaled(scaleFactor);
       }
-      pdfgen.getContext().put(MapContext.BOUNDS, mapBounds);
+      gen.getContext().put(BOUNDS, mapBounds);
 
-      LayerMerger merger = new LayerMerger();
+      List<Layer> layers = style.getLayers();
+
       for (int i = 0; i < layers.size(); i++)
       {
         Layer layer = layers.get(i);
         boolean visible = false;
-        if (layerVisibility == null)
-        {
-          visible = layer.isVisible(); // default visibility
-        }
-        else if (i < layerVisibility.length())
+        if (i < layerVisibility.length())
         {
           visible = layerVisibility.charAt(i) == '1';
         }
         if (visible)
         {
-          if (!merger.merge(layer))
-          {
-            drawLayer((PdfGraphics2D)g2d, map, merger, mapBounds, pdfgen,
-              credentials);
-            merger.reset();
-            merger.merge(layer);
-          }
+          drawLayer((PdfGraphics2D)g2d, style, layer, mapBounds, gen, credentials);
         }
       }
-      drawLayer((PdfGraphics2D)g2d, map, merger, mapBounds, pdfgen,
-        credentials);
 
-      // draw hilight
-      String lastX = (String)context.get(MapContext.LAST_X);
-      String lastY = (String)context.get(MapContext.LAST_Y);
-      String hilightLayer = (String)context.get(MapContext.HILIGHT_LAYER);
-      String hilightGeometry = (String)context.get(MapContext.HILIGHT_GEOMETRY);
-      if (lastX != null && lastY != null &&
+      // draw highlight
+      String lastX = (String)context.get(LAST_X);
+      String lastY = (String)context.get(LAST_Y);
+      String serviceId = (String)context.get(HILIGHT_SERVICE);
+      String hilightLayer = (String)context.get(HILIGHT_LAYER);
+      String hilightGeometry = (String)context.get(HILIGHT_GEOMETRY);
+
+      if (lastX != null && lastY != null && serviceId != null &&
           hilightLayer != null && hilightGeometry != null)
       {
-        String hilightStyle = (String)context.get(MapContext.HILIGHT_STYLE);
-        drawHilightLayer((PdfGraphics2D)g2d, map,
+        String hilightStyle = (String)context.get(HILIGHT_STYLE);
+
+        drawHighlight((PdfGraphics2D)g2d, map, serviceId,
           hilightLayer, hilightStyle, hilightGeometry,
-          lastX, lastY, mapBounds, pdfgen, credentials);
+          lastX, lastY, mapBounds, gen, credentials);
       }
+
       localPaint(g2d);
     }
     catch (Exception ex)
@@ -162,32 +159,62 @@ public class MapViewNode extends MapRectNode
     }
   }
 
-  private void drawLayer(PdfGraphics2D g2d,
-    MapDocument map, LayerMerger merger, Bounds mapBounds,
-    PdfGenerator pdfgen, Credentials credentials)
+  private void drawLayer(PdfGraphics2D g2d, Style style, Layer layer,
+    Bounds mapBounds, PdfGenerator gen, Credentials credentials)
   {
     try
     {
+      System.out.println(">> Processing layer id: " + layer.getId());
+      System.out.println(">> label: " + layer.getLabel());
+
       Rectangle2D svgBounds = getBounds();
       double svgWidth = svgBounds.getWidth();
       double svgHeight = svgBounds.getHeight();
 
-      String serviceUrl = merger.getServiceUrl();
-      ServiceCapabilities capabilities =
-        ServiceCache.getServiceCapabilities(serviceUrl, false, credentials);
-      List<String> formats = capabilities.getRequest().getGetMap().getFormats();
-      if (formats.indexOf("application/pdf") != -1)
-      {
-        String url = getWmsUrl(serviceUrl, map.getSrs(), merger, mapBounds,
-         "application/pdf", svgWidth, svgHeight, credentials);
-        addPdfLayer(url, g2d, pdfgen);
-      }
-      else if (formats.indexOf("image/png") != -1)
-      {
-        String url = getWmsUrl(serviceUrl, map.getSrs(), merger, mapBounds,
-         "image/png", svgWidth, svgHeight, credentials);
-        addImageLayer(url, g2d, pdfgen);
-      }
+      String sourceId = layer.getSource();
+
+      Map<String, ServiceParameters> serviceParametersMap =
+        (Map<String, ServiceParameters>)style.getMetadata().get(SERVICE_PARAMETERS);
+      if (serviceParametersMap == null) return;
+
+      ServiceParameters serviceParameters = serviceParametersMap.get(sourceId);
+      if (serviceParameters == null) return;
+
+      String serviceId = serviceParameters.getService();
+      Map<String, Service> servicesMap =
+        (Map<String, Service>)style.getMetadata().get(SERVICES);
+      Service service = servicesMap.get(serviceId);
+
+      String sld = serviceParameters.getSldName();
+
+      List<String> layerList = new ArrayList<>();
+      List<String> cqlFilterList = new ArrayList<>();
+      List<String> styleList = new ArrayList<>();
+
+      mergeLayer(serviceParameters, layer, layerList, styleList, cqlFilterList);
+
+      if (layerList.isEmpty()) return;
+
+      String layers = String.join(",", layerList);
+      String styles = String.join(",", styleList);
+      String cqlFilters = String.join(";", cqlFilterList);
+
+      if (styles.replace(",", " ").trim().length() == 0) styles = null;
+      if (cqlFilters.replace(";", " ").trim().length() == 0) cqlFilters = null;
+
+      System.out.println("Layers: " + layers);
+      System.out.println("Styles: " + styles);
+      System.out.println("CqlFilters: " + cqlFilters);
+
+      String srs = (String)gen.getContext().get(SRS);
+
+      String url = getWmsUrl(service.getUrl(), srs,
+        sld, layers, styles, cqlFilters,
+        mapBounds, "application/pdf", svgWidth, svgHeight, credentials);
+
+      System.out.println("url:" + url);
+
+      addPdfLayer(url, g2d, gen);
     }
     catch (Exception ex)
     {
@@ -195,10 +222,57 @@ public class MapViewNode extends MapRectNode
     }
   }
 
-  private void drawHilightLayer(PdfGraphics2D g2d, MapDocument map,
-    String hilightLayer, String hilightStyle, String hilightGeometry,
+  private void mergeLayer(ServiceParameters serviceParameters, Layer layer,
+    List<String> layerList, List<String> styleList, List<String> cqlFilterList)
+  {
+    String[] parts;
+
+    if (!StringUtils.isBlank(serviceParameters.getLayers()))
+    {
+      parts = serviceParameters.getLayers().split(",");
+      layerList.addAll(Arrays.asList(parts));
+    }
+
+    if (!StringUtils.isBlank(serviceParameters.getStyles()))
+    {
+      parts = serviceParameters.getStyles().split(",");
+      styleList.addAll(Arrays.asList(parts));
+      while (styleList.size() < layerList.size()) styleList.add("");
+    }
+
+    if (!StringUtils.isBlank(serviceParameters.getCqlFilter()))
+    {
+      parts = serviceParameters.getCqlFilter().split(";");
+      cqlFilterList.addAll(Arrays.asList(parts));
+      while (cqlFilterList.size() < layerList.size()) cqlFilterList.add("1=1");
+    }
+
+    if (!StringUtils.isBlank(layer.getLayers()))
+    {
+      parts = layer.getLayers().split(",");
+      layerList.addAll(Arrays.asList(parts));
+    }
+
+    if (!StringUtils.isBlank(layer.getStyles()))
+    {
+      parts = layer.getStyles().split(",");
+      styleList.addAll(Arrays.asList(parts));
+      while (styleList.size() < layerList.size()) styleList.add("");
+    }
+
+    if (!StringUtils.isBlank(layer.getCqlFilter()))
+    {
+      parts = layer.getCqlFilter().split(",");
+      cqlFilterList.addAll(Arrays.asList(parts));
+      while (cqlFilterList.size() < layerList.size()) cqlFilterList.add("1=1");
+    }
+  }
+
+  private void drawHighlight(PdfGraphics2D g2d, MapDocument map,
+    String serviceId, String highlightLayer,
+    String highlightStyle, String geometryColumn,
     String lastX, String lastY, Bounds mapBounds,
-    PdfGenerator pdfgen, Credentials credentials)
+    PdfGenerator gen, Credentials credentials)
   {
     try
     {
@@ -206,27 +280,23 @@ public class MapViewNode extends MapRectNode
       double svgWidth = svgBounds.getWidth();
       double svgHeight = svgBounds.getHeight();
       String cqlFilter =
-        "contains(" + hilightGeometry +
+        "contains(" + geometryColumn +
         ", point(" + lastX + " " + lastY + "))";
 
-      String serviceUrl = map.getServices().get(0).getUrl();
-      ServiceCapabilities capabilities =
-        ServiceCache.getServiceCapabilities(serviceUrl, false, credentials);
-      List<String> formats = capabilities.getRequest().getGetMap().getFormats();
-      if (formats.indexOf("application/pdf") != -1)
-      {
-        String url = getWmsUrl(serviceUrl, map.getSrs(), hilightLayer,
-          hilightStyle, null, cqlFilter, mapBounds,
-          "application/pdf", svgWidth, svgHeight, credentials);
-        addPdfLayer(url, g2d, pdfgen);
-      }
-      else if (formats.indexOf("image/png") != -1)
-      {
-        String url = getWmsUrl(serviceUrl, map.getSrs(), hilightLayer,
-          hilightStyle, null, cqlFilter, mapBounds,
-          "image/png", svgWidth, svgHeight, credentials);
-        addImageLayer(url, g2d, pdfgen);
-      }
+      Map<String, Service> servicesMap =
+        (Map<String, Service>)map.getStyle().getMetadata().get(SERVICES);
+      if (servicesMap == null) return;
+
+      Service service = servicesMap.get(serviceId);
+      if (service == null) return;
+
+      String serviceUrl = service.getUrl();
+      String srs = (String)gen.getContext().get(SRS);
+
+      String url = getWmsUrl(serviceUrl, srs, null, highlightLayer,
+        highlightStyle, cqlFilter, mapBounds,
+        "application/pdf", svgWidth, svgHeight, credentials);
+      addPdfLayer(url, g2d, gen);
     }
     catch (Exception ex)
     {
@@ -240,8 +310,8 @@ public class MapViewNode extends MapRectNode
     PdfGenerator pdfgen = PdfGenerator.getCurrentInstance();
     Map context = pdfgen.getContext();
 
-    String lastX = (String)context.get(MapContext.LAST_X);
-    String lastY = (String)context.get(MapContext.LAST_Y);
+    String lastX = (String)context.get(LAST_X);
+    String lastY = (String)context.get(LAST_Y);
     double boxWidth = bounds.getWidth();
     double boxHeight = bounds.getHeight();
 
@@ -254,7 +324,7 @@ public class MapViewNode extends MapRectNode
         double x = Double.parseDouble(lastX);
         double y = Double.parseDouble(lastY);
 
-        Bounds mapBounds = (Bounds)context.get(MapContext.BOUNDS);
+        Bounds mapBounds = (Bounds)context.get(BOUNDS);
 
         mapBounds = mapBounds.getAdjusted(boxWidth, boxHeight);
         int relativeX =
@@ -270,6 +340,7 @@ public class MapViewNode extends MapRectNode
       }
       catch (Exception ex)
       {
+        // ignore
       }
     }
     g2d.setColor(Color.BLACK);
@@ -319,44 +390,8 @@ public class MapViewNode extends MapRectNode
       (float)matrix[3], (float)matrix[4], (float)matrix[5]);
   }
 
-  private void addImageLayer(String url, PdfGraphics2D g2d, PdfGenerator pdfgen)
-    throws Exception
-  {
-    Rectangle2D svgBounds = getBounds();
-    double x = svgBounds.getX();
-    double y = svgBounds.getY();
-    double svgWidth = svgBounds.getWidth();
-    double svgHeight = svgBounds.getHeight();
-
-    double factor = 72.0 / svgDPI;
-
-    Document document = pdfgen.getDocument();
-
-    Rectangle pdfPageBounds = document.getPageSize();
-
-    double ox = factor * x;
-    double oy = pdfPageBounds.getHeight() - factor * (y + svgHeight);
-    double imageWidth = factor * svgWidth;
-    double imageHeight = factor * svgHeight;
-
-    Image image = Image.getInstance(new URL(url));
-    image.setAbsolutePosition((float)ox, (float)oy);
-    image.scaleToFit((float)imageWidth, (float)imageHeight);
-
-    document.add(image);
-  }
-
   private String getWmsUrl(String serviceUrl, String srs,
-    LayerMerger merger, Bounds mapBounds, String format,
-    double mapWidth, double mapHeight, Credentials credentials)
-  {
-    return getWmsUrl(serviceUrl, srs, merger.getLayerNames(),
-      merger.getStyleNames(), merger.getSld(), merger.getCqlFilter(),
-      mapBounds, format, mapWidth, mapHeight, credentials);
-  }
-
-  private String getWmsUrl(String serviceUrl, String srs,
-    String layerNames, String styleNames, String sld, String cqlFilter,
+    String sld, String layerNames, String styleNames, String cqlFilter,
     Bounds mapBounds, String format, double mapWidth, double mapHeight,
     Credentials credentials)
   {
@@ -377,7 +412,8 @@ public class MapViewNode extends MapRectNode
     }
     if (!StringUtils.isBlank(sld))
     {
-      String sldUrl = SLDStore.getSldURL(sld);
+      SldStore sldStore = new SldStore();
+      String sldUrl = sldStore.getSldUrl(sld);
       url += "&sld=" + sldUrl;
     }
     if (!StringUtils.isBlank(cqlFilter))

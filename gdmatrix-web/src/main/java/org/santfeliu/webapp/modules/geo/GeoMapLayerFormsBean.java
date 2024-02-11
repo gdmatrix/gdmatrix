@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.LAYER_FORMS;
 
 /**
  *
@@ -57,11 +58,11 @@ public class GeoMapLayerFormsBean extends WebBean implements Serializable
   {
     Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
 
-    List<LayerForm> layerForms = (List<LayerForm>)metadata.get("layerForms");
+    List<LayerForm> layerForms = (List<LayerForm>)metadata.get(LAYER_FORMS);
     if (layerForms == null)
     {
       layerForms = new ArrayList<>();
-      metadata.put("layerForms", layerForms);
+      metadata.put(LAYER_FORMS, layerForms);
     }
     return layerForms;
   }

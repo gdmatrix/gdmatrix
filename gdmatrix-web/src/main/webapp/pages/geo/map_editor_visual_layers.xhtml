@@ -174,7 +174,8 @@
               <f:facet name="title">
                 <span class="fa fa-paintbrush mr-2"/>Paint
               </f:facet>
-              <gdm:codemirror value="#{geoMapLayersBean.jsonPaint}" language="json">
+              <gdm:codemirror value="#{geoMapLayersBean.jsonPaint}" 
+                              language="json" lineNumbers="true">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>
             </p:tab>
@@ -183,7 +184,8 @@
               <f:facet name="title">
                 <span class="fa fa-up-down-left-right mr-2"/>Layout
               </f:facet>
-              <gdm:codemirror value="#{geoMapLayersBean.jsonLayout}" language="json">
+              <gdm:codemirror value="#{geoMapLayersBean.jsonLayout}" 
+                              language="json" lineNumbers="true">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>
@@ -192,7 +194,8 @@
               <f:facet name="title">
                 <span class="pi pi-filter mr-2"/>Filter
               </f:facet>
-              <gdm:codemirror value="#{geoMapLayersBean.jsonFilter}" language="json">
+              <gdm:codemirror value="#{geoMapLayersBean.jsonFilter}" 
+                              language="json" lineNumbers="true">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>

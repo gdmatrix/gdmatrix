@@ -76,6 +76,13 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     currentMapView = mapView;
   }
 
+  public void showMap(MapView mapView)
+  {
+    this.currentMapView = mapView;
+    GeoMapBean geoMapBean = CDI.current().select(GeoMapBean.class).get();
+    geoMapBean.loadMap(mapView.getMapName(), "map_viewer");
+  }
+
   public String getCurrentMapSummary()
   {
     try

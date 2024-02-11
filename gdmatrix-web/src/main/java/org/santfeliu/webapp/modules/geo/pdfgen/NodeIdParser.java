@@ -28,59 +28,46 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.geo.metadata;
-
-import java.io.Serializable;
-import static org.apache.commons.lang.StringUtils.isBlank;
+package org.santfeliu.webapp.modules.geo.pdfgen;
 
 /**
  *
  * @author realor
  */
-public class PrintReport implements Serializable
+public class NodeIdParser
 {
-  String reportName;
-  String label;
-  String formSelector;
+  /* id format in components: *<componentName>_<argument> */
+  public static final String COMPONENT_TAG = "comp_"; // deprecated
+  private String componentName;
+  private String argument;
 
-  public PrintReport()
+  public void parse(String id)
   {
+    componentName = null;
+    argument = null;
+    if (id.startsWith(COMPONENT_TAG))
+    {
+      id = id.substring(COMPONENT_TAG.length());
+    }
+    int index = id.indexOf("_");
+    if (index != -1)
+    {
+      componentName = id.substring(0, index);
+      argument = id.substring(index + 1);
+    }
+    else
+    {
+      componentName = id;
+    }
   }
 
-  public PrintReport(java.util.Map properties)
+  public String getComponentName()
   {
-    reportName = (String)properties.get("reportName");
-    label = (String)properties.get("label");
-    formSelector = (String)properties.get("formSelector");
+    return componentName;
   }
 
-  public String getReportName()
+  public String getArgument()
   {
-    return reportName;
-  }
-
-  public void setReportName(String reportName)
-  {
-    this.reportName = reportName;
-  }
-
-  public String getLabel()
-  {
-    return label;
-  }
-
-  public void setLabel(String label)
-  {
-    this.label = label;
-  }
-
-  public String getFormSelector()
-  {
-    return formSelector;
-  }
-
-  public void setFormSelector(String formSelector)
-  {
-    this.formSelector = isBlank(formSelector) ? null : formSelector;
+    return argument;
   }
 }

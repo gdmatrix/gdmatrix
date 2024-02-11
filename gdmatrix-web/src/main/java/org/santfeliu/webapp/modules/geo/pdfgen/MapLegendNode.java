@@ -28,59 +28,46 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.geo.metadata;
+package org.santfeliu.webapp.modules.geo.pdfgen;
 
-import java.io.Serializable;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Map;
+import org.santfeliu.pdfgen.PdfGenerator;
 
 /**
  *
  * @author realor
  */
-public class PrintReport implements Serializable
+public class MapLegendNode extends MapRectNode
 {
-  String reportName;
-  String label;
-  String formSelector;
-
-  public PrintReport()
+  public MapLegendNode(String argument)
   {
+    super(argument);
   }
 
-  public PrintReport(java.util.Map properties)
+  @Override
+  protected void localPrimitivePaint(Graphics2D g2d, Rectangle2D bounds)
   {
-    reportName = (String)properties.get("reportName");
-    label = (String)properties.get("label");
-    formSelector = (String)properties.get("formSelector");
-  }
+    try
+    {
+      Map context = PdfGenerator.getCurrentInstance().getContext();
+      MapContext.init(context);
 
-  public String getReportName()
-  {
-    return reportName;
-  }
+      String text = "Legend ";
+      Object value = context.get("text");
+      if (value != null) text += value.toString();
 
-  public void setReportName(String reportName)
-  {
-    this.reportName = reportName;
-  }
-
-  public String getLabel()
-  {
-    return label;
-  }
-
-  public void setLabel(String label)
-  {
-    this.label = label;
-  }
-
-  public String getFormSelector()
-  {
-    return formSelector;
-  }
-
-  public void setFormSelector(String formSelector)
-  {
-    this.formSelector = isBlank(formSelector) ? null : formSelector;
+      Color color = g2d.getColor();
+      g2d.setColor(Color.BLACK);
+      g2d.drawString(text, 10, 20);
+      g2d.drawRect(0, 0, (int)bounds.getWidth(), (int)bounds.getHeight());
+      g2d.setColor(color);
+    }
+    catch (Exception ex)
+    {
+      // ignore
+    }
   }
 }

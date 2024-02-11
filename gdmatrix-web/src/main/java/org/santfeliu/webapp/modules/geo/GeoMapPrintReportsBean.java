@@ -39,12 +39,15 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
+import org.matrix.doc.Document;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.PRINT_REPORTS;
 
 /**
  *
@@ -55,7 +58,7 @@ import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
 public class GeoMapPrintReportsBean extends WebBean implements Serializable
 {
   private PrintReport editingPrintReport;
-  private String reportToUpload;
+  private PrintReport reportToUpload;
 
   @Inject
   GeoMapBean geoMapBean;
@@ -63,11 +66,11 @@ public class GeoMapPrintReportsBean extends WebBean implements Serializable
   public List<PrintReport> getPrintReports()
   {
     List<PrintReport> printReports =
-      (List<PrintReport>)geoMapBean.getStyle().getMetadata().get("printReports");
+      (List<PrintReport>)geoMapBean.getStyle().getMetadata().get(PRINT_REPORTS);
     if (printReports == null)
     {
       printReports = new ArrayList<>();
-      geoMapBean.getStyle().getMetadata().put("printReports", printReports);
+      geoMapBean.getStyle().getMetadata().put(PRINT_REPORTS, printReports);
     }
     return printReports;
   }
@@ -77,9 +80,9 @@ public class GeoMapPrintReportsBean extends WebBean implements Serializable
     return editingPrintReport;
   }
 
-  public void setPrintReportToUpload(String reportName)
+  public void setPrintReportToUpload(PrintReport printReport)
   {
-    reportToUpload = reportName;
+    reportToUpload = printReport;
   }
 
   public void uploadPrintReportFile(FileUploadEvent event)
@@ -95,7 +98,9 @@ public class GeoMapPrintReportsBean extends WebBean implements Serializable
         {
           IOUtils.writeToFile(is, fileToStore);
         }
-        geoMapBean.getSvgStore().storeSvg(reportToUpload, fileToStore);
+        geoMapBean.getSvgStore().storeSvg(reportToUpload.getReportName(),
+          reportToUpload.getLabel(), fileToStore);
+        reportToUpload = null;
       }
       catch (Exception ex)
       {
@@ -138,6 +143,25 @@ public class GeoMapPrintReportsBean extends WebBean implements Serializable
     {
       getPrintReports().add(editingPrintReport);
     }
+
+    if (StringUtils.isBlank(editingPrintReport.getLabel()))
+    {
+      String reportName = editingPrintReport.getReportName();
+      try
+      {
+        Document document =
+          geoMapBean.getSvgStore().getReportDocument(reportName, null, false);
+        String title = document.getTitle();
+        int index = title.indexOf(":");
+        String label = index == -1 ? title : title.substring(index + 1);
+        editingPrintReport.setLabel(label);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+
     editingPrintReport = null;
     geoMapBean.setDialogVisible(false);
   }
@@ -177,5 +201,5 @@ public class GeoMapPrintReportsBean extends WebBean implements Serializable
       return Collections.EMPTY_LIST;
     }
   }
-  
+
 }

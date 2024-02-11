@@ -40,6 +40,7 @@ class GetFeatureInfoTool extends Tool
     this.infoDiv.innerHTML = "";
     this.clearHighlight();
     this.panel.hide();
+    this.setLastUtm(null);
   }
 
   reactivate()
@@ -103,6 +104,19 @@ class GetFeatureInfoTool extends Tool
         "circle-color": "#000000"
       }
     });
+  }
+  
+  setLastUtm(utm)
+  {
+    const map = this.map;
+    if (utm)
+    {
+      map.lastUtm = utm;
+    }
+    else
+    {
+      map.lastUtm = null;
+    }
   }
 
   highlight(geojson)
@@ -175,17 +189,19 @@ class GetFeatureInfoTool extends Tool
       this.addPointer(lngLat);
 
       const headerDiv = this.headerDiv;
+      headerDiv.className = "pl-2";
       headerDiv.innerHTML = "";
       const lngLatDiv = document.createElement("div");
       headerDiv.appendChild(lngLatDiv);
       lngLatDiv.innerHTML = `Lon/Lat: ${lngLat.lng.toFixed(5)}, ${lngLat.lat.toFixed(5)}`;
 
       const utm = toUtm(lngLat.lat, lngLat.lng, 7, 'ETRS89');
+      this.setLastUtm(utm);
       const utmDiv = document.createElement("div");
       headerDiv.appendChild(utmDiv);
       utmDiv.innerHTML = `UTM: ${utm.easting.toFixed(3)}, ${utm.northing.toFixed(3)}`;
 
-      this.infoDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
+      this.infoDiv.innerHTML = `<span class="pi pi-spin pi-spinner p-2" />`;
 
       const services = map.getStyle().metadata?.services;
       const serviceParameters = map.getStyle().metadata?.serviceParameters;

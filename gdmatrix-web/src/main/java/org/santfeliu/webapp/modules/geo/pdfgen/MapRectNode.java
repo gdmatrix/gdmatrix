@@ -28,59 +28,57 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.geo.metadata;
+package org.santfeliu.webapp.modules.geo.pdfgen;
 
-import java.io.Serializable;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import com.lowagie.text.pdf.PdfGraphics2D;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import org.apache.batik.gvt.ShapeNode;
 
 /**
  *
  * @author realor
  */
-public class PrintReport implements Serializable
+public class MapRectNode extends ShapeNode
 {
-  String reportName;
-  String label;
-  String formSelector;
+  private String argument;
 
-  public PrintReport()
+  public MapRectNode()
   {
   }
 
-  public PrintReport(java.util.Map properties)
+  public MapRectNode(String argument)
   {
-    reportName = (String)properties.get("reportName");
-    label = (String)properties.get("label");
-    formSelector = (String)properties.get("formSelector");
+    this.argument = argument;
   }
 
-  public String getReportName()
+  public String getArgument()
   {
-    return reportName;
+    return argument;
   }
 
-  public void setReportName(String reportName)
+  public void setArgument(String argument)
   {
-    this.reportName = reportName;
+    this.argument = argument;
   }
 
-  public String getLabel()
+  @Override
+  public void primitivePaint(Graphics2D g2d)
   {
-    return label;
+    super.primitivePaint(g2d);
+    localPaint(g2d);
   }
 
-  public void setLabel(String label)
+  protected final void localPaint(Graphics2D g2d)
   {
-    this.label = label;
+    Rectangle2D bounds = getBounds();
+    PdfGraphics2D pdf = (PdfGraphics2D)g2d;
+    g2d.translate(bounds.getX(), bounds.getY());
+    localPrimitivePaint(pdf, bounds);
+    g2d.translate(-bounds.getX(), -bounds.getY());
   }
 
-  public String getFormSelector()
+  protected void localPrimitivePaint(Graphics2D g2d, Rectangle2D bounds)
   {
-    return formSelector;
-  }
-
-  public void setFormSelector(String formSelector)
-  {
-    this.formSelector = isBlank(formSelector) ? null : formSelector;
   }
 }

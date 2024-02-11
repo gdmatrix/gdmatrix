@@ -18,10 +18,14 @@ Bundle.getBundle("main").setTranslations("", {
   "ExportAreaTool.noLayersToExport": "None of the visible layers can be exported.",
   
   "FindFeatureControl.title": "Find",
+  "FindFeatureControl.finderLabel": "Select finder:",
   "FindFeatureControl.layer": "Layer",
-  "FindFeatureControl.filter": "Filter",
+  "FindFeatureControl.filter": "Filter (CQL)",
+  "FindFeatureControl.addMarkers": "Add markers",
   "FindFeatureControl.clearMarkers": "Clear previous markers",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} feature found:` : `${count} features found:`,
+  "FindFeatureControl.outputExpression" : "Output expression (JS)",
+  "FindFeatureControl.sortBy" : "Sort by",
   
   "GetFeatureInfoTool.title": "Get feature information",
   "GetFeatureInfoTool.help": "Press on the map to obtain information about the features.",
@@ -45,7 +49,11 @@ Bundle.getBundle("main").setTranslations("", {
   "ZoomControl.zoom": (zoom) => `Zoom: ${zoom}`,
   
   "PrintControl.title": "Print",
-  
+  "PrintControl.reportName": "Template",
+  "PrintControl.reportTitle": "Title",
+  "PrintControl.scale": "Printing scale",
+  "PrintControl.currentWindow": "Current window",
+    
   "RefreshControl.title": "Refresh"
 
 });

@@ -7,9 +7,9 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <li class="pt-1 pb-1">
+  <li class="pt-1 pb-1 #{geoCatalogueBean.currentMapView.mapName == mapView.mapName ? 'current_map' : ''}">
     <span class="pi pi-map mr-2" />
-    <p:commandLink action="#{geoMapBean.loadMap(mapView.mapName, 'map_viewer')}"
+    <p:commandLink action="#{geoCatalogueBean.showMap(mapView)}"
                    value="#{applicationBean.translate(mapView.title, 'geo')}" 
                    process="@this" update="@form:cnt" />
 

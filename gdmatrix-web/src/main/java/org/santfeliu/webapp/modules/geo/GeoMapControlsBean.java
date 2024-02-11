@@ -36,14 +36,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.web.WebBean;
 import org.matrix.dic.Property;
@@ -53,6 +51,8 @@ import org.matrix.doc.DocumentManagerPort;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.PROFILE;
+import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SCRIPTS;
 
 /**
  *
@@ -66,8 +66,6 @@ public class GeoMapControlsBean extends WebBean implements Serializable
   public static final String SCRIPT_NAME_PROPERTY = "workflow.js";
   public static final String SCRIPT_PURPOSE_PROPERTY = "purpose";
   public static final String SCRIPT_PURPOSE_VALUE = "geo";
-  public static final String PROFILE_METADATA = "profile";
-  public static final String SCRIPTS_METADATA = "scripts";
 
   private String scriptToAdd;
 
@@ -80,7 +78,7 @@ public class GeoMapControlsBean extends WebBean implements Serializable
   public String getProfile()
   {
     Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
-    return (String)metadata.get(PROFILE_METADATA);
+    return (String)metadata.get(PROFILE);
   }
 
   public void setProfile(String profile)
@@ -88,11 +86,11 @@ public class GeoMapControlsBean extends WebBean implements Serializable
     Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
     if (StringUtils.isBlank(profile))
     {
-      metadata.remove(PROFILE_METADATA);
+      metadata.remove(PROFILE);
     }
     else
     {
-      metadata.put(PROFILE_METADATA, profile);
+      metadata.put(PROFILE, profile);
     }
   }
 
@@ -132,11 +130,11 @@ public class GeoMapControlsBean extends WebBean implements Serializable
     if (scripts == null)
     {
       Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
-      scripts = (List<String>)metadata.get(SCRIPTS_METADATA);
+      scripts = (List<String>)metadata.get(SCRIPTS);
       if (scripts == null)
       {
         scripts = new ArrayList<>();
-        metadata.put(SCRIPTS_METADATA, scripts);
+        metadata.put(SCRIPTS, scripts);
       }
     }
     return scripts;
