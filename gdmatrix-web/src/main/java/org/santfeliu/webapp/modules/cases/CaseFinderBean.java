@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +54,7 @@ import org.santfeliu.webapp.util.DataTableRow;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseFinderBean extends FinderBean
 {
   private String smartFilter;

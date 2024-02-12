@@ -66,7 +66,7 @@ public abstract class ObjectBean extends BaseBean
   protected String objectId = NEW_OBJECT_ID;
   private int searchTabSelector;
   private int editTabSelector;
-  private transient ObjectSetup objectSetup;
+  private ObjectSetup objectSetup;
   private ScriptClient actionsClient;
   private ScriptActions scriptActions;
 

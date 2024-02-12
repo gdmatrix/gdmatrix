@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -58,7 +58,7 @@ import org.santfeliu.webapp.setup.ActionObject;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();

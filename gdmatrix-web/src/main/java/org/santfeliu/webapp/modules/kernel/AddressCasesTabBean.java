@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CaseAddressFilter;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.modules.cases.CasesModuleBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class AddressCasesTabBean extends TabBean
 {
   @Inject

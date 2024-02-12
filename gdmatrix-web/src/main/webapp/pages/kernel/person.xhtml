@@ -4,14 +4,15 @@
                 xmlns:f="http://java.sun.com/jsf/core"  
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp" 
+                xmlns:gdm="http://gdmatrix.org/faces"                 
                 template="/pages/obj/object_3col.xhtml">
-    
+
   <ui:param name="objectBean" value="#{personObjectBean}" />
   <ui:param name="searchLabel" value="#{kernelBundle.person_searchLabel}" />    
-  
+
   <ui:define name="filter"> 
-    
+
     <p:outputPanel id="filter_panel">
 
       <p:tabView id="find_selector" dynamic="true"
@@ -176,6 +177,9 @@
       </p:tab>
 
     </p:tabView>    
+
+    <gdm:saveBean value="personObjectBean"  />  
+    <gdm:saveBean value="personFinderBean"  />    
 
   </ui:define>
 

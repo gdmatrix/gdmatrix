@@ -4,7 +4,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces">
 
   <style>
     .modified { font-style: italic; }
@@ -189,5 +190,7 @@
     </f:facet>
 
   </p:dialog>  
+  
+  <gdm:saveBean value="caseACLTabBean"  />    
 
 </ui:composition>

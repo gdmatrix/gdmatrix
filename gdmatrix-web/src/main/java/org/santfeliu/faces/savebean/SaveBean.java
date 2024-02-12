@@ -34,6 +34,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.faces.application.Application;
 import javax.faces.component.FacesComponent;
@@ -120,7 +121,8 @@ public class SaveBean extends UIParameter
   private List<Field> getSavableFields(Class beanClass)
   {
     ArrayList<Field> savableFields = new ArrayList<>();
-    Field[] declaredFields = beanClass.getDeclaredFields();
+    List<Field> declaredFields = getAllFields(beanClass);
+
     for (Field field : declaredFields)
     {
       if (!Modifier.isTransient(field.getModifiers()) &&
@@ -135,5 +137,15 @@ public class SaveBean extends UIParameter
       }
     }
     return savableFields;
+  }
+  
+  private List<Field> getAllFields(Class<?> type)
+  {
+    List<Field> fields = new ArrayList<>();
+    for (Class<?> c = type; c != null; c = c.getSuperclass())
+    {
+      fields.addAll(Arrays.asList(c.getDeclaredFields()));
+    }
+    return fields;
   }
 }

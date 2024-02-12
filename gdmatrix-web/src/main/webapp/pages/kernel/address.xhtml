@@ -4,7 +4,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"  
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces"                
                 template="/pages/obj/object_3col.xhtml">
   
   <ui:param name="objectBean" value="#{addressObjectBean}" />
@@ -156,7 +157,7 @@
     </p:outputPanel>    
   </ui:define>
 
-  <ui:define name="object">
+  <ui:define name="object">  
     <script>
       function onTabShow()
       {
@@ -199,7 +200,10 @@
       </p:tab>
 
     </p:tabView>    
-
+    
+    <gdm:saveBean value="addressObjectBean"  />
+    <gdm:saveBean value="addressFinderBean"  />    
+    
   </ui:define>
-
+  
 </ui:composition>
