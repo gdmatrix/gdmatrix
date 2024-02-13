@@ -92,6 +92,10 @@
           </h:panelGroup>
         <t:saveState value="#{loginBean}" />
       </h:form>
+      <script>
+        var hash = window.location.hash;
+        if (hash.length > 0) document.forms[0].action += hash;
+      </script>
     </h:body>
   </f:view>
 </html>
