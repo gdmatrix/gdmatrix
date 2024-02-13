@@ -447,7 +447,7 @@ public class MapStore
   {
     String adminUserId = MatrixConfig.getProperty("adminCredentials.userId");
     String adminPassword = MatrixConfig.getProperty("adminCredentials.password");
-    return documentManagerPort = DocModuleBean.getPort(adminUserId, adminPassword);
+    return DocModuleBean.getPort(adminUserId, adminPassword);
   }
 
   private MapGroup getMapGroup(String categoryName,
@@ -476,7 +476,7 @@ public class MapStore
     property.setName(MAP_NAME_PROPERTY);
     property.getValue().add(mapName);
     filter.getProperty().add(property);
-    List<Document> documents = getPort().findDocuments(filter);
+    List<Document> documents = getPortAsAdmin().findDocuments(filter);
     return documents.isEmpty() ? null : documents.get(0).getDocId();
   }
 

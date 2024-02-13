@@ -42,6 +42,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
+import javax.faces.context.ExternalContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import org.santfeliu.faces.maplibre.model.Style;
@@ -59,9 +60,9 @@ import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
 import org.santfeliu.faces.maplibre.encoder.TranslateStyleEncoder;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICES;
 import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICE_PARAMETERS;
+import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
  *
@@ -387,6 +388,8 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public String show()
   {
+    loadFromParameters();
+
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
   }
@@ -410,6 +413,58 @@ public class GeoMapBean extends WebBean implements Serializable
   }
 
   // non public methods
+
+  void loadFromParameters()
+  {
+    ExternalContext extContext = getExternalContext();
+    Map<String, String> parameters = extContext.getRequestParameterMap();
+    String mapName = (String)parameters.get("map_name");
+    if (mapName != null)
+    {
+      try
+      {
+        mapDocument = getMapStore().loadMap(mapName);
+        if (mapDocument == null)
+        {
+          error("MAP_NOT_FOUND");
+          setView("catalogue");
+        }
+        else
+        {
+          convertMetadata();
+          setView("map_viewer");
+        }
+      }
+      catch (Exception ex)
+      {
+        String message = ex.getMessage();
+        if (message != null && message.contains("ACTION_DENIED"))
+        {
+          try
+          {
+            Map<String, List<String>> params = new HashMap<>();
+            for (String name : parameters.keySet())
+            {
+              String value = parameters.get(name);
+              params.put(name, Collections.singletonList(value));
+            }
+            String url = extContext.encodeRedirectURL("/login.faces", params);
+            extContext.redirect(url);
+            getFacesContext().responseComplete();
+          }
+          catch (Exception ioex)
+          {
+            // ignore
+          }
+        }
+        else
+        {
+          error(ex);
+          setView("catalogue");
+        }
+      }
+    }
+  }
 
   void editSld(String sourceId, String layers, String styles)
   {

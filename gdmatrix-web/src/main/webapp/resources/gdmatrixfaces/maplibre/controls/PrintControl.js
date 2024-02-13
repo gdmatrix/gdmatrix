@@ -126,7 +126,8 @@ class PrintControl
       + "&map_name=" + style.name
       + "&scale=" + scale
       + "&bbox=" + bbox
-      + "&srs=" + this.options.srs;
+      + "&srs=" + this.options.srs
+      + "&bridges=geo";
 
     if (reportTitle)
     {

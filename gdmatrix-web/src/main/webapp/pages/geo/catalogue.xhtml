@@ -31,6 +31,12 @@
       </div>
     </div>
     
+    <p:messages showSummary="true" styleClass="messages pl-3 pr-3" 
+                rendered="#{not geoMapBean.isDialogVisible()}"
+                showIcon="true" closable="true" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>
+    
     <h:panelGroup id="maps" styleClass="flex-grow-1 overflow-auto pl-3 pr-3">
 
       <div class="pt-1">
@@ -118,15 +124,13 @@
   </p:dialog>
 
   <gdm:saveBean value="geoCatalogueBean" />
-
-  <p:growl id="growl" life="1000">
-    <p:autoUpdate />
-  </p:growl>
   
   <script>
-    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
     document.title = "#{userSessionBean.selectedMenuItem.label}";
-    
+    window.history.pushState({}, document.title, '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+
+    setTimeout(() => window.location.hash = "");
+
     var elems = document.getElementsByClassName("current_map");
     if (elems.length > 0)
     {
