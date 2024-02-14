@@ -65,6 +65,8 @@ public class Style implements Serializable
   String glyphs =  "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf";
   Map<String, Source> sources = new HashMap<>();
   Terrain terrain;
+  Sky sky;
+  Light light;
   List<Layer> layers = new ArrayList<>();
   Map<String, Object> metadata = new HashMap<>();
 
@@ -150,13 +152,32 @@ public class Style implements Serializable
 
   public Terrain getTerrain()
   {
-    if (terrain == null) terrain = new Terrain();
     return terrain;
   }
 
   public void setTerrain(Terrain terrain)
   {
     this.terrain = terrain;
+  }
+
+  public Sky getSky()
+  {
+    return sky;
+  }
+
+  public void setSky(Sky sky)
+  {
+    this.sky = sky;
+  }
+
+  public Light getLight()
+  {
+    return light;
+  }
+
+  public void setLight(Light light)
+  {
+    this.light = light;
   }
 
   public Map<String, Source> getSources()

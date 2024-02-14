@@ -60,6 +60,9 @@ import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
 import org.santfeliu.faces.maplibre.encoder.TranslateStyleEncoder;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.faces.maplibre.model.Light;
+import org.santfeliu.faces.maplibre.model.Sky;
+import org.santfeliu.faces.maplibre.model.Terrain;
 import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICES;
 import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICE_PARAMETERS;
 import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
@@ -190,6 +193,137 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     this.mapNameChanged = true;
   }
+
+  // terrain
+
+  public void setTerrainEnabled(boolean enabled)
+  {
+    Style style = getStyle();
+    if (enabled)
+    {
+      if (style.getTerrain() == null)
+      {
+        style.setTerrain(new Terrain());
+      }
+    }
+    else
+    {
+      style.setTerrain(null);
+    }
+  }
+
+  public boolean isTerrainEnabled()
+  {
+    return getStyle().getTerrain() != null;
+  }
+
+  public void onEnableTerrain()
+  {
+    setTerrainEnabled(isTerrainEnabled());
+  }
+
+  // light
+
+  public void setLightEnabled(boolean enabled)
+  {
+    Style style = getStyle();
+    if (enabled)
+    {
+      if (style.getLight() == null)
+      {
+        style.setLight(new Light());
+      }
+    }
+    else
+    {
+      style.setLight(null);
+    }
+  }
+
+  public boolean isLightEnabled()
+  {
+    return getStyle().getLight() != null;
+  }
+
+  public void onEnableLight()
+  {
+    setLightEnabled(isLightEnabled());
+  }
+
+  public String getLightColor()
+  {
+    Light light = getStyle().getLight();
+    return light == null ? null : light.getColor();
+
+  }
+
+  public void setLightColor(String color)
+  {
+    Light light = getStyle().getLight();
+    if (light != null)
+    {
+      light.setColor(color);
+    }
+  }
+
+  // sky
+
+  public void setSkyEnabled(boolean enabled)
+  {
+    Style style = getStyle();
+    if (enabled)
+    {
+      if (style.getSky() == null)
+      {
+        style.setSky(new Sky());
+      }
+    }
+    else
+    {
+      style.setSky(null);
+    }
+  }
+
+  public boolean isSkyEnabled()
+  {
+    return getStyle().getSky() != null;
+  }
+
+  public void onEnableSky()
+  {
+    setSkyEnabled(isSkyEnabled());
+  }
+
+  public String getSkyColor()
+  {
+    Sky sky = getStyle().getSky();
+    return sky == null ? null : sky.getSkyColor();
+  }
+
+  public void setSkyColor(String color)
+  {
+    Sky sky = getStyle().getSky();
+    if (sky != null)
+    {
+      sky.setSkyColor(color);
+    }
+  }
+
+  public String getFogColor()
+  {
+    Sky sky = getStyle().getSky();
+    return sky == null ? null : sky.getFogColor();
+  }
+
+  public void setFogColor(String color)
+  {
+    Sky sky = getStyle().getSky();
+    if (sky != null)
+    {
+      sky.setFogColor(color);
+    }
+  }
+  
 
   // services
 

@@ -143,7 +143,7 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
     ServiceParameters serviceParameters =
       geoMapBean.getServiceParameters(sourceId);
 
-    if (serviceParameters != null)
+    if (serviceParameters != null && serviceParameters.getService() != null)
     {
       String serviceId = serviceParameters.getService();
       String layers = serviceParameters.getLayers();

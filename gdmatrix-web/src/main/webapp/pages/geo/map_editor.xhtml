@@ -106,6 +106,10 @@
   </p:growl>
 
   <script>
+    // remove duplicates in detachedWidgets
+    PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
+      (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
+
     function acLayerOnInput(widgetVar)
     {
       var value = PF(widgetVar).input.val();
@@ -137,7 +141,7 @@
     }
 
     window.popStateListener = () => {
-      var pfButton = PF("showCatalogueButton");
+      var pfButton = PrimeFaces.widgets["showCatalogueButton"];
       if (pfButton)
       {
         var id = pfButton.id;

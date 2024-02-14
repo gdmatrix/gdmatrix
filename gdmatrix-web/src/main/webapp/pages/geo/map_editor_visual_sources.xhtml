@@ -139,7 +139,7 @@
                   <p:selectOneMenu value="#{geoMapSourcesBean.editingServiceParameters.service}">
                     <f:selectItem itemValue="" itemLabel="" />
                     <f:selectItems value="#{geoMapServicesBean.serviceIds}" var="svc" 
-                                   itemValue="#{svc}" itemLabel="#{geoMapBean.services[svc].description}" />
+                                   itemValue="#{svc}" itemLabel="#{geoMapBean.services[svc].description} (#{svc})" />
                     <p:ajax event="change" process="@this" update="@parent:@parent:@parent:cql_assistant" />
                   </p:selectOneMenu>
                 </div>

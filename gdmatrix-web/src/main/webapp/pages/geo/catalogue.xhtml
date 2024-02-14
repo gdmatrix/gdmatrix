@@ -126,6 +126,10 @@
   <gdm:saveBean value="geoCatalogueBean" />
   
   <script>
+    // remove duplicates in detachedWidgets
+    PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
+      (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
+
     document.title = "#{userSessionBean.selectedMenuItem.label}";
     window.history.pushState({}, document.title, '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
 
