@@ -54,9 +54,18 @@
     <p:menuitem value="Cut" action="#{geoMapLegendBean.cutLegendNodes}"
                 icon="fa fa-scissors" update="legend"
                 rendered="#{!geoMapLegendBean.isTopLegendNode()}" />
-    <p:menuitem value="Paste" action="#{geoMapLegendBean.pasteLegendNodes}"
-                rendered="#{geoMapLegendBean.isLegendPasteEnabled()}"
-                icon="fa fa-clipboard" update="legend" />
+    <p:submenu label="Paste" icon="fa fa-clipboard" 
+               rendered="#{geoMapLegendBean.isLegendPasteEnabled('')}">
+      <p:menuitem value="Inside" action="#{geoMapLegendBean.pasteLegendNodes('inside')}"
+                  rendered="#{geoMapLegendBean.isLegendPasteEnabled('inside')}"
+                  icon="pi pi-arrow-right" update="legend" />
+      <p:menuitem value="Before" action="#{geoMapLegendBean.pasteLegendNodes('before')}"
+                  rendered="#{geoMapLegendBean.isLegendPasteEnabled('before')}"
+                  icon="pi pi-arrow-up" update="legend" />
+      <p:menuitem value="After" action="#{geoMapLegendBean.pasteLegendNodes('after')}"
+                  rendered="#{geoMapLegendBean.isLegendPasteEnabled('after')}"
+                  icon="pi pi-arrow-down" update="legend" />
+    </p:submenu>
     <p:menuitem value="Remove" action="#{geoMapLegendBean.removeLegendNodes}"
                 icon="pi pi-trash" update="legend"
                 rendered="#{!geoMapLegendBean.isTopLegendNode()}" />

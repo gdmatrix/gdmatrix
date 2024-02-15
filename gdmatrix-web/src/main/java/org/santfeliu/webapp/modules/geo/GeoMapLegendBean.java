@@ -283,31 +283,76 @@ public class GeoMapLegendBean extends WebBean implements Serializable
     return isCutLegendNode(node.getParent());
   }
 
-  public boolean isLegendPasteEnabled()
+  public boolean isLegendPasteEnabled(String where)
   {
     if (legendCut == null) return false;
     if (legendSelection == null) return false;
     if (legendSelection.size() != 1) return false;
     LegendTreeNode node = (LegendTreeNode)legendSelection.get(0);
-    return node.isGroupNode();
+
+    if ("inside".equals(where))
+      return node.isGroupNode();
+
+    if ("before".equals(where) || "after".equals(where))
+      return node.getParent() != this.legendTreeRoot;
+
+    return true;
   }
 
-  public void pasteLegendNodes()
+  public void pasteLegendNodes(String where)
   {
     if (legendCut != null && legendSelection != null)
     {
       if (legendSelection.size() == 1 && !legendCut.isEmpty())
       {
         LegendTreeNode targetNode = (LegendTreeNode)legendSelection.get(0);
-        if (targetNode.isGroupNode())
+
+        if ("inside".equals(where))
         {
+          if (targetNode.isGroupNode())
+          {
+            for (TreeNode node : legendCut)
+            {
+              LegendTreeNode sourceNode = (LegendTreeNode)node;
+              if (targetNode != sourceNode &&
+                  !targetNode.isDescendant(sourceNode))
+              {
+                targetNode.add(sourceNode);
+              }
+            }
+          }
+        }
+        else // before or after
+        {
+          LegendTreeNode parentNode = (LegendTreeNode)targetNode.getParent();
+
+          for (TreeNode node : legendCut)
+          {
+            if (parentNode.isDescendant(node) ||
+                targetNode.isDescendant(node) ||
+                node == targetNode)
+            {
+              legendCut = null;
+              return;
+            }
+          }
+
+          for (TreeNode node : legendCut)
+          {
+            node.getParent().getChildren().remove(node);
+          }
+
+          int index = parentNode.getChildren().indexOf(targetNode);
+          if ("after".equals(where)) index++;
+
           for (TreeNode node : legendCut)
           {
             LegendTreeNode sourceNode = (LegendTreeNode)node;
-            if (targetNode != sourceNode &&
-                !targetNode.isDescendant(sourceNode))
+            if (parentNode != sourceNode &&
+                !parentNode.isDescendant(sourceNode))
             {
-              targetNode.add(sourceNode);
+              parentNode.add(index, sourceNode);
+              index++;
             }
           }
         }
