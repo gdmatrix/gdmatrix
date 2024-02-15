@@ -43,6 +43,8 @@ import static org.matrix.dic.DictionaryConstants.CASE_CASE_TYPE;
 import static org.matrix.dic.DictionaryConstants.CASE_DOCUMENT_TYPE;
 import static org.matrix.dic.DictionaryConstants.CASE_PERSON_TYPE;
 import static org.matrix.dic.DictionaryConstants.INTERVENTION_TYPE;
+import org.matrix.policy.PolicyConstants;
+import org.matrix.security.SecurityConstants;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -121,8 +123,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     
     EditTab mainTab = 
       new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/cases/case_main.xhtml");
-    mainTab.getReadRoles().add("EVERYONE");
-    mainTab.getWriteRoles().add("EVERYONE");
+    mainTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    mainTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);
     editTabs.add(mainTab);
     
     EditTab personsTab = 
@@ -130,8 +132,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
         "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
         "/pages/cases/case_persons_dialog.xhtml");
     personsTab.getProperties().put("typeId", CASE_PERSON_TYPE);
-    personsTab.getReadRoles().add("EVERYONE");
-    personsTab.getWriteRoles().add("EVERYONE");    
+    personsTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    personsTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);    
     editTabs.add(personsTab);
     
     EditTab addressesTab = 
@@ -139,8 +141,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
         "/pages/cases/case_addresses.xhtml", "caseAddressesTabBean", 
         "addresses1", "/pages/cases/case_addresses_dialog.xhtml");
     addressesTab.getProperties().put("typeId", CASE_ADDRESS_TYPE);
-    addressesTab.getReadRoles().add("EVERYONE");
-    addressesTab.getWriteRoles().add("EVERYONE");      
+    addressesTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    addressesTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
     editTabs.add(addressesTab);
     
     EditTab documentsTab = 
@@ -148,8 +150,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
         "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
         "/pages/cases/case_documents_dialog.xhtml");
     documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
-    documentsTab.getReadRoles().add("EVERYONE");
-    documentsTab.getWriteRoles().add("EVERYONE");      
+    documentsTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    documentsTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
     editTabs.add(documentsTab);
     
     EditTab intEditTab = 
@@ -165,8 +167,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     intEditTab.getColumns().add(new Column("endDate", 
       BUNDLE_PREFIX + "caseInterventions_endDate", "col-1 text-center white-space-nowrap" ));
     intEditTab.getProperties().put("typeId", INTERVENTION_TYPE);
-    intEditTab.getReadRoles().add("EVERYONE");
-    intEditTab.getWriteRoles().add("EVERYONE");       
+    intEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    intEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);       
     editTabs.add(intEditTab);
     
     EditTab casesEditTab = 
@@ -183,26 +185,29 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     casesEditTab.getColumns().add(new Column("endDate", 
       BUNDLE_PREFIX + "caseCases_endDate", "col-1 text-center white-space-nowrap"));
     casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
-    casesEditTab.getReadRoles().add("EVERYONE");
-    casesEditTab.getWriteRoles().add("EVERYONE");     
+    casesEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    casesEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);     
     editTabs.add(casesEditTab);
-    
-    EditTab aclTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_acl", "/pages/cases/case_acl.xhtml", 
-        "caseACLTabBean");
-    aclTab.getReadRoles().add("EVERYONE");
-    aclTab.getWriteRoles().add("EVERYONE");      
-    editTabs.add(aclTab);
     
     EditTab eventsEditTab = new EditTab(BUNDLE_PREFIX + "tab_events", 
       "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
       "/pages/cases/case_events_dialog.xhtml");
-    eventsEditTab.getReadRoles().add("EVERYONE");
-    eventsEditTab.getWriteRoles().add("EVERYONE");      
-    editTabs.add(eventsEditTab);
+    eventsEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    eventsEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
+    editTabs.add(eventsEditTab);    
     
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", 
-      "/pages/policy/case_policies.xhtml", "casePoliciesTabBean"));      
+    EditTab aclTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_acl", "/pages/cases/case_acl.xhtml", 
+        "caseACLTabBean");
+    aclTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    aclTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
+    editTabs.add(aclTab);
+    
+    EditTab policiesEditTab = new EditTab(BUNDLE_PREFIX + "tab_policies", 
+      "/pages/policy/case_policies.xhtml", "casePoliciesTabBean");
+    policiesEditTab.getReadRoles().add(PolicyConstants.POLICY_ADMIN_ROLE);
+    policiesEditTab.getWriteRoles().add(PolicyConstants.POLICY_ADMIN_ROLE);     
+    editTabs.add(policiesEditTab);      
     
     objectSetup.setEditTabs(editTabs);
     

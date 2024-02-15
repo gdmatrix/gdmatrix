@@ -55,6 +55,12 @@ public class ObjectSetup implements Serializable
   private List<EditTab> editTabs = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
   private ScriptActions scriptActions = new ScriptActions();
+  private MergeMode mergeMode = MergeMode.ADD;
+  public enum MergeMode 
+  {
+    ADD,
+    PRESERVE
+  }
 
   public String getTypeId()
   {
@@ -156,6 +162,16 @@ public class ObjectSetup implements Serializable
     this.scriptActions = scriptActions;
   }
 
+  public MergeMode getMergeMode()
+  {
+    return mergeMode;
+  }
+
+  public void setMergeMode(MergeMode mergeMode)
+  {
+    this.mergeMode = mergeMode;
+  }
+
   @Override
   public String toString()
   {
@@ -207,6 +223,7 @@ public class ObjectSetup implements Serializable
   {
     mergeProperties(defaultSetup.getProperties(), getProperties());
 
+    //Search tabs
     if (searchTabs.isEmpty() && !defaultSetup.getSearchTabs().isEmpty())
     {
       for (SearchTab defaultEditTab : defaultSetup.getSearchTabs())
@@ -216,15 +233,30 @@ public class ObjectSetup implements Serializable
     }
     else
     {
-      for (SearchTab searchTab : searchTabs)
+      if (mergeMode == MergeMode.PRESERVE)
       {
-        SearchTab defaultSearchTab =
-          defaultSetup.findSearchTabByViewId(searchTab.getViewId());
-        if (defaultSearchTab != null)
-          mergeSearchTab(searchTab, defaultSearchTab);
+        for (SearchTab defSearchTab : defaultSetup.getSearchTabs())
+        {
+          SearchTab searchTab = findSearchTabByViewId(defSearchTab.getViewId());
+          if (searchTab != null)
+            mergeSearchTab(searchTab, defSearchTab);
+          else
+            searchTabs.add(defSearchTab);
+        }
+      }
+      else
+      {
+        for (SearchTab searchTab : searchTabs)
+        {
+          SearchTab defSearchTab =
+            defaultSetup.findSearchTabByViewId(searchTab.getViewId());
+          if (defSearchTab != null)
+            mergeSearchTab(searchTab, defSearchTab);
+        }
       }
     }
 
+    //Edit tabs
     if (editTabs.isEmpty() && !defaultSetup.getEditTabs().isEmpty())
     {
       for (EditTab defaultEditTab : defaultSetup.getEditTabs())
@@ -234,12 +266,26 @@ public class ObjectSetup implements Serializable
     }
     else
     {
-      for (EditTab editTab : editTabs)
+      if (mergeMode == MergeMode.PRESERVE)
       {
-        EditTab defaultEditTab =
-          defaultSetup.findEditTabByViewId(editTab.getViewId());
-        if (defaultEditTab != null)
-          mergeEditTab(defaultEditTab, editTab);
+        for (EditTab defEditTab : defaultSetup.getEditTabs())
+        {
+          EditTab editTab = findEditTabByViewId(defEditTab.getViewId());
+          if (editTab != null)
+            mergeEditTab(defEditTab, editTab);
+          else
+            editTabs.add(defEditTab);
+        }
+      }
+      else
+      {
+        for (EditTab editTab : editTabs)
+        {
+          EditTab defEditTab =
+            defaultSetup.findEditTabByViewId(editTab.getViewId());
+          if (defEditTab != null)
+            mergeEditTab(defEditTab, editTab);
+        }
       }
     }
   }

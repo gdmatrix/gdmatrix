@@ -52,6 +52,7 @@ import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.ActionObject;
+import org.santfeliu.webapp.setup.EditTab;
 
 /**
  *
@@ -207,6 +208,27 @@ public class CaseObjectBean extends ObjectBean
     return !(pd != null && pd.getValue() != null && pd.getMinOccurs() > 0
       && pd.isReadOnly());
   }
+  
+  @Override
+  public boolean isRenderedEditTab(EditTab tab)
+  {
+    boolean isRendered = super.isRenderedEditTab(tab);
+    
+    if (!isRendered && tab.getViewId().equals("/pages/cases/case_acl.xhtml"))
+    {
+      String typeId = cas.getCaseTypeId();
+      Type type = TypeCache.getInstance().getType(typeId);
+      if (type != null)
+      {
+        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
+        Set<String> roles = userSessionBean.getRoles();        
+        isRendered = 
+          type.canPerformAction(DictionaryConstants.WRITE_ACTION, roles);
+      }
+    }
+    
+    return isRendered;
+  }  
 
   private Date getDate(String date, String time)
   {
