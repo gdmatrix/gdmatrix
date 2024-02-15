@@ -33,12 +33,83 @@ function maplibreInit(clientId, style, language)
     antialias: true
   });
   
-  window.map = map;
+  const placeHolderImage = createPlaceHolderImage();
+  
+  map.on("styleimagemissing", (e) => {
+    const imageId = e.id;
 
+    map.addImage(imageId, placeHolderImage);
+    
+    loadActualImage(map, imageId);
+  });
+  
   map.setPixelRatio(window.devicePixelRatio);
   map.getContainer().style.touchAction = "none";
 
   importControls(map, style, language);
+
+  window.map = map;
+}
+
+function createPlaceHolderImage()
+{
+  const width = 2;
+  const bytesPerPixel = 4;
+  const data = new Uint8Array(width * width * bytesPerPixel);
+
+  for (let x = 0; x < width; x++) 
+  {
+    for (let y = 0; y < width; y++) 
+    {
+      const offset = (y * width + x) * bytesPerPixel;
+      data[offset + 0] = 0; // red
+      data[offset + 1] = 0; // green
+      data[offset + 2] = 0; // blue
+      data[offset + 3] = 0; // alpha
+    }
+  }
+  return { width, height: width, data };
+}
+
+async function loadActualImage(map, imageId)
+{
+  let url;
+  let imageWidth = 32;
+  let imageHeight = 32;
+
+  if (imageId.indexOf("doc:") === 0)
+  {
+    // format: doc:<docId> || doc:<docId>/size || doc:<docId>/width/height
+    // Examples: doc:129634, doc:13243/16, doc:2344245/32/64
+
+    let docId = imageId.substring(4);
+    let parts = docId.split("/");
+    docId = parts[0];
+    if (parts.length >= 2)
+    {
+      imageWidth = parseInt(parts[1]);
+      if (parts.length >= 3)
+      {
+        imageHeight = parseInt(parts[2]);
+      }
+      else
+      {
+        imageHeight = imageWidth;
+      }
+    }
+    url = "/documents/" + docId;
+  }
+  else
+  {
+    url = imageId;
+  }
+  
+  const image = new Image(imageWidth, imageHeight);
+  image.src = url;
+  image.onload = () => {
+    map.removeImage(imageId);
+    map.addImage(imageId, image);
+  };
 }
 
 async function importControls(map, style, language)
