@@ -273,6 +273,11 @@
   overflow: hidden;
 }
 
+.maplibre_panel_container .scroller .panel ul.legend li.layer
+{
+  padding-left: 1.5rem;
+}
+
 .maplibre_panel_container .scroller .panel ul.legend li > div
 {
   display: flex;
@@ -287,7 +292,7 @@
   background-color: transparent;
   color: var(--text-color);
   padding: 0;
-  margin-right: 8px;
+  margin-right: 6px;
   margin-top: 3px;
   cursor: pointer;
 }
@@ -308,6 +313,8 @@
   color: var(--text-color);
   display: flex;
   align-items: start;
+  opacity: 1;
+  transition: opacity 0.25s ease-in-out;
 }
 
 .maplibre_panel_container .scroller .panel ul.legend a > i
@@ -316,14 +323,9 @@
   padding-right: 4px;  
 }
 
-.maplibre_panel_container .scroller .panel ul.legend a.hidden_layer > i
+.maplibre_panel_container .scroller .panel ul.legend a.hidden_layer
 {
-  color: var(--surface-400);
-}
-
-.maplibre_panel_container .scroller .panel ul.legend a.hidden_layer > span
-{
-  color: var(--surface-600);
+  opacity: 0.5;
 }
 
 .maplibre_panel_container .scroller .panel ul.legend li > div .graphic
@@ -332,6 +334,7 @@
   height: 16px;
   display: inline-block;
   margin-top: 2px;
+  margin-left: 0px;
   margin-right: 4px;
   flex-shrink: 0;
 }

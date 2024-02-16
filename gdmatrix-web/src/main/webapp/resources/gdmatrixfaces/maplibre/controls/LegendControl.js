@@ -74,18 +74,15 @@ class LegendControl
     const li = document.createElement("li");
     ul.appendChild(li);
     const liDiv = document.createElement("div");
-    if (node.graphic && node.graphic.startsWith("image:"))
-    {
-      liDiv.classList.add("flex-column-reverse");
-    }
     li.appendChild(liDiv);
-    if (node.layerId) // layer node
+    if (node.layerId)
     {
-      let graphic = this.getNodeGraphic(node);
-      liDiv.appendChild(graphic);
+      li.className = "layer";
     }
-    else // group node
+    else
     {
+      li.className = "group";
+
       if (node.children === undefined || node.children.length === 0)
       {
         li.style.display = "none";
@@ -115,8 +112,12 @@ class LegendControl
     const link = document.createElement("a");
     liDiv.appendChild(link);
 
+    let icon = document.createElement("i"); // eye icon
+    link.appendChild(icon);
+
+    this.addNodeGraphicAndLabel(node, link);
+    
     link.href = "#";
-    link.innerHTML = `<i></i> <span>${node.label}</span>`;
     node.link = link;
     link.addEventListener("click", (event) =>
     {
@@ -183,35 +184,38 @@ class LegendControl
     }
   }
 
-  getNodeGraphic(node)
+  addNodeGraphicAndLabel(node, link)
   {
+    const labelSpan = document.createElement("span");
+    labelSpan.textContent = node.label;
+    
     let graphic = node.graphic || null;
-    if (graphic === null ||
-        graphic.startsWith("square:") ||
-        graphic.startsWith("circle:"))
+    if (graphic === null)
     {
-      const span = document.createElement("span");
-      span.className = "graphic";
-      span.style.display = "inline-block";
-      span.style.width = "16px";
-      span.style.height = "16px";
-      if (graphic === null)
-      {
-        span.style.backgroundColor = "transparent";
-      }
-      else if (graphic.startsWith("square:"))
+      link.appendChild(labelSpan);
+    }
+    else if (graphic.startsWith("square:") ||
+             graphic.startsWith("circle:"))
+    {
+      const graphicSpan = document.createElement("span");
+      graphicSpan.className = "graphic";
+      graphicSpan.style.display = "inline-block";
+      graphicSpan.style.width = "16px";
+      graphicSpan.style.height = "16px";
+      if (graphic.startsWith("square:"))
       {
         let color = graphic.substring(7);
-        span.style.backgroundColor = color;
-        span.classList.add("square");
+        graphicSpan.style.backgroundColor = color;
+        graphicSpan.classList.add("square");
       }
       else if (graphic.startsWith("circle:"))
       {
         let color = graphic.substring(7);
-        span.style.backgroundColor = color;
-        span.classList.add("circle");
+        graphicSpan.style.backgroundColor = color;
+        graphicSpan.classList.add("circle");
       }
-      return span;
+      link.appendChild(graphicSpan);
+      link.appendChild(labelSpan);
     }
     else if (graphic.startsWith("icon:"))
     {
@@ -219,22 +223,30 @@ class LegendControl
       img.className = "graphic";
       img.alt = "";
       img.src = "/documents/" + graphic.substring(5);
-      return img;
+      link.appendChild(img);
+      link.appendChild(labelSpan);
     }
     else if (graphic.startsWith("image:"))
     {
       let img = document.createElement("img");
-      img.style.display = "block";
+      img.className = "block pt-1";
       img.alt = "";
       img.src = "/documents/" + graphic.substring(6);
-      return img;
+      const div = document.createElement("div");
+      link.appendChild(div);      
+      div.appendChild(labelSpan);
+      div.appendChild(img);
     }
     else if (graphic === "auto")
     {
       let img = document.createElement("img");
-      img.className = "graphic";
+      img.className = "block pt-1";
       img.alt = "";
-      return img;
+      // img.src = ... get url from service
+      const div = document.createElement("div");
+      link.appendChild(div);      
+      div.appendChild(labelSpan);
+      div.appendChild(img);
     }
   }
   

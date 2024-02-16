@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.util.keywords;
@@ -50,7 +50,7 @@ import org.santfeliu.util.TextUtils;
 public class KeywordsManager implements Serializable
 {
   public static final String KEYWORDS_PROPERTY = "keywords";
-  public static final String KEYWORDS_PROPERTIES_PROPERTY = 
+  public static final String KEYWORDS_PROPERTIES_PROPERTY =
     "_keywordsProperties";
 
   private List<String> keywords;
@@ -80,6 +80,11 @@ public class KeywordsManager implements Serializable
         formProperties.remove(remove);
     }
     return keywordsManager;
+  }
+
+  public static String toKeywordsText(String text)
+  {
+    return toKeywordsText(null, text);
   }
 
   public Property getDisjointKeywords()
@@ -134,8 +139,8 @@ public class KeywordsManager implements Serializable
           String text = p.getValue().get(0);
           keywords = KeywordsManager.toKeywordsText(keywords, text);
         }
-        
-        PropertyDefinition propDef = 
+
+        PropertyDefinition propDef =
           type.getPropertyDefinition(KEYWORDS_PROPERTIES_PROPERTY);
         if (propDef != null)
         {
@@ -146,7 +151,7 @@ public class KeywordsManager implements Serializable
             if (p != null)
             {
               String text = p.getValue().get(0);
-              keywords = 
+              keywords =
                 KeywordsManager.toKeywordsText(keywords, text);
             }
           }
@@ -199,18 +204,13 @@ public class KeywordsManager implements Serializable
         String word = parts[i].toLowerCase();
         word = TextUtils.unAccent(word);
         word = word.replaceAll("[\\W]", "");
-        if (word.length() > 2 && !sb.toString().contains(word + " "))
+        if (word.length() > 2 && sb.indexOf(word + " ") == -1)
         {
           sb.append(word).append(" ");
         }
       }
     }
     return sb.toString();
-  }
-
-  private static String toKeywordsText(String text)
-  {
-    return toKeywordsText(null, text);
   }
 
 
@@ -244,7 +244,7 @@ public class KeywordsManager implements Serializable
     public KeywordsComparator()
     {
     }
-    
+
     @Override
     public int compare(Object o1, Object o2)
     {
@@ -266,9 +266,9 @@ public class KeywordsManager implements Serializable
           {
             int k1Pos = keywords1.indexOf(word);
             int k2Pos = keywords2.indexOf(word);
-            score1 = score1 + (k1Pos >= 0 ? (double)((double)k1Pos / 
+            score1 = score1 + (k1Pos >= 0 ? (double)((double)k1Pos /
               (double)keywords1.size()) : 2.0);
-            score2 = score2 + (k2Pos >= 0 ? (double)((double)k2Pos / 
+            score2 = score2 + (k2Pos >= 0 ? (double)((double)k2Pos /
               (double)keywords2.size()) : 2.0);
           }
           return (score1 <= score2 ? -1 : 1);

@@ -66,6 +66,7 @@ import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.misc.mapviewer.Bounds;
+import org.santfeliu.util.MatrixConfig;
 
 public class MapMigrator
 {

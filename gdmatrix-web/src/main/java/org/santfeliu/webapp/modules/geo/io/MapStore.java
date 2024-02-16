@@ -193,6 +193,7 @@ public class MapStore
     {
       if (isNewMap)
       {
+        // previous map found, do not save it
         return false;
       }
       else
@@ -205,18 +206,8 @@ public class MapStore
     document.setCreationDate(mapDocument.getCreationDate());
 
     document.getProperty().clear();
-    for (Property property : mapDocument.getProperty())
-    {
-      String propertyName = property.getName();
-      if (!propertyName.equals(MAP_NAME_PROPERTY) &&
-          !propertyName.equals(MAP_SUMMARY_PROPERTY) &&
-          !propertyName.equals(MAP_DESCRIPTION_PROPERTY) &&
-          !propertyName.equals(MAP_KEYWORDS_PROPERTY) &&
-          !propertyName.equals(MAP_CATEGORY_NAME_PROPERTY))
-      {
-        document.getProperty().add(property);
-      }
-    }
+    document.getProperty().addAll(mapDocument.getProperty());
+
     Property property = new Property();
     property.setName(MAP_NAME_PROPERTY);
     property.getValue().add(mapName);
@@ -250,13 +241,18 @@ public class MapStore
     }
 
     String mapKeywords = mapDocument.getKeywords();
-    if (!isBlank(mapKeywords))
+    if (isBlank(mapKeywords))
     {
-      property = new Property();
-      property.setName(MAP_KEYWORDS_PROPERTY);
-      property.getValue().add(mapKeywords);
-      document.getProperty().add(property);
+      mapKeywords = mapDocument.getTitle();
     }
+    else
+    {
+      mapKeywords = mapDocument.getTitle() + " " + mapKeywords;
+    }
+    property = new Property();
+    property.setName(MAP_KEYWORDS_PROPERTY);
+    property.getValue().add(KeywordsManager.toKeywordsText(mapKeywords));
+    document.getProperty().add(property);
 
     document.getAccessControl().clear();
     document.getAccessControl().addAll(mapDocument.getAccessControl());
@@ -267,7 +263,9 @@ public class MapStore
     content.setData(new DataHandler(ds));
     document.setContent(content);
 
-    port.storeDocument(document);
+    document = port.storeDocument(document);
+
+    mapDocument.readProperties(document);
 
     return true;
   }
@@ -447,7 +445,14 @@ public class MapStore
   {
     String adminUserId = MatrixConfig.getProperty("adminCredentials.userId");
     String adminPassword = MatrixConfig.getProperty("adminCredentials.password");
-    return DocModuleBean.getPort(adminUserId, adminPassword);
+    if (adminUserId != null && adminPassword != null)
+    {
+      return DocModuleBean.getPort(adminUserId, adminPassword);
+    }
+    else
+    {
+      return getPort();
+    }
   }
 
   private MapGroup getMapGroup(String categoryName,
@@ -504,9 +509,9 @@ public class MapStore
       title = "New map";
     }
 
-    public MapDocument(Style map)
+    public MapDocument(Style style)
     {
-      this.style = map;
+      this.style = style;
     }
 
     public MapDocument(Document document) throws IOException
@@ -746,6 +751,7 @@ public class MapStore
       this.captureUserId = document.getCaptureUserId();
       this.captureDateTime = document.getCaptureDateTime();
 
+      getProperty().clear();
       for (Property documentProperty : document.getProperty())
       {
         String propertyName = documentProperty.getName();
