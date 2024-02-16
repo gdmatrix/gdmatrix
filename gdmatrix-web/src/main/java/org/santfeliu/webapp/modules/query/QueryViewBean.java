@@ -32,8 +32,6 @@ package org.santfeliu.webapp.modules.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +43,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
@@ -58,9 +55,12 @@ import org.matrix.sql.SQLManagerPort;
 import org.matrix.sql.SQLManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
-import org.primefaces.event.TransferEvent;
-import org.primefaces.model.DualListModel;
+import org.primefaces.event.ReorderEvent;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.ToggleSelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.santfeliu.misc.query.Query;
+import org.santfeliu.misc.query.Query.Output;
 import org.santfeliu.misc.query.QueryInstance;
 import org.santfeliu.misc.query.QueryInstance.Expression;
 import org.santfeliu.misc.query.QueryInstance.Operator;
@@ -88,7 +88,8 @@ public class QueryViewBean extends WebBean implements Serializable
   private String selectedInstanceName;
   private String selectedInstanceDescription;  
   private List<SelectItem> instanceSelectItems;    
-  private DualListModel<SelectItem> outputs;  
+  private List<Output> allOutputs;
+  private List<Output> selectedOutputs;
   private ParameterSelectItemsMap parameterSelectItemsMap;  
   
   @Inject
@@ -300,51 +301,86 @@ public class QueryViewBean extends WebBean implements Serializable
   public void selectInstance()
   {
     selectedInstance = getQuery().getInstance(selectedInstanceName);
-    outputs = null;        
+    allOutputs = null;
+    selectedOutputs = null;
   }
 
-  public DualListModel<SelectItem> getOutputs()
+  public List<Output> getAllOutputs()
   {
-    if (outputs == null)
+    if (allOutputs == null)
     {
-      List<SelectItem> availableOutputSelectItems = new ArrayList();
-      List<SelectItem> selectedOutputSelectItems = new ArrayList();
-      List<SelectItem> allSelectItems = getAllOutputSelectItems();
-      for (SelectItem selectItem : allSelectItems)
+      allOutputs = new ArrayList();      
+      for (QueryInstance.Output instanceOutput : selectedInstance.getOutputs())
       {
-        if (selectedInstance.indexOfOutput((String)selectItem.getValue()) != -1)
-        {
-          selectedOutputSelectItems.add(selectItem);
-        }
-        else
-        {
-          availableOutputSelectItems.add(selectItem);
-        }
+        allOutputs.add(instanceOutput.getOutput());
       }
-      Collections.sort(selectedOutputSelectItems, 
-        new Comparator<SelectItem>() 
+      for (Output queryOutput : getQuery().getOutputs())
+      {
+        if (selectedInstance.indexOfOutput(queryOutput.getName()) == -1) 
         {
-          @Override
-          public int compare(SelectItem item1, SelectItem item2)
-          {
-            String item1Name = (String)item1.getValue();
-            String item2Name = (String)item2.getValue();
-            return selectedInstance.indexOfOutput(item1Name) - 
-              selectedInstance.indexOfOutput(item2Name);
-          }        
-        }
-      );
-      outputs = new DualListModel(availableOutputSelectItems, 
-        selectedOutputSelectItems);
+          //not selected          
+          allOutputs.add(queryOutput);
+        }        
+      }
     }
-    return outputs;
+    return allOutputs;
   }
 
-  public void setOutputs(DualListModel<SelectItem> outputs)
+  public void setAllOutputs(List<Output> allOutputs)
   {
-    this.outputs = outputs;
+    this.allOutputs = allOutputs;
   }
 
+  public List<Output> getSelectedOutputs()
+  {
+    if (selectedOutputs == null)
+    {
+      selectedOutputs = new ArrayList();
+      for (QueryInstance.Output instanceOutput : selectedInstance.getOutputs())
+      {
+        selectedOutputs.add(instanceOutput.getOutput());
+      }
+    }
+    return selectedOutputs;
+  }
+
+  public void setSelectedOutputs(List<Output> selectedOutputs)
+  {
+    this.selectedOutputs = selectedOutputs;
+  }
+  
+  public void onOutputSelect(SelectEvent<Output> event) 
+  {
+    syncOutputs();
+  }
+
+  public void onOutputUnselect(UnselectEvent<Output> event) 
+  {
+    syncOutputs();    
+  }
+  
+  public void onOutputReorder(ReorderEvent event)
+  {
+    syncOutputs();
+  }
+  
+  public void onOutputToggleAll(ToggleSelectEvent event)
+  {
+    syncOutputs();
+  }
+  
+  private void syncOutputs()
+  {
+    selectedInstance.getOutputs().clear();
+    for (Output output : allOutputs)
+    {
+      if (selectedOutputs.contains(output)) //selected
+      {
+        selectedInstance.addOutput(output.getName());
+      }
+    }
+  }
+  
   private List<SelectItem> getAllOutputSelectItems()
   {
     List outputSelectItems = new ArrayList();
@@ -363,26 +399,6 @@ public class QueryViewBean extends WebBean implements Serializable
   public Operator getRootExpression()
   {
     return selectedInstance.getRootExpression();
-  }
-
-  public void onOutputTransfer(TransferEvent event) 
-  {
-    syncInstanceOutputs();
-  }
-  
-  public void onOutputReorder(AjaxBehaviorEvent event)
-  {
-    syncInstanceOutputs();    
-  }
-  
-  private void syncInstanceOutputs()
-  {    
-    selectedInstance.getOutputs().clear();    
-    for (SelectItem item : outputs.getTarget())
-    {
-      String itemValue = (String)((SelectItem)item).getValue();
-      selectedInstance.addOutput(itemValue);
-    }
   }
 
   public Converter<SelectItem> getOutputConverter()
@@ -430,7 +446,6 @@ public class QueryViewBean extends WebBean implements Serializable
   public void addExpression(String expressionName)
   {
     Operator op = (Operator)selectedExpression;
-    //String expressionName = (String)getValue("#{expression}");
     if (expressionName.startsWith(OPERATOR_PREFIX))
     {
       String operator = expressionName.substring(OPERATOR_PREFIX.length());
@@ -516,7 +531,8 @@ public class QueryViewBean extends WebBean implements Serializable
     {
       queryMainBean.reloadQuery();
       instanceSelectItems = null;
-      outputs = null;
+      allOutputs = null;
+      selectedOutputs = null;
       selectedInstance = getQuery().getInstances().get(0);
       selectedInstanceName = selectedInstance.getName();
       selectedInstanceDescription = null;
@@ -556,7 +572,8 @@ public class QueryViewBean extends WebBean implements Serializable
     selectedInstance.setDescription("Instància " + num);
     selectedInstance.setMaxResults(QueryInstance.DEFAULT_MAX_RESULTS);
     putInstanceDefaultValues(selectedInstance);
-    outputs = null;    
+    allOutputs = null;
+    selectedOutputs = null;
     instanceSelectItems = null;
   }
 
@@ -572,8 +589,9 @@ public class QueryViewBean extends WebBean implements Serializable
     {
       selectedInstance = query.getInstances().get(0);
       selectedInstanceName = selectedInstance.getName();
-      outputs = null;
-    }    
+      allOutputs = null;
+      selectedOutputs = null;
+    }
     instanceSelectItems = null;    
   }
 

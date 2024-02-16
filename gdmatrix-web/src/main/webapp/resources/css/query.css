@@ -152,6 +152,28 @@
   float: right;
 }
 
+.query_view .output_selector .selectAllColumn
+{
+  width: 16px;
+  text-align: center;
+}
+
+.query_view .output_selector .labelColumn
+{
+  width: 30%;  
+}
+
+.query_view .output_selector .descriptionColumn
+{
+  width: 70%;  
+}
+
+.query_view .output_selector .dragColumn
+{
+  width: 16px;
+  text-align: center;
+}
+
 .expression
 {
   display: block;
@@ -197,6 +219,28 @@
 {
   margin-left: 2px;
   margin-right: 2px;
+}
+
+.expression.ROOT > label,
+.expression.ROOT > input
+{
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.expression.predicate span
+{
+  margin-left: 0;
+}
+
+.expression.predicate input[type='text']
+{
+  max-width: 100%;
+}
+
+.expression .operator span
+{
+  margin-left: 0;
 }
 
 .op_children
@@ -385,15 +429,15 @@
   color: blue;
 }
 
-.query_edit .tabbed_panel .edit_panel .left .item_list .item .row1
+.query_component_row1
 {
-  font-size: 10px;
+  font-size: 10px !important; 
   word-break: break-all;
 }
 
-.query_edit .tabbed_panel .edit_panel .left .item_list .item .row2
+.query_component_row2
 { 
-  font-size: 9px;
+  font-size: 9px !important;
   word-break: break-word;
 }
 
