@@ -27,7 +27,7 @@
     <p:column headerText="Type">
       #{layer.type}
     </p:column>
-    <p:column headerText="Flags" styleClass="white-space-nowrap">
+    <p:column headerText="Options" styleClass="white-space-nowrap">
       <p:commandButton action="#{geoMapLayersBean.toggleLayerVisibility(layer)}"
                        icon="#{geoMapLayersBean.isLayerVisible(layer) ? 'pi pi-eye' : 'pi pi-eye-slash'}" 
                        styleClass="rounded-button ui-button-flat"
@@ -154,18 +154,6 @@
           </p:selectOneMenu>
         </div>
         
-        <div class="field col-6">
-          <p:outputLabel value="Visible" for="@next" />
-          <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.visible}" 
-                          styleClass="vertical-align-middle ml-2"/>
-        </div>
-        
-        <div class="field col-6">
-          <p:outputLabel value="Locatable" for="@next" />
-          <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.locatable}" 
-                          styleClass="vertical-align-middle ml-2" />
-        </div>
-        
         <div class="field col-12">
           <p:tabView id="layer_options" dynamic="true" 
                      activeIndex="#{geoMapLayersBean.activeLayerTabIndex}">
@@ -270,14 +258,40 @@
             
             <p:tab>
               <f:facet name="title">
-                <span class="pi pi-sun mr-2"/>Highlight
+                <span class="pi pi-cog mr-2"/>Options
               </f:facet>
               <div class="ui-fluid formgrid grid">
-                <div class="field col-12">
-                  <p:outputLabel value="Enabled" for="@next" />
+
+                <div class="field col-4">
+                  <p:outputLabel value="Visible" for="@next" styleClass="mr-2" />
+                  <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.visible}" 
+                                  styleClass="vertical-align-middle"/>
+                </div>
+
+                <div class="field col-4">
+                  <p:outputLabel value="Locatable" for="@next" styleClass="mr-2" />
+                  <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.locatable}" 
+                                  styleClass="vertical-align-middle">
+                    <p:ajax update="sel_radius" />
+                  </p:toggleSwitch>
+                </div>
+
+                <div class="field col-4">
+                  <p:outputLabel value="Highlight" for="@next" styleClass="mr-2" />
                   <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.highlightEnabled}"
-                                  styleClass="vertical-align-middle ml-2"/>
-                </div> 
+                                  styleClass="vertical-align-middle" />
+                </div>
+
+                <div class="field col-12">
+                  <p:outputLabel value="Selection distance (px)" for="@next" />
+                  <div style="max-width: 200px">
+                  <p:spinner id="sel_radius"          
+                             value="#{geoMapLayersBean.editingLayer.selectionDistance}"
+                             min="1" stepFactor="1"
+                             disabled="#{not geoMapLayersBean.editingLayer.locatable}" /> 
+                  </div>
+                </div>
+
               </div>
             </p:tab>            
             

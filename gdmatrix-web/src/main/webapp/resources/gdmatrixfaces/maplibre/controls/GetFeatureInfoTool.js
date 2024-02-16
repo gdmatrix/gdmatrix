@@ -277,8 +277,10 @@ class GetFeatureInfoTool extends Tool
   async getForms(lngLat, layer, service, layerName, cqlFilter = "")
   {
     const map = this.map;
+    const selectionDistance = layer?.metadata?.selection_distance || 4;
     
-    const geojson = await this.getFeatures(lngLat, service, layerName, cqlFilter);
+    const geojson = await this.getFeatures(lngLat, service, layerName, 
+      cqlFilter, selectionDistance);
       
     const formPromises = [];
     
@@ -309,17 +311,18 @@ class GetFeatureInfoTool extends Tool
     return forms;
   }
 
-  async getFeatures(lngLat, service, layerName, cqlFilter = "")
+  async getFeatures(lngLat, service, layerName, cqlFilter = "", selectionDistance)
   {
     try
-    {
+    {      
       const info = await FeatureTypeInspector.getInfo(service.url, layerName);
       if (info?.geometryColumn)
       {
         const map = this.map;
         const isSurface = info.geometryType.indexOf("Surface") !== -1;
         const zoom = map.getZoom();
-        const dist = isSurface ? 0 : Math.pow(2, 18 - zoom);
+        const dist = isSurface ?
+          0 : (selectionDistance * Math.pow(2, 18 - zoom)) / 4;
 
         let url = "/proxy?url=" + service.url + "&" +
           "request=GetFeature" +
@@ -329,8 +332,9 @@ class GetFeatureInfoTool extends Tool
           "&srsName=EPSG:4326" +
           "&outputFormat=application/json" +
           "&exceptions=application/json" +
-          "&cql_filter=" + "DISTANCE(" + info.geometryColumn +
-            ",SRID=4326;POINT(" + lngLat.lng + " " + lngLat.lat + "))<=" + dist;
+          "&cql_filter=" + info.geometryColumn + " IS NOT NULL AND DISTANCE(" + 
+          info.geometryColumn + ",SRID=4326;POINT(" + 
+          lngLat.lng + " " + lngLat.lat + "))<=" + dist;
 
         if (cqlFilter && cqlFilter.trim().length > 0)
         {

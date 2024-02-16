@@ -164,6 +164,17 @@ public class Layer implements Serializable
     metadata.put("highlight", enabled);
   }
 
+  public Double getSelectionDistance()
+  {
+    Object value = metadata.get("selection_distance");
+    return (value instanceof Double) ? (Double)value : null;
+  }
+
+  public void setSelectionDistance(Double distance)
+  {
+    metadata.put("selection_distance", distance);
+  }
+
   public Map<String, Object> getPaint()
   {
     return paint;
