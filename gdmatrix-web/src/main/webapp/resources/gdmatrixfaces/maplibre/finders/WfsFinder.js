@@ -6,23 +6,23 @@ const bundle = Bundle.getBundle("main");
 
 class WfsFinder extends FeatureFinder
 {
-  constructor(params)
+  constructor(options)
   {
-    super(params);
+    super(options);
 
-    this.service = params?.service || {
+    this.service = options?.service || {
       url: "https://gis.santfeliu.cat/geoserver/wfs",
       useProxy: true
     };
 
-    this.layerName = params?.layerName;
-    this.outputProperties = null;
+    this.layerName = options?.layerName;
+    this.outputExpression = null;
     this.addMarkers = true;
   }
 
   getTitle()
   {
-    return "Generic WFS finder";
+    return bundle.get("WfsFinder.title");
   }
 
   createFormFields()
@@ -30,25 +30,25 @@ class WfsFinder extends FeatureFinder
     return `
       <div class="formgrid grid">
         <div class="field col-12">
-          <label for="wfs_layer_name">${bundle.get("FindFeatureControl.layer")}:</label>
+          <label for="wfs_layer_name">${bundle.get("WfsFinder.layer")}:</label>
           <input id="wfs_layer_name" type="text" spellcheck="false" class="code w-full" />
         </div>
         <div class="field col-12">
-          <label for="wfs_cql_filter">${bundle.get("FindFeatureControl.filter")}:</label>
+          <label for="wfs_cql_filter">${bundle.get("WfsFinder.filter")}:</label>
           <textarea id="wfs_cql_filter" spellcheck="false" class="code w-full"></textarea>
         </div>
         <div class="field col-12">
-          <label for="wfs_output_expr">${bundle.get("FindFeatureControl.outputExpression")}:</label>
+          <label for="wfs_output_expr">${bundle.get("WfsFinder.outputExpression")}:</label>
           <textarea id="wfs_output_expr" spellcheck="false" class="code w-full">feature.id</textarea>
         </div>
         <div class="field col-12">
-          <label for="wfs_sort_by">${bundle.get("FindFeatureControl.sortBy")}:</label>
+          <label for="wfs_sort_by">${bundle.get("WfsFinder.sortBy")}:</label>
           <input id="wfs_sort_by" spellcheck="false" class="code w-full"></textarea>
         </div>
       </div>
       <div class="flex align-items-center">
         <input id="add_markers" type="checkbox" checked>
-        <label for="add_markers">${bundle.get("FindFeatureControl.addMarkers")}</label>
+        <label for="add_markers">${bundle.get("WfsFinder.addMarkers")}</label>
       </div>
     `;
   }
@@ -64,7 +64,7 @@ class WfsFinder extends FeatureFinder
       expr = "feature.id";
       document.getElementById("wfs_output_expr").value = expr;
     }
-    this.labelExpression = new Function("feature", "return " + expr);
+    this.outputExpression = new Function("feature", "return " + expr);
     this.addMarkers = document.getElementById("add_markers").checked;
 
     if (this.service?.url && this.layerName)
@@ -112,9 +112,9 @@ class WfsFinder extends FeatureFinder
 
   getFeatureLabel(feature)
   {
-    if (this.labelExpression)
+    if (this.outputExpression)
     {
-      return this.labelExpression(feature);
+      return this.outputExpression(feature);
     }
     else
     {

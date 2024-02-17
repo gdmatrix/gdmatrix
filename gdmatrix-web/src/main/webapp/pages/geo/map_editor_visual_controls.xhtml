@@ -10,17 +10,17 @@
   <div class="mb-2">
     <p:outputLabel for="@next" value="Profile:" />
     <p:selectOneMenu value="#{geoMapControlsBean.profile}" styleClass="ml-2">
-      <f:selectItem itemValue="" itemLabel="" /> 
+      <f:selectItem itemValue="" itemLabel="" />
       <f:selectItems value="#{geoMapControlsBean.profiles}" var="profile"
                      itemLabel="#{profile}" itemValue="#{profile}" />
     </p:selectOneMenu>
   </div>
-  
+
   <p:dataTable id="map_controls_table" value="#{geoMapControlsBean.scripts}"
-               var="script" stripedRows="true" size="small" 
+               var="script" stripedRows="true" size="small"
                draggableRows="true" rowDragSelector=".drag"
                resizableColumns="false" showGridlines="true">
-    <p:ajax event="rowReorder" 
+    <p:ajax event="rowReorder"
             update="@form:cnt:map_tabs:map_controls_table"/>
 
     <p:column headerText="Script" styleClass="col-7">
@@ -29,11 +29,11 @@
 
     <p:column styleClass="col-2 text-right white-space-nowrap">
       <span class="drag pi pi-arrows-v p-2" />
-      <p:linkButton href="/scripts/#{script}" 
-                    icon="pi pi-eye" 
+      <p:linkButton href="/scripts/#{script}"
+                    icon="pi pi-eye"
                     title="#{objectBundle.view}"
                     styleClass="rounded-button ui-button-flat"
-                    target="_blank" />      
+                    target="_blank" />
       <p:commandButton action="#{geoMapControlsBean.removeScript(script)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"
@@ -42,15 +42,15 @@
                        styleClass="rounded-button ui-button-flat">
       </p:commandButton>
     </p:column>
-    
+
     <f:facet name="footer">
       <div class="flex align-items-center">
         <p:outputLabel value="Script:" for="@next" styleClass="m-2" />
         <div class="ui-inputgroup">
           <p:autoComplete value="#{geoMapControlsBean.scriptToAdd}" var="scriptName"
-                          maxResults="100" minQueryLength="1" 
-                          dropdown="true" dropdownMode="blank"                          
-                          itemLabel="#{scriptName}" itemValue="#{scriptName}" 
+                          maxResults="100" minQueryLength="1"
+                          dropdown="true" dropdownMode="blank"
+                          itemLabel="#{scriptName}" itemValue="#{scriptName}"
                           scrollHeight="200" emptyMessage=""
                           forceSelection="true"
                           completeMethod="#{geoMapControlsBean.completeScriptName}">
@@ -63,7 +63,7 @@
         </div>
       </div>
     </f:facet>
-    
+
   </p:dataTable>
 
 </ui:composition>

@@ -19,13 +19,8 @@ Bundle.getBundle("main").setTranslations("ca", {
 
   "FindFeatureControl.title": "Cerca",
   "FindFeatureControl.finderLabel": "Selecciona cercador:",
-  "FindFeatureControl.layer": "Capa",
-  "FindFeatureControl.filter": "Filtre (CQL)",
-  "FindFeatureControl.addMarkers": "Afegeix marcadors",
   "FindFeatureControl.clearMarkers": "Neteja marcadors anteriors",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} entitat trobada` : `${count} entitats trobades`,
-  "FindFeatureControl.outputExpression" : "Expressió de sortida (JS)",
-  "FindFeatureControl.sortBy" : "Ordena per",
   
   "GetFeatureInfoTool.title": "Obtenir informació",
   "GetFeatureInfoTool.help": "Prem sobre el mapa per obtenir informació de les entitats.",
@@ -54,6 +49,13 @@ Bundle.getBundle("main").setTranslations("ca", {
   "PrintControl.scale": "Escala d'impressió",
   "PrintControl.currentWindow": "Finestra actual",
   
-  "RefreshControl.title": "Actualitza"
+  "RefreshControl.title": "Actualitza",
+  
+  "WfsFinder.title": "Cercador WFS",
+  "WfsFinder.layer": "Capa",
+  "WfsFinder.filter": "Filtre (CQL)",
+  "WfsFinder.outputExpression" : "Expressió de sortida (JS)",
+  "WfsFinder.sortBy" : "Ordena per",
+  "WfsFinder.addMarkers": "Afegeix marcadors"  
 
 });

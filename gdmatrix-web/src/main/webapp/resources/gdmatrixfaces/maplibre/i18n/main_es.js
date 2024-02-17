@@ -19,13 +19,8 @@ Bundle.getBundle("main").setTranslations("es", {
 
   "FindFeatureControl.title": "Buscar",
   "FindFeatureControl.finderLabel": "Selecciona buscador:",
-  "FindFeatureControl.layer": "Capa",
-  "FindFeatureControl.filter": "Filtro (CQL)", 
-  "FindFeatureControl.addMarkers": "Añadir marcadores",
   "FindFeatureControl.clearMarkers": "Limpiar marcadores anteriores",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} entitad encontrada` : `${count} entitades encontradas`,
-  "FindFeatureControl.outputExpression" : "Expresión de salida (JS)",
-  "FindFeatureControl.sortBy" : "Ordenar por",
 
   "GetFeatureInfoTool.title": "Obtener información",
   "GetFeatureInfoTool.help": "Pulsa sobre el mapa para obtener información de las entitades.",
@@ -54,6 +49,13 @@ Bundle.getBundle("main").setTranslations("es", {
   "PrintControl.scale": "Escala de impresión",
   "PrintControl.currentWindow": "Ventana actual",
   
-  "RefreshControl.title": "Refrescar"
+  "RefreshControl.title": "Refrescar",
+
+  "WfsFinder.title": "Buscador WFS",
+  "WfsFinder.layer": "Capa",
+  "WfsFinder.filter": "Filtro (CQL)",
+  "WfsFinder.outputExpression" : "Expresión de salida (JS)",
+  "WfsFinder.sortBy" : "Ordenar por",
+  "WfsFinder.addMarkers": "Añadir marcadores"  
 
 });

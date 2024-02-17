@@ -1,14 +1,17 @@
 /* FeatureFinder */
 
 import { Bundle } from "../i18n/Bundle.js";
-import "../turf.js";
 
 const bundle = Bundle.getBundle("main");
 
 class FeatureFinder
 {
-  constructor(params)
+  constructor(options)
   {
+    this.maxZoom = options?.maxZoom || 18;
+    this.centerMarkerOnClick = options?.centerMarkerOnClick || false;
+    this.formViewMode = options?.formViewMode || "panel"; // panel || popup
+    this.showPopupFromList = options?.showPopupFromList || false;
   }
 
   onAdd(findFeatureControl)
@@ -21,12 +24,12 @@ class FeatureFinder
     return "title";
   }
 
-  addFormFields(elem)
+  populateForm(element)
   {
     // create form fields into elem
     if (this.createFormFields)
     {
-      elem.innerHTML = this.createFormFields();
+      element.innerHTML = this.createFormFields();
     }
   }
 
@@ -44,6 +47,11 @@ class FeatureFinder
   {
     return "?";
   }
+  
+  populateList(feature, element)
+  {
+    element.textContent = this.getFeatureLabel(feature);
+  }
 
   getListIcon(feature)
   {
@@ -57,39 +65,24 @@ class FeatureFinder
 
   getMarker(feature)
   {
-    const control = this.findFeatureControl;
-    const map = control.map;
-    const centroid = turf.centroid(feature);
     const marker = new maplibregl.Marker({ 
       color: this.getMarkerColor(feature) 
-     }).setLngLat(centroid.geometry.coordinates);
+     });
 
     const element = marker.getElement();
     element.style.cursor = "pointer";
-
-    const form = this.getForm(feature);
-
-    marker.select = () => {
-      marker.remove();
-      marker.selectedMarker = this.getSelectedMarker(feature);
-      marker.selectedMarker.addTo(map);      
-      if (form) control.showForm(form);
-    };
-
-    marker.unselect = () => {
-      marker.selectedMarker.remove();
-      marker.addTo(map);
-    };
 
     return marker;
   }
 
   getSelectedMarker(feature)
   {
-    const centroid = turf.centroid(feature);
-    const marker = new maplibregl.Marker({ 
+    const marker = new maplibregl.Marker({
       color: this.getSelectedMarkerColor(feature) 
-    }).setLngLat(centroid.geometry.coordinates);
+    });
+
+    const element = marker.getElement();
+    element.style.cursor = "pointer";
 
     return marker;
   }
@@ -107,12 +100,7 @@ class FeatureFinder
   getForm(feature)
   {
     return null;
-  }
-  
-  getMaxZoom()
-  {
-    return 18;
-  }
+  }  
 }
 
 export { FeatureFinder };

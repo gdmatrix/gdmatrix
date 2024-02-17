@@ -9,9 +9,15 @@ class FeatureForm
     this.priority = 0;
     this.service = null; // optional
     this.layerName = null; // optional
-    this.forEdit = false;
+    this.forEdit = false;    
 
-    this.div = document.createElement("div");
+    this._div = document.createElement("div");
+    this._rendered = false;
+  }
+  
+  getElement()
+  {
+    return this._div;
   }
 
   setFormSelectorAndPriority(map)
@@ -47,25 +53,28 @@ class FeatureForm
     this.priority = priority;
   }
 
-  async render()
+  async render(update = false)
   {
-    const feature = this.feature;
-    const forEdit = this.forEdit;
-    const properties = feature.properties;
-    const params = {
-      entity: this.layerName,
-      formseed: Math.random(),
-      selector: this.formSelector,
-      forEdit: forEdit,
-      renderer: forEdit ?
-        "org.santfeliu.web.servlet.form.EditableFormRenderer" :
-        "org.santfeliu.web.servlet.form.ReadOnlyFormRenderer",
-      ...properties
-    };
+    if (!this._rendered || update)
+    {
+      const feature = this.feature;
+      const forEdit = this.forEdit;
+      const properties = feature.properties;
+      const params = {
+        entity: this.layerName,
+        formseed: Math.random(),
+        selector: this.formSelector,
+        forEdit: forEdit,
+        renderer: forEdit ?
+          "org.santfeliu.web.servlet.form.EditableFormRenderer" :
+          "org.santfeliu.web.servlet.form.ReadOnlyFormRenderer",
+        ...properties
+      };
 
-    const response = await fetch("/form?" + new URLSearchParams(params));
-    this.div.innerHTML = await response.text();
-    
+      const response = await fetch("/form?" + new URLSearchParams(params));
+      this._div.innerHTML = await response.text();
+      this._rendered = true;
+    }
     return this;
   }
 

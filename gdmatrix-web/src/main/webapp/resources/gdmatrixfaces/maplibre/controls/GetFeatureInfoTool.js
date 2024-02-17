@@ -375,7 +375,7 @@ class GetFeatureInfoTool extends Tool
       infoDiv.innerHTML = "";
       for (let form of forms)
       {
-        infoDiv.appendChild(form.div);
+        infoDiv.appendChild(form.getElement());
       }
     }
     this.panel.show();

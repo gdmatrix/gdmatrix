@@ -19,13 +19,8 @@ Bundle.getBundle("main").setTranslations("", {
   
   "FindFeatureControl.title": "Find",
   "FindFeatureControl.finderLabel": "Select finder:",
-  "FindFeatureControl.layer": "Layer",
-  "FindFeatureControl.filter": "Filter (CQL)",
-  "FindFeatureControl.addMarkers": "Add markers",
   "FindFeatureControl.clearMarkers": "Clear previous markers",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} feature found:` : `${count} features found:`,
-  "FindFeatureControl.outputExpression" : "Output expression (JS)",
-  "FindFeatureControl.sortBy" : "Sort by",
   
   "GetFeatureInfoTool.title": "Get feature information",
   "GetFeatureInfoTool.help": "Press on the map to obtain information about the features.",
@@ -54,7 +49,14 @@ Bundle.getBundle("main").setTranslations("", {
   "PrintControl.scale": "Printing scale",
   "PrintControl.currentWindow": "Current window",
     
-  "RefreshControl.title": "Refresh"
+  "RefreshControl.title": "Refresh",
+  
+  "WfsFinder.title": "WFS finder",
+  "WfsFinder.layer": "Layer",
+  "WfsFinder.filter": "Filter (CQL)",
+  "WfsFinder.outputExpression" : "Output expression (JS)",
+  "WfsFinder.sortBy" : "Sort by",
+  "WfsFinder.addMarkers": "Add markers"
 
 });
 

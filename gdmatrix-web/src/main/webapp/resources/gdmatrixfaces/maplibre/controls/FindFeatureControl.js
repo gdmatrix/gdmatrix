@@ -16,7 +16,8 @@ class FindFeatureControl
         "iconClass" : "pi pi-search",
         "paddingOffset": 32,
         "selectedFinderIconClass": "pi pi-arrow-right",
-        "unselectedFinderIconClass": "pi pi-minus"        
+        "unselectedFinderIconClass": "pi pi-minus",
+        "popup" : {}
       }, ...options};
 
     this.finders = [];
@@ -26,6 +27,8 @@ class FindFeatureControl
       features: []
     };
     this.markers = new Map(); // feature -> Marker
+    this.forms = new Map(); // feature -> Form
+    this.selectedFeature = null;
     this.selectedMarker = null;
   }
 
@@ -81,6 +84,12 @@ class FindFeatureControl
       position: "right"
     });
     this.infoPanel = infoPanel;
+  }
+  
+  createPopup()
+  {
+    const popup = new maplibregl.Popup(this.options.popup);
+    this.popup = popup;
   }
 
   initSourceAndLayers()
@@ -156,7 +165,7 @@ class FindFeatureControl
       let icon = document.createElement("i");
       icon.className = this.options.unselectedFinderIconClass;
       li.appendChild(icon);
-      
+
       let anchor = document.createElement("a");
       anchor.href = "#";
       li.appendChild(anchor);
@@ -169,7 +178,7 @@ class FindFeatureControl
     }
     this.highlightFinderSelector();
   }
-  
+
   highlightFinderSelector()
   {
     const ul = this.finderSelectorDiv.firstElementChild;
@@ -195,7 +204,7 @@ class FindFeatureControl
     this.formDiv.innerHTML = "";
     this.resultDiv.innerHTML = "";
     this.activeFinder = finder;
-    this.activeFinder.addFormFields(this.formDiv);
+    this.activeFinder.populateForm(this.formDiv);
   }
 
   async find()
@@ -206,6 +215,13 @@ class FindFeatureControl
       this.resultDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
       try
       {
+        if (this.clearMarkersCheckbox.checked) 
+        {
+          this.clearMarkers();
+          this.clearForms();
+        }
+        this.popup.remove();
+        
         this.data.features = await this.activeFinder.find();
         map.getSource("finder_results").setData(this.data);
 
@@ -218,13 +234,13 @@ class FindFeatureControl
           const panelManager = map.panelManager;
           this.map.fitBounds(bounds,
           {
-            maxZoom: this.activeFinder.getMaxZoom(),
+            maxZoom: this.activeFinder.maxZoom,
             padding: panelManager.getPadding(paddingOffset)
           });
         }
         this.listFeatures();
-        if (this.clearMarkersCheckbox.checked) this.clearMarkers();
         this.addMarkers();
+        this.addForms();
       }
       catch (ex)
       {
@@ -250,20 +266,10 @@ class FindFeatureControl
     }
   }
 
-  clear()
-  {
-    this.data.features = [];
-    this.map.getSource("finder_results").setData(this.data);
-    this.setActiveFinder(this.activeFinder);
-    this.clearMarkers();
-    this.infoPanel.hide();
-  }
-
   listFeatures()
   {
     const finder = this.activeFinder;
     const features = this.data.features;
-    const maxZoom = finder.getMaxZoom();
 
     this.resultDiv.innerHTML = "";
 
@@ -303,11 +309,10 @@ class FindFeatureControl
       anchor.href = "#";
       anchor.className = "pl-1";
       li.appendChild(anchor);
-      anchor.textContent = finder.getFeatureLabel(feature);
+      finder.populateList(feature, anchor);
       anchor.addEventListener("click", (event) => {
         event.preventDefault();
-        const finder = this.activeFinder;
-        this.selectFeature(feature, true, maxZoom);
+        this.selectFeature(feature, finder, "list");
       });
     }
   }
@@ -317,47 +322,78 @@ class FindFeatureControl
     const map = this.map;
     const finder = this.activeFinder;
     const features = this.data.features;
-    const maxZoom = finder.getMaxZoom();
 
     for (let feature of features)
     {
       let marker = finder.getMarker(feature);
       if (marker)
       {
-        marker.addTo(map);
         this.markers.set(feature, marker);
-        if (typeof marker.select === "function")
-        {
-          marker.getElement().addEventListener("click", (event) => 
-          {
-            event.stopPropagation();
-            this.selectFeature(feature, false, maxZoom);
-          });
-        }
+
+        const centroid = turf.centroid(feature);
+        marker.setLngLat(centroid.geometry.coordinates);
+        marker.getElement().addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.selectFeature(feature, finder, "marker");
+        });
+        marker.addTo(map);
       }
     }
   }
 
+  addForms()
+  {
+    const map = this.map;
+    const finder = this.activeFinder;
+    const features = this.data.features;
+
+    for (let feature of features)
+    {
+      let form = finder.getForm(feature);
+      if (form)
+      {
+        this.forms.set(feature, form);
+      }
+    }
+  }
+  
+  clear()
+  {
+    this.data.features = [];
+    this.map.getSource("finder_results").setData(this.data);
+    this.setActiveFinder(this.activeFinder);
+    this.clearMarkers();
+    this.clearForms();
+    this.infoPanel.hide();
+    this.popup.remove();
+  }  
+
   clearMarkers()
   {
-    if (this.selectedMarker && this.selectedMarker.unselect)
+    if (this.selectedMarker)
     {
-      this.selectedMarker.unselect();
+      this.selectedMarker.remove();
       this.selectedMarker = null;
+      this.selectedFeature = null;
     }
-    
+
     for (let marker of this.markers.values())
     {
       marker.remove();
     }
     this.markers.clear();
   }
+  
+  clearForms()
+  {
+    this.forms.clear();
+  }
 
-  selectFeature(feature, center = false, maxZoom)
+  selectFeature(feature, finder, source)
   {
     const map = this.map;
 
-    if (center)
+    if (source === "list" || finder.centerMarkerOnClick)
     {
       let paddingOffset = this.options.paddingOffset || 0;
       let bbox = turf.bbox(feature);
@@ -366,43 +402,92 @@ class FindFeatureControl
       const panelManager = map.panelManager;
       map.fitBounds(bounds,
       {
-        maxZoom: maxZoom || 18,
+        maxZoom: finder.maxZoom || 18,
         padding: panelManager.getPadding(paddingOffset)
       });
     }
-    
-    if (this.selectedMarker && this.selectedMarker.unselect)
-    {
-      this.selectedMarker.unselect();
-    }
-    this.selectedMarker = this.markers.get(feature);
-    if (this.selectedMarker && this.selectedMarker.select)
-    {
-      this.selectedMarker.select();
-    }
-  }
 
-  async showForm(form)
-  {
-    this.infoPanel.bodyDiv.innerHTML =
-      `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
+    if (this.selectedMarker)
+    {
+      // remove selected marker
+      this.selectedMarker.remove();
 
-    form = await form.render();
-    if (form)
-    {
-      this.infoPanel.bodyDiv.innerHTML = "";
-      this.infoPanel.bodyDiv.appendChild(form.div);
-      this.infoPanel.show();
+      // restore unselected feature marker
+      let marker = this.markers.get(this.selectedFeature);
+      if (marker) marker.addTo(map);
     }
-    else
+
+    this.selectedFeature = feature;
+    this.selectedMarker = finder.getSelectedMarker(feature);
+    if (this.selectedMarker)
     {
-      this.infoPanel.bodyDiv.innerHTML = "";
+      let marker = this.markers.get(feature);
+      if (marker)
+      {
+        // remove unselected feature marker
+        marker.remove();
+
+        // add selected marker
+        this.selectedMarker.setLngLat(marker.getLngLat());
+        this.selectedMarker.getElement().addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.selectFeature(feature, finder, "marker");
+        });
+
+        this.selectedMarker.addTo(map);
+      }
     }
-  }
-  
-  hideForm()
-  {
+
+    this.popup.remove();
     this.infoPanel.bodyDiv.innerHTML = "";
+    
+    if (source === "marker" || 
+        finder.formViewMode === "panel" || 
+        finder.showPopupFromList)
+    {
+      let form = this.forms.get(feature);
+      if (form)
+      {
+        this.showForm(form, finder.formViewMode);
+      }
+    }
+  }
+
+  async showForm(form, formViewMode)
+  {
+    const map = this.map;
+
+    if (formViewMode === "panel")
+    {
+      this.infoPanel.bodyDiv.innerHTML =
+        `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
+
+      form = await form.render();
+      if (form)
+      {
+        this.infoPanel.bodyDiv.innerHTML = "";
+        this.infoPanel.bodyDiv.appendChild(form.getElement());
+        this.infoPanel.show();
+      }
+      else
+      {
+        this.infoPanel.bodyDiv.innerHTML = "";
+      }
+    }
+    else if (formViewMode === "popup")
+    {
+      form = await form.render();
+      if (form)
+      {
+        const popup = this.popup;
+        const feature = form.feature;
+        const centroid = turf.centroid(feature);
+        popup.setLngLat(centroid.geometry.coordinates);
+
+        this.popup.setDOMContent(form.getElement());
+        this.popup.addTo(map);
+      }
+    }
   }
 
   onAdd(map)
@@ -434,6 +519,7 @@ class FindFeatureControl
     }
 
     this.createPanels(map);
+    this.createPopup();
 
     return div;
   }

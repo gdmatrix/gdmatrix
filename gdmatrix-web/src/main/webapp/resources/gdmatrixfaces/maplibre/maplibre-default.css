@@ -381,10 +381,37 @@
 }
 
 /* html controls */
+.maplibregl-map .panel,
+.maplibregl-popup-content
+{
+  font-family: var(--font-family);
+  font-size: 12px;  
+}
+
+.maplibregl-popup-content
+{
+  color: var(--text-color) !important;  
+  background-color: var(--surface-ground) !important;
+  border-radius: var(--border-radius) !important;
+}
+
+.maplibregl-popup-tip
+{
+  border-bottom-color: var(--surface-ground) !important;
+  border-top-color: var(--surface-ground) !important;
+}
+
+.maplibregl-popup-close-button
+{
+  color: var(--text-color) !important;
+}
 
 .maplibregl-map .panel input,
 .maplibregl-map .panel textarea,
-.maplibregl-map .panel select
+.maplibregl-map .panel select,
+.maplibregl-popup-content input,
+.maplibregl-popup-content textarea,
+.maplibregl-popup-content select
 {
   font-family: var(--font-family);
   font-size: 12px;
@@ -407,7 +434,8 @@
   padding: 0.3rem 0.3rem !important;  
 }
 
-.maplibregl-map .panel input[type=submit]
+.maplibregl-map .panel input[type=submit],
+.maplibregl-popup-content input[type=submit]
 {
   background-color: var(--primary-color);
   color: var(--primary-color-text);
@@ -415,14 +443,20 @@
 
 .maplibregl-map .panel input:hover,
 .maplibregl-map .panel textarea:hover,
-.maplibregl-map .panel select:hover
+.maplibregl-map .panel select:hover,
+.maplibregl-popup-content input:hover,
+.maplibregl-popup-content textarea:hover,
+.maplibregl-popup-content select:hover
 {
   border-color: var(--primary-color);
 }
 
 .maplibregl-map .panel input:focus,
 .maplibregl-map .panel textarea:focus,
-.maplibregl-map .panel select:focus
+.maplibregl-map .panel select:focus,
+.maplibregl-popup-content input:focus,
+.maplibregl-popup-content textarea:focus,
+.maplibregl-popup-content select:focus
 {
   border-color: var(--primary-color);
   box-shadow: var(--focus-ring);
