@@ -35,7 +35,9 @@ package org.santfeliu.webapp.modules.geo.util;
  * @author realor
  */
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.activation.DataHandler;
 import org.matrix.dic.Property;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
@@ -65,14 +68,17 @@ import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.matrix.doc.Content;
 import org.santfeliu.misc.mapviewer.Bounds;
-import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.MemoryDataSource;
 
 public class MapMigrator
 {
+
   DocumentManagerClient oldPort;
   DocumentManagerClient newPort;
   Collection excludedCategories;
+  boolean simulation;
 
   public MapMigrator(DocumentManagerClient oldPort, DocumentManagerClient newPort)
   {
@@ -100,6 +106,16 @@ public class MapMigrator
     this.excludedCategories = excludedCategories;
   }
 
+  public boolean isSimulation()
+  {
+    return simulation;
+  }
+
+  public void setSimulation(boolean simulation)
+  {
+    this.simulation = simulation;
+  }
+
   public void migrateSvgReports() throws Exception
   {
     DocumentFilter filter = new DocumentFilter();
@@ -109,11 +125,13 @@ public class MapMigrator
     for (Document doc : docs)
     {
       doc = oldPort.loadDocument(doc.getDocId(), 0, ContentInfo.ALL);
+      String reportName = DictionaryUtils.getPropertyValue(doc.getProperty(), SvgStore.SVG_REPORT_NAME_PROPERTY);
+      System.out.println(doc.getDocId() + ", " + reportName + ": " + doc.getTitle());
+
       doc.setDocId(null);
       doc.setVersion(0);
       doc.setIncremental(false);
-      String reportName = DictionaryUtils.getPropertyValue(doc.getProperty(), SvgStore.SVG_REPORT_NAME_PROPERTY);
-      System.out.println(doc.getDocId() + ", " + reportName + ": " + doc.getTitle());
+
       DocumentFilter filter2 = new DocumentFilter();
       filter2.setDocTypeId(SvgStore.SVG_TYPEID);
       Property property = new Property();
@@ -128,8 +146,11 @@ public class MapMigrator
         System.out.println("Found: " + oldDocId);
       }
       doc.getContent().setContentId(null);
-      System.out.println(i + ": storeReport: " + doc.getDocId());
-      newPort.storeDocument(doc);
+      if (!simulation)
+      {
+        System.out.println(i + ": storeReport: " + doc.getDocId());
+        newPort.storeDocument(doc);
+      }
       Thread.sleep(200L);
       i++;
     }
@@ -144,11 +165,13 @@ public class MapMigrator
     for (Document doc : docs)
     {
       doc = oldPort.loadDocument(doc.getDocId(), 0, ContentInfo.ALL);
+      String category = DictionaryUtils.getPropertyValue(doc.getProperty(), MapStore.MAP_CATEGORY_NAME_PROPERTY);
+      System.out.println(doc.getDocId() + ", " + category + ": " + doc.getTitle());
+
       doc.setDocId(null);
       doc.setVersion(0);
       doc.setIncremental(false);
-      String category = DictionaryUtils.getPropertyValue(doc.getProperty(), MapStore.MAP_CATEGORY_NAME_PROPERTY);
-      System.out.println(doc.getDocId() + ", " + category + ": " + doc.getTitle());
+
       DocumentFilter filter2 = new DocumentFilter();
       filter2.setDocTypeId(MapStore.MAP_CATEGORY_TYPEID);
       Property property = new Property();
@@ -163,8 +186,105 @@ public class MapMigrator
         System.out.println("Found: " + oldDocId);
       }
       doc.getContent().setContentId(null);
-      System.out.println(i + ": storeCategory: " + doc.getDocId());
-      newPort.storeDocument(doc);
+      if (!simulation)
+      {
+        System.out.println(i + ": storeCategory: " + doc.getDocId());
+        newPort.storeDocument(doc);
+      }
+      Thread.sleep(200L);
+      i++;
+    }
+  }
+
+  public void migrateLocators() throws Exception
+  {
+    DocumentFilter filter = new DocumentFilter();
+    //filter.setDocTypeId("CODE");
+    Property property = new Property();
+    property.setName("workflow.js");
+    property.getValue().add("%");
+    filter.getProperty().add(property);
+
+    List<Document> docs = oldPort.findDocuments(filter);
+    int i = 0;
+    for (Document doc : docs)
+    {
+      doc = oldPort.loadDocument(doc.getDocId(), 0, ContentInfo.ALL);
+      String locatorName = DictionaryUtils.getPropertyValue(doc.getProperty(), "workflow.js");
+      if (!locatorName.endsWith("Locator")) continue;
+
+      System.out.println(doc.getDocId() + ", Locator: " + locatorName + ", " + doc.getTitle());
+
+      String finderName = locatorName.substring(0, locatorName.length() - 7) + "Finder";
+      int index = doc.getTitle().indexOf(":");
+      String title = index != -1 ? doc.getTitle().substring(index + 1) : doc.getTitle();
+      String finderTitle = finderName + ": " + title;
+      System.out.println("#" + i + ": Finder: " + finderName + ", " + finderTitle);
+
+      doc.setDocId(null);
+      doc.setVersion(0);
+      doc.setIncremental(false);
+
+      StringBuilder buffer = new StringBuilder();
+      buffer.append("/** ").append(finderName).append(" **/\n\n");
+      buffer.append("import { WfsFinder } from \"/resources/gdmatrixfaces/maplibre/finders/WfsFinder.js\";\n\n");
+
+      try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(doc.getContent().getData().getInputStream(), "utf-8")))
+      {
+        String line = reader.readLine();
+        while (line != null)
+        {
+          buffer.append("//");
+          buffer.append(line);
+          buffer.append("\n");
+          line = reader.readLine();
+        }
+      }
+      String newCode = buffer.toString();
+      System.out.println(newCode);
+
+      DocumentFilter filter2 = new DocumentFilter();
+      filter2.setDocTypeId("CODE");
+      property = new Property();
+      property.setName("workflow.js");
+      property.getValue().add(finderName);
+      filter2.getProperty().add(property);
+      List<Document> docs2 = newPort.findDocuments(filter2);
+      if (!docs2.isEmpty())
+      {
+        String oldDocId = ((Document) docs2.get(0)).getDocId();
+        doc.setDocId(oldDocId);
+        System.out.println("Found: " + oldDocId);
+      }
+
+      doc.setTitle(finderTitle);
+
+      MemoryDataSource ds = new MemoryDataSource(newCode.getBytes("UTF-8"),
+        "code", "application/javascript");
+
+      Content content = new Content();
+      content.setData(new DataHandler(ds));
+      content.setContentType("application/javascript");
+      doc.setContent(content);
+
+      doc.getProperty().clear();
+
+      property = new Property();
+      property.setName("workflow.js");
+      property.getValue().add(finderName);
+      doc.getProperty().add(property);
+
+      property = new Property();
+      property.setName("purpose");
+      property.getValue().add("geo");
+      doc.getProperty().add(property);
+
+      if (!simulation)
+      {
+        doc = newPort.storeDocument(doc);
+        System.out.println(i + ": storeFinder: " + finderName + " " + doc.getDocId());
+      }
       Thread.sleep(200L);
       i++;
     }
@@ -198,8 +318,11 @@ public class MapMigrator
         System.out.println("Found: " + oldDocId);
       }
       doc.getContent().setContentId(null);
-      System.out.println(i + ": storeSLD: " + doc.getDocId());
-      newPort.storeDocument(doc);
+      if (!simulation)
+      {
+        System.out.println(i + ": storeSLD: " + doc.getDocId());
+        newPort.storeDocument(doc);
+      }
       Thread.sleep(200L);
       i++;
     }
@@ -207,8 +330,10 @@ public class MapMigrator
 
   public void migrateMaps() throws Exception
   {
-    org.santfeliu.misc.mapviewer.MapStore oldMapStore =
-      new org.santfeliu.misc.mapviewer.MapStore(oldPort);
+    org.santfeliu.misc.mapviewer.MapStore oldMapStore
+      = new org.santfeliu.misc.mapviewer.MapStore(oldPort);
+
+    HashMap<String, Integer> scriptReferences = new HashMap<>();
 
     MapStore styleStore = new MapStore();
     styleStore.setPort((DocumentManagerPort) newPort);
@@ -227,7 +352,9 @@ public class MapMigrator
         MapStore.MAP_CATEGORY_NAME_PROPERTY);
 
       if (excludedCategories != null && excludedCategories.contains(mapCategory))
+      {
         continue;
+      }
 
       MapDocument mapDoc = oldMapStore.loadMap(mapName);
       Bounds bounds = mapDoc.getBounds();
@@ -236,16 +363,17 @@ public class MapMigrator
       double size = (bounds.getMaxX() - bounds.getMinX());
 
       UTMConverter.LatLng pos = UTMConverter.convertToLatLng(cx, cy, 31, false);
-      double zoom = 25 - (int)Math.round(Math.log(size) / Math.log(2));
+      double zoom = 25 - (int) Math.round(Math.log(size) / Math.log(2));
       System.out.println(pos + " " + zoom);
 
       String mapTitle = mapDoc.getTitle();
-      System.out.println(i + ":" + mapName + ": " + mapTitle);
+      System.out.println("\n" + i + ":" + mapName + ": " + mapTitle);
       Style style = new Style();
       style.getCenter()[0] = pos.lng;
       style.getCenter()[1] = pos.lat;
       style.setZoom(zoom);
       style.getMetadata().put("maxZoom", 20.0);
+      style.getMetadata().put("hash", true);
 
       // services
       HashMap<String, Service> newServices = new HashMap<>();
@@ -290,7 +418,6 @@ public class MapMigrator
         layerForms.add(layerForm);
       }
       style.getMetadata().put("layerForms", layerForms);
-
 
       // prepare legend groups
       HashMap<String, LegendGroup> legendGroups = new HashMap<>();
@@ -337,7 +464,10 @@ public class MapMigrator
         for (String part : parts)
         {
           int index = part.indexOf(":");
-          if (index != -1) part = part.substring(index + 1);
+          if (index != -1)
+          {
+            part = part.substring(index + 1);
+          }
           boolean highlighted = highLightedLayers.contains(part);
           if (highlighted)
           {
@@ -398,11 +528,25 @@ public class MapMigrator
           {
             System.out.print(legendGraphic + "->");
             legendGraphic = legendGraphic.trim();
-            if ("true".equals(legendGraphic)) legendGraphic = "auto";
-            else if ("false".equals(legendGraphic)) legendGraphic = null;
-            else if ("auto".equals(legendGraphic)) legendGraphic = "auto";
-            else if (legendGraphic.startsWith("large:")) legendGraphic = "image:" + legendGraphic.substring(6);
-            else legendGraphic = "icon:" + legendGraphic;
+            if ("true".equals(legendGraphic))
+            {
+              legendGraphic = "auto";
+            }
+            else if ("false".equals(legendGraphic))
+            {
+              legendGraphic = null;
+            }
+            else if ("auto".equals(legendGraphic))
+            {
+              legendGraphic = "auto";
+            }
+            else if (legendGraphic.startsWith("large:"))
+            {
+              legendGraphic = "image:" + legendGraphic.substring(6);
+            } else
+            {
+              legendGraphic = "icon:" + legendGraphic;
+            }
             System.out.println(legendGraphic);
           }
           legendLayer.setGraphic(legendGraphic);
@@ -412,8 +556,7 @@ public class MapMigrator
           {
             baseGroup.getChildren().add(legendLayer);
             continue;
-          }
-          else
+          } else
           {
             Map.Group group = oldLayer.getGroup();
             if (group != null)
@@ -477,9 +620,63 @@ public class MapMigrator
         DictionaryUtils.setProperty(styleDocument, "description", newDesc);
       }
       styleDocument.setAccessControl(document.getAccessControl());
-      styleStore.storeMap(styleDocument, false);
+
+      // Locators
+      List<String> scripts =
+        (List<String>)styleDocument.getStyle().getMetadata().get("scripts");
+      if (scripts == null)
+      {
+        scripts = new ArrayList<>();
+        styleDocument.getStyle().getMetadata().put("scripts", scripts);
+      }
+      else
+      {
+        scripts.clear();
+      }
+
+      String featureLocators = properties.get("featureLocators");
+      System.out.println("FeatureLocators:" + featureLocators);
+      if (featureLocators != null)
+      {
+        String[] locatorNames = featureLocators.split(",");
+        for (String locatorName : locatorNames)
+        {
+          String finderName = locatorName.substring(0, locatorName.length() - 7) + "Finder";
+          finderName = finderName.trim();
+          finderName = replaceFinder(finderName);
+
+          if (finderName != null && scripts.indexOf(finderName) == -1)
+          {
+            scripts.add(finderName);
+          }
+        }
+        System.out.println(scripts);
+        for (String script : scripts)
+        {
+          Integer num = scriptReferences.get(script);
+          if (num == null) num = 0;
+          scriptReferences.put(script, num + 1);
+        }
+      }
+
+      if (!simulation)
+      {
+        System.out.println("Saving map " + styleDocument.getName() + "...");
+        styleStore.storeMap(styleDocument, false);
+      }
       Thread.sleep(1000L);
     }
+    System.out.println("script usage:" + scriptReferences);
+    System.out.println("script count: " + scriptReferences.size());
+  }
+
+  private String replaceFinder(String finderName)
+  {
+    switch (finderName)
+    {
+      case "GenericFeatureFinder": return "GenericWfsFinder";
+    }
+    return finderName;
   }
 
   private String getLayerId(String label, List<Layer> layers)
@@ -524,11 +721,10 @@ public class MapMigrator
       {
         buffer.append(ch);
         isSeparator = false;
-      }
-      else if (!isSeparator)
+      } else if (!isSeparator)
       {
-        if (ch == '_' || ch == ',' || ch == ';' ||
-            ch == '.' || ch == ' ' || ch == '-')
+        if (ch == '_' || ch == ',' || ch == ';'
+          || ch == '.' || ch == ' ' || ch == '-')
         {
           buffer.append("_");
           isSeparator = true;
@@ -562,23 +758,22 @@ public class MapMigrator
       try (FileReader reader = new FileReader(configFile))
       {
         config = gson.fromJson(reader, java.util.Map.class);
-      }
-      catch (Exception ex)
+      } catch (Exception ex)
       {
         System.out.println("Error reading file: " + ex.getMessage());
         return;
       }
 
-      java.util.Map<String, String> oldStore =
-        (java.util.Map<String, String>)config.get("source");
+      java.util.Map<String, String> oldStore
+        = (java.util.Map<String, String>) config.get("source");
       if (oldStore == null)
       {
         System.out.println("\"source\" property not defined. It's an object with these properties: url, userId, and password.");
         return;
       }
 
-      java.util.Map<String, String> newStore =
-        (java.util.Map<String, String>)config.get("target");
+      java.util.Map<String, String> newStore
+        = (java.util.Map<String, String>) config.get("target");
       if (newStore == null)
       {
         System.out.println("\"target\" property not defined. It's an object with these properties: url, userId and password.");
@@ -596,15 +791,22 @@ public class MapMigrator
         newStore.get("password"));
 
       MapMigrator migrator = new MapMigrator(oldPort, newPort);
-      List<String> migrate = (List<String>)config.get("migrate");
+      List<String> migrate = (List<String>) config.get("migrate");
       Object ec = config.get("excludedCategories");
       if (ec instanceof Collection)
       {
-        migrator.setExcludedCategories((Collection)ec);
+        migrator.setExcludedCategories((Collection) ec);
       }
+      Boolean simulation = (Boolean) config.get("simulation");
+      if (simulation != null)
+      {
+        System.out.println("Simulation: " + simulation);
+        migrator.setSimulation(simulation);
+      }
+
       if (migrate == null)
       {
-        System.out.println("\"migrate\" property not defined. It's a list of [\"map\", \"cat\", \"sld\", \"svg\"].");
+        System.out.println("\"migrate\" property not defined. It's a list of [\"map\", \"cat\", \"sld\", \"svg\", \"loc\"].");
         return;
       }
 
@@ -612,18 +814,24 @@ public class MapMigrator
       {
         switch (type)
         {
-          case "map": migrator.migrateMaps();
+          case "map":
+            migrator.migrateMaps();
             break;
-          case "cat": migrator.migrateCategories();
+          case "cat":
+            migrator.migrateCategories();
             break;
-          case "sld": migrator.migrateSlds();
+          case "sld":
+            migrator.migrateSlds();
             break;
-          case "svg": migrator.migrateSvgReports();
+          case "svg":
+            migrator.migrateSvgReports();
+            break;
+          case "loc":
+            migrator.migrateLocators();
             break;
         }
       }
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
       ex.printStackTrace();
     }

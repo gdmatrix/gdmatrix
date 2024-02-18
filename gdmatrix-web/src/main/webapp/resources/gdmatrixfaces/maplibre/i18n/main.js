@@ -51,12 +51,12 @@ Bundle.getBundle("main").setTranslations("", {
     
   "RefreshControl.title": "Refresh",
   
-  "WfsFinder.title": "WFS finder",
-  "WfsFinder.layer": "Layer",
-  "WfsFinder.filter": "Filter (CQL)",
-  "WfsFinder.outputExpression" : "Output expression (JS)",
-  "WfsFinder.sortBy" : "Sort by",
-  "WfsFinder.addMarkers": "Add markers"
+  "GenericWfsFinder.title": "WFS finder",
+  "GenericWfsFinder.layer": "Layer",
+  "GenericWfsFinder.filter": "Filter (CQL)",
+  "GenericWfsFinder.outputExpression" : "Output expression (JS)",
+  "GenericWfsFinder.sortBy" : "Sort by",
+  "GenericWfsFinder.addMarkers": "Add markers"
 
 });
 

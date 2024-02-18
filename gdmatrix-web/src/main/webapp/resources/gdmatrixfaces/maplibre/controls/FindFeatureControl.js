@@ -409,33 +409,17 @@ class FindFeatureControl
 
     if (this.selectedMarker)
     {
-      // remove selected marker
-      this.selectedMarker.remove();
-
-      // restore unselected feature marker
-      let marker = this.markers.get(this.selectedFeature);
-      if (marker) marker.addTo(map);
+      finder.unselectMarker(this.selectedMarker, this.selectedFeature);
     }
 
     this.selectedFeature = feature;
-    this.selectedMarker = finder.getSelectedMarker(feature);
+    this.selectedMarker = this.markers.get(feature);
+    
     if (this.selectedMarker)
     {
-      let marker = this.markers.get(feature);
-      if (marker)
-      {
-        // remove unselected feature marker
-        marker.remove();
-
-        // add selected marker
-        this.selectedMarker.setLngLat(marker.getLngLat());
-        this.selectedMarker.getElement().addEventListener("click", (event) => {
-          event.stopPropagation();
-          this.selectFeature(feature, finder, "marker");
-        });
-
-        this.selectedMarker.addTo(map);
-      }
+      this.selectedMarker.remove();      
+      finder.selectMarker(this.selectedMarker, this.selectedFeature);
+      this.selectedMarker.addTo(map);            
     }
 
     this.popup.remove();

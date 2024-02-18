@@ -51,11 +51,11 @@ Bundle.getBundle("main").setTranslations("es", {
   
   "RefreshControl.title": "Refrescar",
 
-  "WfsFinder.title": "Buscador WFS",
-  "WfsFinder.layer": "Capa",
-  "WfsFinder.filter": "Filtro (CQL)",
-  "WfsFinder.outputExpression" : "Expresión de salida (JS)",
-  "WfsFinder.sortBy" : "Ordenar por",
-  "WfsFinder.addMarkers": "Añadir marcadores"  
+  "GenericWfsFinder.title": "Buscador WFS",
+  "GenericWfsFinder.layer": "Capa",
+  "GenericWfsFinder.filter": "Filtro (CQL)",
+  "GenericWfsFinder.outputExpression" : "Expresión de salida (JS)",
+  "GenericWfsFinder.sortBy" : "Ordenar por",
+  "GenericWfsFinder.addMarkers": "Añadir marcadores"  
 
 });

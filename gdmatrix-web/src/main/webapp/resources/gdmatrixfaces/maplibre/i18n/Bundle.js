@@ -5,10 +5,18 @@ class Bundle
   static bundles = {};
   static userLanguage;
 
-  constructor(name)
+  constructor(name, translations)
   {
     this.name = name;
     this.languages = {};
+
+    if (translations)
+    {
+      for (let language in translations)
+      {
+        this.languages[language] = translations[language];
+      }
+    }
   }
 
   static getBundle(name)

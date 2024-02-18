@@ -1,13 +1,10 @@
-/* FeatureFinder */
-
-import { Bundle } from "../i18n/Bundle.js";
-
-const bundle = Bundle.getBundle("main");
+/* FeatureFinder.js */
 
 class FeatureFinder
 {
   constructor(options)
   {
+    this.name = options?.name || this.constructor.name;
     this.maxZoom = options?.maxZoom || 18;
     this.centerMarkerOnClick = options?.centerMarkerOnClick || false;
     this.formViewMode = options?.formViewMode || "panel"; // panel || popup
@@ -21,7 +18,7 @@ class FeatureFinder
 
   getTitle()
   {
-    return "title";
+    return this.name;
   }
 
   populateForm(element)
@@ -47,7 +44,7 @@ class FeatureFinder
   {
     return "?";
   }
-  
+
   populateList(feature, element)
   {
     element.textContent = this.getFeatureLabel(feature);
@@ -65,28 +62,74 @@ class FeatureFinder
 
   getMarker(feature)
   {
-    const marker = new maplibregl.Marker({ 
-      color: this.getMarkerColor(feature) 
-     });
+    const markerOptions = {};
+    let element;
 
-    const element = marker.getElement();
+    if (this.isCustomMarker(feature)) // custom marker
+    {
+      element = document.createElement("div");
+      element.className = "marker";
+      this.populateMarker(feature, element);
+      markerOptions.element = element;
+    }
+    else // default marker
+    {
+      markerOptions.color = this.getMarkerColor(feature);
+    }
+    
+    const marker = new maplibregl.Marker(markerOptions);
+    element = marker.getElement();
     element.style.cursor = "pointer";
 
     return marker;
   }
 
-  getSelectedMarker(feature)
+  selectMarker(marker, feature)
   {
-    const marker = new maplibregl.Marker({
-      color: this.getSelectedMarkerColor(feature) 
-    });
-
-    const element = marker.getElement();
-    element.style.cursor = "pointer";
-
-    return marker;
+    if (this.isCustomMarker(feature))
+    {
+      marker.addClassName("selected");
+    }
+    else
+    {
+      this.changeMarkerColor(marker, this.getSelectedMarkerColor(feature));      
+    }
   }
 
+  unselectMarker(marker, feature)
+  {
+    if (this.isCustomMarker(feature))
+    {
+      marker.removeClassName("selected");
+    }
+    else
+    {
+      this.changeMarkerColor(marker, this.getMarkerColor(feature));      
+    }
+  }
+  
+  isCustomMarker(feature)
+  {
+    return false;
+  }
+
+  populateMarker(feature, element)
+  {
+  }
+
+  changeMarkerColor(marker, color)
+  {
+    // only for default markers
+    let markerElement = marker.getElement();
+    let fillElements = markerElement.querySelectorAll(
+      'svg g[fill="' + marker._color + '"]');
+    if (fillElements.length > 0)
+    {
+      fillElements[0].setAttribute("fill", color);
+      marker._color = color;
+    }
+  }
+  
   getMarkerColor(feature)
   {
     return "#3FB1CE";
@@ -100,7 +143,7 @@ class FeatureFinder
   getForm(feature)
   {
     return null;
-  }  
+  }
 }
 
 export { FeatureFinder };

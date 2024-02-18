@@ -42,7 +42,7 @@ function maplibreInit(clientId, style, language)
     
     loadActualImage(map, imageId);
   });
-  
+    
   map.setPixelRatio(window.devicePixelRatio);
   map.getContainer().style.touchAction = "none";
 
