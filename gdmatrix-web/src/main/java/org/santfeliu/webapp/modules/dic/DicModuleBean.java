@@ -129,6 +129,16 @@ public class DicModuleBean
 
     return String.join(", ", actionLabels);
   }
+  
+  public String getLocalizedAction(String action)
+  {
+    if (action == null) return null;
+    FacesContext context = FacesContext.getCurrentInstance();
+    Locale locale = context.getViewRoot().getLocale();
+    String bundleName = context.getApplication().getMessageBundle();
+    ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale);
+    return getLocalizedAction(action, bundle);
+  }  
 
   private String getLocalizedAction(String action, ResourceBundle bundle)
   {

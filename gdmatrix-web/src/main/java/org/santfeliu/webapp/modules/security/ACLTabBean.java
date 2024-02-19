@@ -53,7 +53,7 @@ public abstract class ACLTabBean extends TabBean
   private List<AccessControlEdit> rows = new ArrayList<>();
 
   @Inject
-  DicModuleBean dicModuleBean;
+  protected DicModuleBean dicModuleBean;
 
   @PostConstruct
   public void init()
