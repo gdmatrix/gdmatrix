@@ -2,7 +2,8 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jsf="http://xmlns.jcp.org/jsf">
 
   <f:subview id="#{tab.subviewId}">
 
@@ -37,34 +38,28 @@
         </div>
       </f:facet>
 
-      <p:headerRow field="caseEventTypeId" expandable="true"
+      <p:headerRow groupBy="#{row.typeId}" expandable="true"
                    expanded="true" rendered="#{eventCasesTabBean.groupedView}">
         <p:column colspan="6">
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseEventTypeId)}"/>
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{agendaBundle.eventCases_id}" styleClass="col-1">
-        <h:outputText value="#{row.caseObject.caseId}" />
-      </p:column>
-
-      <p:column headerText="#{agendaBundle.eventCases_case}" styleClass="col-7">
-        <h:outputText value="#{row.caseObject.title}"/>
-      </p:column>
-
-      <p:column headerText="#{agendaBundle.eventCases_type}" styleClass="col-2"
-                rendered="#{eventCasesTabBean.renderTypeColumn}"
-                sortBy="#{typeTypeBean.getDescription(row.caseEventTypeId)}"
-                sortOrder="asc" sortPriority="1">
-        <h:outputText value="#{typeTypeBean.getDescription(row.caseEventTypeId)}"/>
-      </p:column>
-
+      <p:columns value="#{eventCasesTabBean.columns}" var="column" columnIndexVar="i"
+                 filterable="false" sortable="true" resizable="false"
+                 headerText="#{applicationBean.translate(column.label)}" 
+                 field="#{column.name}" styleClass="#{column.styleClass}"
+                 sortBy="#{row.values[i].sorted}">
+        <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
+        <h:outputText value="#{row.values[i].label}" />
+      </p:columns>      
+      
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this"
                          update="@form:cnt"
-                         action="#{navigatorBean.show('Case', row.caseObject.caseId)}"
+                         action="#{navigatorBean.show('Case', row.caseId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
@@ -74,14 +69,14 @@
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"
                          oncomplete="PF('eventCasesDialog').show()"
-                         disabled="#{!caseObjectBean.isRowEditable(row.caseEventTypeId)}" />
+                         disabled="#{!caseObjectBean.isRowEditable(row.typeId)}" />
         <p:commandButton action="#{eventCasesTabBean.remove(row)}"
                          process="@this"
                          update="@form:cnt:search_tabs:tabs"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
-                         disabled="#{!eventObjectBean.editable or !caseObjectBean.isRowRemovable(row.caseEventTypeId)}">
+                         disabled="#{!eventObjectBean.editable or !caseObjectBean.isRowRemovable(row.typeId)}">
           <p:confirm header="#{objectBundle.confirm_remove_header}"
                      message="#{objectBundle.confirm_remove_message}"
                      icon="pi pi-info-circle" />

@@ -41,6 +41,7 @@ import org.matrix.dic.DictionaryConstants;
 import static org.matrix.dic.DictionaryConstants.CASE_ADDRESS_TYPE;
 import static org.matrix.dic.DictionaryConstants.CASE_CASE_TYPE;
 import static org.matrix.dic.DictionaryConstants.CASE_DOCUMENT_TYPE;
+import static org.matrix.dic.DictionaryConstants.CASE_EVENT_TYPE;
 import static org.matrix.dic.DictionaryConstants.CASE_PERSON_TYPE;
 import static org.matrix.dic.DictionaryConstants.INTERVENTION_TYPE;
 import org.matrix.policy.PolicyConstants;
@@ -192,6 +193,16 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     EditTab eventsEditTab = new EditTab(BUNDLE_PREFIX + "tab_events", 
       "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
       "/pages/cases/case_events_dialog.xhtml");
+    eventsEditTab.getColumns().add(new Column("eventId", 
+      BUNDLE_PREFIX + "caseEvents_id", "col-1"));
+    eventsEditTab.getColumns().add(new Column("eventTitle", 
+      BUNDLE_PREFIX + "caseEvents_event", "col-5"));    
+    eventsEditTab.getColumns().add(new Column("caseEventTypeId", 
+      BUNDLE_PREFIX + "caseEvents_type", "col-3"));    
+    eventsEditTab.getColumns().add(new Column("eventIniDate", 
+      BUNDLE_PREFIX + "caseEvents_date", 
+      "col-1 text-center white-space-nowrap"));
+    eventsEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);
     eventsEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     eventsEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
     editTabs.add(eventsEditTab);    

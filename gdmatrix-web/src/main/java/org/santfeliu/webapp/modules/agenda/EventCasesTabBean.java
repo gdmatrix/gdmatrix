@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,9 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.cases.CaseTypeBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -69,7 +72,7 @@ public class EventCasesTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    List<CaseEventView> rows;
+    List<CaseEventsDataTableRow> rows;
     int firstRow = 0;
     boolean groupedView = true;
   }
@@ -129,6 +132,15 @@ public class EventCasesTabBean extends TabBean
     return eventObjectBean;
   }
 
+  public List<Column> getColumns()
+  {
+    EditTab activeEditTab = eventObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
   public CaseEvent getEditing()
   {
     return editing;
@@ -150,12 +162,12 @@ public class EventCasesTabBean extends TabBean
     return editing == null ? NEW_OBJECT_ID : editing.getCaseEventTypeId();
   }
 
-  public List<CaseEventView> getRows()
+  public List<CaseEventsDataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<CaseEventView> rows)
+  public void setRows(List<CaseEventsDataTableRow> rows)
   {
     getCurrentTabInstance().rows = rows;
   }
@@ -226,14 +238,14 @@ public class EventCasesTabBean extends TabBean
     return "";
   }
 
-  public void edit(CaseEventView row)
+  public void edit(DataTableRow row)
   {
     if (row != null)
     {
       try
       {
         editing = CasesModuleBean.getPort(false).
-          loadCaseEvent(row.getCaseEventId());
+          loadCaseEvent(row.getRowId());
       }
       catch (Exception ex)
       {
@@ -250,6 +262,7 @@ public class EventCasesTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
+    executeTabAction("preTabLoad", null);    
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -258,9 +271,10 @@ public class EventCasesTabBean extends TabBean
         CaseEventFilter filter = new CaseEventFilter();
         filter.setEventId(eventObjectBean.getObjectId());
         filter.setCaseEventTypeId(typeId);
-        filter.setExcludeMetadata(false);
-        getCurrentTabInstance().rows =
+        filter.setExcludeMetadata(false);        
+        List<CaseEventView> events = 
           CasesModuleBean.getPort(false).findCaseEventViews(filter);
+        setRows(toDataTableRows(events));        
       }
       catch (Exception ex)
       {
@@ -274,6 +288,7 @@ public class EventCasesTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
+    executeTabAction("postTabLoad", null);     
   }
 
   public void create()
@@ -297,7 +312,9 @@ public class EventCasesTabBean extends TabBean
       {
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
-        CasesModuleBean.getPort(false).storeCaseEvent(editing);
+        editing = (CaseEvent)executeTabAction("preTabStore", editing);        
+        editing = CasesModuleBean.getPort(false).storeCaseEvent(editing);
+        executeTabAction("postTabStore", editing);        
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -310,13 +327,15 @@ public class EventCasesTabBean extends TabBean
     }
   }
 
-  public void remove(CaseEventView row)
+  public void remove(DataTableRow row)
   {
     if (row != null)
     {
       try
       {
-        CasesModuleBean.getPort(false).removeCaseEvent(row.getCaseEventId());
+        row = (DataTableRow)executeTabAction("preTabRemove", row);
+        CasesModuleBean.getPort(false).removeCaseEvent(row.getRowId());
+        executeTabAction("postTabRemove", row);
         refreshHiddenTabInstances();
         load();
         growl("REMOVE_OBJECT");
@@ -372,6 +391,19 @@ public class EventCasesTabBean extends TabBean
     return (attendant != null && attendant.getCaseEventId() == null);
   }
 
+  private List<CaseEventsDataTableRow> toDataTableRows(List<CaseEventView> events) 
+    throws Exception
+  {
+    List<CaseEventsDataTableRow> convertedRows = new ArrayList();
+    for (CaseEventView row : events)
+    {
+      CaseEventsDataTableRow dataTableRow = new CaseEventsDataTableRow(row);
+      dataTableRow.setValues(this, row, getColumns());
+      convertedRows.add(dataTableRow);
+    }
+    return convertedRows;
+  }  
+  
   private void refreshHiddenTabInstances()
   {
     for (TabInstance tabInstance : tabInstances.values())
@@ -382,5 +414,160 @@ public class EventCasesTabBean extends TabBean
       }
     }
   }
+
+  public class CaseEventsDataTableRow extends DataTableRow
+  {
+    private String caseId;
+    private String caseTypeId;
+    private String caseTitle;
+    private String eventId;
+    private String eventTypeId;
+    private String eventTitle;
+    private String eventIniDate;
+    private String eventEndDate;    
+    private String caseEventTypeId;
+
+    public CaseEventsDataTableRow(CaseEventView row)
+    {
+      super(row.getCaseEventId(), row.getCaseEventTypeId());
+      if (row.getCaseObject() != null)
+      {
+        caseId = row.getCaseObject().getCaseId();
+        caseTypeId = row.getCaseObject().getCaseTypeId();
+        caseTitle = row.getCaseObject().getTitle();
+      }
+      if (row.getEvent() != null)
+      {
+        eventId = row.getEvent().getEventId();
+        eventTypeId = row.getEvent().getEventTypeId();
+        eventTitle = row.getEvent().getSummary();
+        eventIniDate = row.getEvent().getStartDateTime();
+        eventEndDate = row.getEvent().getEndDateTime();      
+      }
+      caseEventTypeId = row.getCaseEventTypeId();
+    }
+
+    public String getCaseId()
+    {
+      return caseId;
+    }
+
+    public void setCaseId(String caseId)
+    {
+      this.caseId = caseId;
+    }
+
+    public String getCaseTypeId()
+    {
+      return caseTypeId;
+    }
+
+    public void setCaseTypeId(String caseTypeId)
+    {
+      this.caseTypeId = caseTypeId;
+    }
+
+    public String getCaseTitle()
+    {
+      return caseTitle;
+    }
+
+    public void setCaseTitle(String caseTitle)
+    {
+      this.caseTitle = caseTitle;
+    }
+
+    public String getEventId()
+    {
+      return eventId;
+    }
+
+    public void setEventId(String eventId)
+    {
+      this.eventId = eventId;
+    }
+
+    public String getEventTypeId()
+    {
+      return eventTypeId;
+    }
+
+    public void setEventTypeId(String eventTypeId)
+    {
+      this.eventTypeId = eventTypeId;
+    }
+
+    public String getEventTitle()
+    {
+      return eventTitle;
+    }
+
+    public void setEventTitle(String eventTitle)
+    {
+      this.eventTitle = eventTitle;
+    }
+
+    public String getEventIniDate()
+    {
+      return eventIniDate;
+    }
+
+    public void setEventIniDate(String eventIniDate)
+    {
+      this.eventIniDate = eventIniDate;
+    }
+
+    public String getEventEndDate()
+    {
+      return eventEndDate;
+    }
+
+    public void setEventEndDate(String eventEndDate)
+    {
+      this.eventEndDate = eventEndDate;
+    }
+
+    public String getCaseEventTypeId()
+    {
+      return caseEventTypeId;
+    }
+
+    public void setCaseEventTypeId(String caseEventTypeId)
+    {
+      this.caseEventTypeId = caseEventTypeId;
+    }
+
+    @Override
+    protected Value getDefaultValue(String columnName)
+    {
+      if (columnName != null)
+      {
+        switch (columnName)
+        {
+          case "caseId":
+            return new DefaultValue(getCaseId());
+          case "caseTypeId":
+            return new TypeValue(getCaseTypeId());
+          case "caseTitle":
+            return new DefaultValue(getCaseTitle());          
+          case "eventId":
+            return new DefaultValue(getEventId());
+          case "eventTypeId":
+            return new TypeValue(getEventTypeId());
+          case "eventTitle":
+            return new DefaultValue(getEventTitle());
+          case "eventIniDate":
+            return new DateValue(getEventIniDate());
+          case "eventEndDate":
+            return new DateValue(getEventEndDate());
+          case "caseEventTypeId":
+            return new TypeValue(getCaseEventTypeId());
+          default:
+            break;
+        }
+      }
+      return super.getDefaultValue(columnName);
+    }
+  }  
 
 }

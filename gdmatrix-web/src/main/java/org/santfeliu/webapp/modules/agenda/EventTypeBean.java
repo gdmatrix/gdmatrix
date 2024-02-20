@@ -40,6 +40,8 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
 import org.matrix.dic.DictionaryConstants;
+import static org.matrix.dic.DictionaryConstants.CASE_EVENT_TYPE;
+import org.matrix.security.SecurityConstants;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -133,10 +135,22 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
       "/pages/agenda/event_documents.xhtml",
       "eventDocumentsTabBean", "docs1",
       "/pages/agenda/event_documents_dialog.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases",
+    
+    EditTab casesEditTab = new EditTab(BUNDLE_PREFIX + "tab_cases",
       "/pages/agenda/event_cases.xhtml",
       "eventCasesTabBean", "cases1",
-      "/pages/agenda/event_cases_dialog.xhtml"));
+      "/pages/agenda/event_cases_dialog.xhtml");
+    casesEditTab.getColumns().add(new Column("caseId", 
+      BUNDLE_PREFIX + "eventCases_id", "col-1"));
+    casesEditTab.getColumns().add(new Column("caseTitle", 
+      BUNDLE_PREFIX + "eventCases_case", "col-6"));    
+    casesEditTab.getColumns().add(new Column("caseEventTypeId", 
+      BUNDLE_PREFIX + "eventCases_type", "col-3"));    
+    casesEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);
+    casesEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
+    casesEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
+    editTabs.add(casesEditTab);    
+    
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_recurrences",
       "/pages/agenda/event_recurrences.xhtml",
       "eventRecurrencesTabBean"));
