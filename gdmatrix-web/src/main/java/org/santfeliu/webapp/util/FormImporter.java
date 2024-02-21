@@ -52,6 +52,7 @@ import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.primefaces.component.chips.Chips;
 import org.primefaces.component.datepicker.DatePicker;
 import org.primefaces.component.inputnumber.InputNumber;
@@ -419,21 +420,22 @@ public class FormImporter
 
         List<View> children = view.getChildren();
 
+        try {
+        if (addEmptyValue)
+        {
+          component.getChildren().add(new UISelectItem());
+        }
+
         for (View child : children)
         {
           if (View.ITEM.equals(child.getViewType()))
           {
             String itemValue = (String)child.getProperty("value");
-            if (!child.getChildren().isEmpty())
+            String itemLabel = child.getChildren().isEmpty() ? "" :
+              (String)child.getChildren().get(0).getProperty("text");
+
+            if (!isBlank(itemLabel) || !addEmptyValue)
             {
-              if (addEmptyValue)
-              {
-                if (!StringUtils.isBlank(itemValue))
-                  component.getChildren().add(new UISelectItem());
-                addEmptyValue = false;
-              }
-              String itemLabel =
-                (String)child.getChildren().get(0).getProperty("text");
               UISelectItem selectItem = new UISelectItem();
               selectItem.setItemValue(itemValue);
               selectItem.setItemLabel(itemLabel);
@@ -441,6 +443,9 @@ public class FormImporter
             }
           }
         }
+        }
+        catch (Exception exx)
+        { exx.printStackTrace(); };
       }
       else if (view instanceof HtmlRadioView)
       {
