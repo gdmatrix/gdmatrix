@@ -44,6 +44,8 @@ public class Layer implements Serializable
   String id;
   String type;
   String source;
+  Double maxzoom;
+  Double minzoom;
   @SerializedName("source-layer")
   String sourceLayer;
   Map<String, Object> paint = new HashMap<>();
@@ -89,6 +91,26 @@ public class Layer implements Serializable
   public void setSource(String source)
   {
     this.source = source;
+  }
+
+  public Double getMaxzoom()
+  {
+    return maxzoom;
+  }
+
+  public void setMaxzoom(Double maxzoom)
+  {
+    this.maxzoom = maxzoom;
+  }
+
+  public Double getMinzoom()
+  {
+    return minzoom;
+  }
+
+  public void setMinzoom(Double minzoom)
+  {
+    this.minzoom = minzoom;
   }
 
   public String getSourceLayer()

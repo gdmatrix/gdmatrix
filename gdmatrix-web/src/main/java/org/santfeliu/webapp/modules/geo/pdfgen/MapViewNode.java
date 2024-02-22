@@ -63,8 +63,7 @@ import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
-import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICES;
-import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICE_PARAMETERS;
+import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 import static org.santfeliu.webapp.modules.geo.pdfgen.MapContext.*;
 /**
  *
@@ -173,17 +172,15 @@ public class MapViewNode extends MapRectNode
 
       String sourceId = layer.getSource();
 
-      Map<String, ServiceParameters> serviceParametersMap =
-        (Map<String, ServiceParameters>)style.getMetadata().get(SERVICE_PARAMETERS);
-      if (serviceParametersMap == null) return;
+      StyleMetadata styleMetadata = new StyleMetadata(style);
 
-      ServiceParameters serviceParameters = serviceParametersMap.get(sourceId);
+      ServiceParameters serviceParameters =
+        styleMetadata.getServiceParameters(sourceId, false);
       if (serviceParameters == null) return;
 
       String serviceId = serviceParameters.getService();
-      Map<String, Service> servicesMap =
-        (Map<String, Service>)style.getMetadata().get(SERVICES);
-      Service service = servicesMap.get(serviceId);
+      Service service = styleMetadata.getService(serviceId, false);
+      if (service == null) return;
 
       String sld = serviceParameters.getSldName();
 
@@ -283,11 +280,11 @@ public class MapViewNode extends MapRectNode
         "contains(" + geometryColumn +
         ", point(" + lastX + " " + lastY + "))";
 
-      Map<String, Service> servicesMap =
-        (Map<String, Service>)map.getStyle().getMetadata().get(SERVICES);
-      if (servicesMap == null) return;
+      Style style = map.getStyle();
 
-      Service service = servicesMap.get(serviceId);
+      StyleMetadata styleMetadata = new StyleMetadata(style);
+
+      Service service = styleMetadata.getService(serviceId, false);
       if (service == null) return;
 
       String serviceUrl = service.getUrl();

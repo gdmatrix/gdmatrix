@@ -37,7 +37,6 @@ import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.PojoUtils;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
 import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
-import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
  *
@@ -80,7 +79,6 @@ public class MapContext
       context.put(MAP, map);
 
       Style style = map.getStyle();
-      StyleMetadata.convert(style);
 
       // bounds
       String bbox = (String)context.get(BBOX);

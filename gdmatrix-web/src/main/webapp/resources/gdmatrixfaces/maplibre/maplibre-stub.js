@@ -30,7 +30,8 @@ function maplibreInit(clientId, style, language)
     maxPitch: style.metadata.maxPitch,
     hash: style.metadata.hash || false,
     style: style,
-    antialias: true
+    antialias: true,
+    attributionControl: false
   });
   
   const placeHolderImage = createPlaceHolderImage();

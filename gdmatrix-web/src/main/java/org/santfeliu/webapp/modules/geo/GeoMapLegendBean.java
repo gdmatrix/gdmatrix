@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.geo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -46,7 +45,7 @@ import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
 import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.LEGEND;
+import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
  *
@@ -72,22 +71,20 @@ public class GeoMapLegendBean extends WebBean implements Serializable
     {
       legendTreeRoot = new LegendTreeNode("group", null, null);
 
-      Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
+      StyleMetadata styleMetadata = new StyleMetadata(geoMapBean.getStyle());
 
-      LegendGroup legendGroup = (LegendGroup)metadata.get(LEGEND);
-
-      if (legendGroup == null)
+      LegendGroup legendGroup = styleMetadata.getLegend(true);
+      if (legendGroup.getLabel() == null)
       {
-        legendGroup = new LegendGroup();
         legendGroup.setLabel("Legend");
-        metadata.put(LEGEND, legendGroup);
       }
+
       populateLegendItem(legendGroup, legendTreeRoot);
     }
     return legendTreeRoot;
   }
 
-  public void updateLegendTreeRoot()
+  public void refresh()
   {
     legendTreeRoot = null;
   }

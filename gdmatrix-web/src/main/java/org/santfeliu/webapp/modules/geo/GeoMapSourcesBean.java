@@ -108,6 +108,11 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
     return sourceTypeSelectItems;
   }
 
+  public void refresh()
+  {
+    sourceIds = null;
+  }
+
   public List<String> getSourceIds()
   {
     if (sourceIds == null)
@@ -186,7 +191,7 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
     String serviceId = serviceParameters.getService();
     if (isBlank(serviceId)) return null;
 
-    Service service = geoMapBean.getServices().get(serviceId);
+    Service service = geoMapBean.getServiceMap().get(serviceId);
     if (service == null) return null;
 
     return service.getUrl();

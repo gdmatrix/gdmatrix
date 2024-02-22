@@ -37,7 +37,7 @@
     </div>
 
   </h:panelGroup>
-
+  
   <!-- Light -->
   
   <p:selectBooleanCheckbox id="light_enable"
@@ -60,9 +60,12 @@
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Color" />
-      <p:colorPicker id="light_color" 
-                     value="#{geoMapBean.lightColor}"
+      <div class="ui-inputgroup flex-grow-1">
+        <input type="color" value="#{geoMapBean.lightColor}" class="br-1"
+               oninput="this.nextElementSibling.value = this.value;" />
+        <p:inputText value="#{geoMapBean.lightColor}" 
                      disabled="#{not geoMapBean.lightEnabled}" />
+      </div>
     </div>
 
     <div class="field col-12 md:col-3">
@@ -71,9 +74,12 @@
                  value="#{geoMapBean.style.light.intensity}" 
                  min="0" max="1" stepFactor="0.01"
                  disabled="#{not geoMapBean.lightEnabled}" />
-      <p:slider for="@previous" minValue="0" maxValue="1" step="0.01" 
+      <!--
+      <p:slider id="light_slider" 
+                for="@previous" minValue="0" maxValue="1" step="0.01" 
                 styleClass="mt-2"
                 disabled="#{not geoMapBean.lightEnabled}" />
+      -->
     </div>
 
   </h:panelGroup>
@@ -90,27 +96,36 @@
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Sky Color" />
-      <p:colorPicker id="sky_color" 
-                     value="#{geoMapBean.skyColor}"
+      <div class="ui-inputgroup flex-grow-1">
+        <input type="color" value="#{geoMapBean.skyColor}" class="br-1"
+               oninput="this.nextElementSibling.value = this.value;" />
+        <p:inputText value="#{geoMapBean.skyColor}" 
                      disabled="#{not geoMapBean.skyEnabled}" />
+      </div>
     </div>
     
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Fog Color" />
-      <p:colorPicker id="fog_color"
-                     value="#{geoMapBean.fogColor}"
+      <div class="ui-inputgroup flex-grow-1">
+        <input type="color" value="#{geoMapBean.fogColor}" class="br-1"
+               oninput="this.nextElementSibling.value = this.value;" />
+        <p:inputText value="#{geoMapBean.fogColor}" 
                      disabled="#{not geoMapBean.skyEnabled}" />
+      </div>
     </div>
-    
+
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Horizon blend" />
       <p:spinner id="horizontal_blend" 
                  value="#{geoMapBean.style.sky.horizonBlend}"
                  min="0" max="1" stepFactor="0.01"
-                 disabled="#{not geoMapBean.skyEnabled}" /> 
-      <p:slider for="@previous" minValue="0" maxValue="1" step="0.01" 
+                 disabled="#{not geoMapBean.skyEnabled}" />
+      <!--
+      <p:slider id="blend_slider" for="@previous" 
+                minValue="0" maxValue="1" step="0.01" 
                 styleClass="mt-2"
                 disabled="#{not geoMapBean.skyEnabled}" />
+      -->
     </div>
 
     <div class="field col-12 md:col-3">
@@ -118,10 +133,13 @@
       <p:spinner id="fog_blend" 
                  value="#{geoMapBean.style.sky.fogBlend}"
                  min="0" max="1" stepFactor="0.01"
-                 disabled="#{not geoMapBean.skyEnabled}" /> 
-      <p:slider for="@previous" minValue="0" maxValue="1" step="0.01" 
+                 disabled="#{not geoMapBean.skyEnabled}" />
+      <!--
+      <p:slider id="fog_slider" for="@previous" 
+                minValue="0" maxValue="1" step="0.01" 
                 styleClass="mt-2"
                 disabled="#{not geoMapBean.skyEnabled}" />
+      -->
     </div>
 
   </h:panelGroup>

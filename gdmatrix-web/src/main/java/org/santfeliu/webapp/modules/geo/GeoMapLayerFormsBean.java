@@ -31,15 +31,13 @@
 package org.santfeliu.webapp.modules.geo;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
-import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.LAYER_FORMS;
+import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
  *
@@ -56,15 +54,8 @@ public class GeoMapLayerFormsBean extends WebBean implements Serializable
 
   public List<LayerForm> getLayerForms()
   {
-    Map<String, Object> metadata = geoMapBean.getStyle().getMetadata();
-
-    List<LayerForm> layerForms = (List<LayerForm>)metadata.get(LAYER_FORMS);
-    if (layerForms == null)
-    {
-      layerForms = new ArrayList<>();
-      metadata.put(LAYER_FORMS, layerForms);
-    }
-    return layerForms;
+    StyleMetadata styleMetadata = new StyleMetadata(geoMapBean.getStyle());
+    return styleMetadata.getLayerForms(true);
   }
 
   public LayerForm getEditingLayerForm()

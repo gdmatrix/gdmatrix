@@ -93,7 +93,7 @@ public class GeoMapServicesBean extends WebBean implements Serializable
     try
     {
       capabilitiesServiceId = serviceId;
-      Service service = geoMapBean.getServices().get(capabilitiesServiceId);
+      Service service = geoMapBean.getServiceMap().get(capabilitiesServiceId);
       GeoServiceBean geoServiceBean =
         CDI.current().select(GeoServiceBean.class).get();
 
@@ -106,11 +106,16 @@ public class GeoMapServicesBean extends WebBean implements Serializable
     }
   }
 
+  public void refresh()
+  {
+    serviceIds = null;
+  }
+
   public List<String> getServiceIds()
   {
     if (serviceIds == null)
     {
-      serviceIds = new ArrayList<>(geoMapBean.getServices().keySet());
+      serviceIds = new ArrayList<>(geoMapBean.getServiceMap().keySet());
       Collections.sort(serviceIds);
     }
     return serviceIds;
@@ -133,7 +138,7 @@ public class GeoMapServicesBean extends WebBean implements Serializable
   {
     editingServiceId = serviceId;
     editingService = geoMapBean.cloneObject(
-      geoMapBean.getServices().get(serviceId), Service.class);
+      geoMapBean.getServiceMap().get(serviceId), Service.class);
     geoMapBean.setDialogVisible(true);
   }
 
@@ -142,7 +147,7 @@ public class GeoMapServicesBean extends WebBean implements Serializable
     editingServiceId = null;
     newService = true;
     editingService = geoMapBean.cloneObject(
-      geoMapBean.getServices().get(serviceId), Service.class);
+      geoMapBean.getServiceMap().get(serviceId), Service.class);
     geoMapBean.setDialogVisible(true);
   }
 
@@ -168,14 +173,14 @@ public class GeoMapServicesBean extends WebBean implements Serializable
         }
       }
     }
-    geoMapBean.getServices().remove(serviceId);
+    geoMapBean.getServiceMap().remove(serviceId);
   }
 
   public void acceptService()
   {
     if (newService)
     {
-      if (geoMapBean.getServices().containsKey(editingServiceId))
+      if (geoMapBean.getServiceMap().containsKey(editingServiceId))
       {
         error("DUPLICATED_ID");
         return;
@@ -185,7 +190,7 @@ public class GeoMapServicesBean extends WebBean implements Serializable
         newService = false;
       }
     }
-    geoMapBean.getServices().put(editingServiceId, editingService);
+    geoMapBean.getServiceMap().put(editingServiceId, editingService);
 
     editingServiceId = null;
     editingService = null;

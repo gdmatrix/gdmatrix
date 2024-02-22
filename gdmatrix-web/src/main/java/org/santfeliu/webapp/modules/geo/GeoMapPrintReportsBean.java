@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.geo;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
@@ -47,7 +46,7 @@ import org.santfeliu.util.IOUtils;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.metadata.PrintReport;
-import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.PRINT_REPORTS;
+import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
  *
@@ -65,14 +64,8 @@ public class GeoMapPrintReportsBean extends WebBean implements Serializable
 
   public List<PrintReport> getPrintReports()
   {
-    List<PrintReport> printReports =
-      (List<PrintReport>)geoMapBean.getStyle().getMetadata().get(PRINT_REPORTS);
-    if (printReports == null)
-    {
-      printReports = new ArrayList<>();
-      geoMapBean.getStyle().getMetadata().put(PRINT_REPORTS, printReports);
-    }
-    return printReports;
+    StyleMetadata styleMetadata = new StyleMetadata(geoMapBean.getStyle());
+    return styleMetadata.getPrintReports(true);
   }
 
   public PrintReport getEditingPrintReport()

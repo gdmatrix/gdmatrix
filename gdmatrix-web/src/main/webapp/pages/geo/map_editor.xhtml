@@ -56,6 +56,13 @@
                            resetValues="true"
                            process="@this" update="@form:cnt" />
 
+          <p:commandButton action="#{geoMapImportBean.setDialogVisible(true)}"
+                           value="#{objectBundle.import}"
+                           resetValues="true"
+                           icon="pi pi-download" title="#{objectBundle.import}" styleClass="mini"
+                           process="@this" update="@form:cnt:map_import_dialog"
+                           oncomplete="PF('mapImportDialog').show()" />          
+          
           <p:commandButton action="#{geoMapBean.reloadMap}" value="#{objectBundle.reload}"
                            icon="pi pi-refresh" title="#{objectBundle.reload}" styleClass="mini"
                            resetValues="true"
@@ -66,7 +73,7 @@
                            icon="pi pi-save" title="#{objectBundle.store}" styleClass="mini"
                            process="@form:cnt" update="@form:cnt"
                            oncomplete="if (isFacesError()) objectScrollUp()" />
-
+          
           <p:commandButton action="#{geoMapBean.removeMap}" value="#{objectBundle.delete}"
                            icon="pi pi-trash" title="#{objectBundle.delete}" styleClass="mini"
                            process="@form:cnt" update="@form:cnt"
@@ -78,16 +85,19 @@
         </div>
       </div>
     </div>
-    <div id="editor_body" class="p-2 flex-grow-1 overflow-auto">
+    <h:panelGroup id="editor_body" class="p-2 flex-grow-1 overflow-auto" layout="body">
 
-      <p:messages showSummary="true" styleClass="messages" 
+      <p:messages id="geo_editor_msg" showSummary="true" styleClass="messages" 
                   rendered="#{not geoMapBean.isDialogVisible()}"
                   showIcon="true" closable="false" forIgnores="growl">
         <p:autoUpdate />
       </p:messages>
 
       <ui:insert name="body"></ui:insert>
-    </div>
+    </h:panelGroup>
+    
+    <ui:include src="/pages/geo/map_import.xhtml" />
+
   </div>
 
   <gdm:saveBean value="geoMapBean" />
@@ -131,8 +141,8 @@
   
     function objectScrollUp()
     {
-      var elem = document.getElementById("editor_body");
-      elem.scrollTop = 0;
+      var elem = document.getElementById("mainform:editor_body");
+      if (elem) elem.scrollTop = 0;
     }
     window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
 

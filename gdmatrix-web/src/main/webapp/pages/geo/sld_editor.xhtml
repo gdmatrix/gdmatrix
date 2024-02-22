@@ -105,8 +105,8 @@
   <script>
     function objectScrollUp()
     {
-      var elem = document.getElementById("editor_body");
-      elem.scrollTop = 0;
+      var elem = document.getElementById("mainform:editor_body");
+      if (elem) elem.scrollTop = 0;
     }
     CQLAssistant.serviceUrl = #{geoSldBean.serviceUrlString};
 

@@ -12,7 +12,7 @@
     <p:outputLabel value="StrokeColor:" for="@next" />
     <div class="ui-inputgroup flex-grow-1">
       <input type="color" value="#{symbolizer.stroke.strokeColor}" class="br-1"
-             onchange="this.nextElementSibling.value = '\'' + this.value + '\''" />
+             oninput="this.nextElementSibling.value = '\'' + this.value + '\''" />
       <p:inputText value="#{symbolizer.stroke.strokeColorAsCql}" 
                    onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
                    onblur="CQLAssistant.hide()"

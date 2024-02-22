@@ -49,7 +49,7 @@
   margin-bottom: 2px;
 }
 
-.sld_panel input[type=color]
+input[type=color]
 {
   border-width: 1px;
   border-radius: var(--border-radius) 0 0 var(--border-radius);
@@ -99,6 +99,31 @@ div.ui-growl {
   #map_toolbar .buttons
   {
     padding-top: 4px;
+  }
+}
+
+@media only screen and (max-width: 850px) 
+{
+  body .ui-button.ui-button-text-icon-left.mini,
+  body .ui-button.ui-button-text-icon-right.mini
+  {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  
+  body .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
+  body .ui-button.ui-button-text-icon-right.mini > .ui-button-text
+  {
+    visibility: hidden;
+    width: 0;
+    padding-right: 0;
+    white-space:nowrap;
+  }
+
+  body .ui-button.ui-button-text-icon-left.mini > .ui-icon,
+  body .ui-button.ui-button-text-icon-right.mini > .ui-icon
+  {
+    left: 8px;
   }
 }
 

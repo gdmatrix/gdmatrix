@@ -8,7 +8,7 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <p:dataTable id="map_layers_table" size="small" 
+  <p:dataTable id="map_layers_table" size="small"
                showGridlines="true" stripedRows="true"
                draggableRows="true" rowDragSelector=".drag"
                value="#{geoMapBean.style.layers}" var="layer">
@@ -153,6 +153,16 @@
             <f:selectItems value="#{geoMapLayersBean.layerTypeSelectItems}" />
           </p:selectOneMenu>
         </div>
+
+        <div class="field col-6">
+          <p:outputLabel for="@next" value="Minzoom" />
+          <p:spinner value="#{geoMapLayersBean.editingLayer.minzoom}" />
+        </div>
+
+        <div class="field col-6">
+          <p:outputLabel for="@next" value="Maxzoom" />
+          <p:spinner value="#{geoMapLayersBean.editingLayer.maxzoom}" />
+        </div>
         
         <div class="field col-12">
           <p:tabView id="layer_options" dynamic="true" 
@@ -262,24 +272,27 @@
               </f:facet>
               <div class="ui-fluid formgrid grid">
 
-                <div class="field col-4">
-                  <p:outputLabel value="Visible" for="@next" styleClass="mr-2" />
+                <div class="field col-12 md:col-4 white-space-nowrap">
                   <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.visible}" 
                                   styleClass="vertical-align-middle"/>
+                  <i class="pi pi-eye ml-1" />
+                  <p:outputLabel value="Visible" for="@previous" styleClass="ml-2" />
                 </div>
 
-                <div class="field col-4">
-                  <p:outputLabel value="Locatable" for="@next" styleClass="mr-2" />
+                <div class="field col-12 md:col-4 white-space-nowrap">
                   <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.locatable}" 
                                   styleClass="vertical-align-middle">
                     <p:ajax update="sel_radius" />
                   </p:toggleSwitch>
+                  <i class="fa fa-arrow-pointer ml-2" />
+                  <p:outputLabel value="Locatable" for="@previous" styleClass="ml-2" />
                 </div>
 
-                <div class="field col-4">
-                  <p:outputLabel value="Highlight" for="@next" styleClass="mr-2" />
+                <div class="field col-12 md:col-4 white-space-nowrap">
                   <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.highlightEnabled}"
                                   styleClass="vertical-align-middle" />
+                  <i class="pi pi-sun ml-1" />
+                  <p:outputLabel value="Highlight" for="@previous" styleClass="ml-2" />
                 </div>
 
                 <div class="field col-12">

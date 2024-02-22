@@ -107,7 +107,7 @@
         <p:outputLabel value="FillColor:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
           <input type="color" value="#{symbolizer.fill.fillColor}"
-                 onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+                 oninput="this.nextElementSibling.value='\'' + this.value + '\''" />
           <p:inputText value="#{symbolizer.fill.fillColorAsCql}" 
                        onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
                        onblur="CQLAssistant.hide()"
@@ -207,7 +207,7 @@
         <p:outputLabel value="HaloFillColor:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
           <input type="color" value="#{symbolizer.halo.fill.fillColor}"
-                 onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+                 oninput="this.nextElementSibling.value='\'' + this.value + '\''" />
           <p:inputText value="#{symbolizer.halo.fill.fillColorAsCql}" 
                        onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
                        onblur="CQLAssistant.hide()"

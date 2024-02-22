@@ -103,7 +103,7 @@
         <p:outputLabel value="MarkStrokeColor:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
           <input type="color" value="#{symbolizer.graphic.mark.stroke.strokeColor}"
-                 onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+                 oninput="this.nextElementSibling.value='\'' + this.value + '\''" />
           <p:inputText value="#{symbolizer.graphic.mark.stroke.strokeColorAsCql}"
                        onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
                        onblur="CQLAssistant.hide()"
@@ -135,7 +135,7 @@
         <p:outputLabel value="MarkFillColor:" for="@next" />
         <div class="ui-inputgroup flex-grow-1">
           <input type="color" value="#{symbolizer.graphic.mark.fill.fillColor}"
-                 onchange="this.nextElementSibling.value='\'' + this.value + '\''" />
+                 oninput="this.nextElementSibling.value='\'' + this.value + '\''" />
           <p:inputText value="#{symbolizer.graphic.mark.fill.fillColorAsCql}"
                        onfocus="CQLAssistant.show('#{namedLayer.layerName}', this)"
                        onblur="CQLAssistant.hide()"

@@ -32,6 +32,23 @@ class MapInfoControl
         bodyDiv.appendChild(mapInfoElem);
       }
     }
+
+    const attribUl = document.createElement("ul");
+    attribUl.className = "attributions";
+    bodyDiv.appendChild(attribUl);
+
+    const sources = map.getStyle().sources;
+    for (let sourceId in sources)
+    {
+      let source = sources[sourceId];
+      let attribution = source.attribution;
+      if (attribution && attribution.length > 0)
+      {
+        let attribLi = document.createElement("li");
+        attribLi.innerHTML = attribution;
+        attribUl.appendChild(attribLi);
+      }
+    }
   }
 
   onAdd(map)

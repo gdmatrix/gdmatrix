@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <p:dialog id="map_import_dialog" widgetVar="mapImportDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <span class="pi pi-download mr-2"/><span>Map import</span>
+    </f:facet>
+
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>
+
+    <h:panelGroup styleClass="mt-2" id="map_import_panel" layout="block"
+                  rendered="#{geoMapImportBean.isDialogVisible()}">
+      <div class="ui-fluid formgrid grid">
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Map to import from" indicateRequired="true" />
+          <p:autoComplete value="#{geoMapImportBean.mapName}"
+                          maxResults="100" minQueryLength="2"
+                          var="mapView" 
+                          itemLabel="#{mapView.title}"
+                          itemValue="#{mapView.mapName}"
+                          required="true"
+                          onclick="this.setSelectionRange(0, this.value.length)"
+                          scrollHeight="200" emptyMessage=""
+                          forceSelection="true"
+                          completeMethod="#{geoMapImportBean.findMapViews}">
+            <p:column>
+              #{mapView.title}
+            </p:column>
+          </p:autoComplete>
+        </div>
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Data to import" />
+          <p:selectOneMenu value="#{geoMapImportBean.dataToImport}">
+            <f:selectItem itemLabel="Services" itemValue="1" />
+            <f:selectItem itemLabel="Sources" itemValue="2" />
+            <f:selectItem itemLabel="Layers" itemValue="3" />
+            <f:selectItem itemLabel="Legend" itemValue="4" />
+          </p:selectOneMenu>
+        </div>
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Import position" />
+          <p:selectOneMenu value="#{geoMapImportBean.importPosition}">
+            <f:selectItem itemLabel="Insert top" itemValue="top" />
+            <f:selectItem itemLabel="Add to bottom" itemValue="bottom" />
+          </p:selectOneMenu>
+        </div>
+      </div>
+    </h:panelGroup>
+
+    <f:facet name="footer">
+      <div class="field col-12 text-right">
+        <p:commandButton id="accept_import"
+                         action="#{geoMapImportBean.acceptImport}"
+                         styleClass="m-1" value="#{objectBundle.import}"
+                         process="@form:cnt:map_import_dialog"
+                         update="map_import_panel @form:cnt:editor_body"
+                         icon="pi pi-download"
+                         oncomplete="closePFDialog('mapImportDialog')" />
+        <p:commandButton action="#{geoMapImportBean.cancelImport}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="@form:cnt" global="false"
+                         icon="pi pi-times"
+                         onclick="PF('mapImportDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+  <gdm:saveBean value="geoMapImportBean" />
+
+</ui:composition>

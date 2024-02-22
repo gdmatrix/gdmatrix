@@ -63,8 +63,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.faces.maplibre.model.Light;
 import org.santfeliu.faces.maplibre.model.Sky;
 import org.santfeliu.faces.maplibre.model.Terrain;
-import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICES;
-import static org.santfeliu.webapp.modules.geo.metadata.StyleMetadata.SERVICE_PARAMETERS;
 import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
@@ -120,6 +118,21 @@ public class GeoMapBean extends WebBean implements Serializable
   public void setMode(String mode)
   {
     this.mode = mode;
+  }
+
+  public void refresh()
+  {
+    GeoMapServicesBean geoMapServicesBean =
+      CDI.current().select(GeoMapServicesBean.class).get();
+    geoMapServicesBean.refresh();
+
+    GeoMapSourcesBean geoMapSourcesBean =
+      CDI.current().select(GeoMapSourcesBean.class).get();
+    geoMapSourcesBean.refresh();
+
+    GeoMapLegendBean geoMapLegendBean =
+      CDI.current().select(GeoMapLegendBean.class).get();
+    geoMapLegendBean.refresh();
   }
 
   public String getContent()
@@ -323,43 +336,27 @@ public class GeoMapBean extends WebBean implements Serializable
       sky.setFogColor(color);
     }
   }
-  
+
 
   // services
 
-  public Map<String, Service> getServices()
+  public Map<String, Service> getServiceMap()
   {
-    return getServices(true);
+    return GeoMapBean.this.getServiceMap(true);
   }
 
-  public Map<String, Service> getServices(boolean neverNull)
+  public Map<String, Service> getServiceMap(boolean create)
   {
-    Map<String, Object> metadata = getStyle().getMetadata();
-
-    Map<String, Service> services =
-      (Map<String, Service>)metadata.get(SERVICES);
-    if (services == null && neverNull)
-    {
-      services = new HashMap<>();
-      metadata.put(SERVICES, services);
-    }
-    return services;
+    StyleMetadata styleMetadata = new StyleMetadata(getStyle());
+    return styleMetadata.getServiceMap(create);
   }
 
   // service parameters
 
   public Map<String, ServiceParameters> getServiceParametersMap()
   {
-    Map<String, Object> metadata = getStyle().getMetadata();
-
-    Map<String, ServiceParameters> map =
-      (Map<String, ServiceParameters>)metadata.get(SERVICE_PARAMETERS);
-    if (map == null)
-    {
-      map = new HashMap<>();
-      metadata.put(SERVICE_PARAMETERS, map);
-    }
-    return map;
+    StyleMetadata styleMetadata = new StyleMetadata(getStyle());
+    return styleMetadata.getServiceParametersMap(true);
   }
 
   public ServiceParameters getServiceParameters(String sourceId)
@@ -457,7 +454,7 @@ public class GeoMapBean extends WebBean implements Serializable
       }
       else if (view != null)
       {
-        convertMetadata();
+        refresh();
         setView(view);
       }
     }
@@ -479,7 +476,7 @@ public class GeoMapBean extends WebBean implements Serializable
       else
       {
         mapDocument = mapReloaded;
-        convertMetadata();
+        refresh();
         growl("MAP_RELOADED");
         mapNameChanged = false;
       }
@@ -538,7 +535,7 @@ public class GeoMapBean extends WebBean implements Serializable
     try
     {
       getStyle().fromString(json);
-      convertMetadata();
+      refresh();
     }
     catch (IOException ex)
     {
@@ -565,7 +562,7 @@ public class GeoMapBean extends WebBean implements Serializable
         }
         else
         {
-          convertMetadata();
+          refresh();
           setView("map_viewer");
         }
       }
@@ -613,7 +610,7 @@ public class GeoMapBean extends WebBean implements Serializable
       String sldName = serviceParameters.getSldName();
       System.out.println("sldName:" + sldName);
 
-      Service service = getServices().get(serviceId);
+      Service service = getServiceMap().get(serviceId);
       String serviceUrl = service == null ? null : service.getUrl();
 
       List<String> layerList = new ArrayList<>();
@@ -661,7 +658,7 @@ public class GeoMapBean extends WebBean implements Serializable
       text = text.toUpperCase();
 
       String serviceId = serviceParameters.getService();
-      Service service = getServices().get(serviceId);
+      Service service = getServiceMap().get(serviceId);
       String serviceUrl = service.getUrl();
 
       GeoServiceBean geoServiceBean =
@@ -739,15 +736,5 @@ public class GeoMapBean extends WebBean implements Serializable
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     svgStore.setCredentials(userSessionBean.getUserId(), userSessionBean.getPassword());
     return svgStore;
-  }
-
-  private void convertMetadata()
-  {
-    StyleMetadata.convert(getStyle());
-
-    GeoMapLegendBean geoMapLegendBean =
-      CDI.current().select(GeoMapLegendBean.class).get();
-
-    geoMapLegendBean.updateLegendTreeRoot();
   }
 }

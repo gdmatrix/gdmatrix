@@ -290,4 +290,10 @@ public class Source implements Serializable
   {
     this.tolerance = tolerance;
   }
+
+  public boolean equivalentTo(Source source)
+  {
+    // TODO: compare all fields
+    return source != null && source.getType().equals(getType());
+  }
 }

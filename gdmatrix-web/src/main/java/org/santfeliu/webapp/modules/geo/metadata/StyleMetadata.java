@@ -30,6 +30,8 @@
  */
 package org.santfeliu.webapp.modules.geo.metadata;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.santfeliu.faces.maplibre.model.Style;
@@ -48,51 +50,184 @@ public class StyleMetadata
   public static final String PROFILE = "profile";
   public static final String SCRIPTS = "scripts";
 
-  public static void convert(Style style)
+  Style style;
+
+  public StyleMetadata(Style style)
   {
-    Map<String, Object> services =
-      (Map<String, Object>)style.getMetadata().get(SERVICES);
-    if (services != null)
+    this.style = style;
+  }
+
+  public Style getStyle()
+  {
+    return style;
+  }
+
+  public Map<String, Service> getServiceMap(boolean create)
+  {
+    Map<String, Service> serviceMap =
+      (Map<String, Service>)style.getMetadata().get(SERVICES);
+
+    if (serviceMap == null)
     {
-      for (String serviceId : services.keySet())
+      if (create)
       {
-        services.put(serviceId, new Service((Map)services.get(serviceId)));
+        serviceMap = new HashMap<>();
+        style.getMetadata().put(SERVICES, serviceMap);
       }
+      return serviceMap;
     }
 
-    Map<String, Object> params =
-      (Map<String, Object>)style.getMetadata().get(SERVICE_PARAMETERS);
-    if (params != null)
+    if (!serviceMap.isEmpty())
     {
-      for (String sourceId : params.keySet())
+      for (String serviceId : serviceMap.keySet())
       {
-        params.put(sourceId, new ServiceParameters((Map)params.get(sourceId)));
+        Object item = serviceMap.get(serviceId);
+        if (item instanceof Map) // from gson
+        {
+          serviceMap.put(serviceId, new Service((Map)item));
+        }
+        else break;
       }
     }
+    return serviceMap;
+  }
 
-    List list = (List)style.getMetadata().get(LAYER_FORMS);
-    if (list != null)
+  public Service getService(String serviceId, boolean create)
+  {
+    Map<String, Service> serviceMap = getServiceMap(create);
+
+    if (serviceMap == null) return null;
+
+    Service service = serviceMap.get(serviceId);
+    if (service == null)
+    {
+      if (create)
+      {
+        service = new Service();
+        serviceMap.put(serviceId, service);
+      }
+    }
+    return service;
+  }
+
+  public Map<String, ServiceParameters> getServiceParametersMap(boolean create)
+  {
+    Map<String, ServiceParameters> serviceParametersMap =
+      (Map<String, ServiceParameters>)style.getMetadata().get(SERVICE_PARAMETERS);
+
+    if (serviceParametersMap == null)
+    {
+      if (create)
+      {
+        serviceParametersMap = new HashMap<>();
+        style.getMetadata().put(SERVICE_PARAMETERS, serviceParametersMap);
+      }
+      return serviceParametersMap;
+    }
+
+    for (String sourceId : serviceParametersMap.keySet())
+    {
+      Object item = serviceParametersMap.get(sourceId);
+      if (item instanceof Map)
+      {
+        serviceParametersMap.put(sourceId, new ServiceParameters((Map)item));
+      }
+      else break;
+    }
+    return serviceParametersMap;
+  }
+
+  public ServiceParameters getServiceParameters(String sourceId, boolean create)
+  {
+    Map<String, ServiceParameters> serviceParametersMap =
+      getServiceParametersMap(create);
+
+    if (serviceParametersMap == null) return null;
+
+    ServiceParameters serviceParameters = serviceParametersMap.get(sourceId);
+    if (serviceParameters == null && create)
+    {
+      serviceParameters = new ServiceParameters();
+      serviceParametersMap.put(sourceId, serviceParameters);
+    }
+    return serviceParameters;
+  }
+
+  public List<LayerForm> getLayerForms(boolean create)
+  {
+    List<LayerForm> list = (List<LayerForm>)style.getMetadata().get(LAYER_FORMS);
+    if (list == null)
+    {
+      if (create)
+      {
+        list = new ArrayList<>();
+        style.getMetadata().put(LAYER_FORMS, list);
+      }
+    }
+    else
     {
       for (int i = 0; i < list.size(); i++)
       {
-        list.set(i, new LayerForm((Map)list.get(i)));
+        Object item = list.get(i);
+        if (item instanceof Map) // from gson
+        {
+          list.set(i, new LayerForm((Map)item));
+        }
+        else break;
       }
     }
+    return list;
+  }
 
-    list = (List)style.getMetadata().get(PRINT_REPORTS);
-    if (list != null)
+  public List<PrintReport> getPrintReports(boolean create)
+  {
+    List<PrintReport> list = (List<PrintReport>)style.getMetadata().get(PRINT_REPORTS);
+    if (list == null)
+    {
+      if (create)
+      {
+        list = new ArrayList<>();
+        style.getMetadata().put(PRINT_REPORTS, list);
+      }
+    }
+    else
     {
       for (int i = 0; i < list.size(); i++)
       {
-        list.set(i, new PrintReport((Map)list.get(i)));
+        Object item = list.get(i);
+        if (item instanceof Map) // from gson
+        {
+          list.set(i, new PrintReport((Map)item));
+        }
+        else break;
       }
     }
+    return list;
+  }
 
-    Map legendProperties = (Map)style.getMetadata().get(LEGEND);
-    if (legendProperties != null &&
-        "group".equals(legendProperties.get("type")))
+  public LegendGroup getLegend(boolean create)
+  {
+    LegendGroup legendGroup = null;
+    Object legend = style.getMetadata().get(LEGEND);
+
+    if (legend instanceof LegendGroup)
     {
-      style.getMetadata().put("legend", new LegendGroup(legendProperties));
+      legendGroup = (LegendGroup)legend;
     }
+    else if (legend instanceof Map &&
+      "group".equals(((Map)legend).get("type")))
+    {
+      legendGroup = new LegendGroup((Map)legend);
+      style.getMetadata().put(LEGEND, legendGroup);
+    }
+    else
+    {
+      if (create)
+      {
+        legendGroup = new LegendGroup();
+        style.getMetadata().put(LEGEND, legendGroup);
+      }
+    }
+    return legendGroup;
   }
 }

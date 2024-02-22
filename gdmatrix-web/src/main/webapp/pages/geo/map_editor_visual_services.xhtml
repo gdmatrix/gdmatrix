@@ -15,16 +15,16 @@
       <span class="code">#{serviceId}</span>
     </p:column>
     <p:column headerText="Description">
-      #{geoMapBean.services[serviceId].description}
+      #{geoMapBean.serviceMap[serviceId].description}
     </p:column>
     <p:column headerText="Type">
-      #{geoMapBean.services[serviceId].type}
+      #{geoMapBean.serviceMap[serviceId].type}
     </p:column>
     <p:column headerText="Url">
-      <span class="code">#{geoMapBean.services[serviceId].url}</span>
+      <span class="code">#{geoMapBean.serviceMap[serviceId].url}</span>
     </p:column>
     <p:column headerText="Use proxy">
-      <span class="code">#{geoMapBean.services[serviceId].useProxy}</span>
+      <span class="code">#{geoMapBean.serviceMap[serviceId].useProxy}</span>
     </p:column>
 
     <p:column styleClass="w-2 text-right white-space-nowrap">
