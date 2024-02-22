@@ -32,7 +32,7 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -46,7 +46,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author blanquepa
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class AddressObjectBean extends ObjectBean
 {
   private Address address = new Address();

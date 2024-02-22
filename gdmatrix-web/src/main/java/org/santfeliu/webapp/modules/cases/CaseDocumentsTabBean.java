@@ -37,10 +37,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +67,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author realor
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class CaseDocumentsTabBean extends TabBean
 {
   public static final String UNLINK = "unlink";

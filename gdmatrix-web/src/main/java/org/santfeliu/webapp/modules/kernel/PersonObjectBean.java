@@ -35,8 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -54,7 +54,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author blanquepa
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class PersonObjectBean extends ObjectBean
 {
   private Person person = new Person();

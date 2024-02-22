@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
@@ -835,9 +834,6 @@ public class NavigatorBean extends WebBean implements Serializable
         {
           Bean<?> bean = iter.next();
           Object beanInstance = context.get(bean);
-
-          if (beanInstance == null)
-            beanInstance = beanManager.getContext(RequestScoped.class).get(bean); 
           
           if (beanInstance instanceof TabBean)
           {

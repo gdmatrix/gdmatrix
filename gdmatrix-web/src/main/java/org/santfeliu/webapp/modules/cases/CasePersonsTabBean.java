@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -71,7 +71,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author realor
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class CasePersonsTabBean extends TabBean
 {
   private Map<String, TabInstance> tabInstances = new HashMap<>();

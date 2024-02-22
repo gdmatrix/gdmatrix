@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -59,7 +59,7 @@ import org.santfeliu.webapp.setup.EditTab;
  * @author realor
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();

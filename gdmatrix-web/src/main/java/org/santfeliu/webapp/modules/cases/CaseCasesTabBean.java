@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
@@ -61,7 +61,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author blanquepa
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class CaseCasesTabBean extends TabBean
 {
   private static final String TYPEID_PROPERTY = "typeId";

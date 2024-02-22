@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.PersonAddress;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.TabBean;
  * @author blanquepa
  */
 @Named
-@RequestScoped
+@ViewScoped
 public class AddressPersonsTabBean extends TabBean
 {
   private List<PersonAddressView> rows;
