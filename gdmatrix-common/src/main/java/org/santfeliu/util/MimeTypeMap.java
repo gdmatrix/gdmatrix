@@ -147,6 +147,9 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("application/x-java-jnlp-file", new String[]{"jnlp"});
     addMimeType("application/pkcs7-signature", new String[]{"p7s"});
     addMimeType("application/pkcs7-mime", new String[]{"p7m"});
+    addMimeType("application/pkix-cert", new String[]{"cer"}); 
+    addMimeType("application/x-pem-file", new String[]{"pem"});    
+    addMimeType("application/x-pkcs12", new String[]{"p12", "pfx"});
     addMimeType("application/vnd.oasis.opendocument.text", new String[]{"odt"});
     addMimeType("application/vnd.oasis.opendocument.spreadsheet", 
       new String[]{"ods"});    

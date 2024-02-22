@@ -1837,9 +1837,10 @@ public class DocumentManager implements DocumentManagerPort
       else
         content.setContentType(mimeType.trim());
     }
-    else if (format.getNumExtensions() > 0)
+    else if (StringUtils.isBlank(content.getContentType()) 
+      && format.getNumExtensions() > 0)
     {
-      //Try get mimeType from identifed extension.
+      //Try get mimeType from identified extension.
       String filename = "filename." + format.getExtension(0);
       mimeType = DroidMimeTypeMap.getMimeTypeMap().getContentType(filename);
       if (!StringUtils.isBlank(mimeType))
