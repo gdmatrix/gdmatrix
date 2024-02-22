@@ -45,10 +45,9 @@
       <div class="flex justify-content-end align-items-center">
         <p:button onclick="PF('menu').show(); return false;" icon="pi pi-bars"
                   class="ml-1 rounded-button ui-button-flat" />
-        <p:outputLabel class="flex align-items-center text-xl ml-1"
-          value="#{userSessionBean.menuModel.selectedMenuItem.properties.description}" />
+        <h1 class="flex align-items-center ml-2 mr-2">#{userSessionBean.menuModel.selectedMenuItem.properties.description}</h1>
         <p:commandButton action="#{templateBean.showComponentTree}"
-                         styleClass="rounded-button ui-button-flat ml-2"
+                         styleClass="rounded-button ui-button-flat"
                          icon="pi pi-sitemap"
                          rendered="#{userSessionBean.administrator}"
                          alt="Component tree"
@@ -99,6 +98,10 @@
         <ui:include src="#{templateBean.content}"></ui:include>
 
         <script>
+          // remove duplicates in detachedWidgets
+          PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
+            (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
+
           var elems = document.getElementsByClassName("ui-button current");
           if (elems.length > 0)
           {
