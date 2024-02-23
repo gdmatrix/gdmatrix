@@ -43,7 +43,7 @@ import uk.gov.nationalarchives.droid.core.interfaces.signature.SignatureServiceE
 public class ContainerSignatureFileManager extends AbstractSignatureFileManager
 {
   private static final String DEFAULT_SERVICE_URL = 
-    "https://www.nationalarchives.gov.uk/pronom/container-signature.xml";
+    "http://www.nationalarchives.gov.uk/pronom/container-signature.xml";
   private static final String DEFAULT_FILENAME_PATTERN =
     "container-signature-%s.xml";    
   

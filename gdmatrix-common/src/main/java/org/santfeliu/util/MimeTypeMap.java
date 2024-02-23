@@ -123,7 +123,8 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("text/plain", new String[]{"txt", "text", "java", "log"});
     addMimeType("text/css", new String[]{"css"});
     addMimeType("text/xml", new String[]{"xml"});    
-    addMimeType("text/markdown", new String[]{"md", "mdown"});     
+    addMimeType("text/markdown", new String[]{"md", "mdown"}); 
+    addMimeType("text/csv", new String[]{"csv"});     
     addMimeType("image/gif", new String[]{"gif"});
     addMimeType("image/jpeg", new String[]{"jpg", "jpeg"});
     addMimeType("image/tiff", new String[]{"tif", "tiff"});
@@ -147,7 +148,7 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("application/x-java-jnlp-file", new String[]{"jnlp"});
     addMimeType("application/pkcs7-signature", new String[]{"p7s"});
     addMimeType("application/pkcs7-mime", new String[]{"p7m"});
-    addMimeType("application/pkix-cert", new String[]{"cer"}); 
+    addMimeType("application/pkix-cert", new String[]{"cer", "crt"}); 
     addMimeType("application/x-pem-file", new String[]{"pem"});    
     addMimeType("application/x-pkcs12", new String[]{"p12", "pfx"});
     addMimeType("application/vnd.oasis.opendocument.text", new String[]{"odt"});
