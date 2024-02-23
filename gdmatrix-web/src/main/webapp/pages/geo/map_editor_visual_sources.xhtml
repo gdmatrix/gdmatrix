@@ -11,26 +11,10 @@
   <p:dataTable id="map_sources_table" size="small" 
                showGridlines="true" stripedRows="true"
                value="#{geoMapSourcesBean.sourceIds}" var="sourceId">
-    <p:column headerText="Id">
-      <span class="code">#{sourceId}</span>
-    </p:column>
-    <p:column headerText="Type">
-      #{geoMapBean.style.sources[sourceId].type}
-    </p:column>
-    <p:column headerText="Service - Layer / Tiles / Url / Data">
-      <span class="code">#{geoMapSourcesBean.getSourceInfo(sourceId)}</span>
-    </p:column>
-    <p:column headerText="minzoom">
-      #{geoMapBean.style.sources[sourceId].minzoom}
-    </p:column>
-    <p:column headerText="maxzoom">
-      #{geoMapBean.style.sources[sourceId].maxzoom}
-    </p:column>
-    <p:column headerText="tileSize">
-      #{geoMapBean.style.sources[sourceId].tileSize}
-    </p:column>
-    <p:column styleClass="w-2 text-right white-space-nowrap">
-      <f:facet name="header">
+
+    <f:facet name="header">
+      <div class="flex align-items-center">
+        <div class="font-normal flex-grow-1">#{geoMapSourcesBean.sourceIds.size()} sources</div>
         <p:commandButton action="#{geoMapSourcesBean.addSource}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
@@ -40,7 +24,33 @@
                          resetValues="true"
                          oncomplete="PF('mapSourcesDialog').show()"
                          />
-      </f:facet>
+      </div>
+    </f:facet>
+
+    <p:column headerText="Id" styleClass="w-1">
+      <span class="code">#{sourceId}</span>
+    </p:column>
+    <p:column headerText="Type" styleClass="w-1 text-center">
+      #{geoMapBean.style.sources[sourceId].type}
+    </p:column>
+    <p:column headerText="Service - Layer / Tiles / Url / Data" styleClass="w-5">
+      <span class="code">#{geoMapSourcesBean.getSourceInfo(sourceId)}</span>
+    </p:column>
+    <p:column headerText="SLD" styleClass="w-1 white-space-nowrap">
+      <ui:fragment rendered="#{geoMapSourcesBean.getSourceSldName(sourceId) != null}">
+        <i class="pi pi-palette mr-1" /><span class="code">#{geoMapSourcesBean.getSourceSldName(sourceId)}</span>
+      </ui:fragment>
+    </p:column>
+    <p:column headerText="minzoom" styleClass="w-1 text-center">
+      #{geoMapBean.style.sources[sourceId].minzoom}
+    </p:column>
+    <p:column headerText="maxzoom" styleClass="w-1 text-center">
+      #{geoMapBean.style.sources[sourceId].maxzoom}
+    </p:column>
+    <p:column headerText="tileSize" styleClass="w-1 text-center">
+      #{geoMapBean.style.sources[sourceId].tileSize}
+    </p:column>
+    <p:column headerText="Actions" styleClass="w-1 text-center white-space-nowrap">
       <p:commandButton action="#{geoMapSourcesBean.editSource(sourceId)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"

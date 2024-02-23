@@ -217,11 +217,20 @@ public class GeoMapImportBean extends WebBean implements Serializable
 
     for (Layer impLayer : impLayers)
     {
-      if (indexOfLayer(layers, impLayer.getId()) == -1)
+      String impLayerId = impLayer.getId();
+      if (indexOfLayer(layers, impLayerId) == -1)
       {
         if ("top".equals(importPosition))
         {
-          layers.set(position++, impLayer);
+          if (position >= layers.size())
+          {
+            layers.add(impLayer);
+          }
+          else
+          {
+            layers.add(position, impLayer);
+          }
+          position++;
         }
         else // bottom
         {

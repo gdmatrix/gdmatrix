@@ -8,27 +8,13 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <p:dataTable id="map_services_table" size="small" 
+  <p:dataTable id="map_services_table" size="small"
                showGridlines="true" stripedRows="true"
                value="#{geoMapServicesBean.serviceIds}" var="serviceId">
-    <p:column headerText="Id">
-      <span class="code">#{serviceId}</span>
-    </p:column>
-    <p:column headerText="Description">
-      #{geoMapBean.serviceMap[serviceId].description}
-    </p:column>
-    <p:column headerText="Type">
-      #{geoMapBean.serviceMap[serviceId].type}
-    </p:column>
-    <p:column headerText="Url">
-      <span class="code">#{geoMapBean.serviceMap[serviceId].url}</span>
-    </p:column>
-    <p:column headerText="Use proxy">
-      <span class="code">#{geoMapBean.serviceMap[serviceId].useProxy}</span>
-    </p:column>
 
-    <p:column styleClass="w-2 text-right white-space-nowrap">
-      <f:facet name="header">
+    <f:facet name="header">
+      <div class="flex align-items-center">
+        <div class="font-normal flex-grow-1">#{geoMapServicesBean.serviceIds.size()} services</div>
         <p:commandButton action="#{geoMapServicesBean.addService}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
@@ -38,7 +24,26 @@
                          resetValues="true"
                          oncomplete="PF('mapServicesDialog').show()"
                          />
-      </f:facet>
+      </div>
+    </f:facet>
+
+    <p:column headerText="Id" styleClass="w-1">
+      <span class="code">#{serviceId}</span>
+    </p:column>
+    <p:column headerText="Description" styleClass="w-2">
+      #{geoMapBean.serviceMap[serviceId].description}
+    </p:column>
+    <p:column headerText="Type" styleClass="w-1 text-center">
+      #{geoMapBean.serviceMap[serviceId].type}
+    </p:column>
+    <p:column headerText="Url" styleClass="w-6">
+      <span class="code">#{geoMapBean.serviceMap[serviceId].url}</span>
+    </p:column>
+    <p:column headerText="Use proxy" styleClass="w-1 text-center">
+      <span class="code">#{geoMapBean.serviceMap[serviceId].useProxy}</span>
+    </p:column>
+
+    <p:column headerText="Actions" styleClass="w-1 text-center white-space-nowrap">
       <p:commandButton action="#{geoMapServicesBean.loadServiceCapabilities(serviceId)}"
                        icon="pi pi-info-circle"
                        alt="#{objectBundle.info}" title="#{objectBundle.info}"

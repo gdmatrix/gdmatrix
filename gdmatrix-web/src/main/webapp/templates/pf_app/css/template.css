@@ -162,6 +162,12 @@ body .ui-datatable .ui-datatable-header
   padding: 0.25rem 1rem;
 }
 
+body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-even:hover,
+body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd:hover
+{
+  background-color: var(--surface-100) !important;
+}
+
 .ui-menu-button.ui-button-flat button
 {
   background-color: transparent;

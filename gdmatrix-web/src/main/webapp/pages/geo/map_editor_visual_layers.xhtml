@@ -15,19 +15,34 @@
     <p:ajax event="rowReorder" listener="#{geoMapLayersBean.onLayerReorder}" 
             update="@form:cnt:map_tabs:map_layers_table"/>
     
-    <p:column headerText="Id" styleClass="code">
+    <f:facet name="header">
+      <div class="flex align-items-center">
+        <div class="font-normal flex-grow-1">#{geoMapBean.style.layers.size()} layers</div>
+        <p:commandButton action="#{geoMapLayersBean.addLayer}"
+                         icon="pi pi-plus-circle"
+                         alt="#{objectBundle.create}" title="#{objectBundle.create}"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@form:cnt:map_tabs"
+                         update="@form:cnt:map_tabs:map_layers_dialog"
+                         resetValues="true"
+                         oncomplete="PF('mapLayersDialog').show()"
+                         />
+      </div>
+    </f:facet>
+    
+    <p:column headerText="Id" styleClass="code w-2">
       #{layer.id}
     </p:column>
-    <p:column headerText="Label">
+    <p:column headerText="Label" styleClass="w-3">
       #{layer.label}
     </p:column>
-    <p:column headerText="Source" styleClass="code">
+    <p:column headerText="Source" styleClass="code w-4">
       #{layer.source} (#{geoMapBean.style.sources[layer.source].type})
     </p:column>
-    <p:column headerText="Type">
+    <p:column headerText="Type" styleClass="w-1 text-center">
       #{layer.type}
     </p:column>
-    <p:column headerText="Options" styleClass="white-space-nowrap">
+    <p:column headerText="Options" styleClass="w-1 text-center white-space-nowrap">
       <p:commandButton action="#{geoMapLayersBean.toggleLayerVisibility(layer)}"
                        icon="#{geoMapLayersBean.isLayerVisible(layer) ? 'pi pi-eye' : 'pi pi-eye-slash'}" 
                        styleClass="rounded-button ui-button-flat"
@@ -48,18 +63,7 @@
                        update="@this" />
     </p:column>
 
-    <p:column styleClass="w-2 text-right white-space-nowrap">
-      <f:facet name="header">
-        <p:commandButton action="#{geoMapLayersBean.addLayer}"
-                         icon="pi pi-plus-circle"
-                         alt="#{objectBundle.create}" title="#{objectBundle.create}"
-                         styleClass="rounded-button ui-button-flat"
-                         process="@form:cnt:map_tabs"
-                         update="@form:cnt:map_tabs:map_layers_dialog"
-                         resetValues="true"
-                         oncomplete="PF('mapLayersDialog').show()"
-                         />
-      </f:facet>
+    <p:column headerText="Actions" styleClass="w-1 text-center white-space-nowrap">
       <span class="drag pi pi-arrows-v p-2" />
       <p:commandButton action="#{geoMapLayersBean.editLayer(layer)}"
                        icon="pi pi-pencil"

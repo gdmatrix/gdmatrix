@@ -11,19 +11,10 @@
                var="form" stripedRows="true" size="small"
                draggableRows="true" rowDragSelector=".drag"
                resizableColumns="false" showGridlines="true">
-    <p:ajax event="rowReorder" 
-            update="@form:cnt:map_tabs:map_forms_table"/>
 
-    <p:column headerText="Layer" styleClass="col-5">
-      <h:outputText value="#{form.layer}" />
-    </p:column>
-
-    <p:column headerText="Form selector" styleClass="col-5">
-      <h:outputText value="#{form.formSelector}" />
-    </p:column>
-
-    <p:column styleClass="col-2 text-right white-space-nowrap">
-      <f:facet name="header">
+    <f:facet name="header">
+      <div class="flex align-items-center">
+        <div class="font-normal flex-grow-1">#{geoMapLayerFormsBean.layerForms.size()} forms</div>
         <p:commandButton action="#{geoMapLayerFormsBean.addLayerForm}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
@@ -33,7 +24,21 @@
                          resetValues="true"
                          oncomplete="PF('mapFormsDialog').show()"
                          />
-      </f:facet>
+      </div>
+    </f:facet>
+
+    <p:ajax event="rowReorder" 
+            update="@form:cnt:map_tabs:map_forms_table"/>
+
+    <p:column headerText="Layer" styleClass="w-6">
+      <h:outputText value="#{form.layer}" />
+    </p:column>
+
+    <p:column headerText="Form selector" styleClass="w-5">
+      <h:outputText value="#{form.formSelector}" />
+    </p:column>
+
+    <p:column headerText="Actions" styleClass="w-1 text-center white-space-nowrap">
       <span class="drag pi pi-arrows-v p-2" />
       <p:commandButton action="#{geoMapLayerFormsBean.editLayerForm(form)}"
                        icon="pi pi-pencil"

@@ -152,7 +152,10 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
     {
       String serviceId = serviceParameters.getService();
       String layers = serviceParameters.getLayers();
-      return serviceId + " - " + layers;
+      String sldName = serviceParameters.getSldName();
+      StringBuilder buffer = new StringBuilder(serviceId);
+      if (!isBlank(layers)) buffer.append(" - ").append(layers);
+      return buffer.toString();
     }
     else if (!source.getTiles().isEmpty())
     {
@@ -166,6 +169,18 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
     {
       return String.valueOf(source.getData());
     }
+  }
+
+  public String getSourceSldName(String sourceId)
+  {
+    ServiceParameters serviceParameters =
+      geoMapBean.getServiceParameters(sourceId);
+
+    if (serviceParameters != null)
+    {
+      return serviceParameters.getSldName();
+    }
+    return null;
   }
 
   public String getSourceDataUrl()
@@ -364,6 +379,11 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
 
       if ("vector".equals(editingSource.getType()))
       {
+        ServiceParameters serviceParameters = getEditingServiceParameters();
+        if (serviceParameters != null)
+        {
+          serviceParameters.setFormat("application/vnd.mapbox-vector-tile");
+        }
         if (editingSource.getUrl() != null)
         {
           activeSourceTabIndex = 2;
@@ -377,7 +397,8 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
         ServiceParameters serviceParameters = getEditingServiceParameters();
         if (serviceParameters != null)
         {
-          if ("application/json".equals(serviceParameters.getFormat()))
+          String format = serviceParameters.getFormat() ;
+          if (isBlank(format) || !format.startsWith("image/"))
           {
             serviceParameters.setFormat("image/png");
           }
