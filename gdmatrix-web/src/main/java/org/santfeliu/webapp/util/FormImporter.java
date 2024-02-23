@@ -421,7 +421,7 @@ public class FormImporter
         List<View> children = view.getChildren();
 
         try {
-        if (addEmptyValue)
+        if (addEmptyValue && !isMultiple)
         {
           component.getChildren().add(new UISelectItem());
         }
