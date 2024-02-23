@@ -150,6 +150,18 @@ public class CaseCasesTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
+  
+  public boolean isColumnRendered(Column column)
+  {
+    if (!isRenderTypeColumn() && column.getName().endsWith("TypeId"))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }    
+  }  
 
   public CaseCase getEditing()
   {
@@ -525,6 +537,27 @@ public class CaseCasesTabBean extends TabBean
     return true;
   }
 
+  private boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = getObjectBean().getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }
+  
   public class CaseCasesDataTableRow extends DataTableRow
   {
     private boolean reverseRelation;

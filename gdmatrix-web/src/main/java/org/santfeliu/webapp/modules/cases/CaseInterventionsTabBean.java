@@ -42,6 +42,7 @@ import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -186,6 +187,18 @@ public class CaseInterventionsTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
+  
+  public boolean isColumnRendered(Column column)
+  {
+    if (!isRenderTypeColumn() && column.getName().endsWith("TypeId"))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }    
+  }  
 
   public int getFirstRow()
   {
@@ -446,5 +459,26 @@ public class CaseInterventionsTabBean extends TabBean
       }
     }
   }
+  
+  private boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = getObjectBean().getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }  
 
 }

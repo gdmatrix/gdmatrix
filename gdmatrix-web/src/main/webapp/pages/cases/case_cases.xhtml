@@ -51,7 +51,7 @@
         </p:column>
       </p:headerRow>
 
-      <p:column styleClass="w-2rem">
+      <p:column styleClass="w-1">
         <i class="pi pi-#{row.reverseRelation ? 'arrow-left' : 'arrow-right'} text-xl"
            style="#{row.reverseRelation ? 'color:red' : 'color:green'}"></i>
       </p:column>
@@ -59,7 +59,8 @@
       <p:columns value="#{caseCasesTabBean.columns}" var="column" columnIndexVar="i"
                  filterable="false" sortable="true" resizable="false"
                  headerText="#{applicationBean.translate(column.label)}" 
-                 field="#{column.name}" styleClass="#{column.styleClass}" 
+                 field="#{column.name}" styleClass="#{column.styleClass}"
+                 style="#{caseCasesTabBean.isColumnRendered(column) ? '' : 'display:none'}"
                  sortBy="#{row.values[i].sorted}" >
         <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
         <h:outputText value="#{row.values[i].label}" />

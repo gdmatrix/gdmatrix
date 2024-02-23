@@ -138,7 +138,19 @@ public class CaseEventsTabBean extends TabBean
       return activeEditTab.getColumns();
     else
       return Collections.EMPTY_LIST;
-  }  
+  }
+  
+  public boolean isColumnRendered(Column column)
+  {
+    if (!isRenderTypeColumn() && column.getName().endsWith("TypeId"))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }    
+  }
 
   public CaseEvent getEditing()
   {
@@ -207,27 +219,6 @@ public class CaseEventsTabBean extends TabBean
       .getBoolean("groupedViewEnabled");
   }
 
-  public boolean isRenderTypeColumn()
-  {
-    if (isGroupedView())
-    {
-      return false;
-    }
-    else
-    {
-      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
-        getString("typeId");
-      if (tabTypeId != null)
-      {
-        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-      }
-      else
-      {
-        return true;
-      }
-    }    
-  }  
-  
   public String getEventDescription()
   {
     if (editing != null && !isNew(editing))
@@ -412,6 +403,27 @@ public class CaseEventsTabBean extends TabBean
       }
     }
   }
+  
+  private boolean isRenderTypeColumn()
+  {
+    if (isGroupedView())
+    {
+      return false;
+    }
+    else
+    {
+      String tabTypeId = getObjectBean().getActiveEditTab().getProperties().
+        getString("typeId");
+      if (tabTypeId != null)
+      {
+        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
+      }
+      else
+      {
+        return true;
+      }
+    }    
+  }  
   
   public class CaseEventsDataTableRow extends DataTableRow
   {
