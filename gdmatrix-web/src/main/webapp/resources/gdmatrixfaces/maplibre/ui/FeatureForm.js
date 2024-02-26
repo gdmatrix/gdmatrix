@@ -23,10 +23,10 @@ class FeatureForm
   setFormSelectorAndPriority(map)
   {
     const layerForms = map.getStyle().metadata?.layerForms;
-    if (layerForms === undefined) return;
+    if (!layerForms) return;
 
     const layerName = this.layerName;
-    if (layerName === undefined) return;
+    if (!layerName) return;
     
     const normLayerName = this.normalizeLayerName(layerName);
  

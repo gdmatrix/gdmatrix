@@ -111,7 +111,7 @@ class FindFeatureControl
         "circle-color": "#000000",
         "circle-radius": 4
       },
-      "filter": ["==", "$type", "Point"]
+      "filter": ["==", ["geometry-type"], "Point"]
     });
 
     map.addLayer({
@@ -125,7 +125,7 @@ class FindFeatureControl
         "line-width": 4,
         "line-opacity": 0.5
       },
-      "filter": ["==", "$type", "LineString"]
+      "filter": ["==", ["geometry-type"], "LineString"]
     });
 
     map.addLayer({
@@ -138,7 +138,7 @@ class FindFeatureControl
         "fill-color": "#0000ff",
         "fill-opacity": 0.2
       },
-      "filter": ["==", "$type", "Polygon"]
+      "filter": ["==", ["geometry-type"], "Polygon"]
     });
   }
 

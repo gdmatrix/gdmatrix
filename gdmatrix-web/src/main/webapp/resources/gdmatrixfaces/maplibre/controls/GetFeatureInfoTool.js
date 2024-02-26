@@ -20,7 +20,9 @@ class GetFeatureInfoTool extends Tool
 
     this.highlightCount = 0;
     this.inProgress = false;
-    this._onMapClick = (event) => this.getFeatureInfo(event.lngLat);
+    this._onMapClick = (event) => {
+      this.getFeatureInfo(event.point, event.lngLat);
+    };    
   }
 
   activate()
@@ -143,7 +145,7 @@ class GetFeatureInfoTool extends Tool
         "circle-stroke-width": 2,
         "circle-stroke-color": "blue"
       },
-      "filter": ['==', '$type', 'Point']
+      "filter": ['==', ["geometry-type"], 'Point']
     });
 
     map.addLayer({
@@ -157,7 +159,7 @@ class GetFeatureInfoTool extends Tool
         "line-width": 4,
         "line-opacity": 0.5
       },
-      "filter": ["any", ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']]
+      "filter": ["any", ['==', ["geometry-type"], 'LineString'], ['==', ["geometry-type"], 'Polygon']]
     });
 
     map.addLayer({
@@ -170,11 +172,11 @@ class GetFeatureInfoTool extends Tool
         "fill-color": "#0000ff",
         "fill-opacity": 0.2
       },
-      "filter": ['==', '$type', 'Polygon']
+      "filter": ['==', ["geometry-type"], 'Polygon']
     });
   }
 
-  async getFeatureInfo(lngLat)
+  async getFeatureInfo(point, lngLat)
   {
     if (this.inProgress) return; // operation in progress
 
@@ -210,6 +212,42 @@ class GetFeatureInfoTool extends Tool
 
       const formPromises = [];
 
+      const features = this.map.queryRenderedFeatures(point);
+      const geojson = { "type": "FeatureCollection", "features": [] };
+      for (let feat of features)
+      {
+        let layer = map.getLayer(feat.layer.id);
+        if (layer.metadata?.locatable)
+        {
+          let feature = {
+            type: "Feature",
+            geometry: feat.geometry, 
+            properties: feat.properties 
+          };
+          
+          let sourceId = layer.source;
+          let params = serviceParameters[sourceId];
+          let service = params?.service ? services[params.service] : null;
+          let layerName = params?.layers ? params.layers : layer.id;
+
+          // highlight
+          if (layer.metadata.highlight)
+          {
+            geojson.features.push(feature);
+          }
+
+          const form = new FeatureForm(feature);
+          form.service = service;
+          form.layerName = layerName;
+          form.setFormSelectorAndPriority(map);
+          formPromises.push(form.render());       
+        }
+      }
+      if (geojson.features.length > 0)
+      {
+        this.highlight(geojson);        
+      }      
+
       const layers = map.getStyle().layers;
       for (let lay of layers)
       {
@@ -217,8 +255,9 @@ class GetFeatureInfoTool extends Tool
         if (layer.metadata?.visible && layer.metadata?.locatable)
         {
           let sourceId = layer.source;
+          let source = map.getSource(sourceId);
           let params = serviceParameters[sourceId];
-          if (params)
+          if (params && source.type === "raster")
           {
             let serviceId = params.service;
             if (serviceId)
