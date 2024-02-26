@@ -3179,11 +3179,17 @@ public class CaseManager implements CaseManagerPort
     if (caseAddress.getStartDate() != null && caseAddress.getEndDate() != null &&
       caseAddress.getStartDate().compareTo(caseAddress.getEndDate()) > 0)
         throw new WebServiceException("cases:INVALID_CASE_ADDRESS_DATE_RANGE");
-
-      Type type =
-        TypeCache.getInstance().getType(DictionaryConstants.CASE_ADDRESS_TYPE);
-      WSTypeValidator validator = new WSTypeValidator(type);
-      validator.validate(caseAddress, "caseAddressId");
+    
+    String caseAddressTypeId = caseAddress.getCaseAddressTypeId();
+    if (caseAddressTypeId == null)
+    {
+      caseAddressTypeId = DictionaryConstants.CASE_ADDRESS_TYPE;    
+      caseAddress.setCaseAddressTypeId(caseAddressTypeId);
+    }
+    
+    Type type = TypeCache.getInstance().getType(caseAddressTypeId);
+    WSTypeValidator validator = new WSTypeValidator(type);
+    validator.validate(caseAddress, "caseAddressId");
   }
   
   private void validateCasePerson(CasePerson casePerson)
@@ -3210,7 +3216,10 @@ public class CaseManager implements CaseManagerPort
 
     String casePersonTypeId = casePerson.getCasePersonTypeId();
     if (casePersonTypeId == null)
+    {
       casePersonTypeId = DictionaryConstants.CASE_PERSON_TYPE;
+      casePerson.setCasePersonTypeId(casePersonTypeId);
+    }
     else
     {
       casePersonTypeId = 
