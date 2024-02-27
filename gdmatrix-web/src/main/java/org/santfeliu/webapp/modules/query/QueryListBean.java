@@ -63,6 +63,7 @@ public class QueryListBean extends WebBean implements Serializable
   private transient List<SelectItem> queryObjectSelectItems;
   private transient List<SelectItem> queryTypeSelectItems;  
   private List<Document> documents;
+  private int firstRow;  
 
   @Inject
   QueryMainBean queryMainBean;  
@@ -218,6 +219,7 @@ public class QueryListBean extends WebBean implements Serializable
       filter.getProperty().add(property);
     }
 
+    firstRow = 0;
     documents = QueryMainBean.getDocumentManagerClient().findDocuments(filter);
     queryMainBean.setView("query_list");
   }
@@ -231,6 +233,16 @@ public class QueryListBean extends WebBean implements Serializable
   {
     documents = null;
   }  
+
+  public int getFirstRow()
+  {
+    return firstRow;
+  }
+
+  public void setFirstRow(int firstRow)
+  {
+    this.firstRow = firstRow;
+  }
     
   public String getQueryName()
   {

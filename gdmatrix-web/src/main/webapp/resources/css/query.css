@@ -40,6 +40,18 @@
   color: var(--text-color);
 }
 
+.query_body .dragColumn
+{
+  width: 16px;
+  text-align: center;
+  padding: 0.5rem 0.5rem !important;
+}
+
+.query_body th.dragColumn
+{
+  padding: 0 !important;
+}
+
 /* query_list */
 
 .query_list
@@ -56,13 +68,11 @@
 
 .query_list .result_list .col_icon
 {
-  width: 10%;
   text-align: center;
 }
 
 .query_list .result_list .col_data
 {
-  width: 75%;
 }
 
 .query_list .result_list .col_data > *
@@ -86,9 +96,14 @@
   color: var(--text-color-secondary);
 }
 
+.query_list .result_list .col_data span
+{
+  word-break: break-word;
+  word-wrap: normal;
+}
+
 .query_list .result_list .col_buttons
 {
-  width: 15%;
 }
 
 /* query_view */
@@ -118,7 +133,21 @@
 
 .query_view .instance_selector_panel
 {
-  
+}
+
+.query_view .instance_selector_panel > *
+{
+  margin-top: 4px;
+}
+
+.query_view .instance_description
+{
+  min-width: 200px !important;
+}
+
+.query_view .instance_description .ui-inputfield
+{
+  white-space: normal;
 }
 
 .query_view .instance_editor
@@ -168,12 +197,6 @@
   width: 70%;  
 }
 
-.query_view .output_selector .dragColumn
-{
-  width: 16px;
-  text-align: center;
-}
-
 .expression
 {
   display: block;
@@ -217,8 +240,19 @@
 .expression.predicate label,
 .expression.predicate span
 {
-  margin-left: 2px;
   margin-right: 2px;
+}
+
+.expression.ROOT span,
+.expression.predicate span
+{
+  margin-left: 0;
+}
+
+.expression.ROOT label,
+.expression.predicate label
+{
+  margin-left: 2px;
 }
 
 .expression.ROOT > label,
@@ -226,11 +260,6 @@
 {
   margin-top: 4px;
   margin-bottom: 4px;
-}
-
-.expression.predicate span
-{
-  margin-left: 0;
 }
 
 .expression.predicate input[type='text']
@@ -241,6 +270,13 @@
 .expression .operator span
 {
   margin-left: 0;
+}
+
+.expression .ui-selectonemenu,
+.expression .ui-calendar,
+.expression .ui-inputtext
+{
+  margin-bottom: 4px;
 }
 
 .op_children
@@ -329,6 +365,19 @@
   min-width: 50px;
 }
 
+.query_edit .classification_panel .select_box,
+.query_edit .classification_panel .input_text,
+.query_edit .connection_panel .input_text,
+.query_edit .roles_panel .input_text
+{
+  min-width: 250px !important;  
+}
+
+.query_edit .classification_panel .select_box .ui-inputfield
+{
+  white-space: normal;
+}
+
 .query_edit .tabbed_panel .output_label
 {
   min-width: 110px;
@@ -347,7 +396,7 @@
 
 .query_edit .tabbed_panel .edit_panel .left
 {
-  flex-grow: 0;
+  flex-grow: 1;
   width: 200px;
   padding-left: 8px;
   padding-right: 8px;
@@ -355,10 +404,10 @@
 
 .query_edit .tabbed_panel .edit_panel .right
 {  
-  flex-grow: 1;
+  flex-grow: 2;
+  width: 300px;
   padding-left: 8px;
   padding-right: 8px;
-  min-width: 200px;
 }
 
 .query_edit .tabbed_panel .edit_panel .right .property
@@ -449,6 +498,7 @@
 .query_edit .tabbed_panel .edit_panel .left .edit_panel_buttons
 {
   margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .query_edit .tabbed_panel .edit_panel .left .edit_panel_buttons > button

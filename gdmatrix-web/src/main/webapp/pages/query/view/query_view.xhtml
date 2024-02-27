@@ -31,16 +31,16 @@
 
     <p:outputPanel id="instance_selector_pan">
 
-      <p:outputPanel styleClass="instance_selector_panel flex" 
+      <p:outputPanel styleClass="instance_selector_panel flex flex-wrap" 
                      rendered="#{queryViewBean.selectedInstanceDescription == null}">
         <p:selectOneMenu id="instance_selector" 
                          value="#{queryViewBean.selectedInstanceName}" 
-                         styleClass="instance_description flex-grow-1">
+                         styleClass="instance_description flex-grow-1 mr-3">
           <p:ajax listener="#{queryViewBean.selectInstance}"
                   process="@this" update="@form:cnt" />                
           <f:selectItems value="#{queryViewBean.instanceSelectItems}" />
         </p:selectOneMenu>
-        <div class="flex-grow-0 ui-inputgroup ml-6">
+        <div class="flex-grow-0 ui-inputgroup">
           <p:commandButton value="#{queryBundle.add_instance}" action="#{queryViewBean.addInstance}"
                            process="@this" update="@form:cnt" 
                            styleClass="mini" icon="pi pi-plus-circle" />
@@ -54,12 +54,12 @@
         </div>
       </p:outputPanel>
 
-      <p:outputPanel styleClass="instance_selector_panel flex" 
+      <p:outputPanel styleClass="instance_selector_panel flex flex-wrap" 
                      rendered="#{queryViewBean.selectedInstanceDescription != null}">
         <p:inputText value="#{queryViewBean.selectedInstanceDescription}" 
-                     styleClass="instance_description flex-grow-1"
+                     styleClass="instance_description flex-grow-1 mr-3"
                      required="true" />
-        <div class="flex-grow-0 ml-6">
+        <div class="flex-grow-0 ui-inputgroup">
           <p:commandButton value="#{objectBundle.accept}" action="#{queryViewBean.acceptRename}" 
                            process="@this instance_selector_pan" update="instance_selector_pan"
                            styleClass="mini" icon="pi pi-check" />

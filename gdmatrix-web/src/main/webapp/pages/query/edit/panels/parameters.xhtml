@@ -28,29 +28,29 @@
   
   <ui:define name="properties">      
     
-    <div class="property one_line">
+    <div class="property">
       <p:outputLabel value="#{queryBundle.name}:" styleClass="output_label" for="@next" />
       <p:inputText value="#{queryEditBean.editingParameter.name}" 
                    styleClass="input_text" required="true" />
     </div>
-    <div class="property one_line">
+    <div class="property">
       <p:outputLabel value="#{queryBundle.description}:" styleClass="output_label" for="@next" />
       <p:inputText value="#{queryEditBean.editingParameter.description}" 
                    styleClass="input_text" />
     </div>
-    <div class="property one_line">
+    <div class="property">
       <p:outputLabel value="#{queryBundle.format}:" styleClass="output_label" for="@next" />
       <p:selectOneMenu value="#{queryEditBean.editingParameter.format}" 
                        styleClass="select_box parameter_format">
         <f:selectItems value="#{queryEditBean.formatSelectItems}" />
       </p:selectOneMenu>
     </div>
-    <div class="property one_line">
+    <div class="property">
       <p:outputLabel value="#{queryBundle.size}:" styleClass="output_label" for="@next" />
       <p:inputText value="#{queryEditBean.editingParameter.size}" 
                    styleClass="input_text parameter_size" />
     </div>
-    <div class="property one_line">
+    <div class="property">
       <p:outputLabel value="#{queryBundle.default_value}:" styleClass="output_label" for="@next" />
       <p:inputText value="#{queryEditBean.editingParameter.defaultValue}" 
                    styleClass="input_text"  />

@@ -12,9 +12,10 @@
     <div class="left">
       
       <div class="item_list #{componentRef}" onscroll="changeItemListScroll('#{componentRef}')">
-        <p:dataTable id="#{componentRef}_list" value="#{componentList}" var="item" 
-                     rowKey="#{item.name}" 
-                     draggableRows="#{userSessionBean.menuModel.browserType == 'desktop' ? 'true' : 'false'}" 
+        <p:dataTable id="#{componentRef}_list" value="#{componentList}" var="comp" 
+                     rowKey="#{comp.name}" 
+                     draggableRows="true"
+                     rowDragSelector="#{userSessionBean.menuModel.browserType == 'desktop' ? '' : '.drag'}"                     
                      selectionMode="single" selection="#{componentSelectedItem}" 
                      emptyMessage="#{componentNoElementsLabel}">
           <p:ajax event="rowSelect" listener="#{queryEditBean[componentOnItemSelectMethod]}" 
@@ -22,11 +23,17 @@
                   update="@parent:#{componentRef}_panel" oncomplete="updateItemListScroll('#{componentRef}')" />        
           <p:ajax event="rowReorder" listener="#{queryEditBean[componentOnItemReorderMethod]}" 
                   process="@this" update="@parent:#{componentRef}_panel:#{componentRef}_buttons" />
-          <p:column styleClass="item#{item.inherited ? ' inherited' : ''}">
-            <p:outputLabel value="#{item.name}" styleClass="query_component_row1" />
+          <p:column styleClass="item#{comp.inherited ? ' inherited' : ''}">
+            <p:outputLabel value="#{comp.name}" styleClass="query_component_row1" />
             <br/>
-            <p:outputLabel value="#{item[componentItemDescriptionProperty]}" styleClass="query_component_row2" />
+            <p:outputLabel value="#{comp[componentItemDescriptionProperty]}" styleClass="query_component_row2" />
           </p:column>
+          <p:column rendered="#{userSessionBean.menuModel.browserType != 'desktop'}"
+                    styleClass="dragColumn">
+            <p:commandLink onclick="return false;">
+              <span class="drag pi pi-arrows-v p-2 cursor_move" />
+            </p:commandLink>
+          </p:column>          
         </p:dataTable>
       </div>
       

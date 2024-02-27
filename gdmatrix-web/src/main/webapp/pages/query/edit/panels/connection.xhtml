@@ -7,23 +7,23 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:gdm="http://gdmatrix.org/faces">
   
-  <p:outputPanel id="connection_panel">
-    <div class="flex mt-2">
+  <p:outputPanel id="connection_panel" styleClass="connection_panel">
+    <div class="flex mt-2 flex-wrap">
       <p:outputLabel value="#{queryBundle.driver}:" styleClass="output_label" for="@next" />
       <p:inputText value="#{queryMainBean.query.connection.driver}" 
                    styleClass="input_text conn_driver flex-grow-1" />
     </div>
-    <div class="flex mt-2">
+    <div class="flex mt-2  flex-wrap">
       <p:outputLabel value="#{queryBundle.url}:" styleClass="output_label" for="@next" />
       <p:inputText value="#{queryMainBean.query.connection.url}" 
                    styleClass="input_text conn_url flex-grow-1" />
     </div>
-    <div class="flex mt-2">
+    <div class="flex mt-2  flex-wrap">
       <p:outputLabel value="#{queryBundle.username}:" styleClass="output_label" for="@next" />
       <p:inputText value="#{queryMainBean.query.connection.username}" 
                    styleClass="input_text" />
     </div>
-    <div class="flex mt-2">
+    <div class="flex mt-2  flex-wrap">
       <p:outputLabel value="#{queryBundle.password}:" styleClass="output_label" for="@next" />
       <p:password value="#{queryMainBean.query.connection.password}" 
                   styleClass="input_text" redisplay="true" />
