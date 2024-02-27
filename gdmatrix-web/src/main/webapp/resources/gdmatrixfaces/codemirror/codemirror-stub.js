@@ -2,7 +2,7 @@
 
 import "./codemirror.js";
 
-function codemirrorInit(clientId, readonly, language, showLineNumbers)
+function codemirrorInit(clientId, readonly, language, showLineNumbers, completion)
 {
   const editorId = clientId + "_editor";
   const inputId = clientId + "_input";
@@ -29,6 +29,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers)
   const { searchKeymap, highlightSelectionMatches } = CM["@codemirror/search"];
   const { indentOnInput } = CM["@codemirror/language"];
   const { EditorState } = CM["@codemirror/state"];
+  const { autocompletion } = CM["@codemirror/autocomplete"];
 
   let theme = EditorView.theme({
     "&.cm-focused .cm-cursor" : {
@@ -91,7 +92,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers)
   else if (language === "html") langExtension = html();
   else if (language === "xml") langExtension = xml();
   else langExtension = javascript();
-
+  
   const extensions = [
     highlightActiveLineGutter(),
     highlightSpecialChars(),
@@ -114,9 +115,14 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers)
     theme];
 
   if (showLineNumbers)
-  { 
+  {
     extensions.push(lineNumbers());
     extensions.push(foldGutter());
+  }
+  
+  if (completion)
+  {
+    extensions.push(autocompletion({override: [completion]}));
   }
   
   let editorState = EditorState.create(

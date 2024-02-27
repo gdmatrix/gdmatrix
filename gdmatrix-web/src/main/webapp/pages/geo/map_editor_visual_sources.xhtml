@@ -137,7 +137,7 @@
           <p:inputText value="#{geoMapSourcesBean.editingSource.attribution}" />
         </div>
 
-        <div class="field col-12">
+        <div class="field col-12 mb-0">
           <p:tabView id="source_data" dynamic="true" 
                      activeIndex="#{geoMapSourcesBean.activeSourceTabIndex}">
             <p:tab title="OGC Service" 
@@ -385,7 +385,7 @@
     </h:panelGroup>
 
     <f:facet name="footer">
-      <div class="field col-12 text-right">
+      <div class="text-right">
         <p:commandButton id="accept_source"
                          action="#{geoMapSourcesBean.acceptSource}"
                          styleClass="m-1" value="#{objectBundle.accept}"

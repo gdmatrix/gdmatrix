@@ -151,10 +151,11 @@
           <p:selectOneMenu id="layer_type" value="#{geoMapLayersBean.editingLayer.type}" 
                            required="#{not empty param['mainform:map_tabs:accept_layer']}"
                            requiredMessage="Layer type is mandatory">
-            <p:ajax event="valueChange" update="layer_options" 
+            <p:ajax event="valueChange" process="@this layer_options" update="layer_options" 
                     listener="#{geoMapLayersBean.updateLayerPanel()}" />
             <f:selectItem itemValue="" itemLabel="" />
-            <f:selectItems value="#{geoMapLayersBean.layerTypeSelectItems}" />
+            <f:selectItems value="#{geoMapLayersBean.layerTypeSelectItems}" var="typeItem"
+                           itemDisabled="#{geoMapLayersBean.isLayerTypeDisabled(typeItem)}" />
           </p:selectOneMenu>
         </div>
 
@@ -168,7 +169,7 @@
           <p:spinner value="#{geoMapLayersBean.editingLayer.maxzoom}" />
         </div>
         
-        <div class="field col-12">
+        <div class="field col-12 mb-0">
           <p:tabView id="layer_options" dynamic="true" 
                      activeIndex="#{geoMapLayersBean.activeLayerTabIndex}">
             
@@ -177,8 +178,9 @@
                 <span class="fa fa-paintbrush mr-2"/>Paint
               </f:facet>
               <gdm:codemirror value="#{geoMapLayersBean.jsonPaint}" 
-                              style="height:200px" styleClass="overflow-auto"
-                              language="json" lineNumbers="true">
+                              style="height:250px" styleClass="overflow-auto"
+                              language="json" lineNumbers="true" 
+                              completion="getPaintCompletion('#{geoMapLayersBean.editingLayer.type}')">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>
             </p:tab>
@@ -188,8 +190,9 @@
                 <span class="fa fa-up-down-left-right mr-2"/>Layout
               </f:facet>
               <gdm:codemirror value="#{geoMapLayersBean.jsonLayout}" 
-                              style="height:200px" styleClass="overflow-auto"
-                              language="json" lineNumbers="true">
+                              style="height:250px" styleClass="overflow-auto"
+                              language="json" lineNumbers="true"
+                              completion="getLayoutCompletion('#{geoMapLayersBean.editingLayer.type}')">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>
@@ -199,8 +202,9 @@
                 <span class="pi pi-filter mr-2"/>Filter
               </f:facet>
               <gdm:codemirror value="#{geoMapLayersBean.jsonFilter}" 
-                              style="height:200px" styleClass="overflow-auto"
-                              language="json" lineNumbers="true">
+                              style="height:250px" styleClass="overflow-auto"
+                              language="json" lineNumbers="true"
+                              completion="getFilterCompletion()">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>
@@ -322,7 +326,7 @@
     </h:panelGroup>
 
     <f:facet name="footer">
-      <div class="field col-12 text-right">
+      <div class="text-right">
         <p:commandButton id="accept_layer"
                          action="#{geoMapLayersBean.acceptLayer}"
                          styleClass="m-1" value="#{objectBundle.accept}"

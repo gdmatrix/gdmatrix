@@ -99,6 +99,22 @@ public class GeoMapLayersBean extends WebBean implements Serializable
     return layerTypeSelectItems;
   }
 
+  public boolean isLayerTypeDisabled(SelectItem typeItem)
+  {
+    if (editingLayer == null) return false;
+
+    Source source = geoMapBean.getStyle().getSources().get(editingLayer.getSource());
+    if (source == null) return false;
+
+    String layerType = (String)typeItem.getValue();
+    String sourceType = source.getType();
+
+    if ("raster".equals(sourceType) && !"raster".equals(layerType)) return true;
+    if (!"raster".equals(sourceType) && "raster".equals(layerType)) return true;
+
+    return false;
+  }
+
   public Layer getEditingLayer()
   {
     return editingLayer;

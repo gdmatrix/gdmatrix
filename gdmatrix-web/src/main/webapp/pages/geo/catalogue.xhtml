@@ -17,7 +17,7 @@
         <span class="pi pi-th-large"/>
         <strong>#{applicationBean.translate(userSessionBean.selectedMenuItem.label, 'geo')}</strong>
       </div>      
-      <div class="flex-grow-1">
+      <h:panelGroup id="map_filter" layout="block" styleClass="flex-grow-1">
         <div class="ui-inputgroup justify-content-end">
           <p:inputText value="#{geoCatalogueBean.filter.keywords}"
                        autocomplete="off" placeholder="#{objectBundle.search}" />
@@ -26,9 +26,9 @@
                            icon="pi pi-search"
                            title="#{objectBundle.search}"
                            process="@form:cnt" update="@form:cnt:maps" />
-          <p:defaultCommand target="find_maps" />
+          <p:defaultCommand target="find_maps" scope="map_filter" />
         </div>
-      </div>
+      </h:panelGroup>
     </div>
     
     <p:messages showSummary="true" styleClass="messages pl-3 pr-3" 

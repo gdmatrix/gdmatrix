@@ -111,6 +111,11 @@
       <type>java.lang.Boolean</type>
       <description>Show line numbers</description>
     </attribute>
+    <attribute>
+      <name>completion</name>
+      <type>java.lang.String</type>
+      <description>javascript completion function</description>
+    </attribute>
   </tag>  
 
   <tag>
