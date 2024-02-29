@@ -91,9 +91,18 @@ public class GeoMapLayerFormsBean extends WebBean implements Serializable
     for (LayerForm layerForm : layerForms)
     {
       String formSelector = layerForm.getFormSelector();
-      int index = formSelector.indexOf(":");
-      if (index == -1) formSelector = "form:" + formSelector;
-
+      if (formSelector == null)
+      {
+        String layer = layerForm.getLayer();
+        int index = layer.indexOf(":");
+        if (index != -1) layer = layer.substring(index + 1);
+        formSelector = "form:" + layer;
+      }
+      else
+      {
+        int index = formSelector.indexOf(":");
+        if (index == -1) formSelector = "form:" + formSelector;
+      }
       formFactory.clearForm(formSelector);
     }
     growl("FORMS_UPDATED");
