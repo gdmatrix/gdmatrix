@@ -43,6 +43,9 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     "&.ͼ2 .cm-activeLine" : {
       "backgroundColor" : "var(--surface-hover)"
     },
+    "&.ͼ2 .cm-tooltip" : {
+      "backgroundColor" : "var(--surface-overlay)"
+    },
     "&.ͼ2 .cm-gutters" : {
       "backgroundColor" : "transparent"      
     },

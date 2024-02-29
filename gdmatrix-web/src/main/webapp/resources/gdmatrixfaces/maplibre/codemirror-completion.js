@@ -1,203 +1,390 @@
 /* codemirror-completion.js */
 
-var maplibrePaint = {
-  "background": [
-    { label: '"background-color"', type: "text" },
-    { label: '"background-opacity"', type: "text" },
-    { label: '"background-pattern"', type: "text" }    
-  ],
-  "fill": [
-    { label: '"fill-antialias"', type: "text" },
-    { label: '"fill-color"', type: "text" },
-    { label: '"fill-opacity"', type: "text" },
-    { label: '"fill-outline-color"', type: "text" },
-    { label: '"fill-pattern"', type: "text" },
-    { label: '"fill-translate"', type: "text" },
-    { label: '"fill-translate-anchor"', type: "text" }
-  ],
-  "line": [
-    { label: '"line-blur"', type: "text" },
-    { label: '"line-color"', type: "text" },
-    { label: '"line-dasharray"', type: "text" },
-    { label: '"line-gap-width"', type: "text" },
-    { label: '"line-gradient"', type: "text" },
-    { label: '"line-offset"', type: "text" },    
-    { label: '"line-opacity"', type: "text" },    
-    { label: '"line-pattern"', type: "text" },    
-    { label: '"line-translate"', type: "text" },    
-    { label: '"line-translate-anchor"', type: "text" },    
-    { label: '"line-width"', type: "text" }
-  ],
-  "symbol": [
-    { label: '"icon-color"', type: "text" },        
-    { label: '"icon-halo-blur"', type: "text" },            
-    { label: '"icon-halo-color"', type: "text" },            
-    { label: '"icon-halo-width"', type: "text" },            
-    { label: '"icon-opacity"', type: "text" },            
-    { label: '"icon-translate"', type: "text" },            
-    { label: '"icon-translate-anchor"', type: "text" },
-    { label: '"text-color"', type: "text" },                
-    { label: '"text-halo-blur"', type: "text" },                
-    { label: '"text-halo-color"', type: "text" },                
-    { label: '"text-halo-width"', type: "text" },    
-    { label: '"text-opacity"', type: "text" },    
-    { label: '"text-translate"', type: "text" },    
-    { label: '"text-translate-anchor"', type: "text" }    
-  ],
-  "raster": [
-    { label: '"raster-brightness-max"', type: "text" },
-    { label: '"raster-brightness-min"', type: "text" },
-    { label: '"raster-contrast"', type: "text" },    
-    { label: '"raster-fade-duration"', type: "text" },    
-    { label: '"raster-hue-rotate"', type: "text" },    
-    { label: '"raster-opacity"', type: "text" },    
-    { label: '"raster-resampling"', type: "text" },    
-    { label: '"raster-saturation"', type: "text" }
-  ],
-  "circle": [
-    { label: '"circle-blur"', type: "text" },
-    { label: '"circle-color"', type: "text" },
-    { label: '"circle-opacity"', type: "text" },
-    { label: '"circle-pitch-alignment"', type: "text" },
-    { label: '"circle-pitch-scale"', type: "text" },
-    { label: '"circle-radius"', type: "text" },
-    { label: '"circle-stroke-color"', type: "text" },
-    { label: '"circle-stroke-opacity"', type: "text" },
-    { label: '"circle-stroke-width"', type: "text" },    
-    { label: '"circle-translate"', type: "text" },
-    { label: '"circle-translate-anchor"', type: "text" }
-  ],
-  "fill-extrusion": [
-    { label: '"fill-extrusion-base"', type: "text" },
-    { label: '"fill-extrusion-color"', type: "text" },
-    { label: '"fill-extrusion-height"', type: "text" },    
-    { label: '"fill-extrusion-opacity"', type: "text" },    
-    { label: '"fill-extrusion-pattern"', type: "text" },    
-    { label: '"fill-extrusion-translate"', type: "text" },    
-    { label: '"fill-extrusion-translate-anchor"', type: "text" },    
-    { label: '"fill-extrusion-vertical-gradient"', type: "text" }
-  ],
-  "heatmap": [
-    { label: '"heatmap-color"', type: "text" },    
-    { label: '"heatmap-intensity"', type: "text" },
-    { label: '"heatmap-opacity"', type: "text" },    
-    { label: '"heatmap-radius"', type: "text" },    
-    { label: '"heatmap-weight"', type: "text" }
-  ],
-  "hillshade": [
-    { label: '"hillshade-accent-color"', type: "text" },    
-    { label: '"hillshade-exaggeration"', type: "text" },    
-    { label: '"hillshade-highlight-color"', type: "text" },    
-    { label: '"hillshade-illumination-anchor"', type: "text" },        
-    { label: '"hillshade-illumination-direction"', type: "text" },        
-    { label: '"hillshade-shadow-color"', type: "text" }
-  ]
-};
-
-var maplibreLayout = {
-  "fill": [
-    { label: '"fill-sort-key"', type: "text" }
-  ],
-  "line": [
-    { label: '"line-cap"', type: "text" },
-    { label: '"line-join"', type: "text" },
-    { label: '"line-miter-limit"', type: "text" },
-    { label: '"line-round-limit"', type: "text" },    
-    { label: '"line-sort-key"', type: "text" }
-  ],
-  "symbol": [
-    { label: '"icon-allow-overlap"', type: "text" },
-    { label: '"icon-anchor"', type: "text" },
-    { label: '"icon-ignore-placement"', type: "text" },
-    { label: '"icon-image"', type: "text" },
-    { label: '"icon-keep-upright"', type: "text" },    
-    { label: '"icon-offset"', type: "text" },    
-    { label: '"icon-optional"', type: "text" },    
-    { label: '"icon-overlap"', type: "text" },    
-    { label: '"icon-padding"', type: "text" },    
-    { label: '"icon-pitch-alignment"', type: "text" },    
-    { label: '"icon-rotate"', type: "text" },    
-    { label: '"icon-rotation-alignment"', type: "text" },    
-    { label: '"icon-size"', type: "text" },    
-    { label: '"icon-text-fit"', type: "text" },    
-    { label: '"icon-text-fit-padding"', type: "text" },    
-    { label: '"symbol-avoid-edges"', type: "text" },    
-    { label: '"symbol-placement"', type: "text" },    
-    { label: '"symbol-sort-key"', type: "text" },        
-    { label: '"symbol-spacing"', type: "text" },        
-    { label: '"symbol-z-order"', type: "text" },        
-    { label: '"text-allow-overlap"', type: "text" },        
-    { label: '"text-anchor"', type: "text" },            
-    { label: '"text-field"', type: "text" },            
-    { label: '"text-font"', type: "text" },            
-    { label: '"text-allow-overlap"', type: "text" },    
-    { label: '"text-ignore-placement"', type: "text" },        
-    { label: '"text-justify"', type: "text" },        
-    { label: '"text-keep-upright"', type: "text" },        
-    { label: '"text-letter-spacing"', type: "text" },        
-    { label: '"text-line-height"', type: "text" },        
-    { label: '"text-max-angle"', type: "text" },        
-    { label: '"text-max-width"', type: "text" },        
-    { label: '"text-offset"', type: "text" },        
-    { label: '"text-optional"', type: "text" },        
-    { label: '"text-padding"', type: "text" },        
-    { label: '"text-pitch-alignment"', type: "text" },        
-    { label: '"text-radial-offset"', type: "text" },        
-    { label: '"text-rotate"', type: "text" },        
-    { label: '"text-rotation-alignment"', type: "text" },        
-    { label: '"text-size"', type: "text" },        
-    { label: '"text-transform"', type: "text" },        
-    { label: '"text-variable-anchor"', type: "text" },        
-    { label: '"text-writing-mode"', type: "text" }          
-  ],
-  "circle": [
-    { label: '"circle-sort-key"', type: "text" }
-  ]
-};
-
-function getPaintCompletion(layerType)
+if (!window.MapLibreCompletion)
 {
-  return (context) => maplibreComplete(context, maplibrePaint[layerType]);
-}
-
-function getLayoutCompletion(layerType)
-{
-  return (context) => maplibreComplete(context, maplibreLayout[layerType]);
-}
-
-function getFilterCompletion()
-{
-  return null;
-}
-
-function maplibreComplete(context, options) 
-{
-  if (options === undefined) return null;
-  let word = context.matchBefore(/\"(\w|\-)*/);
-  if (word === null) return null;
-
-  let text = context.state.doc.toString();
-  let index = word.from - 1;
-  let auto = false;
-  while (index >= 0)
+  class MapLibreCompletion
   {
-    let ch = text[index];
-    if (ch === '\n')
+    static maplibreFunctions = [
+      ["array", "types-array"],
+      ["boolean", "types-boolean"],
+      ["collator", "types-collator"],
+      ["format", "types-format"],
+      ["image", "types-image"],
+      ["literal", "types-literal"],
+      ["number", "types-number"],
+      ["number-format", "types-number-format"],
+      ["object", "types-object"],
+      ["string", "types-string"],
+      ["to-boolean", "types-to-boolean"],
+      ["to-color", "types-to-color"],
+      ["to-number", "types-to-number"],
+      ["to-string", "types-to-string"],
+      ["typeof", "types-typeof"],
+      "accumulated",
+      "feature-state",
+      "geometry-type",
+      "id",
+      "line-progress",
+      "properties",
+      "at",
+      "get",
+      "has",
+      "in",
+      "index-of",
+      "length",
+      "slice",
+      "!",
+      "!=",
+      "<",
+      "<=",
+      "==",
+      ">",
+      ">=",
+      "all",
+      "any",
+      "case",
+      "coalesce",
+      "match",
+      "within",
+      "interpolate",
+      "interpolate-hcl",
+      "interpolate-lab",
+      "step",
+      "let",
+      "var",
+      "concat",
+      "downcase",
+      "is-supported-script",
+      "resolved-locale",
+      "upcase",
+      "rgb",
+      "rgba",
+      "to-rgba",
+      "-",
+      "*",
+      "/",
+      "%",
+      "^",
+      "+",
+      "abs",
+      "acos",
+      "asin",
+      "atan",
+      "ceil",
+      "cos",
+      "distance",
+      "e",
+      "floor",
+      "ln",
+      "ln2",
+      "log10",
+      "log2",
+      "max",
+      "min",
+      "pi",
+      "round",
+      "sin",
+      "sqrt",
+      "tan",
+      "zoom",
+      "heatmap-density"
+    ];
+
+    static maplibrePaint = {
+      "background": [
+        "background-color", 
+        "background-opacity",
+        "background-pattern"
+      ],
+      "fill": [
+        "fill-antialias",
+        "fill-color",
+        "fill-opacity",
+        "fill-outline-color",
+        "fill-pattern",
+        "fill-translate",
+        "fill-translate-anchor"
+      ],
+      "line": [
+        "line-blur",
+        "line-color",
+        "line-dasharray",
+        "line-gap-width",
+        "line-gradient",
+        "line-offset",
+        "line-opacity",
+        "line-pattern",
+        "line-translate",
+        "line-translate-anchor",
+        "line-width"
+      ],
+      "symbol": [
+        "icon-color",
+        "icon-halo-blur",
+        "icon-halo-color",
+        "icon-halo-width",
+        "icon-opacity",
+        "icon-translate",
+        "icon-translate-anchor",
+        "text-color",
+        "text-halo-blur",
+        "text-halo-color",
+        "text-halo-width",
+        "text-opacity",
+        "text-translate",
+        "text-translate-anchor"
+      ],
+      "raster": [
+        "raster-brightness-max",
+        "raster-brightness-min",
+        "raster-contrast",
+        "raster-fade-duration",
+        "raster-hue-rotate",
+        "raster-opacity",
+        "raster-resampling",
+        "raster-saturation"
+      ],
+      "circle": [
+        "circle-blur",
+        "circle-color",
+        "circle-opacity",
+        "circle-pitch-alignment",
+        "circle-pitch-scale",
+        "circle-radius",
+        "circle-stroke-color",
+        "circle-stroke-opacity",
+        "circle-stroke-width",
+        "circle-translate",
+        "circle-translate-anchor"
+      ],
+      "fill-extrusion": [
+        "fill-extrusion-base",
+        "fill-extrusion-color",
+        "fill-extrusion-height",
+        "fill-extrusion-opacity",
+        "fill-extrusion-pattern",
+        "fill-extrusion-translate",
+        "fill-extrusion-translate-anchor",
+        "fill-extrusion-vertical-gradient"
+      ],
+      "heatmap": [
+        "heatmap-color",
+        "heatmap-intensity",
+        "heatmap-opacity",
+        "heatmap-radius",
+        "heatmap-weight"
+      ],
+      "hillshade": [
+        "hillshade-accent-color",
+        "hillshade-exaggeration",
+        "hillshade-highlight-color",
+        "hillshade-illumination-anchor",
+        "hillshade-illumination-direction",
+        "hillshade-shadow-color"
+      ]
+    };
+
+    static maplibreLayout = {
+      "fill": [
+        "fill-sort-key"
+      ],
+      "line": [
+        "line-cap",
+        "line-join",
+        "line-miter-limit",
+        "line-round-limit",
+        "line-sort-key"
+      ],
+      "symbol": [
+        "icon-allow-overlap",
+        "icon-anchor",
+        "icon-ignore-placement",
+        "icon-image",
+        "icon-keep-upright",
+        "icon-offset",
+        "icon-optional",
+        "icon-overlap",
+        "icon-padding",
+        "icon-pitch-alignment",
+        "icon-rotate",
+        "icon-rotation-alignment",
+        "icon-size",
+        "icon-text-fit",
+        "icon-text-fit-padding",
+        "symbol-avoid-edges",
+        "symbol-placement",
+        "symbol-sort-key",
+        "symbol-spacing",
+        "symbol-z-order",
+        "text-allow-overlap",
+        "text-anchor",
+        '"text-field"',
+        "text-font",
+        "text-allow-overlap",
+        "text-ignore-placement",
+        "text-justify",
+        "text-keep-upright",
+        "text-letter-spacing",
+        "text-line-height",
+        "text-max-angle",
+        "text-max-width",
+        "text-offset",
+        "text-optional",
+        "text-padding",
+        "text-pitch-alignment",
+        "text-radial-offset",
+        "text-rotate",
+        "text-rotation-alignment",
+        "text-size",
+        "text-transform",
+        "text-variable-anchor",
+        "text-writing-mode"
+      ],
+      "circle": [
+        "circle-sort-key"
+      ]
+    };
+
+    static getFunctionOptions()
     {
-      auto = true;
-      break;
+      let options = [];
+      for (let fn of this.maplibreFunctions)
+      {
+        let functionName;
+        let key;
+        
+        if (fn instanceof Array)
+        {
+          functionName = fn[0];
+          key = fn[1];
+        }  
+        else
+        {
+          functionName = fn;
+          key = fn;
+        }
+        
+        let option = {
+          "label": '"' + functionName + '"', 
+          "type": "constant",
+          "info": this.maplibreFnInfo(key) 
+        };
+        options.push(option);
+      }
+      return options;
     }
-    else if (ch === " " || ch === "\t")
+
+    static getPaintCompletion(layerType)
     {
-      index--;
+      let paintOptions = [];
+      let properties = this.maplibrePaint[layerType];
+      if (!properties) return null;
+
+      for (let property of properties)
+      {
+        let key = "paint-" + layerType + "-" + property;  
+        let option = {
+          "label": '"' + property + '"', 
+          "type": "constant", 
+          "info": this.maplibreInfo(key) 
+        };
+        paintOptions.push(option);
+      }
+      return (context) => this.maplibreComplete(context, 
+        this.getFunctionOptions(), paintOptions);
     }
-    else break;
+
+    static getLayoutCompletion(layerType)
+    {
+      let layoutOptions = [];
+      let properties = this.maplibreLayout[layerType];
+      if (!properties) return null;
+
+      for (let property of properties)
+      {
+        let key = "layout-" + layerType + "-" + property;  
+        let option = {
+          "label": '"' + property + '"', 
+          "type": "constant", 
+          "info": this.maplibreInfo(key) 
+        };
+        layoutOptions.push(option);
+      }
+      return (context) => this.maplibreComplete(context, 
+        this.getFunctionOptions(), layoutOptions);
+    }
+
+    static getFilterCompletion()
+    {
+      return (context) => this.maplibreComplete(context, this.getFunctionOptions());
+    }
+
+    static maplibreInfo(key)
+    {
+      let div = document.createElement("div");
+      div.innerHTML = `<div><a href="https://maplibre.org/maplibre-style-spec/layers/#${key}" target="blank">+Info</a></div>`;
+      return () => div;
+    }
+
+    static maplibreFnInfo(key)
+    {
+      let div = document.createElement("div");
+      div.innerHTML = `<div><a href="https://maplibre.org/maplibre-style-spec/expressions/#${key}" target="blank">+Info</a></div>`;
+      return () => div;
+    }
+
+    static maplibreComplete(context, functionOptions, propertyOptions)
+    {
+      if (!functionOptions) 
+        return null;
+
+      let word = context.matchBefore(/\[\"(\w|\-)*/);
+      if (word)
+      {
+        return {
+          from: word.from + 1,
+          options: functionOptions
+        };
+      };
+
+      if (!propertyOptions) 
+        return null;  
+
+      word = context.matchBefore(/\"(\w|\-)*/);
+      if (word === null) return null;
+
+      let text = context.state.doc.toString();
+      let index = word.from - 1;
+      let auto = false;
+      let indent = 0;
+      while (index >= 0 && indent <= 2)
+      {
+        let ch = text[index];
+        if (ch === '\n')
+        {
+          auto = true;
+          break;
+        }
+        else if (ch === " ")
+        {
+          indent++;
+          index--;
+        }
+        else if (ch === "\t")
+        {
+          indent += 2;
+          index--;
+        }
+        else break;
+      }
+
+      if (!auto) return null;
+
+      return {
+        from: word.from,
+        options: propertyOptions
+      };
+    }
   }
-
-  if (!auto) return null;
-
-  return {
-    from: word.from,
-    options: options
-  };
-}    
+  window.MapLibreCompletion = MapLibreCompletion;
+}

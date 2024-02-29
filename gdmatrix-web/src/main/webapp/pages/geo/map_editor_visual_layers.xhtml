@@ -180,7 +180,7 @@
               <gdm:codemirror value="#{geoMapLayersBean.jsonPaint}" 
                               style="height:250px" styleClass="overflow-auto"
                               language="json" lineNumbers="true" 
-                              completion="getPaintCompletion('#{geoMapLayersBean.editingLayer.type}')">
+                              completion="MapLibreCompletion.getPaintCompletion('#{geoMapLayersBean.editingLayer.type}')">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>
             </p:tab>
@@ -192,7 +192,7 @@
               <gdm:codemirror value="#{geoMapLayersBean.jsonLayout}" 
                               style="height:250px" styleClass="overflow-auto"
                               language="json" lineNumbers="true"
-                              completion="getLayoutCompletion('#{geoMapLayersBean.editingLayer.type}')">
+                              completion="MapLibreCompletion.getLayoutCompletion('#{geoMapLayersBean.editingLayer.type}')">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>
@@ -204,7 +204,7 @@
               <gdm:codemirror value="#{geoMapLayersBean.jsonFilter}" 
                               style="height:250px" styleClass="overflow-auto"
                               language="json" lineNumbers="true"
-                              completion="getFilterCompletion()">
+                              completion="MapLibreCompletion.getFilterCompletion()">
                 <f:validator validatorId="JsonValidator" />
               </gdm:codemirror>            
             </p:tab>
