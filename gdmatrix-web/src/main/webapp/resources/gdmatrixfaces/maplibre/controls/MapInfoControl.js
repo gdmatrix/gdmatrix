@@ -33,19 +33,32 @@ class MapInfoControl
       }
     }
 
-    const attribUl = document.createElement("ul");
-    attribUl.className = "attributions";
-    bodyDiv.appendChild(attribUl);
-
+    const attributions = [];
     const sources = map.getStyle().sources;
     for (let sourceId in sources)
     {
       let source = sources[sourceId];
       let attribution = source.attribution;
-      if (attribution && attribution.length > 0)
+      if (attribution && attribution.trim().length > 0)
+      {
+        attribution = attribution.trim();
+        if (attributions.indexOf(attribution) === -1)
+        {
+          attributions.push(attribution);
+        }
+      }
+    }
+
+    if (attributions.length > 0)
+    {
+      const attribUl = document.createElement("ul");
+      attribUl.className = "attributions";
+      bodyDiv.appendChild(attribUl);
+
+      for (let attribution of attributions)
       {
         let attribLi = document.createElement("li");
-        attribLi.innerHTML = attribution;
+        attribLi.innerHTML = `<div class="flex"><span class="pi pi-info-circle mt-1 mr-1"></span><span>${attribution}</span></div>`;
         attribUl.appendChild(attribLi);
       }
     }

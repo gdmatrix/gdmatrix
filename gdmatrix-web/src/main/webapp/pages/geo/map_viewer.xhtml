@@ -21,6 +21,7 @@
                            value="#{geoBundle.catalogue_short}" 
                            icon="pi pi-th-large" widgetVar="showCatalogueButton"
                            title="#{geoBundle.catalogue}" styleClass="mini"
+                           rendered="#{geoMapBean.catalogueEnabled}"
                            process="@this" update="@form:cnt" />
 
           <p:commandButton action="#{geoMapBean.setView('map_editor')}" 

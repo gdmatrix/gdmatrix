@@ -73,6 +73,8 @@ import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 @RequestScoped
 public class GeoMapBean extends WebBean implements Serializable
 {
+  public static final String MAP_NAME_PROPERTY = "map_name";
+
   private MapDocument mapDocument;
   private String view = "catalogue"; // or "map_viewer", "map_editor", "sld_editor"
   private String mode = "visual"; // or "code"
@@ -543,13 +545,24 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
+  public boolean isCatalogueEnabled()
+  {
+    return getProperty(MAP_NAME_PROPERTY) == null;
+  }
+
   // non public methods
 
   void loadFromParameters()
   {
     ExternalContext extContext = getExternalContext();
     Map<String, String> parameters = extContext.getRequestParameterMap();
-    String mapName = (String)parameters.get("map_name");
+
+    String mapName = getProperty(MAP_NAME_PROPERTY);
+    if (mapName == null)
+    {
+      mapName = (String)parameters.get(MAP_NAME_PROPERTY);
+    }
+
     if (mapName != null)
     {
       try
