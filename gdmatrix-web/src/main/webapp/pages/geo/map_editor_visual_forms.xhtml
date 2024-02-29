@@ -57,6 +57,13 @@
                        styleClass="rounded-button ui-button-flat">
       </p:commandButton>
     </p:column>
+    
+    <f:facet name="footer">
+      <p:commandButton action="#{geoMapLayerFormsBean.refreshLayerForms()}"
+                       value="#{geoBundle.refreshForms}"
+                       icon="pi pi-refresh"
+                       process="@this" update="@none" />
+    </f:facet>
   </p:dataTable>
 
   

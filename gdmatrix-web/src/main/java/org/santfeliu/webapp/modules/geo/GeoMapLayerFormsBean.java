@@ -35,6 +35,7 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.santfeliu.form.FormFactory;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.metadata.LayerForm;
 import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
@@ -78,6 +79,24 @@ public class GeoMapLayerFormsBean extends WebBean implements Serializable
   public void removeLayerForm(LayerForm form)
   {
     getLayerForms().remove(form);
+  }
+
+  public void refreshLayerForms()
+  {
+    FormFactory formFactory = FormFactory.getInstance();
+
+    List<LayerForm> layerForms = getLayerForms();
+    if (layerForms == null) return;
+
+    for (LayerForm layerForm : layerForms)
+    {
+      String formSelector = layerForm.getFormSelector();
+      int index = formSelector.indexOf(":");
+      if (index == -1) formSelector = "form:" + formSelector;
+
+      formFactory.clearForm(formSelector);
+    }
+    growl("FORMS_UPDATED");
   }
 
   public void acceptLayerForm()

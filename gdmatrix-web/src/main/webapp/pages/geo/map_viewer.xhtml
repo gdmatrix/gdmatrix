@@ -17,16 +17,26 @@
       </div>      
       <div class="flex-grow-1 flex justify-content-end">
         <div class="ui-inputgroup">
-          <p:commandButton action="#{geoMapBean.setView('catalogue')}" value="#{geoBundle.catalogue_short}" 
+          <p:commandButton action="#{geoMapBean.setView('catalogue')}" 
+                           value="#{geoBundle.catalogue_short}" 
                            icon="pi pi-th-large" widgetVar="showCatalogueButton"
                            title="#{geoBundle.catalogue}" styleClass="mini"
                            process="@this" update="@form:cnt" />
 
-          <p:commandButton action="#{geoMapBean.setView('map_editor')}" value="#{objectBundle.edit}" 
-                           icon="pi pi-pencil" rendered="#{geoMapBean.isEditorUser()}"
+          <p:commandButton action="#{geoMapBean.setView('map_editor')}" 
+                           value="#{objectBundle.edit}" 
+                           icon="pi pi-pencil" 
+                           rendered="#{geoMapBean.isEditorUser()}"
                            title="#{objectBundle.edit}" styleClass="mini"
                            process="@this" update="@form:cnt" />
 
+          <p:commandButton action="#{geoMapLayerFormsBean.refreshLayerForms()}"
+                           value="#{geoBundle.refreshForms}"
+                           icon="pi pi-refresh" 
+                           rendered="#{geoMapBean.isEditorUser()}"
+                           title="#{geoBundle.refreshForms}" styleClass="mini"
+                           process="@this" update="@none" />
+          
           <p:commandButton action="#{geoMapBean.setView('sld_editor')}" value="SLD" 
                            icon="pi pi-palette" rendered="#{geoMapBean.isEditorUser()}"
                            title="SLD" styleClass="mini"
