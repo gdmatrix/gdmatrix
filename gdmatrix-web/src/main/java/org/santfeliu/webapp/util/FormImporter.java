@@ -288,7 +288,31 @@ public class FormImporter
   }
 
   protected void importScript(HtmlView view, UIComponent parent)
-  {
+  {       
+    List<View> children = view.getChildren();
+    if (!children.isEmpty())
+    {
+      HtmlView childView = (HtmlView) children.get(0);
+      if (View.TEXT.equals(childView.getViewType()))
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<")
+          .append(view.getNativeViewType())
+          .append(" >")
+          .append(childView.getProperty("text"))
+          .append("</")
+          .append(view.getNativeViewType())
+          .append(">");      
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        Application application = facesContext.getApplication();
+        HtmlOutputText outputText =
+          (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+        outputText.setEscape(false);
+        outputText.setValue(sb.toString());
+        parent.getChildren().add(outputText);
+      }
+    }    
   }
 
   protected void importFields()
