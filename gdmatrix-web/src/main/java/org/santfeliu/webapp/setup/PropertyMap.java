@@ -30,7 +30,10 @@
  */
 package org.santfeliu.webapp.setup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -61,6 +64,25 @@ public class PropertyMap extends HashMap<String, Object>
     Object value = get(name);
     if (value == null) return null;
     return value.toString();
+  }
+  
+  public List<String> getList(String name)
+  {
+    Object value = get(name);
+    if (value == null) return null;
+    if (value instanceof List)
+    {
+      List<String> result = new ArrayList();
+      for (Object item : (List)value)
+      {
+        result.add(item.toString());
+      }
+      return result;
+    }
+    else
+    {
+      return Arrays.asList(value.toString().split(",")); 
+    }
   }
 
 }

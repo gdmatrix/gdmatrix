@@ -61,7 +61,10 @@ import org.santfeliu.form.FormDescriptor;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.NavigatorBean;
+import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.PropertyHelper;
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.ComponentUtils;
 import org.santfeliu.webapp.util.FormImporter;
 import org.santfeliu.webapp.util.WebUtils;
@@ -168,22 +171,33 @@ public class DynamicPropertiesBean implements Serializable
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
 
       selectItems = new ArrayList<>();
-      if (!StringUtils.isBlank(typeId))
+      List<FormDescriptor> descriptors = new ArrayList();
+        
+      List<String> fixedSelectorList = getFixedSelectorList();
+      if (fixedSelectorList != null)
       {
-        String selectorBase = formKey +
-          TypeFormBuilder.USERID + userSessionBean.getUserId() +
-          TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
-
-        List<FormDescriptor> descriptors =
-          FormFactory.getInstance().findForms(selectorBase);
-
-        for (FormDescriptor descriptor : descriptors)
+        for (String selector : fixedSelectorList)
         {
-          String selector = descriptor.getSelector();
-          String label = descriptor.getTitle();
-          selectItems.add(new SelectItem(selector, label));
+          descriptors.addAll(FormFactory.getInstance().findForms(selector));
         }
       }
+      else
+      {
+        if (!StringUtils.isBlank(typeId))
+        {          
+          String selectorBase = formKey +
+            TypeFormBuilder.USERID + userSessionBean.getUserId() +
+            TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
+          descriptors.addAll(FormFactory.getInstance().findForms(selectorBase));
+        }
+      }
+      for (FormDescriptor descriptor : descriptors)
+      {
+        String selector = descriptor.getSelector();
+        String label = descriptor.getTitle();
+        selectItems.add(new SelectItem(selector, label));
+      }
+      
       ResourceBundle bundle = ResourceBundle.getBundle(
         "org.santfeliu.web.obj.resources.ObjectBundle",
         userSessionBean.getViewLocale());
@@ -360,4 +374,22 @@ public class DynamicPropertiesBean implements Serializable
     }
     return false;
   }
+  
+  private List<String> getFixedSelectorList()
+  {
+    List<String> selectorList = null;
+    String prefix = getFormBuilderPrefix();
+    if ("type".equals(prefix))
+    {
+      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");        
+      ObjectBean objectBean = navigatorBean.getBaseTypeInfo().getObjectBean();
+      EditTab tab = objectBean.getActiveEditTab();
+      if (tab != null && tab.getProperties() != null)
+      {
+        selectorList = tab.getProperties().getList("forms");
+      }
+    }
+    return selectorList;    
+  }
+
 }

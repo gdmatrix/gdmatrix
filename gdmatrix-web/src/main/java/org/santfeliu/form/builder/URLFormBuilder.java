@@ -30,9 +30,11 @@
  */
 package org.santfeliu.form.builder;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.List;
 import org.santfeliu.form.Form;
@@ -53,6 +55,11 @@ public class URLFormBuilder extends FileFormBuilder
     if (url != null)
     {
       String filename = url.getFile();
+      try
+      {
+        filename = URLDecoder.decode(filename, "UTF-8");
+      }
+      catch (UnsupportedEncodingException ex) { }      
       String title = getTitle(filename);
       FormDescriptor descriptor = new FormDescriptor();
       descriptor.setTitle(title);
@@ -116,5 +123,5 @@ public class URLFormBuilder extends FileFormBuilder
       }
     }
     return url;
-  }
+  }  
 }

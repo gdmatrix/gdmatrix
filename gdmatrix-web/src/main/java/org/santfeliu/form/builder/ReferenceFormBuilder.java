@@ -74,9 +74,17 @@ public class ReferenceFormBuilder extends MatrixFormBuilder
           {
             FormDescriptor descriptor = new FormDescriptor();
             String title = document.getTitle();
+            String selector;
             int index = title.indexOf(":");
-            String selector = (index == -1) ?
-              title : entry.prefix + ":" + title.substring(0, index);
+            if (index == -1)
+            {
+              selector = title;
+            }
+            else
+            {
+              selector = entry.prefix + ":" + title.substring(0, index);
+              title = title.substring(index + 1);
+            }
             descriptor.setTitle(title);
             descriptor.setSelector(selector);
             descriptors.add(descriptor);
@@ -154,7 +162,7 @@ public class ReferenceFormBuilder extends MatrixFormBuilder
     DocumentManagerClient client = getDocumentManagerClient();
     return client.findDocuments(filter);
   }
-
+  
   static class Entry
   {
     String prefix;

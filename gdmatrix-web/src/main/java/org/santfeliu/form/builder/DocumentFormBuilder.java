@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.FormDescriptor;
@@ -58,7 +59,7 @@ public class DocumentFormBuilder extends MatrixFormBuilder
         Document document = client.loadDocument(docId, 0, ContentInfo.ID);
         // check document is a form
         FormDescriptor descriptor = new FormDescriptor();
-        descriptor.setTitle(document.getTitle());
+        descriptor.setTitle(getTitle(document));
         descriptor.setSelector(selector);
         return Collections.singletonList(descriptor);
       }
@@ -101,4 +102,12 @@ public class DocumentFormBuilder extends MatrixFormBuilder
     }
     return null;
   }
+
+  private String getTitle(Document doc)
+  {
+    String prettyTitle = 
+      DictionaryUtils.getPropertyValue(doc.getProperty(), "prettyTitle");
+    return (prettyTitle != null ? prettyTitle : doc.getTitle());
+  }
+  
 }
