@@ -26,9 +26,17 @@ class PrintControl
 
     const bodyDiv = this.panel.bodyDiv;
 
-    this.optionsDiv = document.createElement("div");
-    this.optionsDiv.innerHTML = `
+    const optionsDiv = document.createElement("div");
+    this.optionsDiv = optionsDiv;
+    optionsDiv.innerHTML = `
       <div class="formgrid grid">
+        <div class="field col-12">
+          <label for="print_format">${bundle.get("PrintControl.printFormat")}:</label>
+          <select id="print_format" type="text">
+            <option value="pdf">PDF</option>
+            <option value="html">HTML</option>
+          </select>
+        </div>
         <div class="field col-12">
           <label for="print_report">${bundle.get("PrintControl.reportName")}:</label>
           <select id="print_report" type="text" class="w-full">
@@ -40,7 +48,7 @@ class PrintControl
         </div>
         <div class="field col-12">
           <label for="print_scale">${bundle.get("PrintControl.scale")}:</label>
-          <select id="print_scale" w-full">
+          <select id="print_scale">
             <option value="0">${bundle.get("PrintControl.currentWindow")}</option>
             <option value="25">1 : 25</option>
             <option value="50">1 : 50</option>
@@ -58,9 +66,19 @@ class PrintControl
     `;
     bodyDiv.appendChild(this.optionsDiv);
 
-    this.reportNameSelect = document.getElementById("print_report");
-    this.reportTitleElem = document.getElementById("print_title");
-    this.scaleSelect = document.getElementById("print_scale");
+    this.reportNameSelect = optionsDiv.querySelector("#print_report");
+    this.reportTitleElem = optionsDiv.querySelector("#print_title");
+    this.scaleSelect = optionsDiv.querySelector("#print_scale");
+    this.formatElem = optionsDiv.querySelector("#print_format");
+    
+    this.formatElem.addEventListener("change", () => {
+      let format = this.formatElem.value;
+      let div = this.reportNameSelect.parentElement;
+      div.style.display = format === "html" ? "none" : "";
+
+      div = this.scaleSelect.parentElement;
+      div.style.display = format === "html" ? "none" : "";    
+    });
 
     const style = map.getStyle();
     let printReports = style.metadata?.printReports;
@@ -86,12 +104,20 @@ class PrintControl
     this.printButton.textContent = bundle.get("button.print");
     this.printButton.addEventListener("click", (event) => {
       event.preventDefault();
-      this.print();
+      
+      if (this.formatElem.value === "pdf")
+      {
+        this.printPdf();      
+      }
+      else if (this.formatElem.value === "html")
+      {
+        this.printHtml();
+      }
     });
     this.buttonsDiv.appendChild(this.printButton);
   }
-
-  print()
+  
+  printPdf()
   {
     const map = this.map;
     const style = map.getStyle();
@@ -141,6 +167,36 @@ class PrintControl
 
     window.open(url, "_blank");
   }
+  
+  printHtml()
+  {
+    const map = this.map;
+    const canvas = map.getCanvas();
+    const imageURL = canvas.toDataURL("image/png");
+
+    let reportTitle = this.reportTitleElem.value;
+    if (!reportTitle) reportTitle = map.getStyle().name;
+
+    const win = window.open("", "Print");
+    win.document.body.innerHTML = `
+      <style>
+        .page {
+         border: 1px solid black;
+         display:inline-block;
+        h1 {
+          padding: 2px;
+          margin:0;
+          font-size: 16px;
+          border-bottom: 1px solid #c0c0c0;
+        }
+      }
+      </style>
+      <div class="page">
+        <h1>${reportTitle}</h1>
+        <img src="${imageURL}"></img>
+      </div>
+    `;  
+  }  
 
   onAdd(map)
   {

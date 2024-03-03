@@ -459,6 +459,7 @@ body .ui-messages-error ul
     width: 0;
     padding-right: 0;
     white-space:nowrap;
+    overflow: hidden;
   }
 
   body .ui-button.ui-button-text-icon-left.mini > .ui-icon,

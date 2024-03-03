@@ -44,12 +44,19 @@ Bundle.getBundle("main").setTranslations("", {
   "ZoomControl.zoom": (zoom) => `Zoom: ${zoom}`,
   
   "PrintControl.title": "Print",
+  "PrintControl.printFormat": "Print format",
   "PrintControl.reportName": "Template",
   "PrintControl.reportTitle": "Title",
   "PrintControl.scale": "Printing scale",
   "PrintControl.currentWindow": "Current window",
     
   "RefreshControl.title": "Refresh",
+  
+  "TimeSliderControl.period": "Period",
+  "TimeSliderControl.period.d": "1 day",
+  "TimeSliderControl.period.w": "1 week",
+  "TimeSliderControl.period.M": "1 month",
+  "TimeSliderControl.period.2": "between 2 dates",
   
   "GenericWfsFinder.title": "WFS finder",
   "GenericWfsFinder.layer": "Layer",

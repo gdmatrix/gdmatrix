@@ -30,6 +30,7 @@ function maplibreInit(clientId, style, language)
     maxPitch: style.metadata.maxPitch,
     hash: style.metadata.hash || false,
     style: style,
+    preserveDrawingBuffer: true,
     antialias: true,
     attributionControl: false
   });

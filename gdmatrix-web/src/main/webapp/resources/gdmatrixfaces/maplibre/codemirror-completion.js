@@ -218,7 +218,7 @@ if (!window.MapLibreCompletion)
         "symbol-z-order",
         "text-allow-overlap",
         "text-anchor",
-        '"text-field"',
+        "text-field",
         "text-font",
         "text-allow-overlap",
         "text-ignore-placement",
