@@ -219,23 +219,64 @@ class LegendControl
     }
     else if (graphic.startsWith("icon:"))
     {
-      let img = document.createElement("img");
+      let imageDef = graphic.substring(5);
+      let parts = imageDef.split("/");
+      let docId = parts[0];
+
+      let img = document.createElement("img");     
       img.className = "graphic";
       img.alt = "";
-      img.src = "/documents/" + graphic.substring(5);
+      img.src = "/documents/" + docId;
+
+      if (parts.length >= 2)
+      {
+        let imageWidth = parseInt(parts[1]);
+        let imageHeight;
+        if (parts.length >= 3)
+        {
+          imageHeight = parseInt(parts[2]);
+        }
+        else
+        {
+          imageHeight = imageWidth;
+        }
+        img.style.width = imageWidth + "px";
+        img.style.height = imageHeight + "px";
+      }
       link.appendChild(img);
       link.appendChild(labelSpan);
     }
     else if (graphic.startsWith("image:"))
     {
+      let imageDef = graphic.substring(6);
+      let parts = imageDef.split("/");
+      let docId = parts[0];
+
       let img = document.createElement("img");
       img.className = "block pt-1";
       img.alt = "";
-      img.src = "/documents/" + graphic.substring(6);
+      img.src = "/documents/" + docId;
+
+      if (parts.length >= 2)
+      {
+        let imageWidth = parseInt(parts[1]);
+        let imageHeight;
+        if (parts.length >= 3)
+        {
+          imageHeight = parseInt(parts[2]);
+        }
+        else
+        {
+          imageHeight = imageWidth;
+        }
+        img.style.width = imageWidth + "px";
+        img.style.height = imageHeight + "px";
+      }
+
       const div = document.createElement("div");
-      link.appendChild(div);      
       div.appendChild(labelSpan);
       div.appendChild(img);
+      link.appendChild(div);
     }
     else if (graphic === "auto")
     {

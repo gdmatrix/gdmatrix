@@ -5,6 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
   <p:tree id="legend"
@@ -17,7 +18,8 @@
     <p:ajax event="contextMenu" update="@parent:legend_menu" />
 
     <p:treeNode type="group" styleClass="#{geoMapLegendBean.isCutLegendNode(node) ? 'legend_cut_node' : ''}">
-      <span class="pi pi-folder mr-1"/><h:outputText value="#{item.label}"/>
+      <span class="pi pi-folder#{item.expanded ? '-open' : ''} mr-1"/><h:outputText value="#{item.label}"/>
+      <span class="text-color border-500 border-solid border-round border-1 ml-1 p-1 code">#{item.mode}</span>
     </p:treeNode>
 
     <p:treeNode type="layer" styleClass="#{geoMapLegendBean.isCutLegendNode(node) ? 'legend_cut_node' : ''}">
@@ -106,8 +108,12 @@
         </div>
 
         <div class="field col-12">
-          <p:outputLabel for="@next" value="Graphic ( auto | square:&lt;color&gt; | circle:&lt;color&gt; | icon:&lt;imageId&gt; | image:&lt;imageId&gt; )" />
-          <p:inputText value="#{geoMapLegendBean.editingLegendGroup.graphic}" />
+          <p:outputLabel for="@next" value="Graphic" />
+          <p:inputText value="#{geoMapLegendBean.editingLegendGroup.graphic}" styleClass="code" pt:spellcheck="false" />
+          <div class="flex mt-1 align-items-center">
+            <i class="pi pi-info-circle mr-2"/> 
+            <span class="code">auto | square:&lt;color&gt; | circle:&lt;color&gt; | icon:&lt;imageId&gt;/&lt;width&gt;/&lt;height&gt; | image:&lt;imageId&gt;/&lt;width&gt;/&lt;height&gt;</span>
+          </div>
         </div>
 
         <div class="field col-12">
@@ -172,8 +178,12 @@
         </div>
 
         <div class="field col-12">
-          <p:outputLabel for="@next" value="Graphic ( auto | square:&lt;color&gt; | circle:&lt;color&gt; | icon:&lt;imageId&gt; | image:&lt;imageId&gt; )" />
-          <p:inputText value="#{geoMapLegendBean.editingLegendLayer.graphic}" />
+          <p:outputLabel for="@next" value="Graphic" />
+          <p:inputText value="#{geoMapLegendBean.editingLegendLayer.graphic}" styleClass="code" pt:spellcheck="false" />
+          <div class="flex mt-1 align-items-center">
+            <i class="pi pi-info-circle mr-2"/> 
+            <span class="code">auto | square:&lt;color&gt; | circle:&lt;color&gt; | icon:&lt;imageId&gt;/&lt;width&gt;/&lt;height&gt; | image:&lt;imageId&gt;/&lt;width&gt;/&lt;height&gt;</span>
+          </div>
         </div>
         
       </div>

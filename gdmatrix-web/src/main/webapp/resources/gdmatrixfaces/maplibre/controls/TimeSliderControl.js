@@ -315,13 +315,6 @@ class TimeSliderControl
         if (index1 === -1 && index2 === -1) continue;
         
         map.setFilter(layerId, filter);
-
-        let visibility = map.getLayoutProperty(layerId, 'visibility');
-        if (visibility === "none")
-        {
-          map.setLayoutProperty(layerId, 'visibility', 'visible');
-          map.getLayer(layerId).metadata.visible = true;
-        }        
       }
     }
   }

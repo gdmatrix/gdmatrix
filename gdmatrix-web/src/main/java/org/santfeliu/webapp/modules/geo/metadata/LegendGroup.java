@@ -57,6 +57,8 @@ public class LegendGroup extends LegendItem
     super(properties);
     this.mode = (String)properties.get("mode");
     if (this.mode == null) mode = MULTIPLE;
+    Object value = properties.get("expanded");
+    this.expanded =  value == null || Boolean.TRUE.equals(value);
     children = new ArrayList<>();
     List list = (List)properties.get("children");
     if (list != null)

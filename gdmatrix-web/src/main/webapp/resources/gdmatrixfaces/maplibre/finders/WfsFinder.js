@@ -17,6 +17,7 @@ class WfsFinder extends FeatureFinder
     this.layerName = options?.layerName;
     this.outputExpression = options?.outputExpression || null;
     this.addMarkers = options && options.addMarkers === false ? false : true;
+    this.maxFeatures = options?.maxFeatures || 1000;
   }
 
   async findWfs(cqlFilter, viewparams, sortBy)
@@ -28,7 +29,8 @@ class WfsFinder extends FeatureFinder
       "&typeNames=" + this.layerName +
       "&srsName=EPSG:4326" +
       "&outputFormat=application/json" +
-      "&exceptions=application/json";
+      "&exceptions=application/json" +
+      "&count=" + this.maxFeatures;
 
     if (cqlFilter)
     {
