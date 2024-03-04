@@ -1138,7 +1138,8 @@ public class NavigatorBean extends WebBean implements Serializable
       MenuItemCursor typeMenuItem = menuTypesCache.get(
         userSessionBean.getSelectedMenuItem(), objectTypeId);
 
-      return typeMenuItem.isNull() ? null : typeMenuItem.getMid();
+      return typeMenuItem == null || typeMenuItem.isNull() ? null : 
+        typeMenuItem.getMid();
     }
   }
 }

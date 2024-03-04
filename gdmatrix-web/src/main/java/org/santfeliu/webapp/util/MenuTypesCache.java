@@ -145,21 +145,22 @@ public class MenuTypesCache
 
     private MatchItem getMenuItem(MenuItemCursor menuItem, String typeId, 
       MatchItem candidate)
-    {      
-      if (!menuItem.isRendered())
-        return candidate;
-      
-      MatchItem matchItem = matchTypeId(menuItem, typeId);
-      if (matchItem.hasExactMatch()) 
-        return matchItem;
-      else if (!matchItem.hasMatch()) //Spread the candidate
-        matchItem = candidate;
-      else if (matchItem.isCandidate() && candidate != null &&
-        matchItem.getCandidate() < candidate.getCandidate())
+    {          
+      MatchItem matchItem = candidate;
+      if (menuItem.isRendered())
       {
-        matchItem = candidate; 
+        matchItem = matchTypeId(menuItem, typeId);
+        if (matchItem.hasExactMatch()) 
+          return matchItem;
+        else if (!matchItem.hasMatch()) //Spread the candidate
+          matchItem = candidate;
+        else if (matchItem.isCandidate() && candidate != null &&
+          matchItem.getCandidate() < candidate.getCandidate())
+        {
+          matchItem = candidate; 
+        }
       }
-
+      
       //First child
       MenuItemCursor auxMenuItem = menuItem.getClone();
       if (auxMenuItem.moveFirstChild())

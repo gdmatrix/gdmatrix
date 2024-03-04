@@ -5,6 +5,7 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 template="/frames/#{userSessionBean.frame}/frame.xhtml">
 
   <ui:define name="template">
@@ -169,6 +170,8 @@
       onResize();
       window.addEventListener("resize", onResize);
     </script>
+    
+    <gdm:saveBean value="templateBean" />
 
   </ui:define>
 

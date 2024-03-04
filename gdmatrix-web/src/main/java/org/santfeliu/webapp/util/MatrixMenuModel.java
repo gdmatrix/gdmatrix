@@ -10,6 +10,7 @@ import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
+import static org.santfeliu.webapp.util.WebUtils.TOPWEB_PROPERTY;
 
 /**
  *
@@ -38,14 +39,17 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
       }
     }
 
-    MenuItemCursor mic = mModel.getSelectedMenuItem();
-    if (mic != null)
+    if (mModel != null)
     {
-      currentMid = mic.getMid();
-      mic = WebUtils.getTopWebMenuItem(mic);
+      MenuItemCursor mic = mModel.getSelectedMenuItem();
+      if (mic != null)
+      {
+        currentMid = mic.getMid();
+        mic = WebUtils.getTopWebMenuItem(mic);
 
-      getElements().addAll(
-        getElements(mic.hasChildren() ? mic.getFirstChild() : mic));
+        getElements().addAll(
+          getElements(mic.hasChildren() ? mic.getFirstChild() : mic));
+      }
     }
   }
 
@@ -55,68 +59,71 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
   private List<MenuElement> getElements(MenuItemCursor mic)
   {
     List<MenuElement> items = new ArrayList();
-
-    String label = mic.getDirectProperty("description") != null
-      ? mic.getDirectProperty("description")
-      : mic.getLabel();
     
-    ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
-    label = applicationBean.translate(label, "jsp:" + mic.getMid());    
-    
-    if (mic.hasChildren())
+    if (mic.getDirectProperty(TOPWEB_PROPERTY) == null)
     {
-      DefaultSubMenu.Builder builder = DefaultSubMenu.builder()
-        .label(label);
+      String label = mic.getDirectProperty("description") != null
+        ? mic.getDirectProperty("description")
+        : mic.getLabel();
 
-      //Icon
-      String icon = mic.getProperty("icon");
-      if (!StringUtils.isBlank(icon))
-        builder.icon(icon);
+      ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
+      label = applicationBean.translate(label, "jsp:" + mic.getMid());    
 
-      DefaultSubMenu submenu = builder.build();
-
-      submenu.getElements().addAll(getElements(mic.getFirstChild()));
-      submenu.setId(mic.getMid());
-      items.add(submenu);
-    }
-    else
-    {
-      if (mic.isRendered())
+      if (mic.hasChildren())
       {
-        MatrixMenuItem.Builder builder = MatrixMenuItem.builder(mic)
-          .value(label);
-        if (mic.getProperty("content") != null)
-        {
-          String command = "#{templateBean.show('" + mic.getMid() + "')}";
-          builder.command(command);
-          builder.ajax(true);
-          builder.onstart("PF('menu').hide();");
-          builder.process("@this");
-          builder.update("@form:cnt");
-        }
-        else if (mic.getAction() == null && mic.getURL() != null)
-        {
-          builder.url(mic.getURL());
-          builder.ajax(false);
-        }
-        //Target
-        builder.target(mic.getTarget());
+        DefaultSubMenu.Builder builder = DefaultSubMenu.builder()
+          .label(label);
 
         //Icon
         String icon = mic.getProperty("icon");
         if (!StringUtils.isBlank(icon))
           builder.icon(icon);
 
-        //Current styleClass
-        if (currentMid.equals(mic.getMid()))
-          builder.styleClass("current");
+        DefaultSubMenu submenu = builder.build();
 
-        MatrixMenuItem item = builder.build();
-        item.setId(mic.getMid());
-        items.add(item);
+        submenu.getElements().addAll(getElements(mic.getFirstChild()));
+        submenu.setId(mic.getMid());
+        items.add(submenu);
+      }
+      else
+      {
+        if (mic.isRendered())
+        {
+          MatrixMenuItem.Builder builder = MatrixMenuItem.builder(mic)
+            .value(label);
+          if (mic.getProperty("content") != null)
+          {
+            String command = "#{templateBean.show('" + mic.getMid() + "')}";
+            builder.command(command);
+            builder.ajax(true);
+            builder.onstart("PF('menu').hide();");
+            builder.process("@this");
+            builder.update("@form:cnt");
+          }
+          else if (mic.getAction() == null && mic.getURL() != null)
+          {
+            builder.url(mic.getURL());
+            builder.ajax(false);
+          }
+          //Target
+          builder.target(mic.getTarget());
+
+          //Icon
+          String icon = mic.getProperty("icon");
+          if (!StringUtils.isBlank(icon))
+            builder.icon(icon);
+
+          //Current styleClass
+          if (currentMid.equals(mic.getMid()))
+            builder.styleClass("current");
+
+          MatrixMenuItem item = builder.build();
+          item.setId(mic.getMid());
+          items.add(item);
+        }
       }
     }
-
+    
     if (mic.moveNext())
     {
       List<MenuElement> elements = getElements(mic);
@@ -125,14 +132,5 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
 
     return items;
   }
-
-  private String encodeGoFunction(String mid)
-  {
-    if (!StringUtils.isBlank(mid))
-      return "return " + GOMID_JS_FUNCTION + "('" + mid +"');";
-    else
-      return "#";
-  }
-
 
 }
