@@ -1,7 +1,11 @@
+User-Agent: Baiduspider
+Disallow: /
+
+User-Agent: Amazonbot
+Disallow: /
+
 User-Agent: *
 Allow: /
 Disallow: /documents/
 Disallow: /signatures/
 Disallow: /reports/
-User-Agent: Baiduspider
-Disallow: /
