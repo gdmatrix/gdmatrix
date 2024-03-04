@@ -62,6 +62,7 @@ import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.NavigatorBean;
+import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.setup.EditTab;
@@ -381,12 +382,19 @@ public class DynamicPropertiesBean implements Serializable
     String prefix = getFormBuilderPrefix();
     if ("type".equals(prefix))
     {
-      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");        
-      ObjectBean objectBean = navigatorBean.getBaseTypeInfo().getObjectBean();
-      EditTab tab = objectBean.getActiveEditTab();
-      if (tab != null && tab.getProperties() != null)
+      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+      BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
+      if (baseTypeInfo != null)
       {
-        selectorList = tab.getProperties().getList("forms");
+        ObjectBean objectBean = baseTypeInfo.getObjectBean();
+        if (objectBean != null)
+        {
+          EditTab tab = objectBean.getActiveEditTab();
+          if (tab != null && tab.getProperties() != null)
+          {
+            selectorList = tab.getProperties().getList("forms");
+          }
+        }
       }
     }
     return selectorList;    
