@@ -169,7 +169,7 @@ class LegendControl
       this.updateLegendStyle();
     });
 
-    if (node.children && node.children.length > 0)
+    if (node.children && node.children.length > 0 && node.mode !== "block")
     {
       const subul = document.createElement("ul");
       node.ul = subul;
@@ -193,6 +193,7 @@ class LegendControl
     if (graphic === null)
     {
       link.appendChild(labelSpan);
+      link.classList.add("align-items-center");
     }
     else if (graphic.startsWith("square:") ||
              graphic.startsWith("circle:"))
@@ -200,8 +201,8 @@ class LegendControl
       const graphicSpan = document.createElement("span");
       graphicSpan.className = "graphic";
       graphicSpan.style.display = "inline-block";
-      graphicSpan.style.width = "16px";
-      graphicSpan.style.height = "16px";
+      graphicSpan.style.width = "16pt";
+      graphicSpan.style.height = "16pt";
       if (graphic.startsWith("square:"))
       {
         let color = graphic.substring(7);
@@ -216,6 +217,7 @@ class LegendControl
       }
       link.appendChild(graphicSpan);
       link.appendChild(labelSpan);
+      link.classList.add("align-items-center");
     }
     else if (graphic.startsWith("icon:"))
     {
@@ -240,11 +242,12 @@ class LegendControl
         {
           imageHeight = imageWidth;
         }
-        img.style.width = imageWidth + "px";
-        img.style.height = imageHeight + "px";
+        img.style.width = imageWidth + "pt";
+        img.style.height = imageHeight + "pt";
       }
       link.appendChild(img);
       link.appendChild(labelSpan);
+      link.classList.add("align-items-center");
     }
     else if (graphic.startsWith("image:"))
     {
@@ -269,14 +272,15 @@ class LegendControl
         {
           imageHeight = imageWidth;
         }
-        img.style.width = imageWidth + "px";
-        img.style.height = imageHeight + "px";
+        img.style.width = imageWidth + "pt";
+        img.style.height = imageHeight + "pt";
       }
 
       const div = document.createElement("div");
       div.appendChild(labelSpan);
       div.appendChild(img);
       link.appendChild(div);
+      link.classList.add("align-items-start");
     }
     else if (graphic === "auto")
     {
@@ -284,10 +288,12 @@ class LegendControl
       img.className = "block pt-1";
       img.alt = "";
       // img.src = ... get url from service
+      
       const div = document.createElement("div");
-      link.appendChild(div);      
       div.appendChild(labelSpan);
       div.appendChild(img);
+      link.appendChild(div);      
+      link.classList.add("align-items-start");
     }
   }
   
@@ -355,10 +361,7 @@ class LegendControl
   updateNodeStyle(node)
   {
     const map = this.map;
-    const link = node.link;
     const layerId = node.layerId;
-    const iconSpan = link.firstElementChild;
-    const textSpan = iconSpan.nextElementSibling;
     let nodeVisible = false;
 
     if (layerId) // layer node
@@ -375,6 +378,11 @@ class LegendControl
         nodeVisible = nodeVisible || childVisible;
       }
     }
+    
+    const link = node.link;    
+    if (link === undefined) return nodeVisible;
+    
+    const iconSpan = link.firstElementChild;
 
     if (nodeVisible === false)
     {
