@@ -1,0 +1,26 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+
+  <f:loadBundle basename="org.santfeliu.report.web.resources.ReportBundle" 
+                var="reportBundle"/>
+  
+  <div class="reportPanel">
+    <ui:include src="/pages/report/templates/#{reportViewerBean.reportTemplate}/template.xhtml" /> 
+  </div>
+  
+  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
+ 
+  <gdm:saveBean value="reportViewerBean" />
+  <gdm:saveBean value="reportObjectBean"  />
+  <gdm:saveBean value="reportFinderBean"  />  
+  
+  <script>
+    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>  
+  
+</ui:composition>

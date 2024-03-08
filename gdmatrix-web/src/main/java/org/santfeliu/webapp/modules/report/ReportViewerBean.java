@@ -90,6 +90,7 @@ public class ReportViewerBean extends WebBean implements Serializable
   @CMSProperty
   public static final String OUTPUT_FORMAT_PROPERTY = "outputFormat";
   public static final String HTML_OUTPUT_FORMAT = "html";
+  public static final String PDF_OUTPUT_FORMAT = "pdf";
   
   @CMSProperty
   public static final String EXECUTE_BUTTON_LABEL_PROPERTY =
@@ -121,7 +122,10 @@ public class ReportViewerBean extends WebBean implements Serializable
   
   private static final String STORED_PARAMS = "storedParams";
   
+  private String reportName;
   private Map parameters = new HashMap<>();
+  private String reportTemplate;
+  private String outputFormat;
   
   private Map formValues = new HashMap<>();
   private String formSelector;  
@@ -132,7 +136,7 @@ public class ReportViewerBean extends WebBean implements Serializable
 
   public String getContent()
   {
-    return "/pages/report/report.xhtml";
+    return "/pages/report/report_viewer.xhtml";
   }
   
   //Accessors
@@ -155,12 +159,51 @@ public class ReportViewerBean extends WebBean implements Serializable
   {
     this.parameters = parameters;
   }  
+
+  private String getReportName() 
+  {    
+    return reportName;
+  }  
+
+  public void setReportName(String reportName)
+  {
+    this.reportName = reportName;
+  }
+
+  public void setOutputFormat(String outputFormat)
+  {
+    this.outputFormat = outputFormat;
+  }
+    
+  public String getOutputFormat()
+  {
+    if (outputFormat != null)
+      return outputFormat;
+    
+    outputFormat = getSelectedMenuItem().getProperty(OUTPUT_FORMAT_PROPERTY);
+    
+    return outputFormat == null ? HTML_OUTPUT_FORMAT : outputFormat;
+  }    
+
+  public String getReportTemplate()
+  {
+    if (reportTemplate != null)
+      return reportTemplate;
+    
+    reportTemplate = getSelectedMenuItem().getProperty("reportTemplate");
+    
+    return reportTemplate == null ? "default" : reportTemplate;
+  }
+
+  public void setReportTemplate(String reportTemplate)
+  {
+    this.reportTemplate = reportTemplate;
+  }
   
   //Report methods
   public String getReportURL()
   {
     String url = null;
-    String reportName = getReportName();
     if (reportName != null)
     {
       url = getContextURL() + "/reports/" + reportName + "." +
@@ -287,7 +330,7 @@ public class ReportViewerBean extends WebBean implements Serializable
     String printReportName = cursor.getProperty(PRINT_REPORT_NAME_PROPERTY);
     if (printReportName == null)
     {
-      printReportName = cursor.getProperty(REPORT_NAME_PROPERTY);
+      printReportName = getReportName();
     }
     return printReportName;
   }
@@ -326,19 +369,9 @@ public class ReportViewerBean extends WebBean implements Serializable
   {
     String outcome = null;
     
-    try    
-    {     
-      String reportName = getReportName();
-      if (reportName == null) 
-        throw new Exception("UNDEFINED_REPORT_NAME");
-      
-      parameters = getReportDefaultParameters(reportName);       
-      mergeRequestParameters(parameters);
-      mergeFormValues(parameters);
-      mergeUserParameters(parameters);
-      
-      formSelector = getFormSelector();
-      outcome = show();
+    try
+    {
+      outcome = executeReport(reportName, parameters);
     }
     catch (Exception ex)
     {
@@ -346,6 +379,53 @@ public class ReportViewerBean extends WebBean implements Serializable
     }
     
     return outcome;
+  }
+  
+  public String executeReport(Report report, boolean targetBlank)
+  {
+    String outcome = null;
+    
+    try
+    {
+      Map params = getReportDefaultParameters(report);
+      setReportTemplate(targetBlank ? "default" : null);
+      outcome = executeReport(report.getReportId(), params);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    return outcome;
+  }  
+  
+  private String executeReport(String reportName, Map parameters) 
+    throws Exception
+  {
+    String outcome;
+    
+    if (reportName == null)
+    {
+      MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
+      MenuItemCursor cursor = menuModel.getSelectedMenuItem();
+      reportName = cursor.getBrowserSensitiveProperty(REPORT_NAME_PROPERTY);
+    }
+    if (reportName == null)
+      throw new Exception("UNDEFINED_REPORT_NAME");      
+    setReportName(reportName);
+    
+    if (parameters == null)
+      parameters = getReportDefaultParameters(reportName);      
+    setParameters(parameters);
+    
+    mergeRequestParameters(parameters);
+    mergeFormValues(parameters);
+    mergeUserParameters(parameters);
+
+    formSelector = getFormSelector();
+    outcome = show();
+    
+    return outcome;    
   }
   
 
@@ -356,22 +436,6 @@ public class ReportViewerBean extends WebBean implements Serializable
     return "/templates/" + template + "/template.xhtml";
   }
     
-  private String getReportName()
-  {    
-    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
-    return cursor.getBrowserSensitiveProperty(REPORT_NAME_PROPERTY);
-  }    
-  
-  private String getOutputFormat()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = 
-      userSessionBean.getMenuModel().getSelectedMenuItem();
-    String outputFormat = cursor.getProperty(OUTPUT_FORMAT_PROPERTY);
-    return outputFormat == null ? HTML_OUTPUT_FORMAT : outputFormat;
-  }  
-  
   private void updateComponents(UIComponent panel)
   {
     try
@@ -473,16 +537,28 @@ public class ReportViewerBean extends WebBean implements Serializable
 
   private Map getReportDefaultParameters(String reportName) throws Exception
   {
-    Map defaultParams = new HashMap();
+    if (reportName == null) 
+      throw new Exception("UNDEFINED_REPORT_NAME");  
+    
     ReportManagerPort port = ReportModuleBean.getPort(
       ReportModuleBean.getReportAdminCredentials());
     Report report = port.loadReport(reportName, false);
+    
+    return getReportDefaultParameters(report);
+  }
+  
+  public Map getReportDefaultParameters(Report report) throws Exception
+  {
+    if (report == null) 
+      throw new Exception("UNDEFINED_REPORT");  
+    
+    Map defaultParams = new HashMap();    
     List<ParameterDefinition> paramDefs = report.getParameterDefinition();
     for (ParameterDefinition paramDef : paramDefs)
     {
       defaultParams.put(paramDef.getName(), paramDef.getDefaultValue());
     }
-    return defaultParams;
+    return defaultParams;    
   }
   
   private String getFormName()

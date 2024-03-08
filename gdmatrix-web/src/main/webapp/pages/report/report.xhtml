@@ -1,23 +1,122 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:gdm="http://gdmatrix.org/faces">
+                xmlns:h="http://java.sun.com/jsf/html"  
+                xmlns:ui="http://java.sun.com/jsf/facelets" 
+                xmlns:f="http://java.sun.com/jsf/core"  
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces"                
+                template="/pages/obj/object_3col.xhtml">
+
+  <ui:param name="objectBean" value="#{reportObjectBean}" />
+  <ui:param name="searchLabel" value="#{reportBundle.reportSearchLabel}" />  
+
+  <ui:define name="filter"> 
+
+    <p:outputPanel id="filter_panel">
+
+      <div class="ui-fluid formgrid grid"> 
+
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.reportId}" />
+          <p:inputText value="#{reportFinderBean.reportId}" /> 
+        </div>   
+        
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.reportDescription}" />
+          <p:inputText value="#{reportFinderBean.filter.title}" /> 
+        </div> 
+        
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.reportTechnology}" />
+          <p:selectOneMenu value="#{reportFinderBean.technology}">
+            <f:selectItem itemValue="" itemLabel="" />            
+            <f:selectItem itemValue="jasper" itemLabel="Jasper" />
+            <f:selectItem itemValue="template" itemLabel="Template" />     
+            <f:selectItem itemValue="script" itemLabel="Script" />            
+          </p:selectOneMenu>
+        </div> 
+        
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.reportThemes}" />
+          <p:selectOneMenu value="#{reportFinderBean.theme}" >
+            <f:selectItem itemValue="" itemLabel="" />  
+            <f:selectItems value="#{reportFinderBean.themeItems}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}" />            
+          </p:selectOneMenu>
+        </div>         
+
+      </div>
+
+      <div class="text-right col-12">
+        <p:commandButton value="#{objectBundle.clear}"
+                         action="#{reportFinderBean.clear}"
+                         process="@form:cnt:filter_panel"
+                         styleClass="m-1"
+                         update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                         resetValues="true"
+                         icon="fa fa-broom" />
+        <p:commandButton id="advanced_search_button"
+                         value="#{objectBundle.search}"
+                         action="#{reportFinderBean.find}"
+                         process="@form:cnt:filter_panel"
+                         update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                         styleClass="m-1"
+                         resetValues="true"
+                         oncomplete="endPanel('leftPanel');"
+                         icon="pi pi-search" />
+      </div> 
 
 
-  <f:loadBundle basename="org.santfeliu.report.web.resources.ReportBundle" 
-                var="reportBundle"/>
+    </p:outputPanel>    
+  </ui:define>
 
-  <div class="reportPanel">
-    <ui:include src="/pages/report/templates/#{userSessionBean.selectedMenuItem.properties.reportTemplate != null ? userSessionBean.selectedMenuItem.properties.reportTemplate : 'default'}/template.xhtml" /> 
-  </div>
-  
-  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
- 
-  <gdm:saveBean value="reportViewerBean" />
-  
-  <script>
-    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-  </script>  
-  
+  <ui:define name="object">  
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0)
+        {
+          updateResults();
+        }
+      }
+    </script>
+    <p:remoteCommand name="updateResults"
+                     action="#{reportFinderBean.update}"
+                     process="@this" 
+                     update="@form:cnt:search_tabs:result_list" />
+
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
+               activeIndex="#{reportObjectBean.searchTabSelector}"
+               touchable="false"
+               onTabShow="onTabShow()">
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list mr-2"></i>
+          <h:outputText value="#{objectBundle.list}"/>
+        </f:facet>
+        <h:panelGroup id="result_list">
+          <ui:include src="report_list.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-pencil mr-2"></i>
+          <h:outputText value="#{reportBundle.report}"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">         
+          <ui:include src="/pages/report/report_standard.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+
+    </p:tabView>    
+
+    <gdm:saveBean value="reportObjectBean"  />
+    <gdm:saveBean value="reportFinderBean"  />    
+
+  </ui:define>
+
 </ui:composition>

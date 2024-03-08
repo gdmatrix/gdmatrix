@@ -7,7 +7,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:gdm="http://gdmatrix.org/faces"
-                template="/pages/obj/object_3col.xhtml" >
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="report_3col.xhtml" >
 
   <ui:define name="filter">
   
@@ -40,13 +41,70 @@
                          oncomplete="endPanel('leftPanel');" />        
       </p:outputPanel>
     </p:outputPanel>
+    
+    <p:outputPanel id="filter_panel" rendered="#{!reportViewerBean.formRendered}">
+
+      <div class="ui-fluid formgrid grid"> 
+
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.report_id}" />
+          <p:inputText value="#{reportFinderBean.reportId}" /> 
+        </div>   
+        
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.report_description}" />
+          <p:inputText value="#{reportFinderBean.filter.title}" /> 
+        </div> 
+        
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.report_technology}" />
+          <p:selectOneMenu value="#{reportFinderBean.technology}">
+            <f:selectItem itemValue="" itemLabel="" />            
+            <f:selectItem itemValue="jasper" itemLabel="Jasper" />
+            <f:selectItem itemValue="template" itemLabel="Template" />     
+            <f:selectItem itemValue="script" itemLabel="Script" />            
+          </p:selectOneMenu>
+        </div> 
+        
+        <div class="field col-12">    
+          <p:outputLabel for="@next" value="#{reportBundle.report_themes}" />
+          <p:selectOneMenu value="#{reportFinderBean.theme}" >
+            <f:selectItem itemValue="" itemLabel="" />  
+            <f:selectItems value="#{reportFinderBean.themeItems}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}" />            
+          </p:selectOneMenu>
+        </div>         
+
+      </div>
+
+      <div class="text-right col-12">
+        <p:commandButton value="#{objectBundle.clear}"
+                         action="#{reportFinderBean.clear}"
+                         process="@form:cnt:filter_panel"
+                         styleClass="m-1"
+                         update="@form:cnt:filter_panel @form:cnt"
+                         resetValues="true"
+                         icon="fa fa-broom" />
+        <p:commandButton id="advanced_search_button"
+                         value="#{objectBundle.search}"
+                         action="#{reportFinderBean.find}"
+                         process="@form:cnt:filter_panel"
+                         update="@form:cnt:filter_panel @form:cnt"
+                         styleClass="m-1"
+                         resetValues="true"
+                         oncomplete="endPanel('leftPanel');"
+                         icon="pi pi-search" />
+      </div> 
+
+
+    </p:outputPanel>     
+    
   </ui:define>
 
   <ui:define name="object">
   
-    <p:outputPanel id="search_tabs">
-      <p:outputPanel id="obj_tabs"></p:outputPanel>       
-    </p:outputPanel>
+    <h:panelGroup id="search_tabs">
+      <h:panelGroup id="obj_tabs"></h:panelGroup>       
+    </h:panelGroup>
        
 
     <sf:browser url="#{reportViewerBean.headerURL}"
@@ -60,7 +118,7 @@
       <p:linkButton href="#{reportViewerBean.printURL}" target="blank" icon="pi pi-print" />
     </p:outputPanel>
 
-    <p:outputPanel id="report_body" styleClass="body">
+    <p:outputPanel id="report_body" styleClass="body" rendered="#{reportViewerBean.outputFormat != 'pdf'}">
       <sf:browser url="#{reportViewerBean.reportURL}"
                   port="#{applicationBean.defaultPort}"
                   iframe="#{reportViewerBean.showInIFrame}" width="100%" height="500px"
@@ -69,6 +127,11 @@
                   allowedHtmlTags="#{reportViewerBean.allowedHtmlTags}"
                   readTimeout="#{reportViewerBean.readTimeout}"/>
     </p:outputPanel>
+    
+    <pe:documentViewer url="#{reportViewerBean.reportURL}" 
+                       style="height:75vh"
+                       zoom="page-width" 
+                       rendered="#{reportViewerBean.outputFormat == 'pdf'}" />    
 
     <sf:browser url="#{reportViewerBean.footerURL}"
                 port="#{applicationBean.defaultPort}"

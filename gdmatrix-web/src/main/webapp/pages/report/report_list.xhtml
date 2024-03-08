@@ -1,0 +1,40 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"  
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+
+  <p:dataTable value="#{reportFinderBean.rows}"
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{reportFinderBean.firstRow}"
+               rowStyleClass="#{row.reportId == reportObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
+               rows="10"
+               rowIndexVar="rowIndex">
+
+    <p:column headerText="#{reportBundle.reportId}" styleClass="col-3">
+      <h:outputText value="#{row.reportId}" />
+    </p:column>                
+    <p:column headerText="#{reportBundle.reportDescription}" styleClass="col-6">
+      <h:outputText value="#{row.title}" />
+    </p:column> 
+    <p:column headerText="#{reportBundle.reportTechnology}" styleClass="col-1">
+      <h:outputText value="#{row.technology}" />
+    </p:column>     
+    <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:commandButton icon="pi pi-arrow-circle-right" styleClass="rounded-button ui-button-flat" 
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}"
+                       action="#{reportFinderBean.view(rowIndex)}"
+                       resetValues="true"
+                       process="@this"
+                       oncomplete="PF('searchTabs').select(1);"
+                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                       />  
+    </p:column>      
+
+  </p:dataTable> 
+
+</ui:composition> 

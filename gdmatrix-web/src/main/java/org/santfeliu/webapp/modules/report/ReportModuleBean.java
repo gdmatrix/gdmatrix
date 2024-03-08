@@ -78,6 +78,11 @@ public class ReportModuleBean implements Serializable
     return port;
   }
   
+  public static ReportManagerPort getPort() throws Exception
+  {
+    return getPort(getReportAdminCredentials());
+  }
+  
   public static Credentials getExecutionCredentials(boolean runAsAdmin)
   {
     Credentials credentials;

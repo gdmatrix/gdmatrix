@@ -1,0 +1,225 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
+    <p:outputPanel class="flex flex-grow-0 justify-content-start align-self-center"
+                   rendered="#{reportFinderBean.isScrollEnabled()}">
+      <p:commandButton icon="ui-icon pi pi-step-backward"
+                       styleClass="rounded-button ui-button-flat mr-2"
+                       action="#{reportFinderBean.viewPrevious}"
+                       process="@this"
+                       update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
+                       resetValues="true"
+                       disabled="#{not reportFinderBean.hasPrevious()}"
+                       title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
+                       />
+      <span class="align-self-center">
+        <h:outputText value="#{reportFinderBean.objectPosition + 1}">
+          <f:convertNumber type="number"
+                           groupingUsed="true" />
+        </h:outputText> /
+        <h:outputText value="#{reportFinderBean.objectCount}">
+          <f:convertNumber type="number"
+                           groupingUsed="true" />
+        </h:outputText>
+      </span>
+      <p:commandButton icon="ui-icon pi pi-step-forward"
+                       styleClass="rounded-button ui-button-flat ml-2 mr-2"
+                       action="#{reportFinderBean.viewNext}"
+                       process="@this"
+                       update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
+                       resetValues="true"
+                       disabled="#{not reportFinderBean.hasNext()}"
+                       title="#{objectBundle.next}" alt="#{objectBundle.next}"
+                       />
+    </p:outputPanel>
+    <div class="flex flex-grow-1 justify-content-start align-self-center">
+      <h:outputText value="#{objectBean.objectId}" styleClass="main_object_id" />
+      <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
+    </div>
+    <div class="flex flex-grow-1 justify-content-end">
+      <!--
+            <p:commandButton icon="pi pi-file-o"
+                             styleClass="rounded-button ui-button-flat"
+                             action="#{reportObjectBean.executeReport('html')}" 
+                             process="@this"
+                             update="@form:cnt:search_tabs:obj_tabs @form:cnt"
+                             partialSubmit="true"
+                             title="HTML" alt="HTML"
+                             rendered="#{not empty reportObjectBean.report.reportId}"
+                             />   
+            <p:commandButton  icon="pi pi-file-pdf"
+                              styleClass="rounded-button ui-button-flat"
+                              action="#{reportObjectBean.executeReport('pdf')}" 
+                              rendered="#{not empty reportObjectBean.report.reportId and reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"
+                              process="@this"
+                              update="@form:cnt:search_tabs:obj_tabs @form:cnt"
+                              partialSubmit="true"
+                              title="PDF" alt="PDF"
+                             />       
+      --> 
+      <p:commandButton icon="ui-icon pi pi-star"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
+                       rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-star-fill"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
+                       rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
+                       />
+
+      <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                    title="#{objectBundle.actions}"
+                    rendered="#{not objectBean.isNew() and not empty objectBean.scriptActions.actions}">
+        <c:forEach items="#{objectBean.scriptActions.actions}" var="action" >
+          <p:menuitem icon="#{action.icon}"
+                      value="#{action.label}" action="#{objectBean.callAction(action.name)}"
+                      rendered="#{not empty action.label and not action.isUrlAction()}" process="@this"
+                      update="@form:cnt:search_tabs:tabs"/>
+          <p:menuitem icon="#{action.icon}"
+                      value="#{action.label}" 
+                      url="#{action.url}" target="#{action.urlTarget}"
+                      rendered="#{not empty action.label and action.isUrlAction()}" />            
+        </c:forEach>
+      </p:menuButton>
+    </div>
+  </p:outputPanel>
+
+  <f:metadata>
+    <f:viewAction action="#{objectBean.selectTabWithErrors}"
+                  onPostback="true" phase="PROCESS_VALIDATIONS" />
+
+    <f:viewAction action="#{objectBean.loadActiveEditTab}"
+                  onPostback="true" />
+  </f:metadata>
+
+  <!--- start include -->
+  <div class="ui-fluid formgrid grid">
+
+
+    <div class="field col-12 lg:col-8">
+      <p:outputLabel for="@next" value="Report id." />
+      <p:inputText value="#{reportObjectBean.report.reportId}" readonly="true" />
+    </div> 
+
+    <div class="field col-12 lg:col-4">
+      <p:outputLabel for="@next" value="Doc. id." />
+      <div class="ui-inputgroup">
+        <p:inputText value="#{reportObjectBean.report.docId}" readonly="true" />
+        <p:commandButton action="#{navigatorBean.show('Document', reportObjectBean.report.docId)}" process="@this"
+                         update="@form:cnt" icon="pi pi-arrow-circle-right"
+                         styleClass="select-button" />
+      </div>
+    </div>     
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="Description" />
+      <p:inputText value="#{reportObjectBean.report.title}" />
+    </div> 
+
+    <div class="col-12 p-2 mb-3">
+      <div class="col-12 p-2 border-bottom-1">#{reportBundle.parameters}</div>
+    </div>
+
+    <p:dataTable id="reports_table" value="#{reportObjectBean.report.parameterDefinition}" 
+                 var="pd" stripedRows="true" paginator="false" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="20"
+                 size="small" paginatorPosition="bottom" 
+                 rowIndexVar="firstRow" first="#{reportObjectBean.firstRow}"
+                 styleClass="w-full p-2" editable="true" editMode="cell"
+                 rendered="#{empty reportObjectBean.formSelector}" >
+
+      <p:column headerText="#{reportBundle.parameterName}" styleClass="col-2">
+        <h:outputText value="#{pd.name}" />
+      </p:column>   
+
+      <p:column headerText="#{reportBundle.parameterDescription}" styleClass="col-5">
+        <h:outputText value="#{pd.description}" />
+      </p:column> 
+
+      <p:column headerText="#{reportBundle.parameterValue}" styleClass="col-5">  
+        <p:cellEditor>
+          <f:facet name="output">             
+            <h:outputText value="#{pd.defaultValue}" />
+          </f:facet>
+          <f:facet name="input">
+            <p:inputText value="#{pd.defaultValue}" style="width:100%"/>
+          </f:facet>
+        </p:cellEditor>          
+      </p:column>     
+
+    </p:dataTable>  
+
+    <div class="field col-12">
+      <h:panelGroup id="dyn_form" 
+                    styleClass="ui-fluid formgrid grid" layout="block"
+                    rendered="#{not empty reportObjectBean.formSelector}">
+        <f:event type="postAddToView"
+                 listener="#{reportObjectBean.loadDynamicComponents}" />
+      </h:panelGroup>
+      <h:outputText id="form_selector" />     
+    </div>
+
+  </div> 
+  <!--- end include -->
+
+  <div class="tab_footer text-right pt-3"> 
+
+    <p:splitButton value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html', false)}" icon="pi pi-play"
+                   process="@form:cnt:search_tabs:obj_tabs" update="@form:cnt"
+                   rendered="#{not empty reportObjectBean.report.reportId}">
+      <p:menuitem value="HTML" action="#{reportObjectBean.executeReport('html', false)}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-o" />
+      <p:menuitem value="HTML" action="#{reportObjectBean.executeReport('html', true)}" target="_blank" ajax="false" icon="pi pi-external-link"/>      
+      <p:menuitem value="PDF" action="#{reportObjectBean.executeReport('pdf', false)}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-pdf" 
+                  rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>
+      <p:menuitem value="PDF" action="#{reportObjectBean.executeReport('pdf', true)}" target="_blank" ajax="false" icon="pi pi-external-link" 
+                  rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>    
+    </p:splitButton>    
+  </div>
+
+  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
+
+  <script>
+    function objectScrollUp()
+    {
+      var elems = document.getElementsByClassName("object_data");
+      if (elems.length > 0)
+        elems[0].scrollTop = 0;
+    }
+
+    if (window.popStateListener)
+    {
+      window.removeEventListener("popstate", window.popStateListener);
+    }
+
+    window.popStateListener = () => {
+      var pfButton = PF("backButton");
+      if (pfButton)
+      {
+        var id = pfButton.id;
+        var button = document.getElementById(id);
+        button.click();
+      }
+      ;
+    };
+
+    window.addEventListener("popstate", window.popStateListener);
+  </script>
+
+</ui:composition>
+

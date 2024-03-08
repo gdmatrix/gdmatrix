@@ -4,6 +4,7 @@
       xmlns:sf="http://faces.santfeliu.org"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions"      
       xmlns:gdm="http://gdmatrix.org/faces">
 
     <sf:browser url="#{reportViewerBean.headerURL}"
@@ -45,7 +46,13 @@
     </p:outputPanel>
 
     <p:outputPanel styleClass="body">
-      <sf:browser url="#{reportViewerBean.reportURL}"
+      <pe:documentViewer url="#{reportViewerBean.reportURL}" 
+                         style="height:90vh"
+                         zoom="page-width" 
+                         rendered="#{reportViewerBean.outputFormat == 'pdf'}" />        
+      
+      
+      <sf:browser url="#{reportViewerBean.reportURL}" rendered="#{reportViewerBean.outputFormat != 'pdf'}"
         port="#{applicationBean.defaultPort}"
         iframe="#{reportViewerBean.showInIFrame}" width="100%" height="500px"
         translator="#{not reportViewerBean.showInIFrame ? userSessionBean.translator : null}"
