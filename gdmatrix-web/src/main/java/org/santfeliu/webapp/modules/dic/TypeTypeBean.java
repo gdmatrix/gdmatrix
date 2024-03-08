@@ -209,12 +209,23 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     boolean addNavigatorItems, boolean sorted)
   {
     List<SelectItem> items = new ArrayList<>();
-
+    
     if (StringUtils.isBlank(query) && addNavigatorItems)
     {
       if (typeId == null) typeId = getRootTypeId();
       addNavigatorItems(items, typeId);
     }
+    else if (StringUtils.isBlank(query))
+    {
+      org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
+      for (org.santfeliu.dic.Type derived : type.getDerivedTypes(true))
+      {
+        String objectId = derived.getTypeId();
+        String description = derived.getDescription() +
+          " (" + objectId + ")";
+        items.add(new SelectItem(objectId, description));
+      }
+    }    
     else
     {
       List<Type> types = findByQuery(query, typeId);
