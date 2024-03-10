@@ -217,6 +217,13 @@ public class FacesUtils
     context.addMessage(component.getClientId(context), message);
   }
 
+  public static void addMessage(String clientId, Exception ex)
+  {
+    FacesMessage message = getFacesMessage(ex);
+    FacesContext context = FacesContext.getCurrentInstance();
+    context.addMessage(clientId, message);
+  }
+
   public static void addMessage(Exception ex)
   {
     FacesMessage message = getFacesMessage(ex);

@@ -14,6 +14,7 @@
 {
   font-size:12px;
   --font-family:Montserrat;
+  --menubar-height: 3rem;
   --toolbar-button-size: 3rem;
   --toolbar-icon-size: 1rem;
 }
@@ -22,7 +23,7 @@ h1
 {
   font-family: var(--font-family);
   font-weight: normal;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   margin:0;
 }
 
@@ -54,7 +55,6 @@ body .ui-selectonemenu .ui-selectonemenu-label
 
 body .ui-selectonemenu .ui-selectonemenu-trigger 
 {
-  __background-color: var(--secondary-color);
   background-color: var(--surface-ground);
 }
 
@@ -174,6 +174,7 @@ body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd
   color: var(--primary-500);
   border-color: transparent;  
 }
+
 /*** Autocomplete ***/
 body .ui-autocomplete
 {
@@ -309,7 +310,21 @@ body .ui-messages-error ul
   margin-left: 30px;
 }
 
+/* icons */
+.mi-outlined
+{
+  transform:scale(1.25);
+}
+
 /***** template styles *****/
+
+.app_menubar .menu_button
+{
+  width: var(--toolbar-button-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .app_menubar
 {
@@ -317,7 +332,7 @@ body .ui-messages-error ul
   top: 0;
   left: 0;
   right: 0;
-  height: 32px;
+  height: var(--menubar-height);
   padding: 0;
   background-color: var(--primary-color);
   color: var(--primary-color-text);
@@ -342,7 +357,7 @@ body .ui-messages-error ul
 .app_content
 {
   position: absolute;
-  top: 32px;
+  top: var(--menubar-height);
   left: 0;
   right: 0;
   bottom: 0;
@@ -548,4 +563,36 @@ body div.field
   background: inherit;
   margin: 0;
   margin-bottom: 1rem;
+}
+
+.logo
+{
+  background-color: var(--primary-color-text);
+  height: var(--menubar-height);
+  mask-size: auto var(--menubar-height);
+  mask-repeat: no-repeat;
+  mask-position: left center;
+}
+
+.login_button
+{
+  width: 24px;
+  height: 24px;
+  border-color: var(--primary-color-text);
+  color: var(--primary-color-text) !important;
+  text-decoration: none !important;
+  outline:none;
+  border-radius: 50%;
+  border-style:solid;
+  border-width: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+}
+
+.login_button:focus
+{
+  border-color: var(--primary-color);
+  box-shadow: var(--focus-ring);
 }

@@ -41,6 +41,8 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuElement;
+import org.santfeliu.faces.FacesBean;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
@@ -54,13 +56,36 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 @Named
 @RequestScoped
-public class TemplateBean implements Serializable
+public class TemplateBean extends FacesBean implements Serializable
 {
   private static final String HIGHLIGHTED_PROPERTY = "highlighted";
 
   private MatrixMenuModel matrixMenuModel;
   private List<MatrixMenuItem> highlightedItems;
   private String componentTree;
+
+  private transient String username;
+  private transient String password;
+
+  public String getUsername()
+  {
+    return username;
+  }
+
+  public void setUsername(String username)
+  {
+    this.username = username;
+  }
+
+  public String getPassword()
+  {
+    return password;
+  }
+
+  public void setPassword(String password)
+  {
+    this.password = password;
+  }
 
   public MatrixMenuModel getPFMenuModel()
   {
@@ -105,12 +130,34 @@ public class TemplateBean implements Serializable
     userSessionBean.executeSelectedMenuItem();
   }
 
-  public boolean isGrowlEnabled()
+  public String getUserInitial()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
-    String value = cursor.getProperty("growlEnabled");
-    return value == null || "true".equals(value);
+    String displayName = userSessionBean.getDisplayName();
+    return displayName.length() > 0 ? displayName.substring(0, 1) : "?";
+  }
+
+  public void login()
+  {
+    try
+    {
+      if (!StringUtils.isBlank(username))
+      {
+        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+        userSessionBean.login(username, password);
+        userSessionBean.redirectSelectedMenuItem();
+      }
+    }
+    catch (Exception ex)
+    {
+      FacesUtils.addMessage("login_messages", ex);
+    }
+  }
+
+  public void logout()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.logout(); // redirect
   }
 
   private List<MatrixMenuItem> getHighlightedItems(List<MenuElement> elements)
