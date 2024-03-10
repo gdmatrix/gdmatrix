@@ -59,7 +59,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
   private List<MenuElement> getElements(MenuItemCursor mic)
   {
     List<MenuElement> items = new ArrayList();
-    
+
     if (mic.getDirectProperty(TOPWEB_PROPERTY) == null)
     {
       String label = mic.getDirectProperty("description") != null
@@ -67,7 +67,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
         : mic.getLabel();
 
       ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
-      label = applicationBean.translate(label, "jsp:" + mic.getMid());    
+      label = applicationBean.translate(label, "jsp:" + mic.getMid());
 
       if (mic.hasChildren())
       {
@@ -96,7 +96,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
             String command = "#{templateBean.show('" + mic.getMid() + "')}";
             builder.command(command);
             builder.ajax(true);
-            builder.onstart("PF('menu').hide();");
+            builder.onstart("PF('menuBar').hide();");
             builder.process("@this");
             builder.update("@form:cnt");
           }
@@ -123,7 +123,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
         }
       }
     }
-    
+
     if (mic.moveNext())
     {
       List<MenuElement> elements = getElements(mic);
