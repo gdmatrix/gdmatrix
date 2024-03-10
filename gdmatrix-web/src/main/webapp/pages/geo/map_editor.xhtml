@@ -87,11 +87,11 @@
         </div>
       </div>
     </div>
-    <h:panelGroup id="editor_body" class="p-2 flex-grow-1 overflow-auto" layout="body">
+    <h:panelGroup id="editor_body" class="p-2 flex-grow-1 overflow-auto" layout="block">
 
       <p:messages id="geo_editor_msg" showSummary="true" styleClass="messages" 
                   rendered="#{not geoMapBean.isDialogVisible()}"
-                  showIcon="true" closable="false" forIgnores="growl">
+                  showIcon="true" closable="false" forIgnores="growl login_messages">
         <p:autoUpdate />
       </p:messages>
 
