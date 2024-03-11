@@ -78,8 +78,8 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     languageComboBox.addItem("it");
     languageComboBox.addItem("de");
     RestrictedDocument document = new RestrictedDocument();
-    document.setMaxLength(32);
-    document.setPattern("[a-zA-Z][a-zA-Z0-9_]*");
+    document.setMaxLength(40);
+    document.setPattern("[a-zA-Z][a-zA-Z0-9_@]*");
     nameTextField.setDocument(document);
 
     metadataTextArea.setFont(Options.getEditorFont());
