@@ -44,7 +44,9 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
+import org.matrix.doc.OrderByProperty;
 import org.santfeliu.classif.ClassCache;
+import static org.santfeliu.doc.web.DocumentSearchBean.ORDERBY_PROPERTY;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.UserSessionBean;
@@ -356,6 +358,9 @@ public class DocumentFinderBean extends FinderBean
                 filter.getOutputProperty().add(column.getName());
               }
               filter.setIncludeContentMetadata(true);
+              
+              setOrderByProperties();
+              
               List<Document> documents =
                 DocModuleBean.getPort(false).findDocuments(filter);
               DocumentFinderBean.this.setClassId(classId);
@@ -430,7 +435,29 @@ public class DocumentFinderBean extends FinderBean
     }
     return convertedRows;
   }
+  
+  private void setOrderByProperties() throws Exception
+  {
+    if (objectSetup == null)
+      loadObjectSetup();
 
+    List<String> orderByValues = 
+      objectSetup.getSearchTabs().get(0).getProperties()
+        .getList(ORDERBY_PROPERTY);
+
+    for (String item : orderByValues)
+    {
+      String[] parts = item.split(":");
+      OrderByProperty orderByProperty = new OrderByProperty();
+      orderByProperty.setName(parts[0]);
+      if (parts.length > 1 && "desc".equalsIgnoreCase(parts[1]))
+      {
+        orderByProperty.setDescending(true);
+      }
+      filter.getOrderByProperty().add(orderByProperty);
+    }
+  }  
+  
   public static class DocumentDataTableRow extends DataTableRow
   {
     private String contentId;

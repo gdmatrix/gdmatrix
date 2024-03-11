@@ -112,6 +112,8 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     titleColumn.setExpression("org.santfeliu.webapp.modules.doc.DocumentTypeBean.formatTitle(row)");
     titleColumn.setIcon("'text-xl mr-2 ' + org.santfeliu.webapp.modules.doc.DocumentTypeBean.getContentIcon(row)");
     searchTab.getColumns().add(titleColumn);
+    
+    searchTab.getProperties().put("orderBy", "changeDateTime:desc");
 
     searchTabs.add(searchTab);
 
