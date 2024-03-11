@@ -87,6 +87,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
   public static final int LABEL_COLUMN_WIDTH = 19; // percentage
   private static final String SORT_FORMS_BY_TYPE_DEPTH_PROPERTY =
     "_sortFormsByTypeDepth";
+  private static final String VARIANT_SEPARATOR = "@";
 
   public static enum FormMode
   {
@@ -359,6 +360,8 @@ public class TypeFormBuilder extends MatrixFormBuilder
       filter.getOrderByProperty().add(orderBy);
       List<Document> documents = docClient.findDocuments(filter);
 
+      documents = filterDocumentsByVariant(documents, parser.getVariant());
+      
       for (Document document : documents)
       {
         document =
@@ -390,6 +393,58 @@ public class TypeFormBuilder extends MatrixFormBuilder
       }
       addUserForms(type.getSuperType(), descriptors, parser, sortDescending);
     }
+  }
+  
+  private List<Document> filterDocumentsByVariant(List<Document> documents, 
+    String variant)
+  {
+    List<Document> result = new ArrayList();
+    for (Document document : documents)
+    {
+      String formName = getFormName(document);
+      if (variant == null || variant.trim().isEmpty())
+      {
+        if (!formName.contains(VARIANT_SEPARATOR)) result.add(document);
+      }
+      else if (formName.endsWith(VARIANT_SEPARATOR + variant))
+      {
+        result.add(document);
+      }
+      else if (!formName.contains(VARIANT_SEPARATOR))
+      {
+        if (!existsDocumentVariant(formName, documents, variant))
+        {
+          result.add(document);
+        }
+      }
+      else //@other
+      {
+        //not include
+      }
+    }
+    return result;
+  }
+  
+  private boolean existsDocumentVariant(String baseFormName, 
+    List<Document> documents, String variant)
+  {
+    for (Document document : documents)
+    {
+      String docFormName = getFormName(document);
+      if (docFormName.equals(baseFormName + VARIANT_SEPARATOR + variant)) 
+        return true;
+    }
+    return false;
+  }
+  
+  private String getFormName(Document document)
+  {
+    String title = document.getTitle();
+    if (title.contains(":"))
+    {
+      return title.substring(0, title.indexOf(":"));
+    }
+    return title;
   }
 
   protected void addAutoForm(Type type, FormMode formMode,
@@ -479,16 +534,35 @@ public class TypeFormBuilder extends MatrixFormBuilder
     private String userId;
     private String password;
     private FormMode formMode;
+    private String variant;
 
     SelectorParser(String selector)
     {
-      String prefix = selector.startsWith(PREFIX + ":") ? PREFIX :
-        (selector.startsWith(SEARCH_PREFIX + ":") ? SEARCH_PREFIX :
-        (selector.startsWith(VIEW_PREFIX + ":") ? VIEW_PREFIX : null));
+      String prefix = null;
+      if (selector.startsWith(PREFIX + ":") || 
+        selector.startsWith(PREFIX + VARIANT_SEPARATOR))
+      {
+        prefix = selector.substring(0, selector.indexOf(":"));
+        formMode = FormMode.EDIT;
+      }
+      else if (selector.startsWith(SEARCH_PREFIX + ":") || 
+        selector.startsWith(SEARCH_PREFIX + VARIANT_SEPARATOR))
+      {
+        prefix = selector.substring(0, selector.indexOf(":"));
+        formMode = FormMode.SEARCH;
+      }
+      else if (selector.startsWith(VIEW_PREFIX + ":") || 
+        selector.startsWith(VIEW_PREFIX + VARIANT_SEPARATOR))
+      {
+        prefix = selector.substring(0, selector.indexOf(":"));
+        formMode = FormMode.VIEW;
+      }
       if (prefix != null)
       {
-        formMode = prefix.equals(SEARCH_PREFIX) ? FormMode.SEARCH :
-          prefix.equals(VIEW_PREFIX) ? FormMode.VIEW : FormMode.EDIT;
+        if (prefix.contains(VARIANT_SEPARATOR))
+        {
+          variant = prefix.substring(prefix.indexOf(VARIANT_SEPARATOR) + 1);
+        }
         typeId = extract(selector.substring(prefix.length() + 1), null, USERID);
         userId = extract(selector, USERID, PASSWORD);
         password = extract(selector, PASSWORD, null);
@@ -520,6 +594,11 @@ public class TypeFormBuilder extends MatrixFormBuilder
     public FormMode getFormMode()
     {
       return formMode;
+    }
+
+    public String getVariant()
+    {
+      return variant;
     }
 
     private String extract(String selector, String startToken, String endToken)
