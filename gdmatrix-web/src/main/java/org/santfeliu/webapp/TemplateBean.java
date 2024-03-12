@@ -39,15 +39,10 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import org.primefaces.model.menu.DefaultSubMenu;
-import org.primefaces.model.menu.MenuElement;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
-import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.webapp.util.MatrixMenuItem;
-import org.santfeliu.webapp.util.MatrixMenuModel;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -58,14 +53,13 @@ import org.santfeliu.webapp.util.WebUtils;
 @RequestScoped
 public class TemplateBean extends FacesBean implements Serializable
 {
+  private static final String TOPWEB_PROPERTY = "topweb";
   private static final String HIGHLIGHTED_PROPERTY = "highlighted";
 
-  private MatrixMenuModel matrixMenuModel;
-  private List<MatrixMenuItem> highlightedItems;
   private String componentTree;
-
-  private transient String username;
-  private transient String password;
+  private String username;
+  private String password;
+  private List<MenuItemCursor> highlightedItems;
 
   public String getUsername()
   {
@@ -87,26 +81,41 @@ public class TemplateBean extends FacesBean implements Serializable
     this.password = password;
   }
 
-  public MatrixMenuModel getPFMenuModel()
-  {
-    if (matrixMenuModel == null)
-    {
-      System.out.println(">>> getPFMenuModel");
-      MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-      matrixMenuModel = new MatrixMenuModel(menuModel);
-    }
-    return matrixMenuModel;
-  }
-
-  public List<MatrixMenuItem> getHighlightedItems()
+  public List<MenuItemCursor> getHighlightedItems()
   {
     if (highlightedItems == null)
     {
-      System.out.println(">>> getHighlightedItems");
-      MatrixMenuModel mMenuModel = getPFMenuModel();
-      highlightedItems = getHighlightedItems(mMenuModel.getElements());
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+      cursor = cursor.getClone();
+      while (!cursor.isRoot() &&
+             !"true".equals(cursor.getDirectProperty(TOPWEB_PROPERTY)))
+      {
+        cursor.moveParent();
+      }
+      highlightedItems = new ArrayList<>();
+      addHighlightedItems(cursor);
     }
     return highlightedItems;
+  }
+
+  private void addHighlightedItems(MenuItemCursor cursor)
+  {
+    if (cursor.hasChildren())
+    {
+      cursor = cursor.getClone();
+      cursor.moveFirstChild();
+      while (!cursor.isNull())
+      {
+        if ("true".equals(cursor.getDirectProperty(HIGHLIGHTED_PROPERTY))
+            && cursor.getDirectProperty("icon") != null)
+        {
+          highlightedItems.add(cursor.getClone());
+        }
+        addHighlightedItems(cursor);
+        cursor.moveNext();
+      }
+    }
   }
 
   public String getContent()
@@ -158,31 +167,6 @@ public class TemplateBean extends FacesBean implements Serializable
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     userSessionBean.logout(); // redirect
-  }
-
-  private List<MatrixMenuItem> getHighlightedItems(List<MenuElement> elements)
-  {
-    List<MatrixMenuItem> menuItems = new ArrayList<>();
-    for (MenuElement element : elements)
-    {
-      if (element instanceof MatrixMenuItem)
-      {
-        MatrixMenuItem menuItem = (MatrixMenuItem) element;
-        if (menuItem.getIcon() != null)
-        {
-          String highlighted = menuItem.getProperty(HIGHLIGHTED_PROPERTY);
-          if (highlighted != null && highlighted.equalsIgnoreCase("true"))
-            menuItems.add(menuItem);
-        }
-      }
-      else if (element instanceof DefaultSubMenu)
-      {
-        List<MatrixMenuItem> highlihted =
-          getHighlightedItems(((DefaultSubMenu) element).getElements());
-        menuItems.addAll(highlihted);
-      }
-    }
-    return menuItems;
   }
 
   public void showComponentTree()

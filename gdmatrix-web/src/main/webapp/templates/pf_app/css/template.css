@@ -596,3 +596,43 @@ body div.field
   border-color: var(--primary-color);
   box-shadow: var(--focus-ring);
 }
+
+.tree_menu > ul
+{
+  padding: 0;
+  list-style-type: none;
+}
+
+.tree_menu > ul ul
+{
+  list-style-type: none;  
+  padding-left: 16px;
+}
+
+.tree_menu li a
+{
+  display:block;
+  color: var(--text-color);
+  padding: 6px;  
+}
+
+.tree_menu li a:hover
+{
+  color: var(--text-color);
+  text-decoration: none;
+  background-color: var(--surface-200);
+}
+
+.ui-sidebar
+{
+  padding:0 !important;
+}
+
+.ui-sidebar-content
+{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+

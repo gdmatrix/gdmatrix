@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.menu.view;
@@ -78,7 +78,7 @@ public class HtmlTreeMenu extends UIComponentBase
 
   private MenuModel _menuModel = null;
   private MenuItemCursor _currentMenuItem = null;
-  
+
   private String _var;
   private String _baseMid;
   private String _style;
@@ -95,12 +95,12 @@ public class HtmlTreeMenu extends UIComponentBase
   private String _headingsStyleClass;
   private Set _expandedMenuItems = new HashSet();
   private Boolean _enableDropdownButton;
-  
+
   private final String MENU_DECORATED_PROPERTY = "menuDecorated";
 
   private final int MAX_CHILDREN = 1000;
   private static final Logger logger = Logger.getLogger("HtmlTreeMenu");
-  
+
   public HtmlTreeMenu() throws Exception
   {
   }
@@ -120,7 +120,7 @@ public class HtmlTreeMenu extends UIComponentBase
   public void setValue(Object value)
   {
   }
-  
+
   /* remove it */
   public Object getValue()
   {
@@ -179,7 +179,7 @@ public class HtmlTreeMenu extends UIComponentBase
   {
     _expandedMenuItems = set;
   }
-  
+
   // value binding has preference
   public Set getExpandedMenuItems()
   {
@@ -307,7 +307,7 @@ public class HtmlTreeMenu extends UIComponentBase
     ValueExpression ve = getValueExpression("expandImageUrl");
     return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
   }
-  
+
   public void setCollapseImageUrl(String _collapseImageUrl)
   {
     this._collapseImageUrl = _collapseImageUrl;
@@ -326,7 +326,7 @@ public class HtmlTreeMenu extends UIComponentBase
     ValueExpression ve = getValueExpression("enableDropdownButton");
     return ve != null ? (Boolean)ve.getValue(getFacesContext().getELContext()) : Boolean.FALSE;
   }
- 
+
   public void setEnableDropdownButton(Boolean enableDropdownButton)
   {
     this._enableDropdownButton = enableDropdownButton;
@@ -432,13 +432,10 @@ public class HtmlTreeMenu extends UIComponentBase
     String formId = FacesUtils.getParentFormId(this, context);
     String menuId = getClientId(context);
 
-    MenuItemCursor baseMenuItem = getBaseMenuItem();
     ResponseWriter writer = context.getResponseWriter();
-    MenuUtils.encodeJavascript(context, writer, this);
-
-    setMenuItemVar(null);
 
     writer.startElement("div", this);
+    writer.writeAttribute("id", menuId, null);
     String style = getStyle();
     if (style != null)
     {
@@ -449,9 +446,13 @@ public class HtmlTreeMenu extends UIComponentBase
     {
       writer.writeAttribute("class", styleClass, null);
     }
+
+    MenuUtils.encodeJavascript(context, writer, this);
+    setMenuItemVar(null);
+    MenuItemCursor baseMenuItem = getBaseMenuItem();
     Integer depth = getExpandDepth();
 
-    encodeChildMenuItems(baseMenuItem, writer, context, formId, menuId, depth, 
+    encodeChildMenuItems(baseMenuItem, writer, context, formId, menuId, depth,
       getHeadingsBaseLevel());
     writer.endElement("div");
 
@@ -490,7 +491,7 @@ public class HtmlTreeMenu extends UIComponentBase
       setMenuItemVar(((FacesEventWrapper)event).getMenuItem());
       try
       {
-        FacesEvent originalEvent = 
+        FacesEvent originalEvent =
           ((FacesEventWrapper)event).getWrappedFacesEvent();
         originalEvent.getComponent().broadcast(originalEvent);
       }
@@ -524,7 +525,7 @@ public class HtmlTreeMenu extends UIComponentBase
     values[12] = _headingsRender;
     values[13] = _headingsBaseLevel;
     values[14] = _expandedMenuItems.toArray();
-    values[15] = _headingsStyleClass; 
+    values[15] = _headingsStyleClass;
     values[16] = _enableDropdownButton;
     return values;
   }
@@ -598,11 +599,13 @@ public class HtmlTreeMenu extends UIComponentBase
       return _wrappedFacesEvent.toString();
     }
 
+    @Override
     public boolean isAppropriateListener(FacesListener faceslistener)
     {
       return _wrappedFacesEvent.isAppropriateListener(faceslistener);
     }
 
+    @Override
     public void processListener(FacesListener faceslistener)
     {
       _wrappedFacesEvent.processListener(faceslistener);
@@ -625,7 +628,7 @@ public class HtmlTreeMenu extends UIComponentBase
   {
     MenuItemCursor baseMenuItem;
     String baseMid = getBaseMid();
-    
+
     if (StringUtils.isBlank(baseMid))
     {
       baseMid = null; //TODO: getRoot()
@@ -664,15 +667,15 @@ public class HtmlTreeMenu extends UIComponentBase
           boolean processChildrenDecodes;
           if (depth == null)
           {
-            processChildrenDecodes = 
+            processChildrenDecodes =
               expandedMenuItems.contains(menuItem.getMid());
           }
           else
           {
-            if (depth.intValue() > 0)
+            if (depth > 0)
             {
               processChildrenDecodes = true;
-              depth = new Integer(depth.intValue() - 1);
+              depth = depth - 1;
             }
             else processChildrenDecodes = false;
           }
@@ -692,7 +695,7 @@ public class HtmlTreeMenu extends UIComponentBase
   }
 
   private void encodeChildMenuItems(MenuItemCursor menuItem,
-    ResponseWriter writer, FacesContext context, String formId, String menuId, 
+    ResponseWriter writer, FacesContext context, String formId, String menuId,
     Integer depth, Integer headingsLevel) throws IOException
   {
     if (menuItem.hasChildren())
@@ -702,10 +705,10 @@ public class HtmlTreeMenu extends UIComponentBase
       {
         encodeChildMenuItems = true;
       }
-      else if (depth.intValue() > 0)
+      else if (depth > 0)
       {
         encodeChildMenuItems = true;
-        depth = new Integer(depth.intValue() - 1);
+        depth = depth - 1;
       }
       else // depth == 0 => stop
       {
@@ -717,13 +720,13 @@ public class HtmlTreeMenu extends UIComponentBase
       {
         if (isAnyChildMenuItemVisible(menuItem))
         {
-          setMenuItemVar(menuItem);          
+          setMenuItemVar(menuItem);
           writer.startElement("ul", this);
           String menuStyleClass = getMenuStyleClass();
           if (menuStyleClass != null)
           {
             writer.writeAttribute("class", menuStyleClass, null);
-            if (menuStyleClass.contains("popup") && 
+            if (menuStyleClass.contains("popup") &&
               isMenuItemDecorated(menuItem))
             {
               // add extra div tag for border decoration
@@ -735,14 +738,14 @@ public class HtmlTreeMenu extends UIComponentBase
           int childCount = 0;
           while (!child.isNull() && childCount < MAX_CHILDREN)
           {
-            encodeMenuItem(child, writer, context, formId, menuId, depth, 
+            encodeMenuItem(child, writer, context, formId, menuId, depth,
               headingsLevel + 1);
             child.moveNext();
             childCount++;
           }
           if (childCount == MAX_CHILDREN)
           {
-            logger.log(Level.SEVERE, "Max children exceeded in node {0}", 
+            logger.log(Level.SEVERE, "Max children exceeded in node {0}",
               new Object[]{menuItem.getMid()});
           }
           writer.endElement("ul");
@@ -751,8 +754,8 @@ public class HtmlTreeMenu extends UIComponentBase
     }
   }
 
-  private void encodeMenuItem(MenuItemCursor menuItem, ResponseWriter writer, 
-    FacesContext context, String formId, String menuId, Integer depth, 
+  private void encodeMenuItem(MenuItemCursor menuItem, ResponseWriter writer,
+    FacesContext context, String formId, String menuId, Integer depth,
     Integer headingsLevel) throws IOException
   {
     setMenuItemVar(menuItem);
@@ -761,7 +764,7 @@ public class HtmlTreeMenu extends UIComponentBase
       // start tag li
       writer.startElement("li", this);
       // apply styles
-      String styleClass = null;
+      String styleClass;
       if (menuItem.containsSelection()) // selected menuItem
       {
         styleClass = getSelectedStyleClass();
@@ -772,9 +775,15 @@ public class HtmlTreeMenu extends UIComponentBase
       }
       if (styleClass != null || menuItem.hasChildren())
       {
-        String sclass = styleClass != null ? styleClass : "";
+        String sclass = styleClass == null ? "" : styleClass;
         if (depth == null || depth > 0)
-          sclass = sclass + " " + (menuItem.hasChildren() ? "has-children" : "");
+        {
+          if (menuItem.hasChildren())
+          {
+            if (sclass.length() > 0) sclass += " ";
+            sclass += "has-children";
+          }
+        }
         writer.writeAttribute("class", sclass, null);
       }
 
@@ -783,7 +792,7 @@ public class HtmlTreeMenu extends UIComponentBase
       {
         if (menuItem.hasChildren())
         {
-          boolean isExpanded = 
+          boolean isExpanded =
             getExpandedMenuItems().contains(menuItem.getMid());
           String togglerAction = isExpanded ? COLLAPSE : EXPAND;
           encodeToggler(menuItem, writer, menuId, togglerAction, context);
@@ -800,7 +809,7 @@ public class HtmlTreeMenu extends UIComponentBase
         if (depth == null || depth > 0)
         {
           boolean expandMode = false;
-          if (getExpandSelected() != null) expandMode = getExpandSelected();            
+          if (getExpandSelected() != null) expandMode = getExpandSelected();
           if (expandMode)
           {
             try
@@ -809,7 +818,7 @@ public class HtmlTreeMenu extends UIComponentBase
                 getSelectedMenuItem().getParent().getMid();
               encodeHeading = !menuItem.isDescendantOf(parentSelectedMid);
             }
-            catch (Exception ex) { }            
+            catch (Exception ex) { }
           }
           else
           {
@@ -818,7 +827,7 @@ public class HtmlTreeMenu extends UIComponentBase
           }
         }
       }
-      
+
       if (encodeHeading)
       {
         writer.startElement("h" + (headingsLevel <= 6 ? headingsLevel : 6), this);
@@ -831,18 +840,18 @@ public class HtmlTreeMenu extends UIComponentBase
         writer.write(getTranslation(menuItem.getLabel()));
         writer.endElement("h" + (headingsLevel <= 6 ? headingsLevel : 6));
       }
-      
+
       // encode data
       encodeData(menuItem, writer, context);
 
       // encode children
       if (encodeChildren)
       {
-        boolean enableDropdownButton = getEnableDropdownButton();        
+        boolean enableDropdownButton = getEnableDropdownButton();
         if (enableDropdownButton && (depth == null || depth > 0) && menuItem.hasChildren())
           encodeDropdownButton(menuItem, writer, context);
-        
-        encodeChildMenuItems(menuItem, writer, context, formId, menuId, depth, 
+
+        encodeChildMenuItems(menuItem, writer, context, formId, menuId, depth,
           headingsLevel);
       }
 
@@ -856,21 +865,21 @@ public class HtmlTreeMenu extends UIComponentBase
   {
     String imageUrl;
     String title;
-    
+
     Locale locale = context.getViewRoot().getLocale();
     ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.faces.menu.resources.TreeMenuBundle", locale);      
-    
+      "org.santfeliu.faces.menu.resources.TreeMenuBundle", locale);
+
     if (EXPAND.equals(action))
     {
       imageUrl = getExpandImageUrl();
-      title = bundle.getString("expandNode") + " " 
+      title = bundle.getString("expandNode") + " "
         + getTranslation(menuItem.getLabel());
     }
     else // COLLAPSE
     {
       imageUrl = getCollapseImageUrl();
-      title = bundle.getString("collapseNode") + " " 
+      title = bundle.getString("collapseNode") + " "
         + getTranslation(menuItem.getLabel());
     }
 
@@ -887,8 +896,8 @@ public class HtmlTreeMenu extends UIComponentBase
       writer.endElement("input");
     }
   }
-  
-  private void encodeData(MenuItemCursor menuItem, 
+
+  private void encodeData(MenuItemCursor menuItem,
                           ResponseWriter writer,
                           FacesContext context) throws IOException
   {
@@ -905,28 +914,28 @@ public class HtmlTreeMenu extends UIComponentBase
       writer.writeText(ch, 0, ch.length);
     }
   }
-  
-  private void encodeDropdownButton(MenuItemCursor menuItem, 
+
+  private void encodeDropdownButton(MenuItemCursor menuItem,
                           ResponseWriter writer, FacesContext context) throws IOException
   {
     Locale locale = context.getViewRoot().getLocale();
     ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.faces.menu.resources.TreeMenuBundle", locale);    
-    
-    writer.startElement("button", this);    
-    writer.startElement("span", this);    
-    writer.startElement("span", this);  
+      "org.santfeliu.faces.menu.resources.TreeMenuBundle", locale);
+
+    writer.startElement("button", this);
+    writer.startElement("span", this);
+    writer.startElement("span", this);
     writer.writeAttribute("class", "visuallyhidden", null);
     writer.write(bundle.getString("showSubmenuFor") + " '" + getTranslation(menuItem.getLabel()) + "'");
-    writer.endElement("span");          
-    writer.endElement("span");    
-    writer.endElement("button");    
+    writer.endElement("span");
+    writer.endElement("span");
+    writer.endElement("button");
   }
-  
+
   private void resetId(UIComponent component)
   {
     if (!component.isRendered()) return;
-    
+
     component.setId(component.getId());
 
     List list = component.getChildren();
@@ -958,12 +967,12 @@ public class HtmlTreeMenu extends UIComponentBase
     }
     if (childCount == MAX_CHILDREN)
     {
-      logger.log(Level.SEVERE, "Max children exceeded in node {0}", 
+      logger.log(Level.SEVERE, "Max children exceeded in node {0}",
         new Object[]{menuItem.getMid()});
     }
     return found;
   }
-  
+
   private boolean isMenuItemDecorated(MenuItemCursor menuItem)
   {
     String decorated = menuItem.getProperty(MENU_DECORATED_PROPERTY);
@@ -976,32 +985,32 @@ public class HtmlTreeMenu extends UIComponentBase
     UIComponent component = (UIComponent)getFacet(DATA_FACET);
     return (component == null) ? false : component.isRendered();
   }
-  
+
   private String getTranslation(String text) throws IOException
   {
     try
     {
       if (text != null)
-      {  
-        Translator translator = 
+      {
+        Translator translator =
           UserSessionBean.getCurrentInstance().getTranslator();
         if (translator != null)
         {
           String userLanguage = FacesUtils.getViewLanguage();
-          String translationGroup = 
+          String translationGroup =
             UserSessionBean.getCurrentInstance().getTranslationGroup();
           StringWriter sw = new StringWriter();
           translator.translate(new StringReader(text), sw, "text/plain",
             userLanguage, translationGroup);
           return sw.toString();
-        }      
+        }
       }
     }
-    catch (Exception ex) 
+    catch (Exception ex)
     {
-      
+
     }
     return text;
   }
-  
+
 }

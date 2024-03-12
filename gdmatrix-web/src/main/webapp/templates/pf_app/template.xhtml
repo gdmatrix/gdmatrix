@@ -11,158 +11,168 @@
 
   <ui:define name="template">
 
-    <p:sidebar id="app_menu" widgetVar="menuBar" styleClass="overflow-auto" modal="false"
+    <p:sidebar id="app_menu" widgetVar="menuBar" modal="false"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" showCloseIcon="false">
 
-      <div class="flex align-items-center">
+      <div class="flex align-items-center p-3 pb-2 border-bottom-1 border-100">
         <h:outputText id="web_title" styleClass="flex-grow-1 font-bold block" 
                       value="#{applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.description)}" />
         <p:button onclick="PF('menuBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
       </div>
 
-      <div class="mt-3">
-        <p:outputLabel id="language_label" 
-                       value="#{webBundle.language}" for="@next" />
-        <p:selectOneMenu value="#{userSessionBean.viewLanguage}"  
-                          styleClass="mt-2 block">
-          <p:ajax event="valueChange" process="@this" 
-                  update="web_title language_label theme_label menu_label vertical_menu app_menubar login_bar @form:cnt" />
-          <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale" 
-                         itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)}" />
-        </p:selectOneMenu>
+      <div class="flex-grow-1 overflow-auto p-3 pt-0">
+        <div class="mt-3">
+          <p:outputLabel id="language_label" 
+                         value="#{webBundle.language}" for="@next" />
+          <p:selectOneMenu value="#{userSessionBean.viewLanguage}"  
+                            styleClass="mt-2 block">
+            <p:ajax event="valueChange" process="@this" 
+                    update="web_title language_label theme_label vertical_menu app_menubar login_bar @form:cnt" />
+            <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale" 
+                           itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)}" />
+          </p:selectOneMenu>
+        </div>
+        <div class="mt-3">
+          <p:outputLabel id="theme_label"
+                         value="#{webBundle.themes}" for="@next" />
+          <p:selectOneMenu value="#{userSessionBean.primefacesTheme}"  
+                            styleClass="mt-2 block"
+                            widgetVar="themeSelector">
+            <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
+            <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
+          </p:selectOneMenu>
+        </div>
+        <div>
+          <sf:treeMenu id="vertical_menu" var="item" expandDepth="6" styleClass="tree_menu"
+                       baseMid="#{userSessionBean.selectedMenuItem.path[1]}">
+            <f:facet name="data">
+              <p:commandLink action="#{templateBean.show(item.mid)}" 
+                             onclick="PF('menuBar').hide();" 
+                             process="@form:app_menu" update="@form:cnt">
+                <ui:fragment rendered="#{item.properties.icon != null}">
+                  <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                </ui:fragment>
+                #{applicationBean.translate(item.label)}
+              </p:commandLink>
+            </f:facet>
+          </sf:treeMenu>
+        </div>      
+        <div>
+          <p:commandButton action="#{templateBean.showComponentTree}"
+                           styleClass="rounded-button ui-button-flat"
+                           icon="pi pi-sitemap"
+                           rendered="#{userSessionBean.administrator}"
+                           value="Component tree"
+                           process="@this"
+                           update=":mainform:component_tree"
+                           oncomplete="PF('componentTree').show()" />        
+        </div>      
       </div>
-      <div class="mt-3">
-        <p:outputLabel id="theme_label"
-                       value="#{webBundle.themes}" for="@next" />
-        <p:selectOneMenu value="#{userSessionBean.primefacesTheme}"  
-                          styleClass="mt-2 block"
-                          widgetVar="themeSelector">
-          <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
-          <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
-        </p:selectOneMenu>
-      </div>
-      <div class="mt-3">
-        <p:outputLabel id="menu_label"
-                       value="#{webBundle.menu}" for="@next" styleClass="font-bold" />
-        <p:menu id="vertical_menu" styleClass="vertical_menu" 
-                model="#{templateBean.PFMenuModel}" toggleable="true" statefulGlobal="true"/>
-      </div>
-      
-      <div>
-        <p:commandButton action="#{templateBean.showComponentTree}"
-                         styleClass="rounded-button ui-button-flat"
-                         icon="pi pi-sitemap"
-                         rendered="#{userSessionBean.administrator}"
-                         value="Component tree"
-                         process="@this"
-                         update=":mainform:component_tree"
-                         oncomplete="PF('componentTree').show()" />        
-      </div>
-      
     </p:sidebar>
 
-    <p:sidebar id="login_bar" widgetVar="loginBar" styleClass="overflow-auto" modal="false"
+    <p:sidebar id="login_bar" widgetVar="loginBar" modal="false"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" position="right" showCloseIcon="false" >
 
-      <div class="flex align-items-center">
+      <div class="flex align-items-center p-3 pb-2 border-bottom-1 border-100">
         <div class="flex-grow-1 font-bold">#{webBundle.identification}</div>
         <p:button onclick="PF('loginBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
       </div>
       
-      <ui:fragment rendered="#{userSessionBean.anonymousUser}">
-      
-        <h:panelGroup layout="block" styleClass="ui-fluid formgrid grid mb-3"
-                      rendered="#{userSessionBean.selectedMenuItem.properties.login_valid != null}">
-          <div class="p-2">
-            <div>
-              <i class="fa fa-certificate" /> <b>#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid)}</b>
-            </div>
-            <h:outputText styleClass="block mt-2" value="#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid_info)}"
-              rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_info != null}" />
-          </div>
-          <div class="p-2 w-full">
-            <p:commandButton action="#{validBean.login}"
-                             value="#{webBundle.buttonSignin}"
-                             icon="pi pi-sign-in" class="flex-grow-1"
-                             process="@this" update="@none" />
-            <p:linkButton href="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url}" 
-                          icon="pi pi-external-link" target="_blank" class="flex-grow-1 mt-1"
-                          rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url != null}"
-                          value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text}" />
-          </div>
-        </h:panelGroup>
+      <div class="overflow-auto p-3 pt-0">
+        <ui:fragment rendered="#{userSessionBean.anonymousUser}">
 
-        <div class="ui-fluid formgrid grid">
-          <h:panelGroup layout="block" styleClass="p-2" rendered="#{userSessionBean.selectedMenuItem.properties.login_password != null}">
-            <div>
-              <i class="fa fa-key" /> <b>#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_password)}</b>
+          <h:panelGroup layout="block" styleClass="ui-fluid formgrid grid mb-3"
+                        rendered="#{userSessionBean.selectedMenuItem.properties.login_valid != null}">
+            <div class="p-2">
+              <div>
+                <i class="fa fa-certificate" /> <b>#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid)}</b>
+              </div>
+              <h:outputText styleClass="block mt-2" value="#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid_info)}"
+                rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_info != null}" />
+            </div>
+            <div class="p-2 w-full">
+              <p:commandButton action="#{validBean.login}"
+                               value="#{webBundle.buttonSignin}"
+                               icon="pi pi-sign-in" class="flex-grow-1"
+                               process="@this" update="@none" />
+              <p:linkButton href="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url}" 
+                            icon="pi pi-external-link" target="_blank" class="flex-grow-1 mt-1"
+                            rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url != null}"
+                            value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text}" />
             </div>
           </h:panelGroup>
-          <div class="field col-12">
-            <p:outputLabel value="#{webBundle.outputUsername}" for="@next" />
-            <p:inputText value="#{templateBean.username}" pt:spellcheck="false"
-                         widgetVar="usernameInput"
-                         onkeyup="enableUserPassButton()"/>
+
+          <div class="ui-fluid formgrid grid">
+            <h:panelGroup layout="block" styleClass="p-2" rendered="#{userSessionBean.selectedMenuItem.properties.login_password != null}">
+              <div>
+                <i class="fa fa-key" /> <b>#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_password)}</b>
+              </div>
+            </h:panelGroup>
+            <div class="field col-12">
+              <p:outputLabel value="#{webBundle.outputUsername}" for="@next" />
+              <p:inputText value="#{templateBean.username}" pt:spellcheck="false"
+                           widgetVar="usernameInput"
+                           onkeyup="enableUserPassButton()"/>
+            </div>
+            <div class="field col-12">
+              <p:outputLabel value="#{webBundle.outputPassword}" for="@next" />
+              <p:password value="#{templateBean.password}" class="w-full"
+                          toggleMask="true" redisplay="true" />
+            </div>
+            <div class="p-2 w-full">
+              <p:commandButton id="user_pass_button" widgetVar="userPassButton" 
+                               value="#{webBundle.buttonSignin}" action="#{templateBean.login}" 
+                               process="login_bar" update="login_messages" 
+                               icon="pi pi-sign-in"
+                               oncomplete="if (!isFacesError()) PF('loginBar').hide()" />
+            </div>
           </div>
-          <div class="field col-12">
-            <p:outputLabel value="#{webBundle.outputPassword}" for="@next" />
-            <p:password value="#{templateBean.password}" class="w-full"
-                        toggleMask="true" redisplay="true" />
+
+          <p:defaultCommand target="user_pass_button" />
+
+          <p:messages id="login_messages" showSummary="true" styleClass="messages"  
+                      showIcon="true" closable="false" />
+        </ui:fragment>
+
+        <ui:fragment rendered="#{not userSessionBean.anonymousUser}">
+
+          <div class="ui-fluid formgrid grid">
+
+            <h:panelGroup styleClass="p-2 w-full" layout="block">
+              <h:outputText value="#{userSessionBean.displayName}" class="block" />
+            </h:panelGroup>
+
+            <h:panelGroup styleClass="p-2 w-full" layout="block" 
+                          rendered="#{userSessionBean.NIF != null}">
+              <h:outputText value="NIF: #{userSessionBean.NIF}" class="block" />
+            </h:panelGroup>
+
+            <h:panelGroup styleClass="p-2 w-full" layout="block"
+                          rendered="#{userSessionBean.CIF != null}">              
+              <h:outputText value="CIF: #{userSessionBean.CIF}" class="block" />
+              <h:outputText value="#{webBundle.represents}:" rendered="#{userSessionBean.isRepresentant()}" class="block" />
+              <h:outputText value="#{userSessionBean.organizationName}" class="block font-italic" />
+            </h:panelGroup>
+
+            <h:panelGroup styleClass="p-2 w-full" layout="block" 
+                          rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and
+                                      userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}">
+              <h:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" class="block" />
+              <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}" class="block">
+                <f:converter converterId="DateTimeConverter" />
+                <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+              </h:outputText>
+            </h:panelGroup> 
+
+            <div class="p-2 w-full">
+              <p:commandButton action="#{templateBean.logout}" icon="pi pi-sign-out"
+                               value="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
+                               oncomplete="PF('loginBar').hide();"
+                               update="@none" />
+            </div>
           </div>
-          <div class="p-2 w-full">
-            <p:commandButton id="user_pass_button" widgetVar="userPassButton" 
-                             value="#{webBundle.buttonSignin}" action="#{templateBean.login}" 
-                             process="login_bar" update="login_messages" 
-                             icon="pi pi-sign-in"
-                             oncomplete="if (!isFacesError()) PF('loginBar').hide()" />
-          </div>
-        </div>
-
-        <p:defaultCommand target="user_pass_button" />
-
-        <p:messages id="login_messages" showSummary="true" styleClass="messages"  
-                    showIcon="true" closable="false" />
-      </ui:fragment>
-      
-      <ui:fragment rendered="#{not userSessionBean.anonymousUser}">
-
-        <div class="ui-fluid formgrid grid">
-          
-          <h:panelGroup styleClass="p-2 w-full" layout="block">
-            <h:outputText value="#{userSessionBean.displayName}" class="block" />
-          </h:panelGroup>
-
-          <h:panelGroup styleClass="p-2 w-full" layout="block" 
-                        rendered="#{userSessionBean.NIF != null}">
-            <h:outputText value="NIF: #{userSessionBean.NIF}" class="block" />
-          </h:panelGroup>
-
-          <h:panelGroup styleClass="p-2 w-full" layout="block"
-                        rendered="#{userSessionBean.CIF != null}">              
-            <h:outputText value="CIF: #{userSessionBean.CIF}" class="block" />
-            <h:outputText value="#{webBundle.represents}:" rendered="#{userSessionBean.isRepresentant()}" class="block" />
-            <h:outputText value="#{userSessionBean.organizationName}" class="block font-italic" />
-          </h:panelGroup>
-          
-          <h:panelGroup styleClass="p-2 w-full" layout="block" 
-                        rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and
-                                    userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}">
-            <h:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" class="block" />
-            <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}" class="block">
-              <f:converter converterId="DateTimeConverter" />
-              <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
-            </h:outputText>
-          </h:panelGroup> 
-          
-          <div class="p-2 w-full">
-            <p:commandButton action="#{templateBean.logout}" icon="pi pi-sign-out"
-                             value="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
-                             oncomplete="PF('loginBar').hide();"
-                             update="@none" />
-          </div>
-        </div>
-      </ui:fragment>
-            
+        </ui:fragment>
+      </div>            
     </p:sidebar>
     
     
@@ -200,9 +210,9 @@
       <div class="app_toolbar">
         <div class="scroll">
           <ui:repeat id="app_toolbar" value="#{templateBean.highlightedItems}" var="item">
-            <p:commandButton action="#{templateBean.show(item.menuItem.mid)}"
-                             icon="#{item.getIcon()}"
-                             styleClass="btn-#{item.menuItem.mid}"
+            <p:commandButton action="#{templateBean.show(item.mid)}"
+                             icon="#{item.properties.icon}"
+                             styleClass="btn-#{item.mid}"
                              process="@this" update="@form:cnt"
                              title="#{item.getProperty('label')}" />
           </ui:repeat>
@@ -305,8 +315,6 @@
       onResize();
       window.addEventListener("resize", onResize);
     </script>
-    
-    <gdm:saveBean value="templateBean" />
 
   </ui:define>
 
