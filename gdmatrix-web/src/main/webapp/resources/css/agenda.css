@@ -41,7 +41,6 @@
 .eventList .eventRow > div
 {
   flex-grow: 0;
-  padding: 4px;
   margin-top: auto;
   margin-bottom: auto;
 }

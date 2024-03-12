@@ -155,6 +155,9 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
       "/pages/agenda/event_recurrences.xhtml",
       "eventRecurrencesTabBean"));
     objectSetup.setEditTabs(editTabs);
+    
+    objectSetup.getProperties().put("publicTypeSymbol", 
+      String.valueOf((char)0x24CC));
 
     return objectSetup;
   }

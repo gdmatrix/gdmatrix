@@ -594,8 +594,22 @@ public class EventFinderBean extends FinderBean
       navigatorBean.getBaseTypeInfo().getDefaultSearchTabSelector();
     if (searchTabSelector == -1) searchTabSelector = 0;
     return searchTabSelector;
-  }  
-  
+  }
+
+  public String getPublicTypeSymbol()
+  {
+    try
+    {
+      if (objectSetup == null) loadObjectSetup();
+      String publicTypeSymbol = 
+        objectSetup.getProperties().getString("publicTypeSymbol");
+      if (publicTypeSymbol != null) return publicTypeSymbol;
+    }
+    catch (Exception ex) { }
+    
+    return String.valueOf((char)0x24CC);
+  }
+
   @Override
   public Serializable saveState()
   {

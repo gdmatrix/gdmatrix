@@ -18,7 +18,7 @@
       <span class="pi pi-book mr-2" />     
       <p:commandLink action="#{navigatorBean.view(data.typeId)}" 
                      update="@form:cnt:central_column @form:cnt:context_panel">
-        <h:outputText value="#{data.description}"
+        <h:outputText value="#{typeTypeBean.getDescription(data.typeId)}"
                       styleClass="#{data.typeId == typeObjectBean.objectId ? 'current' : ''}" />
       </p:commandLink>
       <h:outputText value="(#{data.typeId})"

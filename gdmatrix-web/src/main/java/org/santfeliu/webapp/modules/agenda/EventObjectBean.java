@@ -31,14 +31,12 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -266,21 +264,6 @@ public class EventObjectBean extends ObjectBean
   public String getAdminRole()
   {
     return AgendaConstants.AGENDA_ADMIN_ROLE;
-  }
-
-  public List<SelectItem> getSelectItems()
-  {
-    List<SelectItem> itemList = new ArrayList();
-    itemList.addAll(typeTypeBean.getSelectItems(getRootTypeId()));
-    for (SelectItem item : itemList)
-    {
-      String typeId = (String)item.getValue();
-      if (isPublicType(typeId))
-      {
-        item.setLabel(item.getLabel() + " Ⓦ");
-      }
-    }
-    return itemList;
   }
 
   @Override

@@ -100,7 +100,7 @@ public class TypeObjectBean extends ObjectBean
   @Override
   public String getDescription()
   {
-    return isNew() ? "" : type.getDescription();
+    return isNew() ? "" : getTypeBean().getDescription(type.getTypeId());
   }
   
   @Override

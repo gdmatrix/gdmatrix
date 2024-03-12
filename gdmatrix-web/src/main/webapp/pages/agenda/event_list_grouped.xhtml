@@ -38,7 +38,8 @@
           <h:outputText value="#{row.summary}" />
         </div>
         <div class="eventActions text-right white-space-nowrap">
-          <h:outputText value="Ⓦ" styleClass="pi ui-icon publicIcon"
+          <h:outputText value="#{eventFinderBean.publicTypeSymbol}" 
+                        styleClass="pi ui-icon publicIcon"
                         rendered="#{eventFinderBean.renderPublicIcon and row.publicRow}"
                         title="#{agendaBundle.event_public}" />
           <h:outputText value="" styleClass="pi pi-eye-slash ui-icon onlyAtt"

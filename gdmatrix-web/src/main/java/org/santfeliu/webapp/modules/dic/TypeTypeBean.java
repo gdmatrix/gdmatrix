@@ -43,6 +43,7 @@ import static org.matrix.dic.DictionaryConstants.TYPE_PATH_SEPARATOR;
 import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 import org.matrix.dic.Type;
 import org.matrix.dic.TypeFilter;
+import org.matrix.security.SecurityConstants;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.NavigatorBean;
 import org.santfeliu.webapp.TypeBean;
@@ -100,6 +101,19 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   @Override
   public String describe(Type type)
   {
+    if (isPublicType(type.getTypeId()))
+    {
+      ObjectSetup objectSetup = getObjectSetup(type.getTypeId());
+      if (objectSetup != null)
+      {
+        String publicTypeSymbol = 
+          objectSetup.getProperties().getString("publicTypeSymbol");
+        if (publicTypeSymbol != null)
+        {
+          return type.getDescription() + " " + publicTypeSymbol;
+        }
+      }
+    }
     return type.getDescription();
   }
 
@@ -221,7 +235,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       for (org.santfeliu.dic.Type derived : type.getDerivedTypes(true))
       {
         String objectId = derived.getTypeId();
-        String description = derived.getDescription() +
+        String description = getDescription(objectId) +
           " (" + objectId + ")";
         items.add(new SelectItem(objectId, description));
       }
@@ -232,7 +246,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       for (Type type : types)
       {
         String objectId = getObjectId(type);
-        String description = type.getDescription() +
+        String description = getDescription(type.getTypeId()) +
           " (" + type.getTypeId() + ")";
         items.add(new SelectItem(objectId, description));
       }
@@ -300,6 +314,36 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     return results;
   }
 
+  private boolean isPublicType(String typeId)
+  {
+    if (!StringUtils.isBlank(typeId))
+    {
+      org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
+      if (type != null)
+      {
+        return type.canPerformAction(DictionaryConstants.READ_ACTION,
+            Collections.singleton(SecurityConstants.EVERYONE_ROLE));
+      }
+    }
+    return false;
+  }
+
+  private ObjectSetup getObjectSetup(String typeId)
+  {
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    NavigatorBean.BaseTypeInfo baseTypeInfo = 
+      navigatorBean.getBaseTypeInfo(typeId);
+    if (baseTypeInfo != null)
+    {
+      try
+      {
+        return baseTypeInfo.getObjectSetup();
+      }
+      catch (Exception ex) { }
+    }
+    return null;    
+  }
+  
   public static void main(String[] args)
   {
     TypeTypeBean bean = new TypeTypeBean();
