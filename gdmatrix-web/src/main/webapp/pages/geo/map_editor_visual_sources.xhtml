@@ -223,9 +223,9 @@
                   <p:spinner value="#{geoMapSourcesBean.editingServiceParameters.buffer}" />
                 </div>
                 <div class="field col-12">
-                  <p:outputLabel for="@next" value="Transparent" />
                   <p:toggleSwitch value="#{geoMapSourcesBean.editingServiceParameters.transparent}"
-                                  styleClass="vertical-align-middle ml-2" />
+                                  styleClass="vertical-align-middle mr-2" />
+                  <p:outputLabel for="@previous" value="Transparent" />
                 </div>
               </div>
             </p:tab>
@@ -359,7 +359,7 @@
                 </p:selectOneMenu>
               </div>
             </div>
-
+            
             <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Base shift" />
               <p:spinner value="#{geoMapSourcesBean.editingSource.baseShift}" />
@@ -380,6 +380,69 @@
               <p:spinner value="#{geoMapSourcesBean.editingSource.blueFactor}" />
             </div>
           </div>
+        </p:fieldset>
+
+        <p:fieldset id="geojson_params" 
+                    legend="Geojson parameters" styleClass="field col-12 pt-4"
+                    toggleable="true" collapsed="false" 
+                    rendered="#{geoMapSourcesBean.editingSource.type == 'geojson'}">
+          <div class="ui-fluid formgrid grid">
+            <div class="field col-4">
+              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.generateId}" 
+                              styleClass="vertical-align-middle" />
+              <p:outputLabel value="GenerateId" for="@previous" styleClass="ml-2" />
+            </div>
+
+            <div class="field col-4">
+              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.lineMetrics}" 
+                              styleClass="vertical-align-middle" />
+              <p:outputLabel value="Line metrics" for="@previous" styleClass="ml-2" />
+            </div>
+
+            <div class="field col-4">
+              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.cluster}" 
+                              styleClass="vertical-align-middle">
+                <p:ajax update="cluster_max_zoom cluster_min_points cluster_radius" />
+              </p:toggleSwitch>
+              <p:outputLabel value="Cluster" for="@previous" styleClass="ml-2" />
+            </div>            
+            
+            <div class="field col-12 md:col-4">
+              <p:outputLabel for="@next" value="Cluster max zoom" />
+              <p:spinner id="cluster_max_zoom" value="#{geoMapSourcesBean.editingSource.clusterMaxZoom}"
+                         disabled="#{not geoMapSourcesBean.editingSource.cluster}" />
+            </div>
+
+            <div class="field col-12 md:col-4">
+              <p:outputLabel for="@next" value="Cluster min points" />
+              <p:spinner id="cluster_min_points" value="#{geoMapSourcesBean.editingSource.clusterMinPoints}"
+                         disabled="#{not geoMapSourcesBean.editingSource.cluster}" />
+            </div>
+
+            <div class="field col-12 md:col-4">
+              <p:outputLabel for="@next" value="Cluster radius" />
+              <p:spinner id="cluster_radius" value="#{geoMapSourcesBean.editingSource.clusterRadius}" 
+                         disabled="#{not geoMapSourcesBean.editingSource.cluster}" />
+            </div>
+          </div>
+          
+          <p:tabView dynamic="true">
+            <p:tab title="Filter">
+              <gdm:codemirror value="#{geoMapSourcesBean.jsonFilter}" 
+                              style="height:200px" styleClass="overflow-auto"
+                              language="json" lineNumbers="true">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>
+            </p:tab>
+
+            <p:tab title="Cluster properties">
+              <gdm:codemirror value="#{geoMapSourcesBean.jsonClusterProperties}" 
+                              style="height:200px" styleClass="overflow-auto"
+                              language="json" lineNumbers="true">
+                <f:validator validatorId="JsonValidator" />
+              </gdm:codemirror>
+            </p:tab>
+          </p:tabView>
         </p:fieldset>
       </div>
     </h:panelGroup>

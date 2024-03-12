@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import static org.santfeliu.faces.maplibre.model.SourceType.*;
 
 /**
  *
@@ -69,6 +70,14 @@ public class Source implements Serializable
   Object filter;
   Double tolerance;
 
+  Boolean generateId;
+  Boolean lineMetrics;
+  Boolean cluster;
+  Double clusterMaxZoom;
+  Integer clusterMinPoints;
+  Object clusterProperties;
+  Double clusterRadius;
+
   public String getType()
   {
     return type;
@@ -77,6 +86,7 @@ public class Source implements Serializable
   public void setType(String type)
   {
     this.type = type;
+    cleanUp();
   }
 
   public List<String> getTiles()
@@ -291,9 +301,100 @@ public class Source implements Serializable
     this.tolerance = tolerance;
   }
 
-  public boolean equivalentTo(Source source)
+  public Boolean getGenerateId()
   {
-    // TODO: compare all fields
-    return source != null && source.getType().equals(getType());
+    return generateId;
+  }
+
+  public void setGenerateId(Boolean generateId)
+  {
+    this.generateId = generateId;
+  }
+
+  public Boolean getLineMetrics()
+  {
+    return lineMetrics;
+  }
+
+  public void setLineMetrics(Boolean lineMetrics)
+  {
+    this.lineMetrics = lineMetrics;
+  }
+
+  public Boolean getCluster()
+  {
+    return cluster;
+  }
+
+  public void setCluster(Boolean cluster)
+  {
+    this.cluster = cluster;
+  }
+
+  public Double getClusterMaxZoom()
+  {
+    return clusterMaxZoom;
+  }
+
+  public void setClusterMaxZoom(Double clusterMaxZoom)
+  {
+    this.clusterMaxZoom = clusterMaxZoom;
+  }
+
+  public Integer getClusterMinPoints()
+  {
+    return clusterMinPoints;
+  }
+
+  public void setClusterMinPoints(Integer clusterMinPoints)
+  {
+    this.clusterMinPoints = clusterMinPoints;
+  }
+
+  public Object getClusterProperties()
+  {
+    return clusterProperties;
+  }
+
+  public void setClusterProperties(Object clusterProperties)
+  {
+    this.clusterProperties = clusterProperties;
+  }
+
+  public Double getClusterRadius()
+  {
+    return clusterRadius;
+  }
+
+  public void setClusterRadius(Double clusterRadius)
+  {
+    this.clusterRadius = clusterRadius;
+  }
+
+  public void cleanUp()
+  {
+    if (GEOJSON.equals(type))
+    {
+      setTiles(null);
+      setBounds(null);
+//      if (!Boolean.TRUE.equals(getCluster()))
+//      {
+//        setClusterMinPoints(null);
+//        setClusterRadius(null);
+//        setClusterMaxZoom(null);
+//        setClusterProperties(null);
+//      }
+    }
+    else if (!GEOJSON.equals(type))
+    {
+      setGenerateId(null);
+      setLineMetrics(null);
+      setFilter(null);
+      setCluster(null);
+      setClusterMinPoints(null);
+      setClusterRadius(null);
+      setClusterMaxZoom(null);
+      setClusterProperties(null);
+    }
   }
 }

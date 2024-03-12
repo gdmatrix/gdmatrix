@@ -250,11 +250,7 @@ public class Style implements Serializable
     }
     for (Source source : getSources().values())
     {
-      if ("geojson".equals(source.getType()))
-      {
-        source.setTiles(null);
-        source.setBounds(null);
-      }
+      source.cleanUp();
     }
   }
 

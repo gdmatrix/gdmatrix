@@ -30,6 +30,8 @@
  */
 package org.santfeliu.webapp.modules.geo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,11 +48,11 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.maplibre.model.SourceType;
-import static org.santfeliu.faces.maplibre.model.SourceType.RASTER_DEM;
 import org.santfeliu.faces.maplibre.model.Style;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.santfeliu.faces.maplibre.model.SourceType.RASTER_DEM;
 
 /**
  *
@@ -152,12 +154,11 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
     {
       String serviceId = serviceParameters.getService();
       String layers = serviceParameters.getLayers();
-      String sldName = serviceParameters.getSldName();
       StringBuilder buffer = new StringBuilder(serviceId);
       if (!isBlank(layers)) buffer.append(" - ").append(layers);
       return buffer.toString();
     }
-    else if (!source.getTiles().isEmpty())
+    else if (source.getTiles() != null && !source.getTiles().isEmpty())
     {
       return source.getTiles().toString();
     }
@@ -359,6 +360,38 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
     editingSource = null;
     newSource = false;
     geoMapBean.setDialogVisible(false);
+  }
+
+  public String getJsonFilter()
+  {
+    if (editingSource.getFilter() == null) return "";
+
+    Gson gson = new GsonBuilder()
+      .setPrettyPrinting()
+      .disableHtmlEscaping().create();
+    return gson.toJson(editingSource.getFilter());
+  }
+
+  public void setJsonFilter(String json)
+  {
+    Gson gson = new Gson();
+    editingSource.setFilter(gson.fromJson(json, Object.class));
+  }
+
+  public String getJsonClusterProperties()
+  {
+    if (editingSource.getClusterProperties() == null) return "";
+
+    Gson gson = new GsonBuilder()
+      .setPrettyPrinting()
+      .disableHtmlEscaping().create();
+    return gson.toJson(editingSource.getClusterProperties());
+  }
+
+  public void setJsonClusterProperties(String json)
+  {
+    Gson gson = new Gson();
+    editingSource.setClusterProperties(gson.fromJson(json, Map.class));
   }
 
   public void updateSourcePanel()
