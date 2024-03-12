@@ -14,7 +14,7 @@
     <p:sidebar id="app_menu" widgetVar="menuBar" modal="false"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" showCloseIcon="false">
 
-      <div class="flex align-items-center p-3 pb-2 border-bottom-1 border-100">
+      <div class="flex align-items-center p-3 border-bottom-1 border-300">
         <h:outputText id="web_title" styleClass="flex-grow-1 font-bold block" 
                       value="#{applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.description)}" />
         <p:button onclick="PF('menuBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
@@ -48,6 +48,7 @@
             <f:facet name="data">
               <p:commandLink action="#{templateBean.show(item.mid)}" 
                              onclick="PF('menuBar').hide();" 
+                             rendered="#{item.rendered}"
                              process="@form:app_menu" update="@form:cnt">
                 <ui:fragment rendered="#{item.properties.icon != null}">
                   <i class="ui-icon #{item.properties.icon} mr-1'}" />
@@ -73,12 +74,12 @@
     <p:sidebar id="login_bar" widgetVar="loginBar" modal="false"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" position="right" showCloseIcon="false" >
 
-      <div class="flex align-items-center p-3 pb-2 border-bottom-1 border-100">
+      <div class="flex align-items-center p-3 border-bottom-1 border-300">
         <div class="flex-grow-1 font-bold">#{webBundle.identification}</div>
         <p:button onclick="PF('loginBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
       </div>
       
-      <div class="overflow-auto p-3 pt-0">
+      <div class="overflow-auto p-3 pt-1">
         <ui:fragment rendered="#{userSessionBean.anonymousUser}">
 
           <h:panelGroup layout="block" styleClass="ui-fluid formgrid grid mb-3"
