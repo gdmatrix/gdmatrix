@@ -47,17 +47,17 @@
       <div class="ui-fluid formgrid grid"> 
 
         <div class="field col-12">    
-          <p:outputLabel for="@next" value="#{reportBundle.report_id}" />
+          <p:outputLabel for="@next" value="#{reportBundle.reportId}" />
           <p:inputText value="#{reportFinderBean.reportId}" /> 
         </div>   
         
         <div class="field col-12">    
-          <p:outputLabel for="@next" value="#{reportBundle.report_description}" />
+          <p:outputLabel for="@next" value="#{reportBundle.reportDescription}" />
           <p:inputText value="#{reportFinderBean.filter.title}" /> 
         </div> 
         
         <div class="field col-12">    
-          <p:outputLabel for="@next" value="#{reportBundle.report_technology}" />
+          <p:outputLabel for="@next" value="#{reportBundle.reportTechnology}" />
           <p:selectOneMenu value="#{reportFinderBean.technology}">
             <f:selectItem itemValue="" itemLabel="" />            
             <f:selectItem itemValue="jasper" itemLabel="Jasper" />
@@ -67,7 +67,7 @@
         </div> 
         
         <div class="field col-12">    
-          <p:outputLabel for="@next" value="#{reportBundle.report_themes}" />
+          <p:outputLabel for="@next" value="#{reportBundle.reportThemes}" />
           <p:selectOneMenu value="#{reportFinderBean.theme}" >
             <f:selectItem itemValue="" itemLabel="" />  
             <f:selectItems value="#{reportFinderBean.themeItems}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}" />            
