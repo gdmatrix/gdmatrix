@@ -294,6 +294,7 @@ public class GeoMapSourcesBean extends WebBean implements Serializable
       new ServiceParameters() :
       geoMapBean.cloneObject(editingServiceParameters, ServiceParameters.class);
     updateSourcePanel();
+    geoMapBean.setDialogVisible(true);
   }
 
   public void copySource(String sourceId)

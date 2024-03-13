@@ -170,9 +170,7 @@
         </div>
         
         <div class="field col-12 mb-0">
-          <p:tabView id="layer_options" dynamic="true" 
-                     activeIndex="#{geoMapLayersBean.activeLayerTabIndex}">
-            
+          <p:tabView id="layer_options">            
             <p:tab>
               <f:facet name="title">
                 <span class="fa fa-paintbrush mr-2"/>Paint
@@ -182,6 +180,7 @@
                               language="json" lineNumbers="true" 
                               completion="MapLibreCompletion.getPaintCompletion('#{geoMapLayersBean.editingLayer.type}')">
                 <f:validator validatorId="JsonValidator" />
+                <f:attribute name="jsonClass" value="java.util.Map" /> 
               </gdm:codemirror>
             </p:tab>
 
@@ -194,6 +193,7 @@
                               language="json" lineNumbers="true"
                               completion="MapLibreCompletion.getLayoutCompletion('#{geoMapLayersBean.editingLayer.type}')">
                 <f:validator validatorId="JsonValidator" />
+                <f:attribute name="jsonClass" value="java.util.Map" /> 
               </gdm:codemirror>            
             </p:tab>
 
@@ -206,6 +206,7 @@
                               language="json" lineNumbers="true"
                               completion="MapLibreCompletion.getFilterCompletion()">
                 <f:validator validatorId="JsonValidator" />
+                <f:attribute name="jsonClass" value="java.util.List" /> 
               </gdm:codemirror>            
             </p:tab>
 

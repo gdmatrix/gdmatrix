@@ -58,7 +58,6 @@ import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
 @RequestScoped
 public class GeoMapLayersBean extends WebBean implements Serializable
 {
-  private int activeLayerTabIndex;
   private Layer editingLayer;
   private boolean newLayer;
 
@@ -67,16 +66,6 @@ public class GeoMapLayersBean extends WebBean implements Serializable
 
   @Inject
   GeoMapBean geoMapBean;
-
-  public int getActiveLayerTabIndex()
-  {
-    return activeLayerTabIndex;
-  }
-
-  public void setActiveLayerTabIndex(int activeLayerTabIndex)
-  {
-    this.activeLayerTabIndex = activeLayerTabIndex;
-  }
 
   public List<String> getLayerIds()
   {
@@ -263,7 +252,6 @@ public class GeoMapLayersBean extends WebBean implements Serializable
           }
         }
       }
-      activeLayerTabIndex = 0;
     }
   }
 

@@ -426,20 +426,24 @@
             </div>
           </div>
           
-          <p:tabView dynamic="true">
+          <p:tabView>
             <p:tab title="Filter">
               <gdm:codemirror value="#{geoMapSourcesBean.jsonFilter}" 
                               style="height:200px" styleClass="overflow-auto"
-                              language="json" lineNumbers="true">
+                              language="json" lineNumbers="true"
+                              completion="MapLibreCompletion.getFilterCompletion()">
                 <f:validator validatorId="JsonValidator" />
+                <f:attribute name="jsonClass" value="java.util.List" /> 
               </gdm:codemirror>
             </p:tab>
 
             <p:tab title="Cluster properties">
               <gdm:codemirror value="#{geoMapSourcesBean.jsonClusterProperties}" 
                               style="height:200px" styleClass="overflow-auto"
-                              language="json" lineNumbers="true">
+                              language="json" lineNumbers="true"
+                              completion="MapLibreCompletion.getFilterCompletion()">
                 <f:validator validatorId="JsonValidator" />
+                <f:attribute name="jsonClass" value="java.util.Map" /> 
               </gdm:codemirror>
             </p:tab>
           </p:tabView>
