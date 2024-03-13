@@ -46,7 +46,8 @@
           <sf:treeMenu id="vertical_menu" var="item" expandDepth="6" styleClass="tree_menu"
                        baseMid="#{userSessionBean.selectedMenuItem.path[1]}">
             <f:facet name="data">
-              <p:commandLink action="#{templateBean.show(item.mid)}" 
+              <p:commandLink id="cl"
+                             action="#{templateBean.show(item.mid)}" 
                              onclick="PF('menuBar').hide();" 
                              rendered="#{item.rendered}"
                              process="@form:app_menu" update="@form:cnt">
@@ -136,7 +137,7 @@
         </ui:fragment>
 
         <ui:fragment rendered="#{not userSessionBean.anonymousUser}">
-
+          
           <div class="ui-fluid formgrid grid">
 
             <h:panelGroup styleClass="p-2 w-full" layout="block">
@@ -228,6 +229,7 @@
           PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
             (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
 
+          // highlight toolbar
           var elems = document.getElementsByClassName("ui-button current");
           if (elems.length > 0)
           {
@@ -241,7 +243,17 @@
             var elem = elems[0];
             elem.classList.add("current");
             elem.scrollIntoView();
-          } 
+          }
+          
+          // highlight vertical menu
+          var verticalMenu = document.getElementById("mainform:vertical_menu");
+          if (verticalMenu)
+          {
+            var selected = verticalMenu.querySelector(".current");
+            if (selected) selected.classList.remove("current");
+            selected = document.getElementById("mainform:vertical_menu_" + mid + ":cl");
+            if (selected) selected.classList.add("current");
+          }          
         </script>      
       </p:outputPanel>
     </div>

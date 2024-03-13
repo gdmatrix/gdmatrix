@@ -613,7 +613,7 @@ body div.field
 {
   display:block;
   color: var(--text-color);
-  padding: 6px;  
+  padding: 6px;
 }
 
 .tree_menu li a:hover
@@ -621,6 +621,22 @@ body div.field
   color: var(--text-color);
   text-decoration: none;
   background-color: var(--surface-200);
+}
+
+.tree_menu li li a
+{
+  border-left: 1px solid var(--surface-300);  
+}
+
+.tree_menu li.has-children > a
+{
+  font-weight: bold;
+  background-color: var(--surface-200);
+}
+
+.tree_menu li a.current
+{
+  color: var(--primary-color);
 }
 
 .ui-sidebar
