@@ -30,7 +30,9 @@
  */
 package org.santfeliu.webapp.validators;
 
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.FacesValidator;
@@ -48,19 +50,33 @@ import org.santfeliu.faces.FacesUtils;
 public class JsonValidator implements Validator<String>
 {
   @Override
-  public void validate (FacesContext facesContext, UIComponent component,
+  public void validate(FacesContext facesContext, UIComponent component,
     String json)
   {
     try
     {
       if (!StringUtils.isBlank(json))
       {
-        JsonParser.parseString(json);
+        String className = (String)component.getAttributes().get("jsonClass");
+        Class cls = className == null ? Object.class : Class.forName(className);
+        Gson gson = new Gson();
+        gson.fromJson(json, cls);
       }
     }
-    catch (Exception ex)
+    catch (JsonSyntaxException | ClassNotFoundException ex)
     {
-      throw new ValidatorException(FacesUtils.getFacesMessage(ex));
+      String detail;
+      Throwable cause = ex.getCause();
+      if (cause != null)
+      {
+        detail = cause.getLocalizedMessage();
+      }
+      else
+      {
+        detail = ex.getLocalizedMessage();
+      }
+      throw new ValidatorException(FacesUtils.getFacesMessage("JSON_ERROR",
+        new Object[]{ detail }, FacesMessage.SEVERITY_ERROR));
     }
   }
 }
