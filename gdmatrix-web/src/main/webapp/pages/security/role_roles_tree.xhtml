@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle 
+    basename="org.santfeliu.security.web.resources.SecurityBundle"
+    var="securityBundle" />
+
+  <h:outputStylesheet library="css" name="security.css" />  
+
+  <p:outputPanel id="roles_tree_search"
+                 styleClass="rolesTreeSearch" 
+                 rendered="#{!roleRolesTreeTabBean.isNew()}"> 
+
+    <p:outputPanel class="flex flex-wrap" rendered="#{roleRolesTreeTabBean.treeRender}">        
+      <p:commandButton value="#{securityBundle.expandAll}" 
+                       action="#{roleRolesTreeTabBean.expandAll}"                                              
+                       process="@this"
+                       update="rolesTree"
+                       styleClass="mr-2 mb-2" 
+                       icon="pi pi-angle-double-down" 
+                       alt="#{securityBundle.expandAll}" 
+                       title="#{securityBundle.expandAll}" />
+      <p:commandButton value="#{securityBundle.collapseAll}" 
+                       action="#{roleRolesTreeTabBean.collapseAll}"                                               
+                       process="@this"
+                       update="rolesTree"
+                       styleClass="mb-2" 
+                       icon="pi pi-angle-double-up" 
+                       alt="#{securityBundle.collapseAll}" 
+                       title="#{securityBundle.collapseAll}" />
+    </p:outputPanel>
+
+    <div class="rolesTree mt-2">
+      <p:tree id="rolesTree" value="#{roleRolesTreeTabBean.root}" var="node"
+              rendered="#{roleRolesTreeTabBean.treeRender}"
+              filterBy="#{node.nodeId}" filterMatchMode="contains" dynamic="true">
+        <p:ajax event="filter"                
+                oncomplete="markFoundElements()" />        
+        <p:treeNode type="Role">          
+          <div class="roleRow">
+            <div class="roleIcon mr-2">
+              <span class="pi pi-key"                
+                    title="#{node.roleTypeId}" /> 
+            </div>
+            <div class="roleLink mr-2">
+              <p:commandLink action="#{navigatorBean.view(node.roleId)}"                                                   
+                         process="@this" update="@form:cnt"
+                         rendered="#{node.renderLink}"                         
+                         styleClass="#{node.cycle ? ' cycle' : ''}">                         
+                <h:outputText value="#{node.roleId}" />
+              </p:commandLink>
+              <h:outputText rendered="#{!node.renderLink}" 
+                            value="#{node.roleId}" />
+            </div>
+            <div class="roleName">
+              <h:outputText value=" (#{node.name})" />          
+            </div>
+          </div>
+        </p:treeNode>
+      </p:tree>
+      <p:outputPanel rendered="#{!roleRolesTreeTabBean.treeRender}" 
+                     styleClass="noRolesMessage noDescendants">      
+        <h:outputText value="#{securityBundle.roles_not_found}" />
+      </p:outputPanel>
+      <div class="noRolesMessage noRolesFound" style="display:none">      
+        <h:outputText value="#{securityBundle.roles_not_found}" />      
+      </div>
+
+    </div>
+    
+  </p:outputPanel>
+
+  <script>
+    function markFoundElements()
+    {      
+      document.querySelector(".noRolesMessage.noRolesFound").style.display = 'none';      
+      var inputFilter = document.querySelectorAll(".rolesTreeSearch .ui-tree-filter");
+      if (inputFilter.length > 0)
+      {
+        var inputFilterValue = inputFilter[0].value;
+        if (inputFilterValue != '')
+        {
+          var items = document.querySelectorAll('.rolesTreeSearch .ui-treenode-label');
+          items.forEach(span => {
+            var aElement = span.querySelector('.roleLink a');
+            if (aElement &amp;&amp; 
+              aElement.textContent.toLowerCase().includes(inputFilterValue.toLowerCase())) 
+            {
+              aElement.classList.add("found");
+            }
+          });
+          if (items.length == 0)
+          {
+            document.querySelector(".noRolesMessage.noRolesFound").style.display = 'block';
+          }
+        }
+      }
+    }
+  </script>
+  
+</ui:composition>

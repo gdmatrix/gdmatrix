@@ -1,0 +1,57 @@
+.rolesTreeSearch .rolesTree .roleLink
+{
+}
+
+.rolesTreeSearch .rolesTree .roleLink a.cycle
+{
+  color: red;
+}
+
+.rolesTreeSearch .rolesTree .roleLink a.found
+{
+  background-color: yellow;
+}
+
+.rolesTreeSearch .rolesTree .ui-tree .ui-treenode-label
+{
+  width: calc(100% - 24px);
+}
+
+.rolesTreeSearch .rolesTree .ui-tree .ui-tree-toggler,
+.rolesTreeSearch .rolesTree .ui-tree .ui-treenode-leaf-icon
+{
+  margin-right: 0 !important;
+  vertical-align: top !important;
+}
+
+.rolesTreeSearch .rolesTree .roleRow
+{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.rolesTreeSearch .rolesTree .roleRow .roleIcon
+{
+
+}
+.rolesTreeSearch .rolesTree .roleRow .roleLink
+{
+
+}
+.rolesTreeSearch .rolesTree .roleRow .roleName
+{
+  max-width: 100%;
+  white-space: normal;  
+}
+
+.rolesTreeSearch .noRolesMessage.noDescendants
+{  
+  padding: 20px;
+  border: 1px solid #DEE2E6;
+  text-align: center;
+}
+
+.rolesTreeSearch .noRolesMessage.noRolesFound
+{  
+  margin-top: 10px;
+}
