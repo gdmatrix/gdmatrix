@@ -8,8 +8,9 @@ class TimeSliderControl
 {
   /* 
     options: 
-      baseDate: minimal date of the slider.
-      startDate: initial start date.
+      minDate: minimal accepted date.
+      baseDate: base date of the slider.
+      startDate: initial start date of the period.
       scales: object { "d": number of days, "w": number of weeks, "M": number of months }
       startDateVar: string, start date variable to change in the filters (using let)
       endDateVar: string, end date variable to change in the filters (using let)
@@ -19,6 +20,7 @@ class TimeSliderControl
   constructor(options)
   {
     this.options = options || {}; 
+    this.minDate = this.roundDate(options.minDate || new Date());
     this.baseDate = this.roundDate(options.baseDate || new Date());
     this.startDate = new Date(this.baseDate);
     this.endDate = this.startDate;
@@ -224,9 +226,9 @@ class TimeSliderControl
   updatePeriod()
   {
     const period = this.period;
-    if (this.startDate < this.baseDate)
+    if (this.startDate < this.minDate)
     {
-      this.startDate = new Date(this.baseDate);
+      this.startDate = new Date(this.minDate);
     }
     
     if (period === "2")
