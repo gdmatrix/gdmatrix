@@ -62,6 +62,7 @@ public class Html5FormRenderer extends HtmlFormRenderer
     {
       String name = view.getProperty("name");
       String value = getValueAsString(component, view);
+      String hiddenId = "h-" + clientId + "_" + name;
 
       writer.startElement("input", component);
       writer.writeAttribute("name", getFieldId(clientId, name + "_dp"), null);
@@ -77,14 +78,14 @@ public class Html5FormRenderer extends HtmlFormRenderer
       // user = dd/MM/yyyy
 
       writer.writeAttribute("onchange",
-        "var v=this.value;document.getElementById('h-" + clientId + "').value=" +
+        "var v=this.value;document.getElementById('" + hiddenId + "').value=" +
         "(v.length==10)?v.substring(8,10)+'/'+v.substring(5,7)+'/'+v.substring(0,4):null;", null);
 
       renderViewAttributes(view, writer, "name", "type", "value", "maxlength");
       writer.endElement("input");
 
       writer.startElement("input", component);
-      writer.writeAttribute("id", "h-" + clientId, null);
+      writer.writeAttribute("id", hiddenId, null);
       writer.writeAttribute("type", "hidden", null);
       writer.writeAttribute("name", getFieldId(clientId, name), null);
       writer.writeAttribute("value", value, null);
@@ -107,6 +108,12 @@ public class Html5FormRenderer extends HtmlFormRenderer
 
     return sdate.substring(6, 10) + "-" +
       sdate.substring(3, 5) + "-" + sdate.substring(0, 2);
+  }
+
+  @Override
+  protected boolean isJQueryLibraryRequired()
+  {
+    return false;
   }
 
   @Override

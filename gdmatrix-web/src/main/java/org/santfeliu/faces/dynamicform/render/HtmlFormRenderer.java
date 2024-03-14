@@ -861,6 +861,11 @@ public class HtmlFormRenderer extends FormRenderer
     }
   }
 
+  protected boolean isJQueryLibraryRequired()
+  {
+    return true;
+  }
+
   protected void encodeHtmlEditor(HtmlView view, DynamicForm component,
     String clientId, ResponseWriter writer) throws IOException
   {
@@ -875,7 +880,10 @@ public class HtmlFormRenderer extends FormRenderer
                           null);
     writer.endElement("script");
 
-    JQueryRenderUtils.encodeLibraries(context, writer, component);
+    if (isJQueryLibraryRequired())
+    {
+      JQueryRenderUtils.encodeLibraries(context, writer, component);
+    }
 
     writer.startElement("script", component);
 
@@ -992,6 +1000,7 @@ public class HtmlFormRenderer extends FormRenderer
       buffer.append(",");
     }
     buffer.deleteCharAt(buffer.length()-1);
+    buffer.append(", on: { \"change\": (e) => { e.editor.element.$.textContent = e.editor.getData(); } }");
     buffer.append("}");
     return buffer.toString();
   }
