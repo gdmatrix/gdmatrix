@@ -551,7 +551,7 @@ public class FormImporter
               component = codemirror;
             }
             break;
-
+            
             default:
             {
               InputTextarea inputTextarea =
@@ -568,7 +568,21 @@ public class FormImporter
 
           if (inputType == null || "text".equals(inputType))
           {
-            if (field.getMaxOccurs() == 1)
+            String renderer = 
+              view != null ? (String)view.getProperty("renderer") : "text";
+            if (renderer == null)
+              renderer = "text";
+            isMultiple = field.getMaxOccurs() != 1;
+            
+            switch (renderer)
+            {
+              case "chips":
+              case "multiple":
+              case "multivalued": isMultiple = true;
+              break;
+            }
+            
+            if (!isMultiple)
             {
               InputText inputText =
                (InputText)application.createComponent(InputText.COMPONENT_TYPE);
@@ -578,8 +592,8 @@ public class FormImporter
             }
             else
             {
-              isMultiple = true;
-              Chips chips = (Chips)application.createComponent(Chips.COMPONENT_TYPE);
+              Chips chips = 
+                (Chips)application.createComponent(Chips.COMPONENT_TYPE);
               if (field.getMaxOccurs() > 1)
               {
                 chips.setMax(field.getMaxOccurs());
