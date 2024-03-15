@@ -5,6 +5,7 @@ import com.audifilm.matrix.common.service.VersionIdentifier;
 import com.audifilm.matrix.common.service.VersionType;
 import com.audifilm.matrix.dic.service.address.AddressType;
 import com.audifilm.matrix.dic.service.contact.ContactType;
+import com.audifilm.matrix.dic.service.person.PersonType;
 import static com.audifilm.matrix.dic.service.person.PersonType.Types.E;
 import static com.audifilm.matrix.dic.service.person.PersonType.Types.F;
 import static com.audifilm.matrix.dic.service.person.PersonType.Types.J;
@@ -405,6 +406,8 @@ public class KernelManager implements KernelManagerPort
       person.setNif(dbPerson.getNif());
       person.setPassport(dbPerson.getPassport());
       person.setBirthDate(dbPerson.getBirthDate());
+      person.setPersonTypeId(DicTypeAdmin.getInstance(PersonType.class)
+        .toGlobalId(endpoint, dbPerson.getPersonType()));
       persons.add(getEndpoint().toGlobal(Person.class, person));
     }
 
@@ -433,6 +436,8 @@ public class KernelManager implements KernelManagerPort
       personView.setFullName(dbPerson.getFullName());
       personView.setNif(dbPerson.getNif());
       personView.setPassport(dbPerson.getPassport());
+      personView.setPersonTypeId(DicTypeAdmin.getInstance(PersonType.class)
+        .toGlobalId(endpoint, dbPerson.getPersonType()));
       personViews.add(getEndpoint().toGlobal(PersonView.class, personView));
     }
     return personViews;
@@ -931,6 +936,9 @@ public class KernelManager implements KernelManagerPort
 //        DBAddress dbAddress = (DBAddress) row[0];
         AddressView addressView = new AddressView();
         addressView.setAddressId(dbAddress.getAddressId());
+        addressView.setAddressTypeId(DicTypeAdmin.getInstance(AddressType.class)
+              .toGlobalId(endpoint, dbAddress.getAddressTypeId()));
+        getEndpoint().toGlobal(AddressView.class, addressView);
         DBStreet dbStreet = dbAddress.getStreet();
         String description = describeAddress(dbAddress, dbStreet);
         addressView.setDescription(description);
@@ -977,6 +985,8 @@ public class KernelManager implements KernelManagerPort
         addressView.setCity(dbCity.getName());
         addressView.setProvince(dbProvince.getName());
         addressView.setCountry(dbCountry.getName());
+        addressView.setAddressTypeId(DicTypeAdmin.getInstance(AddressType.class)
+              .toGlobalId(endpoint, dbAddress.getAddressTypeId()));
         addressViews.add(getEndpoint().toGlobal(AddressView.class, addressView));
       }
 

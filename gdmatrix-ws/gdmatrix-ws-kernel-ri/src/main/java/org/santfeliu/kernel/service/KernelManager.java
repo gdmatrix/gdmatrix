@@ -240,6 +240,7 @@ public class KernelManager implements KernelManagerPort
       personView.setFullName(dbPerson.getFullName());
       personView.setNif(dbPerson.getNif());
       personView.setPassport(dbPerson.getPassport());
+      personView.setPersonTypeId(dbPerson.getPersonTypeId());
       personViews.add(personView);
     }
     return personViews;
@@ -501,6 +502,7 @@ public class KernelManager implements KernelManagerPort
     {
       AddressView addressView = new AddressView();
       addressView.setAddressId(dbAddress.getAddressId());
+      addressView.setAddressTypeId(dbAddress.getAddressTypeId());
       DBStreet dbStreet = dbAddress.getStreet();
       String description = describeAddress(dbAddress, dbStreet);
       addressView.setDescription(description);

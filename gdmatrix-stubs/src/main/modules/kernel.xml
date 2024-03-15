@@ -329,6 +329,9 @@
       </property>
       <property name="passport" type="xs:string" minOccurs="0">
       </property>
+      <property name="personTypeId" type="xs:string" minOccurs="1"
+        references="dic:Type">
+      </property>      
     </struct>
 
     <struct name="ContactFilter">
@@ -373,13 +376,16 @@
         references="kernel:Address">
       </property>
       <property name="description" type="xs:string" minOccurs="0">
-      </property>
+      </property>     
       <property name="city" type="xs:string" minOccurs="0">
       </property>
       <property name="province" type="xs:string" minOccurs="0">
       </property>
       <property name="country" type="xs:string" minOccurs="0">
       </property>
+      <property name="addressTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>       
     </struct>
 
     <struct name="AddressFilter">
