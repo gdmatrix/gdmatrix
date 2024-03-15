@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.report;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -65,7 +66,7 @@ public class ReportObjectBean extends ObjectBean
   private int firstRow;
   private boolean executing = false;
   private String formSelector;
-  private Map<String, String> parameters = new HashMap<>();
+  private Map<String, Object> parameters = new HashMap<>();
 
   @Inject
   ReportFinderBean reportFinderBean;
@@ -189,7 +190,7 @@ public class ReportObjectBean extends ObjectBean
       report = new Report();
   }
  
-  public void executeReport(String outputFormat, boolean targetBlank)
+  public void executeReport(String outputFormat, String template)
   {
     try
     {
@@ -199,12 +200,17 @@ public class ReportObjectBean extends ObjectBean
       {
         for (ParameterDefinition pd : report.getParameterDefinition())
         {
-          String value = parameters.get(pd.getName());
+          Object value = parameters.get(pd.getName());
           if (value != null)
-            pd.setDefaultValue(value);
+          {
+            if (value instanceof Collection)
+              value = ((Collection)value).stream().findFirst();
+            pd.setDefaultValue(String.valueOf(value));
+          }
         }
       }
-      reportViewerBean.executeReport(report, targetBlank);
+      reportViewerBean.setReportTemplate(template != null ? template : "default");
+      reportViewerBean.executeReport(report);
       executing = true;
     }
     catch (Exception ex)

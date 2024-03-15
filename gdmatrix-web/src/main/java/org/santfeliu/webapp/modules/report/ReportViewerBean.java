@@ -39,8 +39,11 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.dic.Property;
@@ -201,22 +204,30 @@ public class ReportViewerBean extends WebBean implements Serializable
   }
   
   //Report methods
-  public String getReportURL()
+  private String getReportURL(String reportName, boolean addCredentials)
   {
     String url = null;
     if (reportName != null)
     {
       url = getContextURL() + "/reports/" + reportName + "." +
         getOutputFormat() + getParametersString();
-      String runAsAdmin = 
-        getSelectedMenuItem().getProperty(RUN_AS_ADMIN_PROPERTY);    
-      Credentials credentials = 
-        ReportModuleBean.getExecutionCredentials("true".equals(runAsAdmin));
-      URLCredentialsCipher cipher = SecurityUtils.getURLCredentialsCipher();
-      url = cipher.putCredentials(url, credentials);
+      if (addCredentials)
+      {
+        String runAsAdmin = 
+          getSelectedMenuItem().getProperty(RUN_AS_ADMIN_PROPERTY);    
+        Credentials credentials = 
+          ReportModuleBean.getExecutionCredentials("true".equals(runAsAdmin));
+        URLCredentialsCipher cipher = SecurityUtils.getURLCredentialsCipher();
+        url = cipher.putCredentials(url, credentials);
+      }
     }
     return url;
   }  
+  
+  public String getReportURL()
+  {
+    return getReportURL(reportName, true);
+  }
   
   public String getAllowedHtmlTags()
   {  
@@ -381,15 +392,22 @@ public class ReportViewerBean extends WebBean implements Serializable
     return outcome;
   }
   
-  public String executeReport(Report report, boolean targetBlank)
+  public String executeReport(Report report)
   {
     String outcome = null;
     
     try
     {
-      Map params = getReportDefaultParameters(report);
-      setReportTemplate(targetBlank ? "default" : null);
-      outcome = executeReport(report.getReportId(), params);
+      Map params = getReportDefaultParameters(report);      
+      if (StringUtils.isBlank(reportTemplate)) //target _blank
+      {
+        setParameters(params);
+        ExternalContext externalContext = 
+          FacesContext.getCurrentInstance().getExternalContext();
+        externalContext.redirect(getReportURL(report.getReportId(), false));        
+      }
+      else
+        outcome = executeReport(report.getReportId(), params);
     }
     catch (Exception ex)
     {

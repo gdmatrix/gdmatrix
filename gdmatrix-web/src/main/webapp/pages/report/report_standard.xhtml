@@ -180,15 +180,22 @@
 
   <div class="tab_footer text-right pt-3"> 
 
-    <p:splitButton value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html', false)}" icon="pi pi-play"
+    <p:splitButton value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html', '3col')}" icon="pi pi-play"
                    process="@form:cnt:search_tabs:obj_tabs" update="@form:cnt"
                    rendered="#{not empty reportObjectBean.report.reportId}">
-      <p:menuitem value="HTML" action="#{reportObjectBean.executeReport('html', false)}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-o" />
-      <p:menuitem value="HTML" action="#{reportObjectBean.executeReport('html', true)}" target="_blank" ajax="false" icon="pi pi-external-link"/>      
-      <p:menuitem value="PDF" action="#{reportObjectBean.executeReport('pdf', false)}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-pdf" 
-                  rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>
-      <p:menuitem value="PDF" action="#{reportObjectBean.executeReport('pdf', true)}" target="_blank" ajax="false" icon="pi pi-external-link" 
-                  rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>    
+      
+      <p:submenu label="HTML">
+        <p:menuitem value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html', '3col')}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-o" />
+        <p:menuitem value="#{reportBundle.executeNewTab}" action="#{reportObjectBean.executeReport('html', null)}" target="_blank" ajax="false" icon="pi pi-external-link"/>          
+      </p:submenu>
+      
+      <p:submenu label="PDF" rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}">
+        <p:menuitem value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('pdf', '3col')}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-pdf" 
+                    rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>
+        <p:menuitem value="#{reportBundle.executeNewTab}" action="#{reportObjectBean.executeReport('pdf', null)}" target="_blank" ajax="false" icon="pi pi-external-link" 
+                    rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>           
+      </p:submenu>      
+   
     </p:splitButton>    
   </div>
 
