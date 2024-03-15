@@ -565,6 +565,7 @@
   max-width: calc(100% - 8px);
   max-height: calc(100% - 8px);
   row-gap: 4px;
+  z-index: 2000;
 }
 
 .ql-dialog input
