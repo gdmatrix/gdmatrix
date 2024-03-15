@@ -509,7 +509,7 @@ public class NavigatorBean extends WebBean implements Serializable
   public void setContextTabSelector(int selector)
   {
     List<String> contextPanels = getContextPanels();
-    if (selector >= contextPanels.size()) return;
+    if (selector < 0 || selector >= contextPanels.size()) return;
 
     currentContextPanel = contextPanels.get(selector);
   }
@@ -594,7 +594,7 @@ public class NavigatorBean extends WebBean implements Serializable
             if (propdef != null && !propdef.getValue().isEmpty())
             {
               val = propdef.getValue().get(0);
-            }            
+            }
           }
         }
         return (val != null ? val : "false");
@@ -823,7 +823,7 @@ public class NavigatorBean extends WebBean implements Serializable
       String baseTypeId = getBaseTypeId();
       BeanManager beanManager = CDI.current().getBeanManager();
       Context context = beanManager.getContext(ViewScoped.class);
-    
+
       for (EditTab tab : tabs)
       {
         String beanName = tab.getBeanName();
@@ -834,7 +834,7 @@ public class NavigatorBean extends WebBean implements Serializable
         {
           Bean<?> bean = iter.next();
           Object beanInstance = context.get(bean);
-          
+
           if (beanInstance instanceof TabBean)
           {
             TabBean tabBean = (TabBean)beanInstance;
@@ -1015,7 +1015,7 @@ public class NavigatorBean extends WebBean implements Serializable
         String findOnFirstLoadValue = baseTypeInfo.getFindOnFirstLoad();
         if ("custom".equals(findOnFirstLoadValue))
         {
-          finderBean.putDefaultFilter();        
+          finderBean.putDefaultFilter();
           finderBean.find();
         }
         else if ("true".equals(findOnFirstLoadValue))
@@ -1138,7 +1138,7 @@ public class NavigatorBean extends WebBean implements Serializable
       MenuItemCursor typeMenuItem = menuTypesCache.get(
         userSessionBean.getSelectedMenuItem(), objectTypeId);
 
-      return typeMenuItem == null || typeMenuItem.isNull() ? null : 
+      return typeMenuItem == null || typeMenuItem.isNull() ? null :
         typeMenuItem.getMid();
     }
   }

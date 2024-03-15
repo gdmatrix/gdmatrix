@@ -48,13 +48,18 @@ import org.santfeliu.webapp.util.WebUtils;
 /**
  *
  * @author blanquepa
- */
+ * @author realor
+*/
 @Named
 @RequestScoped
 public class TemplateBean extends FacesBean implements Serializable
 {
   private static final String TOPWEB_PROPERTY = "topweb";
   private static final String HIGHLIGHTED_PROPERTY = "highlighted";
+  private static final String TOOLBAR_MODE = "toolbarMode";
+  private static final String TOOLBAR_MODE_GLOBAL = "global";
+  private static final String TOOLBAR_MODE_CONTEXT = "context";
+  private static final String CONTEXT_MID = "contextMid";
 
   private String componentTree;
   private String username;
@@ -85,37 +90,22 @@ public class TemplateBean extends FacesBean implements Serializable
   {
     if (highlightedItems == null)
     {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
-      cursor = cursor.getClone();
-      while (!cursor.isRoot() &&
-             !"true".equals(cursor.getDirectProperty(TOPWEB_PROPERTY)))
-      {
-        cursor.moveParent();
-      }
       highlightedItems = new ArrayList<>();
-      addHighlightedItems(cursor);
+      String toolbarMode = getToolbarMode();
+
+      if (TOOLBAR_MODE_GLOBAL.equals(toolbarMode))
+      {
+        MenuItemCursor cursor = getTopwebMenuItem();
+        addHighlightedMenuItems(cursor);
+      }
+      else
+      {
+        MenuItemCursor cursor = getContextMenuItem();
+        System.out.println("\n\n>>Context MID: " + cursor.getMid());
+        addContextMenuItems(cursor);
+      }
     }
     return highlightedItems;
-  }
-
-  private void addHighlightedItems(MenuItemCursor cursor)
-  {
-    if (cursor.hasChildren())
-    {
-      cursor = cursor.getClone();
-      cursor.moveFirstChild();
-      while (!cursor.isNull())
-      {
-        if ("true".equals(cursor.getDirectProperty(HIGHLIGHTED_PROPERTY))
-            && cursor.getDirectProperty("icon") != null)
-        {
-          highlightedItems.add(cursor.getClone());
-        }
-        addHighlightedItems(cursor);
-        cursor.moveNext();
-      }
-    }
   }
 
   public String getContent()
@@ -132,18 +122,18 @@ public class TemplateBean extends FacesBean implements Serializable
     return "/pages/obj/empty.xhtml";
   }
 
-  public void show(String mid)
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    userSessionBean.setSelectedMid(mid);
-    userSessionBean.executeSelectedMenuItem();
-  }
-
   public String getUserInitial()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     String displayName = userSessionBean.getDisplayName();
     return displayName.length() > 0 ? displayName.substring(0, 1) : "?";
+  }
+
+  public void show(String mid)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.setSelectedMid(mid);
+    userSessionBean.executeSelectedMenuItem();
   }
 
   public void login()
@@ -181,6 +171,85 @@ public class TemplateBean extends FacesBean implements Serializable
   public String getComponentTree()
   {
     return componentTree;
+  }
+
+
+  /* private methods */
+
+  private String getToolbarMode()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    String toolbarMode = cursor.getProperty(TOOLBAR_MODE);
+
+    if (toolbarMode == null) toolbarMode = TOOLBAR_MODE_GLOBAL;
+    return toolbarMode;
+  }
+
+  private MenuItemCursor getTopwebMenuItem()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    while (!cursor.isRoot() &&
+           !"true".equals(cursor.getDirectProperty(TOPWEB_PROPERTY)))
+    {
+      cursor.moveParent();
+    }
+    return cursor;
+  }
+
+  private MenuItemCursor getContextMenuItem()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    String contextMid = (String)userSessionBean.getAttribute(CONTEXT_MID);
+    if (contextMid != null)
+      return userSessionBean.getMenuModel().getMenuItem(contextMid);
+
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    MenuItemCursor ctxCursor = null;
+    while (!cursor.isRoot() &&
+           !"true".equals(cursor.getDirectProperty(TOPWEB_PROPERTY)))
+    {
+      ctxCursor = cursor.getClone();
+      cursor.moveParent();
+    }
+    if (ctxCursor == null) return userSessionBean.getSelectedMenuItem();
+
+    userSessionBean.getAttributes().put(CONTEXT_MID, ctxCursor.getMid());
+
+    return ctxCursor;
+  }
+
+  private void addHighlightedMenuItems(MenuItemCursor cursor)
+  {
+    if (cursor.hasChildren())
+    {
+      cursor = cursor.getClone();
+      cursor.moveFirstChild();
+      while (!cursor.isNull())
+      {
+        if ("true".equals(cursor.getDirectProperty(HIGHLIGHTED_PROPERTY))
+            && cursor.getDirectProperty("icon") != null)
+        {
+          highlightedItems.add(cursor.getClone());
+        }
+        addHighlightedMenuItems(cursor);
+        cursor.moveNext();
+      }
+    }
+  }
+
+  private void addContextMenuItems(MenuItemCursor cursor)
+  {
+    if (cursor.hasChildren())
+    {
+      cursor.moveFirstChild();
+      while (!cursor.isNull())
+      {
+        highlightedItems.add(cursor.getClone());
+        cursor.moveNext();
+      }
+    }
   }
 
   private void printComponent(UIComponent component, int indent,

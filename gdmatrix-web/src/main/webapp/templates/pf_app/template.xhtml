@@ -11,46 +11,25 @@
 
   <ui:define name="template">
 
-    <p:sidebar id="app_menu" widgetVar="menuBar" modal="false"
+    <p:sidebar id="menu_sb" widgetVar="menuSideBar" modal="false"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" showCloseIcon="false">
 
       <div class="flex align-items-center p-3 border-bottom-1 border-300">
         <h:outputText id="web_title" styleClass="flex-grow-1 font-bold block" 
                       value="#{applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.description)}" />
-        <p:button onclick="PF('menuBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
+        <p:button onclick="PF('menuSideBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
       </div>
 
       <div class="flex-grow-1 overflow-auto p-3 pt-0">
-        <div class="mt-3">
-          <p:outputLabel id="language_label" 
-                         value="#{webBundle.language}" for="@next" />
-          <p:selectOneMenu value="#{userSessionBean.viewLanguage}"  
-                            styleClass="mt-2 block">
-            <p:ajax event="valueChange" process="@this" 
-                    update="web_title language_label theme_label vertical_menu app_menubar login_bar @form:cnt" />
-            <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale" 
-                           itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)}" />
-          </p:selectOneMenu>
-        </div>
-        <div class="mt-3">
-          <p:outputLabel id="theme_label"
-                         value="#{webBundle.themes}" for="@next" />
-          <p:selectOneMenu value="#{userSessionBean.primefacesTheme}"  
-                            styleClass="mt-2 block"
-                            widgetVar="themeSelector">
-            <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
-            <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
-          </p:selectOneMenu>
-        </div>
         <div>
           <sf:treeMenu id="vertical_menu" var="item" expandDepth="6" styleClass="tree_menu"
                        baseMid="#{userSessionBean.selectedMenuItem.path[1]}">
             <f:facet name="data">
               <p:commandLink id="cl"
                              action="#{templateBean.show(item.mid)}" 
-                             onclick="PF('menuBar').hide();" 
+                             onclick="PF('menuSideBar').hide();" 
                              rendered="#{item.rendered}"
-                             process="@form:app_menu" update="@form:cnt">
+                             process="@form:menu_sb" update="@form:cnt">
                 <ui:fragment rendered="#{item.properties.icon != null}">
                   <i class="ui-icon #{item.properties.icon} mr-1'}" />
                 </ui:fragment>
@@ -72,12 +51,12 @@
       </div>
     </p:sidebar>
 
-    <p:sidebar id="login_bar" widgetVar="loginBar" modal="false"
+    <p:sidebar id="login_sb" widgetVar="loginSideBar" modal="false"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" position="right" showCloseIcon="false" >
 
       <div class="flex align-items-center p-3 border-bottom-1 border-300">
-        <div class="flex-grow-1 font-bold">#{webBundle.identification}</div>
-        <p:button onclick="PF('loginBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
+        <div class="flex-grow-1"><i class="pi pi-user mr-1" /><h:outputText id="id_label" class="font-bold" value="#{webBundle.identification}" /></div>
+        <p:button onclick="PF('loginSideBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
       </div>
       
       <div class="overflow-auto p-3 pt-1">
@@ -124,9 +103,9 @@
             <div class="p-2 w-full">
               <p:commandButton id="user_pass_button" widgetVar="userPassButton" 
                                value="#{webBundle.buttonSignin}" action="#{templateBean.login}" 
-                               process="login_bar" update="login_messages" 
+                               process="login_sb" update="login_messages" 
                                icon="pi pi-sign-in"
-                               oncomplete="if (!isFacesError()) PF('loginBar').hide()" />
+                               oncomplete="if (!isFacesError()) PF('loginSideBar').hide()" />
             </div>
           </div>
 
@@ -169,7 +148,7 @@
             <div class="p-2 w-full">
               <p:commandButton action="#{templateBean.logout}" icon="pi pi-sign-out"
                                value="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
-                               oncomplete="PF('loginBar').hide();"
+                               oncomplete="PF('loginSideBar').hide();"
                                update="@none" />
             </div>
           </div>
@@ -177,11 +156,44 @@
       </div>            
     </p:sidebar>
     
+    <p:sidebar id="config_sb" widgetVar="configSideBar" modal="false"
+               onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" position="right" showCloseIcon="false" >
+   
+      <div class="flex align-items-center p-3 border-bottom-1 border-300">
+        <div class="flex-grow-1"><i class="pi pi-cog mr-1" /><h:outputText id="config_label" class="font-bold" value="#{webBundle.configuration}" /></div>
+        <p:button onclick="PF('configSideBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
+      </div>
+      
+      <div class="overflow-auto p-3 pt-1">
+     
+        <div class="mt-3">
+          <p:outputLabel id="language_label" 
+                         value="#{webBundle.language}" for="@next" />
+          <p:selectOneMenu value="#{userSessionBean.viewLanguage}"  
+                            styleClass="mt-2 block">
+            <p:ajax event="valueChange" process="@this" 
+                    update="menubar menu_sb login_sb config_label language_label theme_label @form:cnt" />
+            <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale" 
+                           itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)}" />
+          </p:selectOneMenu>
+        </div>
+        <div class="mt-3">
+          <p:outputLabel id="theme_label"
+                         value="#{webBundle.themes}" for="@next" />
+          <p:selectOneMenu value="#{userSessionBean.primefacesTheme}"  
+                            styleClass="mt-2 block"
+                            widgetVar="themeSelector">
+            <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
+            <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
+          </p:selectOneMenu>
+        </div>
+      </div>
+    </p:sidebar>
     
     <!-- header -->
-    <h:panelGroup id="app_menubar" layout="block" class="app_menubar flex align-items-center">
+    <h:panelGroup id="menubar" layout="block" class="app_menubar flex align-items-center">
       <div class="menu_button flex-grow-0 flex-shrink-0 flex align-items-center">
-        <p:button onclick="PF('menuBar').show(); return false;" icon="pi pi-bars"
+        <p:button onclick="PF('menuSideBar').show(); return false;" icon="pi pi-bars"
                   class="rounded-button ui-button-flat" />
       </div>
 
@@ -191,16 +203,22 @@
       <div class="flex justify-content-end align-items-center flex-grow-0 flex-shrink-0">
         <p:link href="#" styleClass="login_button ml-2 mr-2" 
                 title="#{webBundle.identification}"
-                onclick="PF('loginBar').show();enableUserPassButton();return false;" 
+                onclick="PF('loginSideBar').show();enableUserPassButton();return false;" 
                 rendered="#{userSessionBean.anonymousUser}">
           <i class="pi pi-user" />
         </p:link>
 
         <p:link href="#" styleClass="login_button ml-2 mr-2"
                 title="#{userSessionBean.displayName}"
-                onclick="PF('loginBar').show();return false;" 
+                onclick="PF('loginSideBar').show();return false;" 
                 rendered="#{not userSessionBean.anonymousUser}">
           #{templateBean.userInitial}
+        </p:link>
+
+        <p:link href="#" styleClass="login_button ml-2 mr-2"
+                title="#{webBundle.configuration}"
+                onclick="PF('configSideBar').show();return false;">
+          <i class="pi pi-cog" />
         </p:link>
       </div>
     </h:panelGroup>
