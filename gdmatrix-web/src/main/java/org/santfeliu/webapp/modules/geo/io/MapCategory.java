@@ -1,0 +1,156 @@
+/*
+ * GDMatrix
+ *
+ * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
+ * Commission.
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
+ * and more details.
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ * http://www.gnu.org/licenses/
+ * and
+ * https://www.gnu.org/licenses/lgpl.txt
+ */
+package org.santfeliu.webapp.modules.geo.io;
+
+import java.io.Serializable;
+
+/**
+ *
+ * @author realor
+ */
+public class MapCategory implements Serializable
+{
+  String docId;
+  String name;
+  String title;
+  String description;
+  String position;
+  String parentCategoryName;
+  int level;
+  String contentId;
+
+  public MapCategory()
+  {
+  }
+
+  public MapCategory(MapCategory category)
+  {
+    this.docId = category.docId;
+    this.name = category.name;
+    this.title = category.title;
+    this.description = category.description;
+    this.position = category.position;
+    this.parentCategoryName = category.parentCategoryName;
+    this.level = category.level;
+    this.contentId = category.contentId;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public void setName(String categoryName)
+  {
+    this.name = categoryName;
+  }
+
+  public String getParentCategoryName()
+  {
+    return parentCategoryName;
+  }
+
+  public void setParentCategoryName(String parentCategoryName)
+  {
+    this.parentCategoryName = parentCategoryName;
+  }
+
+  public String getTitle()
+  {
+    return title;
+  }
+
+  public void setTitle(String title)
+  {
+    this.title = title;
+  }
+
+  public String getDocId()
+  {
+    return docId;
+  }
+
+  public void setDocId(String docId)
+  {
+    this.docId = docId;
+  }
+
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
+
+  public String getPosition()
+  {
+    return position;
+  }
+
+  public void setPosition(String position)
+  {
+    this.position = position;
+  }
+
+  public boolean isRootCategoty()
+  {
+    return parentCategoryName == null;
+  }
+
+  public int getLevel()
+  {
+    return level;
+  }
+
+  public void setLevel(int level)
+  {
+    this.level = level;
+  }
+
+  public String getContentId()
+  {
+    return contentId;
+  }
+
+  public void setContentId(String contentId)
+  {
+    this.contentId = contentId;
+  }
+
+  @Override
+  public String toString()
+  {
+    return "MapCategory{" + name + ", " + parentCategoryName + "}";
+  }
+}

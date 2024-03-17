@@ -36,7 +36,7 @@ import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.PojoUtils;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
+import org.santfeliu.webapp.modules.geo.io.MapDocument;
 
 /**
  *

@@ -28,60 +28,42 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.geo;
+package org.santfeliu.webapp.modules.geo.io;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.CDI;
-import javax.faces.model.SelectItem;
-import javax.inject.Named;
-import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.geo.io.MapCategory;
-import org.santfeliu.webapp.modules.geo.io.MapStore;
+import java.io.Serializable;
 
 /**
  *
  * @author realor
  */
-
-@Named
-@ApplicationScoped
-public class GeoCategoryBean extends WebBean
+public class MapView implements Serializable
 {
-  List<SelectItem> categorySelectItems;
+  String mapName;
+  String title;
 
-  public void updateCategories()
+  public String getMapName()
   {
-    getMapStore().purgeCategoryCache();
-    categorySelectItems = null;
+    return mapName;
   }
 
-  public List<SelectItem> getCategorySelectItems()
+  public void setMapName(String mapName)
   {
-    if (categorySelectItems == null)
-    {
-      List<SelectItem> selectItems = new ArrayList<>();
-
-      for (MapCategory category : getMapStore().getCategoryList())
-      {
-        SelectItem selectItem =
-          new SelectItem(category.getName(), category.getTitle());
-        selectItems.add(selectItem);
-      }
-      categorySelectItems = selectItems;
-    }
-    return categorySelectItems;
+    this.mapName = mapName;
   }
 
-  public MapCategory getCategory(String categoryName)
+  public String getTitle()
   {
-    return getMapStore().getCategory(categoryName);
+    return title;
   }
 
-  MapStore getMapStore()
+  public void setTitle(String title)
   {
-    return CDI.current().select(MapStore.class).get();
+    this.title = title;
+  }
+
+  @Override
+  public String toString()
+  {
+    return "MapView{" + mapName + "}";
   }
 }
-

@@ -59,7 +59,7 @@ import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.security.util.URLCredentialsCipher;
 import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
+import org.santfeliu.webapp.modules.geo.io.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;

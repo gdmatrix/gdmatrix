@@ -52,7 +52,7 @@ import org.santfeliu.faces.maplibre.model.Source;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
+import org.santfeliu.webapp.modules.geo.io.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.SldStore;
 import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;

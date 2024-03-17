@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <p:dialog id="map_summary_dialog" widgetVar="mapSummaryDialog"
+            resizable="false" responsive="true" position="center center"
+            minHeight="100" width="350" showEffect="fade" hideEffect="fade">
+
+    <f:facet name="header" rendered="#{geoCatalogueBean.currentMapView != null}">
+      <div class="text-base">
+        #{applicationBean.translate(geoCatalogueBean.currentMapView.title, 'geo')}
+      </div>
+    </f:facet>
+
+    <h:outputText value="#{applicationBean.translateHtml(geoCatalogueBean.currentMapSummary, 'geo')}"
+                  rendered="#{geoCatalogueBean.currentMapView != null}"
+                  escape="false" />
+
+    <f:facet name="footer">
+      <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_viewer')}"
+                       value="#{objectBundle.show}"
+                       styleClass="rounded-button ui-button-flat no-underline ml-1"
+                       icon="pi pi-eye mr-1"
+                       onclick="PF('mapSummaryDialog').hide()"
+                       process="@this" update="@form:cnt" />
+
+      <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_editor')}"
+                       value="#{objectBundle.edit}"
+                       rendered="#{geoCatalogueBean.currentMapView != null and geoCatalogueBean.isCurrentMapEditable()}"
+                       styleClass="rounded-button ui-button-flat no-underline ml-1"
+                       icon="pi pi-pencil mr-1"
+                       onclick="PF('mapSummaryDialog').hide()"
+                       process="@this" update="@form:cnt" />
+    </f:facet>
+  </p:dialog>
+
+</ui:composition>

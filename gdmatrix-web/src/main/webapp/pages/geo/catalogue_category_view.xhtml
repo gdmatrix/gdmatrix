@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <div class="flex align-items-center">
+    <ui:fragment rendered="#{mapGroup.category.contentId != null}">
+      <img src="/documents/#{mapGroup.category.contentId}" style="width:16px" class="mr-1" alt="" />
+    </ui:fragment>
+    <strong>#{applicationBean.translate(mapGroup.category.title, 'geo')}</strong> 
+    <span class="ml-1">(#{mapGroup.mapCount} #{geoBundle.maps})</span>
+    <p:commandButton action="#{geoCatalogueBean.setCurrentMapCategory(mapGroup.category)}"
+                     icon="pi pi-pencil" 
+                     rendered="#{geoCatalogueBean.isAdminUser()}"
+                     resetValues="true"
+                     styleClass="rounded-button ui-button-flat geo_catalogue_button ml-3"
+                     process="@this" update="@form:cnt:catalogue_category_dialog"
+                     oncomplete="PF('catalogueCategoryDialog').show()" />
+    <p:commandButton action="#{geoCatalogueBean.setCurrentMapCategory(mapGroup.category)}"
+                     icon="pi pi-upload" 
+                     rendered="#{geoCatalogueBean.isAdminUser()}"
+                     oncomplete="PF('categoryImageUpload').show()" 
+                     styleClass="rounded-button ui-button-flat geo_catalogue_button ml-3"
+                     process="@this" update="@none" />
+  </div>
+
+</ui:composition>

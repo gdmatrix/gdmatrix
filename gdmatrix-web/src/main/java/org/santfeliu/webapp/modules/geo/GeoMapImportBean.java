@@ -41,10 +41,11 @@ import org.santfeliu.faces.maplibre.model.Layer;
 import org.santfeliu.faces.maplibre.model.Source;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.modules.geo.io.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapFilter;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapGroup;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapView;
+import org.santfeliu.webapp.modules.geo.io.MapFilter;
+import org.santfeliu.webapp.modules.geo.io.MapGroup;
+import org.santfeliu.webapp.modules.geo.io.MapView;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
@@ -115,7 +116,7 @@ public class GeoMapImportBean extends WebBean implements Serializable
     {
       MapFilter mapFilter = new MapFilter();
       mapFilter.setKeywords(name);
-      MapStore.MapGroup mapGroup = mapStore.findMaps(mapFilter);
+      MapGroup mapGroup = mapStore.findMaps(mapFilter);
       explodeMapViews(mapGroup, mapViews);
     }
     catch (Exception ex)
@@ -132,7 +133,7 @@ public class GeoMapImportBean extends WebBean implements Serializable
       MapStore mapStore = geoMapBean.getMapStore();
       Style style = geoMapBean.getStyle();
 
-      MapStore.MapDocument mapDocument = mapStore.loadMap(mapName);
+      MapDocument mapDocument = mapStore.loadMap(mapName);
       Style impStyle = mapDocument.getStyle();
 
       StyleMetadata styleMetadata = new StyleMetadata(style);

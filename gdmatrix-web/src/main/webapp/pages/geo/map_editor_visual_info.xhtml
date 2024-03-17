@@ -29,16 +29,16 @@
       <div class="ui-inputgroup">
         <p:selectOneMenu id="category_list" styleClass="border-round-left"
                          var="categoryName" value="#{geoMapBean.mapDocument.categoryName}">
-          <f:selectItem itemLabel="" itemValue="" />
+          <f:selectItem itemLabel="#{geoBundle.nullCategory}" itemValue="" />
           <f:selectItems value="#{geoCategoryBean.categorySelectItems}" />
           <p:column>
-            <h:outputText value="" rendered="#{categoryName == null}" />
-            <h:panelGroup rendered="#{categoryName != null and geoCategoryBean.getCategory(categoryName).level == 0}">
+            <h:outputText value="#{geoBundle.nullCategory}" rendered="#{categoryName == ''}" />
+            <ui:fragment rendered="#{categoryName != null and geoCategoryBean.getCategory(categoryName).level == 0}">
               <strong>#{geoCategoryBean.getCategory(categoryName).title}</strong>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{categoryName != null and geoCategoryBean.getCategory(categoryName).level > 0}">
+            </ui:fragment>
+            <ui:fragment rendered="#{categoryName != null and geoCategoryBean.getCategory(categoryName).level > 0}">
               <span style="margin-left:#{geoCategoryBean.getCategory(categoryName).level * 8}px">#{geoCategoryBean.getCategory(categoryName).title}</span>
-            </h:panelGroup>
+            </ui:fragment>
           </p:column>
         </p:selectOneMenu>
         <p:commandButton icon="pi pi-refresh" 

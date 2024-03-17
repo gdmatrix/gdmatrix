@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.security.AccessControl;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
+import org.santfeliu.webapp.modules.geo.io.MapDocument;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 

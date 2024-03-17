@@ -159,7 +159,7 @@ public class MapMigrator
   public void migrateCategories() throws Exception
   {
     DocumentFilter filter = new DocumentFilter();
-    filter.setDocTypeId("XMAPCAT");
+    filter.setDocTypeId("XMAPCAT"); // old category
     List<Document> docs = oldPort.findDocuments(filter);
     int i = 0;
     for (Document doc : docs)
@@ -171,6 +171,7 @@ public class MapMigrator
       doc.setDocId(null);
       doc.setVersion(0);
       doc.setIncremental(false);
+      doc.setDocTypeId(MapStore.MAP_CATEGORY_TYPEID);
 
       DocumentFilter filter2 = new DocumentFilter();
       filter2.setDocTypeId(MapStore.MAP_CATEGORY_TYPEID);
@@ -189,7 +190,8 @@ public class MapMigrator
       if (!simulation)
       {
         System.out.println(i + ": storeCategory: " + doc.getDocId());
-        newPort.storeDocument(doc);
+        doc = newPort.storeDocument(doc);
+        System.out.println(i + ": stored category: " + doc.getDocId());
       }
       Thread.sleep(200L);
       i++;
@@ -595,7 +597,7 @@ public class MapMigrator
       }
 
       // information
-      MapStore.MapDocument styleDocument = new MapStore.MapDocument(style);
+      org.santfeliu.webapp.modules.geo.io.MapDocument styleDocument = new org.santfeliu.webapp.modules.geo.io.MapDocument(style);
       Property descriptionProperty = DictionaryUtils.getPropertyByName(document
         .getProperty(), "mapDescription");
       String mapDescription = null;

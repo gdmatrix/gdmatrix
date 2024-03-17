@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <p:dialog id="catalogue_category_dialog" widgetVar="catalogueCategoryDialog"
+            resizable="false" responsive="true" position="center center"
+            minHeight="100" width="400" showEffect="fade" hideEffect="fade">
+
+    <f:facet name="header">
+      Category
+    </f:facet>
+
+    <p:messages showSummary="true" styleClass="messages"
+                showIcon="true" closable="false">
+      <p:autoUpdate />
+    </p:messages>
+    
+    <h:panelGroup id="catalogue_category_panel" layout="block" 
+                  rendered="#{geoCatalogueBean.currentMapCategory != null}">
+
+      <div class="ui-fluid formgrid grid">
+        <div class="field col-12">
+          <p:outputLabel value="Name" for="@next" />
+          <p:inputText value="#{geoCatalogueBean.currentMapCategory.name}" 
+                       pt:spellcheck="false" required="true" styleClass="code"
+                       requiredMessage="Category name is required"
+                       disabled="#{geoCatalogueBean.currentMapCategory.name != null}"  />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel value="Title" for="@next" />
+          <p:inputText value="#{geoCatalogueBean.currentMapCategory.title}" 
+                       requiredMessage="Category title is required"
+                       pt:spellcheck="false" required="true" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Parent category" />
+          <div class="ui-inputgroup">
+            <p:selectOneMenu id="category_list" styleClass="border-round-left"
+                             var="categoryName" 
+                             value="#{geoCatalogueBean.currentMapCategory.parentCategoryName}">
+              <f:selectItem itemLabel="#{geoBundle.nullParentCategory}" itemValue="" />
+              <f:selectItems value="#{geoCategoryBean.categorySelectItems}" />
+              <p:column>
+                <h:outputText value="#{geoBundle.nullParentCategory}" rendered="#{categoryName == ''}" />
+                <ui:fragment rendered="#{categoryName != null and geoCategoryBean.getCategory(categoryName).level == 0}">
+                  <strong>#{geoCategoryBean.getCategory(categoryName).title}</strong>
+                </ui:fragment>
+                <ui:fragment rendered="#{categoryName != null and geoCategoryBean.getCategory(categoryName).level > 0}">
+                  <span style="margin-left:#{geoCategoryBean.getCategory(categoryName).level * 8}px">#{geoCategoryBean.getCategory(categoryName).title}</span>
+                </ui:fragment>
+              </p:column>
+            </p:selectOneMenu>
+            <p:commandButton icon="pi pi-refresh" 
+                             actionListener="#{geoCategoryBean.updateCategories}"
+                             title="#{objectBundle.update}"
+                             process="@this" update="category_list" />
+          </div>
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel value="Description" for="@next" />
+          <p:inputTextarea value="#{geoCatalogueBean.currentMapCategory.description}" 
+                           pt:spellcheck="false" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel value="Position" for="@next" />
+          <p:inputText value="#{geoCatalogueBean.currentMapCategory.position}" 
+                       pt:spellcheck="false" />
+        </div>
+
+      </div>
+    </h:panelGroup>
+    
+    <f:facet name="footer">
+      <p:commandButton action="#{geoCatalogueBean.storeMapCategory}"
+                       value="#{objectBundle.store}"
+                       styleClass="no-underline mr-2"
+                       icon="pi pi-save"
+                       process="catalogue_category_dialog" 
+                       update="catalogue_category_panel @form:cnt:maps" 
+                       oncomplete="closePFDialog('catalogueCategoryDialog')"/>
+
+      <p:commandButton action="#{geoCatalogueBean.cancelMapCategory}"
+                       value="#{objectBundle.cancel}"
+                       icon="pi pi-times"
+                       process="@this" update="@none" 
+                       onclick="PF('catalogueCategoryDialog').hide()" />
+    </f:facet>
+  </p:dialog>
+
+</ui:composition>

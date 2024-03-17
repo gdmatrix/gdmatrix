@@ -30,17 +30,23 @@
  */
 package org.santfeliu.webapp.modules.geo;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Named;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
+import org.santfeliu.util.IOUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.modules.geo.io.MapCategory;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapDocument;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapFilter;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapGroup;
-import org.santfeliu.webapp.modules.geo.io.MapStore.MapView;
+import org.santfeliu.webapp.modules.geo.io.MapDocument;
+import org.santfeliu.webapp.modules.geo.io.MapFilter;
+import org.santfeliu.webapp.modules.geo.io.MapGroup;
+import org.santfeliu.webapp.modules.geo.io.MapView;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 
 /**
@@ -54,6 +60,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   MapGroup mapGroup;
   MapFilter filter = new MapFilter();
   MapView currentMapView;
+  MapCategory currentMapCategory;
 
   transient MapDocument currentMapDocument;
 
@@ -74,6 +81,28 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   public void setCurrentMapView(MapView mapView)
   {
     currentMapView = mapView;
+  }
+
+  public MapCategory getCurrentMapCategory()
+  {
+    return currentMapCategory;
+  }
+
+  public void setCurrentMapCategory(MapCategory mapCategory)
+  {
+    this.currentMapCategory = new MapCategory(mapCategory);
+  }
+
+  public void createMap()
+  {
+    GeoMapBean geoMapBean = CDI.current().select(GeoMapBean.class).get();
+    geoMapBean.newMap();
+    geoMapBean.setView("map_editor");
+  }
+
+  public void createMapCategory()
+  {
+    this.currentMapCategory = new MapCategory();
   }
 
   public void showMap(MapView mapView)
@@ -128,11 +157,74 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     try
     {
       mapGroup = getMapStore().findMaps(filter);
+      currentMapCategory = null;
     }
     catch (Exception ex)
     {
       error(ex);
     }
+  }
+
+  public void storeMapCategory()
+  {
+    try
+    {
+      getMapStore().storeCategory(currentMapCategory, null);
+      GeoCategoryBean geoCategoryBean =
+        CDI.current().select(GeoCategoryBean.class).get();
+      geoCategoryBean.updateCategories();
+      mapGroup = null;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void uploadCategoryImage(FileUploadEvent event)
+  {
+    if (currentMapCategory != null)
+    {
+      UploadedFile imageToUpload = event.getFile();
+      File imageFile = null;
+      try
+      {
+        imageFile = File.createTempFile("image", ".svg");
+        try (InputStream is = imageToUpload.getInputStream())
+        {
+          IOUtils.writeToFile(is, imageFile);
+        }
+        getMapStore().storeCategory(currentMapCategory, imageFile);
+        mapGroup = null;
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+      finally
+      {
+        currentMapCategory = null;
+        try
+        {
+          if (imageFile != null) imageFile.delete();
+          imageToUpload.delete();
+        }
+        catch (Exception ex2)
+        {
+        }
+      }
+    }
+  }
+
+  public void cancelMapCategory()
+  {
+    currentMapCategory = null;
+  }
+
+  public boolean isAdminUser()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    return userSessionBean.isUserInRole(GEO_ADMIN_ROLE);
   }
 
   private MapDocument getCurrentMapDocument() throws Exception
