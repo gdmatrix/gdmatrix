@@ -11,7 +11,7 @@ class TimeSliderControl
       minDate: minimal accepted date.
       baseDate: base date of the slider.
       startDate: initial start date of the period.
-      scales: object { "d": number of days, "w": number of weeks, "M": number of months }
+      scales: object { "d": number of days, "w": number of weeks, "M": number of months, "y": number of years }
       startDateVar: string, start date variable to change in the filters (using let)
       endDateVar: string, end date variable to change in the filters (using let)
       convertDate: function(date), returns the string value to set in the filter
@@ -36,7 +36,8 @@ class TimeSliderControl
       options.scales = {
         "d": 30,
         "w": 16,
-        "M": 12        
+        "M": 12,
+        "y": 10
       };
     }
 
@@ -221,6 +222,13 @@ class TimeSliderControl
       this.startDate.setMonth(this.startDate.getMonth() + months);
       this.updatePeriod();      
     }    
+    else if (this.period === "y")
+    {
+      const years = parseInt(this.rangeElement.value);
+      this.startDate = new Date(this.baseDate);
+      this.startDate.setFullYear(this.startDate.getFullYear() + years);
+      this.updatePeriod();      
+    }
   }
   
   updatePeriod()
@@ -272,6 +280,15 @@ class TimeSliderControl
         this.endDate = new Date(this.startDate);
         this.endDate.setMonth(this.endDate.getMonth() + 1);
         this.rangeElement.max = this.options.scales["M"];
+      }
+      else if (period === "y")
+      {
+        this.startDate.setDate(1);
+        this.startDate.setMonth(0);
+        this.roundDate(this.startDate);
+        this.endDate = new Date(this.startDate);
+        this.endDate.setFullYear(this.endDate.getFullYear() + 1);
+        this.rangeElement.max = this.options.scales["y"];
       }
     }
     this.updateDates();

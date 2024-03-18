@@ -98,7 +98,7 @@ class FindFeatureControl
 
     map.addSource("finder_results", {
       type: 'geojson',
-      data: this.data.features
+      data: this.data
     });
 
     map.addLayer({

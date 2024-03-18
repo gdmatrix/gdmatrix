@@ -56,6 +56,7 @@ Bundle.getBundle("main").setTranslations("", {
   "TimeSliderControl.period.d": "1 day",
   "TimeSliderControl.period.w": "1 week",
   "TimeSliderControl.period.M": "1 month",
+  "TimeSliderControl.period.y": "1 year",
   "TimeSliderControl.period.2": "between 2 dates",
   
   "GenericWfsFinder.title": "WFS finder",
