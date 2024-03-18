@@ -11,12 +11,13 @@ class TimeSliderControl
       minDate: minimal accepted date.
       baseDate: base date of the slider.
       startDate: initial start date of the period.
-      scales: object { "d": number of days, "w": number of weeks, "M": number of months, "y": number of years }
-      startDateVar: string, start date variable to change in the filters (using let)
-      endDateVar: string, end date variable to change in the filters (using let)
-      convertDate: function(date), returns the string value to set in the filter
-      firstDayOfWeek: number(0-6), first day of week
-  */
+      scales: object { "d": number of days, "w": number of weeks, "M": number of months, "y": number of years }.
+      startDateVar: string, start date variable to change in the filters (using let), "startDate" by default.
+      endDateVar: string, end date variable to change in the filters (using let), "endDate" by default.
+      convertDate: function(date), returns the string value to set in the filter.
+      enableForLayers: array of layer ids that enable this control when they are visible.
+      firstDayOfWeek: number(0-6), first day of the week.
+   */
   constructor(options)
   {
     this.options = options || {}; 
@@ -54,6 +55,7 @@ class TimeSliderControl
   createSliderPanel()
   {    
     const div = document.createElement("div");
+    this.div = div;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group";
     div.innerHTML = `
       <div class="flex flex-column p-1" style="font-family:var(--font-family)">
@@ -292,7 +294,7 @@ class TimeSliderControl
       }
     }
     this.updateDates();
-    this.updateLayers();
+    this.updateSourcesAndLayers();
   }
   
   updateDates()
@@ -306,36 +308,58 @@ class TimeSliderControl
     this.endDoWElement.textContent = this.getDayOfWeek(endDate);    
   }
 
-  updateLayers()
+  updateSourcesAndLayers()
   {
     const map = this.map;
     let startDateString = this.options.convertDate(this.startDate);
     let endDateString = this.options.convertDate(this.endDate);
-    
-    let startDateVar = this.options.startDateVar || "startDate";
-    let endDateVar = this.options.endDateVar || "endDate";
+
+    let sources = map.getStyle().sources;
+    for(let sourceId in sources)
+    {
+      let source = sources[sourceId];
+      if (source.type === "geojson" && source.filter)
+      {
+        source = map.getSource(sourceId);
+        let filter = source.workerOptions.filter;
+        if (this.updateFilter(filter, startDateString, endDateString))
+        {
+          source.updateData();
+        }
+      }
+    }
     
     let layers = map.getStyle().layers;
-
     for (let layer of layers)
     {
       let layerId = layer.id;
       let filter = map.getFilter(layerId);
-      if (filter instanceof Array)
-      {
-        if (filter.indexOf("let") !== 0) continue;
-        
-        let index1 = filter.indexOf(startDateVar);
-        if (index1 !== -1) filter[index1 + 1] = startDateString;
 
-        let index2 = filter.indexOf(endDateVar);
-        if (index2 !== -1) filter[index2 + 1] = endDateString;
-        
-        if (index1 === -1 && index2 === -1) continue;
-        
+      if (this.updateFilter(filter, startDateString, endDateString))
+      {
         map.setFilter(layerId, filter);
       }
     }
+  }
+  
+  updateFilter(filter, startDateString, endDateString)
+  {
+    if (filter instanceof Array)
+    {
+      let startDateVar = this.options.startDateVar || "startDate";
+      let endDateVar = this.options.endDateVar || "endDate";  
+      
+      if (filter.indexOf("let") !== 0) return false;
+
+      let index1 = filter.indexOf(startDateVar);
+      if (index1 !== -1) filter[index1 + 1] = startDateString;
+
+      let index2 = filter.indexOf(endDateVar);
+      if (index2 !== -1) filter[index2 + 1] = endDateString;
+
+      if (index1 === -1 && index2 === -1) return false;
+    }
+    return true;
   }
 
   getDayOfWeek(date)
@@ -360,10 +384,31 @@ class TimeSliderControl
     return date;
   }
 
+  onIdle()
+  {
+    const enableForLayers = this.options.enableForLayers; 
+    if (enableForLayers instanceof Array)
+    {
+      const map = this.map;
+      let enabled = false;
+      
+      for (let layerId of enableForLayers)
+      {
+        let layer = map.getLayer(layerId);
+        if (layer.metadata.visible)
+        {
+          enabled = true;
+          break;
+        }
+      }
+      this.div.style.display = enabled ? "" : "none";
+    }
+  }
+
   onAdd(map)
   {
     this.map = map;
-    this.updateLayers(new Date().toISOString());
+    map.on("idle", () => this.onIdle());
     return this.createSliderPanel(map);
   }
 }
