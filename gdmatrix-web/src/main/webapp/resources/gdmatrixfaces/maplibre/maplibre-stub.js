@@ -434,7 +434,7 @@ function getSourceUrl(sourceId, style)
   {
     url = "https://" + document.location.host + "/proxy?url=" +
           serviceUrl + "&" + urlParams +
-          "&_CHG=" + sourceId + "&_CHF=image&_CHR=_seed";
+          "&_CHG=" + sourceId + "&_CHR=_seed";
   }
   else
   {
