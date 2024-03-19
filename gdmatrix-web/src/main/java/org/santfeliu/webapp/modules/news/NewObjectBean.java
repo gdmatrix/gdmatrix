@@ -322,15 +322,15 @@ public class NewObjectBean extends ObjectBean
   
   private void encodeNewContent(New newObject)
   {
-    String headline = Unicode.encode(newObject.getHeadline());
+    String headline = Unicode.encode(newObject.getHeadline(), true);
     newObject.setHeadline(headline.length() > 1000 ?
       headline.substring(0, 1000) : headline);
     
-    String summary = Unicode.encode(newObject.getSummary());
+    String summary = Unicode.encode(newObject.getSummary(), true);
     newObject.setSummary(summary.length() > 4000 ?
       summary.substring(0, 4000) : summary);  
     
-    newObject.setText(Unicode.encode(newObject.getText()));
+    newObject.setText(Unicode.encode(newObject.getText(), true));
   }
   
   private void decodeNewContent(New newObject)

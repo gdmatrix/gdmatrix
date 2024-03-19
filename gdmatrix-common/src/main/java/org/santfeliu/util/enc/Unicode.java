@@ -38,6 +38,11 @@ public class Unicode
 {
   public static String encode(String text)
   {
+    return encode(text, false);
+  }
+  
+  public static String encode(String text, boolean extendedASCII)
+  {
     if (text == null) return null;
 
     StringBuffer buffer = new StringBuffer();
@@ -47,7 +52,7 @@ public class Unicode
       {
         buffer.append("\\\\");
       }
-      else if (ch >= 32 && ch < 128)
+      else if (ch >= 32 && ch < (extendedASCII ? 256 : 128))
       {
         buffer.append(ch);
       }
@@ -115,7 +120,7 @@ public class Unicode
   public static void main(String[] args)
   {
     String s;
-    s = Unicode.encode("Aixòòò és \\o &una [\u0456] prova´`");
+    s = Unicode.encode("Aixòòò és \\o &una [\u0456] prova´`", true);
     System.out.println(s);
     s = Unicode.decode(s);
     System.out.println(s);
