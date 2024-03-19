@@ -17,6 +17,18 @@
   --menubar-height: 3rem;
   --toolbar-button-size: 3rem;
   --toolbar-icon-size: 1rem;
+  --toolbar-color: #404040;
+  --toolbar-color-text: #f0f0f0;
+}
+
+::-moz-selection {
+  color: var(--primary-color-text);
+  background: var(--primary-color);
+}
+
+::selection {
+  color: var(--primary-color-text);
+  background: var(--primary-color);
 }
 
 h1
@@ -371,7 +383,7 @@ body .ui-messages-error ul
   display: flex;
   padding: 0;
   border: none;
-  background-color: #303030;
+  background-color: var(--toolbar-color);
   box-shadow: 5px 0 3px -3px rgb(50 50 50 / 30%);
   z-index:10;
   border-radius: 0;
@@ -400,7 +412,7 @@ body .ui-messages-error ul
   border:none;
   border-radius: 0;
   background-color: transparent;
-  color: #d0d0d0;
+  color: var(--toolbar-color-text);
   width: var(--toolbar-button-size);
   height: var(--toolbar-button-size);
   flex-shrink: 0;
@@ -415,14 +427,14 @@ body .ui-messages-error ul
 
 .app_content > .app_toolbar .ui-button:hover
 {
-  background-color: #606060;
-  color: #f0f0f0;
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
 }
 
 .app_content > .app_toolbar .ui-button.current
 {
-  background-color: #0b7ad1;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
 }
 
 .app_content > .app_body
