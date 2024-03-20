@@ -739,19 +739,19 @@ public class FeedReaderTask2 extends WSTask
   {
     if (newItem.getHeadline() != null)
     {
-      String headline = Unicode.encode(newItem.getHeadline());
+      String headline = Unicode.encode(newItem.getHeadline(), true);
       newItem.setHeadline(headline.length() > 1000 ? 
         headline.substring(0, 1000) : headline);
     }
     if (newItem.getSummary() != null)
     {
-      String summary = Unicode.encode(newItem.getSummary());
+      String summary = Unicode.encode(newItem.getSummary(), true);
       newItem.setSummary(summary.length() > 4000 ? 
         summary.substring(0, 4000) : summary);    
     }
     if (newItem.getText() != null)
     {
-      newItem.setText(Unicode.encode(newItem.getText()));
+      newItem.setText(Unicode.encode(newItem.getText(), true));
     }   
   }
   
