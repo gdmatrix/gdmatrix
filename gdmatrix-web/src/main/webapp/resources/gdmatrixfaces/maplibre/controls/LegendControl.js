@@ -126,23 +126,7 @@ class LegendControl
       {
         if (node.parent?.mode === "single")
         {
-          let visibleNode = null;
-          for (let childNode of node.parent.children)
-          {
-            if (childNode.link?.firstElementChild?.className === "pi pi-eye")
-            {
-              visibleNode = childNode;
-              break;
-            }
-          }
-          if (visibleNode)
-          {
-            this.changeNodeVisibility(visibleNode, "none");
-          }
-          if (visibleNode !== node)
-          {
-            this.changeNodeVisibility(node, "visible");
-          }
+          this.changeSingleNodeVisibility(node);
         }
         else
         {
@@ -160,6 +144,10 @@ class LegendControl
           {
             this.changeNodeVisibility(node.children[0], "visible");
           };
+        }
+        else if (node.parent?.mode === "single")
+        {
+          this.changeSingleNodeVisibility(node);
         }
         else
         {
@@ -182,6 +170,27 @@ class LegendControl
         childNode.parent = node;
       }
     }
+  }
+
+  changeSingleNodeVisibility(node)
+  {
+    let visibleNode = null;
+    for (let childNode of node.parent.children)
+    {
+      if (childNode.link?.firstElementChild?.className === "pi pi-eye")
+      {
+        visibleNode = childNode;
+        break;
+      }
+    }
+    if (visibleNode)
+    {
+      this.changeNodeVisibility(visibleNode, "none");
+    }
+    if (visibleNode !== node)
+    {
+      this.changeNodeVisibility(node, "visible");
+    }    
   }
 
   addNodeGraphicAndLabel(node, link)
@@ -399,6 +408,8 @@ class LegendControl
 
   changeNodeVisibility(node, mode = "toggle", sourceSet = null)
   {
+    console.info(node.label, mode);
+    
     const map = this.map;
     const layerId = node.layerId || null;
     if (sourceSet === null) sourceSet = new Set();
