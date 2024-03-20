@@ -16,6 +16,8 @@
     <p:outputPanel id="filter_panel">
 
       <div class="ui-fluid formgrid grid"> 
+        
+        <p:defaultCommand target="advanced_search_button" scope="filter_panel" />
 
         <div class="field col-12">    
           <p:outputLabel for="@next" value="#{reportBundle.reportId}" />
@@ -37,13 +39,13 @@
           </p:selectOneMenu>
         </div> 
         
-        <div class="field col-12">    
+        <h:panelGroup styleClass="field col-12" rendered="#{!reportFinderBean.themeConfigured}">    
           <p:outputLabel for="@next" value="#{reportBundle.reportThemes}" />
           <p:selectOneMenu value="#{reportFinderBean.theme}" >
             <f:selectItem itemValue="" itemLabel="" />  
             <f:selectItems value="#{reportFinderBean.themeItems}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}" />            
           </p:selectOneMenu>
-        </div>         
+        </h:panelGroup>         
 
       </div>
 

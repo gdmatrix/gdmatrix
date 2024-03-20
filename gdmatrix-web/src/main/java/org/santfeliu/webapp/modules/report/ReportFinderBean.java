@@ -61,6 +61,8 @@ import static org.santfeliu.webapp.modules.report.ReportTypeBean.REPORT_DOC_TYPE
 @RequestScoped
 public class ReportFinderBean extends FinderBean
 {
+  private static final String REPORT_THEME_PROPERTY = "reportTheme";
+  
   private String smartFilter;
   private DocumentFilter filter = new DocumentFilter();  
   private List<Report> rows;
@@ -176,6 +178,16 @@ public class ReportFinderBean extends FinderBean
   {
     this.theme = theme;
   }
+  
+  public String getConfiguredTheme()
+  {
+    return getProperty(REPORT_THEME_PROPERTY);
+  }
+  
+  public boolean isThemeConfigured()
+  {
+    return !StringUtils.isBlank(getConfiguredTheme());
+  }
 
   public List<EnumTypeItem> getThemeItems()
   {
@@ -240,6 +252,7 @@ public class ReportFinderBean extends FinderBean
       }
       else
       {
+        theme = isThemeConfigured() ? getConfiguredTheme() : theme;
         rows = new BigList(20, 10)
         {
           @Override
