@@ -88,8 +88,9 @@
           <c:forEach items="#{objectBean.scriptActions.actions}" var="action" >
             <p:menuitem icon="#{action.icon}"
                         value="#{action.label}" action="#{objectBean.callAction(action.name)}"
-                        rendered="#{not empty action.label and not action.isUrlAction()}" process="@this"
-                        update="@form:cnt:search_tabs:tabs"/>
+                        rendered="#{not empty action.label and not action.isUrlAction()}" 
+                        process="@this"
+                        update="@form:cnt:search_tabs:tabs object_header"/>
             <p:menuitem icon="#{action.icon}"
                         value="#{action.label}" 
                         url="#{action.url}" target="#{action.urlTarget}"
