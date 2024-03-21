@@ -65,6 +65,7 @@ public class TemplateBean extends FacesBean implements Serializable
   private String username;
   private String password;
   private List<MenuItemCursor> highlightedItems;
+  private String workspaceId;
 
   public String getUsername()
   {
@@ -88,8 +89,9 @@ public class TemplateBean extends FacesBean implements Serializable
 
   public List<MenuItemCursor> getHighlightedItems()
   {
-    if (highlightedItems == null)
+    if (isHighlightedItemsReloadRequired())
     {
+      workspaceId = UserSessionBean.getCurrentInstance().getWorkspaceId();
       highlightedItems = new ArrayList<>();
       String toolbarMode = getToolbarMode();
 
@@ -101,11 +103,26 @@ public class TemplateBean extends FacesBean implements Serializable
       else
       {
         MenuItemCursor cursor = getContextMenuItem();
-        System.out.println("\n\n>>Context MID: " + cursor.getMid());
         addContextMenuItems(cursor);
       }
     }
     return highlightedItems;
+  }
+
+  private boolean isHighlightedItemsReloadRequired()
+  {
+    boolean reload;
+
+    if (highlightedItems == null)
+    {
+      reload = true;
+    }
+    else
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      reload = !userSessionBean.getWorkspaceId().equals(workspaceId);
+    }
+    return reload;
   }
 
   public String getContent()
