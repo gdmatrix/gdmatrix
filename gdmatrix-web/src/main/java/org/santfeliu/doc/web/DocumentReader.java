@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.web;
@@ -78,13 +78,13 @@ public class DocumentReader
   public static final String TRANSFORM_TO_PARAM = "transform-to";
   public static final String TRANSFORM_WITH_PARAM = "transform-with";
   public static final String AUTHENTICATE = "authenticate";
-  
-  private static final String DOCX_MIMETYPE = 
+
+  private static final String DOCX_MIMETYPE =
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  private static final String TCQ_MIMETYPE = 
+  private static final String TCQ_MIMETYPE =
     "application/tcq";
-    
-  
+
+
 
   private long defaultCacheTime = 10000; // 10 seconds
 
@@ -129,7 +129,7 @@ public class DocumentReader
           {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
           }
-          else if (msg != null && (msg.contains("ACTION_DENIED") || 
+          else if (msg != null && (msg.contains("ACTION_DENIED") ||
             msg.contains("INVALID_IDENTIFICATION")))
           {
             if (HttpUtils.isSecure(request) && docReq.authenticate)
@@ -137,7 +137,8 @@ public class DocumentReader
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
           }
           else
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+              ex.toString());
         }
       }
     }
@@ -250,7 +251,7 @@ public class DocumentReader
       docReq.username = credentials.getUserId();
       docReq.password = credentials.getPassword();
       String authParam = request.getParameter(AUTHENTICATE);
-      docReq.authenticate = 
+      docReq.authenticate =
         authParam != null && !authParam.equalsIgnoreCase("false");
 
     }
@@ -301,7 +302,7 @@ public class DocumentReader
         response.setContentType(dataHandler.getContentType());
       }
       // cache result for few seconds to avoid double request
-      response.setDateHeader("Expires", System.currentTimeMillis() + 3000);      
+      response.setDateHeader("Expires", System.currentTimeMillis() + 3000);
     }
     else // Send content
     {
@@ -382,7 +383,7 @@ public class DocumentReader
     }
   }
 
-  private void setContentDispositionHeader(DocumentRequest docReq, 
+  private void setContentDispositionHeader(DocumentRequest docReq,
     HttpServletResponse response)
   {
     String contentType = response.getContentType();
@@ -396,7 +397,7 @@ public class DocumentReader
       docReq.saveAs = filename;
     }
 
-    if (docReq.saveAs != null) 
+    if (docReq.saveAs != null)
     {
       String headerValue = "attachment; filename=" + docReq.saveAs;
       response.addHeader("Content-Disposition", headerValue);
