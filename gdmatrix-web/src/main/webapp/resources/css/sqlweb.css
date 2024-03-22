@@ -16,3 +16,9 @@
   color: #495057;
   font-weight: bold;
 }
+
+.code,
+.code > .ui-inputfield
+{
+  font-family: monospace !important;
+}

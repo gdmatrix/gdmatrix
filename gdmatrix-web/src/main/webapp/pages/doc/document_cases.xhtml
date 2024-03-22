@@ -42,11 +42,11 @@
       </p:column>
 
       <p:column headerText="#{documentBundle.document_docType}" 
-                styleClass="col-3">
+                styleClass="col-5">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}"/>
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-center white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat" 

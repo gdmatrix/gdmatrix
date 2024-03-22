@@ -30,15 +30,15 @@
         </div>
       </f:facet>
 
-      <p:column headerText="#{securityBundle.user_user}" styleClass="col-3">
+      <p:column headerText="#{securityBundle.user_user}" styleClass="col-4">
         <h:outputText value="#{row.user.userId}" />
       </p:column>
 
-      <p:column headerText="#{securityBundle.user_displayName}" styleClass="col-7">
+      <p:column headerText="#{securityBundle.user_displayName}" styleClass="col-8">
         <h:outputText value="#{row.user.displayName}" />
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-center white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this" update="@form:cnt"

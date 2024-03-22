@@ -12,24 +12,9 @@
                var="fileId" stripedRows="true" size="small" 
                resizableColumns="false" showGridlines="true">
 
-    <p:column headerText="FileId" styleClass="col-4 white-space-nowrap" >
-      <span class="pi pi-file mr-1"/><h:outputText value="#{fileId}" />
-    </p:column>
-
-    <p:column headerText="#{assistantBundle.filename}" styleClass="col-3">
-      <h:outputText value="#{assistantFilesBean.getFile(fileId).filename}" />
-    </p:column>
-
-    <p:column headerText="#{assistantBundle.size}" styleClass="col-2" >
-      <h:outputText value="#{assistantFilesBean.getFile(fileId).bytes} bytes" />
-    </p:column>
-
-    <p:column headerText="#{assistantBundle.created}" styleClass="col-2" >
-      <h:outputText value="#{assistantFilesBean.getCreationDate(fileId)}" />
-    </p:column>
-
-    <p:column styleClass="col-1 text-right white-space-nowrap">
-      <f:facet name="header">
+    <f:facet name="header">
+      <div class="flex align-items-center">
+        <div class="font-normal flex-grow-1">#{assistantBean.assistant.fileIds.size()} #{assistantBundle.files}</div>
         <p:commandButton action="#{assistantFilesBean.addFile()}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.add}" title="#{objectBundle.add}"
@@ -38,8 +23,26 @@
                          update="@form:cnt:assistant_tabs:assistant_files_dialog"
                          resetValues="true"
                          oncomplete="PF('assistantFilesDialog').show()" />
-      </f:facet>
-      
+      </div>
+    </f:facet>
+    
+    <p:column headerText="FileId" styleClass="col-4 white-space-nowrap" >
+      <span class="pi pi-file mr-1"/><span class="code">#{fileId}</span>
+    </p:column>
+
+    <p:column headerText="#{assistantBundle.filename}" styleClass="col-4">
+      <span class="code">#{assistantFilesBean.getFile(fileId).filename}</span>
+    </p:column>
+
+    <p:column headerText="#{assistantBundle.size}" styleClass="text-center col-2" >
+      <h:outputText value="#{assistantFilesBean.getFile(fileId).bytes} bytes" />
+    </p:column>
+
+    <p:column headerText="#{assistantBundle.created}" styleClass="col-2" >
+      <h:outputText value="#{assistantFilesBean.getCreationDate(fileId)}" />
+    </p:column>
+
+    <p:column styleClass="text-center white-space-nowrap">
       <p:commandButton action="#{assistantFilesBean.editFile(fileId)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
@@ -87,14 +90,14 @@
                             readonly="#{assistantFilesBean.phase == 2}"
                             itemLabel="#{filename}" itemValue="#{filename}"
                             completeMethod="#{assistantFilesBean.completeFilename}" 
-                            pt:spellcheck="false"
+                            pt:spellcheck="false" styleClass="code"
                             emptyMessage="">
               <p:ajax event="itemSelect" 
                       listener="#{assistantFilesBean.setPhase(2)}"
                       process="@this"
                       update="assistant_files_panel assistant_files_footer" />
               <p:column>
-                #{filename}
+                <span class="code">#{filename}</span>
               </p:column>
             </p:autoComplete>
             <p:commandButton icon="pi pi-check" 
@@ -114,13 +117,15 @@
 
         <div class="field col-12 md:col-6">
           <p:outputLabel value="FileId:" for="@next" />
-          <p:inputText value="#{assistantFilesBean.lastFileId}" readonly="true" 
+          <p:inputText value="#{assistantFilesBean.lastFileId}" 
+                       readonly="true" styleClass="code"
                        style="#{assistantFilesBean.isInvalidFileId() ? 'color:red' : ''}" />
         </div>
 
         <div class="field col-12 md:col-6">
           <p:outputLabel value="ContentId:" for="@next" />
-          <p:inputText value="#{assistantFilesBean.contentId}" readonly="true" />
+          <p:inputText value="#{assistantFilesBean.contentId}" 
+                       readonly="true" styleClass="code" />
         </div>
         
         <div class="field col-6">

@@ -3,6 +3,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
 
   <div class="sqlweb p-3">
@@ -31,15 +32,17 @@
                     styleClass="ui-fluid formgrid grid">
         <div class="field col-12 md:col-6 xl:col-4">
           <p:outputLabel value="#{sqlWebBundle.driver}:" for="@next" />
-          <p:inputText value="#{sqlwebBean.driver}"  />    
+          <p:inputText value="#{sqlwebBean.driver}" 
+                       pt:spellcheck="false" styleClass="code" />    
         </div>
         <div class="field col-12 md:col-6 xl:col-4">
           <p:outputLabel value="#{sqlWebBundle.url}:" for="@next" />
-          <p:inputText value="#{sqlwebBean.url}" />    
+          <p:inputText value="#{sqlwebBean.url}" 
+                       pt:spellcheck="false" styleClass="code" />    
         </div>
         <div class="field col-12 md:col-6 xl:col-2">
           <p:outputLabel value="#{sqlWebBundle.username}:" for="@next" />
-          <p:inputText value="#{sqlwebBean.username}" />
+          <p:inputText value="#{sqlwebBean.username}" pt:spellcheck="false" />
         </div>
         <div class="field col-12 md:col-6 xl:col-2">
           <p:outputLabel value="#{sqlWebBundle.password}:" for="@next" />

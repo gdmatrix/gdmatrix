@@ -37,11 +37,11 @@
         </div>
       </f:facet>
 
-      <p:column headerText="#{documentBundle.relation}" styleClass="col-3">
+      <p:column headerText="#{documentBundle.relation}" styleClass="col-4">
         <h:outputText value="#{documentBundle['org.matrix.doc.RelationType.' += row.relatedDocument.relationType]}"/>
       </p:column>
 
-      <p:column headerText="#{documentBundle.name}" styleClass="col-2">
+      <p:column headerText="#{documentBundle.name}" styleClass="col-3">
         <h:outputText value="#{row.relatedDocument.name}"/>
       </p:column>
 
@@ -49,7 +49,7 @@
         <h:outputText value="#{documentTypeBean.getDescription(row.relatedDocument.docId)}" />
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-center white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat"

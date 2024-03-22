@@ -30,15 +30,15 @@
     <p:ajax event="rowReorder" 
             update="@form:cnt:map_tabs:map_forms_table"/>
 
-    <p:column headerText="Layer" styleClass="w-6">
+    <p:column headerText="Layer" styleClass="col-6">
       <h:outputText value="#{form.layer}" />
     </p:column>
 
-    <p:column headerText="Form selector" styleClass="w-5">
+    <p:column headerText="Form selector" styleClass="col-6">
       <h:outputText value="#{form.formSelector}" />
     </p:column>
 
-    <p:column headerText="Actions" styleClass="w-1 text-center white-space-nowrap">
+    <p:column headerText="Actions" styleClass="text-center white-space-nowrap">
       <span class="drag pi pi-arrows-v p-2" />
       <p:commandButton action="#{geoMapLayerFormsBean.editLayerForm(form)}"
                        icon="pi pi-pencil"

@@ -30,19 +30,19 @@
       </div>
     </f:facet>
     
-    <p:column headerText="Id" styleClass="code w-2">
+    <p:column headerText="Id" styleClass="code col-3">
       #{layer.id}
     </p:column>
-    <p:column headerText="Label" styleClass="w-3">
+    <p:column headerText="Label" styleClass="col-4">
       #{layer.label}
     </p:column>
-    <p:column headerText="Source" styleClass="code w-4">
+    <p:column headerText="Source" styleClass="code col-4">
       #{layer.source} (#{geoMapBean.style.sources[layer.source].type})
     </p:column>
-    <p:column headerText="Type" styleClass="w-1 text-center">
+    <p:column headerText="Type" styleClass="text-center col-1">
       #{layer.type}
     </p:column>
-    <p:column headerText="Options" styleClass="w-1 text-center white-space-nowrap">
+    <p:column headerText="Options" styleClass="text-center white-space-nowrap">
       <p:commandButton action="#{geoMapLayersBean.toggleLayerVisibility(layer)}"
                        icon="#{geoMapLayersBean.isLayerVisible(layer) ? 'pi pi-eye' : 'pi pi-eye-slash'}" 
                        styleClass="rounded-button ui-button-flat"

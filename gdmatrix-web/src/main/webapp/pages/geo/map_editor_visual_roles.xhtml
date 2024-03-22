@@ -12,17 +12,17 @@
                var="ac" stripedRows="true" size="small" 
                resizableColumns="false" showGridlines="true">
 
-    <p:column headerText="Role" styleClass="w-8" 
+    <p:column headerText="Role" styleClass="col-8" 
               sortable="true" sortBy="#{ac.roleId}">
       <h:outputText value="#{roleTypeBean.getDescription(ac.roleId)}" />
     </p:column>    
     
-    <p:column headerText="Access" styleClass="w-3" 
+    <p:column headerText="Access" styleClass="col-4" 
               sortable="true" sortBy="#{ac.action}">
       <h:outputText value="#{geoBundle['acl_' += ac.action]}" />
     </p:column>
     
-    <p:column headerText="Actions" styleClass="w-1 text-center white-space-nowrap">
+    <p:column headerText="Actions" styleClass="text-center white-space-nowrap">
       <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat">
         <p:menuitem value="#{geoBundle.acl_Read}" action="#{geoMapRolesBean.updateAccessControl(ac, 'Read')}"
                        process="@this" update="@namingcontainer" />

@@ -12,16 +12,9 @@
                var="tool" stripedRows="true" size="small" 
                resizableColumns="false" showGridlines="true">
 
-    <p:column headerText="#{assistantBundle.type}" styleClass="col-4 white-space-nowrap" >
-      <span class="pi pi-cog mr-1"/><h:outputText value="#{tool.type}" />
-    </p:column>
-
-    <p:column headerText="#{assistantBundle.functionName}" styleClass="col-6 white-space-nowrap" >
-      <h:outputText value="#{tool.function.name}" />
-    </p:column>
-    
-    <p:column styleClass="col-2 text-right white-space-nowrap">
-      <f:facet name="header">
+    <f:facet name="header">
+      <div class="flex align-items-center">
+        <div class="font-normal flex-grow-1">#{assistantBean.assistant.tools.size()} #{assistantBundle.tools}</div>
         <p:commandButton action="#{assistantToolsBean.addTool()}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.add}" title="#{objectBundle.add}"
@@ -30,8 +23,18 @@
                          update="@form:cnt:assistant_tabs:assistant_tools_dialog"
                          resetValues="true"
                          oncomplete="PF('assistantToolsDialog').show()" />
-      </f:facet>
-      
+      </div>
+    </f:facet>    
+    
+    <p:column headerText="#{assistantBundle.type}" styleClass="col-5 white-space-nowrap" >
+      <span class="pi pi-cog mr-1"/><h:outputText value="#{tool.type}" />
+    </p:column>
+
+    <p:column headerText="#{assistantBundle.functionName}" styleClass="col-7 white-space-nowrap" >
+      <span class="code">#{tool.function.name}</span>
+    </p:column>
+    
+    <p:column styleClass="text-center white-space-nowrap">
       <p:commandButton action="#{assistantToolsBean.editTool(tool)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
@@ -91,7 +94,7 @@
                             readonly="#{assistantFilesBean.phase == 2}"
                             itemLabel="#{toolName}" itemValue="#{toolName}"
                             completeMethod="#{assistantToolsBean.completeToolName}" 
-                            forceSelection="true"
+                            forceSelection="true" styleClass="code"
                             pt:spellcheck="false"
                             emptyMessage="">
               <p:ajax event="itemSelect"
@@ -103,7 +106,7 @@
                       process="@this"
                       update="@none" />
               <p:column>
-                #{toolName}
+                <span class="code">#{toolName}</span>
               </p:column>
             </p:autoComplete>
           </div>
