@@ -115,6 +115,12 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
       BUNDLE_PREFIX + "event_endDate", "col-2"));
     searchTab.getColumns().add(new Column("summary",
       BUNDLE_PREFIX + "event_summary", "col-4"));
+    
+    List<String> orderBy = searchTab.getOrderBy();
+    orderBy.add("startDateTime");  
+    orderBy.add("endDateTime");
+    orderBy.add("eventId");
+    
     searchTabs.add(searchTab);
     objectSetup.setSearchTabs(searchTabs);
 

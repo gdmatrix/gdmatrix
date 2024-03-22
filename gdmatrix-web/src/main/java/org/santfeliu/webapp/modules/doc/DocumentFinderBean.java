@@ -46,7 +46,6 @@ import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.OrderByProperty;
 import org.santfeliu.classif.ClassCache;
-import static org.santfeliu.doc.web.DocumentSearchBean.ORDERBY_PROPERTY;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.UserSessionBean;
@@ -130,8 +129,11 @@ public class DocumentFinderBean extends FinderBean
     {
       if (objectSetup == null)
         loadObjectSetup();
+      
+      List<Column> columns = 
+        objectSetup.getSearchTabs().get(0).getColumns();
 
-      return objectSetup.getSearchTabs().get(0).getColumns();
+      return columns != null ? columns : Collections.emptyList();
     }
     catch (Exception ex)
     {
@@ -359,7 +361,7 @@ public class DocumentFinderBean extends FinderBean
               }
               filter.setIncludeContentMetadata(true);
               
-              setOrderByProperties();
+              setOrderBy(filter);
               
               List<Document> documents =
                 DocModuleBean.getPort(false).findDocuments(filter);
@@ -436,25 +438,30 @@ public class DocumentFinderBean extends FinderBean
     return convertedRows;
   }
   
-  private void setOrderByProperties() throws Exception
+  private void setOrderBy(DocumentFilter filter) throws Exception
   {
     if (objectSetup == null)
       loadObjectSetup();
 
-    List<String> orderByValues = 
-      objectSetup.getSearchTabs().get(0).getProperties()
-        .getList(ORDERBY_PROPERTY);
-
-    for (String item : orderByValues)
+    int tabSelector = documentObjectBean.getSearchTabSelector();
+    tabSelector = 
+      tabSelector < objectSetup.getSearchTabs().size() ? tabSelector : 0;      
+    List<String> orderBy = 
+      objectSetup.getSearchTabs().get(tabSelector).getOrderBy();
+    
+    if (orderBy != null && !orderBy.isEmpty())
     {
-      String[] parts = item.split(":");
-      OrderByProperty orderByProperty = new OrderByProperty();
-      orderByProperty.setName(parts[0]);
-      if (parts.length > 1 && "desc".equalsIgnoreCase(parts[1]))
+      for (String item : orderBy)
       {
-        orderByProperty.setDescending(true);
+        String[] parts = item.split(":");
+        OrderByProperty orderByProperty = new OrderByProperty();
+        orderByProperty.setName(parts[0]);
+        if (parts.length > 1 && "desc".equalsIgnoreCase(parts[1]))
+        {
+          orderByProperty.setDescending(true);
+        }
+        filter.getOrderByProperty().add(orderByProperty);
       }
-      filter.getOrderByProperty().add(orderByProperty);
     }
   }  
   

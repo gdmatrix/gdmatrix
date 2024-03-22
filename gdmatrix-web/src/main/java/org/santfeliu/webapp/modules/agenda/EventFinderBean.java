@@ -50,6 +50,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
+import org.matrix.agenda.OrderByProperty;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.security.SecurityConstants;
 import org.primefaces.PrimeFaces;
@@ -173,7 +174,9 @@ public class EventFinderBean extends FinderBean
       if (objectSetup == null)
         loadObjectSetup();
 
-      return objectSetup.getSearchTabs().get(0).getColumns();
+      List<Column> columns = objectSetup.getSearchTabs().get(0).getColumns();
+      
+      return columns != null ? columns : Collections.emptyList();
     }
     catch (Exception ex)
     {
@@ -685,6 +688,7 @@ public class EventFinderBean extends FinderBean
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               filter.setIncludeMetadata(true);
+              setOrderBy(filter);
               List<Event> events = AgendaModuleBean.getClient().
                 findEventsFromCache(filter);
               return toDataTableRows(events);
@@ -754,6 +758,35 @@ public class EventFinderBean extends FinderBean
     }
     return convertedRows;
   }
+  
+  private void setOrderBy(EventFilter filter) throws Exception
+  {
+    filter.getOrderBy().clear();
+    
+    if (objectSetup == null)        
+      loadObjectSetup();
+       
+    int tabSelector = eventObjectBean.getSearchTabSelector();
+    tabSelector = 
+      tabSelector < objectSetup.getSearchTabs().size() ? tabSelector : 0;
+    List<String> orderBy =
+      objectSetup.getSearchTabs().get(tabSelector).getOrderBy(); 
+    
+    if (orderBy != null && !orderBy.isEmpty())
+    {
+      for (String column : orderBy)
+      {
+        String[] parts = column.split(":");
+        OrderByProperty orderByProperty = new OrderByProperty();
+        orderByProperty.setName(parts[0]);
+        if (parts.length > 1 && "desc".equalsIgnoreCase(parts[1]))
+        {
+          orderByProperty.setDescending(true);
+        }
+        filter.getOrderBy().add(orderByProperty);
+      }
+    }
+  }  
 
   private ScheduleModel loadEventModel()
   {

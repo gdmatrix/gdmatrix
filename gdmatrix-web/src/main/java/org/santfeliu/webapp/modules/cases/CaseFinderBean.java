@@ -168,7 +168,9 @@ public class CaseFinderBean extends FinderBean
       if (objectSetup == null)
         loadObjectSetup();
       
-      return objectSetup.getSearchTabs().get(0).getColumns();
+      List<Column> columns = objectSetup.getSearchTabs().get(0).getColumns();
+      
+      return columns != null ? columns : Collections.emptyList();
     }
     catch (Exception ex)
     {
@@ -320,6 +322,8 @@ public class CaseFinderBean extends FinderBean
                 filter.getClassId().clear();
                 filter.getClassId().addAll(classIds);                
               }   
+
+              setOrderBy(filter);
               
               List<Column> columns = getColumns();
               for (Column column : columns)
@@ -393,6 +397,38 @@ public class CaseFinderBean extends FinderBean
     if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
       title = title.replaceAll("^%+|%+$", "");
     filter.setTitle(title);
+  }
+  
+  private void setOrderBy(CaseFilter filter) throws Exception
+  {
+    if (objectSetup == null)
+      loadObjectSetup();
+                  
+    int tabSelector = caseObjectBean.getSearchTabSelector();
+    tabSelector = 
+      tabSelector < objectSetup.getSearchTabs().size() ? tabSelector : 0;    
+    List<String> orderBy = 
+      objectSetup.getSearchTabs().get(tabSelector).getOrderBy(); 
+    
+    if (orderBy != null && !orderBy.isEmpty())
+    {
+      StringBuilder buffer = new StringBuilder(" ORDER BY ");
+      boolean firstColumn = true;
+      for (String column : orderBy)
+      {
+        if (!firstColumn)
+          buffer.append(", ");
+        else
+          firstColumn = false;
+
+        String[] parts = column.split(":");
+        buffer.append(parts[0]).append(" ");
+        if (parts.length > 1 && "desc".equalsIgnoreCase(parts[1]))
+          buffer.append(" desc ");
+      }
+
+      filter.setSearchExpression(buffer.toString());                    
+    }    
   }
   
 }

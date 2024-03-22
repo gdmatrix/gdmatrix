@@ -115,7 +115,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     searchTab.getColumns().add(new Column("caseTypeId", 
       BUNDLE_PREFIX + "case_type", "col-3"));   
     searchTab.getColumns().add(new Column("title", 
-      BUNDLE_PREFIX + "case_title", "col-6"));  
+      BUNDLE_PREFIX + "case_title", "col-6")); 
+    searchTab.getOrderBy().add("caseId");
     searchTabs.add(searchTab);
     
     objectSetup.setSearchTabs(searchTabs);
