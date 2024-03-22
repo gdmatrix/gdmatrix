@@ -42,12 +42,15 @@ import org.santfeliu.util.RandomUtils;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
+ * @author realor
  */
 public class UserPreferences implements Serializable
 {
-  public static String DEFAULT_LANGUAGE_PROPERTY = "defaultLanguage";
-  public static String DEFAULT_THEME_PROPERTY = "defaultTheme";
+  public static String LANGUAGE_PROPERTY = "defaultLanguage";
+  public static String THEME_PROPERTY = "defaultTheme";
+  public static String PRIMEFACES_THEME_PROPERTY = "primefacesTheme";
+  public static String FONT_SIZE_PROPERTY = "fontSize";
   public static String RECENT_PAGES_SIZE_PROPERTY = "recentPagesSize";
 
   private final static float PURGE_PROBABILITY = 0.05f;
@@ -87,12 +90,17 @@ public class UserPreferences implements Serializable
 
   public void storePreference(String name, String value)
   {
+    storePreference(name, value, true);
+  }
+
+  public void storePreference(String name, String value, boolean incremental)
+  {
     Property property = new Property();
     property.setName(name);
     property.getValue().add(value);
     List<Property> propertyList = new ArrayList();
     propertyList.add(property);
-    getSecurityPort().storeUserProperties(userId, propertyList, true);
+    getSecurityPort().storeUserProperties(userId, propertyList, incremental);
     preferencesMap = null;
   }
 
@@ -121,12 +129,22 @@ public class UserPreferences implements Serializable
 
   public String getDefaultLanguage() throws Exception
   {
-    return getPreference(DEFAULT_LANGUAGE_PROPERTY);
+    return getPreference(LANGUAGE_PROPERTY);
   }
 
   public String getDefaultTheme() throws Exception
   {
-    return getPreference(DEFAULT_THEME_PROPERTY);
+    return getPreference(THEME_PROPERTY);
+  }
+
+  public String getPrimefacesTheme() throws Exception
+  {
+    return getPreference(PRIMEFACES_THEME_PROPERTY);
+  }
+
+  public String getFontSize() throws Exception
+  {
+    return getPreference(FONT_SIZE_PROPERTY);
   }
 
   public String getRecentPagesSize() throws Exception

@@ -108,6 +108,7 @@
                                oncomplete="if (!isFacesError()) PF('loginSideBar').hide()" />
             </div>
           </div>
+          
 
           <p:defaultCommand target="user_pass_button" />
 
@@ -172,7 +173,7 @@
           <p:selectOneMenu value="#{userSessionBean.viewLanguage}"  
                             styleClass="mt-2 block">
             <p:ajax event="valueChange" process="@this" 
-                    update="menubar menu_sb login_sb config_label language_label theme_label @form:cnt" />
+                    update="menubar menu_sb login_sb config_label language_label font_label theme_label save_prefs @form:cnt" />
             <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale" 
                            itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)}" />
           </p:selectOneMenu>
@@ -186,6 +187,24 @@
             <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
             <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
           </p:selectOneMenu>
+        </div>
+        <div class="font_resizer mt-3">
+          <h:panelGroup id="font_label">
+            <label for="font_range" class="block">#{webBundle.fontSize}</label>
+          </h:panelGroup>
+          <input id="font_range" class="block w-full mt-3" 
+                 type="range" min="12" max="14" step="1" 
+                 value="#{userSessionBean.fontSize}"
+                 oninput="updateFontSize(this.value)"
+                 onchange="rcUpdateFontSize([{'name':'fontSize','value':this.value}])" />
+          <p:remoteCommand action="#{userSessionBean.updateFontSize}" name="rcUpdateFontSize" />
+        </div>
+        <div class="mt-5 w-full">
+          <p:commandButton id="save_prefs"
+                           action="#{templateBean.savePreferences}" icon="pi pi-save"
+                           value="#{webBundle.savePreferences}" styleClass="w-full"
+                           rendered="#{userSessionBean.isPersistentUser()}"
+                           process="@this" update="@none" />
         </div>
       </div>
     </p:sidebar>
@@ -332,6 +351,12 @@
           }
         }
       }
+
+      function updateFontSize(size)
+      {
+        document.querySelector(":root").style.setProperty("--font-size", size + 'px');            
+      }
+      updateFontSize(#{userSessionBean.fontSize});
 
       function onResize()
       {

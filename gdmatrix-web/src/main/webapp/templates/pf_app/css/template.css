@@ -12,13 +12,18 @@
 
 :root 
 {
-  font-size:12px;
+  --font-size:12px;
   --font-family:Montserrat;
   --menubar-height: 3rem;
   --toolbar-button-size: 3rem;
   --toolbar-icon-size: 1rem;
-  --toolbar-color: #404040;
+  --toolbar-color: #303030;
   --toolbar-color-text: #f0f0f0;
+}
+
+:root
+{
+  font-size:var(--font-size);
 }
 
 ::-moz-selection {
@@ -666,4 +671,70 @@ body div.field
   height: 100%;
 }
 
+.font_resizer input[type="range"] 
+{
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  margin-left:0;
+}
+
+/* Removes default focus */
+.font_resizer input[type="range"]:focus 
+{
+  outline: none;
+}
+
+/* slider track */
+.font_resizer input[type="range"]::-webkit-slider-runnable-track 
+{
+  background-color: var(--surface-300);
+  border-radius: var(--border-radius);
+  height: 0.5rem;
+}
+
+/* slider thumb */
+.font_resizer input[type="range"]::-webkit-slider-thumb 
+{
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  margin-top: -0.25rem;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  height: 1rem;
+  width: 1rem;
+  outline: 3px solid var(--surface-300);
+}
+
+.font_resizer input[type="range"]:focus::-webkit-slider-thumb 
+{
+  outline: 3px solid var(--surface-400);
+}
+
+/*********** Firefox styles ***********/
+/* slider track */
+.font_resizer input[type="range"]::-moz-range-track 
+{
+  background-color: var(--surface-300);
+  border-radius: var(--border-radius);
+  height: 1rem;
+}
+
+/* slider thumb */
+.font_resizer input[type="range"]::-moz-range-thumb 
+{
+  appearance: none;
+  margin-top: -0.125rem;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.font_resizer input[type="range"]:focus::-moz-range-thumb
+{
+  outline: 3px solid var(--surface-400);
+}
 

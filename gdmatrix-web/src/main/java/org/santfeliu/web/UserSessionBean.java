@@ -108,6 +108,9 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String DEFAULT_TEMPLATE = "default";
   public static final String DEFAULT_SECTION = "default";
   public static final String DEFAULT_THEME = "default";
+  public static final String DEFAULT_FONT_SIZE = "12";
+  public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
+  public static final String EDIT_PRIMEFACES_THEME = "saga";
 
   public static final String MATRIX_INFO_VIEW = "MATRIX_INFO";
   public static final String RENDER_VIEW = "RENDER";
@@ -122,9 +125,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public static final String LOGIN_PASSWORD = "PASSWORD";
   public static final String LOGIN_CERTIFICATE = "CERTIFICATE";
-
-  public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
-  public static final String EDIT_PRIMEFACES_THEME = "saga";
 
   private static List<String> intranetRoles;
 
@@ -145,6 +145,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private String lastPageLanguage;
   private String theme = DEFAULT_THEME;
   private String pfTheme = DEFAULT_PRIMEFACES_THEME;
+  private String fontSize = DEFAULT_FONT_SIZE;
   private String browserType;
   private String loginMethod;
   private String logoutAction;
@@ -310,6 +311,12 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public void setEmail(String email)
   {
     this.email = email;
+  }
+
+  public boolean isPersistentUser()
+  {
+    return !SecurityConstants.ANONYMOUS.equals(userId) &&
+      !isAutoLoginUser() && !isCertificateUser();
   }
 
   public Integer getFailedLoginAttempts()
@@ -1439,6 +1446,21 @@ public final class UserSessionBean extends FacesBean implements Serializable
     return currentTheme;
   }
 
+  public void setFontSize(String fontSize)
+  {
+    this.fontSize = fontSize;
+  }
+
+  public String getFontSize()
+  {
+    return fontSize;
+  }
+
+  public void updateFontSize()
+  {
+    fontSize = getExternalContext().getRequestParameterMap().get("fontSize");
+  }
+
   //Action executed from showObject command in common_script.js
   public String jumpToObject()
   {
@@ -1715,14 +1737,14 @@ public final class UserSessionBean extends FacesBean implements Serializable
     lastSuccessLoginDateTime = user.getLastSuccessLoginDateTime();
     lastFailedLoginDateTime = user.getLastFailedLoginDateTime();
     lastIntrusionDateTime = user.getLastIntrusionDateTime();
-    userPreferences = null;
+    userPreferences = getUserPreferences();
 
     try
     {
       String language;
       try
       {
-        language = getUserPreferences().getDefaultLanguage();
+        language = userPreferences.getDefaultLanguage();
       }
       catch (Exception ex)
       {
@@ -1731,13 +1753,25 @@ public final class UserSessionBean extends FacesBean implements Serializable
       setViewLanguage(language);
       setLastPageLanguage(language);
     }
-    catch (Exception ex) { } //no default language defined
+    catch (Exception ex) { } // no language defined
 
     try
     {
-      setTheme(getUserPreferences().getDefaultTheme());
+      setTheme(userPreferences.getDefaultTheme());
     }
-    catch (Exception ex) { } //no default theme defined
+    catch (Exception ex) { } // no theme defined
+
+    try
+    {
+      setPrimefacesTheme(userPreferences.getPrimefacesTheme());
+    }
+    catch (Exception ex) { } // no primefaces theme defined
+
+    try
+    {
+      setFontSize(userPreferences.getFontSize());
+    }
+    catch (Exception ex) { } // no font size defined
   }
 
   private String getLocaleDescription(Locale locale)

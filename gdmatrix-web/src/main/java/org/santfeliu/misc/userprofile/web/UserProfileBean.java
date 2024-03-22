@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.misc.userprofile.web;
@@ -44,7 +44,7 @@ import org.santfeliu.web.bean.CMSManagedBean;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 @CMSManagedBean
 public class UserProfileBean extends WebBean implements Serializable
@@ -65,7 +65,7 @@ public class UserProfileBean extends WebBean implements Serializable
         defaultLanguage = getUserPreferences().getDefaultLanguage();
       }
       catch (Exception ex) //unspecified
-      {        
+      {
         defaultLanguage = "";
       }
     }
@@ -86,7 +86,7 @@ public class UserProfileBean extends WebBean implements Serializable
         defaultTheme = getUserPreferences().getDefaultTheme();
       }
       catch (Exception ex) //unspecified
-      {        
+      {
         defaultTheme = "";
       }
     }
@@ -123,13 +123,12 @@ public class UserProfileBean extends WebBean implements Serializable
   {
     if (defaultLanguageList == null)
     {
-      defaultLanguageList = new ArrayList<SelectItem>();      
+      defaultLanguageList = new ArrayList<SelectItem>();
       defaultLanguageList.add(new SelectItem("", getUnspecifiedLabel()));
       List<String> elems = UserSessionBean.getCurrentInstance().getMenuModel().
-        getSelectedMenuItem().getMultiValuedProperty(
-          UserPreferences.DEFAULT_LANGUAGE_PROPERTY);
+        getSelectedMenuItem().getMultiValuedProperty(UserPreferences.LANGUAGE_PROPERTY);
       for (String sElem : elems)
-      {        
+      {
         if (sElem != null && sElem.length() > 0)
         {
           Locale locale = new Locale(sElem);
@@ -151,13 +150,12 @@ public class UserProfileBean extends WebBean implements Serializable
   {
     if (defaultThemeList == null)
     {
-      defaultThemeList = new ArrayList<SelectItem>();      
+      defaultThemeList = new ArrayList<>();
       defaultThemeList.add(new SelectItem("", getUnspecifiedLabel()));
       List<String> elems = UserSessionBean.getCurrentInstance().getMenuModel().
-        getSelectedMenuItem().getMultiValuedProperty(
-          UserPreferences.DEFAULT_THEME_PROPERTY);
+        getSelectedMenuItem().getMultiValuedProperty(UserPreferences.THEME_PROPERTY);
       for (String sElem : elems)
-      {        
+      {
         if (sElem != null && sElem.length() > 0)
         {
           defaultThemeList.add(new SelectItem(sElem));
@@ -195,20 +193,16 @@ public class UserProfileBean extends WebBean implements Serializable
   private void changePreferences()
   {
     //Languages
-    getUserPreferences().removePreference(
-      UserPreferences.DEFAULT_LANGUAGE_PROPERTY);
+    getUserPreferences().removePreference(UserPreferences.LANGUAGE_PROPERTY);
     if (!getDefaultLanguage().equals(""))
     {
-      getUserPreferences().storePreference(
-        UserPreferences.DEFAULT_LANGUAGE_PROPERTY, getDefaultLanguage());
+      getUserPreferences().storePreference(UserPreferences.LANGUAGE_PROPERTY, getDefaultLanguage());
     }
     //Themes
-    getUserPreferences().removePreference(
-      UserPreferences.DEFAULT_THEME_PROPERTY);
+    getUserPreferences().removePreference(UserPreferences.THEME_PROPERTY);
     if (!getDefaultTheme().equals(""))
     {
-      getUserPreferences().storePreference(
-        UserPreferences.DEFAULT_THEME_PROPERTY, getDefaultTheme());
+      getUserPreferences().storePreference(UserPreferences.THEME_PROPERTY, getDefaultTheme());
     }
 
     //Recent pages size
@@ -219,7 +213,7 @@ public class UserProfileBean extends WebBean implements Serializable
       getUserPreferences().storePreference(
         UserPreferences.RECENT_PAGES_SIZE_PROPERTY, getRecentPagesSize());
     }
-    
+
   }
 
   private UserPreferences getUserPreferences()

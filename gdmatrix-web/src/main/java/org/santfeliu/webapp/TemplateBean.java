@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -174,6 +175,27 @@ public class TemplateBean extends FacesBean implements Serializable
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     userSessionBean.logout(); // redirect
+  }
+
+  public void savePreferences()
+  {
+    try
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      UserPreferences userPreferences = userSessionBean.getUserPreferences();
+      userPreferences.storePreference(UserPreferences.LANGUAGE_PROPERTY,
+        userSessionBean.getViewLanguage(), false);
+      userPreferences.storePreference(UserPreferences.PRIMEFACES_THEME_PROPERTY,
+        userSessionBean.getPrimefacesTheme(), false);
+      userPreferences.storePreference(UserPreferences.FONT_SIZE_PROPERTY,
+        userSessionBean.getFontSize(), false);
+
+      growl("PREFERENCES_SAVED");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void showComponentTree()
