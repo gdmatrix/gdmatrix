@@ -433,7 +433,8 @@ public class DocumentObjectBean extends ObjectBean
       port.lockDocument(document.getDocId(), document.getVersion());
       document = port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
-      info("Document locked by " + document.getLockUserId());
+      info("DOCUMENT_LOCKED_BY_ANOTHER_USER", 
+        new Object[]{document.getLockUserId()});
     }
     catch (Exception ex)
     {
@@ -449,7 +450,7 @@ public class DocumentObjectBean extends ObjectBean
       port.unlockDocument(document.getDocId(), document.getVersion());
       document = port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
-      info("Document unlocked.");
+      info("DOCUMENT_UNLOCKED");
     }
     catch (Exception ex)
     {

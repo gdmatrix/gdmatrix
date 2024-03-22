@@ -50,8 +50,10 @@ import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.doc.Document;
+import org.matrix.doc.DocumentConstants;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -160,6 +162,21 @@ public class CaseDocumentsTabBean extends TabBean
   public String getDocumentIcon(Document document)
   {
     return DocumentTypeBean.getContentIcon(document);
+  }
+
+  public String getDocumentLanguage(Document document)
+  {
+    String language = document.getLanguage();
+    if (language == null || 
+      language.equals(DocumentConstants.UNIVERSAL_LANGUAGE))
+    {
+      return "";
+    }
+    else
+    {
+      String languageDescr = DocumentUtils.extendLanguage(language);
+      return ("".equals(languageDescr) ? language : languageDescr);
+    }
   }
 
   public String getViewURL()

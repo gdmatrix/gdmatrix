@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
+  
   <f:subview id="#{tab.subviewId}">
     
     <!-- Results table -->
@@ -61,6 +61,11 @@
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
+      <p:column headerText="#{caseBundle.caseDocuments_language}" styleClass="col-1"
+                sortBy="#{caseDocumentsTabBean.getDocumentLanguage(row.document)}">
+        <h:outputText value="#{caseDocumentsTabBean.getDocumentLanguage(row.document)}"/>
+      </p:column>
+
       <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-4"
                 sortBy="#{row.document.title}">
         <i class="#{caseDocumentsTabBean.getDocumentIcon(row.document)} text-xl mr-1" />
@@ -83,7 +88,13 @@
         </h:outputText>
       </p:column>      
       
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="col-1 text-center white-space-nowrap">
+        <h:outputText styleClass="rounded-button ui-button-flat pi pi-lock p-2"
+                      rendered="#{row.document != null and row.document.lockUserId != null and userSessionBean.username != row.document.lockUserId}"
+                      title="#{documentBundle.lockedBy}: #{row.document.lockUserId}" />
+        <h:outputText styleClass="rounded-button ui-button-flat pi pi-lock-open p-2"
+                      rendered="#{row.document != null and row.document.lockUserId != null and userSessionBean.username == row.document.lockUserId}"
+                      title="#{documentBundle.lockedBy}: #{row.document.lockUserId}" />
         <p:linkButton href="#{caseDocumentsTabBean.viewURL}" 
                       icon="pi pi-eye" 
                       title="#{objectBundle.view}"
@@ -108,7 +119,8 @@
                          process="@form:cnt:search_tabs:tabs"
                          update="@form:cnt:search_tabs:remove_document_dialog"
                          oncomplete="PF('removeDocumentDialog').show()"
-                         styleClass="rounded-button ui-button-flat" 
+                         styleClass="rounded-button ui-button-flat"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.caseDocTypeId)}" />
       </p:column>
     </p:dataTable>
