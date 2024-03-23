@@ -80,7 +80,7 @@ body .ui-selectonemenu .ui-selectonemenu-trigger
 body .ui-autocomplete-token
 {
   white-space: normal;
-  margin: 1px;
+  margin: 1px !important;
 }
 
 body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-input-token input
@@ -331,6 +331,16 @@ body .ui-messages-error ul
 .mi-outlined
 {
   transform:scale(1.25);
+}
+
+.fa
+{
+  text-align: center;
+}
+
+.fa.wr-1
+{
+  width: 1rem;
 }
 
 /***** template styles *****/

@@ -6,8 +6,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:p="http://primefaces.org/ui">
 
-  <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
-    <p:outputPanel class="flex flex-grow-0 justify-content-start align-self-center"
+  <p:outputPanel id="object_header" class="flex flex-wrap align-items-center card-container m-2">
+    <p:outputPanel class="flex flex-grow-0 align-items-center justify-content-start align-self-center"
                    rendered="#{objectBean.finderBean.isScrollEnabled()}">
         <p:commandButton icon="ui-icon pi pi-step-backward"
                          styleClass="rounded-button ui-button-flat mr-2"
@@ -38,65 +38,64 @@
                          title="#{objectBundle.next}" alt="#{objectBundle.next}"
                          />
     </p:outputPanel>
-    <div class="flex flex-grow-1 justify-content-start align-self-center">
-      <h:outputText value="#{objectBean.objectId}" styleClass="main_object_id" />
-      <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
-    </div>
+    <h:outputText value="#{objectBean.objectId}" styleClass="main_object_id mr-2 pt-2 pb-2" />
+    <span class="font-bold pt-2 pb-2">#{objectBean.description}</span>
+
     <div class="flex flex-grow-1 justify-content-end">
-        <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.select}"
-                         process="@this"
-                         update="@form:cnt"
-                         rendered="#{navigatorBean.selectable}"
-                         title="#{objectBundle.select}" alt="#{objectBundle.select}"
-                         />
-        <p:commandButton icon="ui-icon pi pi-star"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
-                         rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         process="@this"
-                         update="object_header @form:cnt:context_panel"
-                         partialSubmit="true"
-                         title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
-                         />
-        <p:commandButton icon="ui-icon pi pi-star-fill"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
-                         rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         process="@this"
-                         update="object_header @form:cnt:context_panel"
-                         partialSubmit="true"
-                         title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
-                         />
-        <p:commandButton icon="ui-icon pi pi-trash"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{objectBean.remove}"
-                         rendered="#{not objectBean.isNew()}"
-                         process="@this"
-                         update="@form:cnt:search_tabs @form:cnt:context_panel"
-                         resetValues="true"
-                         title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
-                         disabled="#{!objectBean.editable}">
-            <p:confirm header="#{objectBundle.confirm_remove_header}"
-                       message="#{objectBundle.confirm_remove_message}"
-                       icon="pi pi-info-circle" />
-        </p:commandButton>
-        <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
-                      title="#{objectBundle.actions}"
-                      rendered="#{not objectBean.isNew() and not empty objectBean.scriptActions.actions}">
-          <c:forEach items="#{objectBean.scriptActions.actions}" var="action" >
-            <p:menuitem icon="#{action.icon}"
-                        value="#{action.label}" action="#{objectBean.callAction(action.name)}"
-                        rendered="#{not empty action.label and not action.isUrlAction()}" 
-                        process="@this"
-                        update="@form:cnt:search_tabs:tabs object_header"/>
-            <p:menuitem icon="#{action.icon}"
-                        value="#{action.label}" 
-                        url="#{action.url}" target="#{action.urlTarget}"
-                        rendered="#{not empty action.label and action.isUrlAction()}" />            
-          </c:forEach>
-        </p:menuButton>
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select}"
+                       process="@this"
+                       update="@form:cnt"
+                       rendered="#{navigatorBean.selectable}"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-star"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
+                       rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-star-fill"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
+                       rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-trash"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{objectBean.remove}"
+                       rendered="#{not objectBean.isNew()}"
+                       process="@this"
+                       update="@form:cnt:search_tabs @form:cnt:context_panel"
+                       resetValues="true"
+                       title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
+                       disabled="#{!objectBean.editable}">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+      </p:commandButton>
+      <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                    title="#{objectBundle.actions}"
+                    rendered="#{not objectBean.isNew() and not empty objectBean.scriptActions.actions}">
+        <c:forEach items="#{objectBean.scriptActions.actions}" var="action" >
+          <p:menuitem icon="#{action.icon}"
+                      value="#{action.label}" action="#{objectBean.callAction(action.name)}"
+                      rendered="#{not empty action.label and not action.isUrlAction()}" 
+                      process="@this"
+                      update="@form:cnt:search_tabs:tabs object_header"/>
+          <p:menuitem icon="#{action.icon}"
+                      value="#{action.label}" 
+                      url="#{action.url}" target="#{action.urlTarget}"
+                      rendered="#{not empty action.label and action.isUrlAction()}" />            
+        </c:forEach>
+      </p:menuButton>
     </div>
   </p:outputPanel>
 

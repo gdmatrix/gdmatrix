@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.util.WebUtils;
@@ -86,6 +87,22 @@ public class TemplateBean extends FacesBean implements Serializable
   public void setPassword(String password)
   {
     this.password = password;
+  }
+
+  public String getWebTitle()
+  {
+    ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
+    String toolbarMode = getToolbarMode();
+    MenuItemCursor cursor;
+    if (TOOLBAR_MODE_GLOBAL.equals(toolbarMode))
+    {
+      cursor = getTopwebMenuItem();
+    }
+    else
+    {
+      cursor = getContextMenuItem();
+    }
+    return applicationBean.translate(cursor.getProperty("description"));
   }
 
   public List<MenuItemCursor> getHighlightedItems()

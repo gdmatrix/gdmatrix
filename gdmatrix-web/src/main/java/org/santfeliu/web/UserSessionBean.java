@@ -1436,8 +1436,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       String library = "primefaces-" + currentTheme;
       Resource resource = getFacesContext().getApplication()
         .getResourceHandler().createResource("theme.css", library);
-      if (resource != null)
-        return currentTheme;
+      if (resource == null) currentTheme = DEFAULT_PRIMEFACES_THEME;
     }
     catch (Exception ex)
     {

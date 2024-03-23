@@ -16,7 +16,7 @@
 
       <div class="flex align-items-center p-3 border-bottom-1 border-300">
         <h:outputText id="web_title" styleClass="flex-grow-1 font-bold block" 
-                      value="#{applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.description)}" />
+                      value="#{templateBean.webTitle}" />
         <p:button onclick="PF('menuSideBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
       </div>
 
@@ -218,7 +218,7 @@
 
       <div class="logo flex-shrink-1" />
       
-      <h1 class="flex-grow-1 text-left">#{applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.description)}</h1>
+      <h1 class="flex-grow-1 text-left">#{templateBean.webTitle}</h1>
       <div class="flex justify-content-end align-items-center flex-grow-0 flex-shrink-0">
         <p:link href="#" styleClass="login_button ml-2 mr-2" 
                 title="#{webBundle.identification}"

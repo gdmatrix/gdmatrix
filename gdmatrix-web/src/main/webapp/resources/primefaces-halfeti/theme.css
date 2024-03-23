@@ -1141,7 +1141,7 @@ body .ui-datatable .ui-datatable-data>tr.ui-state-hover{
   color:rgba(255,255,255,.87)
 }
 body .ui-datatable .ui-datatable-data>tr.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-datatable .ui-datatable-data>tr.ui-state-highlight .ui-row-toggler{
@@ -1307,7 +1307,7 @@ body .ui-datatable .ui-datatable-data>tr .ui-rowgroup-toggler .ui-rowgroup-toggl
   content:""
 }
 body .ui-datatable .ui-datatable-data>tr.ui-datatable-rowordering{
-  background:rgba(100,181,246,.16)
+  background:rgba(246,100,181,.2)
 }
 body .ui-datatable .ui-column-resizer-helper{
   background:#a90a51
@@ -1363,7 +1363,7 @@ body .ui-datatable.ui-datatable-striped .ui-datatable-data>tr.ui-datatable-odd.u
   color:rgba(255,255,255,.87)
 }
 body .ui-datatable.ui-datatable-striped .ui-datatable-data>tr.ui-datatable-odd.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-datatable.ui-datatable-sm thead>tr>th{
@@ -1499,7 +1499,7 @@ body .fc .fc-scrollgrid{
   border-color:#383838
 }
 body .fc .fc-daygrid-day.fc-day-today,body .fc .fc-timegrid-col.fc-day-today{
-  background-color:rgba(100,181,246,.16)
+  background-color:rgba(246,100,181,.2)
 }
 body .fc th{
   background:#1e1e1e;
@@ -1647,7 +1647,7 @@ body .ui-orderlist .ui-orderlist-list .ui-orderlist-item.ui-state-hover{
   color:rgba(255,255,255,.87)
 }
 body .ui-orderlist .ui-orderlist-list .ui-orderlist-item.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-orderlist .ui-orderlist-list .ui-orderlist-item.ui-state-highlight.ui-sortable-placeholder{
@@ -1777,7 +1777,7 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page{
   transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s
 }
 body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-hover{
@@ -1934,7 +1934,7 @@ body .ui-picklist .ui-picklist-list .ui-picklist-item.ui-state-hover{
   color:rgba(255,255,255,.87)
 }
 body .ui-picklist .ui-picklist-list .ui-picklist-item.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-picklist .ui-picklist-list .ui-picklist-item.ui-state-highlight.ui-sortable-placeholder{
@@ -2004,7 +2004,7 @@ body .ui-tagcloud a{
   transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s
 }
 body .ui-tagcloud a.ui-state-hover{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .timeline-frame{
@@ -2081,7 +2081,7 @@ body .timeline-frame .timeline-event{
   color:rgba(255,255,255,.87)
 }
 body .timeline-frame .timeline-event.ui-state-active{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .vis-timeline{
@@ -2101,8 +2101,8 @@ body .vis-timeline .vis-item.vis-dot{
   border-width:4px
 }
 body .vis-timeline .vis-item.vis-selected{
-  background:rgba(100,181,246,.16);
-  border-color:rgba(100,181,246,.16)
+  background:rgba(246,100,181,.2);
+  border-color:rgba(246,100,181,.2)
 }
 body .vis-timeline .vis-item.vis-selected .vis-item-content{
   color:rgba(255,255,255,.87)
@@ -2209,7 +2209,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
   color:rgba(255,255,255,.87)
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-chkbox{
@@ -2227,7 +2227,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-chkbox .u
   content:""
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight .ui-tree-toggler,body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight .ui-treenode-icon{
@@ -2241,7 +2241,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-tree-selec
   color:rgba(255,255,255,.87)
 }
 body .ui-tree .ui-tree-container .ui-tree-droppoint.ui-state-hover{
-  background:rgba(100,181,246,.16)
+  background:rgba(246,100,181,.2)
 }
 body .ui-tree .ui-tree-container .ui-treenode-outline{
   outline:0 none;
@@ -2264,7 +2264,7 @@ body .ui-tree.ui-tree-horizontal .ui-treenode-content.ui-state-hover{
   color:rgba(255,255,255,.87)
 }
 body .ui-tree.ui-tree-horizontal .ui-treenode-content.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-tree.ui-tree-horizontal .ui-treenode-content .ui-tree-toggler{
@@ -2356,7 +2356,7 @@ body .ui-tree.ui-tree-rtl .ui-tree-container .ui-treenode .ui-treenode-content .
   margin-left:2.5rem
 }
 body .ui-tree-draghelper{
-  border:1px solid rgba(100,181,246,.16)
+  border:1px solid rgba(246,100,181,.2)
 }
 body .ui-fluid .ui-tree{
   width:100%
@@ -2547,7 +2547,7 @@ body .ui-treetable .ui-treetable-data>tr.ui-state-hover{
   color:rgba(255,255,255,.87)
 }
 body .ui-treetable .ui-treetable-data>tr.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   cursor:default
 }
@@ -2776,7 +2776,7 @@ body .ui-autocomplete .ui-autocomplete-multiple-container{
 body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-token{
   padding:1px 0;
   margin:0 .5rem 0 0;
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   display:inline-block;
   vertical-align:middle;
@@ -2853,14 +2853,14 @@ body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-auto
   padding:1rem 1rem
 }
 body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-autocomplete-itemtip{
   padding:0
 }
 body .ui-autocomplete-itemtip.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-fluid .ui-autocomplete .ui-autocomplete-input.ui-autocomplete-dd-input{
@@ -2932,7 +2932,7 @@ body .ui-cascadeselect-panel .ui-cascadeselect-items .ui-cascadeselect-item .ui-
 }
 body .ui-cascadeselect-panel .ui-cascadeselect-items .ui-cascadeselect-item.ui-state-highlight{
   color:rgba(255,255,255,.87);
-  background:rgba(100,181,246,.16)
+  background:rgba(246,100,181,.2)
 }
 body .ui-cascadeselect-panel .ui-cascadeselect-items .ui-cascadeselect-item:not(.ui-state-highlight):not(.ui-state-disabled):hover{
   color:rgba(255,255,255,.87);
@@ -3034,7 +3034,7 @@ body .ui-chips .ui-chips-container{
 body .ui-chips .ui-chips-container .ui-chips-token{
   padding:1px 0;
   margin:.125rem;
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   border-radius:4px
 }
@@ -3192,7 +3192,7 @@ body .ui-datepicker .ui-datepicker-calendar td>a:focus,body .ui-datepicker .ui-d
   box-shadow:0 0 0 1px #f22480
 }
 body .ui-datepicker .ui-datepicker-calendar td>a.ui-state-active,body .ui-datepicker .ui-datepicker-calendar td>span.ui-state-active{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   border:0 none
 }
@@ -3207,7 +3207,7 @@ body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-today>a,body .ui-da
   border:0 none
 }
 body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-today>a.ui-state-active,body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-today>span.ui-state-active,body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-current-day>a.ui-state-active,body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-current-day>span.ui-state-active{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   border:0 none
 }
@@ -3330,7 +3330,7 @@ body .ui-datepicker .ui-monthpicker-month:focus{
   box-shadow:0 0 0 1px #f22480
 }
 body .ui-datepicker .ui-monthpicker-month.ui-state-active{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   border:0 none
 }
@@ -3742,7 +3742,7 @@ body .ui-multiselectlistbox .ui-multiselectlistbox-listcontainer .ui-multiselect
   color:rgba(255,255,255,.87)
 }
 body .ui-multiselectlistbox .ui-multiselectlistbox-listcontainer .ui-multiselectlistbox-list .ui-multiselectlistbox-item.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-password .ui-password-icon{
@@ -3998,7 +3998,7 @@ body .ui-selectcheckboxmenu .ui-selectcheckboxmenu-multiple-container.ui-inputfi
 body .ui-selectcheckboxmenu .ui-selectcheckboxmenu-multiple-container .ui-selectcheckboxmenu-token{
   padding:1px 0;
   margin:0 .5rem 0 0;
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   border-radius:4px
 }
@@ -4147,7 +4147,7 @@ body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckbo
   color:rgba(255,255,255,.87)
 }
 body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item .ui-chkbox{
@@ -4240,7 +4240,7 @@ body .ui-selectonelistbox .ui-selectlistbox-listcontainer .ui-selectlistbox-list
   color:rgba(255,255,255,.87)
 }
 body .ui-selectonelistbox .ui-selectlistbox-listcontainer .ui-selectlistbox-list .ui-selectlistbox-item.ui-state-highlight,body .ui-selectmanymenu .ui-selectlistbox-listcontainer .ui-selectlistbox-list .ui-selectlistbox-item.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-selectonelistbox .ui-selectlistbox-listcontainer .ui-selectlistbox-list .ui-selectlistbox-item .ui-chkbox,body .ui-selectmanymenu .ui-selectlistbox-listcontainer .ui-selectlistbox-list .ui-selectlistbox-item .ui-chkbox{
@@ -4398,7 +4398,7 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-s
   color:rgba(255,255,255,.87)
 }
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   overflow:auto
 }
@@ -5228,9 +5228,9 @@ body .ui-steps .ui-steps-item .ui-menuitem-link .ui-steps-title{
   color:rgba(255,255,255,.87)
 }
 body .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
-  border-color:rgba(100,181,246,.16)
+  border-color:rgba(246,100,181,.2)
 }
 body .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-title{
   font-weight:600;
@@ -5779,7 +5779,7 @@ body .ui-overlay-badge .ui-badge{
   margin:0
 }
 body .ui-chip{
-  background-color:rgba(100,181,246,.16);
+  background-color:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87);
   border-radius:16px;
   padding:0 .5rem
@@ -5903,7 +5903,7 @@ body .ui-galleria.ui-galleria-indicator-onitem .ui-galleria-indicators .ui-galle
   background:rgba(255,255,255,.6)
 }
 body .ui-galleria.ui-galleria-indicator-onitem .ui-galleria-indicators .ui-galleria-indicator.ui-state-highlight button{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-galleria .ui-galleria-thumbnail-container{
@@ -6118,7 +6118,7 @@ body .ui-scrolltop{
   border-radius:50%;
   box-shadow:0 0 10px 0 rgba(0,0,0,.16);
   transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
-  background:rgba(100,181,246,.16)
+  background:rgba(246,100,181,.2)
 }
 body .ui-scrolltop:hover{
   background:rgba(100,181,246,.3616)
@@ -6839,7 +6839,7 @@ body .ui-card .ui-card-footer{
   padding:1rem 0 0 0
 }
 body .ui-dashboard .ui-sortable-placeholder{
-  background-color:rgba(100,181,246,.16)
+  background-color:rgba(246,100,181,.2)
 }
 body .ui-divider .ui-divider-content{
   background-color:#1e1e1e
@@ -7389,7 +7389,7 @@ body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title:last-child{
   border-right:1px solid #383838
 }
 body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title.ui-state-highlight{
-  background:rgba(100,181,246,.16);
+  background:rgba(246,100,181,.2);
   color:rgba(255,255,255,.87)
 }
 body .ui-wizard .ui-icon-arrowthick-1-w{

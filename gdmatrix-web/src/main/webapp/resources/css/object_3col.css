@@ -119,6 +119,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   border-bottom: 1px solid;
   border-color: var(--surface-border);
   padding-bottom: 5px;
+  align-items: center;
 }
 
 .central_column .object_data
