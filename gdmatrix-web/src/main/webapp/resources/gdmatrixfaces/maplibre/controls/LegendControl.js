@@ -381,10 +381,13 @@ class LegendControl
     }
     else // group node
     {
-      for (let childNode of node.children)
+      if (node.children)
       {
-        let childVisible = this.updateNodeStyle(childNode);
-        nodeVisible = nodeVisible || childVisible;
+        for (let childNode of node.children)
+        {
+          let childVisible = this.updateNodeStyle(childNode);
+          nodeVisible = nodeVisible || childVisible;
+        }
       }
     }
     
