@@ -7,25 +7,51 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <div class="flex align-items-center">
+  <div class="category_header flex align-items-start">
+<!--
     <ui:fragment rendered="#{mapGroup.category.contentId != null}">
-      <img src="/documents/#{mapGroup.category.contentId}" style="width:16px" class="mr-1" alt="" />
+      <img src="/documents/#{mapGroup.category.contentId}" style="width:3rem" class="mr-2 flex-shrink-0" alt="" />
     </ui:fragment>
-    <strong>#{applicationBean.translate(mapGroup.category.title, 'geo')}</strong> 
-    <span class="ml-1">(#{mapGroup.mapCount} #{geoBundle.maps})</span>
-    <p:commandButton action="#{geoCatalogueBean.setCurrentMapCategory(mapGroup.category)}"
-                     icon="pi pi-pencil" 
-                     rendered="#{geoCatalogueBean.isAdminUser()}"
-                     resetValues="true"
-                     styleClass="rounded-button ui-button-flat geo_catalogue_button ml-3"
-                     process="@this" update="@form:cnt:catalogue_category_dialog"
-                     oncomplete="PF('catalogueCategoryDialog').show()" />
-    <p:commandButton action="#{geoCatalogueBean.setCurrentMapCategory(mapGroup.category)}"
-                     icon="pi pi-upload" 
-                     rendered="#{geoCatalogueBean.isAdminUser()}"
-                     oncomplete="PF('categoryImageUpload').show()" 
-                     styleClass="rounded-button ui-button-flat geo_catalogue_button ml-3"
-                     process="@this" update="@none" />
+-->    
+    <h:panelGroup layout="block" rendered="#{mapGroup.category.contentId != null}" 
+                  styleClass="image mr-2" 
+                  style="mask-image:url(/documents/#{mapGroup.category.contentId});-webkit-mask-image:url(/documents/#{mapGroup.category.contentId});">
+    </h:panelGroup>
+    
+    <div class="flex-grow-1 flex-shrink-1 flex flex-column">
+      <div class="font-bold mr-1">#{applicationBean.translate(mapGroup.category.title, 'geo')}</div>
+      <div class="flex flex-wrap">
+        <ui:fragment rendered="#{mapGroup.category.description != null}">
+          <span class="mr-1">#{mapGroup.category.description}</span>
+        </ui:fragment>
+        <span>(#{mapGroup.mapCount} #{mapGroup.mapCount == 1 ? geoBundle.map : geoBundle.maps})</span>
+      </div>
+    </div>
+    <div class="flex-justify-end white-space-nowrap">
+      <p:commandButton action="#{geoCatalogueBean.setCurrentMapCategory(mapGroup.category)}"
+                       icon="pi pi-pencil" title="#{objectBundle.edit}"
+                       rendered="#{geoCatalogueBean.isAdminUser()}"
+                       resetValues="true"
+                       styleClass="rounded-button ui-button-flat"
+                       process="@this" update="@form:cnt:catalogue_category_dialog"
+                       oncomplete="PF('catalogueCategoryDialog').show()" />
+      <p:commandButton action="#{geoCatalogueBean.setCurrentMapCategory(mapGroup.category)}"
+                       icon="pi pi-upload" title="#{objectBundle.upload}" 
+                       rendered="#{geoCatalogueBean.isAdminUser()}"
+                       oncomplete="PF('categoryImageUpload').show()" 
+                       styleClass="rounded-button ui-button-flat"
+                       process="@this" update="@none" />
+      <p:commandButton action="#{geoCatalogueBean.expandMapCategory(mapGroup.category.name)}"
+                       icon="pi pi-plus" title="#{objectBundle.show}" 
+                       process="@this" update="@none"
+                       onclick="setCategoryExpand(this, true)" 
+                       styleClass="expand_button rounded-button ui-button-flat" />
+      <p:commandButton action="#{geoCatalogueBean.collapseMapCategory(mapGroup.category.name)}"
+                       icon="pi pi-minus" title="#{objectBundle.close}" 
+                       process="@this" update="@none"
+                       onclick="setCategoryExpand(this, false)"
+                       styleClass="collapse_button rounded-button ui-button-flat" />
+    </div>
   </div>
 
 </ui:composition>

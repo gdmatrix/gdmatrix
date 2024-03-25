@@ -34,7 +34,7 @@
           <p:inputText value="#{geoCatalogueBean.filter.keywords}"
                        pt:spellcheck="false" autocomplete="off" 
                        placeholder="#{objectBundle.search}" />
-          <p:commandButton id="find_maps" widgetVar="findButton"
+          <p:commandButton id="find_maps"
                            action="#{geoCatalogueBean.findMaps}"
                            icon="pi pi-search"
                            title="#{objectBundle.search}"
@@ -44,7 +44,7 @@
       </h:panelGroup>
     </div>
     
-    <p:messages showSummary="true" styleClass="messages pl-3 pr-3" 
+    <p:messages showSummary="true" styleClass="messages ml-3 mr-3" 
                 rendered="#{geoCatalogueBean.currentMapCategory == null}"
                 showIcon="true" closable="true" forIgnores="growl login_messages">
       <p:autoUpdate />
@@ -64,28 +64,28 @@
           <ui:include src="/pages/geo/catalogue_map_view.xhtml" />
         </ui:repeat>
         <ui:repeat value="#{geoCatalogueBean.mapGroup.mapGroups}" var="mapGroup1">
-          <li class="pt-1">
+          <li class="category#{geoCatalogueBean.isMapCategoryExpanded(mapGroup1.category.name) ? ' expanded' : ''}">
             <ui:param name="mapGroup" value="#{mapGroup1}" />
             <ui:include src="/pages/geo/catalogue_category_view.xhtml" />
-            <ul class="list-none pl-4 pt-2 pb-2">
+            <ul class="list-none">
               <ui:repeat value="#{mapGroup1.mapViews}" var="mapView1">
                 <ui:param name="mapView" value="#{mapView1}" />
                 <ui:include src="/pages/geo/catalogue_map_view.xhtml" />
               </ui:repeat>
               <ui:repeat value="#{mapGroup1.mapGroups}" var="mapGroup2">
-                <li class="pt-1">
+                <li class="category#{geoCatalogueBean.isMapCategoryExpanded(mapGroup2.category.name) ? ' expanded' : ''}">
                   <ui:param name="mapGroup" value="#{mapGroup2}" />
                   <ui:include src="/pages/geo/catalogue_category_view.xhtml" />                  
-                  <ul class="list-none pl-4 pt-2">
+                  <ul class="list-none">
                     <ui:repeat value="#{mapGroup2.mapViews}" var="mapView2">
                       <ui:param name="mapView" value="#{mapView2}" />
                       <ui:include src="/pages/geo/catalogue_map_view.xhtml" />
                     </ui:repeat>
                     <ui:repeat value="#{mapGroup2.mapGroups}" var="mapGroup3">
-                      <li class="pt-1">
+                      <li class="category#{geoCatalogueBean.isMapCategoryExpanded(mapGroup3.category.name) ? ' expanded' : ''}">
                         <ui:param name="mapGroup" value="#{mapGroup3}" />
                         <ui:include src="/pages/geo/catalogue_category_view.xhtml" />
-                        <ul class="list-none pl-4 pt-2">
+                        <ul class="list-none">
                           <ui:repeat value="#{mapGroup3.mapViews}" var="mapView3">
                             <ui:param name="mapView" value="#{mapView3}" />
                             <ui:include src="/pages/geo/catalogue_map_view.xhtml" />
@@ -131,6 +131,20 @@
       var elem = elems[0];
       elem.scrollIntoView({ behavior: "instant", block: "center", inline: "nearest" });
     }
+    
+    function setCategoryExpand(elem, expanded)
+    {
+      let categoryElem = elem.parentElement.parentElement.parentElement;
+      if (expanded)
+      {
+        categoryElem.classList.add("expanded");
+      }
+      else
+      {
+        categoryElem.classList.remove("expanded");        
+      }
+    }
+    
   </script>
 
 </ui:composition>

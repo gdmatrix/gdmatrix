@@ -24,7 +24,7 @@
     <f:facet name="footer">
       <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_viewer')}"
                        value="#{objectBundle.show}"
-                       styleClass="rounded-button ui-button-flat no-underline ml-1"
+                       styleClass="ml-1"
                        icon="pi pi-eye mr-1"
                        onclick="PF('mapSummaryDialog').hide()"
                        process="@this" update="@form:cnt" />
@@ -32,7 +32,7 @@
       <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_editor')}"
                        value="#{objectBundle.edit}"
                        rendered="#{geoCatalogueBean.currentMapView != null and geoCatalogueBean.isCurrentMapEditable()}"
-                       styleClass="rounded-button ui-button-flat no-underline ml-1"
+                       styleClass="ml-1"
                        icon="pi pi-pencil mr-1"
                        onclick="PF('mapSummaryDialog').hide()"
                        process="@this" update="@form:cnt" />

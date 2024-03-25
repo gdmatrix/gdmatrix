@@ -33,9 +33,12 @@ package org.santfeliu.webapp.modules.geo;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.util.IOUtils;
@@ -61,6 +64,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   MapFilter filter = new MapFilter();
   MapView currentMapView;
   MapCategory currentMapCategory;
+  Set<String> expandedCategories = new HashSet<>();
 
   transient MapDocument currentMapDocument;
 
@@ -90,7 +94,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
 
   public void setCurrentMapCategory(MapCategory mapCategory)
   {
-    this.currentMapCategory = new MapCategory(mapCategory);
+    currentMapCategory = new MapCategory(mapCategory);
   }
 
   public void createMap()
@@ -102,7 +106,32 @@ public class GeoCatalogueBean extends WebBean implements Serializable
 
   public void createMapCategory()
   {
-    this.currentMapCategory = new MapCategory();
+    currentMapCategory = new MapCategory();
+  }
+
+  public void expandMapCategory(String categoryName)
+  {
+    expandedCategories.add(categoryName);
+  }
+
+  public void collapseMapCategory(String categoryName)
+  {
+    expandedCategories.remove(categoryName);
+  }
+
+  public boolean isMapCategoryExpanded(String categoryName)
+  {
+    return expandedCategories.contains(categoryName);
+  }
+
+  public Set<String> getExpandedCategories()
+  {
+    return expandedCategories;
+  }
+
+  public void setExpandedCategories(Set<String> expandedCategories)
+  {
+    this.expandedCategories = expandedCategories;
   }
 
   public void showMap(MapView mapView)
@@ -158,6 +187,12 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     {
       mapGroup = getMapStore().findMaps(filter);
       currentMapCategory = null;
+      expandedCategories.clear();
+
+      if (!StringUtils.isBlank(filter.getKeywords()))
+      {
+        expandMapGroup(mapGroup);
+      }
     }
     catch (Exception ex)
     {
@@ -234,6 +269,19 @@ public class GeoCatalogueBean extends WebBean implements Serializable
       currentMapDocument = getMapStore().loadMap(currentMapView.getMapName());
     }
     return currentMapDocument;
+  }
+
+  private void expandMapGroup(MapGroup mapGroup)
+  {
+    MapCategory mapCategory = mapGroup.getCategory();
+    if (mapCategory != null)
+    {
+      expandedCategories.add(mapCategory.getName());
+    }
+    for (MapGroup subMapGroup : mapGroup.getMapGroups())
+    {
+      expandMapGroup(subMapGroup);
+    }
   }
 
   private MapStore getMapStore()
