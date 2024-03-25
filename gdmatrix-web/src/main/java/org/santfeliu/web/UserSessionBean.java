@@ -586,10 +586,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public UserPreferences getUserPreferences()
   {
-    if (userPreferences == null)
-    {
-      userPreferences = new UserPreferences(userId);
-    }
     return userPreferences;
   }
 
@@ -1736,7 +1732,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     lastSuccessLoginDateTime = user.getLastSuccessLoginDateTime();
     lastFailedLoginDateTime = user.getLastFailedLoginDateTime();
     lastIntrusionDateTime = user.getLastIntrusionDateTime();
-    userPreferences = getUserPreferences();
+    userPreferences = new UserPreferences(userId);
 
     try
     {
