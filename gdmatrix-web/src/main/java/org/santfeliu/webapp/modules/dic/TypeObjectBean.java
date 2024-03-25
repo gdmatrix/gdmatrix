@@ -125,7 +125,8 @@ public class TypeObjectBean extends ObjectBean
       type.setSuperTypeId(null);
     type = DicModuleBean.getPort(false).storeType(type);
     setObjectId(type.getTypeId());
-    typeFinderBean.outdate();    
+    typeFinderBean.outdate();  
+    TypeCache.getInstance().sync();    
   }
   
   @Override
