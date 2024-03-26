@@ -1,11 +1,9 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:jsf="http://xmlns.jcp.org/jsf">
   
   <f:subview id="#{tab.subviewId}">
     
@@ -49,52 +47,30 @@
         </div>
       </f:facet>
 
-      <p:headerRow field="caseDocTypeId" expandable="true"
-                   expanded="true" rendered="#{caseDocumentsTabBean.groupedView}">
-        <p:column colspan="7" >
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseDocTypeId)}"/>
+      <p:headerRow expandable="true"
+                   expanded="true" rendered="#{caseDocumentsTabBean.groupedView}"
+                   groupBy="#{row.typeId}">
+        <p:column colspan="5" >
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
       </p:headerRow>
+      <p:columns value="#{caseDocumentsTabBean.columns}" var="column" columnIndexVar="i"
+                 filterable="false" sortable="true" resizable="false"
+                 headerText="#{applicationBean.translate(column.label)}" 
+                 field="#{column.name}" styleClass="#{column.styleClass}"
+                 style="#{caseDocumentsTabBean.isColumnRendered(column) ? '' : 'display:none'}"                 
+                 sortBy="#{row.values[i].sorted}">
+        <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
+        <h:outputText value="#{row.values[i].label}" />
+      </p:columns>
 
-      <p:column headerText="#{caseBundle.caseDocuments_id}" styleClass="col-1"
-                sortBy="#{row.document.docId}">
-        <h:outputText value="#{row.document.docId}" />
-      </p:column>
-
-      <p:column headerText="#{caseBundle.caseDocuments_language}" styleClass="col-1"
-                sortBy="#{caseDocumentsTabBean.getDocumentLanguage(row.document)}">
-        <h:outputText value="#{caseDocumentsTabBean.getDocumentLanguage(row.document)}"/>
-      </p:column>
-
-      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-4"
-                sortBy="#{row.document.title}">
-        <i class="#{caseDocumentsTabBean.getDocumentIcon(row.document)} text-xl mr-1" />
-        <h:outputText value="#{row.document.title}"/>
-      </p:column>
-
-      <p:column headerText="#{caseBundle.caseDocuments_type}" styleClass="col-3"
-                rendered="#{caseDocumentsTabBean.renderTypeColumn}"
-                sortBy="#{typeTypeBean.getDescription(row.caseDocTypeId)}"
-                sortOrder="asc" sortPriority="1">
-        <h:outputText value="#{typeTypeBean.getDescription(row.caseDocTypeId)}"/>
-      </p:column>
-
-      <p:column headerText="#{documentBundle.document_creationDate}" styleClass="col-2 text-center"
-                sortBy="#{row.document.creationDate}">
-        <h:outputText value="#{row.document.creationDate}">
-          <f:converter converterId="DateTimeConverter" />
-          <f:attribute name="internalFormat" value="yyyyMMdd" />
-          <f:attribute name="userFormat" value="dd/MM/yyyy" />
-        </h:outputText>
-      </p:column>      
-      
-      <p:column styleClass="col-1 text-center white-space-nowrap">
+      <p:column styleClass="col-1 text-right white-space-nowrap">
         <h:outputText styleClass="rounded-button ui-button-flat pi pi-lock p-2"
-                      rendered="#{row.document != null and row.document.lockUserId != null and userSessionBean.username != row.document.lockUserId}"
-                      title="#{documentBundle.lockedBy}: #{row.document.lockUserId}" />
+                      rendered="#{row.docLockUserId != null and userSessionBean.username != row.docLockUserId}"
+                      title="#{documentBundle.lockedBy}: #{row.docLockUserId}" />
         <h:outputText styleClass="rounded-button ui-button-flat pi pi-lock-open p-2"
-                      rendered="#{row.document != null and row.document.lockUserId != null and userSessionBean.username == row.document.lockUserId}"
-                      title="#{documentBundle.lockedBy}: #{row.document.lockUserId}" />
+                      rendered="#{row.docLockUserId != null and userSessionBean.username == row.docLockUserId}"
+                      title="#{documentBundle.lockedBy}: #{row.docLockUserId}" />
         <p:linkButton href="#{caseDocumentsTabBean.viewURL}" 
                       icon="pi pi-eye" 
                       title="#{objectBundle.view}"
@@ -103,7 +79,7 @@
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this" update="@form:cnt"
-                         action="#{navigatorBean.show('Document', row.document.docId)}"
+                         action="#{navigatorBean.show('Document', row.docId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
@@ -113,7 +89,7 @@
                          resetValues="true"
                          oncomplete="PF('caseDocumentsDialog').show()"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         disabled="#{!caseObjectBean.isRowEditable(row.caseDocTypeId)}" /> 
+                         disabled="#{!caseObjectBean.isRowEditable(row.typeId)}" /> 
         <p:commandButton icon="pi pi-trash"
                          action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"
                          process="@form:cnt:search_tabs:tabs"
@@ -121,7 +97,7 @@
                          oncomplete="PF('removeDocumentDialog').show()"
                          styleClass="rounded-button ui-button-flat"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.caseDocTypeId)}" />
+                         disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.typeId)}" />
       </p:column>
     </p:dataTable>
     

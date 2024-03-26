@@ -62,6 +62,8 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -78,7 +80,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
-  CaseDocumentView caseDocumentToRemove;
+  CaseDocumentsDataTableRow caseDocumentToRemove;
   String removeMode;
 
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
@@ -87,7 +89,7 @@ public class CaseDocumentsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    List<CaseDocumentView> rows;
+    List<CaseDocumentsDataTableRow> rows;
     int firstRow = 0;
     boolean groupedView = true;
     String currentVolume;
@@ -149,14 +151,14 @@ public class CaseDocumentsTabBean extends TabBean
     return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
   }
 
-  public List<CaseDocumentView> getRows()
+  public List<CaseDocumentsDataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<CaseDocumentView> caseDocumentViews)
+  public void setRows(List<CaseDocumentsDataTableRow> rows)
   {
-    getCurrentTabInstance().rows = caseDocumentViews;
+    getCurrentTabInstance().rows = rows;
   }
 
   public String getDocumentIcon(Document document)
@@ -181,10 +183,10 @@ public class CaseDocumentsTabBean extends TabBean
 
   public String getViewURL()
   {
-    CaseDocumentView docView = WebUtils.getValue("#{row}");
-    if (docView.getDocument() != null)
+    CaseDocumentsDataTableRow docView = WebUtils.getValue("#{row}");
+    if (docView.getDocId() != null)
     {
-      String docId = docView.getDocument().getDocId();
+      String docId = docView.getDocId();
 
       ExternalContext extContext = getExternalContext();
       HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
@@ -286,6 +288,27 @@ public class CaseDocumentsTabBean extends TabBean
     return "";
   }
 
+  public List<Column> getColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
+  public boolean isColumnRendered(Column column)
+  {
+    if (!isRenderTypeColumn() && column.getName().equals("caseDocTypeId"))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }    
+  }  
+  
   @Override
   public void load()
   {
@@ -333,14 +356,15 @@ public class CaseDocumentsTabBean extends TabBean
           if (cdv.getDocument() != null) auxList.add(cdv);
         }
         
+        List<CaseDocumentView> result;
         String typeId = getTabBaseTypeId();
         if (typeId == null)
         {
-          getCurrentTabInstance().rows = auxList;
+          result = auxList;
         }
         else
         {
-          List<CaseDocumentView> result = new ArrayList();
+          result = new ArrayList();
           for (CaseDocumentView item : auxList)
           {
             try
@@ -357,8 +381,8 @@ public class CaseDocumentsTabBean extends TabBean
               // ignore: bad type?
             }
           }
-          getCurrentTabInstance().rows = result;
-        }        
+        }
+        setRows(toDataTableRows(result));
       }
       catch (Exception ex)
       {
@@ -441,14 +465,14 @@ public class CaseDocumentsTabBean extends TabBean
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }
 
-  public void edit(CaseDocumentView caseDocView)
+  public void edit(DataTableRow row)
   {
-    if (caseDocView != null)
+    if (row != null)
     {
       try
       {
-        editing = CasesModuleBean.getPort(false)
-          .loadCaseDocument(caseDocView.getCaseDocId());
+        editing = 
+          CasesModuleBean.getPort(false).loadCaseDocument(row.getRowId());
       }
       catch (Exception ex)
       {
@@ -464,37 +488,63 @@ public class CaseDocumentsTabBean extends TabBean
   public void remove()
   {
     System.out.println("Remove mode:" + removeMode);
-    System.out.println("caseDocumentView:" + caseDocumentToRemove.getCaseDocId());
+    System.out.println("caseDocumentView:" + caseDocumentToRemove.getRowId());
 
     if (removeMode == null || caseDocumentToRemove == null) return;
 
     try
     {
-      caseDocumentToRemove = 
-        (CaseDocumentView) executeTabAction("preTabRemove", caseDocumentToRemove);          
+      caseDocumentToRemove = (CaseDocumentsDataTableRow)executeTabAction(
+        "preTabRemove", caseDocumentToRemove);          
       switch (removeMode)
       {
         case UNLINK:
         {
           CasesModuleBean.getPort(false)
-            .removeCaseDocument(caseDocumentToRemove.getCaseDocId());
+            .removeCaseDocument(caseDocumentToRemove.getRowId());
         }
         break;
 
         case REMOVE:
         {
-          String docId = caseDocumentToRemove.getDocument().getDocId();
-
-          CasesModuleBean.getPort(false)
-            .removeCaseDocument(caseDocumentToRemove.getCaseDocId());
-
-          CaseDocumentFilter filter = new CaseDocumentFilter();
-          filter.setDocId(docId);
-          int count =
-            CasesModuleBean.getPort(true).countCaseDocuments(filter);
-          System.out.println("Count: " + count);
-          if (count == 0)
+          String docId = caseDocumentToRemove.getDocId();
+          if (docId != null)
           {
+            CasesModuleBean.getPort(false)
+              .removeCaseDocument(caseDocumentToRemove.getRowId());
+            CaseDocumentFilter filter = new CaseDocumentFilter();
+            filter.setDocId(docId);
+            int count =
+              CasesModuleBean.getPort(true).countCaseDocuments(filter);
+            System.out.println("Count: " + count);
+            if (count == 0)
+            {
+              DocModuleBean.getPort(false).removeDocument(docId, 0);
+              NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+              NavigatorBean.BaseTypeInfo baseTypeInfo =
+                navigatorBean.getBaseTypeInfo("Document");
+              if (baseTypeInfo != null)
+              {
+                baseTypeInfo.remove(docId);
+              }
+            }
+          }
+        }
+        break;
+
+        case REMOVE_ALL:
+        {
+          String docId = caseDocumentToRemove.getDocId();
+          if (docId != null)
+          {
+            CaseDocumentFilter filter = new CaseDocumentFilter();
+            filter.setDocId(docId);
+            CaseManagerPort port = CasesModuleBean.getPort(false);
+            List<CaseDocumentView> views = port.findCaseDocumentViews(filter);
+            for (CaseDocumentView view : views)
+            {
+              port.removeCaseDocument(view.getCaseDocId());
+            }
             DocModuleBean.getPort(false).removeDocument(docId, 0);
             NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
             NavigatorBean.BaseTypeInfo baseTypeInfo =
@@ -503,28 +553,6 @@ public class CaseDocumentsTabBean extends TabBean
             {
               baseTypeInfo.remove(docId);
             }
-          }
-        }
-        break;
-
-        case REMOVE_ALL:
-        {
-          String docId = caseDocumentToRemove.getDocument().getDocId();
-          CaseDocumentFilter filter = new CaseDocumentFilter();
-          filter.setDocId(docId);
-          CaseManagerPort port = CasesModuleBean.getPort(false);
-          List<CaseDocumentView> views = port.findCaseDocumentViews(filter);
-          for (CaseDocumentView view : views)
-          {
-            port.removeCaseDocument(view.getCaseDocId());
-          }
-          DocModuleBean.getPort(false).removeDocument(docId, 0);
-          NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-          NavigatorBean.BaseTypeInfo baseTypeInfo =
-            navigatorBean.getBaseTypeInfo("Document");
-          if (baseTypeInfo != null)
-          {
-            baseTypeInfo.remove(docId);
           }
         }
         break;
@@ -553,12 +581,13 @@ public class CaseDocumentsTabBean extends TabBean
     tabInstances.clear();
   }
 
-  public CaseDocumentView getCaseDocumentToRemove()
+  public CaseDocumentsDataTableRow getCaseDocumentToRemove()
   {
     return caseDocumentToRemove;
   }
 
-  public void setCaseDocumentToRemove(CaseDocumentView caseDocumentToRemove)
+  public void setCaseDocumentToRemove(
+    CaseDocumentsDataTableRow caseDocumentToRemove)
   {
     this.caseDocumentToRemove = caseDocumentToRemove;
     this.removeMode = "unlink";
@@ -612,5 +641,244 @@ public class CaseDocumentsTabBean extends TabBean
     }
   }
 
+  private List<CaseDocumentsDataTableRow> toDataTableRows(
+    List<CaseDocumentView> caseDocuments) throws Exception
+  {
+    List<CaseDocumentsDataTableRow> convertedRows = new ArrayList<>();
+    for (CaseDocumentView row : caseDocuments)
+    {
+      CaseDocumentsDataTableRow dataTableRow = 
+        new CaseDocumentsDataTableRow(row);
+      dataTableRow.setValues(this, row, getColumns());
+      convertedRows.add(dataTableRow);
+    }
+    return convertedRows;
+  }
+  
+  public class CaseDocumentsDataTableRow extends DataTableRow
+  {
+    private String comments;
+    private String docId;
+    private Integer docVersion;
+    private String docTypeId;
+    private String docTitle;
+    private String docSummary;
+    private String docLanguage;
+    private String docLockUserId;
+    private String docState;
+    private String docCreationDate;
+    private String docCaptureDateTime;
+    private String docCaptureUserId;
+    private String docChangeDateTime;
+    private String docChangeUserId;
+
+    public CaseDocumentsDataTableRow(CaseDocumentView row)
+    {
+      super(row.getCaseDocId(), row.getCaseDocTypeId());
+      comments = row.getComments();
+      if (row.getDocument() != null)
+      {
+        docId = row.getDocument().getDocId();
+        docVersion = row.getDocument().getVersion();
+        docTypeId = row.getDocument().getDocTypeId();
+        docTitle = row.getDocument().getTitle();
+        docSummary = row.getDocument().getSummary();
+        docLanguage = getDocumentLanguage(row.getDocument());
+        docLockUserId = row.getDocument().getLockUserId();
+        if (row.getDocument().getState() != null)
+        {
+          docState = row.getDocument().getState().value();
+        }
+        docCreationDate = row.getDocument().getCreationDate();
+        docCaptureDateTime = row.getDocument().getCaptureDateTime();
+        docCaptureUserId = row.getDocument().getCaptureUserId();
+        docChangeDateTime = row.getDocument().getChangeDateTime();
+        docChangeUserId = row.getDocument().getChangeUserId();
+      }
+    }
+
+    public String getComments()
+    {
+      return comments;
+    }
+
+    public void setComments(String comments)
+    {
+      this.comments = comments;
+    }    
+
+    public String getDocId()
+    {
+      return docId;
+    }
+
+    public void setDocId(String docId)
+    {
+      this.docId = docId;
+    }
+
+    public Integer getDocVersion()
+    {
+      return docVersion;
+    }
+
+    public void setDocVersion(Integer docVersion)
+    {
+      this.docVersion = docVersion;
+    }
+
+    public String getDocTypeId()
+    {
+      return docTypeId;
+    }
+
+    public void setDocTypeId(String docTypeId)
+    {
+      this.docTypeId = docTypeId;
+    }
+
+    public String getDocTitle()
+    {
+      return docTitle;
+    }
+
+    public void setDocTitle(String docTitle)
+    {
+      this.docTitle = docTitle;
+    }
+
+    public String getDocSummary()
+    {
+      return docSummary;
+    }
+
+    public void setDocSummary(String docSummary)
+    {
+      this.docSummary = docSummary;
+    }
+
+    public String getDocLanguage()
+    {
+      return docLanguage;
+    }
+
+    public void setDocLanguage(String docLanguage)
+    {
+      this.docLanguage = docLanguage;
+    }
+
+    public String getDocLockUserId()
+    {
+      return docLockUserId;
+    }
+
+    public void setDocLockUserId(String docLockUserId)
+    {
+      this.docLockUserId = docLockUserId;
+    }
+
+    public String getDocState()
+    {
+      return docState;
+    }
+
+    public void setDocState(String docState)
+    {
+      this.docState = docState;
+    }
+
+    public String getDocCreationDate()
+    {
+      return docCreationDate;
+    }
+
+    public void setDocCreationDate(String docCreationDate)
+    {
+      this.docCreationDate = docCreationDate;
+    }
+
+    public String getDocCaptureDateTime()
+    {
+      return docCaptureDateTime;
+    }
+
+    public void setDocCaptureDateTime(String docCaptureDateTime)
+    {
+      this.docCaptureDateTime = docCaptureDateTime;
+    }
+
+    public String getDocCaptureUserId()
+    {
+      return docCaptureUserId;
+    }
+
+    public void setDocCaptureUserId(String docCaptureUserId)
+    {
+      this.docCaptureUserId = docCaptureUserId;
+    }
+
+    public String getDocChangeDateTime()
+    {
+      return docChangeDateTime;
+    }
+
+    public void setDocChangeDateTime(String docChangeDateTime)
+    {
+      this.docChangeDateTime = docChangeDateTime;
+    }
+
+    public String getDocChangeUserId()
+    {
+      return docChangeUserId;
+    }
+
+    public void setDocChangeUserId(String docChangeUserId)
+    {
+      this.docChangeUserId = docChangeUserId;
+    }
+
+    @Override
+    protected DataTableRow.Value getDefaultValue(String columnName)
+    {
+      if (columnName != null)
+      {
+        switch (columnName)
+        {
+          case "comments":
+            return new DataTableRow.DefaultValue(getComments());            
+          case "docId":
+            return new DataTableRow.DefaultValue(getDocId());
+          case "docVersion":
+            return new DataTableRow.DefaultValue(getDocVersion());
+          case "docTypeId":
+            return new DataTableRow.TypeValue(getDocTypeId());
+          case "docTitle":
+            return new DataTableRow.DefaultValue(getDocTitle());
+          case "docSummary":
+            return new DataTableRow.DefaultValue(getDocSummary());
+          case "docLanguage":
+            return new DataTableRow.DefaultValue(getDocLanguage());
+          case "docLockUserId":
+            return new DataTableRow.DefaultValue(getDocLockUserId());
+          case "docState":
+            return new DataTableRow.DefaultValue(getDocState());
+          case "docCreationDate":
+            return new DataTableRow.DateValue(getDocCreationDate());            
+          case "docCaptureDateTime":
+            return new DataTableRow.DateValue(getDocCaptureDateTime());
+          case "docCaptureUserId":
+            return new DataTableRow.DefaultValue(getDocCaptureUserId());
+          case "docChangeDateTime":
+            return new DataTableRow.DateValue(getDocChangeDateTime());            
+          case "docChangeUserId":
+            return new DataTableRow.DefaultValue(getDocChangeUserId());            
+          default:
+            break;
+        }
+      }
+      return super.getDefaultValue(columnName);
+    }
+  }
+  
 
 }

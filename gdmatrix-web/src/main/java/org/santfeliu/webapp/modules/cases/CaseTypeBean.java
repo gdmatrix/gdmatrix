@@ -165,6 +165,20 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       new EditTab(BUNDLE_PREFIX + "tab_documents", 
         "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
         "/pages/cases/case_documents_dialog.xhtml");
+    documentsTab.getColumns().add(new Column("docId", 
+      BUNDLE_PREFIX + "caseDocuments_id", "col-1"));
+    documentsTab.getColumns().add(new Column("docLanguage", 
+      BUNDLE_PREFIX + "caseDocuments_language", "col-1"));    
+    Column titleColumn = new Column("docTitle", 
+      BUNDLE_PREFIX + "caseDocuments_title", "col-4");        
+    titleColumn.setIcon("org.santfeliu.webapp.modules.doc.DocumentTypeBean." + 
+      "getContentIcon(row.getDocument()) + ' text-xl mr-1'");
+    documentsTab.getColumns().add(titleColumn);    
+    documentsTab.getColumns().add(new Column("caseDocTypeId", 
+      BUNDLE_PREFIX + "caseDocuments_type", "col-3")); 
+    documentsTab.getColumns().add(new Column("docCreationDate", 
+      "$$documentBundle.document_creationDate", 
+      "col-2 text-center"));    
     documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
     documentsTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     documentsTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
