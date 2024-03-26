@@ -98,7 +98,7 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
     objectSetup.setViewId("/pages/agenda/theme.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-briefcase",
       "/pages/agenda/theme_main.xhtml"));
     objectSetup.setEditTabs(editTabs);
 

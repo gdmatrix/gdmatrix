@@ -110,15 +110,15 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
     objectSetup.setViewId("/pages/kernel/person.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "fa fa-person",
       "/pages/kernel/person_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_addresses", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_addresses", "pi pi-building", 
       "/pages/kernel/person_addresses.xhtml",
       "personAddressesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_contacts", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_contacts", "pi pi-id-card",
       "/pages/kernel/person_contacts.xhtml",
       "personContactsTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", 
       "/pages/kernel/person_cases.xhtml",
       "personCasesTabBean"));
     objectSetup.setEditTabs(editTabs);

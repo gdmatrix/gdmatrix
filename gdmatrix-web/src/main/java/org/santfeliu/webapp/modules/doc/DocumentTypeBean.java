@@ -120,12 +120,12 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     objectSetup.setSearchTabs(searchTabs);
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/doc/document_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_content", "/pages/doc/document_content.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents", "/pages/doc/document_documents.xhtml", "documentDocumentsTabBean"));  
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", "/pages/policy/document_policies.xhtml", "documentPoliciesTabBean"));      
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-file-o", "/pages/doc/document_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_content", "pi pi-save", "/pages/doc/document_content.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents", "pi pi-file-o", "/pages/doc/document_documents.xhtml", "documentDocumentsTabBean"));  
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", "pi pi-key", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", "material-icons-outlined mi-policy text-lg", "/pages/policy/document_policies.xhtml", "documentPoliciesTabBean"));      
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

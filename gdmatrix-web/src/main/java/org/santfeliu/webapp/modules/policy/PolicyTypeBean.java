@@ -114,8 +114,8 @@ public class PolicyTypeBean extends TypeBean<Policy, PolicyFilter>
     objectSetup.setSearchTabs(searchTabs);
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/policy/policy_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_classes", "/pages/policy/policy_classes.xhtml", "policyClassesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "material-icons-outlined mi-policy text-lg", "/pages/policy/policy_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_classes", "pi pi-tag", "/pages/policy/policy_classes.xhtml", "policyClassesTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

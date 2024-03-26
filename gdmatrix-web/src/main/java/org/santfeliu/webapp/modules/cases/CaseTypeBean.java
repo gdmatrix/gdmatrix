@@ -124,13 +124,13 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     List<EditTab> editTabs = new ArrayList<>();
     
     EditTab mainTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/cases/case_main.xhtml");
+      new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-folder", "/pages/cases/case_main.xhtml");
     mainTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     mainTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);
     editTabs.add(mainTab);
     
     EditTab personsTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_persons", 
+      new EditTab(BUNDLE_PREFIX + "tab_persons", "fa fa-person", 
         "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
         "/pages/cases/case_persons_dialog.xhtml");
     personsTab.getColumns().add(new Column("personId", 
@@ -151,7 +151,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     editTabs.add(personsTab);
     
     EditTab addressesTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_addresses", 
+      new EditTab(BUNDLE_PREFIX + "tab_addresses", "pi pi-building", 
         "/pages/cases/case_addresses.xhtml", "caseAddressesTabBean", 
         "addresses1", "/pages/cases/case_addresses_dialog.xhtml");
     addressesTab.getColumns().add(new Column("addressId", 
@@ -174,7 +174,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     editTabs.add(addressesTab);
     
     EditTab documentsTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_documents", 
+      new EditTab(BUNDLE_PREFIX + "tab_documents", "pi pi-file-o", 
         "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
         "/pages/cases/case_documents_dialog.xhtml");
     documentsTab.getColumns().add(new Column("docId", 
@@ -197,7 +197,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     editTabs.add(documentsTab);
     
     EditTab intEditTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_interventions", 
+      new EditTab(BUNDLE_PREFIX + "tab_interventions", "pi pi-clock", 
         "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
         "act1", "/pages/cases/case_interventions_dialog.xhtml");
     intEditTab.getColumns().add(new Column("intId", 
@@ -214,7 +214,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     editTabs.add(intEditTab);
     
     EditTab casesEditTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_cases", "/pages/cases/case_cases.xhtml", 
+      new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", "/pages/cases/case_cases.xhtml", 
         "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml");   
     casesEditTab.getColumns().add(new Column("caseId", 
       BUNDLE_PREFIX + "caseCases_id", "col-1"));
@@ -231,7 +231,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     casesEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);     
     editTabs.add(casesEditTab);
     
-    EditTab eventsEditTab = new EditTab(BUNDLE_PREFIX + "tab_events", 
+    EditTab eventsEditTab = new EditTab(BUNDLE_PREFIX + "tab_events", "pi pi-calendar", 
       "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
       "/pages/cases/case_events_dialog.xhtml");
     eventsEditTab.getColumns().add(new Column("eventId", 
@@ -249,13 +249,14 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     editTabs.add(eventsEditTab);    
     
     EditTab aclTab = 
-      new EditTab(BUNDLE_PREFIX + "tab_acl", "/pages/cases/case_acl.xhtml", 
+      new EditTab(BUNDLE_PREFIX + "tab_acl", "pi pi-key", "/pages/cases/case_acl.xhtml", 
         "caseACLTabBean");
     aclTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     aclTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
     editTabs.add(aclTab);
     
     EditTab policiesEditTab = new EditTab(BUNDLE_PREFIX + "tab_policies", 
+      "material-icons-outlined mi-policy text-lg", 
       "/pages/policy/case_policies.xhtml", "casePoliciesTabBean");
     policiesEditTab.getReadRoles().add(PolicyConstants.POLICY_ADMIN_ROLE);
     policiesEditTab.getWriteRoles().add(PolicyConstants.POLICY_ADMIN_ROLE);     

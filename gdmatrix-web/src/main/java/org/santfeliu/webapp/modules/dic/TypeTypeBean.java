@@ -136,11 +136,11 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     objectSetup.setViewId("/pages/dic/type.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-book",
       "/pages/dic/type_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_properties",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_properties", "pi pi-list",
       "/pages/dic/type_properties.xhtml", "typePropertiesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", "pi pi-key",
       "/pages/dic/type_acl.xhtml", "typeACLTabBean"));
     objectSetup.setEditTabs(editTabs);
 

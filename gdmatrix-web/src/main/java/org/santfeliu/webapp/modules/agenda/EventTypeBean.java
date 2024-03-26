@@ -125,24 +125,25 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     objectSetup.setSearchTabs(searchTabs);
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-calendar",
       "/pages/agenda/event_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons", "fa fa-person",
       "/pages/agenda/event_persons.xhtml",
       "eventPersonsTabBean", "persons1",
       "/pages/agenda/event_persons_dialog.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_places",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_places", "pi pi-building",
       "/pages/agenda/event_places.xhtml",
       "eventPlacesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_themes",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_themes", "pi pi-briefcase",
       "/pages/agenda/event_themes.xhtml",
       "eventThemesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents", "pi pi-file-o",
       "/pages/agenda/event_documents.xhtml",
       "eventDocumentsTabBean", "docs1",
       "/pages/agenda/event_documents_dialog.xhtml"));
     
-    EditTab casesEditTab = new EditTab(BUNDLE_PREFIX + "tab_cases",
+    EditTab casesEditTab = new EditTab(BUNDLE_PREFIX + "tab_cases", 
+      "pi pi-folder",
       "/pages/agenda/event_cases.xhtml",
       "eventCasesTabBean", "cases1",
       "/pages/agenda/event_cases_dialog.xhtml");
@@ -157,7 +158,7 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     casesEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
     editTabs.add(casesEditTab);    
     
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_recurrences",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_recurrences", "pi pi-clone",
       "/pages/agenda/event_recurrences.xhtml",
       "eventRecurrencesTabBean"));
     objectSetup.setEditTabs(editTabs);

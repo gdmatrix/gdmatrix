@@ -101,8 +101,10 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
     objectSetup.setViewId("/pages/classif/class.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/classif/class_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", "/pages/policy/class_policies.xhtml", "classPoliciesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-tag", "/pages/classif/class_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", 
+      "material-icons-outlined mi-policy text-lg", 
+      "/pages/policy/class_policies.xhtml", "classPoliciesTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

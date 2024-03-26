@@ -43,6 +43,7 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.workflow.InstanceEvent;
 import org.matrix.workflow.InstanceFilter;
 import org.matrix.workflow.InstanceView;
@@ -117,7 +118,7 @@ public class WorkflowManager implements WorkflowManagerPort
       // create agents
       String agentNamesString =
         MatrixConfig.getClassProperty(WorkflowManager.class, AGENTS);
-      if (agentNamesString != null)
+      if (!StringUtils.isBlank(agentNamesString))
       {
         String agentNames[] = agentNamesString.split(",");
         for (String agentName : agentNames)

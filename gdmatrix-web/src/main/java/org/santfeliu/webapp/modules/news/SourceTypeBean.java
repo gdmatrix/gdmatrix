@@ -97,7 +97,7 @@ public class SourceTypeBean extends TypeBean<Source, SourceFilter>
     objectSetup.setViewId("/pages/news/source.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "fa-regular fa-newspaper",
       "/pages/news/source_main.xhtml"));
     objectSetup.setEditTabs(editTabs);
 

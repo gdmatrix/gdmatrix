@@ -121,7 +121,7 @@ public class TranslationTypeBean extends TypeBean<Translation, TranslationFilter
     objectSetup.setSearchTabs(searchTabs);
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/translation/translation_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-language", "/pages/translation/translation_main.xhtml"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;
