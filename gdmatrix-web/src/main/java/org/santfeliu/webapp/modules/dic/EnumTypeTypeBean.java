@@ -98,9 +98,9 @@ public class EnumTypeTypeBean extends TypeBean<EnumType, EnumTypeFilter>
     objectSetup.setViewId("/pages/dic/enum_type.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-list" ,
       "/pages/dic/enum_type_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_items", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_items", "pi pi-circle-fill text-sm", 
       "/pages/dic/enum_type_items.xhtml", 
       "enumTypeItemsTabBean"));
     objectSetup.setEditTabs(editTabs);

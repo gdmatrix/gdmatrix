@@ -110,11 +110,11 @@ public class NewTypeBean extends TypeBean<New, NewsFilter>
     objectSetup.setViewId("/pages/news/new.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-megaphone",
       "/pages/news/new_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_sections", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_sections", "pi pi-hashtag",
       "/pages/news/new_sections.xhtml", "newSectionsTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents", "pi pi-file-o", 
       "/pages/news/new_documents.xhtml", 
       "newDocumentsTabBean", "docs1",
       "/pages/news/new_documents_dialog.xhtml"));  

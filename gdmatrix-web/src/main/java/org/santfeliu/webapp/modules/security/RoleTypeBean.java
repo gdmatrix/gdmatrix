@@ -112,15 +112,15 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
     objectSetup.setViewId("/pages/security/role.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-key", 
       "/pages/security/role_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", "pi pi-key", 
       "/pages/security/role_roles.xhtml", "roleRolesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles_tree", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles_tree", "pi pi-sitemap",
       "/pages/security/role_roles_tree.xhtml", "roleRolesTreeTabBean"));    
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_containers", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_containers", "pi pi-box ",  
       "/pages/security/role_containers.xhtml", "roleContainersTabBean"));    
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_users", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_users", "pi pi-user" ,
       "/pages/security/role_users.xhtml", "roleUsersTabBean"));
     objectSetup.setEditTabs(editTabs);
 

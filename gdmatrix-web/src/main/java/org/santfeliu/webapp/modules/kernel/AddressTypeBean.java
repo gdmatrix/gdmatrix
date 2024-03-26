@@ -118,11 +118,11 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
     objectSetup.setViewId("/pages/kernel/address.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-building",
       "/pages/kernel/address_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons", "fa fa-person", 
       "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", 
       "/pages/kernel/address_cases.xhtml", "addressCasesTabBean"));    
     objectSetup.setEditTabs(editTabs);
     

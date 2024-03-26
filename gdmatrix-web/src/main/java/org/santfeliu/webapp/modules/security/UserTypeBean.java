@@ -99,11 +99,11 @@ public class UserTypeBean extends TypeBean<User, UserFilter>
     objectSetup.setViewId("/pages/security/user.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-user", 
       "/pages/security/user_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", "pi pi-key", 
       "/pages/security/user_roles.xhtml", "userRolesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles_tree", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles_tree", "pi pi-sitemap", 
       "/pages/security/user_roles_tree.xhtml", "userRolesTreeTabBean"));
     objectSetup.setEditTabs(editTabs);
 

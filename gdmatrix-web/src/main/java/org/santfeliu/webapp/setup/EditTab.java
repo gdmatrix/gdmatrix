@@ -41,6 +41,7 @@ import java.util.List;
 public class EditTab implements Serializable
 {
   private String label;
+  private String icon;
   private String viewId;
   private String beanName;
   private String subviewId;
@@ -50,25 +51,21 @@ public class EditTab implements Serializable
   private List<String> readRoles = new ArrayList();
   private List<String> writeRoles = new ArrayList();  
 
-  public EditTab(String label, String viewId)
+  public EditTab(String label, String icon, String viewId)
   {
-    this(label, viewId, null, null, null);
+    this(label, icon, viewId, null, null, null);
   }
 
-  public EditTab(String label, String viewId, String beanName)
+  public EditTab(String label, String icon, String viewId, String beanName)
   {
-    this(label, viewId, beanName, null, null);
+    this(label, icon, viewId, beanName, null, null);
   }
 
-  public EditTab(String label, String viewId, String beanName, String subviewId)
-  {
-    this(label, viewId, beanName, subviewId, null);
-  }
-
-  public EditTab(String label, String viewId, String beanName,
+  public EditTab(String label, String icon, String viewId, String beanName,
     String subviewId, String dialogViewId)
   {
     this.label = label;
+    this.icon = icon;    
     this.viewId = viewId;
     this.beanName = beanName;
     this.subviewId = subviewId;
@@ -83,6 +80,16 @@ public class EditTab implements Serializable
   public void setLabel(String label)
   {
     this.label = label;
+  }
+
+  public String getIcon()
+  {
+    return icon;
+  }
+
+  public void setIcon(String icon)
+  {
+    this.icon = icon;
   }
 
   public String getViewId()
