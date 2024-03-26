@@ -41,6 +41,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.CaseAddress;
 import org.matrix.cases.CaseAddressFilter;
 import org.matrix.cases.CaseAddressView;
@@ -58,7 +59,9 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.AddressTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -77,7 +80,7 @@ public class CaseAddressesTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    List<CaseAddressView> rows;
+    List<CaseAddressesDataTableRow> rows;
     int firstRow = 0;
     boolean groupedView = true;
   }
@@ -169,12 +172,12 @@ public class CaseAddressesTabBean extends TabBean
     return editing == null ? NEW_OBJECT_ID : editing.getCaseAddressTypeId();
   }
 
-  public List<CaseAddressView> getRows()
+  public List<CaseAddressesDataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<CaseAddressView> rows)
+  public void setRows(List<CaseAddressesDataTableRow> rows)
   {
     getCurrentTabInstance().rows = rows;
   }
@@ -240,14 +243,35 @@ public class CaseAddressesTabBean extends TabBean
     return tabInstances;
   }
 
-  public void edit(CaseAddressView row)
+  public List<Column> getColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
+  public boolean isColumnRendered(Column column)
+  {
+    if (!isRenderTypeColumn() && column.getName().equals("caseAddressTypeId"))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }    
+  }  
+  
+  public void edit(DataTableRow row)
   {
     if (row != null)
     {
       try
       {
-        editing = CasesModuleBean.getPort(false).
-          loadCaseAddress(row.getCaseAddressId());
+        editing = 
+          CasesModuleBean.getPort(false).loadCaseAddress(row.getRowId());
       }
       catch (Exception ex)
       {
@@ -271,14 +295,19 @@ public class CaseAddressesTabBean extends TabBean
         CaseAddressFilter filter = new CaseAddressFilter();
         filter.setCaseId(caseObjectBean.getObjectId());
 
-        getCurrentTabInstance().rows =
+        List<CaseAddressView> auxList = 
           CasesModuleBean.getPort(false).findCaseAddressViews(filter);
-
+        
+        List<CaseAddressView> result;        
         String typeId = getTabBaseTypeId();
-        if (typeId != null)
+        if (typeId == null)
         {
-          List<CaseAddressView> result = new ArrayList();
-          for (CaseAddressView item : getCurrentTabInstance().rows)
+          result = auxList;          
+        }
+        else  
+        {
+          result = new ArrayList();
+          for (CaseAddressView item : auxList)
           {
             String caseAddressTypeId = item.getCaseAddressTypeId();
             if (caseAddressTypeId == null)
@@ -291,8 +320,8 @@ public class CaseAddressesTabBean extends TabBean
               result.add(item);
             }
           }
-          getCurrentTabInstance().rows = result;
-        }
+        }        
+        setRows(toDataTableRows(result));        
       }
       catch (Exception ex)
       {
@@ -350,14 +379,14 @@ public class CaseAddressesTabBean extends TabBean
     }
   }
   
-  public void remove(CaseAddressView row)
+  public void remove(DataTableRow row)
   {
     if (row != null)
     {
       try
       {
-        row = (CaseAddressView) executeTabAction("preTabRemove", row);
-        CasesModuleBean.getPort(false).removeCaseAddress(row.getCaseAddressId());
+        row = (DataTableRow)executeTabAction("preTabRemove", row);
+        CasesModuleBean.getPort(false).removeCaseAddress(row.getRowId());
         executeTabAction("postTabRemove", row);
         refreshHiddenTabInstances();
         load();
@@ -491,5 +520,187 @@ public class CaseAddressesTabBean extends TabBean
     filter.setAddressId(addressId);
     return KernelModuleBean.getPort(true).findPersonAddressViews(filter);
   }
+  
+  private List<CaseAddressesDataTableRow> toDataTableRows(
+    List<CaseAddressView> caseAddresses) throws Exception
+  {
+    List<CaseAddressesDataTableRow> convertedRows = new ArrayList<>();
+    for (CaseAddressView row : caseAddresses)
+    {
+      CaseAddressesDataTableRow dataTableRow = 
+        new CaseAddressesDataTableRow(row);
+      dataTableRow.setValues(this, row, getColumns());
+      convertedRows.add(dataTableRow);
+    }
+    return convertedRows;
+  }
+
+  public class CaseAddressesDataTableRow extends DataTableRow
+  {      
+    private String startDate;
+    private String endDate;
+    private String comments;
+    private String addressId;
+    private String addressTypeId;
+    private String addressDescription;
+    private String addressFullDescription;
+    private String addressCity;
+    private String addressProvince;
+    private String addressCountry;
+
+    public CaseAddressesDataTableRow(CaseAddressView row)
+    {
+      super(row.getCaseAddressId(), row.getCaseAddressTypeId());
+      startDate = row.getStartDate();
+      endDate = row.getEndDate();
+      comments = row.getComments();
+      if (row.getAddressView() != null)
+      {
+        addressId = row.getAddressView().getAddressId();
+        addressTypeId = row.getAddressView().getAddressTypeId();
+        addressDescription = row.getAddressView().getDescription();
+        addressCity = row.getAddressView().getCity();
+        addressProvince = row.getAddressView().getProvince();
+        addressCountry = row.getAddressView().getCountry();
+        addressFullDescription = addressDescription + 
+          (!StringUtils.isBlank(addressCity) ? " (" + addressCity + ")" : "");
+      }
+    }
+
+    public String getStartDate()
+    {
+      return startDate;
+    }
+
+    public void setStartDate(String startDate)
+    {
+      this.startDate = startDate;
+    }
+
+    public String getEndDate()
+    {
+      return endDate;
+    }
+
+    public void setEndDate(String endDate)
+    {
+      this.endDate = endDate;
+    }
+
+    public String getComments()
+    {
+      return comments;
+    }
+
+    public void setComments(String comments)
+    {
+      this.comments = comments;
+    }    
+
+    public String getAddressId()
+    {
+      return addressId;
+    }
+
+    public void setAddressId(String addressId)
+    {
+      this.addressId = addressId;
+    }
+
+    public String getAddressTypeId()
+    {
+      return addressTypeId;
+    }
+
+    public void setAddressTypeId(String addressTypeId)
+    {
+      this.addressTypeId = addressTypeId;
+    }
+
+    public String getAddressDescription()
+    {
+      return addressDescription;
+    }
+
+    public void setAddressDescription(String addressDescription)
+    {
+      this.addressDescription = addressDescription;
+    }
+
+    public String getAddressFullDescription()
+    {
+      return addressFullDescription;
+    }
+
+    public void setAddressFullDescription(String addressFullDescription)
+    {
+      this.addressFullDescription = addressFullDescription;
+    }
+
+    public String getAddressCity()
+    {
+      return addressCity;
+    }
+
+    public void setAddressCity(String addressCity)
+    {
+      this.addressCity = addressCity;
+    }
+
+    public String getAddressProvince()
+    {
+      return addressProvince;
+    }
+
+    public void setAddressProvince(String addressProvince)
+    {
+      this.addressProvince = addressProvince;
+    }
+
+    public String getAddressCountry()
+    {
+      return addressCountry;
+    }
+
+    public void setAddressCountry(String addressCountry)
+    {
+      this.addressCountry = addressCountry;
+    }
+    
+    @Override
+    protected DataTableRow.Value getDefaultValue(String columnName)
+    {
+      if (columnName != null)
+      {
+        switch (columnName)
+        {
+          case "startDate":
+            return new DataTableRow.DateValue(getStartDate());
+          case "endDate":
+            return new DataTableRow.DateValue(getEndDate());            
+          case "comments":
+            return new DataTableRow.DefaultValue(getComments());            
+          case "addressId":
+            return new DataTableRow.DefaultValue(getAddressId());
+          case "addressTypeId":
+            return new DataTableRow.TypeValue(getAddressTypeId());
+          case "addressDescription":
+            return new DataTableRow.DefaultValue(getAddressDescription());
+          case "addressFullDescription":
+            return new DataTableRow.DefaultValue(getAddressFullDescription());
+          case "addressCity":
+            return new DataTableRow.DefaultValue(getAddressCity());
+          case "addressProvince":
+            return new DataTableRow.DefaultValue(getAddressProvince());
+          case "addressCountry":
+            return new DataTableRow.DefaultValue(getAddressCountry());
+          default:
+            break;
+        }
+      }
+      return super.getDefaultValue(columnName);
+    }
+  }
+  
   
 }
