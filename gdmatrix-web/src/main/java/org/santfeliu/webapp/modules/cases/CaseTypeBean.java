@@ -133,6 +133,18 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       new EditTab(BUNDLE_PREFIX + "tab_persons", 
         "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
         "/pages/cases/case_persons_dialog.xhtml");
+    personsTab.getColumns().add(new Column("personId", 
+      BUNDLE_PREFIX + "casePersons_id", "col-1"));
+    personsTab.getColumns().add(new Column("personName", 
+      BUNDLE_PREFIX + "casePersons_person", "col-5"));    
+    personsTab.getColumns().add(new Column("casePersonTypeId", 
+      BUNDLE_PREFIX + "casePersons_type", "col-3"));    
+    personsTab.getColumns().add(new Column("startDate", 
+      BUNDLE_PREFIX + "casePersons_startDate", 
+      "col-1 text-center white-space-nowrap")); 
+    personsTab.getColumns().add(new Column("endDate", 
+      BUNDLE_PREFIX + "casePersons_endDate", 
+      "col-1 text-center white-space-nowrap"));
     personsTab.getProperties().put("typeId", CASE_PERSON_TYPE);
     personsTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     personsTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);    

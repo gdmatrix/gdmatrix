@@ -3,7 +3,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:jsf="http://xmlns.jcp.org/jsf">
 
   <f:subview id="#{tab.subviewId != null ? tab.subviewId : 'pers'}">
 
@@ -39,45 +39,28 @@
         </div>
       </f:facet>
 
-      <p:headerRow field="casePersonTypeId" expandable="true"
-                   expanded="true" rendered="#{casePersonsTabBean.groupedView}">
-        <p:column colspan="7" >
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.casePersonTypeId)}"/>
+      <p:headerRow expandable="true"
+                   expanded="true" rendered="#{casePersonsTabBean.groupedView}"
+                   groupBy="#{row.typeId}">
+        <p:column colspan="6" >
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
       </p:headerRow>
-
-      <p:column headerText="#{caseBundle.casePersons_id}" styleClass="col-1"
-                sortBy="#{row.personView.personId}">
-        <h:outputText value="#{row.personView.personId}" />
-      </p:column>
-
-      <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-4"
-                sortBy="#{row.personView.fullName}">
-        <h:outputText value="#{row.personView.fullName}"/>
-      </p:column>      
-      
-      <p:column headerText="#{caseBundle.casePersons_type}" styleClass="col-3"
-                rendered="#{casePersonsTabBean.renderTypeColumn}" 
-                sortBy="#{typeTypeBean.getDescription(row.casePersonTypeId)}"
-                sortOrder="asc" sortPriority="1">
-        <h:outputText value="#{typeTypeBean.getDescription(row.casePersonTypeId)}"/>
-      </p:column>
-      
-      <p:column headerText="#{caseBundle.casePersons_startDate}" styleClass="col-1 text-center white-space-nowrap"
-                sortBy="#{row.startDate}">
-        <h:outputText value="#{row.startDate}"><f:converter converterId="dateConverter" /></h:outputText>
-      </p:column>  
-
-      <p:column headerText="#{caseBundle.casePersons_endDate}" styleClass="col-1 text-center white-space-nowrap"
-                sortBy="#{row.endDate}">
-        <h:outputText value="#{row.endDate}"><f:converter converterId="dateConverter" /></h:outputText>
-      </p:column>        
+      <p:columns value="#{casePersonsTabBean.columns}" var="column" columnIndexVar="i"
+                 filterable="false" sortable="true" resizable="false"
+                 headerText="#{applicationBean.translate(column.label)}" 
+                 field="#{column.name}" styleClass="#{column.styleClass}"
+                 style="#{casePersonsTabBean.isColumnRendered(column) ? '' : 'display:none'}"                 
+                 sortBy="#{row.values[i].sorted}">
+        <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
+        <h:outputText value="#{row.values[i].label}" />
+      </p:columns>
 
       <p:column styleClass="col-1 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this" update="@form:cnt"
-                         action="#{navigatorBean.show('Person', row.personView.personId)}"
+                         action="#{navigatorBean.show('Person', row.personId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
@@ -87,7 +70,7 @@
                          resetValues="true"
                          oncomplete="PF('casePersonsDialog').show()"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         disabled="#{!caseObjectBean.isRowEditable(row.casePersonTypeId)}" />
+                         disabled="#{!caseObjectBean.isRowEditable(row.typeId)}" />
         <p:commandButton action="#{casePersonsTabBean.remove(row)}"
                          process="@this"
                          update="@form:cnt:search_tabs:tabs"
@@ -95,7 +78,7 @@
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
-                         disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.casePersonTypeId)}">
+                         disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.typeId)}">
             <p:confirm header="#{objectBundle.confirm_remove_header}"
                        message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />

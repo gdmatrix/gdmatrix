@@ -63,7 +63,9 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -90,7 +92,7 @@ public class CasePersonsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    List<CasePersonView> rows;
+    List<CasePersonsDataTableRow> rows;
     int firstRow = 0;
     boolean groupedView = true;
   }
@@ -132,17 +134,17 @@ public class CasePersonsTabBean extends TabBean
     else
       return EMPTY_TAB_INSTANCE;
   }
-
-  public List<CasePersonView> getRows()
+  
+  public List<CasePersonsDataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<CasePersonView> casePersonViews)
+  public void setRows(List<CasePersonsDataTableRow> rows)
   {
-    getCurrentTabInstance().rows = casePersonViews;
-  }
-
+    getCurrentTabInstance().rows = rows;
+  }    
+  
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -463,6 +465,27 @@ public class CasePersonsTabBean extends TabBean
     return "";
   }
 
+  public List<Column> getColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
+  public boolean isColumnRendered(Column column)
+  {
+    if (!isRenderTypeColumn() && column.getName().equals("casePersonTypeId"))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }    
+  }  
+  
   public void create()
   {
     editing = new CasePerson();
@@ -485,8 +508,11 @@ public class CasePersonsTabBean extends TabBean
         if (typeId != null)
           filter.setCasePersonTypeId(typeId);
 
-        getCurrentTabInstance().rows =
+        List<CasePersonView> casePersons =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
+
+        setRows(toDataTableRows(casePersons));
+        
       }
       catch (Exception ex)
       {
@@ -503,14 +529,13 @@ public class CasePersonsTabBean extends TabBean
     executeTabAction("postTabLoad", null);     
   }
 
-  public void edit(CasePersonView casePersonView)
+  public void edit(DataTableRow row)
   {
-    if (casePersonView != null)
+    if (row != null)
     {
       try
       {
-        editing = CasesModuleBean.getPort(false)
-          .loadCasePerson(casePersonView.getCasePersonId());
+        editing = CasesModuleBean.getPort(false).loadCasePerson(row.getRowId());
         personContacts =
           getPersonContacts(editing.getPersonId());
         representantContacts =
@@ -568,18 +593,18 @@ public class CasePersonsTabBean extends TabBean
     return (editing != null);
   }  
   
-  public void remove(CasePersonView row)
+  public void remove(DataTableRow row)
   {
     try
     {
       if (row != null)
       {
-        row = (CasePersonView) executeTabAction("preTabRemove", row);        
-        String casePersonId = row.getCasePersonId();
-        CasesModuleBean.getPort(false).removeCasePerson(casePersonId);
+        row = (DataTableRow)executeTabAction("preTabRemove", row);        
+        CasesModuleBean.getPort(false).removeCasePerson(row.getRowId());
         executeTabAction("postTabRemove", row);        
         refreshHiddenTabInstances();
         load();
+        growl("REMOVE_OBJECT");        
       }
     }
     catch (Exception ex)
@@ -693,6 +718,19 @@ public class CasePersonsTabBean extends TabBean
     }
   }
 
+  private List<CasePersonsDataTableRow> toDataTableRows(
+    List<CasePersonView> casePersons) throws Exception
+  {
+    List<CasePersonsDataTableRow> convertedRows = new ArrayList<>();
+    for (CasePersonView row : casePersons)
+    {
+      CasePersonsDataTableRow dataTableRow = new CasePersonsDataTableRow(row);
+      dataTableRow.setValues(this, row, getColumns());
+      convertedRows.add(dataTableRow);
+    }
+    return convertedRows;
+  }
+  
   private boolean isNew(CasePerson casePerson)
   {
     return (casePerson != null && casePerson.getCasePersonId() == null);
@@ -822,6 +860,132 @@ public class CasePersonsTabBean extends TabBean
     for (CaseAddressesTabBean.TabInstance tabInstance : caTabInstances)
     {
       tabInstance.objectId = NEW_OBJECT_ID;
+    }
+  }
+
+  public class CasePersonsDataTableRow extends DataTableRow
+  {
+    private String startDate;
+    private String endDate;    
+    private String comments;
+    private String personId;
+    private String personTypeId;
+    private String personName;
+    private String personIdent;
+
+    public CasePersonsDataTableRow(CasePersonView row)
+    {
+      super(row.getCasePersonId(), row.getCasePersonTypeId());
+      startDate = row.getStartDate();
+      endDate = row.getEndDate();
+      comments = row.getComments();      
+      if (row.getPersonView() != null)
+      {
+        personId = row.getPersonView().getPersonId();
+        personTypeId = row.getPersonView().getPersonTypeId();
+        personName = row.getPersonView().getFullName();
+        personIdent = row.getPersonView().getNif() != null ?
+          row.getPersonView().getNif() : 
+          row.getPersonView().getPassport();
+      }
+    }
+    
+    public String getStartDate()
+    {
+      return startDate;
+    }
+
+    public void setStartDate(String startDate)
+    {
+      this.startDate = startDate;
+    }
+
+    public String getEndDate()
+    {
+      return endDate;
+    }
+
+    public void setEndDate(String endDate)
+    {
+      this.endDate = endDate;
+    }
+
+    public String getComments()
+    {
+      return comments;
+    }
+
+    public void setComments(String comments)
+    {
+      this.comments = comments;
+    }    
+
+    public String getPersonId()
+    {
+      return personId;
+    }
+
+    public void setPersonId(String personId)
+    {
+      this.personId = personId;
+    }
+
+    public String getPersonTypeId()
+    {
+      return personTypeId;
+    }
+
+    public void setPersonTypeId(String personTypeId)
+    {
+      this.personTypeId = personTypeId;
+    }
+
+    public String getPersonName()
+    {
+      return personName;
+    }
+
+    public void setPersonName(String personName)
+    {
+      this.personName = personName;
+    }
+
+    public String getPersonIdent()
+    {
+      return personIdent;
+    }
+
+    public void setPersonIdent(String personIdent)
+    {
+      this.personIdent = personIdent;
+    }
+
+    @Override
+    protected Value getDefaultValue(String columnName)
+    {
+      if (columnName != null)
+      {
+        switch (columnName)
+        {
+          case "startDate":
+            return new DateValue(getStartDate());
+          case "endDate":
+            return new DateValue(getEndDate());            
+          case "comments":
+            return new DefaultValue(getComments());          
+          case "personId":
+            return new DefaultValue(getPersonId());
+          case "personTypeId":
+            return new TypeValue(getPersonTypeId());
+          case "personName":
+            return new DefaultValue(getPersonName());
+          case "personIdent":
+            return new DefaultValue(getPersonIdent());
+          default:
+            break;
+        }
+      }
+      return super.getDefaultValue(columnName);
     }
   }
 
