@@ -143,7 +143,7 @@ public class EventCasesTabBean extends TabBean
   
   public boolean isColumnRendered(Column column)
   {
-    if (!isRenderTypeColumn() && column.getName().endsWith("TypeId"))
+    if (!isRenderTypeColumn() && column.getName().equals("caseEventTypeId"))
     {
       return false;
     }
@@ -432,12 +432,6 @@ public class EventCasesTabBean extends TabBean
     private String caseId;
     private String caseTypeId;
     private String caseTitle;
-    private String eventId;
-    private String eventTypeId;
-    private String eventTitle;
-    private String eventIniDate;
-    private String eventEndDate;    
-    private String caseEventTypeId;
 
     public CaseEventsDataTableRow(CaseEventView row)
     {
@@ -448,15 +442,6 @@ public class EventCasesTabBean extends TabBean
         caseTypeId = row.getCaseObject().getCaseTypeId();
         caseTitle = row.getCaseObject().getTitle();
       }
-      if (row.getEvent() != null)
-      {
-        eventId = row.getEvent().getEventId();
-        eventTypeId = row.getEvent().getEventTypeId();
-        eventTitle = row.getEvent().getSummary();
-        eventIniDate = row.getEvent().getStartDateTime();
-        eventEndDate = row.getEvent().getEndDateTime();      
-      }
-      caseEventTypeId = row.getCaseEventTypeId();
     }
 
     public String getCaseId()
@@ -489,66 +474,6 @@ public class EventCasesTabBean extends TabBean
       this.caseTitle = caseTitle;
     }
 
-    public String getEventId()
-    {
-      return eventId;
-    }
-
-    public void setEventId(String eventId)
-    {
-      this.eventId = eventId;
-    }
-
-    public String getEventTypeId()
-    {
-      return eventTypeId;
-    }
-
-    public void setEventTypeId(String eventTypeId)
-    {
-      this.eventTypeId = eventTypeId;
-    }
-
-    public String getEventTitle()
-    {
-      return eventTitle;
-    }
-
-    public void setEventTitle(String eventTitle)
-    {
-      this.eventTitle = eventTitle;
-    }
-
-    public String getEventIniDate()
-    {
-      return eventIniDate;
-    }
-
-    public void setEventIniDate(String eventIniDate)
-    {
-      this.eventIniDate = eventIniDate;
-    }
-
-    public String getEventEndDate()
-    {
-      return eventEndDate;
-    }
-
-    public void setEventEndDate(String eventEndDate)
-    {
-      this.eventEndDate = eventEndDate;
-    }
-
-    public String getCaseEventTypeId()
-    {
-      return caseEventTypeId;
-    }
-
-    public void setCaseEventTypeId(String caseEventTypeId)
-    {
-      this.caseEventTypeId = caseEventTypeId;
-    }
-
     @Override
     protected Value getDefaultValue(String columnName)
     {
@@ -562,18 +487,6 @@ public class EventCasesTabBean extends TabBean
             return new TypeValue(getCaseTypeId());
           case "caseTitle":
             return new DefaultValue(getCaseTitle());          
-          case "eventId":
-            return new DefaultValue(getEventId());
-          case "eventTypeId":
-            return new TypeValue(getEventTypeId());
-          case "eventTitle":
-            return new DefaultValue(getEventTitle());
-          case "eventIniDate":
-            return new DateValue(getEventIniDate());
-          case "eventEndDate":
-            return new DateValue(getEventEndDate());
-          case "caseEventTypeId":
-            return new TypeValue(getCaseEventTypeId());
           default:
             break;
         }

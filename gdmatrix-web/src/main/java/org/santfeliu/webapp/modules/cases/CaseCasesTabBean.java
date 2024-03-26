@@ -153,7 +153,7 @@ public class CaseCasesTabBean extends TabBean
   
   public boolean isColumnRendered(Column column)
   {
-    if (!isRenderTypeColumn() && column.getName().endsWith("TypeId"))
+    if (!isRenderTypeColumn() && column.getName().equals("caseCaseTypeId"))
     {
       return false;
     }
