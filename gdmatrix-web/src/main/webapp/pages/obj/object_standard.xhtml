@@ -119,7 +119,10 @@
       <p:tab disabled="#{objectBean.isDisabledEditTab(tab)}"
              rendered="#{objectBean.isRenderedEditTab(tab)}">
         <f:facet name="title">
-          <span class="#{tab.icon} mr-2"/>#{applicationBean.translate(tab.label, userSessionBean.translationGroup)}
+          <ui:fragment rendered="#{tab.icon != null}">
+            <span class="#{tab.icon} mr-2"/>
+          </ui:fragment>
+          #{applicationBean.translate(tab.label, userSessionBean.translationGroup)}
         </f:facet>
         <ui:include src="#{tab.viewId}" />
       </p:tab>
