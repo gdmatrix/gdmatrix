@@ -67,7 +67,6 @@ import static org.santfeliu.workflow.WorkflowNode.WAIT_OUTCOME;
  */
 public class WorkflowEngine
 {
-  public static final String TIMER_AGENT_NAME = "cronos";
   private final WorkflowStore workflowStore;
   private final DataStore dataStore;
   private final Map agents = new HashMap();
@@ -76,9 +75,6 @@ public class WorkflowEngine
   {
     this.workflowStore = workflowStore;
     this.dataStore = dataStore;
-    TimerAgent agent = new TimerAgent(this, TIMER_AGENT_NAME);
-    agents.put(TIMER_AGENT_NAME, agent);
-    agent.start();
   }
 
   public synchronized WorkflowAgent createAgent(String agentName)
@@ -91,6 +87,13 @@ public class WorkflowEngine
       agent.start();
     }
     return agent;
+  }
+  
+  public synchronized void createTimerAgent(String agentName)  
+  {
+    TimerAgent agent = new TimerAgent(this, agentName);
+    agents.put(agentName, agent);
+    agent.start();    
   }
 
   public synchronized WorkflowAgent getAgent(String agentName)

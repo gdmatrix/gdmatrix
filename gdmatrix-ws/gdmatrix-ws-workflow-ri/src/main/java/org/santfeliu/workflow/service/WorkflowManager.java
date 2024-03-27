@@ -88,6 +88,8 @@ public class WorkflowManager implements WorkflowManagerPort
   public static final String DATA_STORE = "dataStore";
   public static final String WORKFLOW_STORE = "workflowStore";
   public static final String AGENTS = "agents";
+  public static final String TIMER_AGENT_NAME = "cronos";  
+  public static final String DISABLE_TIMER_AGENT = "disableTimerAgent";
   public static final String MAX_STEPS = "maxSteps";
 
   @Initializer
@@ -114,8 +116,13 @@ public class WorkflowManager implements WorkflowManagerPort
 
       // create engine
       engine = new WorkflowEngine(ws, ds);
-
+      
       // create agents
+      String disableTimerAgent = 
+        MatrixConfig.getClassProperty(WorkflowManager.class, DISABLE_TIMER_AGENT);
+      if (disableTimerAgent == null || !"true".equals(disableTimerAgent))
+        engine.createTimerAgent(TIMER_AGENT_NAME);
+        
       String agentNamesString =
         MatrixConfig.getClassProperty(WorkflowManager.class, AGENTS);
       if (!StringUtils.isBlank(agentNamesString))
