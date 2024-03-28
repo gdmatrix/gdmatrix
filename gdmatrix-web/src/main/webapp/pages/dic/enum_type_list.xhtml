@@ -18,10 +18,10 @@
     <p:column headerText="#{dicBundle.enumType_type}" styleClass="col-4">
       <h:outputText value="#{row.enumTypeId}" />
     </p:column>         
-    <p:column headerText="#{dicBundle.enumType_name}" styleClass="col-6">
+    <p:column headerText="#{dicBundle.enumType_name}" styleClass="col-8">
       <h:outputText value="#{row.name}" />
     </p:column>  
-    <p:column styleClass="col-1 white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.enumTypeId)}"

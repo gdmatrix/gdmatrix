@@ -16,13 +16,13 @@
     <p:column headerText="#{newsBundle.source_id}" styleClass="col-1">
       <h:outputText value="#{row.id}" />
     </p:column>
-    <p:column headerText="#{newsBundle.source_name}" styleClass="col-4">
+    <p:column headerText="#{newsBundle.source_name}" styleClass="col-5">
       <h:outputText value="#{row.name}" />
     </p:column>
     <p:column headerText="#{newsBundle.source_url}" styleClass="col-6">
       <p:link href="#{row.url}" target="_blank" rendered="#{row.url != null and not empty row.url}"> <h:outputText value="#{row.url}" /> </p:link>
     </p:column>    
-    <p:column styleClass="col-1 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.id)}"

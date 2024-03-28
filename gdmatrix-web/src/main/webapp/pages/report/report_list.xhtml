@@ -18,13 +18,13 @@
     <p:column headerText="#{reportBundle.reportId}" styleClass="col-3">
       <h:outputText value="#{row.reportId}" />
     </p:column>                
-    <p:column headerText="#{reportBundle.reportDescription}" styleClass="col-6">
+    <p:column headerText="#{reportBundle.reportDescription}" styleClass="col-8">
       <h:outputText value="#{row.title}" />
     </p:column> 
     <p:column headerText="#{reportBundle.reportTechnology}" styleClass="col-1">
       <h:outputText value="#{row.technology}" />
     </p:column>     
-    <p:column styleClass="col-2 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="pi pi-arrow-circle-right" styleClass="rounded-button ui-button-flat" 
                        title="#{objectBundle.show}" alt="#{objectBundle.show}"
                        action="#{reportFinderBean.view(rowIndex)}"

@@ -21,13 +21,13 @@
     <p:column headerText="#{kernelBundle.person_type}" styleClass="col-2">
       <h:outputText value="#{typeTypeBean.getDescription(row.personTypeId)}" />
     </p:column>     
-    <p:column headerText="#{kernelBundle.person_name}" styleClass="col-7">
+    <p:column headerText="#{kernelBundle.person_name}" styleClass="col-8">
       <h:outputText value="#{row.fullName}" />
     </p:column> 
     <p:column headerText="#{kernelBundle.person_nif}" styleClass="col-1">
       <h:outputText value="#{row.nif}" />
     </p:column>     
-    <p:column styleClass="col-1 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.personId)}"

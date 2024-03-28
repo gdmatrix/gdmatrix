@@ -48,18 +48,18 @@
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.eventDocuments_title}" styleClass="col-7">
+      <p:column headerText="#{agendaBundle.eventDocuments_title}" styleClass="col-8">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
-      <p:column headerText="#{agendaBundle.eventDocuments_type}" styleClass="col-2"
+      <p:column headerText="#{agendaBundle.eventDocuments_type}" styleClass="col-3"
                 rendered="#{eventDocumentsTabBean.renderTypeColumn}"
                 sortBy="#{typeTypeBean.getDescription(row.eventDocTypeId)}"
                 sortOrder="asc" sortPriority="1">
         <h:outputText value="#{typeTypeBean.getDescription(row.eventDocTypeId)}"/>
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this"

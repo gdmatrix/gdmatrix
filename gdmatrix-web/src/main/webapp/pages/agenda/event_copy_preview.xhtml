@@ -52,7 +52,7 @@
                     styleClass="inputDateLong" />
     </p:column>
 
-    <p:column headerText="#{agendaBundle.event_title}" styleClass="col-4">
+    <p:column headerText="#{agendaBundle.event_title}" styleClass="col-6">
       <h:outputText value="#{row.event.summary}"
                     rendered="#{eventCopyTabBean.editingRow != row}"/>
       <p:inputText value="#{eventCopyTabBean.editingRow.event.summary}"
@@ -100,7 +100,7 @@
       </p:tooltip>
     </p:column>
 
-    <p:column styleClass="col-1 text-right white-space-nowrap" exportable="false">
+    <p:column styleClass="text-right white-space-nowrap" exportable="false">
       <p:commandButton icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"

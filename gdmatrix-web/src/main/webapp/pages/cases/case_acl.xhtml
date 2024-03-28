@@ -24,15 +24,15 @@
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
-      <p:column headerText="RoleId" styleClass="col-5">
+      <p:column headerText="RoleId" styleClass="col-6">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
-      <p:column headerText="Actions" styleClass="col-5">
+      <p:column headerText="Actions" styleClass="col-6">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat"
@@ -66,15 +66,15 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="RoleId" styleClass="col-5">
+      <p:column headerText="RoleId" styleClass="col-6">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
-      <p:column headerText="Actions" styleClass="col-5">
+      <p:column headerText="Actions" styleClass="col-6">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right" 
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat" 

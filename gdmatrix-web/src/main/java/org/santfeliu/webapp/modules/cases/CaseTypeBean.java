@@ -115,7 +115,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     searchTab.getColumns().add(new Column("caseTypeId", 
       BUNDLE_PREFIX + "case_type", "col-3"));   
     searchTab.getColumns().add(new Column("title", 
-      BUNDLE_PREFIX + "case_title", "col-6")); 
+      BUNDLE_PREFIX + "case_title", "col-8")); 
     searchTab.getOrderBy().add("caseId");
     searchTabs.add(searchTab);
     
@@ -136,7 +136,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     personsTab.getColumns().add(new Column("personId", 
       BUNDLE_PREFIX + "casePersons_id", "col-1"));
     personsTab.getColumns().add(new Column("personName", 
-      BUNDLE_PREFIX + "casePersons_person", "col-5"));    
+      BUNDLE_PREFIX + "casePersons_person", "col-6"));    
     personsTab.getColumns().add(new Column("casePersonTypeId", 
       BUNDLE_PREFIX + "casePersons_type", "col-3"));    
     personsTab.getColumns().add(new Column("startDate", 
@@ -157,7 +157,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     addressesTab.getColumns().add(new Column("addressId", 
       BUNDLE_PREFIX + "caseAddresses_id", "col-1"));
     addressesTab.getColumns().add(new Column("addressFullDescription", 
-      BUNDLE_PREFIX + "caseAddresses_address", "col-4"));    
+      BUNDLE_PREFIX + "caseAddresses_address", "col-5"));    
     addressesTab.getColumns().add(new Column("caseAddressTypeId", 
       BUNDLE_PREFIX + "caseAddresses_type", "col-2"));    
     addressesTab.getColumns().add(new Column("comments", 
@@ -182,7 +182,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     documentsTab.getColumns().add(new Column("docLanguage", 
       BUNDLE_PREFIX + "caseDocuments_language", "col-1"));    
     Column titleColumn = new Column("docTitle", 
-      BUNDLE_PREFIX + "caseDocuments_title", "col-4");        
+      BUNDLE_PREFIX + "caseDocuments_title", "col-5");        
     titleColumn.setIcon("org.santfeliu.webapp.modules.doc.DocumentTypeBean." + 
       "getContentIcon(row.getDocument()) + ' text-xl mr-1'");
     documentsTab.getColumns().add(titleColumn);    
@@ -203,7 +203,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     intEditTab.getColumns().add(new Column("intId", 
       BUNDLE_PREFIX + "caseInterventions_id", "col-1")); 
     intEditTab.getColumns().add(new Column("intTypeId", 
-      BUNDLE_PREFIX + "caseInterventions_type", "col-7"));
+      BUNDLE_PREFIX + "caseInterventions_type", "col-9"));
     intEditTab.getColumns().add(new Column("startDate", 
       BUNDLE_PREFIX + "caseInterventions_startDate", "col-1 text-center white-space-nowrap"));
     intEditTab.getColumns().add(new Column("endDate", 
@@ -219,7 +219,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     casesEditTab.getColumns().add(new Column("caseId", 
       BUNDLE_PREFIX + "caseCases_id", "col-1"));
     casesEditTab.getColumns().add(new Column("caseTitle", 
-      BUNDLE_PREFIX + "caseCases_title", "col-4"));    
+      BUNDLE_PREFIX + "caseCases_title", "col-5"));    
     casesEditTab.getColumns().add(new Column("caseCaseTypeId", 
       BUNDLE_PREFIX + "caseCases_type", "col-3"));    
     casesEditTab.getColumns().add(new Column("startDate", 
@@ -237,7 +237,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     eventsEditTab.getColumns().add(new Column("eventId", 
       BUNDLE_PREFIX + "caseEvents_id", "col-1"));
     eventsEditTab.getColumns().add(new Column("eventTitle", 
-      BUNDLE_PREFIX + "caseEvents_event", "col-5"));    
+      BUNDLE_PREFIX + "caseEvents_event", "col-7"));    
     eventsEditTab.getColumns().add(new Column("caseEventTypeId", 
       BUNDLE_PREFIX + "caseEvents_type", "col-3"));    
     eventsEditTab.getColumns().add(new Column("eventIniDate", 

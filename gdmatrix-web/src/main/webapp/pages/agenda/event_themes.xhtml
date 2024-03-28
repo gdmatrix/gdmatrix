@@ -35,11 +35,11 @@
         <h:outputText value="#{row.themeId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.eventThemes_theme}" styleClass="col-10">
+      <p:column headerText="#{agendaBundle.eventThemes_theme}" styleClass="col-11">
         <h:outputText value="#{row.description}"/>
       </p:column>
 
-      <p:column styleClass="col-1 text-right white-space-nowrap" exportable="false">
+      <p:column styleClass="text-right white-space-nowrap" exportable="false">
         <p:commandButton action="#{eventThemesTabBean.remove(row)}"
                          process="@this"
                          update="event_themes_table"

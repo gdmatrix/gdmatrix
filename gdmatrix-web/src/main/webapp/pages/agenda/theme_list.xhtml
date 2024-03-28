@@ -16,10 +16,10 @@
     <p:column headerText="#{agendaBundle.theme_id}" styleClass="col-1">
       <h:outputText value="#{row.themeId}" />
     </p:column>
-    <p:column headerText="#{agendaBundle.theme_description}" styleClass="col-10">
+    <p:column headerText="#{agendaBundle.theme_description}" styleClass="col-11">
       <h:outputText value="#{row.description}" />
     </p:column>
-    <p:column styleClass="col-1 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.themeId)}"

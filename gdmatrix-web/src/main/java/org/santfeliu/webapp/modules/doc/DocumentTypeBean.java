@@ -108,7 +108,7 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     searchTab.getColumns().add(new Column("docTypeId",
       BUNDLE_PREFIX + "documentSearch_docTypeId", "col-3"));
     Column titleColumn = new Column("title",
-      BUNDLE_PREFIX + "documentSearch_title", "col-6");
+      BUNDLE_PREFIX + "documentSearch_title", "col-8");
     titleColumn.setExpression("org.santfeliu.webapp.modules.doc.DocumentTypeBean.formatTitle(row)");
     titleColumn.setIcon("'text-xl mr-2 ' + org.santfeliu.webapp.modules.doc.DocumentTypeBean.getContentIcon(row)");
     searchTab.getColumns().add(titleColumn);

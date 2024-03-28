@@ -34,7 +34,7 @@
         <h:outputText value="#{row.eventPlaceId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.eventPlaces_place}" styleClass="col-9">
+      <p:column headerText="#{agendaBundle.eventPlaces_place}" styleClass="col-11">
         <p:outputPanel rendered="#{row.roomView != null}">
           <div>#{row.roomView.description}</div>
           <p:outputPanel rendered="#{row.roomView.addressView != null}">#{row.roomView.addressView.description}</p:outputPanel>
@@ -44,7 +44,7 @@
         </p:outputPanel>
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap" exportable="false">
+      <p:column styleClass="text-right white-space-nowrap" exportable="false">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          action="#{navigatorBean.show('Room', row.roomView.roomId)}"
                          process="@this"

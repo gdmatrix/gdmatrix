@@ -18,10 +18,10 @@
     <p:column headerText="userId" styleClass="w-3" style="white-space: nowrap">
       <h:outputText value="#{row.userId}" />
     </p:column>   
-    <p:column headerText="#{securityBundle.user_displayName}" styleClass="w-7">
+    <p:column headerText="#{securityBundle.user_displayName}" styleClass="w-9">
       <h:outputText value="#{row.displayName}" />
     </p:column>
-    <p:column styleClass="w-2 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.userId)}"

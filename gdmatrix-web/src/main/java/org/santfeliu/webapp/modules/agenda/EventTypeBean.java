@@ -114,7 +114,7 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     searchTab.getColumns().add(new Column("endDateTime",
       BUNDLE_PREFIX + "event_endDate", "col-2"));
     searchTab.getColumns().add(new Column("summary",
-      BUNDLE_PREFIX + "event_summary", "col-4"));
+      BUNDLE_PREFIX + "event_summary", "col-5"));
     
     List<String> orderBy = searchTab.getOrderBy();
     orderBy.add("startDateTime");  
@@ -150,7 +150,7 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     casesEditTab.getColumns().add(new Column("caseId", 
       BUNDLE_PREFIX + "eventCases_id", "col-1"));
     casesEditTab.getColumns().add(new Column("caseTitle", 
-      BUNDLE_PREFIX + "eventCases_case", "col-6"));    
+      BUNDLE_PREFIX + "eventCases_case", "col-8"));    
     casesEditTab.getColumns().add(new Column("caseEventTypeId", 
       BUNDLE_PREFIX + "eventCases_type", "col-3"));    
     casesEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);

@@ -45,8 +45,7 @@
                      rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                     rowsPerPageTemplate="5,10,25,50"
-                     >
+                     rowsPerPageTemplate="5,10,25,50">
 
           <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-3 white-space-nowrap">
             <i class="mr-2 #{srow.type == 'TEXT' ? 'fa fa-font' : (srow.type == 'DATE' ? 'pi pi-calendar' : (srow.type == 'NUMERIC' ? 'fa fa-hashtag' : (srow.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
@@ -75,7 +74,7 @@
             <h:outputText value="#{srow.stringValue}"/>
           </p:column>
 
-          <p:column styleClass="white-space-nowrap">
+          <p:column styleClass="text-right white-space-nowrap">
             <p:commandButton icon="pi pi-cog"
                              styleClass="rounded-button ui-button-flat"
                              action="#{typePropertiesTabBean.create(srow)}"
@@ -146,7 +145,7 @@
         <h:outputText value="#{row.stringValue}"/>
       </p:column>
 
-      <p:column styleClass="white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          action="#{typePropertiesTabBean.edit(row)}"

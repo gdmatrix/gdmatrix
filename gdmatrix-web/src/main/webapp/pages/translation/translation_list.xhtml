@@ -17,7 +17,7 @@
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column  styleClass="text-center">
+    <p:column styleClass="col-1 text-center">
       <h:panelGroup id="state-icon">
         <span class="mr-2 #{row.state == 'COMPLETED' ? '': 'pi pi-exclamation-circle'}"></span> 
       </h:panelGroup>
@@ -37,7 +37,7 @@
       </p:overlayPanel> 
     </p:column>     
 
-    <p:column styleClass="col-1 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton id="view-full-translation" type="button" 
                              styleClass="ui-button-flat rounded-button" 
                              rendered="#{row.text.length() > 80}" 

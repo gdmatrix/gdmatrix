@@ -16,13 +16,13 @@
     <p:column headerText="#{kernelBundle.room_id}" styleClass="col-1">
       <h:outputText value="#{row.roomId}" />
     </p:column>
-    <p:column headerText="#{kernelBundle.room_name}" styleClass="col-8">
+    <p:column headerText="#{kernelBundle.room_name}" styleClass="col-9">
       <h:outputText value="#{row.description}" />
     </p:column>    
     <p:column headerText="#{kernelBundle.room_type}" styleClass="col-2">
       <h:outputText value="#{roomFinderBean.getRoomTypeDescription(row)}" />
     </p:column>         
-    <p:column styleClass="col-1 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.roomId)}"

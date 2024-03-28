@@ -34,13 +34,13 @@
       <p:column headerText="#{kernelBundle.personContacts_type}" styleClass="col-2">
         <h:outputText value="#{row.contactTypeLabel}" />
       </p:column>
-      <p:column headerText="#{kernelBundle.personContacts_contact}" styleClass="col-3">
+      <p:column headerText="#{kernelBundle.personContacts_contact}" styleClass="col-5">
         <h:outputText value="#{row.value}"/>
       </p:column>       
       <p:column headerText="#{kernelBundle.personContacts_comments}" styleClass="col-5">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <h:panelGroup>
           <p:commandButton action="#{personContactsTabBean.edit(row)}"
                            icon="pi pi-pencil"

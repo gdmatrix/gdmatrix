@@ -21,7 +21,7 @@
     <p:column headerText="#{kernelBundle.address_type}" styleClass="col-2">
       <h:outputText value="#{typeTypeBean.getDescription(row.addressTypeId)}" />
     </p:column>    
-    <p:column headerText="#{kernelBundle.address}" styleClass="col-4">
+    <p:column headerText="#{kernelBundle.address}" styleClass="col-5">
       <h:outputText value="#{row.description}" />
     </p:column> 
     <p:column headerText="#{kernelBundle.city}" styleClass="col-2">
@@ -33,7 +33,7 @@
     <p:column headerText="#{kernelBundle.country}" styleClass="col-1">
       <h:outputText value="#{row.country}" />
     </p:column>
-    <p:column styleClass="col-1 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.addressId)}"

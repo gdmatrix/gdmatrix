@@ -16,13 +16,13 @@
     <p:column headerText="Id" styleClass="col-1">
       <h:outputText value="#{row.streetId}" />
     </p:column>          
-    <p:column headerText="Nom" styleClass="col-4">
+    <p:column headerText="Nom" styleClass="col-7">
       <h:outputText value="#{row.name}" />
     </p:column> 
     <p:column headerText="Població" styleClass="col-4">
       <h:outputText value="#{row.city}" />
     </p:column>  
-    <p:column styleClass="col-1 white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.streetId)}"

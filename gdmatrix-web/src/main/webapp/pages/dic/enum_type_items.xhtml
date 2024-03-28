@@ -32,7 +32,7 @@
       <h:outputText value="#{row.index}" />
     </p:column>
 
-    <p:column headerText="#{dicBundle.enumTypeItems_label}" styleClass="col-8">
+    <p:column headerText="#{dicBundle.enumTypeItems_label}" styleClass="col-9">
       <h:outputText value="#{row.label}" />
     </p:column>
 
@@ -40,7 +40,7 @@
       <h:outputText value="#{row.value}" />
     </p:column>
 
-    <p:column styleClass="col-1 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandLink rendered="#{enumTypeItemsTabBean.sortedEnumType}"
                      onclick="return false;">
         <span class="drag pi pi-arrows-v p-2 cursor_move" />

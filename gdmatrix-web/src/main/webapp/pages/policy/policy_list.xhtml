@@ -21,10 +21,10 @@
     <p:column headerText="#{policyBundle.policySearch_type}" styleClass="w-4">
       <h:outputText value="#{typeTypeBean.getDescription(row.policyTypeId)}" />
     </p:column>         
-    <p:column headerText="#{policyBundle.policySearch_title}" styleClass="w-5">
+    <p:column headerText="#{policyBundle.policySearch_title}" styleClass="w-7">
       <h:outputText value="#{row.title}" />
     </p:column>
-    <p:column styleClass="w-2 text-right white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.policyId)}"

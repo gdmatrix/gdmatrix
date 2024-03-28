@@ -37,13 +37,13 @@
         <h:outputText value="#{row.documentId}" />
       </p:column>
 
-      <p:column headerText="#{newsBundle.new_documents_documentName}" styleClass="col-4"
+      <p:column headerText="#{newsBundle.new_documents_documentName}" styleClass="col-7"
                 sortBy="#{row.title}">
      <!--   <i class="#{newDocumentsTabBean.getDocumentIcon(row.mimeType)} text-xl mr-1" />-->
         <h:outputText value="#{row.title}"/>
       </p:column>
 
-      <p:column headerText="#{newsBundle.new_documents_type}" styleClass="col-3"
+      <p:column headerText="#{newsBundle.new_documents_type}" styleClass="col-4"
                 rendered="#{newDocumentsTabBean.renderTypeColumn}"
                 sortBy="#{typeTypeBean.getDescription(row.newDocTypeId)}"
                 sortOrder="asc" sortPriority="1">
@@ -51,7 +51,7 @@
       </p:column>
 
        
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <!--
         <p:linkButton href="#{newDocumentsTabBean.viewURL}" 
                       icon="pi pi-eye" 

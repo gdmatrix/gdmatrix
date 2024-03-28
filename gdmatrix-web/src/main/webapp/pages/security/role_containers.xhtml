@@ -34,11 +34,11 @@
         <h:outputText value="#{row.containerRole.roleId}" />
       </p:column>
 
-      <p:column headerText="#{securityBundle.role_name}" styleClass="col-7">
+      <p:column headerText="#{securityBundle.role_name}" styleClass="col-9">
         <h:outputText value="#{row.containerRole.name}" />
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this" update="@form:cnt"

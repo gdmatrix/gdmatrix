@@ -29,7 +29,7 @@
       <p:column headerText="#{kernelBundle.personCases_id}" styleClass="col-1">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-4">
+      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-5">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>       
       <p:column headerText="#{kernelBundle.personCases_type}" styleClass="col-3">
@@ -38,7 +38,7 @@
       <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="col-3">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
-      <p:column styleClass="col-1 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <h:panelGroup>
           <p:commandButton icon="pi pi-arrow-circle-right"  
                            action="#{navigatorBean.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" 

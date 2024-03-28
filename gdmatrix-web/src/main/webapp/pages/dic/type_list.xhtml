@@ -18,13 +18,13 @@
     <p:column headerText="#{dicBundle.type_typeId}" styleClass="col-3">
       <h:outputText value="#{row.typeId}" />
     </p:column>         
-    <p:column headerText="#{dicBundle.type_description}" styleClass="col-4">
+    <p:column headerText="#{dicBundle.type_description}" styleClass="col-6">
       <h:outputText value="#{typeTypeBean.getDescription(row.typeId)}" />
     </p:column>
     <p:column headerText="#{dicBundle.type_superTypeId}" styleClass="col-3">
       <h:outputText value="#{row.superTypeId}" />
     </p:column>    
-    <p:column styleClass="col-1 white-space-nowrap">
+    <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.typeId)}"

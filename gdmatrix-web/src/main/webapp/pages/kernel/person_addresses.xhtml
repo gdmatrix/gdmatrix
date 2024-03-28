@@ -37,10 +37,10 @@
       <p:column headerText="#{kernelBundle.personAddresses_id}" styleClass="col-1">
         <h:outputText value="#{row.address.addressId}" />
       </p:column> 
-      <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="col-9">
+      <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="col-11">
         <h:outputText value="#{row.address.description} (#{row.address.city})"/>
       </p:column>
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="text-right white-space-nowrap">
         <h:panelGroup>
           <p:commandButton icon="pi pi-arrow-circle-right"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
