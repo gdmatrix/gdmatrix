@@ -82,13 +82,24 @@ class TimeSliderControl
           #ts_range
           {
             appearance:none;
+            -webkit-appearance: none;
             background:var(--surface-300);
-            height:8px;
+            height:0.5rem;
             border-radius:var(--border-radius);
           }
-          #ts_range:focus
+          #ts_range::-webkit-slider-thumb
           {
-            background:var(--surface-400);
+            appearance: none;
+            -webkit-appearance: none;
+            margin-top: -0.125rem;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            height: 1rem;
+            width: 1rem;
+          }
+          #ts_range:focus::-webkit-slider-thumb
+          {
+            outline: 2px solid var(--surface-400);            
           }
         </style>
         <div class="flex align-items-center">
