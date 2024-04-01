@@ -30,20 +30,40 @@ if (window.ogcLoaded === undefined)
 
     static parseFeatureInfo(typeName, responseText)
     {
+      const xsdNS = "http://www.w3.org/2001/XMLSchema";
       const properties = [];
       const parser = new DOMParser();
-      const xml = parser.parseFromString(responseText, "application/xml");
+      const xmlDoc = parser.parseFromString(responseText, "application/xml");
+      
+      let schema = xmlDoc.getElementsByTagNameNS(xsdNS, "schema")[0];
+      let namespace = schema.getAttribute("targetNamespace");
+      
+      let child = schema.firstElementChild;
+      while (child !== null)
+      {
+        if (child.tagName.endsWith("element"))
+        {
+          typeName = child.getAttribute("name");
+          break;
+        }
+        child = child.nextElementSibling;
+      }
       
       let geometryColumn = null;
+      let idColumn = null;
       let geometryType = null;
-      let complexType = xml.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "complexType")[0];
+      let complexType = xmlDoc.getElementsByTagNameNS(xsdNS, "complexType")[0];
       if (complexType)
       {
-        let elements = complexType.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "element");
+        let elements = complexType.getElementsByTagNameNS(xsdNS, "element");
         for (let element of elements)
         {
           let name = element.getAttribute("name");
           let type = element.getAttribute("type");
+          let minOccurs = parseInt(element.getAttribute("minOccurs") || 0);
+          let maxOccurs = parseInt(element.getAttribute("maxOccurs") || 0);
+          let nillable = element.getAttribute("nillable") === "true";
+
           let index = type.indexOf(":");
           if (index !== -1) type = type.substring(index + 1);
           if (type.endsWith("PropertyType"))
@@ -61,18 +81,25 @@ if (window.ogcLoaded === undefined)
             geometryColumn = name;
             geometryType = type;
           }
+          else if (minOccurs === 1 && !nillable)
+          {
+            idColumn = name;
+          }
 
           let property = {
             name: name,
             type: type,
-            minOccurs: element.getAttribute("minOccurs"),
-            maxOccurs: element.getAttribute("maxOccurs")
+            minOccurs: minOccurs,
+            maxOccurs: maxOccurs,
+            nillable: nillable
           };
           properties.push(property);      
         }
       }
-      return { 
+      return {
         name: typeName, 
+        namespace: namespace,
+        idColumn: idColumn,
         geometryColumn: geometryColumn,
         geometryType: geometryType,
         properties: properties 

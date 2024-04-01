@@ -22,16 +22,15 @@ class FeatureForm
 
   setFormSelectorAndPriority(map)
   {
-    const layerForms = map.getStyle().metadata?.layerForms;
-    if (!layerForms) return;
-
     const layerName = this.layerName;
     if (!layerName) return;
-    
+
     const normLayerName = this.normalizeLayerName(layerName);
- 
+
     let formSelector = null;
     let priority;
+    
+    const layerForms = map.getStyle().metadata?.layerForms;
     if (layerForms instanceof Array)
     {
       let i = 0;
@@ -52,6 +51,29 @@ class FeatureForm
     this.formSelector = formSelector || "form:" + normLayerName;
     this.priority = priority;
   }
+  
+  updateProperties(featureInfo)
+  {
+    const div = this._div;
+    const definedProperties = featureInfo.properties;
+    if (this.feature.properties === undefined)
+    {
+      this.feature.properties = {};
+    }
+
+    for (let definedProperty of definedProperties)
+    {
+      let propName = definedProperty.name;
+      if (propName !== featureInfo.geometryColumn)
+      {
+        let input = div.querySelector("#" + propName);
+        if (input)
+        {
+          this.feature.properties[propName] = input.value;
+        }
+      }
+    }
+  }
 
   async render(update = false)
   {
@@ -59,7 +81,6 @@ class FeatureForm
     {
       const feature = this.feature;
       const forEdit = this.forEdit;
-      const properties = feature.properties;
       const params = {
         entity: this.layerName,
         formseed: Math.random(),
@@ -67,15 +88,27 @@ class FeatureForm
         forEdit: forEdit,
         renderer: forEdit ?
           "org.santfeliu.web.servlet.form.EditableFormRenderer" :
-          "org.santfeliu.web.servlet.form.ReadOnlyFormRenderer",
-        ...properties
+          "org.santfeliu.web.servlet.form.ReadOnlyFormRenderer"
       };
+      this.addProperties(params, feature.properties);
 
       const response = await fetch("/form?" + new URLSearchParams(params));
       this._div.innerHTML = await response.text();
       this._rendered = true;
     }
     return this;
+  }
+
+  addProperties(params, properties)
+  {
+    for (let name in properties)
+    {
+      let value = properties[name];
+      if (value !== null && value !== undefined)
+      {
+        params[name] = value;
+      }
+    }
   }
 
   normalizeLayerName(layerName)
