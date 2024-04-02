@@ -25,7 +25,8 @@ class DrawTool extends Tool
 
     this.operation = "edit";
     this.layerName = options?.layerName || "OVERLAY";
-    this.maxFeatures = 5000;
+    this.maxFeatures = options?.maxFeatures || 5000;
+    this.tolerance = options?.tolerance === undefined ? 5 : options.tolerance;
     this.wfsVersion = "1.1.0";
     this.featureInfo = null;
     this.featureForm = null;
@@ -309,29 +310,26 @@ class DrawTool extends Tool
         if (this.findVertex(event))
         {
           map.dragPan.disable();
-          map.touchZoomRotate.disable();
           map.on("mousemove", this._onPointerMove);
           map.on("touchmove", this._onPointerMove);
         }
       }
       else if (operation === "move" || operation === "copy")
       {
-        if (this.isOnEditingGeometry(event))
+        if (this.isOnEditingGeometry(event.point))
         {
           this.moveLastPoint = event.point;
           map.dragPan.disable();
-          map.touchZoomRotate.disable();
           map.on("mousemove", this._onPointerMove);
           map.on("touchmove", this._onPointerMove);
         }
       }
       else if (operation === "rotate" && this.geometryType !== "Point")
       {
-        if (this.isOnEditingGeometry(event))
+        if (this.isOnEditingGeometry(event.point))
         {
           this.rotateLastPoint = event.point;
           map.dragPan.disable();
-          map.touchZoomRotate.disable();
           map.on("mousemove", this._onPointerMove);
           map.on("touchmove", this._onPointerMove);
         }
@@ -348,7 +346,6 @@ class DrawTool extends Tool
     this.moveLastPoint = null;
 
     map.dragPan.enable();
-    map.touchZoomRotate.enable();
     map.off("mousemove", this._onPointerMove);
     map.off("touchmove", this._onPointerMove);
   }
@@ -357,6 +354,9 @@ class DrawTool extends Tool
   {
     const map = this.map;
     const operation = this.operation;
+
+    if (event.originalEvent?.touches?.length > 1)
+      return;
 
     if (operation === "edit")
     {
@@ -632,7 +632,13 @@ class DrawTool extends Tool
   {
     if (this.featureInfo)
     {
-      let features = this.map.queryRenderedFeatures(point);
+      const tolerance = this.tolerance;
+      const bbox = [
+        [point.x - tolerance, point.y - tolerance],
+        [point.x + tolerance, point.y + tolerance]
+      ];
+      
+      let features = this.map.queryRenderedFeatures(bbox);
       for (let feature of features)
       {
         if (feature.source === "editing_features")
@@ -877,11 +883,17 @@ class DrawTool extends Tool
     return false;
   }
 
-  isOnEditingGeometry(event)
+  isOnEditingGeometry(point)
   {
     const map = this.map;
 
-    let features = map.queryRenderedFeatures(event.point);
+    const tolerance = this.tolerance;
+    const bbox = [
+      [point.x - tolerance, point.y - tolerance],
+      [point.x + tolerance, point.y + tolerance]
+    ];
+
+    let features = map.queryRenderedFeatures(bbox);
 
     for (let feature of features)
     {
