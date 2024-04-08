@@ -44,7 +44,7 @@
   <context-param>
     <param-name>org.matrix.BEAN_SAVING_METHOD</param-name>
     <param-value>view</param-value>
-  </context-param>  
+  </context-param>
   <context-param>
     <param-name>primefaces.THEME</param-name>
     <param-value>#{userSessionBean.primefacesTheme}</param-value>
@@ -400,7 +400,7 @@
     <param-name>org.santfeliu.signature.service.SignatureManager.validateCertificate</param-name>
     <param-value>true</param-value>
   </context-param>
-  <!-- DocumentManagerCertificateStore configuration 
+  <!-- DocumentManagerCertificateStore configuration
   <context-param>
     <param-name>org.santfeliu.signature.certificate.storeClass</param-name>
     <param-value>org.santfeliu.signature.certificate.DocumentManagerCertificateStore</param-value>
@@ -491,7 +491,7 @@
     <param-name>org.santfeliu.signature.certificate.padro.keyPassword</param-name>
     <param-value>tomcat</param-value>
   </context-param>
-  <!-- END MatrixConfigCertificateStore configuration -->  
+  <!-- END MatrixConfigCertificateStore configuration -->
   <context-param>
     <param-name>valid.baseUrl</param-name>
     <param-value>https://identitats.aoc.cat</param-value>
@@ -659,11 +659,11 @@
   <context-param>
     <param-name>com.audifilm.matrix.kernel.readRole</param-name>
     <param-value>EVERYONE</param-value>
-  </context-param>  
+  </context-param>
   <context-param>
     <param-name>com.audifilm.matrix.kernel.writeRole</param-name>
     <param-value>EVERYONE</param-value>
-  </context-param>   
+  </context-param>
   <context-param>
     <param-name>com.audifilm.matrix.security.adminRoleId</param-name>
     <param-value>CASE_ADMIN</param-value>
@@ -679,7 +679,7 @@
   <context-param>
     <param-name>org.santfeliu.agenda.service.AgendaManager.eventIdInitialValue</param-name>
     <param-value>0</param-value>
-  </context-param>  
+  </context-param>
   <context-param>
     <param-name>addressDescTypeCaseId</param-name>
     <param-value>sf:Equipament</param-value>
@@ -703,11 +703,11 @@
   <context-param>
     <param-name>cnt.dataSource</param-name>
     <param-value>jdbc/cnt</param-value>
-  </context-param>    
+  </context-param>
   <context-param>
     <param-name>org.santfeliu.job.service.JobManager.enabled</param-name>
     <param-value>false</param-value>
-  </context-param>    
+  </context-param>
   <context-param>
     <param-name>agenda.maxRecurrences</param-name>
     <param-value>100</param-value>
@@ -978,7 +978,28 @@
     <filter-name>RemoteIpFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-      
+
+  <filter>
+    <filter-name>FirewallFilter</filter-name>
+    <filter-class>org.santfeliu.web.filter.FirewallFilter</filter-class>
+    <init-param>
+      <param-name>pattern.sql-injection</param-name>
+      <param-value>.*(select.*from|update.*set|insert.*into|delete.*|truncate.*table).*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>pattern.xss-injection</param-name>
+      <param-value>.*(&lt;script.*&gt;|&lt;img.*&gt;|alert\().*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>pattern.path-traversal</param-name>
+      <param-value>.*\.\./\.\./.*</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>FirewallFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
   <filter>
     <filter-name>ShortcutFilter</filter-name>
     <filter-class>org.santfeliu.web.filter.ShortcutFilter</filter-class>
@@ -995,8 +1016,8 @@
   <filter-mapping>
     <filter-name>NoCacheFilter</filter-name>
     <url-pattern>/pages/*</url-pattern>
-  </filter-mapping>  
-      
+  </filter-mapping>
+
   <filter>
     <filter-name>ExtensionsFilter</filter-name>
     <filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>
@@ -1056,7 +1077,7 @@
     <res-ref-name>jdbc/matrix</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
     <res-auth>Container</res-auth>
-  </resource-ref> 
+  </resource-ref>
   <error-page>
      <error-code>404</error-code>
      <location>/common/util/not_found.xhtml</location>
