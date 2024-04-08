@@ -49,7 +49,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import org.santfeliu.webapp.util.MenuTypesCache;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +63,7 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
+import org.santfeliu.webapp.util.MenuTypesFinder;
 
 /**
  *
@@ -1133,10 +1133,9 @@ public class NavigatorBean extends WebBean implements Serializable
 
     private String findBaseTypeMid(String objectTypeId)
     {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
-      MenuItemCursor typeMenuItem = menuTypesCache.get(
-        userSessionBean.getSelectedMenuItem(), objectTypeId);
+      MenuTypesFinder menuTypesFinder = new MenuTypesFinder();
+      MenuItemCursor typeMenuItem = 
+        menuTypesFinder.find(getSelectedMenuItem(), objectTypeId);
 
       return typeMenuItem == null || typeMenuItem.isNull() ? null :
         typeMenuItem.getMid();
