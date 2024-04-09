@@ -984,11 +984,11 @@
     <filter-class>org.santfeliu.web.filter.FirewallFilter</filter-class>
     <init-param>
       <param-name>pattern.sql-injection</param-name>
-      <param-value>.*(select.*from|update.*set|insert.*into|delete.*|truncate.*table).*</param-value>
+      <param-value>.*(select.*from|update.*set|insert\s.+into|delete\s|truncate\s|drop\s).*</param-value>
     </init-param>
     <init-param>
       <param-name>pattern.xss-injection</param-name>
-      <param-value>.*(&lt;script.*&gt;|&lt;img.*&gt;|alert\().*</param-value>
+      <param-value>.*(&lt;script.*|&lt;img\s.*|javascript\:|alert.*\(|&lt;.+\son.*=.*).*</param-value>
     </init-param>
     <init-param>
       <param-name>pattern.path-traversal</param-name>

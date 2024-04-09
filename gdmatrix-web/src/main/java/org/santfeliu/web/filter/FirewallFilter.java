@@ -31,6 +31,8 @@
 package org.santfeliu.web.filter;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -90,6 +92,8 @@ public class FirewallFilter implements Filter
       {
         String type = name.substring(PATTERN_PREFIX.length());
         String regex = config.getInitParameter(name);
+        LOGGER.log(Level.INFO, "Creating pattern \"{0}\" for \"{1}\" type",
+          new Object[]{regex, type});
         Check check = new Check(type, regex);
         checks.add(check);
         itemNames.add(type);
@@ -131,10 +135,10 @@ public class FirewallFilter implements Filter
       String path = httpRequest.getServletPath();
       String query = httpRequest.getQueryString();
       if (query != null) path += "?" + query;
-      String lowerPath = path.toLowerCase();
-      if (isMaliciousPath(lowerPath))
+      String decodedPath = URLDecoder.decode(path, "UTF-8");
+      if (isMaliciousPath(decodedPath))
       {
-        LOGGER.log(Level.SEVERE, "Malicious request detected: ", path);
+        LOGGER.log(Level.SEVERE, "Malicious request detected: {0}", path);
         httpResponse.sendError(400, "Malicious request detected");
       }
       else
