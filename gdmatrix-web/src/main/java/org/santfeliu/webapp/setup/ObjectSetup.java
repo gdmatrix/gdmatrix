@@ -354,6 +354,10 @@ public class ObjectSetup implements Serializable
       editTab.setWriteRoles(writeRoles);
     }
     mergeRoles(defaultWriteRoles, writeRoles);
+    
+    //Icons
+    if (editTab.getIcon() == null)
+      editTab.setIcon(defaultEditTab.getIcon());
   }
 
   private void mergeProperties(PropertyMap defaultPropertyMap,
