@@ -34,6 +34,11 @@
         <h:outputText value="#{classTypeBean.getDescription(row.document.classId.get(0))}"/>
       </p:outputPanel>
 
+      <p:outputPanel rendered="#{row.document.state == 'DELETED'}" styleClass="text-red-500">
+        <i class="pi pi-exclamation-triangle mr-2 nowrap" />
+        <h:outputText value="#{documentBundle['org.matrix.doc.State.DELETED']}"/>
+      </p:outputPanel>      
+
     </p:column>
 
     <p:column styleClass="text-right vertical-align-top">
@@ -48,7 +53,7 @@
       <p:linkButton href="#{documentPolicyFinderBean.getDocumentUrl(row.document)}" 
                     icon="pi pi-eye" 
                     title="#{objectBundle.view}"
-                    rendered="#{row.document != null}"
+                    rendered="#{row.document != null and row.document.state != 'DELETED'}"
                     styleClass="ui-button-flat"
                     target="_blank" />       
     </p:column>

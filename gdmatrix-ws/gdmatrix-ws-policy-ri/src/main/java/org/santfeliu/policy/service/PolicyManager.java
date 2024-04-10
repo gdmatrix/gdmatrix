@@ -74,6 +74,7 @@ import org.matrix.policy.Policy;
 import org.matrix.policy.PolicyFilter;
 import org.matrix.policy.PolicyState;
 import org.matrix.dic.Property;
+import org.matrix.doc.State;
 import org.matrix.policy.PolicyConstants;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
@@ -670,6 +671,10 @@ public class PolicyManager implements PolicyManagerPort
       DocumentManagerPort docPort = getDocumentManagerPort();
       DocumentFilter docFilter = new DocumentFilter();
       docFilter.getDocId().addAll(docIdList);
+      docFilter.getStates().add(State.DRAFT);
+      docFilter.getStates().add(State.COMPLETE);
+      docFilter.getStates().add(State.RECORD);
+      docFilter.getStates().add(State.DELETED);      
       docFilter.setIncludeContentMetadata(true);
       docFilter.getOutputProperty().add("classId");
       List<Document> documents = docPort.findDocuments(docFilter);
