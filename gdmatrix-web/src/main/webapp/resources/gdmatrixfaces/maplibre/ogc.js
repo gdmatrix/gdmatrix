@@ -81,7 +81,7 @@ if (window.ogcLoaded === undefined)
             geometryColumn = name;
             geometryType = type;
           }
-          else if (minOccurs === 1 && !nillable)
+          else if (minOccurs === 1 && !nillable && idColumn === null)
           {
             idColumn = name;
           }
