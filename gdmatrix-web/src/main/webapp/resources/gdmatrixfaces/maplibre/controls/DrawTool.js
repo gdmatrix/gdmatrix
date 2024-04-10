@@ -24,7 +24,9 @@ class DrawTool extends Tool
     };
 
     this.operation = "edit";
-    this.layerName = options?.layerName || "OVERLAY";
+    this.layerName = options?.layerName || null;
+    this.cqlFilter = null;
+    this.layers = options.layers || [];
     this.maxFeatures = options?.maxFeatures || 5000;
     this.tolerance = options?.tolerance === undefined ? 5 : options.tolerance;
     this.wfsVersion = "1.1.0";
@@ -227,6 +229,11 @@ class DrawTool extends Tool
         "circle-radius": 5
       }
     });
+    
+    if (this.editingLayer.features.length === 0)
+    {
+      this.loadSelectedLayer();
+    }
   }
 
   deactivate()
@@ -582,7 +589,7 @@ class DrawTool extends Tool
     if (result.error)
     {
       this.panel.formDiv.innerHTML = `
-       <div color="red">ERROR: ${result.error}</div>
+       <div style="color:#ff0000">ERROR: ${result.error}</div>
      `;
     }
     else
@@ -1047,29 +1054,45 @@ class DrawTool extends Tool
 
   async loadFeatures()
   {
-    this.featureInfo = await FeatureTypeInspector.getInfo(
-      this.service.url, this.layerName);
-
-    let url = "/proxy?url=" + this.service.url + "&" +
-      "request=GetFeature" +
-      "&service=WFS" +
-      "&version=2.0.0" +
-      "&typeNames=" + this.layerName +
-      "&srsName=EPSG:4326" +
-      "&outputFormat=application/json" +
-      "&exceptions=application/json" +
-      "&count=" + this.maxFeatures;
-
-    const response = await fetch(url);
-    const json = await response.json();
-    if (json.exceptions) throw json;
-
-    this.editingLayer = json;
-    for (let feature of this.editingLayer.features)
-    {
-      feature.properties._ACTION_ = "none";
-    }
     const map = this.map;
+    
+    if (!this.layerName || this.layerName.trim().length === 0)
+    {
+      this.editingLayer = { 
+        "type": "FeatureCollection", 
+        "features": [] 
+      };
+    }
+    else
+    {
+      this.featureInfo = await FeatureTypeInspector.getInfo(
+        this.service.url, this.layerName);
+
+      let url = "/proxy?url=" + this.service.url + "&" +
+        "request=GetFeature" +
+        "&service=WFS" +
+        "&version=2.0.0" +
+        "&typeNames=" + this.layerName +
+        "&srsName=EPSG:4326" +
+        "&outputFormat=application/json" +
+        "&exceptions=application/json" +
+        "&count=" + this.maxFeatures;
+
+      if (this.cqlFilter !== null)
+      {
+        url += "&cql_filter=" + encodeURIComponent(this.cqlFilter);
+      }
+
+      const response = await fetch(url);
+      const json = await response.json();
+      if (json.exceptions) throw json;
+
+      this.editingLayer = json;
+      for (let feature of this.editingLayer.features)
+      {
+        feature.properties._ACTION_ = "none";
+      }
+    }
     map.getSource("editing_features").setData(this.editingLayer);
   }
 
@@ -1332,9 +1355,7 @@ class DrawTool extends Tool
     const bodyDiv = this.panel.bodyDiv;
     bodyDiv.innerHTML = `
       <div class="formgrid grid">
-        <div class="field col-12">
-          <label for="layer_name">${bundle.get("DrawTool.layerName")}:</label>
-          <input type="text" id="layer_name" class="w-full" value="OVERLAY" />
+        <div class="field col-12 layer_selector">
         </div>
         <div class="field col-12 button_bar">
           <button class="load_features">${bundle.get("button.load")}</button>
@@ -1363,13 +1384,42 @@ class DrawTool extends Tool
         </div>
       </div>
     `;
+        
+    const layerSelector = bodyDiv.querySelector(".layer_selector");
+    if (this.layers.length === 0)
+    {
+      layerSelector.innerHTML = `
+        <label for="layer_name">${bundle.get("DrawTool.layerName")}:</label>
+        <input type="text" id="layer_name" class="w-full" value="${this.layerName || ''}" /> 
+      `;
+    }
+    else
+    {
+      layerSelector.innerHTML = `
+        <label for="layer_name">${bundle.get("DrawTool.layerName")}:</label>
+        <select id="layer_name" class="w-full" value="${this.layerName || ''}">
+          <option></option>
+        </select>
+      `;
+      let select = document.getElementById("layer_name");
+      for (let layer of this.layers)
+      {
+        let option = document.createElement("option");
+        option.value = layer.layerName;
+        option.textContent = layer.label || layer.layerName;
+        select.appendChild(option);
+      }
+      select.value = this.layerName || null;
+      select.addEventListener("change", (e) => {
+        e.preventDefault();
+        this.loadSelectedLayer();
+      });
+    }
 
     const loadButton = bodyDiv.querySelector(".load_features");
     loadButton.addEventListener("click", (e) => {
       e.preventDefault();
-      this.layerName = document.getElementById("layer_name").value;
-      this.cancelFeature();
-      this.loadFeatures();
+      this.loadSelectedLayer();
     });
 
     const saveButton = bodyDiv.querySelector(".save_features");
@@ -1409,6 +1459,23 @@ class DrawTool extends Tool
 
     this.changeOperation();
   }
+  
+  loadSelectedLayer()
+  {
+    const elem = document.getElementById("layer_name");
+    this.layerName = elem.value;
+    this.cqlFilter = null;
+    if (typeof elem.selectedIndex === "number")
+    {
+      let index = elem.selectedIndex - 1;
+      if (index >= 0)
+      {
+        this.cqlFilter = this.layers[index].cqlFilter || null;
+      }
+    }
+    this.cancelFeature();
+    this.loadFeatures();      
+  };  
 }
 
 export { DrawTool };
