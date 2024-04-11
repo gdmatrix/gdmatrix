@@ -34,7 +34,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -45,7 +44,6 @@ import org.matrix.agenda.AgendaConstants;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.Attendant;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
@@ -57,7 +55,6 @@ import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 
 /**
@@ -72,7 +69,6 @@ public class EventObjectBean extends ObjectBean
 
   private Event event = new Event();
   private boolean autoAttendant;
-  private PropertyHelper propertyHelper;
   private String formSelector;
 
   @Inject
@@ -87,14 +83,7 @@ public class EventObjectBean extends ObjectBean
   @PostConstruct
   public void init()
   {
-    propertyHelper = new PropertyHelper()
-    {
-      @Override
-      public List<Property> getProperties()
-      {
-        return event.getProperty();
-      }
-    };
+    System.out.println("Creating " + this);
   }
 
   @Override
@@ -130,11 +119,6 @@ public class EventObjectBean extends ObjectBean
   public EventFinderBean getFinderBean()
   {
     return eventFinderBean;
-  }
-
-  public PropertyHelper getPropertyHelper()
-  {
-    return propertyHelper;
   }
 
   public String getFormSelector()
