@@ -52,6 +52,7 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -129,6 +130,15 @@ public class CaseEventsTabBean extends TabBean
   public ObjectBean getObjectBean()
   {
     return caseObjectBean;
+  }
+
+  public List<String> getOrderBy()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getOrderBy();
+    else
+      return Collections.EMPTY_LIST;
   }
 
   public List<Column> getColumns()
@@ -263,7 +273,10 @@ public class CaseEventsTabBean extends TabBean
         filter.setExcludeMetadata(false);
         List<CaseEventView> events = 
           CasesModuleBean.getPort(false).findCaseEventViews(filter);
-        setRows(toDataTableRows(events));        
+        List<CaseEventsDataTableRow> auxList = toDataTableRows(events);
+        Collections.sort(auxList, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));
+        setRows(auxList);
       }
       catch (Exception ex)
       {
@@ -290,6 +303,11 @@ public class CaseEventsTabBean extends TabBean
   public void switchView()
   {
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+    if (!getCurrentTabInstance().groupedView) //Reorder
+    {
+      Collections.sort(getCurrentTabInstance().rows, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));
+    }    
   }
 
   @Override
@@ -504,7 +522,7 @@ public class CaseEventsTabBean extends TabBean
         switch (columnName)
         {
           case "eventId":
-            return new DefaultValue(getEventId());
+            return new NumericValue(getEventId());
           case "eventTypeId":
             return new TypeValue(getEventTypeId());
           case "eventTitle":

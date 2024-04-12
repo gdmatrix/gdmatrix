@@ -355,6 +355,16 @@ public class ObjectSetup implements Serializable
     }
     mergeRoles(defaultWriteRoles, writeRoles);
     
+    //OrderBy
+    List<String> defaultOrderBy = defaultEditTab.getOrderBy();
+    List<String> orderBy = editTab.getOrderBy();
+    if (orderBy == null)
+    {
+      orderBy = new ArrayList();
+      editTab.setOrderBy(orderBy);
+    }
+    mergeOrderBy(defaultOrderBy, orderBy);     
+    
     //Icons
     if (editTab.getIcon() == null)
       editTab.setIcon(defaultEditTab.getIcon());
@@ -396,4 +406,13 @@ public class ObjectSetup implements Serializable
     }
   }
 
+  private void mergeOrderBy(List<String> defaultOrderBy, List<String> orderBy)
+  {
+    if (defaultOrderBy != null && !defaultOrderBy.isEmpty()
+      && orderBy != null && orderBy.isEmpty())
+    {
+      orderBy.addAll(defaultOrderBy);
+    }
+  }  
+  
 }

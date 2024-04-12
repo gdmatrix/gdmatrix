@@ -66,6 +66,7 @@ import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -454,6 +455,11 @@ public class CasePersonsTabBean extends TabBean
   public void switchView()
   {
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+    if (!getCurrentTabInstance().groupedView) //Reorder
+    {
+      Collections.sort(getCurrentTabInstance().rows, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));      
+    }
   }
 
   public String getPersonDescription()
@@ -465,6 +471,15 @@ public class CasePersonsTabBean extends TabBean
     return "";
   }
 
+  public List<String> getOrderBy()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getOrderBy();
+    else
+      return Collections.EMPTY_LIST;
+  }
+
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -472,8 +487,8 @@ public class CasePersonsTabBean extends TabBean
       return activeEditTab.getColumns();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
+  }
+
   public boolean isColumnRendered(Column column)
   {
     if (!isRenderTypeColumn() && column.getName().equals("casePersonTypeId"))
@@ -507,12 +522,14 @@ public class CasePersonsTabBean extends TabBean
         String typeId = getTabBaseTypeId();
         if (typeId != null)
           filter.setCasePersonTypeId(typeId);
-
+        
         List<CasePersonView> casePersons =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
 
-        setRows(toDataTableRows(casePersons));
-        
+        List<CasePersonsDataTableRow> auxList = toDataTableRows(casePersons);
+        Collections.sort(auxList, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));
+        setRows(auxList);
       }
       catch (Exception ex)
       {
@@ -865,9 +882,6 @@ public class CasePersonsTabBean extends TabBean
 
   public class CasePersonsDataTableRow extends DataTableRow
   {
-    private String startDate;
-    private String endDate;    
-    private String comments;
     private String personId;
     private String personTypeId;
     private String personName;
@@ -876,9 +890,6 @@ public class CasePersonsTabBean extends TabBean
     public CasePersonsDataTableRow(CasePersonView row)
     {
       super(row.getCasePersonId(), row.getCasePersonTypeId());
-      startDate = row.getStartDate();
-      endDate = row.getEndDate();
-      comments = row.getComments();      
       if (row.getPersonView() != null)
       {
         personId = row.getPersonView().getPersonId();
@@ -889,36 +900,6 @@ public class CasePersonsTabBean extends TabBean
           row.getPersonView().getPassport();
       }
     }
-    
-    public String getStartDate()
-    {
-      return startDate;
-    }
-
-    public void setStartDate(String startDate)
-    {
-      this.startDate = startDate;
-    }
-
-    public String getEndDate()
-    {
-      return endDate;
-    }
-
-    public void setEndDate(String endDate)
-    {
-      this.endDate = endDate;
-    }
-
-    public String getComments()
-    {
-      return comments;
-    }
-
-    public void setComments(String comments)
-    {
-      this.comments = comments;
-    }    
 
     public String getPersonId()
     {
@@ -967,14 +948,8 @@ public class CasePersonsTabBean extends TabBean
       {
         switch (columnName)
         {
-          case "startDate":
-            return new DateValue(getStartDate());
-          case "endDate":
-            return new DateValue(getEndDate());            
-          case "comments":
-            return new DefaultValue(getComments());          
           case "personId":
-            return new DefaultValue(getPersonId());
+            return new NumericValue(getPersonId());
           case "personTypeId":
             return new TypeValue(getPersonTypeId());
           case "personName":

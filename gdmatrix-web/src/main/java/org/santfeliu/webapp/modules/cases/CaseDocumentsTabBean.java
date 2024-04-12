@@ -64,6 +64,7 @@ import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -288,6 +289,15 @@ public class CaseDocumentsTabBean extends TabBean
     return "";
   }
 
+  public List<String> getOrderBy()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getOrderBy();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -381,8 +391,11 @@ public class CaseDocumentsTabBean extends TabBean
               // ignore: bad type?
             }
           }
-        }
-        setRows(toDataTableRows(result));
+        }        
+        List<CaseDocumentsDataTableRow> auxList2 = toDataTableRows(result);
+        Collections.sort(auxList2, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));
+        setRows(auxList2);
       }
       catch (Exception ex)
       {
@@ -463,6 +476,11 @@ public class CaseDocumentsTabBean extends TabBean
   public void switchView()
   {
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+    if (!getCurrentTabInstance().groupedView) //Reorder
+    {
+      Collections.sort(getCurrentTabInstance().rows, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));      
+    }    
   }
 
   public void edit(DataTableRow row)
@@ -657,7 +675,6 @@ public class CaseDocumentsTabBean extends TabBean
   
   public class CaseDocumentsDataTableRow extends DataTableRow
   {
-    private String comments;
     private String docId;
     private Integer docVersion;
     private String docTypeId;
@@ -675,7 +692,6 @@ public class CaseDocumentsTabBean extends TabBean
     public CaseDocumentsDataTableRow(CaseDocumentView row)
     {
       super(row.getCaseDocId(), row.getCaseDocTypeId());
-      comments = row.getComments();
       if (row.getDocument() != null)
       {
         docId = row.getDocument().getDocId();
@@ -696,16 +712,6 @@ public class CaseDocumentsTabBean extends TabBean
         docChangeUserId = row.getDocument().getChangeUserId();
       }
     }
-
-    public String getComments()
-    {
-      return comments;
-    }
-
-    public void setComments(String comments)
-    {
-      this.comments = comments;
-    }    
 
     public String getDocId()
     {
@@ -844,34 +850,32 @@ public class CaseDocumentsTabBean extends TabBean
       {
         switch (columnName)
         {
-          case "comments":
-            return new DataTableRow.DefaultValue(getComments());            
           case "docId":
-            return new DataTableRow.DefaultValue(getDocId());
+            return new NumericValue(getDocId());
           case "docVersion":
-            return new DataTableRow.DefaultValue(getDocVersion());
+            return new NumericValue(String.valueOf(getDocVersion()));
           case "docTypeId":
-            return new DataTableRow.TypeValue(getDocTypeId());
+            return new TypeValue(getDocTypeId());
           case "docTitle":
-            return new DataTableRow.DefaultValue(getDocTitle());
+            return new DefaultValue(getDocTitle());
           case "docSummary":
-            return new DataTableRow.DefaultValue(getDocSummary());
+            return new DefaultValue(getDocSummary());
           case "docLanguage":
-            return new DataTableRow.DefaultValue(getDocLanguage());
+            return new DefaultValue(getDocLanguage());
           case "docLockUserId":
-            return new DataTableRow.DefaultValue(getDocLockUserId());
+            return new DefaultValue(getDocLockUserId());
           case "docState":
-            return new DataTableRow.DefaultValue(getDocState());
+            return new DefaultValue(getDocState());
           case "docCreationDate":
-            return new DataTableRow.DateValue(getDocCreationDate());            
+            return new DateValue(getDocCreationDate());            
           case "docCaptureDateTime":
-            return new DataTableRow.DateValue(getDocCaptureDateTime());
+            return new DateValue(getDocCaptureDateTime());
           case "docCaptureUserId":
-            return new DataTableRow.DefaultValue(getDocCaptureUserId());
+            return new DefaultValue(getDocCaptureUserId());
           case "docChangeDateTime":
-            return new DataTableRow.DateValue(getDocChangeDateTime());            
+            return new DateValue(getDocChangeDateTime());            
           case "docChangeUserId":
-            return new DataTableRow.DefaultValue(getDocChangeUserId());            
+            return new DefaultValue(getDocChangeUserId());            
           default:
             break;
         }

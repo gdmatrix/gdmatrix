@@ -145,6 +145,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     personsTab.getColumns().add(new Column("endDate", 
       BUNDLE_PREFIX + "casePersons_endDate", 
       "col-1 text-center white-space-nowrap"));
+    personsTab.getOrderBy().add("personId");
     personsTab.getProperties().put("typeId", CASE_PERSON_TYPE);
     personsTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     personsTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);    
@@ -167,7 +168,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       "col-1 text-center white-space-nowrap"));    
     addressesTab.getColumns().add(new Column("endDate", 
       BUNDLE_PREFIX + "caseAddresses_endDate", 
-      "col-1 text-center white-space-nowrap"));    
+      "col-1 text-center white-space-nowrap"));
+    addressesTab.getOrderBy().add("addressId");    
     addressesTab.getProperties().put("typeId", CASE_ADDRESS_TYPE);
     addressesTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     addressesTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
@@ -190,7 +192,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       BUNDLE_PREFIX + "caseDocuments_type", "col-3")); 
     documentsTab.getColumns().add(new Column("docCreationDate", 
       "$$documentBundle.document_creationDate", 
-      "col-2 text-center"));    
+      "col-2 text-center"));
+    documentsTab.getOrderBy().add("docId");
     documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
     documentsTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     documentsTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      
@@ -208,6 +211,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       BUNDLE_PREFIX + "caseInterventions_startDate", "col-1 text-center white-space-nowrap"));
     intEditTab.getColumns().add(new Column("endDate", 
       BUNDLE_PREFIX + "caseInterventions_endDate", "col-1 text-center white-space-nowrap" ));
+    intEditTab.getOrderBy().add("intId");
     intEditTab.getProperties().put("typeId", INTERVENTION_TYPE);
     intEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     intEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);       
@@ -226,6 +230,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       BUNDLE_PREFIX + "caseCases_startDate", "col-1 text-center white-space-nowrap"));    
     casesEditTab.getColumns().add(new Column("endDate", 
       BUNDLE_PREFIX + "caseCases_endDate", "col-1 text-center white-space-nowrap"));
+    casesEditTab.getOrderBy().add("caseId");
     casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
     casesEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     casesEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);     
@@ -243,6 +248,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     eventsEditTab.getColumns().add(new Column("eventIniDate", 
       BUNDLE_PREFIX + "caseEvents_date", 
       "col-1 text-center white-space-nowrap"));
+    eventsEditTab.getOrderBy().add("eventId");
     eventsEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);
     eventsEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     eventsEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      

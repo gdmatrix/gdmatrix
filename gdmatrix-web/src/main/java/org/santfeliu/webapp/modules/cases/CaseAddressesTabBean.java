@@ -62,6 +62,7 @@ import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -243,6 +244,15 @@ public class CaseAddressesTabBean extends TabBean
     return tabInstances;
   }
 
+  public List<String> getOrderBy()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getOrderBy();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -321,7 +331,10 @@ public class CaseAddressesTabBean extends TabBean
             }
           }
         }        
-        setRows(toDataTableRows(result));        
+        List<CaseAddressesDataTableRow> auxList2 = toDataTableRows(result);
+        Collections.sort(auxList2, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));
+        setRows(auxList2);
       }
       catch (Exception ex)
       {
@@ -347,6 +360,11 @@ public class CaseAddressesTabBean extends TabBean
   public void switchView()
   {
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+    if (!getCurrentTabInstance().groupedView) //Reorder
+    {
+      Collections.sort(getCurrentTabInstance().rows, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));      
+    }    
   }
 
   @Override
@@ -537,9 +555,6 @@ public class CaseAddressesTabBean extends TabBean
 
   public class CaseAddressesDataTableRow extends DataTableRow
   {      
-    private String startDate;
-    private String endDate;
-    private String comments;
     private String addressId;
     private String addressTypeId;
     private String addressDescription;
@@ -551,9 +566,6 @@ public class CaseAddressesTabBean extends TabBean
     public CaseAddressesDataTableRow(CaseAddressView row)
     {
       super(row.getCaseAddressId(), row.getCaseAddressTypeId());
-      startDate = row.getStartDate();
-      endDate = row.getEndDate();
-      comments = row.getComments();
       if (row.getAddressView() != null)
       {
         addressId = row.getAddressView().getAddressId();
@@ -566,36 +578,6 @@ public class CaseAddressesTabBean extends TabBean
           (!StringUtils.isBlank(addressCity) ? " (" + addressCity + ")" : "");
       }
     }
-
-    public String getStartDate()
-    {
-      return startDate;
-    }
-
-    public void setStartDate(String startDate)
-    {
-      this.startDate = startDate;
-    }
-
-    public String getEndDate()
-    {
-      return endDate;
-    }
-
-    public void setEndDate(String endDate)
-    {
-      this.endDate = endDate;
-    }
-
-    public String getComments()
-    {
-      return comments;
-    }
-
-    public void setComments(String comments)
-    {
-      this.comments = comments;
-    }    
 
     public String getAddressId()
     {
@@ -674,26 +656,20 @@ public class CaseAddressesTabBean extends TabBean
       {
         switch (columnName)
         {
-          case "startDate":
-            return new DataTableRow.DateValue(getStartDate());
-          case "endDate":
-            return new DataTableRow.DateValue(getEndDate());            
-          case "comments":
-            return new DataTableRow.DefaultValue(getComments());            
           case "addressId":
-            return new DataTableRow.DefaultValue(getAddressId());
+            return new NumericValue(getAddressId());
           case "addressTypeId":
-            return new DataTableRow.TypeValue(getAddressTypeId());
+            return new TypeValue(getAddressTypeId());
           case "addressDescription":
-            return new DataTableRow.DefaultValue(getAddressDescription());
+            return new DefaultValue(getAddressDescription());
           case "addressFullDescription":
-            return new DataTableRow.DefaultValue(getAddressFullDescription());
+            return new DefaultValue(getAddressFullDescription());
           case "addressCity":
-            return new DataTableRow.DefaultValue(getAddressCity());
+            return new DefaultValue(getAddressCity());
           case "addressProvince":
-            return new DataTableRow.DefaultValue(getAddressProvince());
+            return new DefaultValue(getAddressProvince());
           case "addressCountry":
-            return new DataTableRow.DefaultValue(getAddressCountry());
+            return new DefaultValue(getAddressCountry());
           default:
             break;
         }

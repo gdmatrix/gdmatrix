@@ -49,7 +49,8 @@ public class EditTab implements Serializable
   private List<Column> columns = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
   private List<String> readRoles = new ArrayList();
-  private List<String> writeRoles = new ArrayList();  
+  private List<String> writeRoles = new ArrayList(); 
+  private List<String> orderBy = new ArrayList();
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -170,6 +171,16 @@ public class EditTab implements Serializable
   public void setWriteRoles(List<String> writeRoles)
   {
     this.writeRoles = writeRoles;
+  }
+
+  public List<String> getOrderBy()
+  {
+    return orderBy;
+  }
+
+  public void setOrderBy(List<String> orderBy)
+  {
+    this.orderBy = orderBy;
   }
 
   public static String createSubviewId(String viewId)

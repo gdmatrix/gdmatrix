@@ -49,6 +49,8 @@ import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRow.Value;
+import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -68,7 +70,7 @@ public class CaseInterventionsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    List<DataTableRow> rows;
+    List<CaseInterventionsDataTableRow> rows;
     int firstRow = 0;
     boolean groupedView = true;
   }
@@ -169,16 +171,25 @@ public class CaseInterventionsTabBean extends TabBean
     editing.setPersonId(personId);
   }
 
-  public List<DataTableRow> getRows()
+  public List<CaseInterventionsDataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<DataTableRow> rows)
+  public void setRows(List<CaseInterventionsDataTableRow> rows)
   {
     this.getCurrentTabInstance().rows = rows;
   }
 
+  public List<String> getOrderBy()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getOrderBy();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -298,9 +309,12 @@ public class CaseInterventionsTabBean extends TabBean
   public void switchView()
   {
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+    if (!getCurrentTabInstance().groupedView) //Reorder
+    {
+      Collections.sort(getCurrentTabInstance().rows, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));      
+    }
   }
-
-
 
   @Override
   public void load() throws Exception
@@ -320,7 +334,11 @@ public class CaseInterventionsTabBean extends TabBean
         List<InterventionView> interventions =
           CasesModuleBean.getPort(false).findInterventionViews(filter);
 
-        setRows(toDataTableRows(interventions));
+        List<CaseInterventionsDataTableRow> auxList = 
+          toDataTableRows(interventions);
+        Collections.sort(auxList, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));
+        setRows(auxList);
       }
       catch (Exception ex)
       {
@@ -435,14 +453,14 @@ public class CaseInterventionsTabBean extends TabBean
     }
   }
 
-  private List<DataTableRow> toDataTableRows(List<InterventionView>
-    interventions) throws Exception
+  private List<CaseInterventionsDataTableRow> toDataTableRows(
+    List<InterventionView> interventions) throws Exception
   {
-    List<DataTableRow> convertedRows = new ArrayList<>();
+    List<CaseInterventionsDataTableRow> convertedRows = new ArrayList<>();
     for (InterventionView row : interventions)
     {
-      DataTableRow dataTableRow =
-        new DataTableRow(row.getIntId(), row.getIntTypeId());
+      CaseInterventionsDataTableRow dataTableRow =
+        new CaseInterventionsDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
       convertedRows.add(dataTableRow);
     }
@@ -479,6 +497,112 @@ public class CaseInterventionsTabBean extends TabBean
         return true;
       }
     }    
+  }
+  
+  public class CaseInterventionsDataTableRow extends DataTableRow
+  {
+    private String startDateTime;
+    private String endDateTime;
+    private String personId;
+    private String personName;
+    private String personIdent;
+
+    public CaseInterventionsDataTableRow(InterventionView row)
+    {
+      super(row.getIntId(), row.getIntTypeId());
+      if (row.getStartDate() != null)
+      {
+        startDateTime = row.getStartDate();
+        if (row.getStartTime() != null) startDateTime += row.getStartTime();        
+      }
+      if (row.getEndDate() != null)
+      {
+        endDateTime = row.getEndDate();
+        if (row.getEndTime() != null) endDateTime += row.getEndTime();
+      }      
+      if (row.getPersonView() != null)
+      {
+        personId = row.getPersonView().getPersonId();
+        personName = row.getPersonView().getFullName();
+        personIdent = row.getPersonView().getNif() != null ?
+          row.getPersonView().getNif() : 
+          row.getPersonView().getPassport();        
+      }
+    }
+
+    public String getStartDateTime()
+    {
+      return startDateTime;
+    }
+
+    public void setStartDateTime(String startDateTime)
+    {
+      this.startDateTime = startDateTime;
+    }
+
+    public String getEndDateTime()
+    {
+      return endDateTime;
+    }
+
+    public void setEndDateTime(String endDateTime)
+    {
+      this.endDateTime = endDateTime;
+    }
+
+    public String getPersonId()
+    {
+      return personId;
+    }
+
+    public void setPersonId(String personId)
+    {
+      this.personId = personId;
+    }
+
+    public String getPersonName()
+    {
+      return personName;
+    }
+
+    public void setPersonName(String personName)
+    {
+      this.personName = personName;
+    }
+
+    public String getPersonIdent()
+    {
+      return personIdent;
+    }
+
+    public void setPersonIdent(String personIdent)
+    {
+      this.personIdent = personIdent;
+    }
+
+    @Override
+    protected Value getDefaultValue(String columnName)
+    {
+      if (columnName != null)
+      {
+        switch (columnName)
+        {
+          case "startDateTime":
+            return new DateValue(getStartDateTime());
+          case "endDateTime":
+            return new DateValue(getEndDateTime());
+          case "personId":
+            return new NumericValue(getPersonId());
+          case "personName":
+            return new DefaultValue(getPersonName());
+          case "personIdent":
+            return new DefaultValue(getPersonIdent());
+          default:
+            break;
+        }
+      }
+      return super.getDefaultValue(columnName);
+    }
   }  
 
 }

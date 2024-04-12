@@ -54,6 +54,7 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -142,6 +143,15 @@ public class CaseCasesTabBean extends TabBean
     return getCurrentTabInstance().relatedByPerson;
   }
 
+  public List<String> getOrderBy()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getOrderBy();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -267,6 +277,11 @@ public class CaseCasesTabBean extends TabBean
   public void switchView()
   {
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+    if (!getCurrentTabInstance().groupedView) //Reorder
+    {
+      Collections.sort(getCurrentTabInstance().rows, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));      
+    }    
   }
 
   public String getCaseDescription()
@@ -479,15 +494,22 @@ public class CaseCasesTabBean extends TabBean
         results.add(revResults.get(i));
       }
     }
-
-    return toDataTableRows(results);
+    
+    List<CaseCasesDataTableRow> auxList = toDataTableRows(results);    
+    Collections.sort(auxList, 
+      new DataTableRowComparator(getColumns(), getOrderBy()));
+    return auxList;
   }
 
   private List<CaseCasesDataTableRow> getResultsByPersons(String cpTypeId1,
     String cpTypeId2) throws Exception
   {
-    CaseCaseMatcher matcher = new CaseCaseMatcher(caseObjectBean.getCase());
-    return toDataTableRows(matcher.matchByPersons(cpTypeId1, cpTypeId2));
+    CaseCaseMatcher matcher = new CaseCaseMatcher(caseObjectBean.getCase());    
+    List<CaseCasesDataTableRow> auxList = 
+      toDataTableRows(matcher.matchByPersons(cpTypeId1, cpTypeId2));
+    Collections.sort(auxList, 
+      new DataTableRowComparator(getColumns(), getOrderBy()));
+    return auxList;
   }
 
   private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView>
@@ -563,7 +585,7 @@ public class CaseCasesTabBean extends TabBean
     private boolean reverseRelation;
     private String caseId;
     private String caseTypeId;
-    private String title;
+    private String caseTitle;
     private String personId; //If is related by person
 
     public CaseCasesDataTableRow(CaseCaseView row)
@@ -580,7 +602,7 @@ public class CaseCasesTabBean extends TabBean
       caseId = reverseRelation ? mainCase.getCaseId() : relCase.getCaseId();
       caseTypeId = reverseRelation ? mainCase.getCaseTypeId() :
         relCase.getCaseTypeId();
-      title = reverseRelation ? mainCase.getTitle() : relCase.getTitle();
+      caseTitle = reverseRelation ? mainCase.getTitle() : relCase.getTitle();
       personId =
         DictionaryUtils.getPropertyValue(row.getProperty(), "personId");
     }
@@ -600,14 +622,14 @@ public class CaseCasesTabBean extends TabBean
       this.caseTypeId = caseTypeId;
     }
 
-    public String getTitle()
+    public String getCaseTitle()
     {
-      return title;
+      return caseTitle;
     }
 
-    public void setTitle(String title)
+    public void setCaseTitle(String caseTitle)
     {
-      this.title = title;
+      this.caseTitle = caseTitle;
     }
 
     public String getCaseId()
@@ -639,9 +661,9 @@ public class CaseCasesTabBean extends TabBean
         switch (columnName)
         {
           case "caseId":
-            return new DefaultValue(getCaseId());
+            return new NumericValue(getCaseId());
           case "caseTitle":
-            return new DefaultValue(getTitle());
+            return new DefaultValue(getCaseTitle());
           case "caseTypeId":
             return new TypeValue(getCaseTypeId());
           case "person":

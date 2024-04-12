@@ -312,14 +312,15 @@ public class DataTableRow implements Serializable
     public NumericValue(String value)
     {
       label = value;
-      try
+      sorted = value;
+      if (value != null)
       {
-        Double dvalue = Double.valueOf(value);
-        sorted = dvalue;
-      }
-      catch(NumberFormatException ex)
-      {
-        sorted = value;
+        try
+        {
+          Double dvalue = Double.valueOf(value);
+          sorted = dvalue;
+        }
+        catch (NumberFormatException ex) { }
       }
     }
   }
