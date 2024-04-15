@@ -121,22 +121,40 @@
     
     <p:tabView id="query_tabs" styleClass="tabbed_panel mt-2" activeIndex="#{queryEditBean.selectedTab}">
       <p:ajax event="tabChange" process="@this" />
-      <p:tab title="#{queryBundle.classification}">        
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-tag mr-2"/>#{queryBundle.classification}
+        </f:facet>        
         <ui:include src="/pages/query/edit/panels/classification.xhtml" />
       </p:tab>
-      <p:tab title="#{queryBundle.connection}">
+      <p:tab>
+        <f:facet name="title">
+          <span class="fa fa-plug mr-2"/>#{queryBundle.connection}
+        </f:facet>        
         <ui:include src="/pages/query/edit/panels/connection.xhtml" />
       </p:tab>
-      <p:tab title="#{queryBundle.parameters}">
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi mr-2">{_}</span>#{queryBundle.parameters}
+        </f:facet>        
         <ui:include src="/pages/query/edit/panels/parameters.xhtml" />
       </p:tab>
-      <p:tab title="#{queryBundle.predicates}">
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-sliders-h mr-2"/>#{queryBundle.predicates}
+        </f:facet>        
         <ui:include src="/pages/query/edit/panels/predicates.xhtml" />
       </p:tab>
-      <p:tab title="#{queryBundle.outputs}">
+      <p:tab>
+        <f:facet name="title">
+          <span class="fa fa-table mr-2"/>#{queryBundle.outputs}
+        </f:facet>        
         <ui:include src="/pages/query/edit/panels/outputs.xhtml" />
       </p:tab>
-      <p:tab title="#{queryBundle.roles}">
+      <p:tab>
+        <f:facet name="title">
+          <span class="pi pi-key mr-2"/>#{queryBundle.roles}
+        </f:facet>        
         <ui:include src="/pages/query/edit/panels/roles.xhtml" />
       </p:tab>
     </p:tabView>    

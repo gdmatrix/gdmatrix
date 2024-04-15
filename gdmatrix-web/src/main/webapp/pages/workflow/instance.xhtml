@@ -172,7 +172,10 @@
       <p:tabView id="debug_tabs" 
                  styleClass="debugTabs mt-2" dynamic="true"
                  activeIndex="#{workflowInstanceBean.activeDebugTab}">
-        <p:tab title="Variables">
+        <p:tab>
+          <f:facet name="title">
+            <span class="fa fa-table mr-2"/>#{workflowBundle.variables}
+          </f:facet>
           <h:dataTable var="instanceVar" value="#{workflowInstanceBean.variablesArray}"
                        styleClass="varTable" columnClasses="col1,col2">
             <h:column>
@@ -208,7 +211,10 @@
           </div>
         </p:tab>
 
-        <p:tab title="Stack">
+        <p:tab>
+          <f:facet name="title">
+            <span class="fa fa-layer-group mr-2"/>#{workflowBundle.stack}
+          </f:facet>
           <p:dataList value="#{workflowInstanceBean.stackItems}" var="stackItem"
                       styleClass="stackItems">
             <ul class="stackItem">
@@ -231,7 +237,10 @@
           </p:dataList>
         </p:tab>
 
-        <p:tab title="Events">
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-clock mr-2"/>#{workflowBundle.events}
+          </f:facet>
           <p:dataList value="#{workflowInstanceBean.instanceEvents}" var="instanceEvent"
                       styleClass="instanceEvents">
             <ul class="instanceEvent">
