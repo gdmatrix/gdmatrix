@@ -69,12 +69,12 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
   public FlexWorkflowBean()
   {
   }
-  
+
   public Map<String, Object> getData()
   {
     return data;
   }
-  
+
   @Override
   public String show(Form form)
   {
@@ -88,8 +88,11 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
 
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
-    UIComponent panel = event.getComponent();
-    updateComponents(panel);
+    UIComponent panel = ComponentUtils.postAddToView(event);
+    if (panel != null)
+    {
+      updateComponents(panel);
+    }
   }
 
   public void doAction(String name, String value)
@@ -119,13 +122,12 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
   {
     try
     {
-      HtmlOutputText hidden =
-        (HtmlOutputText)panel.findComponent("form_selector");
-      String actualFormSelector = (String)hidden.getStyleClass();
+      Map<String, Object> panelAttributes = panel.getPassThroughAttributes();
+      String renderedSelector = (String)panelAttributes.get("form_selector");
 
-      if (!selector.equals(actualFormSelector))
+      if (!selector.equals(renderedSelector))
       {
-        hidden.setStyleClass(selector);
+        panelAttributes.put("form_selector", selector);
 
         panel.getChildren().clear();
 
@@ -139,20 +141,21 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       error(ex);
     }
   }
-  
+
   public Map<String, Object> getValue()
   {
     return data;
   }
-  
+
   public MultivaluedMap getValues()
   {
     return values;
   }
-  
+
   public class MultivaluedMap extends AbstractMap<String, Object>
     implements Serializable
   {
@@ -160,19 +163,19 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
     public Object put(String key, Object value)
     {
       if (value != null && value.getClass().isArray())
-      {  
+      {
         for (String k : data.keySet())
         {
           if (k.equals(key) || k.startsWith(key + "_"))
             data.put(k, null);
         }
-        
+
         int length = Array.getLength(value);
         for (int i = 0; i < length; i++)
         {
           String name = key + "_" + i;
           data.put(name, Array.get(value, i));
-        }        
+        }
       }
       return value;
     }
@@ -187,7 +190,7 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
         .collect(Collectors.toList());
       return list;
     }
-    
+
     @Override
     public Set<Map.Entry<String, Object>> entrySet()
     {
@@ -200,7 +203,7 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
       return data.size();
     }
   }
-  
+
   public static void main(String[] args)
   {
     Map<String,Object> map = new LinkedHashMap();
@@ -212,12 +215,12 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
       .map(k -> map.get(k))
       .collect(Collectors.toList());
     System.out.println(list);
-    
+
     map.entrySet().stream()
-          .forEach(e -> {if (e.getKey().equals("a_1")) 
+          .forEach(e -> {if (e.getKey().equals("a_1"))
                       e.setValue(null);});
-    
+
     System.out.println(map);
-    
+
   }
 }

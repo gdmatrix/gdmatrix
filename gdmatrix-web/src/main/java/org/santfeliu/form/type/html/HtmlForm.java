@@ -68,7 +68,8 @@ public class HtmlForm implements Form, Serializable
   ArrayList<Field> fields = new ArrayList();
   HtmlView rootView;
   Map<String, HtmlView> viewsByRef = new HashMap();
-  Map context;
+  boolean evaluated;
+  boolean cacheable;
   long expires = 0;
   String lastModified;
   public static final String TEXT_FORMAT = "text";
@@ -132,7 +133,7 @@ public class HtmlForm implements Form, Serializable
   {
     this.lastModified = lastModified;
   }
-  
+
   public void setProperty(String name, Object value)
   {
     properties.put(name, value);
@@ -235,9 +236,9 @@ public class HtmlForm implements Form, Serializable
   {
     boolean valid = true;
     Field field = getField(reference);
-    String label = cleanLabel(field.getLabel());
     if (field != null && !field.isReadOnly())
     {
+      String label = cleanLabel(field.getLabel());
       System.out.print("Validating " + field);
 
       // check cardinality
@@ -349,18 +350,17 @@ public class HtmlForm implements Form, Serializable
   @Override
   public Form evaluate(Map context) throws Exception
   {
-    if (this.context != null) return this; // already evaluated
-
     HtmlForm evaluatedForm = new HtmlForm();
     evaluatedForm.title = title;
     evaluatedForm.language = language;
     evaluatedForm.encoding = encoding;
     evaluatedForm.properties = new HashMap(properties);
-    evaluatedForm.context = new HashMap();
+    evaluatedForm.evaluated = true;
 
     if (template == null) // no template, easy way
     {
       // clone View tree
+      evaluatedForm.cacheable = true;
       evaluatedForm.viewsByRef = new HashMap();
       evaluatedForm.rootView =
         cloneViewTree(rootView, evaluatedForm.viewsByRef);
@@ -375,19 +375,22 @@ public class HtmlForm implements Form, Serializable
     {
       // merge template
       StringWriter writer = new StringWriter();
+      Map initialContext = new HashMap(context);
       template.merge(context, writer);
 
       // parse a new View tree
       HtmlParser parser = new HtmlParser(evaluatedForm);
       parser.parse(new StringReader(writer.toString()));
 
-      // put variables into evaluation context of evaluatedForm and
-      // add them as read only fields
+      // put referenced variables into evaluation context of evaluatedForm
       Set<String> variables = template.getReferencedVariables();
       for (String variable : variables)
       {
-        evaluatedForm.context.put(variable, context.get(variable));
-        evaluatedForm.addReadOnlyField(variable);
+        if (!initialContext.containsKey(variable))
+        {
+          // new variable, set as read only field
+          evaluatedForm.addReadOnlyField(variable);
+        }
       }
     }
     evaluateDynamicViews(evaluatedForm, context);
@@ -396,19 +399,25 @@ public class HtmlForm implements Form, Serializable
   }
 
   @Override
-  public Map getContext()
+  public boolean isEvaluated()
   {
-    return context;
+    return evaluated;
+  }
+
+  @Override
+  public boolean isCacheable()
+  {
+    return cacheable;
   }
 
   @Override
   public boolean isOutdated()
   {
-    if (context == null) return false; // non evaluated form (*)
-    if (context.isEmpty()) return false; // context-independent form (*)
+    // TODO: implement strategy to detect source changes
+
+    if (expires == 0) return false;
     long now = System.currentTimeMillis();
     return (now > expires);
-    // (*) TODO: implement strategy to detect source changes
   }
 
   @Override
@@ -440,8 +449,6 @@ public class HtmlForm implements Form, Serializable
         addReadOnlyField(variable);
       }
     }
-    context = null;
-
     return null;
   }
 
@@ -460,6 +467,24 @@ public class HtmlForm implements Form, Serializable
       view.setReference(reference);
       viewsByRef.put(reference, view);
     }
+  }
+
+  @Override
+  public String toString()
+  {
+    StringBuilder buffer = new StringBuilder();
+    buffer.append(getClass().getName());
+    buffer.append("/");
+    buffer.append(id);
+    if (evaluated)
+    {
+      buffer.append("/evaluated");
+    }
+    if (cacheable)
+    {
+      buffer.append("/cacheable");
+    }
+    return buffer.toString();
   }
 
   // private and package methods
@@ -492,10 +517,9 @@ public class HtmlForm implements Form, Serializable
         // put parameters into evaluation context of evaluatedForm
         List<String> parameters =
           selectView.getParameters(evaluatedForm);
-        for (String parameter : parameters)
+        if (!parameters.isEmpty())
         {
-          Object value = context.get(parameter);
-          evaluatedForm.context.put(parameter, value);
+          evaluatedForm.cacheable = false;
         }
       }
     }

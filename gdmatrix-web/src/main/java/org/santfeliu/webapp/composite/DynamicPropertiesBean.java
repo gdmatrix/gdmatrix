@@ -42,7 +42,7 @@ import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
-import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
@@ -57,6 +57,7 @@ import org.primefaces.component.outputlabel.OutputLabel;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.PropertyConverter;
+import org.santfeliu.form.Form;
 import org.santfeliu.form.FormDescriptor;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
@@ -76,6 +77,10 @@ import org.santfeliu.webapp.validators.JsonValidator;
 public class DynamicPropertiesBean implements Serializable
 {
   static final String PROPERTY_EDITOR_SELECTOR = "editor";
+  static final String PROPERTY_EDITOR_ID = "editor_id";
+  static final String FORM_ID = "formid";
+  static final String DATA_HASH = "datahash";
+
   static final Map<String, Object> FILTER_OPTIONS = new HashMap();
   static
   {
@@ -93,9 +98,20 @@ public class DynamicPropertiesBean implements Serializable
     propertyHelper = new PropertyHelper()
     {
       @Override
+      public Object getObject()
+      {
+        return WebUtils.getValue("#{cc.attrs.object}");
+      }
+
+      @Override
       public List<Property> getProperties()
       {
-        return WebUtils.getValue("#{cc.attrs.properties}");
+        List<Property> properties = WebUtils.getValue("#{cc.attrs.properties}");
+        if (properties == null)
+        {
+          properties = super.getProperties();
+        }
+        return properties;
       }
     };
   }
@@ -169,7 +185,7 @@ public class DynamicPropertiesBean implements Serializable
 
       selectItems = new ArrayList<>();
       if (!StringUtils.isBlank(typeId))
-      {          
+      {
         String selectorBase = formKey +
           TypeFormBuilder.USERID + userSessionBean.getUserId() +
           TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
@@ -208,6 +224,7 @@ public class DynamicPropertiesBean implements Serializable
   {
     UIComponent component = event.getComponent();
     UIComponent panel = component.findComponent("dyn_form");
+
     if (panel != null)
     {
       updateComponents(panel);
@@ -221,20 +238,35 @@ public class DynamicPropertiesBean implements Serializable
     formFactory.clearForm(formSelector);
 
     UIComponent component = event.getComponent();
-
-    // reset currentFormSelector
-    HtmlOutputText hidden =
-      (HtmlOutputText)component.findComponent("form_selector");
-    hidden.setStyleClass(null);
-
     UIComponent panel = component.findComponent("dyn_form");
+
+    Map<String, Object> panelAttributes = panel.getPassThroughAttributes();
+
+    // reset renderedFormId
+    panelAttributes.remove(FORM_ID);
+
     updateComponents(panel);
   }
 
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
-    UIComponent panel = event.getComponent();
-    updateComponents(panel);
+    UIComponent panel = ComponentUtils.postAddToView(event);
+    if (panel != null)
+    {
+      if (isPanelRendered(panel))
+      {
+        Map<String, Object> panelAttributes = panel.getPassThroughAttributes();
+        String renderedDataHash = (String)panelAttributes.get(DATA_HASH);
+        String dataHash = getDataHash();
+        String formSelector = getFormSelector();
+
+        if (formSelector == null ||
+            renderedDataHash == null || !renderedDataHash.equals(dataHash))
+        {
+          updateComponents(panel);
+        }
+      }
+    }
   }
 
   public Map<String, Object> getFilterOptions()
@@ -248,10 +280,49 @@ public class DynamicPropertiesBean implements Serializable
       submitButton);
   }
 
+  public String getFormSelector()
+  {
+    return WebUtils.getValue("#{cc.attrs.formSelector}");
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    WebUtils.setValue("#{cc.attrs.formSelector}", String.class, formSelector);
+  }
+
+  public String getDataHash()
+  {
+    return WebUtils.getValue("#{cc.attrs.dataHash}");
+  }
+
+  public String getTypeId()
+  {
+    return WebUtils.getValue("#{cc.attrs.typeId}");
+  }
+
+  public String getFormBuilderPrefix()
+  {
+    return WebUtils.getValue("#{cc.attrs.formBuilderPrefix}");
+  }
+
+  public Map<String, Object> getOptions()
+  {
+    return WebUtils.getValue("#{cc.attrs.options}");
+  }
+
+  public boolean isPropertyEditorRendered()
+  {
+    return PROPERTY_EDITOR_SELECTOR.equals(getFormSelector());
+  }
+
+  // --- private methods ---
+
   private void updateComponents(UIComponent panel)
   {
     try
     {
+      Map<String, Object> panelAttributes = panel.getPassThroughAttributes();
+
       List<SelectItem> selectItems = getSelectItems();
       String formSelector = getFormSelector();
 
@@ -263,20 +334,20 @@ public class DynamicPropertiesBean implements Serializable
         setFormSelector(formSelector);
       }
 
-      // save current formSelector in styleClass property of outputText component
-      HtmlOutputText hidden =
-        (HtmlOutputText)panel.findComponent("form_selector");
-      String currentFormSelector = (String)hidden.getStyleClass();
+      String renderedFormId = (String)panelAttributes.get(FORM_ID);
 
-      if (!formSelector.equals(currentFormSelector))
+      if (StringUtils.isBlank(formSelector))
       {
-        hidden.setStyleClass(formSelector);
-
         panel.getChildren().clear();
-
-        if (PROPERTY_EDITOR_SELECTOR.equals(formSelector))
+        panelAttributes.remove(FORM_ID);
+      }
+      else if (PROPERTY_EDITOR_SELECTOR.equals(formSelector))
+      {
+        if (!PROPERTY_EDITOR_ID.equals(renderedFormId))
         {
-          System.out.println(">>>> property_editor");
+          panel.getChildren().clear();
+
+          System.out.println(">>>> importing property editor components");
           Application application = FacesContext.getCurrentInstance().getApplication();
 
           HtmlPanelGroup group =
@@ -298,19 +369,50 @@ public class DynamicPropertiesBean implements Serializable
           textArea.setStyleClass("field col-12");
           textArea.setStyle("font-family:monospace");
           textArea.addValidator(JSON_VALIDATOR);
+          textArea.getPassThroughAttributes().put("spellcheck", "false");
           textArea.setValueExpression("value",
             WebUtils.createValueExpression("#{dynamicPropertiesBean.propertyJson}", String.class));
           group.getChildren().add(textArea);
+          panelAttributes.put(FORM_ID, PROPERTY_EDITOR_ID);
         }
-        else if (!StringUtils.isBlank(formSelector))
-        {
-          System.out.println(">>>> importing form: " + formSelector);
+      }
+      else
+      {
+        FormFactory formFactory = FormFactory.getInstance();
+        Form form = formFactory.getForm(formSelector,
+          propertyHelper.getValue(), false);
 
-          ComponentUtils.includeFormComponents(panel, formSelector,
-             "dynamicPropertiesBean.propertyHelper.value",
-             "dynamicPropertiesBean.propertyHelper.values",
-            propertyHelper.getValue(), getOptions(), false);
+        if (form == null)
+        {
+          panel.getChildren().clear();
+          panelAttributes.remove(FORM_ID);
         }
+        else if (form.getId().equals(renderedFormId))
+        {
+          System.out.println(">>>> reuse components: " + form);
+        }
+        else
+        {
+          panel.getChildren().clear();
+
+          System.out.println(">>>> importing form components: " +
+            formSelector + "/" + form);
+
+          ComponentUtils.includeFormComponents(panel, form,
+            "dynamicPropertiesBean.propertyHelper.value",
+            "dynamicPropertiesBean.propertyHelper.values",
+            getOptions());
+          panelAttributes.put(FORM_ID, form.getId());
+        }
+      }
+      String dataHash = getDataHash();
+      if (dataHash != null)
+      {
+        panelAttributes.put(DATA_HASH, dataHash);
+      }
+      else
+      {
+        panelAttributes.remove(DATA_HASH);
       }
     }
     catch (Exception ex)
@@ -319,34 +421,16 @@ public class DynamicPropertiesBean implements Serializable
     }
   }
 
-  public String getFormSelector()
+  private boolean isPanelRendered(UIComponent component)
   {
-    return WebUtils.getValue("#{cc.attrs.formSelector}");
-  }
-
-  public void setFormSelector(String formSelector)
-  {
-    WebUtils.setValue("#{cc.attrs.formSelector}", String.class, formSelector);
-  }
-
-  public String getTypeId()
-  {
-    return WebUtils.getValue("#{cc.attrs.typeId}");
-  }
-
-  public String getFormBuilderPrefix()
-  {
-    return WebUtils.getValue("#{cc.attrs.formBuilderPrefix}");
-  }
-
-  public Map<String, Object> getOptions()
-  {
-    return WebUtils.getValue("#{cc.attrs.options}");
-  }
-
-  public boolean isPropertyEditorRendered()
-  {
-    return PROPERTY_EDITOR_SELECTOR.equals(getFormSelector());
+    UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
+    boolean rendered = component.isRendered();
+    while (component != viewRoot && rendered)
+    {
+      component = component.getParent();
+      rendered = component.isRendered();
+    }
+    return rendered;
   }
 
   private boolean isValidFormSelector(String formSelector,

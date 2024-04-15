@@ -1,38 +1,40 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.dic.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,7 @@ import org.santfeliu.dic.Type;
 /**
  *
  * @author blanquepa
+ * @author realor
  */
 public class DictionaryUtils
 {
@@ -64,16 +67,77 @@ public class DictionaryUtils
     }
     return null;
   }
-  
-  public static String getPropertyValue(List<Property> propertyList, 
+
+  public static String getPropertyValue(List<Property> propertyList,
     String name)
-  {    
+  {
     Property property = getPropertyByName(propertyList, name);
-    if (property == null) 
+    if (property == null)
       return null;
-    else 
-      return (property.getValue().isEmpty() ? null : 
+    else
+      return (property.getValue().isEmpty() ? null :
         property.getValue().get(0));
+  }
+
+  public static void setPropertyValue(List<Property> propertyList, String name,
+    Object value, boolean incremental)
+  {
+    if (propertyList != null && name != null)
+    {
+      Property property =
+        DictionaryUtils.getPropertyByName(propertyList, name);
+      if (isEmptyValue(value))
+      {
+        if (property != null)
+        {
+          propertyList.remove(property);
+        }
+      }
+      else // value is not empty
+      {
+        if (property == null)
+        {
+          property = new Property();
+          property.setName(name);
+          propertyList.add(property);
+        }
+        else
+        {
+          if (!incremental)
+          {
+            property.getValue().clear();
+          }
+        }
+
+        // set value to property
+        if (isPrimitiveValue(value))
+        {
+          property.getValue().add(value.toString());
+        }
+        else if (value instanceof List)
+        {
+          for (Object item : (List)value)
+          {
+            if (isPrimitiveValue(item))
+            {
+              property.getValue().add(item.toString());
+            }
+          }
+        }
+        else if (value.getClass().isArray())
+        {
+          int length = Array.getLength(value);
+          for (int i = 0; i < length; i++)
+          {
+            Object item = Array.get(value, i);
+            if (isPrimitiveValue(item))
+            {
+              property.getValue().add(item.toString());
+            }
+          }
+        }
+      }
+    }
   }
 
   /*
@@ -110,32 +174,19 @@ public class DictionaryUtils
 
           return p;
         }
-
       }
 
       //If getter not found tries dynamic properties
-      try
-      {
-        Method getPropertyMethod = docClass.getMethod("getProperty");
-        Object result = getPropertyMethod.invoke(object);
-        List<Property> properties = (List<Property>) result;
-
-        for (Property p : properties)
-        {
-          if (p.getName().equals(propertyName))
-            return p;
-        }
-      }
-      catch (Exception ex)
-      {
-      }
-
-      return null;
+      Method getPropertyMethod = docClass.getMethod("getProperty");
+      Object result = getPropertyMethod.invoke(object);
+      List<Property> properties = (List<Property>) result;
+      return DictionaryUtils.getPropertyByName(properties, propertyName);
     }
     catch (Exception e)
     {
-      return null;
+      // ignore
     }
+    return null;
   }
 
    /*
@@ -218,41 +269,12 @@ public class DictionaryUtils
         Method getPropertyMethod = docClass.getMethod("getProperty");
         Object result = getPropertyMethod.invoke(object);
         List<Property> properties = (List<Property>) result;
-        List<Property> removed = new ArrayList();
-        boolean propFound = false;
-        for (Property property : properties)
-        {
-          if (propertyName.equalsIgnoreCase(property.getName()))
-          {
-            if (!incremental) property.getValue().clear();
-            if (value != null && List.class.isAssignableFrom(value.getClass()))
-              property.getValue().addAll((List)value);
-            else if (value != null)
-              property.getValue().add(String.valueOf(value));
-            else if (value == null)
-              //properties.remove(property);
-              removed.add(property);
-            propFound = true;
-          }
-        }
-        for (Property p : removed)
-        {
-          properties.remove(p);
-        }
-        if (!propFound)
-        {
-          Property p = new Property();
-          p.setName(propertyName);
-          if (List.class.isAssignableFrom(value.getClass()))
-            p.getValue().addAll((List)value);
-          else
-            p.getValue().add(String.valueOf(value));
-          properties.add(p);
-        }
+        setPropertyValue(properties, propertyName, value, incremental);
       }
       catch (Exception ex)
       {
-      }  
+        // ignore
+      }
     }
   }
 
@@ -272,6 +294,22 @@ public class DictionaryUtils
         setProperty(object, property.getName(), property.getValue());
       }
     }
+  }
+
+  public static List<Property> getDynamicProperties(Object object)
+  {
+    List<Property> properties;
+    try
+    {
+      Class cls = object.getClass();
+      Method method = cls.getMethod("getProperty");
+      properties = (List<Property>)method.invoke(object);
+    }
+    catch (Exception ex)
+    {
+      properties = null;
+    }
+    return properties;
   }
 
   public static List<Property> getProperties(Object object)
@@ -322,7 +360,7 @@ public class DictionaryUtils
 
     return properties;
   }
-  
+
   public static List<Property> getPropertiesFromMap(Map map)
   {
     List<Property> result = null;
@@ -336,7 +374,7 @@ public class DictionaryUtils
         Object propertyValue = entry.getValue();
         if (propertyValue instanceof List)
         {
-          addProperty(result, propertyName, (List)propertyValue);          
+          addProperty(result, propertyName, (List)propertyValue);
         }
         else
         {
@@ -345,6 +383,21 @@ public class DictionaryUtils
       }
     }
     return result;
+  }
+
+  public static boolean isEmptyValue(Object value)
+  {
+    return value == null ||
+    (value instanceof String && ((String)value).trim().length() == 0) ||
+    (value instanceof Collection && ((Collection)value).isEmpty()) ||
+    (value.getClass().isArray() && Array.getLength(value) == 0);
+  }
+
+  public static boolean isPrimitiveValue(Object value)
+  {
+    return value instanceof String ||
+           value instanceof Number ||
+           value instanceof Boolean;
   }
 
   public static boolean containsProperty(Object object,
@@ -379,8 +432,8 @@ public class DictionaryUtils
       properties.add(property);
     }
   }
-   
-  public static boolean canPerformAction(String action, Set<String> roles, 
+
+  public static boolean canPerformAction(String action, Set<String> roles,
     List<AccessControl> acl)
   {
     boolean canPerformAction = false;
@@ -391,20 +444,20 @@ public class DictionaryUtils
       if (ac.getAction().equals(action) && roles.contains(ac.getRoleId()))
         canPerformAction = true;
     }
-    return canPerformAction;    
+    return canPerformAction;
   }
-  
-  public static boolean canPerformAction(String action, Set<String> roles, 
+
+  public static boolean canPerformAction(String action, Set<String> roles,
     List<AccessControl> acl, Type type)
   {
-    return DictionaryUtils.canPerformAction(action, roles, acl) || 
+    return DictionaryUtils.canPerformAction(action, roles, acl) ||
       DictionaryUtils.canPerformAction(action, roles, type.getAccessControl());
-  }   
-  
-  public static boolean canPerformAction(String action, Set<String> roles, 
+  }
+
+  public static boolean canPerformAction(String action, Set<String> roles,
     Type type)
   {
     List<AccessControl> acl = type.getAccessControl();
     return DictionaryUtils.canPerformAction(action, roles, acl);
-  }   
+  }
 }

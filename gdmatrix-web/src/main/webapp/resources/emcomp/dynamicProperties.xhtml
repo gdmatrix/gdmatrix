@@ -11,8 +11,10 @@
   <h:body>
     <composite:interface>
       <composite:attribute name="typeId" required="true" />
-      <composite:attribute name="properties" required="true" />
+      <composite:attribute name="object" required="false" />
+      <composite:attribute name="properties" required="false" />
       <composite:attribute name="formSelector" required="true" />
+      <composite:attribute name="dataHash" required="false" />
       <composite:attribute name="formBuilderPrefix" required="false" default="type@flex" />
       <composite:attribute name="options" required="false" type="java.util.Map" />
       <composite:attribute name="oncomplete" required="false" />
@@ -38,12 +40,11 @@
           </div>
         </div>
       </div>
-      <h:panelGroup id="dyn_form" 
+      <h:panelGroup id="dyn_form"
                     styleClass="ui-fluid formgrid grid" layout="block">
         <f:event type="postAddToView"
                  listener="#{dynamicPropertiesBean.loadDynamicComponents}" />
       </h:panelGroup>
-      <h:outputText id="form_selector" />
     </composite:implementation>
   </h:body>
 </html>

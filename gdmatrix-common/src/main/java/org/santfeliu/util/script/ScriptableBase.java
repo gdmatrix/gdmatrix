@@ -157,7 +157,7 @@ public class ScriptableBase extends ScriptableObject
       }
       else if (className.equals("Number"))
       {
-        object = new Double(object.toString());
+        object = Double.valueOf(object.toString());
       }
       else if (className.equals("String"))
       {

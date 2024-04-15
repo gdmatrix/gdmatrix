@@ -28,55 +28,45 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.form;
+package org.santfeliu.util.template;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
  * @author realor
  */
-public interface Form
+public class TemplateTest
 {
-  // Description
-  String getId();
-  String getTitle();
-  String getLanguage();
-  Object getProperty(String name);
-  Collection<String> getPropertyNames();
+  public static void main(String[] args)
+  {
+    String expr = "La suma de ${a} + ${b} es igual a ${a + b}.";
 
-  // Model
-  Collection<Field> getFields(); // input and output fields (read only)
-  Field getField(String reference);
+    HashMap<String, Object> vars = new HashMap<>();
+    vars.put("a", 9);
+    vars.put("b", 12);
 
-  // View
-  View getRootView();
-  View getView(String reference);
+    long t0, t1;
+    int count = 10000;
 
-  // Validation
-  boolean validate(String reference, Object value, List errors, Locale locale);
-  boolean validate(Map data, List errors, Locale locale);
+    // Template
+    t0 = System.currentTimeMillis();
+    Template template1 = Template.create(expr);
+    for (int i = 0; i < count; i++)
+    {
+      String s1 = template1.merge(vars);
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println(t1 - t0);
 
-  // Evaluation
-  Form evaluate(Map context) throws Exception;
-  boolean isEvaluated();
-  boolean isCacheable();
-
-  // Change control
-  boolean isOutdated();
-  String getLastModified();
-  void setLastModified(String date);
-
-  // submit
-  void submit(Map data);
-
-  // Persistence
-  Map read(InputStream is) throws IOException;
-  void write(OutputStream os, Map data) throws IOException;
+    // JSTemplate
+    t0 = System.currentTimeMillis();
+    JSTemplate template2 = JSTemplate.create(expr);
+    for (int i = 0; i < count; i++)
+    {
+      String s2 = template2.merge(vars);
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println(t1 - t0);
+  }
 }

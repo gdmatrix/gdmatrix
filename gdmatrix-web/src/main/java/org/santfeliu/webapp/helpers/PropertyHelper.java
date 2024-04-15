@@ -30,9 +30,7 @@
  */
 package org.santfeliu.webapp.helpers;
 
-import java.lang.reflect.Array;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,154 +55,109 @@ import org.santfeliu.dic.util.DictionaryUtils;
 
 public abstract class PropertyHelper
 {
-  public abstract List<Property> getProperties();
+  public static final String OBJECT_KEY = "_object";
 
-  final Map<String, Object> value = new AbstractMap<String, Object>()
+  public Object getObject()
   {
-    @Override
-    public Object get(Object key)
-    {
-      List<Property> properties = getProperties();
-      String name = String.valueOf(key);
-      Property property = DictionaryUtils.getPropertyByName(properties, name);
-      if (property == null || property.getValue().isEmpty()) return null;
+    return null;
+  }
 
-      return property.getValue().get(0);
+  public List<Property> getProperties()
+  {
+    Object object = getObject();
+    return object == null ? null : DictionaryUtils.getDynamicProperties(object);
+  }
+
+  private final PropertyMap value = new PropertyMap(false);
+  private final PropertyMap values = new PropertyMap(true);
+
+  public class PropertyMap extends AbstractMap<String, Object>
+  {
+    boolean multiValued;
+
+    PropertyMap(boolean multiValued)
+    {
+      this.multiValued = multiValued;
     }
 
     @Override
-    public Object put(String name, Object value)
+    public Object get(Object key)
     {
-      List<Property> properties = getProperties();
-      Property property = DictionaryUtils.getPropertyByName(properties, name);
-      if (value == null || isEmptyString(value))
+      if (OBJECT_KEY.equals(key))
       {
-        if (property != null)
-        {
-          properties.remove(property);
-        }
+        return getObject();
+      }
+
+      String propertyName = key == null ? null : key.toString();
+      List<Property> properties = getProperties();
+      if (properties == null) return null;
+
+      Property property =
+        DictionaryUtils.getPropertyByName(properties, propertyName);
+      if (property != null)
+      {
+        List<String> value = property.getValue();
+        if (value == null || value.isEmpty()) return null;
+        return multiValued ? value : value.get(0);
       }
       else
       {
-        if (property == null)
-        {
-          property = new Property();
-          property.setName(name);
-          properties.add(property);
-        }
-        else
-        {
-          property.getValue().clear();
-        }
-        property.getValue().add(String.valueOf(value));
+        return multiValued ? Collections.EMPTY_LIST : null;
       }
+    }
 
+    @Override
+    public Object put(String propertyName, Object value)
+    {
+      List<Property> properties = getProperties();
+      if (properties != null)
+      {
+        DictionaryUtils.setPropertyValue(properties, propertyName, value, false);
+      }
       return null;
     }
 
     @Override
     public int size()
     {
-      return getProperties().size();
+      int size = 0;
+
+      List<Property> properties = getProperties();
+      if (properties != null) size += properties.size();
+
+      Object object = getObject();
+      if (object != null) size++;
+      return size;
     }
 
     @Override
     public Set<Map.Entry<String, Object>> entrySet()
     {
-      // TODO: return an editable Set
-      Map<String, Object> map = new HashMap<>();
       List<Property> properties = getProperties();
+      if (properties == null) return Collections.EMPTY_SET;
+
+      Map<String, Object> map = new HashMap<>();
       for (Property property : properties)
       {
-        map.put(property.getName(), property.getValue().get(0));
-      }
-      return map.entrySet();
-    }
-  };
-
-  Map<String, Object> values = new AbstractMap<String, Object>()
-  {
-    @Override
-    public Object get(Object key)
-    {
-      List<Property> properties = getProperties();
-      String name = String.valueOf(key);
-      Property property = DictionaryUtils.getPropertyByName(properties, name);
-      if (property == null || property.getName().isEmpty()) return null;
-
-      return property.getValue();
-    }
-
-    @Override
-    public Object put(String name, Object values)
-    {
-      List valueList = Collections.EMPTY_LIST;
-      if (values instanceof List)
-      {
-        valueList = (List)values;
-      }
-      else if (values != null && values.getClass().isArray())
-      {
-        valueList = new ArrayList<>();
-        int length = Array.getLength(values);
-        for (int i = 0; i < length; i++)
+        List<String> valueList = property.getValue();
+        if (!valueList.isEmpty())
         {
-          Object value = Array.get(values, i);
-          valueList.add(value);
-        }
-      }
-
-      List<Property> properties = getProperties();
-      Property property = DictionaryUtils.getPropertyByName(properties, name);
-
-      if (valueList.isEmpty())
-      {
-        // remove property if it has no values
-        if (property != null)
-        {
-          properties.remove(property);
-        }
-      }
-      else
-      {
-        if (property == null)
-        {
-          property = new Property();
-          property.setName(name);
-          properties.add(property);
-        }
-        else
-        {
-          property.getValue().clear();
-        }
-        for (Object value : valueList)
-        {
-          if (value != null && !isEmptyString(value))
+          if (multiValued)
           {
-            property.getValue().add(String.valueOf(value));
+            map.put(property.getName(), property.getValue());
+          }
+          else
+          {
+            map.put(property.getName(), property.getValue().get(0));
           }
         }
       }
-      return null;
-    }
-
-    @Override
-    public int size()
-    {
-      return getProperties().size();
-    }
-
-    @Override
-    public Set<Map.Entry<String, Object>> entrySet()
-    {
-      // TODO: return an editable Set
-      Map<String, Object> map = new HashMap<>();
-      List<Property> properties = getProperties();
-      for (Property property : properties)
+      Object object = getObject();
+      if (object != null)
       {
-        map.put(property.getName(), property.getValue());
+        map.put(OBJECT_KEY, object);
       }
-      return map.entrySet();
+      return Collections.unmodifiableSet(map.entrySet());
     }
   };
 
@@ -216,10 +169,5 @@ public abstract class PropertyHelper
   public Map<String, Object> getValues()
   {
     return values;
-  }
-
-  private boolean isEmptyString(Object value)
-  {
-    return value instanceof String && ((String)value).trim().length() == 0;
   }
 }

@@ -30,11 +30,14 @@
  */
 package org.santfeliu.webapp.util;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ComponentSystemEvent;
 import org.mozilla.javascript.Callable;
 import org.primefaces.component.tabview.TabView;
 import org.santfeliu.form.Form;
@@ -61,6 +64,29 @@ public class ComponentUtils
     }
   }
 
+  public static UIComponent postAddToView(ComponentSystemEvent event)
+  {
+    Map<String, Object> requestMap =
+      FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+    Set<UIComponent> components =
+      (Set<UIComponent>)requestMap.get("postAddedComponents");
+    if (components == null)
+    {
+      components = new HashSet<>();
+      requestMap.put("postAddedComponents", components);
+    }
+    UIComponent component = event.getComponent();
+    if (components.contains(component))
+    {
+      component = null; // already processed;
+    }
+    else
+    {
+      components.add(component);
+    }
+    return component;
+  }
+
   public static void includeFormComponents(UIComponent parent,
     String formSelector, String propertyPath, Map context) throws Exception
   {
@@ -84,13 +110,22 @@ public class ComponentUtils
     FormFactory formFactory = FormFactory.getInstance();
     if (updateForm) formFactory.clearForm(formSelector);
     Form form = formFactory.getForm(formSelector, context, false);
+    if (form != null)
+    {
+      includeFormComponents(parent, form,
+        propertyPathUni, propertyPathMulti, options);
+    }
+  }
 
+  public static void includeFormComponents(UIComponent parent, Form form,
+    String propertyPathUni, String propertyPathMulti,
+    Map<String, Object> options) throws Exception
+  {
     FormImporter formImporter = new FormImporter();
     if (options != null)
     {
       formImporter.getOptions().putAll(options);
     }
-
     formImporter.importForm(form, parent, propertyPathUni, propertyPathMulti);
   }
 

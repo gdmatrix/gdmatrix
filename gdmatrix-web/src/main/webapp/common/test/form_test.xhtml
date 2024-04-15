@@ -200,30 +200,31 @@
         <h:outputText value="Form factory" styleClass="title" />
         <h:commandButton value="Clear forms" action="#{formTestBean.clearForms}"
                          styleClass="button" immediate="true" />
-
-        <t:dataList value="#{formTestBean.formFactoryEntries}" var="row"
+        <h:commandButton value="Update forms" action="#{formTestBean.updateForms}"
+                         styleClass="button ml-1" immediate="true" />
+        <t:dataList value="#{formTestBean.cachedFormSelectors}" var="selector"
                     layout="unorderedList" styleClass="form_list">
           <h:panelGrid styleClass="form_entry" columns="2"
                        columnClasses="col1,col2">
-            <h:outputText value="Form id:"/>
+            <h:outputText value="Selector:" />
             <t:div>
-              <h:outputText value="#{row.form.id}" />
-              <h:commandButton action="#{formTestBean.dumpForm}" value="Dump"
+              <h:outputText value="#{selector}" />
+              <h:commandButton action="#{formTestBean.setDumpFormSelector(selector)}" value="Dump"
                                styleClass="button" immediate="true" />
             </t:div>
 
-            <h:outputText value="Selector:" />
-            <h:outputText value="#{row.selector}" />
-
+            <h:outputText value="Form id:"/>
+            <h:outputText value="#{formTestBean.cachedForms[selector].id}" />
+ 
             <h:outputText value="Class:"/>
-            <h:outputText value="#{formTestBean.formEntryClass}" />
+            <h:outputText value="#{formTestBean.cachedForms[selector].getClass()}" />
 
-            <h:outputText value="Context:" />
-            <h:outputText value="#{row.form.context}" />
+            <h:outputText value="Evaluated:" />
+            <h:outputText value="#{formTestBean.cachedForms[selector].evaluated}" />
           </h:panelGrid>
         </t:dataList>
 
-        <t:div rendered="#{formTestBean.dumpFormId != null}" styleClass="dumpBar">
+        <t:div rendered="#{formTestBean.dumpFormSelector != null}" styleClass="dumpBar">
           <h:outputText value="#{formTestBean.dumpFormContent}"
                         styleClass="dump" escape="false" />
         </t:div>
