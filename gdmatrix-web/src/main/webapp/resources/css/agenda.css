@@ -23,12 +23,18 @@
   font-weight: bold;
   width: 100%;
   margin-top: 16px;
+  margin-bottom: 4px;
 }
 
 .eventList .eventRow
 {
   display: flex;
   flex-direction: row;
+}
+
+.eventList .eventRow
+{
+  padding: 0.25rem;
 }
 
 .eventList .eventRow.current,
@@ -41,8 +47,11 @@
 .eventList .eventRow > div
 {
   flex-grow: 0;
-  margin-top: auto;
-  margin-bottom: auto;
+}
+
+.eventList .eventRow .eventHours
+{
+  align-items: start;
 }
 
 .eventList .eventRow .eventHours > *,
@@ -54,16 +63,22 @@
 .eventList .eventRow .eventHours
 {
   min-width: 90px;
+  padding:3px;
+  padding-right: 8px;
+  text-align: right;
 }
 
 .eventList .eventRow .eventDescription
 {
   flex-grow: 1;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  border-radius: 4px;
-  min-height: 20px;
-  line-height: 20px;  
+  border-radius: var(--border-radius);
+  padding:2px;
+  border: 1px solid var(--surface-200);
+}
+
+.eventList .eventRow:hover .eventDescription
+{
+  border-color: var(--surface-400);
 }
 
 .eventList .eventRow .eventActions
