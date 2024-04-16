@@ -441,6 +441,7 @@ public abstract class ObjectBean extends BaseBean
       }
 
       loadObjectSetup();
+      loadActions();
 
       growl("STORE_OBJECT");
     }
