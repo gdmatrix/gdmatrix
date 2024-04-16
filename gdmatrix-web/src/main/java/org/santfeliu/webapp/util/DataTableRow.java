@@ -59,7 +59,8 @@ public class DataTableRow implements Serializable
   protected String typeId;
   protected Value[] values;
   protected String[] icons;
-  
+  protected String styleClass;
+
   public DataTableRow(String rowId, String typeId)
   {
     this.rowId = rowId;
@@ -105,7 +106,17 @@ public class DataTableRow implements Serializable
   {
     this.values = values;
   }
-  
+
+  public String getStyleClass()
+  {
+    return styleClass;
+  }
+
+  public void setStyleClass(String styleClass)
+  {
+    this.styleClass = styleClass;
+  }
+
   public void setValues(BaseBean baseBean, Object row, List<Column> columns) 
     throws Exception
   {   

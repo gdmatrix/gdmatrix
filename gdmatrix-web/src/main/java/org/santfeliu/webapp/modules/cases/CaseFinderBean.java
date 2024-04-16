@@ -48,6 +48,8 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.webapp.util.RowStyleClassGenerator;
 
 /**
  *
@@ -376,6 +378,7 @@ public class CaseFinderBean extends FinderBean
       DataTableRow dataTableRow = 
         new DataTableRow(row.getCaseId(), row.getCaseTypeId());
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
     
@@ -430,5 +433,19 @@ public class CaseFinderBean extends FinderBean
       filter.setSearchExpression(buffer.toString());                    
     }    
   }
+  
+  private RowStyleClassGenerator getRowStyleClassGenerator()
+  {
+    return new DateTimeRowStyleClassGenerator(
+      "startDate,startTime", "endDate,endTime", 
+      "before,after");
+  }
+  
+  private String getRowStyleClass(Object row)
+  {
+    RowStyleClassGenerator styleClassGenerator = 
+      getRowStyleClassGenerator();
+    return styleClassGenerator.getStyleClass(row);    
+  }  
   
 }

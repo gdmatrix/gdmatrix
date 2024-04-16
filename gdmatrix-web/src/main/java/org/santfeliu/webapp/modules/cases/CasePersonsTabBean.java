@@ -67,6 +67,8 @@ import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRowComparator;
+import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.webapp.util.RowStyleClassGenerator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -743,6 +745,7 @@ public class CasePersonsTabBean extends TabBean
     {
       CasePersonsDataTableRow dataTableRow = new CasePersonsDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
@@ -880,6 +883,19 @@ public class CasePersonsTabBean extends TabBean
     }
   }
 
+  private RowStyleClassGenerator getRowStyleClassGenerator()
+  {
+    return new DateTimeRowStyleClassGenerator("startDate", "endDate", 
+      "before,after");
+  }
+  
+  private String getRowStyleClass(Object row)
+  {
+    RowStyleClassGenerator styleClassGenerator = 
+      getRowStyleClassGenerator();
+    return styleClassGenerator.getStyleClass(row);    
+  }  
+  
   public class CasePersonsDataTableRow extends DataTableRow
   {
     private String personId;

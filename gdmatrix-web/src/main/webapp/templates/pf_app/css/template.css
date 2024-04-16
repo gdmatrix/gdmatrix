@@ -209,6 +209,16 @@ body .ui-autocomplete > input
   table-layout: auto;
 }
 
+.ui-datatable tr.before
+{
+  color: var(--surface-400) !important;  
+}
+
+.ui-datatable tr.after
+{
+  color: var(--blue-400) !important;
+}
+
 /*** Dialogs ***/
 body .ui-dialog
 {

@@ -11,7 +11,7 @@
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{caseFinderBean.firstRow}"
-               rowStyleClass="#{row.rowId == caseObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{row.rowId == caseObjectBean.objectId ? 'current' : ''} #{row.styleClass}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"               
                rows="10"
