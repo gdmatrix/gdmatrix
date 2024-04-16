@@ -84,6 +84,27 @@ public class MarkdownTransformer
       {
         printBreakLine();
       }
+      else if (ch == '\\')
+      {
+        char nch = read();
+        if ("(){}[]*_`+-.!".indexOf(nch) != -1)
+        {
+          printText(nch);
+        }
+        else
+        {
+          unread(nch);
+          if (matches("?("))
+          {
+            printFunction(words.get(0).trim());
+            printText("(");
+          }
+          else
+          {
+            printText('\\');
+          }
+        }
+      }
       else if (ch == '!' || ch != '[' || ch != '<' || ch != '`')
       {
         unread(ch);
@@ -163,6 +184,11 @@ public class MarkdownTransformer
   protected void printText(String text)
   {
     output.print(text);
+  }
+
+  protected void printFunction(String name)
+  {
+    output.print(name);
   }
 
   private boolean matches(String pattern) throws IOException

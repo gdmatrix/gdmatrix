@@ -76,6 +76,7 @@ import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.markdown.MarkdownToHtml;
 import org.santfeliu.webapp.modules.assistant.openai.ContentItem;
+import org.santfeliu.webapp.modules.assistant.openai.Error;
 import org.santfeliu.webapp.modules.assistant.openai.Text;
 
 /**
@@ -401,8 +402,17 @@ public class ThreadsBean extends WebBean
       else // cancel, failed, expired
       {
         runId = null;
-        Message message =
-          Message.create(ASSISTANT_ROLE, "Run " + run.getStatus());
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("Run ").append(run.getStatus());
+        Error lastError = run.getLastError();
+        if (lastError != null)
+        {
+          buffer.append(", [");
+          buffer.append(lastError.getCode());
+          buffer.append("]: ");
+          buffer.append(lastError.getMessage());
+        }
+        Message message = Message.create(ASSISTANT_ROLE, buffer.toString());
         getMessageList().getData().add(message);
       }
       updateMessages();
