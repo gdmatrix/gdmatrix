@@ -193,15 +193,31 @@ public class ObjectSetup implements Serializable
 
   public EditTab findEditTabByViewId(String viewId)
   {
+    return findEditTabByViewId(viewId, null);
+  }
+  
+  public EditTab findEditTabByViewId(String viewId, String subViewId)
+  {
     if (viewId != null)
     {
       for (EditTab editTab : editTabs)
       {
         if (viewId.equals(editTab.getViewId()))
-          return editTab;
+        {
+          if (subViewId == null) 
+          {
+            return editTab;
+          }
+          else //check subViewId
+          {
+            if (subViewId.equals(editTab.getSubviewId()))
+            {
+              return editTab;
+            }
+          }
+        }
       }
     }
-
     return null;
   }
 
@@ -235,14 +251,28 @@ public class ObjectSetup implements Serializable
     {
       if (mergeMode == MergeMode.PRESERVE)
       {
-        for (SearchTab defSearchTab : defaultSetup.getSearchTabs())
+        List<SearchTab> auxList = new ArrayList(defaultSetup.getSearchTabs());
+        for (SearchTab searchTab : searchTabs)
         {
-          SearchTab searchTab = findSearchTabByViewId(defSearchTab.getViewId());
-          if (searchTab != null)
-            mergeSearchTab(searchTab, defSearchTab);
-          else
-            searchTabs.add(defSearchTab);
+          SearchTab defSearchTab =
+            defaultSetup.findSearchTabByViewId(searchTab.getViewId());
+          if (defSearchTab != null) //merge
+          {
+            int i = auxList.indexOf(defSearchTab);
+            if (i >= 0)
+            {
+              auxList.remove(i);
+              mergeSearchTab(defSearchTab, searchTab);
+              auxList.add(i, searchTab);
+            }
+          }
+          else //add
+          {
+            auxList.add(searchTab);
+          }          
         }
+        searchTabs.clear();
+        searchTabs.addAll(auxList);        
       }
       else
       {
@@ -251,7 +281,7 @@ public class ObjectSetup implements Serializable
           SearchTab defSearchTab =
             defaultSetup.findSearchTabByViewId(searchTab.getViewId());
           if (defSearchTab != null)
-            mergeSearchTab(searchTab, defSearchTab);
+            mergeSearchTab(defSearchTab, searchTab);
         }
       }
     }
@@ -268,14 +298,28 @@ public class ObjectSetup implements Serializable
     {
       if (mergeMode == MergeMode.PRESERVE)
       {
-        for (EditTab defEditTab : defaultSetup.getEditTabs())
+        List<EditTab> auxList = new ArrayList(defaultSetup.getEditTabs());
+        for (EditTab editTab : editTabs)
         {
-          EditTab editTab = findEditTabByViewId(defEditTab.getViewId());
-          if (editTab != null)
-            mergeEditTab(defEditTab, editTab);
-          else
-            editTabs.add(defEditTab);
+          EditTab defEditTab = defaultSetup.findEditTabByViewId(
+            editTab.getViewId(), editTab.getSubviewId());
+          if (defEditTab != null) //merge
+          {
+            int i = auxList.indexOf(defEditTab);
+            if (i >= 0)
+            {
+              auxList.remove(i);
+              mergeEditTab(defEditTab, editTab);
+              auxList.add(i, editTab);
+            }
+          }
+          else //add
+          {
+            auxList.add(editTab);
+          }
         }
+        editTabs.clear();
+        editTabs.addAll(auxList);        
       }
       else
       {
