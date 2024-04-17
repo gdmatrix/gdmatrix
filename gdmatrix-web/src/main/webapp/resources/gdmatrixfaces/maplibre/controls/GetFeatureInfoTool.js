@@ -20,6 +20,7 @@ class GetFeatureInfoTool extends Tool
 
     this.highlightCount = 0;
     this.inProgress = false;
+    this.tolerance = options?.tolerance === undefined ? 5 : options.tolerance;
     this._onMapClick = (event) => {
       this.getFeatureInfo(event.point, event.lngLat);
     };    
@@ -212,7 +213,13 @@ class GetFeatureInfoTool extends Tool
 
       const formPromises = [];
 
-      const features = this.map.queryRenderedFeatures(point);
+      const tolerance = this.tolerance;
+      const bbox = [
+        [point.x - tolerance, point.y - tolerance],
+        [point.x + tolerance, point.y + tolerance]
+      ];
+      
+      const features = this.map.queryRenderedFeatures(bbox);
       const geojson = { "type": "FeatureCollection", "features": [] };
       for (let feat of features)
       {
