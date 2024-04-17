@@ -91,7 +91,6 @@ class TimeSliderControl
           {
             appearance: none;
             -webkit-appearance: none;
-            margin-top: -0.125rem;
             background-color: var(--primary-color);
             border-radius: 50%;
             height: 1rem;
@@ -118,7 +117,7 @@ class TimeSliderControl
           <input id="ts_end_date" type="date" class="outline-none border-none text-color code"></input>
         </div>
         <input id="ts_range" type="range"
-               class="outline-none border-radius mt-2" value="0">
+               class="outline-none border-radius mt-3 mb-2" value="0">
         </input>
       </div>
     `;
