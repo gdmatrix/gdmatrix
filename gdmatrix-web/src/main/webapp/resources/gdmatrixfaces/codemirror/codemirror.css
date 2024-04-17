@@ -5,3 +5,8 @@
   padding: var(--content-padding);
   background-color: var(--surface-ground);
 }
+
+.codemirror-container *::selection
+{
+  color: inherit !important;
+}

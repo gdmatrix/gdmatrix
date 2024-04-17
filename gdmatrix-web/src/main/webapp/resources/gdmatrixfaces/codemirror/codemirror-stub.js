@@ -52,10 +52,6 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     "&.ͼ2 .cm-activeLineGutter" : {
       "backgroundColor" : "var(--surface-hover)"      
     },
-    "&.ͼ4 .cm-line::selection" : {
-      "backgroundColor": "var(--primary-color) !important",
-      "color": "var(--primary-color-text) !important"
-    },
     "& .ͼa" : {
       "color" : "#666",
       "fontWeight" : "bold"
@@ -77,9 +73,6 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     },
     "& .cm-scroller" : {
       "overflow" : "auto"
-    },
-    "& .cm-selectionBackground" : {
-      "backgroundColor": "var(--surface-300) !important"
     }
   });
 
