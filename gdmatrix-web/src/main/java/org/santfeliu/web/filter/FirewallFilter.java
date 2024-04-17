@@ -32,10 +32,12 @@ package org.santfeliu.web.filter;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -68,12 +70,16 @@ public class FirewallFilter implements Filter
     Logger.getLogger(FirewallFilter.class.getSimpleName());
   static final String PATTERN_PREFIX = "pattern.";
   static final String MBEAN_NAME = "Firewall";
+  static final int LAST_BLOCKED_REQUEST_COUNT = 10;
+
   final List<Check> checks = new ArrayList<>();
   int totalRequestCount = 0;
   int maliciousRequestCount = 0;
   Map<String, Integer> maliciousRequestCountByType = new HashMap<>();
+  LinkedList<String> lastBlockedRequests = new LinkedList<>();
   CompositeType compositeType;
   FirewallMBean mbean;
+  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
   @Override
   public void init(FilterConfig config) throws ServletException
@@ -172,6 +178,7 @@ public class FirewallFilter implements Filter
       {
         maliciousRequestCountByType.put(type, 0);
       }
+      lastBlockedRequests.clear();
     }
   }
 
@@ -189,6 +196,12 @@ public class FirewallFilter implements Filter
           if (count == null) count = 0;
           count++;
           maliciousRequestCountByType.put(type, count);
+          String dateString = dateFormat.format(new Date());
+          lastBlockedRequests.add(dateString + ": " + path);
+          if (lastBlockedRequests.size() > LAST_BLOCKED_REQUEST_COUNT)
+          {
+            lastBlockedRequests.removeFirst();
+          }
         }
         return true;
       }
@@ -224,6 +237,7 @@ public class FirewallFilter implements Filter
     int getMaliciousRequestCount();
     CompositeDataSupport getMaliciousRequestCountByType()
       throws OpenDataException;
+    String[] getLastBlockedRequests();
     void resetCounters();
   }
 
@@ -252,6 +266,13 @@ public class FirewallFilter implements Filter
       throws OpenDataException
     {
       return new CompositeDataSupport(compositeType, maliciousRequestCountByType);
+    }
+
+    @Override
+    public String[] getLastBlockedRequests()
+    {
+      int count = lastBlockedRequests.size();
+      return lastBlockedRequests.toArray(new String[count]);
     }
 
     @Override
