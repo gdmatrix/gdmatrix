@@ -47,6 +47,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.ValueHolder;
+import javax.faces.component.html.HtmlGraphicImage;
 import javax.faces.component.html.HtmlOutputLink;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
@@ -161,6 +162,10 @@ public class FormImporter
     else if (tag.equals("script"))
     {
       importScript(view, parent);
+    }
+    else if (tag.equals("img"))
+    {
+      importImage(view, parent);
     }
     else if (View.TEXT.equals(view.getViewType()))
     {
@@ -313,6 +318,26 @@ public class FormImporter
         parent.getChildren().add(outputText);
       }
     }    
+  }
+  
+  protected void importImage(HtmlView view, UIComponent parent)
+  {
+    String url = view.getProperty("src");
+    String alt = view.getProperty("alt");
+    String styleClass = view.getProperty("class");
+    String style = view.getProperty("style");
+    
+    FacesContext facesContext = FacesContext.getCurrentInstance();
+    Application application = facesContext.getApplication();    
+    
+    HtmlGraphicImage graphicImage = 
+      (HtmlGraphicImage) application.createComponent(HtmlGraphicImage.COMPONENT_TYPE);  
+    graphicImage.setUrl(url);
+    graphicImage.setAlt(alt);
+    graphicImage.setStyleClass(styleClass);
+    graphicImage.setStyle(style);
+    
+    parent.getChildren().add(graphicImage); 
   }
 
   protected void importFields()
@@ -705,12 +730,9 @@ public class FormImporter
         sb.append("<").append(childView.getNativeViewType());
         for (String name : childView.getPropertyNames())
         {
-          if (name.matches("id|style|class"))
-          {
-            sb.append(" ").append(name).append("='")
-              .append(childView.getProperty(name))
-              .append("'");
-          }
+          sb.append(" ").append(name).append("='")
+            .append(childView.getProperty(name))
+            .append("'");
         }
         sb.append(" >");
         sb = encodeView(childView, sb);
