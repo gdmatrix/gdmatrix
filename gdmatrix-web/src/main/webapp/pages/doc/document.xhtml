@@ -139,6 +139,19 @@
             </div>
 
             <div class="field col-12">
+              <p:fieldset legend="#{documentBundle.document_state}"
+                          toggleable="true" collapsed="true"> 
+                <p:selectManyCheckbox value="#{documentFinderBean.selectedStates}" 
+                                      layout="pageDirection">
+                  <f:selectItem itemValue="DRAFT" itemLabel="#{documentBundle.stateDraft}" />
+                  <f:selectItem itemValue="COMPLETE" itemLabel="#{documentBundle.stateComplete}" />
+                  <f:selectItem itemValue="RECORD" itemLabel="#{documentBundle.stateRecord}" />
+                  <f:selectItem itemValue="DELETED" itemLabel="#{documentBundle.stateDeleted}" />                
+                </p:selectManyCheckbox>
+              </p:fieldset>
+            </div>
+            
+            <div class="field col-12">
               <p:outputLabel for="@next" value="#{documentBundle.document_classification}" />
               <emcomp:objectReference value="#{documentFinderBean.classId}"
                                       type="Class"

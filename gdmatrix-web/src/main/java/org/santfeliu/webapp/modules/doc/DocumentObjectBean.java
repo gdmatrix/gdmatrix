@@ -361,8 +361,22 @@ public class DocumentObjectBean extends ObjectBean
 
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      document = getPort(false).loadDocument(
-        objectId, 0, ContentInfo.METADATA);
+      try
+      {
+        document = getPort(false).loadDocument(
+          objectId, 0, ContentInfo.METADATA);
+      }
+      catch (Exception ex) //deleted file?
+      {
+        loadVersions(objectId);
+        if (versions != null && !versions.isEmpty())
+        {
+          Document lastDoc = versions.get(0);
+          int lastVersion = lastDoc.getVersion();
+          document = getPort(false).loadDocument(
+            objectId, -lastVersion, ContentInfo.METADATA);
+        }
+      }
     }
     else
     {
@@ -492,33 +506,7 @@ public class DocumentObjectBean extends ObjectBean
 
   public void loadVersions()
   {
-    try
-    {
-      if (isNew())
-      {
-        versions = Collections.EMPTY_LIST;
-      }
-      else
-      {
-        DocumentFilter filter = new DocumentFilter();
-        filter.getDocId().add(document.getDocId());
-        filter.setVersion(-1);
-        filter.setIncludeContentMetadata(false);
-        filter.getStates().add(State.DRAFT);
-        filter.getStates().add(State.COMPLETE);
-        filter.getStates().add(State.RECORD);
-        filter.getStates().add(State.DELETED);
-        OrderByProperty order = new OrderByProperty();
-        order.setName(DocumentConstants.VERSION);
-        order.setDescending(true);
-        filter.getOrderByProperty().add(order);
-        versions = getPort(false).findDocuments(filter);
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    loadVersions(document.getDocId());
   }
 
   public List<Document> getVersions()
@@ -637,5 +625,36 @@ public class DocumentObjectBean extends ObjectBean
     }
     return false;
   }
+  
+  private void loadVersions(String docId)
+  {
+    try
+    {
+      if (isNew())
+      {
+        versions = Collections.EMPTY_LIST;
+      }
+      else
+      {
+        DocumentFilter filter = new DocumentFilter();
+        filter.getDocId().add(docId);
+        filter.setVersion(-1);
+        filter.setIncludeContentMetadata(false);
+        filter.getStates().add(State.DRAFT);
+        filter.getStates().add(State.COMPLETE);
+        filter.getStates().add(State.RECORD);
+        filter.getStates().add(State.DELETED);
+        OrderByProperty order = new OrderByProperty();
+        order.setName(DocumentConstants.VERSION);
+        order.setDescending(true);
+        filter.getOrderByProperty().add(order);
+        versions = getPort(false).findDocuments(filter);
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
 
 }

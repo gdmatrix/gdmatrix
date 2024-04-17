@@ -45,6 +45,7 @@ import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.OrderByProperty;
+import org.matrix.doc.State;
 import org.santfeliu.classif.ClassCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.MimeTypeMap;
@@ -70,6 +71,7 @@ public class DocumentFinderBean extends FinderBean
   private int firstRow;
   private boolean outdated;
   private String formSelector;
+  private List<String> selectedStates;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -203,6 +205,23 @@ public class DocumentFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
+  public List<String> getSelectedStates()
+  {
+    if (selectedStates == null)
+    {
+      selectedStates = new ArrayList();
+      selectedStates.add(State.DRAFT.value());
+      selectedStates.add(State.COMPLETE.value());
+      selectedStates.add(State.RECORD.value());
+    }
+    return selectedStates;
+  }
+
+  public void setSelectedStates(List<String> selectedStates)
+  {
+    this.selectedStates = selectedStates;
+  }
+
   public List<SelectItem> getLanguageValues()
   {
     List<SelectItem> results = new ArrayList();
@@ -228,6 +247,7 @@ public class DocumentFinderBean extends FinderBean
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
+    selectedStates = null;
     doFind(true);
     firstRow = 0;
   }
@@ -241,6 +261,14 @@ public class DocumentFinderBean extends FinderBean
     {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
       filter.setDocTypeId(baseTypeId);
+    }
+    filter.getStates().clear();
+    if (!getSelectedStates().isEmpty())
+    {
+      for (String selectedState : getSelectedStates())
+      {
+        filter.getStates().add(State.fromValue(selectedState));        
+      }
     }
     smartFilter = documentTypeBean.filterToQuery(filter);
     doFind(true);
@@ -267,13 +295,15 @@ public class DocumentFinderBean extends FinderBean
     rows = null;
     setFinding(false);
     formSelector = null;
+    selectedStates = null;
   }
 
   @Override
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(),
-      filter, firstRow, getObjectPosition(), formSelector, rows, outdated };
+      filter, firstRow, getObjectPosition(), formSelector, rows, outdated, 
+      selectedStates };
   }
 
   @Override
@@ -288,6 +318,7 @@ public class DocumentFinderBean extends FinderBean
     formSelector = (String)stateArray[5];
     rows = (List<DocumentDataTableRow>)stateArray[6];
     outdated = (Boolean)stateArray[7];
+    selectedStates = (List<String>)stateArray[8];
     setObjectPosition((Integer)stateArray[4]);
   }
 
