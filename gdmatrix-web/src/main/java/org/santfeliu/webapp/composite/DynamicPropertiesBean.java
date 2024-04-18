@@ -104,6 +104,12 @@ public class DynamicPropertiesBean implements Serializable
       }
 
       @Override
+      public Type getType()
+      {
+        return DynamicPropertiesBean.this.getType();
+      }
+
+      @Override
       public List<Property> getProperties()
       {
         List<Property> properties = WebUtils.getValue("#{cc.attrs.properties}");
@@ -131,10 +137,7 @@ public class DynamicPropertiesBean implements Serializable
     List<Property> properties = propertyHelper.getProperties();
     if (properties == null) return null;
 
-    String typeId = getTypeId();
-
-    Type type = StringUtils.isBlank(typeId) ?
-      null : TypeCache.getInstance().getType(typeId);
+    Type type = getType();
 
     PropertyConverter converter = new PropertyConverter(type);
     Map map = converter.toPropertyMap(properties);
@@ -145,10 +148,7 @@ public class DynamicPropertiesBean implements Serializable
 
   public void setPropertyJson(String json)
   {
-    String typeId = getTypeId();
-
-    Type type = StringUtils.isBlank(typeId) ?
-      null : TypeCache.getInstance().getType(typeId);
+    Type type = getType();
 
     Map map;
     if (StringUtils.isBlank(json))
@@ -298,6 +298,16 @@ public class DynamicPropertiesBean implements Serializable
   public String getTypeId()
   {
     return WebUtils.getValue("#{cc.attrs.typeId}");
+  }
+
+  public Type getType()
+  {
+    String typeId = getTypeId();
+
+    Type type = StringUtils.isBlank(typeId) ?
+      null : TypeCache.getInstance().getType(typeId);
+
+    return type;
   }
 
   public String getFormBuilderPrefix()

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.dic;
@@ -40,8 +40,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
+import static org.matrix.dic.PropertyType.BOOLEAN;
+import static org.matrix.dic.PropertyType.NUMERIC;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.dic.util.ObjectPropertiesConverter;
 import org.santfeliu.dic.util.PropertyTypeChecker;
@@ -54,7 +57,7 @@ import org.santfeliu.dic.util.TypeValidator;
  */
 public class Type extends org.matrix.dic.Type
 {
-  private TypeCache typeCache;
+  private final TypeCache typeCache;
 
   protected Type(TypeCache typeCache, org.matrix.dic.Type type)
   {
@@ -99,7 +102,7 @@ public class Type extends org.matrix.dic.Type
 
   public synchronized List<Type> getSuperTypes()
   {
-    ArrayList<Type> path = new ArrayList<Type>();
+    ArrayList<Type> path = new ArrayList<>();
     String curTypeId = getSuperTypeId();
     while (curTypeId != null)
     {
@@ -171,7 +174,7 @@ public class Type extends org.matrix.dic.Type
     if (superTypeId != null)
     {
       Type superType = typeCache.getType(superTypeId);
-      typePath = superType.getTypePath() + typeId + 
+      typePath = superType.getTypePath() + typeId +
         DictionaryConstants.TYPE_PATH_SEPARATOR;
     }
     else
@@ -198,8 +201,8 @@ public class Type extends org.matrix.dic.Type
 
   public boolean isDerivedFrom(String typeId)
   {
-    return getTypePath().indexOf(DictionaryConstants.TYPE_PATH_SEPARATOR +
-      typeId + DictionaryConstants.TYPE_PATH_SEPARATOR) != -1;
+    return getTypePath().contains(DictionaryConstants.TYPE_PATH_SEPARATOR +
+      typeId + DictionaryConstants.TYPE_PATH_SEPARATOR);
   }
 
   public synchronized List<String> getActions()
@@ -247,7 +250,7 @@ public class Type extends org.matrix.dic.Type
     }
     return buffer.toString();
   }
-  
+
   public boolean canPerformAction(String action, Set<String> roles)
   {
     return DictionaryUtils.canPerformAction(action, roles, getAccessControl());
@@ -255,11 +258,11 @@ public class Type extends org.matrix.dic.Type
 
   public Set<String> getPropertyNames()
   {
-    HashSet<String> names = new HashSet<String>();
+    HashSet<String> names = new HashSet<>();
     for (PropertyDefinition pd : getPropertyDefinition())
     {
       names.add(pd.getName());
-    }    
+    }
     return names;
   }
 
@@ -271,9 +274,8 @@ public class Type extends org.matrix.dic.Type
   public List<PropertyDefinition> getPropertyDefinition(
     boolean includeRootType, boolean includeSelfType, boolean includeHidden)
   {
-    List<PropertyDefinition> pdList = new ArrayList<PropertyDefinition>();
-    HashMap<String, PropertyDefinition> propertyMap =
-      new HashMap<String, PropertyDefinition>();
+    List<PropertyDefinition> pdList = new ArrayList<>();
+    HashMap<String, PropertyDefinition> propertyMap = new HashMap<>();
     Set<String> rootTypePropertyNames = null;
 
     List<Type> types = this.getSuperTypes();
@@ -327,11 +329,57 @@ public class Type extends org.matrix.dic.Type
       for (PropertyDefinition pd : this.propertyDefinition)
       {
         if (name.equals(pd.getName()))
+        {
           result = pd;
+          break;
+        }
       }
     }
-    return (result != null) ? result :
+    return result != null ? result :
       (isRootType() ? null : getSuperType().getPropertyDefinition(name));
+  }
+
+  public Object getPropertyValue(Property property, boolean multiValued)
+  {
+    List<String> stringList = property.getValue();
+    PropertyDefinition pd = getPropertyDefinition(property.getName());
+    if (pd != null)
+    {
+      PropertyType propType = pd.getType();
+      switch (propType)
+      {
+        case NUMERIC:
+          if (multiValued)
+          {
+            ArrayList<Double> numberList = new ArrayList<>();
+            for (String value : stringList)
+            {
+              numberList.add(Double.valueOf(value));
+            }
+            return numberList;
+          }
+          else
+          {
+            return Double.valueOf(stringList.get(0));
+          }
+
+        case BOOLEAN:
+          if (multiValued)
+          {
+            ArrayList<Boolean> booleanList = new ArrayList<>();
+            for (String value : stringList)
+            {
+              booleanList.add(Boolean.valueOf(value));
+            }
+            return booleanList;
+          }
+          else
+          {
+            return Boolean.valueOf(stringList.get(0));
+          }
+      }
+    }
+    return multiValued ? stringList : stringList.get(0);
   }
 
   public List<ValidationError> validateProperties(Map<String, Object> properties,
@@ -349,7 +397,7 @@ public class Type extends org.matrix.dic.Type
       superType = superType.getSuperType();
     }
 
-    if (definitions.size() > 0)
+    if (!definitions.isEmpty())
     {
       for (PropertyDefinition pd : definitions)
       {

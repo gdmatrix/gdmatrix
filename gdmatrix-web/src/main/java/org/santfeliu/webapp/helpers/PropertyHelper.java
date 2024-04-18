@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.matrix.dic.Property;
+import org.santfeliu.dic.Type;
 import org.santfeliu.dic.util.DictionaryUtils;
 
 /**
@@ -61,6 +62,8 @@ public abstract class PropertyHelper
   {
     return null;
   }
+
+  public abstract Type getType();
 
   public List<Property> getProperties()
   {
@@ -96,9 +99,11 @@ public abstract class PropertyHelper
         DictionaryUtils.getPropertyByName(properties, propertyName);
       if (property != null)
       {
-        List<String> value = property.getValue();
-        if (value == null || value.isEmpty()) return null;
-        return multiValued ? value : value.get(0);
+        Type type = getType();
+        List<String> stringList = property.getValue();
+        if (type == null)
+          return multiValued ? stringList : stringList.get(0);
+        return type.getPropertyValue(property, multiValued);
       }
       else
       {
@@ -136,22 +141,27 @@ public abstract class PropertyHelper
       List<Property> properties = getProperties();
       if (properties == null) return Collections.EMPTY_SET;
 
+      Type type = getType();
       Map<String, Object> map = new HashMap<>();
+
       for (Property property : properties)
       {
-        List<String> valueList = property.getValue();
-        if (!valueList.isEmpty())
+        List<String> stringList = property.getValue();
+        if (!stringList.isEmpty())
         {
-          if (multiValued)
+          Object value;
+          if (type == null)
           {
-            map.put(property.getName(), property.getValue());
+            value = multiValued ? stringList : stringList.get(0);
           }
           else
           {
-            map.put(property.getName(), property.getValue().get(0));
+            value = type.getPropertyValue(property, multiValued);
           }
+          map.put(property.getName(), value);
         }
       }
+
       Object object = getObject();
       if (object != null)
       {
