@@ -39,10 +39,10 @@
         </div>
         <div class="eventActions text-right white-space-nowrap">
           <h:outputText value="#{eventFinderBean.publicTypeSymbol}" 
-                        styleClass="pi ui-icon publicIcon"
+                        styleClass="pi ui-button ui-button-flat publicIcon"
                         rendered="#{eventFinderBean.renderPublicIcon and row.publicRow}"
                         title="#{agendaBundle.event_public}" />
-          <h:outputText value="" styleClass="pi pi-eye-slash ui-icon onlyAtt"
+          <h:outputText value="" styleClass="pi pi-eye-slash ui-button ui-button-flat onlyAtt"
                         rendered="#{eventFinderBean.renderOnlyAttendantsIcon and row.onlyAttendants}"
                         title="#{agendaBundle.event_onlyAttendants}" />
           <p:commandButton icon="ui-icon fa fa-reply"

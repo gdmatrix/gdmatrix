@@ -94,8 +94,7 @@
 
 .eventList .eventActions .publicIcon,
 .eventList .eventActions .onlyAtt
-{
-  color: #2196f3;
+{  
   cursor: default;
   padding: 0.5rem;
 }
