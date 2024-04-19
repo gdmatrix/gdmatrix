@@ -13,7 +13,8 @@
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
                rows="10"
-               rowIndexVar="rowIndex">
+               rowIndexVar="rowIndex"
+               emptyMessage="#{objectBundle.no_results_found}">
     
     <p:column styleClass="text-center">
       <h:panelGroup id="state-icon">

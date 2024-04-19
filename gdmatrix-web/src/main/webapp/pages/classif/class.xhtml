@@ -200,7 +200,8 @@
       </f:facet>
 
       <p:dataTable value="#{classObjectBean.history}"
-                   var="classHistory" rowIndexVar="rowIndex">
+                   var="classHistory" rowIndexVar="rowIndex" 
+                   emptyMessage="#{objectBundle.no_results_found}">
         <p:column headerText="#{classificationBundle.class_title}">
           <p:commandLink value="#{classHistory.title}"
                          action="#{classObjectBean.loadClassHistory(classHistory.startDateTime)}"

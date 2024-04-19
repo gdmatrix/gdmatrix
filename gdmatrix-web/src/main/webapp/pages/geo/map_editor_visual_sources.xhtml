@@ -10,7 +10,8 @@
 
   <p:dataTable id="map_sources_table" size="small" 
                showGridlines="true" stripedRows="true"
-               value="#{geoMapSourcesBean.sourceIds}" var="sourceId">
+               value="#{geoMapSourcesBean.sourceIds}" var="sourceId"
+               emptyMessage="#{objectBundle.no_results_found}">
 
     <f:facet name="header">
       <div class="flex align-items-center">
@@ -235,7 +236,8 @@
                                geoMapSourcesBean.editingSource.type != 'raster-dem'}">
               <p:dataTable id="source_tile_table" 
                            value="#{geoMapSourcesBean.editingSource.tiles}" var="tile"
-                           rowIndexVar="tileIndex" size="small">
+                           rowIndexVar="tileIndex" size="small"
+                           emptyMessage="#{objectBundle.no_results_found}">
                 <p:column styleClass="w-full">
                   <f:facet name="header">
                     Url

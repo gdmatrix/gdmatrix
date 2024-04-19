@@ -10,7 +10,8 @@
 
   <p:dataTable id="assistant_tools_table" value="#{assistantBean.assistant.tools}"
                var="tool" stripedRows="true" size="small" 
-               resizableColumns="false" showGridlines="true">
+               resizableColumns="false" showGridlines="true"
+               emptyMessage="#{objectBundle.no_results_found}">
 
     <f:facet name="header">
       <div class="flex align-items-center">
@@ -121,8 +122,8 @@
             <p:dataTable id="function_params"
                          value="#{assistantToolsBean.functionParameterNames}" var="name"
                          stripedRows="true" size="small"
-                         emptyMessage="No parameters defined"
-                         resizableColumns="false" showGridlines="true">
+                         resizableColumns="false" showGridlines="true"
+                         emptyMessage="#{objectBundle.no_results_found}">
               <f:facet name="header">
                 #{assistantBundle.parameters}
               </f:facet>

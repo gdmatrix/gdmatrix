@@ -22,7 +22,7 @@
                  rowIndexVar="rowIndex"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50">
+                 rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_results_found}">
 
       <p:column headerText="RoleId" styleClass="col-6">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
@@ -51,7 +51,7 @@
                  rowStyleClass="#{row.modified ? (empty row.actions ? 'removed' : 'modified') : ''}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50">
+                 rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_results_found}">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">        

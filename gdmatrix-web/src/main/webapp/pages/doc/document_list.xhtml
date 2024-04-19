@@ -14,7 +14,7 @@
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="10"
-               rowIndexVar="rowIndex">
+               rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_results_found}">
 
     <p:columns value="#{documentFinderBean.columns}" var="column"  columnIndexVar="i"
                filterable="false" sortable="false" resizable="false"

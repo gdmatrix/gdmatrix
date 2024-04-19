@@ -11,7 +11,8 @@
   <p:dataTable id="map_layers_table" size="small"
                showGridlines="true" stripedRows="true"
                draggableRows="true" rowDragSelector=".drag"
-               value="#{geoMapBean.style.layers}" var="layer">
+               value="#{geoMapBean.style.layers}" var="layer"
+               emptyMessage="#{objectBundle.no_results_found}">
     <p:ajax event="rowReorder" listener="#{geoMapLayersBean.onLayerReorder}" 
             update="@form:cnt:map_tabs:map_layers_table"/>
     

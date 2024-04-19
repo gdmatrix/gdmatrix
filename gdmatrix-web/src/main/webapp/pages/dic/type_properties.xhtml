@@ -45,7 +45,7 @@
                      rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                     rowsPerPageTemplate="5,10,25,50">
+                     rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_results_found}">
 
           <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-3 white-space-nowrap">
             <i class="mr-2 #{srow.type == 'TEXT' ? 'fa fa-font' : (srow.type == 'DATE' ? 'pi pi-calendar' : (srow.type == 'NUMERIC' ? 'fa fa-hashtag' : (srow.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
@@ -102,7 +102,7 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50" widgetVar="typePropertiesTable"
-                 filteredValue="#{typePropertiesTabBean.filteredRows}" globalFilterOnly="true">
+                 filteredValue="#{typePropertiesTabBean.filteredRows}" globalFilterOnly="true" emptyMessage="#{objectBundle.no_results_found}">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">

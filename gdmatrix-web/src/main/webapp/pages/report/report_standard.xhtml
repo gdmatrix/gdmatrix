@@ -142,7 +142,8 @@
                  size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow" first="#{reportObjectBean.firstRow}"
                  styleClass="w-full p-2" editable="true" editMode="cell"
-                 rendered="#{empty reportObjectBean.formSelector}" >
+                 rendered="#{empty reportObjectBean.formSelector}"
+                 emptyMessage="#{objectBundle.no_results_found}" >
 
       <p:column headerText="#{reportBundle.parameterName}" styleClass="col-2">
         <h:outputText value="#{pd.name}" />

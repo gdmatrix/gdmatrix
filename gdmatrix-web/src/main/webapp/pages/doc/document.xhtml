@@ -267,7 +267,7 @@
       </f:facet>
 
       <p:dataTable value="#{documentObjectBean.versions}"
-                   var="docVersion" rowIndexVar="rowIndex">
+                   var="docVersion" rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_results_found}">
         <p:column headerText="#{documentBundle.document_version}">
           <h:outputText value="#{docVersion.version}" />
         </p:column>

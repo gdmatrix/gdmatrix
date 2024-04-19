@@ -80,7 +80,7 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"               
                  rows="20"
-                 rowsPerPageTemplate="20,50,{ShowAll|'Totes'}">      
+                 rowsPerPageTemplate="20,50,{ShowAll|'Totes'}" emptyMessage="#{objectBundle.no_results_found}">      
       <p:column styleClass="col_icon">        
         <span class="fa #{queryListBean.queryUpdate ? 'fa-pen-to-square' : 'fa-magnifying-glass'} fa-xl" 
               title="#{queryListBean.queryUpdate ? queryBundle.updateQuery : queryBundle.selectQuery}" />        
