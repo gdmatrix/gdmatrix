@@ -79,7 +79,12 @@ Bundle.getBundle("main").setTranslations("ca", {
   "TimeSliderControl.period.w": "1 setmana",
   "TimeSliderControl.period.M": "1 mes",
   "TimeSliderControl.period.y": "1 any",
-  "TimeSliderControl.period.2": "entre 2 dates",  
+  "TimeSliderControl.period.2": "entre 2 dates",
+
+  "SimulateRouteControl.view" : "Vista",
+  "SimulateRouteControl.view.manual" : "Manual",
+  "SimulateRouteControl.view.centered" : "Centrada",
+  "SimulateRouteControl.view.navigation" : "Navegació",  
   
   "GenericWfsFinder.title": "Cercador WFS",
   "GenericWfsFinder.layer": "Capa",

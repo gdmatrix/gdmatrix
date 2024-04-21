@@ -80,6 +80,11 @@ Bundle.getBundle("main").setTranslations("", {
   "TimeSliderControl.period.M": "1 month",
   "TimeSliderControl.period.y": "1 year",
   "TimeSliderControl.period.2": "between 2 dates",
+  
+  "SimulateRouteControl.view" : "View",
+  "SimulateRouteControl.view.manual" : "Manual",
+  "SimulateRouteControl.view.centered" : "Centered",
+  "SimulateRouteControl.view.navigation" : "Navigation",
 
   "GenericWfsFinder.title": "WFS finder",
   "GenericWfsFinder.layer": "Layer",

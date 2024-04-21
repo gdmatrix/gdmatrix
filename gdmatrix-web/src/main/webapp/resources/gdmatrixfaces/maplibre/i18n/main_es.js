@@ -81,6 +81,11 @@ Bundle.getBundle("main").setTranslations("es", {
   "TimeSliderControl.period.y": "1 año",
   "TimeSliderControl.period.2": "entre 2 fechas",
 
+  "SimulateRouteControl.view" : "Vista",
+  "SimulateRouteControl.view.manual" : "Manual",
+  "SimulateRouteControl.view.centered" : "Centrada",
+  "SimulateRouteControl.view.navigation" : "Navegación",  
+
   "GenericWfsFinder.title": "Buscador WFS",
   "GenericWfsFinder.layer": "Capa",
   "GenericWfsFinder.filter": "Filtro (CQL)",
