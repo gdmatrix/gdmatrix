@@ -46,6 +46,7 @@ public class InputTextView extends ComponentView
   private boolean required;
   private Integer tabindex;
   private String disabled;
+  private String info;
 
   public InputTextView()
   {
@@ -137,6 +138,16 @@ public class InputTextView extends ComponentView
     return disabled;
   }
 
+  public String getInfo()
+  {
+    return info;
+  }
+
+  public void setInfo(String info)
+  {
+    this.info = info;
+  }
+  
   @Override
   public Object clone() throws CloneNotSupportedException
   {
@@ -147,6 +158,7 @@ public class InputTextView extends ComponentView
     clone.required = required;
     clone.tabindex = tabindex;
     clone.disabled = disabled;
+    clone.info = info;
     return clone;
   }
 }

@@ -62,6 +62,7 @@ public class SelectBoxView extends ComponentView
   private Boolean multiple;
   private String onChange;
   private Boolean translate;
+  private String info;
     
   public SelectBoxView()
   {
@@ -276,6 +277,16 @@ public class SelectBoxView extends ComponentView
     this.translate = translate;
   }
 
+  public String getInfo()
+  {
+    return info;
+  }
+
+  public void setInfo(String info)
+  {
+    this.info = info;
+  }
+
   @Override
   public void setBorderLeftWidth(String borderLeftWidth)
   {
@@ -355,6 +366,7 @@ public class SelectBoxView extends ComponentView
     clone.size = size;
     clone.multiple = multiple;
     clone.translate = translate;
+    clone.info = info;
     return clone;
   }
 }

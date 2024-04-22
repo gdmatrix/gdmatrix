@@ -189,6 +189,10 @@ public class HtmlFormExporter
       {
         writer.write(" disabled=\"" + view.getDisabled() + "\"");
       }
+      if (!StringUtils.isBlank(view.getInfo()))
+      {
+        writer.write(" info=\"" + view.getInfo() + "\"");
+      }
       writer.write(" style=\"" + getStyle(view) +
         ";line-height:" + view.getContentHeight() + "px\">\n");
     }
@@ -223,6 +227,10 @@ public class HtmlFormExporter
       {
         writer.write(" multiple=\"true\"");
       }
+      if (!StringUtils.isBlank(view.getInfo()))
+      {
+        writer.write(" info=\"" + view.getInfo() + "\"");
+      }      
 
       // dynamic options
       if (view.getConnection() != null)
