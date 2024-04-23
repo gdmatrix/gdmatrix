@@ -169,6 +169,7 @@ class SimulateRouteControl
 
   onPointerDown(event)
   {
+    this.map.stop();
     this.manualCamera = true;
   }
 
@@ -179,6 +180,7 @@ class SimulateRouteControl
 
   onWheel(event)
   {
+    this.map.stop();
     this.manualCamera = true;
     if (this.wheelTimer)
     {
@@ -312,7 +314,7 @@ class SimulateRouteControl
 
       this.routeRange.value = 1000 * (this.distance / this.routeLength);
 
-      setTimeout(() => this.animate(), 10);
+      setTimeout(() => this.animate(), 20);
     }
     else
     {
@@ -324,7 +326,11 @@ class SimulateRouteControl
   {
     if (this.state === "stop")
     {
-      if (!this.initRoute()) return;
+      if (this.initRoute())
+      {
+        this.state = "pause";
+      }
+      else return;
     }
     this.distance = this.routeLength * value / 1000;
     this.updateRoutePosition();
@@ -334,7 +340,7 @@ class SimulateRouteControl
   centerToPosition()
   {
     let position = this.point.geometry.coordinates;
-    this.map.flyTo({ center: position, duration: 500 });
+    this.map.flyTo({ center: position, duration: 1000 });
   }
 
   updateRouteDistance()
