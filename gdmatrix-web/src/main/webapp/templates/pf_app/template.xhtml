@@ -244,19 +244,21 @@
 
     <h:outputScript name="locales/locale-#{userSessionBean.viewLanguage}.js"
                     library="primefaces"/>
-    
+
     <div class="app_content">
-      <div class="app_toolbar">
-        <div class="scroll">
-          <ui:repeat id="app_toolbar" value="#{templateBean.highlightedItems}" var="item">
-            <p:commandButton action="#{templateBean.show(item.mid)}"
-                             icon="#{item.properties.icon}"
-                             styleClass="btn-#{item.mid}"
-                             process="@this" update="@form:cnt"
-                             title="#{item.getProperty('label')}" />
-          </ui:repeat>
+      <ui:fragment rendered="#{templateBean.isToolbarEnabled()}">
+        <div class="app_toolbar">
+          <div class="scroll">
+            <ui:repeat id="app_toolbar" value="#{templateBean.highlightedItems}" var="item">
+              <p:commandButton action="#{templateBean.show(item.mid)}"
+                               icon="#{item.properties.icon}"
+                               styleClass="btn-#{item.mid}"
+                               process="@this" update="@form:cnt"
+                               title="#{item.getProperty('label')}" />
+            </ui:repeat>
+          </div>
         </div>
-      </div>
+      </ui:fragment>
 
       <p:outputPanel id="cnt" styleClass="app_body">
         <ui:include src="#{templateBean.content}"></ui:include>

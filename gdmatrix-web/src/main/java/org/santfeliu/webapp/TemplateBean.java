@@ -58,6 +58,7 @@ public class TemplateBean extends FacesBean implements Serializable
 {
   private static final String TOPWEB_PROPERTY = "topweb";
   private static final String HIGHLIGHTED_PROPERTY = "highlighted";
+  private static final String TOOLBAR_ENABLED = "toolbarEnabled";
   private static final String TOOLBAR_MODE = "toolbarMode";
   private static final String TOOLBAR_MODE_GLOBAL = "global";
   private static final String TOOLBAR_MODE_CONTEXT = "context";
@@ -229,6 +230,12 @@ public class TemplateBean extends FacesBean implements Serializable
     return componentTree;
   }
 
+  public boolean isToolbarEnabled()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    return !"false".equals(userSessionBean.getSelectedMenuItem()
+      .getProperty(TOOLBAR_ENABLED));
+  }
 
   /* private methods */
 
