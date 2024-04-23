@@ -44,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -301,10 +302,24 @@ public abstract class TypeBean<T, F> extends WebBean
 
   protected void sortSelectItems(List<SelectItem> items)
   {
+    sortSelectItems(items, true, true);
+  }
+  
+  protected void sortSelectItems(List<SelectItem> items, boolean normalize, 
+    boolean ignoreCase)
+  {
     Collections.sort(items, (SelectItem i1, SelectItem i2) ->
     {
       if (i1 != null && i2 != null)
-        return i1.getLabel().compareTo(i2.getLabel());
+      {
+        String label1 = (normalize ? 
+          TextUtils.normalize(i1.getLabel()) : i1.getLabel());
+        String label2 = (normalize ? 
+          TextUtils.normalize(i2.getLabel()) : i2.getLabel());
+        return (ignoreCase ? 
+          label1.compareToIgnoreCase(label2) : 
+          label1.compareTo(label2));
+      }
       else if (i1 == null)
         return 1;
       else

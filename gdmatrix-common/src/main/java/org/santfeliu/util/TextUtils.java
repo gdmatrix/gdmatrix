@@ -650,6 +650,28 @@ public class TextUtils
       return expression;
   }
   
+  public static String normalize(String text)
+  {
+    if (text == null) return null;
+    
+    char[] cArray = text.toCharArray();
+    for (int i = 0; i < cArray.length; i++)
+    {
+      char c = cArray[i];
+      if ((c == 'à') || (c == 'ä') || (c == 'á')) cArray[i] = 'a';
+      else if ((c == 'è') || (c == 'ë') || (c == 'é')) cArray[i] = 'e';
+      else if ((c == 'ì') || (c == 'ï') || (c == 'í')) cArray[i] = 'i'; 
+      else if ((c == 'ò') || (c == 'ö') || (c == 'ó')) cArray[i] = 'o'; 
+      else if ((c == 'ù') || (c == 'ü') || (c == 'ú')) cArray[i] = 'u';     
+      else if ((c == 'À') || (c == 'Ä') || (c == 'Á')) cArray[i] = 'A'; 
+      else if ((c == 'È') || (c == 'Ë') || (c == 'É')) cArray[i] = 'E';
+      else if ((c == 'Ì') || (c == 'Ï') || (c == 'Í')) cArray[i] = 'I'; 
+      else if ((c == 'Ò') || (c == 'Ö') || (c == 'Ó')) cArray[i] = 'O'; 
+      else if ((c == 'Ù') || (c == 'Ü') || (c == 'Ú')) cArray[i] = 'U';     
+    }
+    return new String(cArray);
+  }  
+  
   public static void main(String[] args)
   {
 //    String original = "“z” ’z’ l•l";
