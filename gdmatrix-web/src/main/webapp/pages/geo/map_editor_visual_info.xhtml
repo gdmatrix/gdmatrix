@@ -88,7 +88,8 @@
 
         <p:tab title="Metadata">
           <emcomp:dynamicProperties typeId="GMAP"
-                              formSelector="#{geoMapBean.metadataFormSelector}"                              
+                              formSelector="#{geoMapBean.metadataFormSelector}"
+                              dataHash="#{geoMapBean.mapDocument.name}-#{geoMapBean.mapDocument.changeDateTime}"
                               properties="#{geoMapBean.mapDocument.property}" />
         </p:tab>
 
