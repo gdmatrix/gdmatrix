@@ -31,15 +31,18 @@
 package org.santfeliu.web.filter;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -73,6 +76,9 @@ public class FirewallFilter implements Filter
   static final int LAST_BLOCKED_REQUEST_COUNT = 10;
 
   final List<Check> checks = new ArrayList<>();
+  final Set<String> untrustedAddresses = new HashSet<>();
+
+  boolean autoUntrustAddresses = false;
   int totalRequestCount = 0;
   int maliciousRequestCount = 0;
   Map<String, Integer> maliciousRequestCountByType = new HashMap<>();
@@ -136,15 +142,26 @@ public class FirewallFilter implements Filter
 
     totalRequestCount++;
 
-    if ("GET".equals(httpRequest.getMethod()))
+    String ip = httpRequest.getRemoteAddr();
+
+    if (isUntrustedAddress(ip))
+    {
+      httpResponse.sendError(403, "Untrusted IP address");
+    }
+    else if ("GET".equals(httpRequest.getMethod()))
     {
       String path = httpRequest.getServletPath();
       String query = httpRequest.getQueryString();
       if (query != null) path += "?" + query;
-      String decodedPath = URLDecoder.decode(path, "UTF-8");
-      if (isMaliciousPath(decodedPath))
+      String decodedPath = decodePath(path);
+      String type = getMaliciousRequestType(decodedPath);
+      if (type != null)
       {
-        LOGGER.log(Level.SEVERE, "Malicious request detected: {0}", path);
+        registerBlockedRequest(ip, decodedPath, type);
+        if (autoUntrustAddresses)
+        {
+          addUntrustedAddress(ip);
+        }
         httpResponse.sendError(400, "Malicious request detected");
       }
       else
@@ -168,6 +185,52 @@ public class FirewallFilter implements Filter
     reset();
   }
 
+  private synchronized boolean isUntrustedAddress(String ip)
+  {
+    return untrustedAddresses.contains(ip);
+  }
+
+  private synchronized void addUntrustedAddress(String ip)
+  {
+    untrustedAddresses.add(ip);
+  }
+
+  private synchronized void removeUntrustedAddress(String ip)
+  {
+    untrustedAddresses.remove(ip);
+  }
+
+  private synchronized void registerBlockedRequest(String ip,
+    String path, String type)
+  {
+    LOGGER.log(Level.SEVERE, "Malicious request detected: {0} {1}",
+      new Object[]{ip, path});
+
+    maliciousRequestCount++;
+    Integer count = maliciousRequestCountByType.get(type);
+    if (count == null) count = 0;
+    count++;
+    maliciousRequestCountByType.put(type, count);
+    String dateString = dateFormat.format(new Date());
+    lastBlockedRequests.add(dateString + ", " + ip + ", " + path);
+    if (lastBlockedRequests.size() > LAST_BLOCKED_REQUEST_COUNT)
+    {
+      lastBlockedRequests.removeFirst();
+    }
+  }
+
+  private String decodePath(String path)
+  {
+    try
+    {
+      return URLDecoder.decode(path, "UTF-8");
+    }
+    catch (Exception ex)
+    {
+      return path;
+    }
+  }
+
   private void reset()
   {
     totalRequestCount = 0;
@@ -182,31 +245,16 @@ public class FirewallFilter implements Filter
     }
   }
 
-  private boolean isMaliciousPath(String path)
+  private String getMaliciousRequestType(String path)
   {
     for (Check check : checks)
     {
       if (check.isMaliciousPath(path))
       {
-        String type = check.getType();
-        synchronized (this)
-        {
-          maliciousRequestCount++;
-          Integer count = maliciousRequestCountByType.get(type);
-          if (count == null) count = 0;
-          count++;
-          maliciousRequestCountByType.put(type, count);
-          String dateString = dateFormat.format(new Date());
-          lastBlockedRequests.add(dateString + ": " + path);
-          if (lastBlockedRequests.size() > LAST_BLOCKED_REQUEST_COUNT)
-          {
-            lastBlockedRequests.removeFirst();
-          }
-        }
-        return true;
+        return check.getType();
       }
     }
-    return false;
+    return null;
   }
 
   static class Check
@@ -238,6 +286,11 @@ public class FirewallFilter implements Filter
     CompositeDataSupport getMaliciousRequestCountByType()
       throws OpenDataException;
     String[] getLastBlockedRequests();
+    String[] getUntrustedAddresses();
+    void addUntrustedAddress(String ip);
+    void removeUntrustedAddress(String ip);
+    boolean isAutoUntrustAddresses();
+    void setAutoUntrustAddresses(boolean autoUntrustAddresses);
     void resetCounters();
   }
 
@@ -273,6 +326,37 @@ public class FirewallFilter implements Filter
     {
       int count = lastBlockedRequests.size();
       return lastBlockedRequests.toArray(new String[count]);
+    }
+
+    @Override
+    public String[] getUntrustedAddresses()
+    {
+      int count = untrustedAddresses.size();
+      return untrustedAddresses.toArray(new String[count]);
+    }
+
+    @Override
+    public void addUntrustedAddress(String ip)
+    {
+      FirewallFilter.this.addUntrustedAddress(ip);
+    }
+
+    @Override
+    public void removeUntrustedAddress(String ip)
+    {
+      FirewallFilter.this.removeUntrustedAddress(ip);
+    }
+
+    @Override
+    public boolean isAutoUntrustAddresses()
+    {
+      return FirewallFilter.this.autoUntrustAddresses;
+    }
+
+    @Override
+    public void setAutoUntrustAddresses(boolean autoUntrustAddresses)
+    {
+      FirewallFilter.this.autoUntrustAddresses = autoUntrustAddresses;
     }
 
     @Override
