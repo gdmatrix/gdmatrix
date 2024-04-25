@@ -32,7 +32,9 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,6 +45,8 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.cases.CaseObjectBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -52,16 +56,21 @@ import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 @ViewScoped
 public class PersonCasesTabBean extends TabBean
 {
+  private final Map<String, TabInstance> tabInstances = new HashMap();
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
+  
+  public class TabInstance
+  {
+    String objectId = NEW_OBJECT_ID;
+    List<CasePersonView> rows;
+    int firstRow = 0;
+  }  
+  
   @Inject
   private PersonObjectBean personObjectBean;
 
   @Inject
   private CaseObjectBean caseObjectBean;
-
-
-  private List<CasePersonView> rows;
-
-  private int firstRow;
 
   public PersonCasesTabBean()
   {
@@ -73,24 +82,59 @@ public class PersonCasesTabBean extends TabBean
     return personObjectBean;
   }
 
+  public TabInstance getCurrentTabInstance()
+  {
+    EditTab tab = personObjectBean.getActiveEditTab();
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
+    {
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
+    }
+    else
+      return EMPTY_TAB_INSTANCE;
+  }
+  
+  @Override
+  public String getObjectId()
+  {
+    return getCurrentTabInstance().objectId;
+  }
+
+  @Override
+  public void setObjectId(String objectId)
+  {
+    getCurrentTabInstance().objectId = objectId;
+  }
+
+  @Override
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
+  }  
+  
   public List<CasePersonView> getRows()
   {
-    return rows;
+    return getCurrentTabInstance().rows;
   }
 
   public void setRows(List<CasePersonView> rows)
   {
-    this.rows = rows;
+    getCurrentTabInstance().rows = rows;
   }
 
   public int getFirstRow()
   {
-    return firstRow;
+    return getCurrentTabInstance().firstRow;
   }
 
   public void setFirstRow(int firstRow)
   {
-    this.firstRow = firstRow;
+    getCurrentTabInstance().firstRow = firstRow;
   }
 
   @Override
@@ -102,7 +146,14 @@ public class PersonCasesTabBean extends TabBean
       {
         CasePersonFilter filter = new CasePersonFilter();
         filter.setPersonId(personObjectBean.getObjectId());
-        rows = CasesModuleBean.getPort(false).findCasePersonViews(filter);
+        
+        String typeId = getTabBaseTypeId();
+        if (typeId != null)
+          filter.setCasePersonTypeId(typeId);        
+        
+        List<CasePersonView> auxList = 
+          CasesModuleBean.getPort(false).findCasePersonViews(filter);
+        setRows(auxList);
       }
       catch (Exception ex)
       {
@@ -110,9 +161,20 @@ public class PersonCasesTabBean extends TabBean
       }
     }
     else
-      rows = Collections.emptyList();         
+    {
+      TabInstance tabInstance = getCurrentTabInstance();
+      tabInstance.objectId = NEW_OBJECT_ID;
+      tabInstance.rows = Collections.EMPTY_LIST;
+      tabInstance.firstRow = 0;      
+    }
   }
 
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
+  }  
+  
   @Override
   public Serializable saveState()
   {

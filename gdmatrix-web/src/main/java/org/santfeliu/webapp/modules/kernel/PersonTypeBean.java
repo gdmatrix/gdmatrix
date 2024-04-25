@@ -120,7 +120,7 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
       "personContactsTabBean"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", 
       "/pages/kernel/person_cases.xhtml",
-      "personCasesTabBean"));
+      "personCasesTabBean", "cases", null));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;
