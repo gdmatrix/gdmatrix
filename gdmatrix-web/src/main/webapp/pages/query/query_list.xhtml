@@ -19,7 +19,7 @@
   
   <h:panelGroup layout="block" styleClass="query_body query_list">   
   
-    <p:panel id="query_list_filter" styleClass="filter_list m-2">
+    <p:panel id="query_list_filter" styleClass="filter_list mt-3 top_rounded_panel">
       
       <f:facet name="header">
         <h:outputText value="#{queryBundle.searchTitle}"
@@ -72,34 +72,38 @@
       </div>
     </p:panel>  
     
-    <p:dataTable value="#{queryListBean.documents}" var="document"
-                 styleClass="result_list"
-                 paginator="true" pageLinks="5"
-                 paginatorPosition="bottom"
-                 first="#{queryListBean.firstRow}"
-                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"               
-                 rows="20"
-                 rowsPerPageTemplate="20,50,{ShowAll|'Totes'}" emptyMessage="#{objectBundle.no_results_found}">      
-      <p:column styleClass="col_icon">        
-        <span class="fa #{queryListBean.queryUpdate ? 'fa-pen-to-square' : 'fa-magnifying-glass'} fa-xl" 
-              title="#{queryListBean.queryUpdate ? queryBundle.updateQuery : queryBundle.selectQuery}" />        
-      </p:column>
-      <p:column styleClass="col_data">
-        <p:outputLabel value="#{queryListBean.queryName}" styleClass="query_name" />
-        <p:outputLabel value="#{document.title}" styleClass="query_title" />
-        <p:outputLabel value="#{queryListBean.queryDescription}" styleClass="query_description" /> 
-      </p:column>
-      <p:column styleClass="col_buttons white-space-nowrap text-right">        
-        <p:commandButton action="#{queryListBean.showQuery}" 
-                         value="#{objectBundle.show}"
-                         title="#{objectBundle.show}"
-                         styleClass="mini m-1"
-                         icon="pi pi-eye"
-                         process="@this" update="@form:cnt" />        
-      </p:column>      
-    </p:dataTable>
+    <p:panel styleClass="mt-3 top_rounded_panel">
+      
+      <p:dataTable value="#{queryListBean.documents}" var="document"
+                   styleClass="result_list"
+                   paginator="true" pageLinks="5"
+                   paginatorPosition="bottom"
+                   first="#{queryListBean.firstRow}"
+                   paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                   currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"               
+                   rows="20"
+                   rowsPerPageTemplate="20,50,{ShowAll|'Totes'}" emptyMessage="#{objectBundle.no_results_found}">      
+        <p:column styleClass="col_icon">        
+          <span class="fa #{queryListBean.queryUpdate ? 'fa-pen-to-square' : 'fa-magnifying-glass'} fa-xl" 
+                title="#{queryListBean.queryUpdate ? queryBundle.updateQuery : queryBundle.selectQuery}" />        
+        </p:column>
+        <p:column styleClass="col_data">
+          <p:outputLabel value="#{queryListBean.queryName}" styleClass="query_name" />
+          <p:outputLabel value="#{document.title}" styleClass="query_title" />
+          <p:outputLabel value="#{queryListBean.queryDescription}" styleClass="query_description" /> 
+        </p:column>
+        <p:column styleClass="col_buttons white-space-nowrap text-right">        
+          <p:commandButton action="#{queryListBean.showQuery}" 
+                           value="#{objectBundle.show}"
+                           title="#{objectBundle.show}"
+                           styleClass="mini m-1"
+                           icon="pi pi-eye"
+                           process="@this" update="@form:cnt" />        
+        </p:column>      
+      </p:dataTable>
 
+    </p:panel>  
+      
     <div class="col-12 text-left">
       <p:commandButton action="#{queryMainBean.createQuery}" 
                        value="#{objectBundle.create}" 

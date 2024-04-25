@@ -47,117 +47,125 @@
 
   <ui:define name="body">
 
-    <div class="flex flex-wrap justify-content-between">
-      <div class="flex-grow-1 flex query_name mt-2 mr-3">
-        <p:outputLabel for="@next" value="#{queryBundle.name}:" 
+    <p:panel styleClass="top_rounded_panel">
+
+      <div class="flex flex-wrap justify-content-between">
+        <div class="flex-grow-1 flex query_name mt-2 mr-3">
+          <p:outputLabel for="@next" value="#{queryBundle.name}:" 
+                         styleClass="output_label top flex-grow-0"
+                         indicateRequired="true" />
+          <p:inputText id="query_name_input" 
+                       readonly="#{queryMainBean.persistent}"
+                       value="#{queryMainBean.query.name}" 
+                       styleClass="input_text flex-grow-1" 
+                       required="#{not empty param['mainform:query_store_button']}" />
+        </div>
+        <div class="flex-grow-1 flex query_base mt-2">
+          <p:outputLabel for="@next" value="#{queryBundle.base}:" 
+                         styleClass="output_label flex-grow-0" />
+          <p:inputText value="#{queryMainBean.query.base}" 
+                       styleClass="input_text flex-grow-1" />
+        </div>
+      </div>
+
+      <div class="flex mt-2">
+        <p:outputLabel for="@next" value="#{queryBundle.title}:" 
                        styleClass="output_label top flex-grow-0"
                        indicateRequired="true" />
-        <p:inputText id="query_name_input" 
-                     readonly="#{queryMainBean.persistent}"
-                     value="#{queryMainBean.query.name}" 
-                     styleClass="input_text flex-grow-1" 
+        <p:inputText value="#{queryMainBean.query.title}" 
+                     styleClass="input_text query_title flex-grow-1"
                      required="#{not empty param['mainform:query_store_button']}" />
       </div>
-      <div class="flex-grow-1 flex query_base mt-2">
-        <p:outputLabel for="@next" value="#{queryBundle.base}:" 
-                       styleClass="output_label flex-grow-0" />
-        <p:inputText value="#{queryMainBean.query.base}" 
-                     styleClass="input_text flex-grow-1" />
+
+      <div class="mt-2">
+        <p:outputLabel for="@next" value="#{queryBundle.description}:" 
+                       styleClass="output_label" />
+        <p:inputTextarea value="#{queryMainBean.query.description}" 
+                         styleClass="input_text query_description w-full mt-2" />
       </div>
-    </div>
 
-    <div class="flex mt-2">
-      <p:outputLabel for="@next" value="#{queryBundle.title}:" 
-                     styleClass="output_label top flex-grow-0"
-                     indicateRequired="true" />
-      <p:inputText value="#{queryMainBean.query.title}" 
-                   styleClass="input_text query_title flex-grow-1"
-                   required="#{not empty param['mainform:query_store_button']}" />
-    </div>
+      <div class="mt-2">
+        <p:outputLabel for="@next" value="#{queryBundle.label}:" 
+                       styleClass="output_label" />
+        <p:inputTextarea value="#{queryMainBean.query.label}" 
+                         styleClass="input_text query_label w-full mt-2" />
+      </div>
 
-    <div class="mt-2">
-      <p:outputLabel for="@next" value="#{queryBundle.description}:" 
-                     styleClass="output_label" />
-      <p:inputTextarea value="#{queryMainBean.query.description}" 
-                       styleClass="input_text query_description w-full mt-2" />
-    </div>
-    
-    <div class="mt-2">
-      <p:outputLabel for="@next" value="#{queryBundle.label}:" 
-                     styleClass="output_label" />
-      <p:inputTextarea value="#{queryMainBean.query.label}" 
-                       styleClass="input_text query_label w-full mt-2" />
-    </div>
+      <div class="mt-2">    
+        <p:outputLabel for="@next" value="#{queryBundle.sql_statement}:" 
+                       styleClass="output_label" />
+        <p:commandButton id="variables_button" type="button" 
+                         icon="pi pi-question-circle"
+                         styleClass="ui-button-flat" />
+        <p:overlayPanel for="variables_button">
+          <div class="vars_popup">
+            <h:outputText value="_FILTER" /><br/>
+            <h:outputText value="_OUTPUT" /><br/>
+            <h:outputText value="_OUTPUT_NAMES" /><br/>
+            <h:outputText value="_OUTPUT_LABELS" /><br/>
+            <h:outputText value="_USERID" /><br/>
+            <h:outputText value="_DATE" /><br/>    
+            <h:outputText value="_DATETIME" /><br/>      
+          </div>
+        </p:overlayPanel>      
+        <gdm:codemirror language="sql" 
+                         value="#{queryMainBean.query.sql}"
+                         lineNumbers="false"
+                         style="font-size:14px" />                 
+      </div>
 
-    <div class="mt-2">    
-      <p:outputLabel for="@next" value="#{queryBundle.sql_statement}:" 
-                     styleClass="output_label" />
-      <p:commandButton id="variables_button" type="button" 
-                       icon="pi pi-question-circle"
-                       styleClass="ui-button-flat" />
-      <p:overlayPanel for="variables_button">
-        <div class="vars_popup">
-          <h:outputText value="_FILTER" /><br/>
-          <h:outputText value="_OUTPUT" /><br/>
-          <h:outputText value="_OUTPUT_NAMES" /><br/>
-          <h:outputText value="_OUTPUT_LABELS" /><br/>
-          <h:outputText value="_USERID" /><br/>
-          <h:outputText value="_DATE" /><br/>    
-          <h:outputText value="_DATETIME" /><br/>      
-        </div>
-      </p:overlayPanel>      
-      <gdm:codemirror language="sql" 
-                       value="#{queryMainBean.query.sql}"
-                       lineNumbers="false"
-                       style="font-size:14px" />                 
-    </div>
+      <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
+                     styleClass="output_label mt-2">
+        <p:outputLabel for="@next" value="#{queryBundle.create_new_version}" />
+        <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
+                        styleClass="ml-2 vertical-align-middle" />
+      </p:outputPanel>      
+
+    </p:panel>
     
-    <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
-                   styleClass="output_label mt-2">
-      <p:outputLabel for="@next" value="#{queryBundle.create_new_version}" />
-      <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
-                      styleClass="ml-2 vertical-align-middle" />
-    </p:outputPanel>      
+    <p:panel styleClass="mt-3 top_rounded_panel">
     
-    <p:tabView id="query_tabs" styleClass="tabbed_panel mt-2" activeIndex="#{queryEditBean.selectedTab}">
-      <p:ajax event="tabChange" process="@this" />
-      <p:tab>
-        <f:facet name="title">
-          <span class="pi pi-tag mr-2"/>#{queryBundle.classification}
-        </f:facet>        
-        <ui:include src="/pages/query/edit/panels/classification.xhtml" />
-      </p:tab>
-      <p:tab>
-        <f:facet name="title">
-          <span class="fa fa-plug mr-2"/>#{queryBundle.connection}
-        </f:facet>        
-        <ui:include src="/pages/query/edit/panels/connection.xhtml" />
-      </p:tab>
-      <p:tab>
-        <f:facet name="title">
-          <span class="pi mr-2">{_}</span>#{queryBundle.parameters}
-        </f:facet>        
-        <ui:include src="/pages/query/edit/panels/parameters.xhtml" />
-      </p:tab>
-      <p:tab>
-        <f:facet name="title">
-          <span class="pi pi-sliders-h mr-2"/>#{queryBundle.predicates}
-        </f:facet>        
-        <ui:include src="/pages/query/edit/panels/predicates.xhtml" />
-      </p:tab>
-      <p:tab>
-        <f:facet name="title">
-          <span class="fa fa-table mr-2"/>#{queryBundle.outputs}
-        </f:facet>        
-        <ui:include src="/pages/query/edit/panels/outputs.xhtml" />
-      </p:tab>
-      <p:tab>
-        <f:facet name="title">
-          <span class="pi pi-key mr-2"/>#{queryBundle.roles}
-        </f:facet>        
-        <ui:include src="/pages/query/edit/panels/roles.xhtml" />
-      </p:tab>
-    </p:tabView>    
+      <p:tabView id="query_tabs" styleClass="tabbed_panel mt-2" activeIndex="#{queryEditBean.selectedTab}">
+        <p:ajax event="tabChange" process="@this" />
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-tag mr-2"/>#{queryBundle.classification}
+          </f:facet>        
+          <ui:include src="/pages/query/edit/panels/classification.xhtml" />
+        </p:tab>
+        <p:tab>
+          <f:facet name="title">
+            <span class="fa fa-plug mr-2"/>#{queryBundle.connection}
+          </f:facet>        
+          <ui:include src="/pages/query/edit/panels/connection.xhtml" />
+        </p:tab>
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi mr-2">{_}</span>#{queryBundle.parameters}
+          </f:facet>        
+          <ui:include src="/pages/query/edit/panels/parameters.xhtml" />
+        </p:tab>
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-sliders-h mr-2"/>#{queryBundle.predicates}
+          </f:facet>        
+          <ui:include src="/pages/query/edit/panels/predicates.xhtml" />
+        </p:tab>
+        <p:tab>
+          <f:facet name="title">
+            <span class="fa fa-table mr-2"/>#{queryBundle.outputs}
+          </f:facet>        
+          <ui:include src="/pages/query/edit/panels/outputs.xhtml" />
+        </p:tab>
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-key mr-2"/>#{queryBundle.roles}
+          </f:facet>        
+          <ui:include src="/pages/query/edit/panels/roles.xhtml" />
+        </p:tab>
+      </p:tabView>    
+    
+    </p:panel>
     
     <gdm:saveBean value="queryMainBean" />  
     <gdm:saveBean value="queryEditBean" />
