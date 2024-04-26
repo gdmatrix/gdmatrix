@@ -30,7 +30,12 @@
  */
 package org.santfeliu.web.filter;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,6 +80,7 @@ public class FirewallFilter implements Filter
   static final String MBEAN_NAME = "Firewall";
   static final String AUTO_UNTRUST_ADDRESSES = "autoUntrustAddresses";
   static final int LAST_BLOCKED_REQUEST_COUNT = 10;
+  static final String UNTRUSTED_ADDRESSES_FILENAME = ".untrusted_addresses.txt";
 
   final List<Check> checks = new ArrayList<>();
   final Set<String> untrustedAddresses = new HashSet<>();
@@ -119,6 +125,15 @@ public class FirewallFilter implements Filter
 
     autoUntrustAddresses =
       !"false".equals(config.getInitParameter(AUTO_UNTRUST_ADDRESSES));
+
+    try
+    {
+      restoreUntrustedAddresses();
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, ex.toString());
+    }
 
     try
     {
@@ -185,6 +200,15 @@ public class FirewallFilter implements Filter
   @Override
   public void destroy()
   {
+    try
+    {
+      saveUntrustedAddresses();
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, ex.toString());
+    }
+
     if (mbean != null)
     {
       JMXUtils.unregisterMBean(MBEAN_NAME);
@@ -265,6 +289,44 @@ public class FirewallFilter implements Filter
     return null;
   }
 
+  private synchronized void restoreUntrustedAddresses() throws Exception
+  {
+    String userHome = System.getProperty("user.home");
+    File file = new File(userHome, UNTRUSTED_ADDRESSES_FILENAME);
+    if (file.exists())
+    {
+      untrustedAddresses.clear();
+      try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(new FileInputStream(file), "UTF-8")))
+      {
+        String address = reader.readLine();
+        while (address != null)
+        {
+          untrustedAddresses.add(address);
+          address = reader.readLine();
+        }
+      }
+    }
+  }
+
+  private synchronized void saveUntrustedAddresses() throws Exception
+  {
+    String userHome = System.getProperty("user.home");
+    File file = new File(userHome, UNTRUSTED_ADDRESSES_FILENAME);
+    try (PrintWriter writer = new PrintWriter(file, "UTF-8"))
+    {
+      for (String address : untrustedAddresses)
+      {
+        writer.println(address);
+      }
+    }
+  }
+
+  private synchronized void clearUntrustedAddresses()
+  {
+    untrustedAddresses.clear();
+  }
+
   static class Check
   {
     final String type;
@@ -300,6 +362,9 @@ public class FirewallFilter implements Filter
     void removeUntrustedAddress(String ip);
     boolean isAutoUntrustAddresses();
     void setAutoUntrustAddresses(boolean autoUntrustAddresses);
+    void restoreUntrastedAddresses() throws Exception;
+    void saveUntrastedAddresses() throws Exception;
+    void clearUntrustedAddresses();
     void resetCounters();
   }
 
@@ -375,6 +440,24 @@ public class FirewallFilter implements Filter
     public void setAutoUntrustAddresses(boolean autoUntrustAddresses)
     {
       FirewallFilter.this.autoUntrustAddresses = autoUntrustAddresses;
+    }
+
+    @Override
+    public void restoreUntrastedAddresses() throws Exception
+    {
+      FirewallFilter.this.restoreUntrustedAddresses();
+    }
+
+    @Override
+    public void saveUntrastedAddresses() throws Exception
+    {
+      FirewallFilter.this.saveUntrustedAddresses();
+    }
+
+    @Override
+    public void clearUntrustedAddresses()
+    {
+      FirewallFilter.this.clearUntrustedAddresses();
     }
 
     @Override
