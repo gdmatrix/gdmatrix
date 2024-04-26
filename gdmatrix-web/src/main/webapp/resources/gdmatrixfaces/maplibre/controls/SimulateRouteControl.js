@@ -392,6 +392,12 @@ class SimulateRouteControl
     const style = map.getStyle();
 
     let layer = map.getLayer(layerId);
+    if (!layer) 
+    {
+      console.warn(`Layer ${layerId} not found.`);
+      return;
+    }
+    
     let sourceId = layer.source;
 
     const url = getSourceUrl(sourceId, style);

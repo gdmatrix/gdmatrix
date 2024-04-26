@@ -65,7 +65,15 @@ class GetFeatureInfoTool extends Tool
     this.infoDiv = document.createElement("div");
     this.infoDiv.className = "custom_form";
     bodyDiv.appendChild(this.infoDiv);
+    
+    this.createPopup();
   }
+  
+  createPopup()
+  {
+    const popup = new maplibregl.Popup(this.options.popup);
+    this.popup = popup;
+  }  
 
   clearHighlight()
   {
@@ -243,18 +251,38 @@ class GetFeatureInfoTool extends Tool
             geojson.features.push(feature);
           }
 
-          const form = new FeatureForm(feature);
+          let form = new FeatureForm(feature);
           form.service = service;
           form.layerName = layerName;
           form.setFormSelectorAndPriority(map);
-          formPromises.push(form.render());       
+          
+          if (this.isPopupLayer(feat.layer.id)) // is popup layer
+          {
+            form = await form.render();
+            if (form)
+            {
+              const popup = this.popup;
+              popup.remove();
+
+              const centroid = turf.centroid(feature);
+              popup.setLngLat(centroid.geometry.coordinates);
+              popup.setDOMContent(form.getElement());
+              popup.addTo(map);
+              this.infoDiv.innerHTML = "";
+              return;
+            }            
+          }
+          else
+          {
+            formPromises.push(form.render());     
+          }
         }
       }
       if (geojson.features.length > 0)
       {
         this.highlight(geojson);        
-      }      
-
+      }
+      
       const layers = map.getStyle().layers;
       for (let lay of layers)
       {
@@ -400,6 +428,13 @@ class GetFeatureInfoTool extends Tool
     {
       return { error: ex };
     }
+  }
+
+  isPopupLayer(layerId)
+  {
+    if (!(this.options.popupLayers instanceof Array)) return false;
+    
+    return this.options.popupLayers.indexOf(layerId) !== -1;
   }
 
   showForms(forms)

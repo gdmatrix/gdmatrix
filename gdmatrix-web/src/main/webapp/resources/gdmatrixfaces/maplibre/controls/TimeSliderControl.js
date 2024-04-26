@@ -14,7 +14,7 @@ class TimeSliderControl
       scales: object { "d": number of days, "w": number of weeks, "M": number of months, "y": number of years }.
       startDateVar: string, start date variable to change in the filters (using let), "startDate" by default.
       endDateVar: string, end date variable to change in the filters (using let), "endDate" by default.
-      convertDate: function(date), returns the string value to set in the filter.
+      convertDate: function(date, isEndDate), returns the string value to set in the filter.
       enableForLayers: array of layer ids that enable this control when they are visible.
       firstDayOfWeek: number(0-6), first day of the week.
    */
@@ -22,7 +22,7 @@ class TimeSliderControl
   {
     this.options = options || {}; 
     this.minDate = this.roundDate(options.minDate || new Date());
-    this.baseDate = this.roundDate(options.baseDate || new Date());
+    this.baseDate = this.roundDate(options.baseDate || this.minDate);
     this.startDate = new Date(this.baseDate);
     this.endDate = this.startDate;
     this.period = "d";
@@ -44,7 +44,7 @@ class TimeSliderControl
 
     if (options.convertDate === undefined)
     {
-      options.convertDate = (date) => {
+      options.convertDate = (date, isEndDate) => {
         let day = ("0" + date.getDate()).slice(-2);
         let month = ("0" + (date.getMonth() + 1)).slice(-2);
         return date.getFullYear() + month + day + "000000";          
@@ -321,8 +321,10 @@ class TimeSliderControl
   updateSourcesAndLayers()
   {
     const map = this.map;
-    let startDateString = this.options.convertDate(this.startDate);
-    let endDateString = this.options.convertDate(this.endDate);
+    let startDateString = this.options.convertDate(this.startDate, false);
+    let endDateString = this.options.convertDate(this.endDate, true);
+    
+    console.info("start: " + startDateString, "end: " + endDateString);
 
     let sources = map.getStyle().sources;
     for(let sourceId in sources)
