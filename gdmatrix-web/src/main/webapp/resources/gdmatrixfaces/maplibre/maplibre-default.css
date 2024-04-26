@@ -408,12 +408,6 @@
   border-radius: var(--border-radius) !important;
 }
 
-.maplibregl-popup-tip
-{
-  border-bottom-color: var(--surface-ground) !important;
-  border-top-color: var(--surface-ground) !important;
-}
-
 .maplibregl-popup-close-button
 {
   color: var(--text-color) !important;
