@@ -83,8 +83,8 @@ class SimulateRouteControl
         </style>
         <div class="flex align-items-center">
           <div id="route_distance" class="code flex-grow-1 text-center" style="font-size:15px"></div>
-          <button id="play_button" class="pi pi-play border-none" />
-          <button id="pause_button" class="pi pi-pause border-none" />
+          <button id="play_button" class="pi pi-play border-none" title="${bundle.get("SimulateRouteControl.start")}" />
+          <button id="pause_button" class="pi pi-pause border-none" title="${bundle.get("SimulateRouteControl.pause")}" />
         </div>
         <input id="route_range" type="range"
                class="outline-none border-radius mt-3 mb-3" value="0"
@@ -153,7 +153,10 @@ class SimulateRouteControl
 
   onPause()
   {
-    this.pauseAnimation();
+    if (this.state === "run")
+    {
+      this.pauseAnimation();
+    }
   }
 
   onIdle()
@@ -171,11 +174,13 @@ class SimulateRouteControl
   {
     this.map.stop();
     this.manualCamera = true;
+    console.info("manual");
   }
 
   onPointerUp(event)
   {
     this.manualCamera = false;
+    console.info("auto");
   }
 
   onWheel(event)
@@ -199,11 +204,7 @@ class SimulateRouteControl
       map.setLayoutProperty("position_in_route", "visibility", "visible");
       this.time0 = window.performance.now();
       this.state = "run";
-      map.on("mousedown", this._onPointerDown);
-      map.on("mouseup", this._onPointerUp);
-      map.on("touchstart", this._onPointerDown);
-      map.on("touchend", this._onPointerUp);
-      map.on("wheel", this._onWheel);
+      this.listenEvents();
       window.requestAnimationFrame(() => this.animate());    
     }
   }
@@ -211,24 +212,42 @@ class SimulateRouteControl
   pauseAnimation()
   {
     this.state = "pause";
+    this.unlistenEvents();
   }
 
   resumeAnimation()
   {
     this.state = "run";
+    this.listenEvents();
+
     this.time0 = window.performance.now();
     window.requestAnimationFrame(() => this.animate());    
   }
 
   stopAnimation()
   {
-    const map = this.map;
     this.state = "stop";
+    this.unlistenEvents();
+  }
+  
+  listenEvents()
+  {
+    const map = this.map;
+    map.on("mousedown", this._onPointerDown);
+    map.on("mouseup", this._onPointerUp);
+    map.on("touchstart", this._onPointerDown);
+    map.on("touchend", this._onPointerUp);    
+    map.on("wheel", this._onWheel);    
+  }
+  
+  unlistenEvents()
+  {
+    const map = this.map;
     map.off("mousedown", this._onPointerDown);
     map.off("mouseup", this._onPointerUp);
     map.off("touchstart", this._onPointerDown);
     map.off("touchend", this._onPointerUp);    
-    map.off("wheel", this._onWheel);
+    map.off("wheel", this._onWheel);    
   }
 
   updateRoute()
@@ -328,7 +347,7 @@ class SimulateRouteControl
     {
       if (this.initRoute())
       {
-        this.state = "pause";
+        this.pauseAnimation();
       }
       else return;
     }

@@ -85,6 +85,8 @@ Bundle.getBundle("main").setTranslations("", {
   "SimulateRouteControl.view.manual" : "Manual",
   "SimulateRouteControl.view.centered" : "Centered",
   "SimulateRouteControl.view.navigation" : "Navigation",
+  "SimulateRouteControl.start" : "Start route",
+  "SimulateRouteControl.pause" : "Pause route",
 
   "GenericWfsFinder.title": "WFS finder",
   "GenericWfsFinder.layer": "Layer",
