@@ -406,7 +406,7 @@ public class FormImporter
       inputNumber.setPadControl(false);
       NumberConverter converter = new NumberConverter();
       converter.setGroupingUsed(false);
-      converter.setLocale(Locale.getDefault());
+      converter.setLocale(Locale.US);
       inputNumber.setConverter(converter);
       inputNumber.setDecimalSeparator(".");
       inputNumber.setThousandSeparator("");      
