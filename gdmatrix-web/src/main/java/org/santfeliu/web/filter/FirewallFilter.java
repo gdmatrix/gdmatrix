@@ -31,10 +31,10 @@
 package org.santfeliu.web.filter;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -73,13 +73,15 @@ public class FirewallFilter implements Filter
     Logger.getLogger(FirewallFilter.class.getSimpleName());
   static final String PATTERN_PREFIX = "pattern.";
   static final String MBEAN_NAME = "Firewall";
+  static final String AUTO_UNTRUST_ADDRESSES = "autoUntrustAddresses";
   static final int LAST_BLOCKED_REQUEST_COUNT = 10;
 
   final List<Check> checks = new ArrayList<>();
   final Set<String> untrustedAddresses = new HashSet<>();
 
-  boolean autoUntrustAddresses = false;
+  boolean autoUntrustAddresses = true;
   int totalRequestCount = 0;
+  int untrustedRequestCount = 0;
   int maliciousRequestCount = 0;
   Map<String, Integer> maliciousRequestCountByType = new HashMap<>();
   LinkedList<String> lastBlockedRequests = new LinkedList<>();
@@ -114,6 +116,10 @@ public class FirewallFilter implements Filter
         maliciousRequestCountByType.put(type, 0);
       }
     }
+
+    autoUntrustAddresses =
+      !"false".equals(config.getInitParameter(AUTO_UNTRUST_ADDRESSES));
+
     try
     {
       // open type creation
@@ -146,6 +152,7 @@ public class FirewallFilter implements Filter
 
     if (isUntrustedAddress(ip))
     {
+      untrustedRequestCount++;
       httpResponse.sendError(403, "Untrusted IP address");
     }
     else if ("GET".equals(httpRequest.getMethod()))
@@ -234,6 +241,7 @@ public class FirewallFilter implements Filter
   private void reset()
   {
     totalRequestCount = 0;
+    untrustedRequestCount = 0;
     maliciousRequestCount = 0;
     synchronized (this)
     {
@@ -282,6 +290,7 @@ public class FirewallFilter implements Filter
   public static interface FirewallStatistics
   {
     int getTotalRequestCount();
+    int getUntrustedRequestCount();
     int getMaliciousRequestCount();
     CompositeDataSupport getMaliciousRequestCountByType()
       throws OpenDataException;
@@ -309,6 +318,12 @@ public class FirewallFilter implements Filter
     }
 
     @Override
+    public int getUntrustedRequestCount()
+    {
+      return untrustedRequestCount;
+    }
+
+    @Override
     public int getMaliciousRequestCount()
     {
       return maliciousRequestCount;
@@ -332,7 +347,10 @@ public class FirewallFilter implements Filter
     public String[] getUntrustedAddresses()
     {
       int count = untrustedAddresses.size();
-      return untrustedAddresses.toArray(new String[count]);
+      String[] array = new String[count];
+      untrustedAddresses.toArray(array);
+      Arrays.sort(array);
+      return array;
     }
 
     @Override
