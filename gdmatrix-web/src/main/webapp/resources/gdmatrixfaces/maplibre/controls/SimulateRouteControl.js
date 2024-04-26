@@ -240,7 +240,7 @@ class SimulateRouteControl
       this.div.style.display = "block";
       map.setLayoutProperty("position_in_route", "visibility", "visible");
     }
-    else
+    else if (this.currentRouteLayerId)
     {
       this.distance = 0;
       this.currentRouteLayerId = null;
