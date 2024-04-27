@@ -5,6 +5,8 @@ class PanelManager
   static SMALL_SCREEN_SIZE = 700;
   static HANDLER_SIZE = 14;
   static MIN_PANEL_SIZE = 32;
+  static CONTROL_AREA_WIDTH = 160;
+  static CONTROL_AREA_MARGIN = 6;
 
   constructor(map)
   {
@@ -29,6 +31,9 @@ class PanelManager
     resizeHandlers.bottom = new ResizeHandler(this, "bottom");
     resizeHandlers.left = new ResizeHandler(this, "left");
     resizeHandlers.right = new ResizeHandler(this, "right");
+    
+    this.leftMaxHeight = 0;
+    this.rightMaxHeight = 0;
 
     window.addEventListener("resize", () => this.organizePanels());
   }
@@ -122,6 +127,30 @@ class PanelManager
     this.setContainerSize("top", panelContainers.top.size, false);
     this.setContainerSize("bottom", panelContainers.bottom.size, false);
     this.doLayout();
+  }
+  
+  getSize(visible = true)
+  {
+    const map = this.map;
+    const mapContainer = map.getContainer();
+    let width = mapContainer.offsetWidth;
+    let height = mapContainer.offsetHeight;
+
+    if (visible)
+    {
+      const panelContainers = this.panelContainers;
+      const left = panelContainers.left.size;
+      const right = panelContainers.right.size;
+      const top = panelContainers.top.size;
+      const bottom = panelContainers.bottom.size;
+      width = width - left - right;
+      height = height - top - bottom;
+    }
+      
+    return  {
+      width: width,
+      height: height
+    };
   }
   
   getPadding(offset = 0)
@@ -223,36 +252,88 @@ class PanelManager
 
     const controlsElem = this.controlsElem;
 
+    let topLeftElem, bottomLeftElem, topRightElem, bottomRightElem;
+    let topLeftHeight, bottomLeftHeight, topRightHeight, bottomRightHeight; 
+    
     let elems = controlsElem
       .getElementsByClassName("maplibregl-ctrl-top-left");
-    for (let elem of elems)
+    if (elems.length > 0)
     {
-      elem.style.left = leftSize;
-      elem.style.top = topSize;
+      topLeftElem = elems[0];
+      topLeftElem.style.left = leftSize;
+      topLeftElem.style.top = topSize;
+      topLeftHeight = topLeftElem.offsetHeight;
     }
 
     elems = controlsElem
             .getElementsByClassName("maplibregl-ctrl-top-right");
-    for (let elem of elems)
+    if (elems.length > 0)
     {
-      elem.style.right = rightSize;
-      elem.style.top = topSize;
+      topRightElem = elems[0];
+      topRightElem.style.right = rightSize;
+      topRightElem.style.top = topSize;
+      topRightHeight = topRightElem.offsetHeight;
     }
 
     elems = controlsElem
             .getElementsByClassName("maplibregl-ctrl-bottom-left");
-    for (let elem of elems)
+    if (elems.length > 0)
     {
-      elem.style.left = leftSize;
-      elem.style.bottom = bottomSize;
+      bottomLeftElem = elems[0];
+      bottomLeftElem.style.left = leftSize;
+      bottomLeftElem.style.bottom = bottomSize;
+      bottomLeftHeight = bottomLeftElem.offsetHeight;  
     }
 
     elems = controlsElem
             .getElementsByClassName("maplibregl-ctrl-bottom-right");
-    for (let elem of elems)
+    if (elems.length > 0)
     {
-      elem.style.right = rightSize;
-      elem.style.bottom = bottomSize;
+      bottomRightElem = elems[0];
+      bottomRightElem.style.right = rightSize;
+      bottomRightElem.style.bottom = bottomSize;
+      bottomRightHeight = bottomRightElem.offsetHeight;
+    }
+
+    let leftHeight = topLeftHeight + bottomLeftHeight;
+    if (leftHeight > this.leftMaxHeight) this.leftMaxHeight = leftHeight;
+    
+    let rightHeight = topRightHeight + bottomRightHeight;    
+    if (rightHeight > this.rightMaxHeight) this.rightMaxHeight = rightHeight;
+
+    let visibleSize = this.getSize();
+
+    let leftOrientation = visibleSize.height > 
+      this.leftMaxHeight + PanelManager.CONTROL_AREA_MARGIN ?
+      "vertical" : "horizontal";
+    this.updateControlsLayout("left", topLeftElem, leftOrientation);
+    this.updateControlsLayout("left", bottomLeftElem, leftOrientation);    
+    
+    let rightOrientation = visibleSize.height > 
+      this.rightMaxHeight + PanelManager.CONTROL_AREA_MARGIN ?
+      "vertical" : "horizontal";
+
+    this.updateControlsLayout("right", topRightElem, rightOrientation);
+    this.updateControlsLayout("right", bottomRightElem, rightOrientation);
+  }
+  
+  updateControlsLayout(side, elem, orientation)
+  {
+    elem.style.display = "flex";
+    if (orientation === "vertical")
+    {
+      elem.style.flexDirection = "column";
+      elem.style.alignItems = side === "left" ? "start" : "end";
+      elem.style.width = "auto";
+      elem.style.justifyContent = "";
+    }
+    else
+    {
+      elem.style.flexDirection = side === "left" ? "row" : "row-reverse";      
+      elem.style.alignItems = "start";
+      elem.style.width = PanelManager.CONTROL_AREA_WIDTH + "px";
+      elem.style.flexWrap = "wrap";
+      elem.style.justifyContent = side === "left" ? "start" : "end";
     }
   }
 

@@ -42,7 +42,7 @@ class SimulateRouteControl
     this.div = div;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group";
     div.innerHTML = `
-      <div class="flex flex-column p-1" style="font-family:var(--font-family);">
+      <div class="flex flex-column p-1" style="font-family:var(--font-family);min-width:146px">
         <style>
           #route_view {
             font-family: var(--font-family);
@@ -174,13 +174,11 @@ class SimulateRouteControl
   {
     this.map.stop();
     this.manualCamera = true;
-    console.info("manual");
   }
 
   onPointerUp(event)
   {
     this.manualCamera = false;
-    console.info("auto");
   }
 
   onWheel(event)

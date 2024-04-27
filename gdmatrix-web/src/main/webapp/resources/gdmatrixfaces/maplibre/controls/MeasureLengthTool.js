@@ -171,7 +171,7 @@ class MeasureLengthTool extends Tool
     }
     else
     {
-      units = "m2";
+      units = "m";
     }
     
     let value = new Intl.NumberFormat('es-ES', 
