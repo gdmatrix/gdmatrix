@@ -679,6 +679,19 @@ body div.field
   color: var(--primary-color);
 }
 
+.tree_menu li a
+{
+  display: flex;
+  gap: 4px;
+  align-items: start;
+}
+
+.tree_menu li a i
+{
+  margin-top: 1px;
+}
+
+
 .ui-sidebar
 {
   padding:0 !important;

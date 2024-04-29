@@ -28,13 +28,21 @@
               <p:commandLink id="cl"
                              action="#{templateBean.show(item.mid)}" 
                              onclick="PF('menuSideBar').hide();" 
-                             rendered="#{item.rendered}"
+                             rendered="#{item.rendered and item.action != 'url'}"
                              process="@form:menu_sb" update="@form:cnt">
                 <ui:fragment rendered="#{item.properties.icon != null}">
                   <i class="ui-icon #{item.properties.icon} mr-1'}" />
                 </ui:fragment>
                 #{applicationBean.translate(item.label)}
               </p:commandLink>
+              <p:link href="#{item.properties.url}"
+                            rendered="#{item.rendered and item.action == 'url'}"
+                            target="#{item.properties.target == null ? '_self' : item.properties.target}">
+                <ui:fragment rendered="#{item.properties.icon != null}">
+                  <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                </ui:fragment>
+                #{applicationBean.translate(item.label)}                
+              </p:link>
             </f:facet>
           </sf:treeMenu>
         </div>      
