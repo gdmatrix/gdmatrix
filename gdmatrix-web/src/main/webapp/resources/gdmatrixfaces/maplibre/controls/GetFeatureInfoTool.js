@@ -20,6 +20,8 @@ class GetFeatureInfoTool extends Tool
 
     this.highlightCount = 0;
     this.inProgress = false;
+    this.hidePanel = this.options.hidePanel === undefined ? 
+      false : Boolean(this.options.hidePanel);
     this.tolerance = options?.tolerance === undefined ? 5 : options.tolerance;
     this._onMapClick = (event) => {
       this.getFeatureInfo(event.point, event.lngLat);
@@ -31,7 +33,7 @@ class GetFeatureInfoTool extends Tool
     const map = this.map;
     map.on("click", this._onMapClick);
     map.getCanvas().style.cursor = "crosshair";
-    this.panel.show();
+    if (!this.hidePanel) this.panel.show();
   }
 
   deactivate()
@@ -48,7 +50,7 @@ class GetFeatureInfoTool extends Tool
 
   reactivate()
   {
-    this.panel.show();
+    if (!this.hidePanel) this.panel.show();
   }
 
   createPanel(map)
@@ -194,7 +196,7 @@ class GetFeatureInfoTool extends Tool
     {
       const map = this.map;
 
-      this.panel.show();
+      if (!this.hidePanel) this.panel.show();
 
       this.clearHighlight();
       this.addPointer(lngLat);
