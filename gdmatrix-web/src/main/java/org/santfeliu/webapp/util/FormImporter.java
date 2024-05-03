@@ -705,38 +705,96 @@ public class FormImporter
       HtmlPanelGroup inputgroup = null;
       if (view != null)
       {
-        Object infoValue = view.getProperty("info");
-        if (infoValue != null)
+        Object infoIcon = view.getProperty("infoicon");
+        Object infoText = view.getProperty("infotext");
+        
+        if (infoIcon != null || infoText != null)
         {
-          String info = String.valueOf(infoValue);
-          boolean leftPosition = info.startsWith("left:");
-          if (leftPosition)
-            info = info.substring(5, info.length());
           inputgroup =
             (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE); 
           inputgroup.setStyleClass("ui-inputgroup");
+          
+          boolean leftIcon = false;
+          boolean leftText = false;
+          OutputPanel iconAddon = null;          
+          OutputPanel textAddon = null;
  
-          OutputPanel addon =
-            (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE); 
-          addon.setStyleClass("ui-inputgroup-addon");
+          if (infoIcon != null)
+          {
+            String info = String.valueOf(infoIcon);
+            int indx = info.indexOf(":");
+            if (indx > -1)
+            {
+              leftIcon =  info.startsWith("left");             
+              info = info.substring(indx + 1, info.length());
+            }
+            iconAddon =
+              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE); 
+            iconAddon.setStyleClass("ui-inputgroup-addon");        
 
-          HtmlPanelGroup outputPanel = 
-            (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-          outputPanel.setStyleClass(info);
-          addon.getChildren().add(outputPanel);          
+            HtmlPanelGroup outputPanel = 
+              (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);            
+
+            outputPanel.setStyleClass(info);    
+            
+            iconAddon.getChildren().add(outputPanel); 
+            
+            if (leftIcon)
+              inputgroup.getChildren().add(iconAddon);             
+          }
           
-          if (leftPosition)
-            inputgroup.getChildren().add(addon);                
-          inputgroup.getChildren().add(component);   
-          if (!leftPosition)
-            inputgroup.getChildren().add(addon);  
+          if (infoText != null)
+          {
+            String info = String.valueOf(infoText);
+            int indx = info.indexOf(":");
+            if (indx > -1)
+            {
+              leftIcon =  info.startsWith("left");             
+              info = info.substring(indx + 1, info.length());
+            }
+            
+            textAddon =
+              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE); 
+            textAddon.setStyleClass("ui-inputgroup-addon");        
+            
+            HtmlOutputText outputText = 
+              (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+            outputText.setValue(info);
+            
+            textAddon.getChildren().add(outputText);    
+            
+            if (leftText)
+              inputgroup.getChildren().add(textAddon);               
+          }
+                     
+          inputgroup.getChildren().add(component); 
           
+          if (infoIcon != null && !leftIcon)
+              inputgroup.getChildren().add(iconAddon); 
+          if (infoText != null && !leftText)
+              inputgroup.getChildren().add(textAddon);           
+            
           group.getChildren().add(inputgroup);           
-        }        
+        } 
       }      
       
+      //Component without no inputgrup
       if (inputgroup == null)
         group.getChildren().add(component);
+      
+      //Help text
+      if (view != null)
+      {
+        Object helpText = view.getProperty("helptext");         
+        if (helpText != null)
+        {
+          HtmlOutputText helpOutputText =
+            (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE); 
+          helpOutputText.setStyleClass("text-xs");
+          helpOutputText.setValue(String.valueOf(helpText));
+          group.getChildren().add(helpOutputText);
+        }      
+      }    
 
     }
   }

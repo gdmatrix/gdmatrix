@@ -189,10 +189,18 @@ public class HtmlFormExporter
       {
         writer.write(" disabled=\"" + view.getDisabled() + "\"");
       }
-      if (!StringUtils.isBlank(view.getInfo()))
+      if (!StringUtils.isBlank(view.getInfoIcon()))
       {
-        writer.write(" info=\"" + view.getInfo() + "\"");
+        writer.write(" infoicon=\"" + view.getInfoIcon() + "\"");
       }
+      if (!StringUtils.isBlank(view.getInfoText()))
+      {
+        writer.write(" infotext=\"" + view.getInfoText() + "\"");
+      }      
+      if (!StringUtils.isBlank(view.getHelpText()))
+      {
+        writer.write(" helptext=\"" + view.getHelpText() + "\"");
+      }          
       writer.write(" style=\"" + getStyle(view) +
         ";line-height:" + view.getContentHeight() + "px\">\n");
     }
@@ -227,10 +235,18 @@ public class HtmlFormExporter
       {
         writer.write(" multiple=\"true\"");
       }
-      if (!StringUtils.isBlank(view.getInfo()))
+      if (!StringUtils.isBlank(view.getInfoIcon()))
       {
-        writer.write(" info=\"" + view.getInfo() + "\"");
-      }      
+        writer.write(" infoicon=\"" + view.getInfoIcon() + "\"");
+      } 
+      if (!StringUtils.isBlank(view.getInfoText()))
+      {
+        writer.write(" infotext=\"" + view.getInfoText() + "\"");
+      }  
+      if (!StringUtils.isBlank(view.getHelpText()))
+      {
+        writer.write(" helptext=\"" + view.getHelpText() + "\"");
+      }       
 
       // dynamic options
       if (view.getConnection() != null)

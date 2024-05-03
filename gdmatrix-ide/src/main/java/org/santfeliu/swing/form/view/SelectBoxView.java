@@ -62,7 +62,9 @@ public class SelectBoxView extends ComponentView
   private Boolean multiple;
   private String onChange;
   private Boolean translate;
-  private String info;
+  private String infoIcon;
+  private String infoText;
+  private String helpText;
     
   public SelectBoxView()
   {
@@ -277,14 +279,34 @@ public class SelectBoxView extends ComponentView
     this.translate = translate;
   }
 
-  public String getInfo()
+  public String getInfoIcon()
   {
-    return info;
+    return infoIcon;
   }
 
-  public void setInfo(String info)
+  public void setInfoIcon(String infoIcon)
   {
-    this.info = info;
+    this.infoIcon = infoIcon;
+  }
+
+  public String getInfoText()
+  {
+    return infoText;
+  }
+
+  public void setInfoText(String infoText)
+  {
+    this.infoText = infoText;
+  }
+
+  public String getHelpText()
+  {
+    return helpText;
+  }
+
+  public void setHelpText(String helpText)
+  {
+    this.helpText = helpText;
   }
 
   @Override
@@ -366,7 +388,10 @@ public class SelectBoxView extends ComponentView
     clone.size = size;
     clone.multiple = multiple;
     clone.translate = translate;
-    clone.info = info;
+    clone.infoIcon = infoIcon;
+    clone.infoText = infoIcon;
+    clone.helpText = helpText;
+    
     return clone;
   }
 }

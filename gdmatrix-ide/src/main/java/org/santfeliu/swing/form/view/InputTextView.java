@@ -46,8 +46,10 @@ public class InputTextView extends ComponentView
   private boolean required;
   private Integer tabindex;
   private String disabled;
-  private String info;
-
+  private String infoIcon;
+  private String infoText;
+  private String helpText;
+  
   public InputTextView()
   {
     setWidth(128);
@@ -138,14 +140,34 @@ public class InputTextView extends ComponentView
     return disabled;
   }
 
-  public String getInfo()
+  public String getInfoIcon()
   {
-    return info;
+    return infoIcon;
   }
 
-  public void setInfo(String info)
+  public void setInfoIcon(String infoIcon)
   {
-    this.info = info;
+    this.infoIcon = infoIcon;
+  }
+
+  public String getInfoText()
+  {
+    return infoText;
+  }
+
+  public void setInfoText(String infoText)
+  {
+    this.infoText = infoText;
+  }
+
+  public String getHelpText()
+  {
+    return helpText;
+  }
+
+  public void setHelpText(String helpText)
+  {
+    this.helpText = helpText;
   }
   
   @Override
@@ -158,7 +180,9 @@ public class InputTextView extends ComponentView
     clone.required = required;
     clone.tabindex = tabindex;
     clone.disabled = disabled;
-    clone.info = info;
+    clone.infoIcon = infoIcon;
+    clone.infoText = infoText;
+    clone.helpText = helpText;
     return clone;
   }
 }

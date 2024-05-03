@@ -213,7 +213,10 @@ public class HtmlFormImporter
           view.setTabindex(getInteger(element.getAttribute("tabindex")));
           view.setRequired("true".equals(element.getAttribute("required")));
           view.setDisabled(element.getAttribute("disabled"));
-          view.setInfo(element.getAttribute("info"));
+          view.setInfoIcon(element.getAttribute("infoicon"));
+          view.setInfoText(element.getAttribute("infotext")); 
+          view.setHelpText(element.getAttribute("helptext"));           
+          
           componentView = view;
         }
         else if ("radio".equalsIgnoreCase(type))
@@ -312,8 +315,10 @@ public class HtmlFormImporter
         view.setTranslate(Boolean.parseBoolean(
           element.getAttribute("translate")));
         view.setMultiple(getBoolean(element.getAttribute("multiple")));
-        view.setInfo(element.getAttribute("info"));
-
+        view.setInfoIcon(element.getAttribute("infoicon"));
+        view.setInfoText(element.getAttribute("infotext"));
+        view.setHelpText(element.getAttribute("helptext"));
+        
         componentView = view;
         Node child = element.getFirstChild();
         while (child != null)
