@@ -50,7 +50,11 @@
     
     <div class="field col-12">
       <p:tabView dynamic="true">
-        <p:tab title="Description">
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-list mr-2"/>Description
+          </f:facet>
+
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel value="Summary" for="@next" />
@@ -86,14 +90,22 @@
           </div>
         </p:tab>
 
-        <p:tab title="Metadata">
+        <p:tab>
+          <f:facet name="title">
+            <span class="fa fa-table-list mr-2"/>Metadata
+          </f:facet>
+
           <emcomp:dynamicProperties typeId="GMAP"
                               formSelector="#{geoMapBean.metadataFormSelector}"
                               dataHash="#{geoMapBean.mapDocument.name}-#{geoMapBean.mapDocument.changeDateTime}"
                               properties="#{geoMapBean.mapDocument.property}" />
         </p:tab>
 
-        <p:tab title="Auditory">
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-database mr-2"/>Auditory
+          </f:facet>
+
           <div class="ui-fluid formgrid grid">
 
             <div class="field col-12 md:col-3">
@@ -135,6 +147,41 @@
               -->
             </div>
           </div>
+        </p:tab>
+        
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-chart-line mr-2"/>Statistics
+          </f:facet>
+
+          <p:dataTable id="map_stats" value="#{geoMapBean.statistics}" 
+                       var="access" size="small" 
+                       showGridlines="true" stripedRows="true"
+                       emptyMessage="#{objectBundle.no_results_found}"
+                       style="max-width:600px">
+            <p:column headerText="Period" styleClass="col-3 p-2">
+              ${access.period}              
+            </p:column>
+            <p:column headerText="Visualizations" styleClass="col-3 p-2 text-center">
+              ${access.visualizations}
+            </p:column>
+            <p:column headerText="Addresses" styleClass="col-3 p-2 text-center">
+              ${access.addresses}
+            </p:column>
+            <p:column headerText="Users" styleClass="col-3 p-2 text-center">
+              ${access.users}
+            </p:column>
+          </p:dataTable>
+          
+          <div class="mt-2">
+            <p:commandButton action="#{geoMapBean.updateStatistics}" 
+                             value="#{objectBundle.update}" 
+                             icon="pi pi-refresh"
+                             process="@this" update="map_stats"
+                             style="width:auto"
+                             />
+          </div>
+          
         </p:tab>
       </p:tabView>
     </div>

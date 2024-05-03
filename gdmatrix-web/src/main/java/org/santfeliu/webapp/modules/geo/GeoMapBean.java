@@ -45,6 +45,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.ExternalContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
@@ -63,6 +64,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.faces.maplibre.model.Light;
 import org.santfeliu.faces.maplibre.model.Sky;
 import org.santfeliu.faces.maplibre.model.Terrain;
+import org.santfeliu.webapp.modules.geo.io.MapAccessLogger;
+import org.santfeliu.webapp.modules.geo.io.MapAccessLogger.Access;
 import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
@@ -457,6 +460,7 @@ public class GeoMapBean extends WebBean implements Serializable
       else if (view != null)
       {
         refresh();
+        MapAccessLogger.registerAccess(mapName, getExternalContext());
         setView(view);
       }
     }
@@ -550,6 +554,20 @@ public class GeoMapBean extends WebBean implements Serializable
     return getProperty(MAP_NAME_PROPERTY) == null;
   }
 
+  public List<Access> getStatistics()
+  {
+    if (mapDocument != null)
+    {
+      return MapAccessLogger.getStatistics(mapDocument.getName());
+    }
+    return null;
+  }
+
+  public void updateStatistics()
+  {
+    MapAccessLogger.clearStatistics();
+  }
+
   // non public methods
 
   void loadFromParameters()
@@ -560,7 +578,11 @@ public class GeoMapBean extends WebBean implements Serializable
     String mapName = getProperty(MAP_NAME_PROPERTY);
     if (mapName == null)
     {
-      mapName = (String)parameters.get(MAP_NAME_PROPERTY);
+      HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
+      if ("GET".equals(request.getMethod()))
+      {
+        mapName = (String)parameters.get(MAP_NAME_PROPERTY);
+      }
     }
 
     if (mapName != null)
@@ -576,6 +598,7 @@ public class GeoMapBean extends WebBean implements Serializable
         else
         {
           refresh();
+          MapAccessLogger.registerAccess(mapName, extContext);
           setView("map_viewer");
         }
       }
@@ -607,6 +630,10 @@ public class GeoMapBean extends WebBean implements Serializable
           setView("catalogue");
         }
       }
+    }
+    else
+    {
+      setView("catalogue");
     }
   }
 
