@@ -25,24 +25,38 @@
           <sf:treeMenu id="vertical_menu" var="item" expandDepth="6" styleClass="tree_menu"
                        baseMid="#{userSessionBean.selectedMenuItem.path[1]}">
             <f:facet name="data">
-              <p:commandLink id="cl"
-                             action="#{templateBean.show(item.mid)}" 
-                             onclick="PF('menuSideBar').hide();" 
-                             rendered="#{item.rendered and item.action != 'url'}"
-                             process="@form:menu_sb" update="@form:cnt">
-                <ui:fragment rendered="#{item.properties.icon != null}">
-                  <i class="ui-icon #{item.properties.icon} mr-1'}" />
-                </ui:fragment>
-                #{applicationBean.translate(item.label)}
-              </p:commandLink>
-              <p:link href="#{item.properties.url}"
-                            rendered="#{item.rendered and item.action == 'url'}"
-                            target="#{item.properties.target == null ? '_self' : item.properties.target}">
-                <ui:fragment rendered="#{item.properties.icon != null}">
-                  <i class="ui-icon #{item.properties.icon} mr-1'}" />
-                </ui:fragment>
-                #{applicationBean.translate(item.label)}                
-              </p:link>
+              <ui:fragment rendered="#{item.rendered}">
+                <p:commandLink action="#{templateBean.show(item.mid)}" 
+                               onclick="PF('menuSideBar').hide();" 
+                               rendered="#{item.action != 'url' 
+                                           and not templateBean.isSectionMenuItem(item)}"
+                               process="@form:menu_sb" 
+                               update="@form:cnt">
+                  <ui:fragment rendered="#{item.properties.icon != null}">
+                    <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                  </ui:fragment>
+                  #{applicationBean.translate(item.label)}
+                </p:commandLink>
+                <p:commandLink action="#{templateBean.changeSection(item.mid)}" 
+                               onclick="PF('menuSideBar').hide();" 
+                               rendered="#{item.action != 'url'
+                               and templateBean.isSectionMenuItem(item)}"
+                               process="@form:menu_sb" 
+                               update="@form:cnt @form:menubar @form:app_toolbar">
+                  <ui:fragment rendered="#{item.properties.icon != null}">
+                    <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                  </ui:fragment>
+                  #{applicationBean.translate(item.label)}
+                </p:commandLink>
+                <p:link href="#{item.properties.url}"
+                              rendered="#{item.action == 'url'}"
+                              target="#{item.properties.target == null ? '_self' : item.properties.target}">
+                  <ui:fragment rendered="#{item.properties.icon != null}">
+                    <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                  </ui:fragment>
+                  #{applicationBean.translate(item.label)}                
+                </p:link>
+              </ui:fragment>
             </f:facet>
           </sf:treeMenu>
         </div>      
@@ -254,19 +268,18 @@
                     library="primefaces"/>
 
     <div class="app_content">
-      <ui:fragment rendered="#{templateBean.isToolbarEnabled()}">
-        <div class="app_toolbar">
-          <div class="scroll">
-            <ui:repeat id="app_toolbar" value="#{templateBean.highlightedItems}" var="item">
-              <p:commandButton action="#{templateBean.show(item.mid)}"
-                               icon="#{item.properties.icon}"
-                               styleClass="btn-#{item.mid}"
-                               process="@this" update="@form:cnt"
-                               title="#{item.getProperty('label')}" />
-            </ui:repeat>
-          </div>
+      <h:panelGroup id="app_toolbar" styleClass="app_toolbar" 
+                    rendered="#{templateBean.isToolbarEnabled()}" layout="block">
+        <div class="scroll">
+          <ui:repeat value="#{templateBean.highlightedItems}" var="item">
+            <p:commandButton action="#{templateBean.show(item.mid)}"
+                             icon="#{item.properties.icon}"
+                             styleClass="btn-#{item.mid}"
+                             process="@this" update="@form:cnt"
+                             title="#{item.getProperty('label')}" />
+          </ui:repeat>
         </div>
-      </ui:fragment>
+      </h:panelGroup>
 
       <p:outputPanel id="cnt" styleClass="app_body">
         <ui:include src="#{templateBean.content}"></ui:include>

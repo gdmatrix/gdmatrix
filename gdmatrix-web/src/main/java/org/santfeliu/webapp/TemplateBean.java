@@ -165,6 +165,15 @@ public class TemplateBean extends FacesBean implements Serializable
     return displayName.length() > 0 ? displayName.substring(0, 1) : "?";
   }
 
+  public void changeSection(String mid)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.setSelectedMid(mid);
+    userSessionBean.executeSelectedMenuItem();
+    userSessionBean.getAttributes().put(CONTEXT_MID, mid);
+    highlightedItems = null;
+  }
+
   public void show(String mid)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -214,6 +223,17 @@ public class TemplateBean extends FacesBean implements Serializable
     {
       error(ex);
     }
+  }
+
+  public boolean isSectionMenuItem(MenuItemCursor cursor)
+  {
+    if (TOOLBAR_MODE_CONTEXT.equals(getToolbarMode()))
+    {
+      MenuItemCursor parent = cursor.getParent();
+      return !parent.isRoot() &&
+             "true".equals(parent.getDirectProperty(TOPWEB_PROPERTY));
+    }
+    return false;
   }
 
   public void showComponentTree()
