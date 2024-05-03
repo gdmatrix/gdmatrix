@@ -21,6 +21,7 @@ class SimulateRouteControl
     this.routeViews = this.options.views || ["manual", "centered", "navigation"];
     this.directionImage = this.options.directionImage || "route_direction";
     this.speed = this.options.speed || 50; // km/h
+    this.initialZoom = this.options.initialZoom || 17;
 
     this.routeCoordinates = {};
     this.turfLine = null;
@@ -256,6 +257,10 @@ class SimulateRouteControl
       this.updateRoutePosition();
       this.div.style.display = "block";
       map.setLayoutProperty("position_in_route", "visibility", "visible");
+      this.map.flyTo({ 
+        center: this.point.geometry.coordinates, 
+        zoom: this.initialZoom 
+      });
     }
     else if (this.currentRouteLayerId)
     {
