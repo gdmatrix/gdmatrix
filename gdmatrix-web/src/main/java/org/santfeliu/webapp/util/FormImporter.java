@@ -758,7 +758,7 @@ public class FormImporter
             int indx = info.indexOf(":");
             if (indx > -1)
             {
-              leftIcon =  info.startsWith("left");             
+              leftText =  info.startsWith("left");             
               info = info.substring(indx + 1, info.length());
             }
             
