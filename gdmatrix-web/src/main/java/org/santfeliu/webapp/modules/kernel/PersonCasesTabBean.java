@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,8 +44,11 @@ import org.matrix.cases.CasePersonView;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.cases.CaseObjectBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
+import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -58,6 +62,7 @@ public class PersonCasesTabBean extends TabBean
 {
   private final Map<String, TabInstance> tabInstances = new HashMap();
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
+  private GroupableRowsHelper groupableRowsHelper;  
   
   public class TabInstance
   {
@@ -72,10 +77,81 @@ public class PersonCasesTabBean extends TabBean
   @Inject
   private CaseObjectBean caseObjectBean;
 
-  public PersonCasesTabBean()
+  @Inject
+  TypeTypeBean typeTypeBean;  
+  
+  @PostConstruct
+  public void init()
   {
+    System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return PersonCasesTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        EditTab activeEditTab = personObjectBean.getActiveEditTab();
+        if (activeEditTab != null)
+          return activeEditTab.getColumns();
+        else
+          return Collections.EMPTY_LIST;        
+      }
+
+      @Override
+      public void sortRows()
+      {
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "casePersonTypeId";
+      }
+      
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        CasePersonView casePersonView = (CasePersonView)row;
+        if ("caseId".equals(columnName))
+        {
+          return casePersonView.getCaseObject().getCaseId();
+        }
+        else if ("caseTitle".equals(columnName))
+        {
+          return casePersonView.getCaseObject().getTitle();
+        }
+        else if ("caseTypeId".equals(columnName))
+        {
+          return typeTypeBean.getDescription(
+            casePersonView.getCaseObject().getCaseTypeId());
+        }
+        else if ("comments".equals(columnName))
+        {
+          return casePersonView.getComments();
+        }
+        else
+        {
+          return null;
+        }
+      }      
+    };
   }
 
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
+  }
+  
   @Override
   public ObjectBean getObjectBean()
   {

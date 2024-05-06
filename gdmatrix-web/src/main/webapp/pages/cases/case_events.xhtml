@@ -22,14 +22,14 @@
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseEventsTabBean.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{caseEventsTabBean.switchView}"
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseEventsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{caseEventsTabBean.groupableRowsHelper.switchView}"
                            process="case_events_table"
                            update="case_events_table"
                            resetValues="true"
-                           alt="#{caseEventsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}" 
-                           title="#{caseEventsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{caseEventsTabBean.groupedViewEnabled}" />
+                           alt="#{caseEventsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                           title="#{caseEventsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{caseEventsTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{caseEventsTabBean.create}"
                            process="@form:cnt:search_tabs:tabs"
@@ -42,10 +42,10 @@
       </f:facet>
 
       <p:headerRow expandable="true"
-                   expanded="true" rendered="#{caseEventsTabBean.groupedView}"
-                   groupBy="#{row.typeId}">
+                   expanded="true" rendered="#{caseEventsTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{caseEventsTabBean.groupableRowsHelper.groupBy}">
         <p:column colspan="6" >
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
+          <h:outputText styleClass="ml-2" value="#{caseEventsTabBean.groupableRowsHelper.groupByDescription}"/>
         </p:column>
       </p:headerRow>
 
@@ -53,7 +53,7 @@
                  filterable="false" sortable="true" resizable="false"
                  headerText="#{applicationBean.translate(column.label)}" 
                  field="#{column.name}" styleClass="#{column.styleClass}" 
-                 style="#{caseEventsTabBean.isColumnRendered(column) ? '' : 'display:none'}"
+                 style="#{caseEventsTabBean.groupableRowsHelper.isColumnRendered(column) ? '' : 'display:none'}"
                  sortBy="#{row.values[i].sorted}">
         <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
         <h:outputText value="#{row.values[i].label}" />

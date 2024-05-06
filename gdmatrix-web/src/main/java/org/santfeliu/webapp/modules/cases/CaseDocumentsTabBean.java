@@ -59,6 +59,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
@@ -86,13 +87,13 @@ public class CaseDocumentsTabBean extends TabBean
 
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private final List<SelectItem> volumeSelectItems = new ArrayList<>();
+  private GroupableRowsHelper groupableRowsHelper;  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseDocumentsDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true;
     String currentVolume;
   }
 
@@ -109,8 +110,51 @@ public class CaseDocumentsTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return CaseDocumentsTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        return CaseDocumentsTabBean.this.getColumns();
+      }
+
+      @Override
+      public void sortRows()
+      {
+        Collections.sort(getCurrentTabInstance().rows, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));             
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "caseDocumentTypeId";
+      }
+
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        return null; //No fixed columns
+      }      
+    };    
   }
 
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
+  }  
+  
   @Override
   public ObjectBean getObjectBean()
   {
@@ -243,43 +287,6 @@ public class CaseDocumentsTabBean extends TabBean
      getCurrentTabInstance().firstRow = firstRow;
   }
 
-  public boolean isGroupedView()
-  {
-    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
-  }
-
-  public void setGroupedView(boolean groupedView)
-  {
-    getCurrentTabInstance().groupedView = groupedView;
-  }
-
-  public boolean isGroupedViewEnabled()
-  {
-    return caseObjectBean.getActiveEditTab().
-      getProperties().getBoolean("groupedViewEnabled");
-  }
-
-  public boolean isRenderTypeColumn()
-  {
-    if (isGroupedView())
-    {
-      return false;
-    }
-    else
-    {
-      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
-        getString("typeId");
-      if (tabTypeId != null)
-      {
-        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-      }
-      else
-      {
-        return true;
-      }
-    }    
-  }  
-  
   public String getDocumentDescription()
   {
     if (editing != null && !isNew(editing))
@@ -305,18 +312,6 @@ public class CaseDocumentsTabBean extends TabBean
       return activeEditTab.getColumns();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
-  public boolean isColumnRendered(Column column)
-  {
-    if (!isRenderTypeColumn() && column.getName().equals("caseDocTypeId"))
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }    
   }  
   
   @Override
@@ -471,16 +466,6 @@ public class CaseDocumentsTabBean extends TabBean
   public void volumeChanged(AjaxBehaviorEvent e)
   {
     load();
-  }
-
-  public void switchView()
-  {
-    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
-    if (!getCurrentTabInstance().groupedView) //Reorder
-    {
-      Collections.sort(getCurrentTabInstance().rows, 
-        new DataTableRowComparator(getColumns(), getOrderBy()));      
-    }    
   }
 
   public void edit(DataTableRow row)

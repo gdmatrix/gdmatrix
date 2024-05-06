@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,8 +42,12 @@ import org.matrix.cases.CaseAddressView;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.cases.CaseObjectBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
+import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.EditTab;
 
 /**
  *
@@ -58,11 +63,83 @@ public class AddressCasesTabBean extends TabBean
   @Inject
   private CaseObjectBean caseObjectBean;
 
+  @Inject
+  TypeTypeBean typeTypeBean;
+  
   private List<CaseAddressView> rows;
   private int firstRow;
+  GroupableRowsHelper groupableRowsHelper;
 
-  public AddressCasesTabBean()
+  @PostConstruct
+  public void init()
   {
+    System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return AddressCasesTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        EditTab activeEditTab = addressObjectBean.getActiveEditTab();
+        if (activeEditTab != null)
+          return activeEditTab.getColumns();
+        else
+          return Collections.EMPTY_LIST;        
+      }
+
+      @Override
+      public void sortRows()
+      {
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "caseAddressTypeId";
+      }
+      
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        CaseAddressView caseAddressView = (CaseAddressView)row;
+        if ("caseId".equals(columnName))
+        {
+          return caseAddressView.getCaseObject().getCaseId();
+        }
+        else if ("caseTitle".equals(columnName))
+        {
+          return caseAddressView.getCaseObject().getTitle();
+        }
+        else if ("caseTypeId".equals(columnName))
+        {
+          return typeTypeBean.getDescription(
+            caseAddressView.getCaseObject().getCaseTypeId());
+        }
+        else if ("comments".equals(columnName))
+        {
+          return caseAddressView.getComments();
+        }
+        else
+        {
+          return null;
+        }
+      }      
+    };
+  }
+
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
   }
 
   @Override

@@ -19,7 +19,15 @@
                  rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_results_found}">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">        
+        <div class="flex justify-content-end w-12"> 
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{documentCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{documentCasesTabBean.groupableRowsHelper.switchView}"
+                           process="document_cases_table"
+                           update="document_cases_table"
+                           resetValues="true"
+                           alt="#{documentCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{documentCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{documentCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />          
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{documentCasesTabBean.create}" 
                            process="@form:cnt:search_tabs:tabs"
@@ -31,18 +39,29 @@
         </div>
       </f:facet>      
 
+      <p:headerRow expandable="true"
+                   expanded="true" rendered="#{documentCasesTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{documentCasesTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="4">
+          <h:outputText styleClass="ml-2" value="#{documentCasesTabBean.groupableRowsHelper.groupByDescription}"/>
+        </p:column>
+      </p:headerRow>      
+      
       <p:column headerText="caseId" 
-                styleClass="col-2">
+                styleClass="col-2"
+                rendered="#{documentCasesTabBean.groupableRowsHelper.isColumnRendered('caseId')}">
         <h:outputText value="#{row.caseObject.caseId}" />
       </p:column> 
 
       <p:column headerText="#{documentBundle.title}" 
-                styleClass="col-5">
+                styleClass="col-5"
+                rendered="#{documentCasesTabBean.groupableRowsHelper.isColumnRendered('caseTitle')}">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>
 
       <p:column headerText="#{documentBundle.document_docType}" 
-                styleClass="col-5">
+                styleClass="col-5"
+                rendered="#{documentCasesTabBean.groupableRowsHelper.isColumnRendered('caseTypeId')}">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}"/>
       </p:column>
 

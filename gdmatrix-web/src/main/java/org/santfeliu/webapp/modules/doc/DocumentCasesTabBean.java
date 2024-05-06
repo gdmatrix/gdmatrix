@@ -45,6 +45,10 @@ import org.matrix.cases.CaseDocumentView;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.EditTab;
 
 /**
  *
@@ -57,16 +61,82 @@ public class DocumentCasesTabBean extends TabBean
   private List<CaseDocumentView> rows;
   private int firstRow;
   private CaseDocument editing;
+  private GroupableRowsHelper groupableRowsHelper;  
 
   @Inject
   DocumentObjectBean documentObjectBean;
 
+  @Inject
+  TypeTypeBean typeTypeBean;  
+  
   @PostConstruct
   public void init()
   {
     System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return DocumentCasesTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        EditTab activeEditTab = documentObjectBean.getActiveEditTab();
+        if (activeEditTab != null)
+          return activeEditTab.getColumns();
+        else
+          return Collections.EMPTY_LIST;        
+      }
+
+      @Override
+      public void sortRows()
+      {
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "caseDocTypeId";
+      }
+      
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        CaseDocumentView caseDocumentView = (CaseDocumentView)row;
+        if ("caseId".equals(columnName))
+        {
+          return caseDocumentView.getCaseObject().getCaseId();
+        }
+        else if ("caseTitle".equals(columnName))
+        {
+          return caseDocumentView.getCaseObject().getTitle();
+        }
+        else if ("caseTypeId".equals(columnName))
+        {
+          return typeTypeBean.getDescription(
+            caseDocumentView.getCaseObject().getCaseTypeId());
+        }
+        else
+        {
+          return null;
+        }
+      }      
+    };
   }
 
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
+  }  
+  
   @Override
   public ObjectBean getObjectBean()
   {

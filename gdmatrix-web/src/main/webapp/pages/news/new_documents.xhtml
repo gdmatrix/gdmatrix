@@ -22,6 +22,14 @@
 
       <f:facet name="header">
         <div class="flex  justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{newDocumentsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{newDocumentsTabBean.groupableRowsHelper.switchView}"
+                           process="new_documents_table"
+                           update="new_documents_table"
+                           resetValues="true"
+                           alt="#{newDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{newDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{newDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />          
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                         action="#{newDocumentsTabBean.create}" 
                         process="@form:cnt:search_tabs:tabs"
@@ -33,33 +41,34 @@
         </div>
       </f:facet>
 
+      <p:headerRow expandable="true"
+                   expanded="true" rendered="#{newDocumentsTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{newDocumentsTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="4">
+          <h:outputText styleClass="ml-2" value="#{newDocumentsTabBean.groupableRowsHelper.groupByDescription}"/>
+        </p:column>
+      </p:headerRow>      
+      
       <p:column headerText="#{newsBundle.new_documents_id}" styleClass="col-1"
-                sortBy="#{row.documentId}">
+                sortBy="#{row.documentId}"
+                rendered="#{newDocumentsTabBean.groupableRowsHelper.isColumnRendered('docId')}">
         <h:outputText value="#{row.documentId}" />
       </p:column>
 
       <p:column headerText="#{newsBundle.new_documents_documentName}" styleClass="col-7"
-                sortBy="#{row.title}">
-     <!--   <i class="#{newDocumentsTabBean.getDocumentIcon(row.mimeType)} text-xl mr-1" />-->
+                sortBy="#{row.title}"
+                rendered="#{newDocumentsTabBean.groupableRowsHelper.isColumnRendered('docTitle')}">
         <h:outputText value="#{row.title}"/>
       </p:column>
 
       <p:column headerText="#{newsBundle.new_documents_type}" styleClass="col-4"
-                rendered="#{newDocumentsTabBean.renderTypeColumn}"
                 sortBy="#{typeTypeBean.getDescription(row.newDocTypeId)}"
-                sortOrder="asc" sortPriority="1">
+                sortOrder="asc" sortPriority="1"
+                rendered="#{newDocumentsTabBean.groupableRowsHelper.isColumnRendered('newDocTypeId')}">
         <h:outputText value="#{typeTypeBean.getDescription(row.newDocTypeId)}"/>
       </p:column>
-
        
       <p:column styleClass="text-right white-space-nowrap">
-        <!--
-        <p:linkButton href="#{newDocumentsTabBean.viewURL}" 
-                      icon="pi pi-eye" 
-                      title="#{objectBundle.view}"
-                      styleClass="rounded-button ui-button-flat"
-                      target="_blank" />
-        -->
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this" update="@form:cnt"

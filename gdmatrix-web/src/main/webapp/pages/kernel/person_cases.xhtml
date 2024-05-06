@@ -23,20 +23,41 @@
                  rowsPerPageTemplate="5,10,25,50"
                  emptyMessage="#{objectBundle.no_results_found}">
 
-      <f:facet name="header">
-        <div class="flex justify-content-end w-12">                   
-        </div>              
-      </f:facet>      
-      <p:column headerText="#{kernelBundle.personCases_id}" styleClass="col-1">
+      <f:facet name="header">        
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{personCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{personCasesTabBean.groupableRowsHelper.switchView}"
+                           process="case_results_table"
+                           update="case_results_table"
+                           resetValues="true"
+                           alt="#{personCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{personCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{personCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />
+        </div>        
+      </f:facet> 
+
+      <p:headerRow expandable="true"
+                   expanded="true" rendered="#{personCasesTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{personCasesTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="5">
+          <h:outputText styleClass="ml-2" value="#{personCasesTabBean.groupableRowsHelper.groupByDescription}"/>
+        </p:column>
+      </p:headerRow>
+      
+      <p:column headerText="#{kernelBundle.personCases_id}" styleClass="col-1"
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseId')}">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-5">
+      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-5"
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseTitle')}">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_type}" styleClass="col-3">
+      <p:column headerText="#{kernelBundle.personCases_type}" styleClass="col-3"
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseTypeId')}">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
-      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="col-3">
+      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="col-3"
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
       <p:column styleClass="text-right white-space-nowrap">

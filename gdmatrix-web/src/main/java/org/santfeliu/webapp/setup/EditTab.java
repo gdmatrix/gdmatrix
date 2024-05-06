@@ -51,6 +51,7 @@ public class EditTab implements Serializable
   private List<String> readRoles = new ArrayList();
   private List<String> writeRoles = new ArrayList(); 
   private List<String> orderBy = new ArrayList();
+  private String groupBy;
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -181,6 +182,16 @@ public class EditTab implements Serializable
   public void setOrderBy(List<String> orderBy)
   {
     this.orderBy = orderBy;
+  }
+
+  public String getGroupBy()
+  {
+    return groupBy;
+  }
+
+  public void setGroupBy(String groupBy)
+  {
+    this.groupBy = groupBy;
   }
 
   public static String createSubviewId(String viewId)

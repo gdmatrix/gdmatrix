@@ -43,10 +43,10 @@ import javax.inject.Named;
 import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
-import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.agenda.EventTypeBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.Column;
@@ -67,13 +67,13 @@ public class CaseEventsTabBean extends TabBean
   Map<String, TabInstance> tabInstances = new HashMap();
   private String formSelector;
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
+  private GroupableRowsHelper groupableRowsHelper;  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseEventsDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true;
   }
 
   @Inject
@@ -89,8 +89,51 @@ public class CaseEventsTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return CaseEventsTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        return CaseEventsTabBean.this.getColumns();
+      }
+
+      @Override
+      public void sortRows()
+      {
+        Collections.sort(getCurrentTabInstance().rows, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));             
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "caseEventTypeId";
+      }
+
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        return null; //No fixed columns
+      }      
+    };    
   }
 
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
+  }  
+  
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
@@ -150,18 +193,6 @@ public class CaseEventsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
   
-  public boolean isColumnRendered(Column column)
-  {
-    if (!isRenderTypeColumn() && column.getName().equals("caseEventTypeId"))
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }    
-  }
-
   public CaseEvent getEditing()
   {
     return editing;
@@ -211,22 +242,6 @@ public class CaseEventsTabBean extends TabBean
   public void setFormSelector(String formSelector)
   {
     this.formSelector = formSelector;
-  }
-
-  public boolean isGroupedView()
-  {
-    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
-  }
-
-  public void setGroupedView(boolean groupedView)
-  {
-    getCurrentTabInstance().groupedView = groupedView;
-  }
-
-  public boolean isGroupedViewEnabled()
-  {
-    return caseObjectBean.getActiveEditTab().getProperties()
-      .getBoolean("groupedViewEnabled");
   }
 
   public String getEventDescription()
@@ -298,16 +313,6 @@ public class CaseEventsTabBean extends TabBean
     editing = new CaseEvent();
     editing.setCaseEventTypeId(getCreationTypeId());
     formSelector = null;    
-  }
-
-  public void switchView()
-  {
-    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
-    if (!getCurrentTabInstance().groupedView) //Reorder
-    {
-      Collections.sort(getCurrentTabInstance().rows, 
-        new DataTableRowComparator(getColumns(), getOrderBy()));
-    }    
   }
 
   @Override
@@ -421,27 +426,6 @@ public class CaseEventsTabBean extends TabBean
       }
     }
   }
-  
-  private boolean isRenderTypeColumn()
-  {
-    if (isGroupedView())
-    {
-      return false;
-    }
-    else
-    {
-      String tabTypeId = getObjectBean().getActiveEditTab().getProperties().
-        getString("typeId");
-      if (tabTypeId != null)
-      {
-        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-      }
-      else
-      {
-        return true;
-      }
-    }    
-  }  
   
   public class CaseEventsDataTableRow extends DataTableRow
   {

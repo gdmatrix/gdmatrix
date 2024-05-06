@@ -152,7 +152,8 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     casesEditTab.getColumns().add(new Column("caseTitle", 
       BUNDLE_PREFIX + "eventCases_case", "col-8"));    
     casesEditTab.getColumns().add(new Column("caseEventTypeId", 
-      BUNDLE_PREFIX + "eventCases_type", "col-3"));    
+      BUNDLE_PREFIX + "eventCases_type", "col-3"));
+    casesEditTab.getOrderBy().add("caseId");
     casesEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);
     casesEditTab.getReadRoles().add(SecurityConstants.EVERYONE_ROLE);
     casesEditTab.getWriteRoles().add(SecurityConstants.EVERYONE_ROLE);      

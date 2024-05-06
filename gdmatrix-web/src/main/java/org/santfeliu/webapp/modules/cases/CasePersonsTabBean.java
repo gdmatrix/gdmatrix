@@ -56,16 +56,17 @@ import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
-import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRow.Value;
 import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
 import org.santfeliu.webapp.util.RowStyleClassGenerator;
@@ -91,13 +92,13 @@ public class CasePersonsTabBean extends TabBean
   private int tabIndex;
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private List<SelectItem> contactTypeSelectItems;
+  private GroupableRowsHelper groupableRowsHelper;  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CasePersonsDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true;
   }
 
   @Inject
@@ -113,6 +114,49 @@ public class CasePersonsTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return CasePersonsTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        return CasePersonsTabBean.this.getColumns();
+      }
+
+      @Override
+      public void sortRows()
+      {
+        Collections.sort(getCurrentTabInstance().rows, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));        
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "casePersonTypeId";
+      }
+      
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        return null; //No fixed columns
+      }      
+    };
+  }
+
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
   }
 
   @Override
@@ -157,44 +201,7 @@ public class CasePersonsTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-
-  public boolean isGroupedView()
-  {
-    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
-  }
-
-  public void setGroupedView(boolean groupedView)
-  {
-    getCurrentTabInstance().groupedView = groupedView;
-  }
-
-  public boolean isGroupedViewEnabled()
-  {
-    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
-      getProperties().getString("groupedViewEnabled"));
-  }
   
-  public boolean isRenderTypeColumn()
-  {
-    if (isGroupedView())
-    {
-      return false;
-    }
-    else
-    {
-      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
-        getString("typeId");
-      if (tabTypeId != null)
-      {
-        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-      }
-      else
-      {
-        return true;
-      }
-    }    
-  }
-
   @Override
   public String getObjectId()
   {
@@ -454,16 +461,6 @@ public class CasePersonsTabBean extends TabBean
     }
   }
 
-  public void switchView()
-  {
-    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
-    if (!getCurrentTabInstance().groupedView) //Reorder
-    {
-      Collections.sort(getCurrentTabInstance().rows, 
-        new DataTableRowComparator(getColumns(), getOrderBy()));      
-    }
-  }
-
   public String getPersonDescription()
   {
     if (editing != null && !isNew(editing))
@@ -490,18 +487,6 @@ public class CasePersonsTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
-
-  public boolean isColumnRendered(Column column)
-  {
-    if (!isRenderTypeColumn() && column.getName().equals("casePersonTypeId"))
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }    
-  }  
   
   public void create()
   {

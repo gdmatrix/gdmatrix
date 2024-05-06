@@ -30,7 +30,6 @@
  */
 package org.santfeliu.webapp.modules.news;
 
-import org.santfeliu.webapp.modules.news.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,8 +46,10 @@ import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -64,6 +65,7 @@ public class NewDocumentsTabBean extends TabBean
 
   private NewDocument editing;
   Map<String, TabInstance> tabInstances = new HashMap<>();
+  private GroupableRowsHelper groupableRowsHelper;  
 
   public class TabInstance
   {
@@ -85,7 +87,68 @@ public class NewDocumentsTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return NewDocumentsTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        EditTab activeEditTab = newObjectBean.getActiveEditTab();
+        if (activeEditTab != null)
+          return activeEditTab.getColumns();
+        else
+          return Collections.EMPTY_LIST;        
+      }
+
+      @Override
+      public void sortRows()
+      {
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "newDocTypeId";
+      }
+      
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        NewDocument newDocument = (NewDocument)row;
+        if ("documentId".equals(columnName))
+        {
+          return newDocument.getDocumentId();
+        }
+        else if ("documentTitle".equals(columnName))
+        {
+          return newDocument.getTitle();
+        }
+        else if ("newDocTypeId".equals(columnName))
+        {
+          return typeTypeBean.getDescription(newDocument.getNewDocTypeId());
+        }
+        else
+        {
+          return null;
+        }
+      }      
+    };    
   }
+
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
+  }  
 
   public TabInstance getCurrentTabInstance()
   {
@@ -166,20 +229,6 @@ public class NewDocumentsTabBean extends TabBean
   {
      getCurrentTabInstance().firstRow = firstRow;
   }
-
-  public boolean isRenderTypeColumn()
-  {
-    String tabTypeId = newObjectBean.getActiveEditTab().getProperties().
-      getString("typeId");
-    if (tabTypeId != null)
-    {
-      return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-    }
-    else
-    {
-      return true;
-    }   
-  }  
 
   public String getDocumentDescription()
   {

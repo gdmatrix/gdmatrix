@@ -21,14 +21,14 @@
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
 
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{casePersonsTabBean.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{casePersonsTabBean.switchView}"
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{casePersonsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{casePersonsTabBean.groupableRowsHelper.switchView}"
                            process="case_persons_table"
                            update="case_persons_table"
                            resetValues="true"
-                           alt="#{casePersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           title="#{casePersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{casePersonsTabBean.groupedViewEnabled}" />
+                           alt="#{casePersonsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{casePersonsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{casePersonsTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
                            action="#{casePersonsTabBean.create}"
                            process="@form:cnt:search_tabs:tabs"
@@ -41,17 +41,18 @@
       </f:facet>
 
       <p:headerRow expandable="true"
-                   expanded="true" rendered="#{casePersonsTabBean.groupedView}"
-                   groupBy="#{row.typeId}">
-        <p:column colspan="6" >
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
+                   expanded="true" rendered="#{casePersonsTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{casePersonsTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="6">
+          <h:outputText styleClass="ml-2" 
+                        value="#{casePersonsTabBean.groupableRowsHelper.groupByDescription}" />
         </p:column>
       </p:headerRow>
       <p:columns value="#{casePersonsTabBean.columns}" var="column" columnIndexVar="i"
                  filterable="false" sortable="true" resizable="false"
                  headerText="#{applicationBean.translate(column.label)}" 
                  field="#{column.name}" styleClass="#{column.styleClass}"
-                 style="#{casePersonsTabBean.isColumnRendered(column) ? '' : 'display:none'}"                 
+                 style="#{casePersonsTabBean.groupableRowsHelper.isColumnRendered(column) ? '' : 'display:none'}"                 
                  sortBy="#{row.values[i].sorted}">
         <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
         <h:outputText value="#{row.values[i].label}" />

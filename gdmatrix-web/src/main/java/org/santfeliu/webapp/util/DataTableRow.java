@@ -157,6 +157,18 @@ public class DataTableRow implements Serializable
       }
     }
   }
+  
+  public Value getColumnValue(List<Column> columns, String colName)
+  {
+    for (int i = 0; i < columns.size(); i++)
+    {
+      if (colName.equals(columns.get(i).getName()))
+      {
+        return values[i];
+      }
+    }
+    return null;    
+  }  
 
   protected ScriptClient newScriptClient() throws Exception
   {

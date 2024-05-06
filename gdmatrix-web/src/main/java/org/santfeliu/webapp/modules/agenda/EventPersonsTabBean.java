@@ -49,8 +49,10 @@ import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -66,13 +68,13 @@ public class EventPersonsTabBean extends TabBean
 
   private Attendant editing;
   Map<String, TabInstance> tabInstances = new HashMap<>();
+  private GroupableRowsHelper groupableRowsHelper;  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<AttendantView> rows;
     int firstRow = 0;
-    boolean groupedView = true;
   }
 
   @Inject
@@ -88,6 +90,77 @@ public class EventPersonsTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return EventPersonsTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        EditTab activeEditTab = eventObjectBean.getActiveEditTab();
+        if (activeEditTab != null)
+          return activeEditTab.getColumns();
+        else
+          return Collections.EMPTY_LIST;        
+      }
+
+      @Override
+      public void sortRows()
+      {
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "attendantTypeId";
+      }
+      
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        AttendantView attendantView = (AttendantView)row;
+        if ("attendantId".equals(columnName))
+        {
+          return attendantView.getAttendantId();
+        }
+        else if ("attendantPerson".equals(columnName))
+        {
+          return attendantView.getPersonView().getFullName();
+        }
+        else if ("attendantTypeId".equals(columnName))
+        {          
+          return typeTypeBean.getDescription(
+            attendantView.getAttendantTypeId());
+        }
+        else if ("attended".equals(columnName))
+        {
+          return attendantView.getAttended();          
+        }
+        else if ("comments".equals(columnName))
+        {
+          return attendantView.getComments();
+        }
+        else
+        {
+          return null;
+        }
+      }
+      
+    };    
+  }
+
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
   }
 
   public TabInstance getCurrentTabInstance()
@@ -170,43 +243,6 @@ public class EventPersonsTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-
-  public boolean isGroupedView()
-  {
-    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
-  }
-
-  public void setGroupedView(boolean groupedView)
-  {
-    getCurrentTabInstance().groupedView = groupedView;
-  }
-
-  public boolean isGroupedViewEnabled()
-  {
-    return Boolean.parseBoolean(eventObjectBean.getActiveEditTab().
-      getProperties().getString("groupedViewEnabled"));
-  }
-
-  public boolean isRenderTypeColumn()
-  {
-    if (isGroupedView())
-    {
-      return false;
-    }
-    else
-    {
-      String tabTypeId = eventObjectBean.getActiveEditTab().getProperties().
-        getString("typeId");
-      if (tabTypeId != null)
-      {
-        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-      }
-      else
-      {
-        return true;
-      }
-    }    
-  }  
   
   public String getPersonDescription()
   {
@@ -318,11 +354,6 @@ public class EventPersonsTabBean extends TabBean
   {
     editing = new Attendant();
     editing.setAttendantTypeId(getCreationTypeId());
-  }
-
-  public void switchView()
-  {
-    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }
 
   @Override

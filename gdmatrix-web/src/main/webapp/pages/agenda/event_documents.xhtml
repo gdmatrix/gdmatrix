@@ -18,14 +18,14 @@
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventDocumentsTabBean.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{eventDocumentsTabBean.switchView}"
-                           process="@this"
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventDocumentsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{eventDocumentsTabBean.groupableRowsHelper.switchView}"
+                           process="event_documents_table"
                            update="event_documents_table"
                            resetValues="true"
-                           alt="#{eventDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           title="#{eventDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{eventDocumentsTabBean.groupedViewEnabled}" />
+                           alt="#{eventDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{eventDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{eventDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventDocumentsTabBean.create}"
                            process="@form:cnt:search_tabs:tabs"
@@ -37,23 +37,28 @@
         </div>
       </f:facet>
 
-      <p:headerRow field="eventDocTypeId" expandable="true"
-                   expanded="true" rendered="#{eventDocumentsTabBean.groupedView}">
-        <p:column colspan="6">
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.eventDocTypeId)}"/>
+      <p:headerRow expandable="true"
+                   expanded="true" 
+                   rendered="#{eventDocumentsTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{eventDocumentsTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="4">
+          <h:outputText styleClass="ml-2" 
+                        value="#{eventDocumentsTabBean.groupableRowsHelper.groupByDescription}"/>
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{agendaBundle.eventDocuments_id}" styleClass="col-1">
+      <p:column headerText="#{agendaBundle.eventDocuments_id}" styleClass="col-1"
+                rendered="#{eventDocumentsTabBean.groupableRowsHelper.isColumnRendered('documentId')}">
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.eventDocuments_title}" styleClass="col-8">
+      <p:column headerText="#{agendaBundle.eventDocuments_title}" styleClass="col-8"
+                rendered="#{eventDocumentsTabBean.groupableRowsHelper.isColumnRendered('documentTitle')}">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
       <p:column headerText="#{agendaBundle.eventDocuments_type}" styleClass="col-3"
-                rendered="#{eventDocumentsTabBean.renderTypeColumn}"
+                rendered="#{eventDocumentsTabBean.groupableRowsHelper.isColumnRendered('eventDocTypeId')}"
                 sortBy="#{typeTypeBean.getDescription(row.eventDocTypeId)}"
                 sortOrder="asc" sortPriority="1">
         <h:outputText value="#{typeTypeBean.getDescription(row.eventDocTypeId)}"/>

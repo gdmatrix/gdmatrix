@@ -19,14 +19,14 @@
       <f:facet name="header">
 
         <div class="flex justify-content-end w-12">
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventPersonsTabBean.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{eventPersonsTabBean.switchView}"
-                           process="@this"
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventPersonsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{eventPersonsTabBean.groupableRowsHelper.switchView}"
+                           process="event_persons_table"
                            update="event_persons_table"
                            resetValues="true"
-                           alt="#{eventPersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           title="#{eventPersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{eventPersonsTabBean.groupedViewEnabled}" />
+                           alt="#{eventPersonsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{eventPersonsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{eventPersonsTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventPersonsTabBean.create}"
                            process="@form:cnt:search_tabs:tabs"
@@ -39,29 +39,33 @@
 
       </f:facet>
 
-      <p:headerRow field="attendantTypeId" expandable="true"
-                   expanded="true" rendered="#{eventPersonsTabBean.groupedView}">
-        <p:column colspan="6">
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.attendantTypeId)}"/>
+      <p:headerRow expandable="true"
+                   expanded="true" rendered="#{eventPersonsTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{eventPersonsTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="5">
+          <h:outputText styleClass="ml-2" value="#{eventPersonsTabBean.groupableRowsHelper.groupByDescription}"/>
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{agendaBundle.attendants_id}" styleClass="col-1">
+      <p:column headerText="#{agendaBundle.attendants_id}" styleClass="col-1"
+                rendered="#{eventPersonsTabBean.groupableRowsHelper.isColumnRendered('attendantId')}">
         <h:outputText value="#{row.personView.personId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.attendants_person}" styleClass="col-6">
+      <p:column headerText="#{agendaBundle.attendants_person}" styleClass="col-6"
+                rendered="#{eventPersonsTabBean.groupableRowsHelper.isColumnRendered('attendantPerson')}">
         <h:outputText value="#{row.personView.fullName}"/>
       </p:column>
 
       <p:column headerText="#{agendaBundle.attendants_type}" styleClass="col-4"
-                rendered="#{eventPersonsTabBean.renderTypeColumn}"
+                rendered="#{eventPersonsTabBean.groupableRowsHelper.isColumnRendered('attendantTypeId')}"
                 sortBy="#{typeTypeBean.getDescription(row.attendantTypeId)}"
                 sortOrder="asc" sortPriority="1">
         <h:outputText value="#{typeTypeBean.getDescription(row.attendantTypeId)}"/>
       </p:column>
 
-      <p:column headerText="#{agendaBundle.attendants_attended}" styleClass="col-1">
+      <p:column headerText="#{agendaBundle.attendants_attended}" styleClass="col-1"
+                rendered="#{eventPersonsTabBean.groupableRowsHelper.isColumnRendered('attended')}">
         <h:outputText value="#{eventPersonsTabBean.attendedLabel}"/>
       </p:column>
 

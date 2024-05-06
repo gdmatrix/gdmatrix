@@ -36,17 +36,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
-import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRow.Value;
@@ -68,13 +69,13 @@ public class CaseInterventionsTabBean extends TabBean
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
+  private GroupableRowsHelper groupableRowsHelper;  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseInterventionsDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true;
   }
 
   private Intervention editing;
@@ -83,6 +84,55 @@ public class CaseInterventionsTabBean extends TabBean
   @Inject
   CaseObjectBean caseObjectBean;
 
+  @PostConstruct
+  public void init()
+  {
+    System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return CaseInterventionsTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        return CaseInterventionsTabBean.this.getColumns();
+      }
+
+      @Override
+      public void sortRows()
+      {
+        Collections.sort(getCurrentTabInstance().rows, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));        
+      }
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "intTypeId";
+      }      
+
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        return null; //No fixed columns
+      }
+    };    
+  }  
+
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
+  }
+  
   @Override
   public ObjectBean getObjectBean()
   {
@@ -144,22 +194,6 @@ public class CaseInterventionsTabBean extends TabBean
     this.formSelector = formSelector;
   }
 
-  public boolean isGroupedView()
-  {
-    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
-  }
-
-  public void setGroupedView(boolean groupedView)
-  {
-    getCurrentTabInstance().groupedView = groupedView;
-  }
-
-  public boolean isGroupedViewEnabled()
-  {
-    return caseObjectBean.getActiveEditTab().getProperties()
-      .getBoolean("groupedViewEnabled");
-  }
-
   public String getPersonId()
   {
     return editing != null ? editing.getPersonId() : null;
@@ -201,18 +235,6 @@ public class CaseInterventionsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
   
-  public boolean isColumnRendered(Column column)
-  {
-    if (!isRenderTypeColumn() && column.getName().endsWith("TypeId"))
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }    
-  }  
-
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -306,16 +328,6 @@ public class CaseInterventionsTabBean extends TabBean
     editing = new Intervention();
     editing.setIntTypeId(getCreationTypeId());
     formSelector = null;
-  }
-
-  public void switchView()
-  {
-    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
-    if (!getCurrentTabInstance().groupedView) //Reorder
-    {
-      Collections.sort(getCurrentTabInstance().rows, 
-        new DataTableRowComparator(getColumns(), getOrderBy()));      
-    }
   }
 
   @Override
@@ -479,27 +491,6 @@ public class CaseInterventionsTabBean extends TabBean
         tabInstance.objectId = NEW_OBJECT_ID;
       }
     }
-  }
-  
-  private boolean isRenderTypeColumn()
-  {
-    if (isGroupedView())
-    {
-      return false;
-    }
-    else
-    {
-      String tabTypeId = getObjectBean().getActiveEditTab().getProperties().
-        getString("typeId");
-      if (tabTypeId != null)
-      {
-        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-      }
-      else
-      {
-        return true;
-      }
-    }    
   }
   
   private RowStyleClassGenerator getRowStyleClassGenerator()

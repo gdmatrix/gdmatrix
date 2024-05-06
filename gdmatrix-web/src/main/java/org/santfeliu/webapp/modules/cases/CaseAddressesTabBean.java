@@ -56,6 +56,7 @@ import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.AddressTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
@@ -79,13 +80,13 @@ public class CaseAddressesTabBean extends TabBean
   Map<String, TabInstance> tabInstances = new HashMap();
   private boolean importPersons;
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
+  private GroupableRowsHelper groupableRowsHelper;  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseAddressesDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true;
   }
 
   @Inject
@@ -101,8 +102,51 @@ public class CaseAddressesTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
+    groupableRowsHelper = new GroupableRowsHelper()
+    {
+      @Override
+      public ObjectBean getObjectBean()
+      {
+        return CaseAddressesTabBean.this.getObjectBean();
+      }
+
+      @Override
+      public List<Column> getColumns()
+      {
+        return CaseAddressesTabBean.this.getColumns();
+      }
+
+      @Override
+      public void sortRows()
+      {
+        Collections.sort(getCurrentTabInstance().rows, 
+          new DataTableRowComparator(getColumns(), getOrderBy()));      
+      }      
+
+      @Override
+      public String getRowTypeColumnName()
+      {
+        return "caseAddressTypeId";
+      }
+      
+      @Override
+      public String getFixedColumnValue(Object row, String columnName)
+      {
+        return null; //No fixed columns
+      }
+    };    
   }
 
+  public GroupableRowsHelper getGroupableRowsHelper()
+  {
+    return groupableRowsHelper;
+  }
+
+  public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
+  {
+    this.groupableRowsHelper = groupableRowsHelper;
+  }
+  
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
@@ -194,43 +238,6 @@ public class CaseAddressesTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-
-  public boolean isGroupedView()
-  {
-    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
-  }
-
-  public void setGroupedView(boolean groupedView)
-  {
-    getCurrentTabInstance().groupedView = groupedView;
-  }
-
-  public boolean isGroupedViewEnabled()
-  {
-    return caseObjectBean.getActiveEditTab().getProperties()
-      .getBoolean("groupedViewEnabled");
-  }
-
-  public boolean isRenderTypeColumn()
-  {
-    if (isGroupedView())
-    {
-      return false;
-    }
-    else
-    {
-      String tabTypeId = caseObjectBean.getActiveEditTab().getProperties().
-        getString("typeId");
-      if (tabTypeId != null)
-      {
-        return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).isEmpty();
-      }
-      else
-      {
-        return true;
-      }
-    }    
-  }  
   
   public String getAddressDescription()
   {
@@ -262,18 +269,6 @@ public class CaseAddressesTabBean extends TabBean
       return activeEditTab.getColumns();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
-  public boolean isColumnRendered(Column column)
-  {
-    if (!isRenderTypeColumn() && column.getName().equals("caseAddressTypeId"))
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }    
   }  
   
   public void edit(DataTableRow row)
@@ -357,16 +352,6 @@ public class CaseAddressesTabBean extends TabBean
   {
     editing = new CaseAddress();
     editing.setCaseAddressTypeId(getCreationTypeId());
-  }
-
-  public void switchView()
-  {
-    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
-    if (!getCurrentTabInstance().groupedView) //Reorder
-    {
-      Collections.sort(getCurrentTabInstance().rows, 
-        new DataTableRowComparator(getColumns(), getOrderBy()));      
-    }    
   }
 
   @Override

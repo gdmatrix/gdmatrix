@@ -23,19 +23,40 @@
                  rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_results_found}">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">                   
+        <div class="flex justify-content-end w-12">  
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{addressCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{addressCasesTabBean.groupableRowsHelper.switchView}"
+                           process="case_results_table"
+                           update="case_results_table"
+                           resetValues="true"
+                           alt="#{addressCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{addressCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{addressCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />          
         </div>              
-      </f:facet>      
-      <p:column headerText="#{caseBundle.case_id}" styleClass="col-1">
+      </f:facet> 
+      
+      <p:headerRow expandable="true"
+                   expanded="true" rendered="#{addressCasesTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{addressCasesTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="5">
+          <h:outputText styleClass="ml-2" value="#{addressCasesTabBean.groupableRowsHelper.groupByDescription}"/>
+        </p:column>
+      </p:headerRow>      
+      
+      <p:column headerText="#{caseBundle.case_id}" styleClass="col-1"
+                rendered="#{addressCasesTabBean.groupableRowsHelper.isColumnRendered('caseId')}">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
-      <p:column headerText="#{caseBundle.case_title}" styleClass="col-5">
+      <p:column headerText="#{caseBundle.case_title}" styleClass="col-5"
+                rendered="#{addressCasesTabBean.groupableRowsHelper.isColumnRendered('caseTitle')}">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>       
-      <p:column headerText="#{caseBundle.caseAddresses_type}" styleClass="col-3">
+      <p:column headerText="#{caseBundle.caseAddresses_type}" styleClass="col-3"
+                rendered="#{addressCasesTabBean.groupableRowsHelper.isColumnRendered('caseTypeId')}">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
-      <p:column headerText="#{caseBundle.caseAddresses_comments}" styleClass="col-3">
+      <p:column headerText="#{caseBundle.caseAddresses_comments}" styleClass="col-3"
+                rendered="#{addressCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
       <p:column styleClass="text-right white-space-nowrap">

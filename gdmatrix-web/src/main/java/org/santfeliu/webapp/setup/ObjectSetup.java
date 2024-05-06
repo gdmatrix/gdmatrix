@@ -408,6 +408,14 @@ public class ObjectSetup implements Serializable
       editTab.setOrderBy(orderBy);
     }
     mergeOrderBy(defaultOrderBy, orderBy);     
+
+    //GroupBy
+    String defaultGroupBy = defaultEditTab.getGroupBy();
+    String groupBy = editTab.getGroupBy();
+    if (defaultGroupBy != null && groupBy == null)
+    {
+      editTab.setGroupBy(defaultGroupBy);
+    }
     
     //Icons
     if (editTab.getIcon() == null)
