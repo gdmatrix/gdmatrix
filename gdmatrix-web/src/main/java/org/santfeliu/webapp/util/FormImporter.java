@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.util;
 
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -404,12 +405,20 @@ public class FormImporter
         (InputNumber)application.createComponent(InputNumber.COMPONENT_TYPE);
       inputNumber.setReadonly(field.isReadOnly());
       inputNumber.setPadControl(false);
+      
+      //Convert value to number.
       NumberConverter converter = new NumberConverter();
       converter.setGroupingUsed(false);
       converter.setLocale(Locale.US);
       inputNumber.setConverter(converter);
-      inputNumber.setDecimalSeparator(".");
-      inputNumber.setThousandSeparator("");      
+      
+      //Set separators format
+      DecimalFormatSymbols dfs = 
+        DecimalFormatSymbols.getInstance(facesContext.getViewRoot().getLocale());      
+      inputNumber.setDecimalSeparator(String.valueOf(dfs.getDecimalSeparator()));
+      inputNumber.setThousandSeparator(String.valueOf(dfs.getGroupingSeparator()));
+      inputNumber.setDecimalPlaces("18");
+      
       if (field.getMinOccurs() > 0) setRequired(inputNumber);
       component = inputNumber;
     }
