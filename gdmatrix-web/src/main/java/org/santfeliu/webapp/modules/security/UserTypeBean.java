@@ -53,7 +53,7 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
 public class UserTypeBean extends TypeBean<User, UserFilter>
 {
   private static final String BUNDLE_PREFIX = "$$securityBundle.";
-  
+
   @Override
   public String getRootTypeId()
   {
@@ -99,11 +99,11 @@ public class UserTypeBean extends TypeBean<User, UserFilter>
     objectSetup.setViewId("/pages/security/user.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-user", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "pi pi-user",
       "/pages/security/user_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", "pi pi-key", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", "pi pi-key",
       "/pages/security/user_roles.xhtml", "userRolesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles_tree", "pi pi-sitemap", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles_tree", "pi pi-sitemap",
       "/pages/security/user_roles_tree.xhtml", "userRolesTreeTabBean"));
     objectSetup.setEditTabs(editTabs);
 
@@ -117,6 +117,7 @@ public class UserTypeBean extends TypeBean<User, UserFilter>
 
     if (query != null)
     {
+      query = query.trim();
       if (query.length() > 0 &&
           ((query.charAt(0) >= 'a' && query.charAt(0) <= 'z') ||
            query.startsWith(SecurityConstants.AUTH_USER_PREFIX)))
