@@ -63,6 +63,7 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
+import org.santfeliu.webapp.util.GlobalMenuTypesFinder;
 import org.santfeliu.webapp.util.MenuTypesFinder;
 
 /**
@@ -92,6 +93,7 @@ public class NavigatorBean extends WebBean implements Serializable
   private String currentContextPanel;
   private int updateCount;
   private Leap inProgressLeap;
+  private MenuTypesFinder menuTypesFinder = new GlobalMenuTypesFinder();
 
   private static final List<String> DEFAULT_CONTEXT_PANELS =
     Arrays.asList("recents", "history", "favorites");
@@ -124,6 +126,21 @@ public class NavigatorBean extends WebBean implements Serializable
     MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);
 
     return baseTypeInfoMap.getBaseTypeIdList(topMenuItem.getMid());
+  }
+
+  public void clearBaseTypeInfos()
+  {
+    baseTypeInfoMap.clear();
+  }
+
+  public MenuTypesFinder getMenuTypesFinder()
+  {
+    return menuTypesFinder;
+  }
+
+  public void setMenuTypesFinder(MenuTypesFinder menuTypesFinder)
+  {
+    this.menuTypesFinder = menuTypesFinder;
   }
 
   public List<String> getContextPanels()
@@ -1133,8 +1150,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     private String findBaseTypeMid(String objectTypeId)
     {
-      MenuTypesFinder menuTypesFinder = new MenuTypesFinder();
-      MenuItemCursor typeMenuItem = 
+      MenuItemCursor typeMenuItem =
         menuTypesFinder.find(getSelectedMenuItem(), objectTypeId);
 
       return typeMenuItem == null || typeMenuItem.isNull() ? null :

@@ -30,14 +30,33 @@
  */
 package org.santfeliu.webapp.util;
 
-import java.io.Serializable;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.UserSessionBean;
+import static org.santfeliu.webapp.TemplateBean.CONTEXT_MID;
 
 /**
  *
  * @author realor
  */
-public interface MenuTypesFinder extends Serializable
+public class ContextMenuTypesFinder extends GlobalMenuTypesFinder
 {
-  public MenuItemCursor find(MenuItemCursor currentMenuItem, String typeId);
+  @Override
+  public MenuItemCursor find(MenuItemCursor currentMenuItem, String typeId)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    String contextMid = (String)userSessionBean.getAttribute(CONTEXT_MID);
+    if (contextMid != null)
+    {
+      MenuItemCursor cursor =
+        userSessionBean.getMenuModel().getMenuItem(contextMid);
+      MatchItem foundMenuItem = getMatchItem(cursor.getFirstChild(), typeId, null);
+
+      if (foundMenuItem != null && !foundMenuItem.getCursor().isNull())
+      {
+        return foundMenuItem.getCursor();
+      }
+    }
+
+    return super.find(currentMenuItem, typeId);
+  }
 }

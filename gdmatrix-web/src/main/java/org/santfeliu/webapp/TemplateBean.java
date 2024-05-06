@@ -33,10 +33,12 @@ package org.santfeliu.webapp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.FacesBean;
@@ -45,7 +47,10 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.util.ContextMenuTypesFinder;
+import org.santfeliu.webapp.util.GlobalMenuTypesFinder;
 import org.santfeliu.webapp.util.WebUtils;
+import static org.santfeliu.webapp.util.WebUtils.TOPWEB_PROPERTY;
 
 /**
  *
@@ -56,19 +61,34 @@ import org.santfeliu.webapp.util.WebUtils;
 @RequestScoped
 public class TemplateBean extends FacesBean implements Serializable
 {
-  private static final String TOPWEB_PROPERTY = "topweb";
-  private static final String HIGHLIGHTED_PROPERTY = "highlighted";
-  private static final String TOOLBAR_ENABLED = "toolbarEnabled";
-  private static final String TOOLBAR_MODE = "toolbarMode";
-  private static final String TOOLBAR_MODE_GLOBAL = "global";
-  private static final String TOOLBAR_MODE_CONTEXT = "context";
-  private static final String CONTEXT_MID = "contextMid";
+  public static final String CONTEXT_MID = "contextMid";
+  public static final String HIGHLIGHTED_PROPERTY = "highlighted";
+  public static final String TOOLBAR_ENABLED = "toolbarEnabled";
+  public static final String TOOLBAR_MODE = "toolbarMode";
+  public static final String TOOLBAR_MODE_GLOBAL = "global";
+  public static final String TOOLBAR_MODE_CONTEXT = "context";
 
   private String componentTree;
   private String username;
   private String password;
   private List<MenuItemCursor> highlightedItems;
   private String workspaceId;
+
+  @Inject
+  NavigatorBean navigatorBean;
+
+  @PostConstruct
+  public void init()
+  {
+    if (TOOLBAR_MODE_CONTEXT.equals(getToolbarMode()))
+    {
+      navigatorBean.setMenuTypesFinder(new ContextMenuTypesFinder());
+    }
+    else
+    {
+      navigatorBean.setMenuTypesFinder(new GlobalMenuTypesFinder());
+    }
+  }
 
   public String getUsername()
   {
@@ -171,6 +191,7 @@ public class TemplateBean extends FacesBean implements Serializable
     userSessionBean.setSelectedMid(mid);
     userSessionBean.executeSelectedMenuItem();
     userSessionBean.getAttributes().put(CONTEXT_MID, mid);
+    navigatorBean.clearBaseTypeInfos();
     highlightedItems = null;
   }
 
@@ -351,5 +372,4 @@ public class TemplateBean extends FacesBean implements Serializable
       printComponent(c, indent + 2, buffer);
     }
   }
-
 }
