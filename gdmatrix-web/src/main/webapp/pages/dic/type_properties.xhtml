@@ -27,7 +27,8 @@
       <h:outputText value="#{dicBundle.typeProperties_inheritedProperties}" rendered="#{not empty typePropertiesTabBean.supertypes}"/>
     </div>
 
-    <p:accordionPanel value="#{typePropertiesTabBean.supertypes}" var="supertype" activeIndex="null">
+    <p:accordionPanel value="#{typePropertiesTabBean.supertypes}" var="supertype" 
+                      activeIndex="null" multiple="true">
       <p:tab title="#{supertype.description}">
         <f:facet name="actions">
           <p:commandLink  action="#{navigatorBean.show('Type', supertype.typeId)}"
