@@ -13,7 +13,7 @@
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowIndexVar="rowIndex"
-               rendered="true" emptyMessage="#{objectBundle.no_results_found}">
+               rendered="true" emptyMessage="#{objectBundle.no_data}">
     <p:columns value="#{eventFinderBean.columns}" var="column"  columnIndexVar="i"
                filterable="false" sortable="false" resizable="false"
                headerText="#{applicationBean.translate(column.label)}"

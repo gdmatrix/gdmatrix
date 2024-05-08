@@ -12,7 +12,7 @@
                showGridlines="true" stripedRows="true"
                draggableRows="true" rowDragSelector=".drag"
                value="#{geoMapBean.style.layers}" var="layer"
-               emptyMessage="#{objectBundle.no_results_found}">
+               emptyMessage="#{objectBundle.no_data}">
     <p:ajax event="rowReorder" listener="#{geoMapLayersBean.onLayerReorder}" 
             update="@form:cnt:map_tabs:map_layers_table"/>
     

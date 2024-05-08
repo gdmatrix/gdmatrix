@@ -3,7 +3,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-  <h:outputText value="#{objectBundle.no_results_found}"
+  <h:outputText value="#{objectBundle.no_data}"
                 rendered="#{eventCopyTabBean.rows != null and eventCopyTabBean.rowCount == 0}" />
 
   <p:dataTable id="event_copy_preview_table"
@@ -16,7 +16,7 @@
                rowIndexVar="firstRow" first="#{eventCopyTabBean.firstRowIndex}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-               rowsPerPageTemplate="5,10,25,50" rows="10" emptyMessage="#{objectBundle.no_results_found}">
+               rowsPerPageTemplate="5,10,25,50" rows="10" emptyMessage="#{objectBundle.no_data}">
 
     <p:column headerText="#{agendaBundle.event_startDate}" styleClass="col-2">
       <h:outputText value="#{row.startDateTime}"

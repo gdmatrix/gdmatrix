@@ -13,7 +13,7 @@
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
                rows="10"
-               rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_results_found}">
+               rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_data}">
 
     <p:column headerText="#{dicBundle.type_typeId}" styleClass="col-3">
       <h:outputText value="#{row.typeId}" />

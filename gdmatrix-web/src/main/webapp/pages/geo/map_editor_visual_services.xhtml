@@ -11,7 +11,7 @@
   <p:dataTable id="map_services_table" size="small"
                showGridlines="true" stripedRows="true"
                value="#{geoMapServicesBean.serviceIds}" var="serviceId"
-               emptyMessage="#{objectBundle.no_results_found}">
+               emptyMessage="#{objectBundle.no_data}">
 
     <f:facet name="header">
       <div class="flex align-items-center">
@@ -161,7 +161,7 @@
       <h:outputText value="#{geoMapServicesBean.serviceCapabilities.srs}" style="max-height:60px;overflow: auto;display: block" />
     </h:panelGroup>
 
-    <p:dataTable value="#{geoMapServicesBean.serviceCapabilities.layers}" var="layer" emptyMessage="#{objectBundle.no_results_found}">
+    <p:dataTable value="#{geoMapServicesBean.serviceCapabilities.layers}" var="layer" emptyMessage="#{objectBundle.no_data}">
       <p:column>
         <f:facet name="header">
           <h:outputText value="Layer name:" />

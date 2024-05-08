@@ -143,7 +143,7 @@
 
                 <p:dataTable id="selected_contacts_table" 
                              var="sc" value="#{casePersonsTabBean.selectedContacts}" 
-                             size="small" rowIndexVar="i" emptyMessage="#{objectBundle.no_results_found}"
+                             size="small" rowIndexVar="i" emptyMessage="#{objectBundle.no_data}"
                              styleClass="invisible_header_table">   
                   <p:column styleClass="col-10">
                     <h:outputText value="#{sc.contactTypeLabel}: #{sc.value}"/>
@@ -269,7 +269,7 @@
                 <p:dataTable id="selected_representant_contacts_table" 
                              var="rsc" value="#{casePersonsTabBean.selectedRepresentantContacts}" 
                              size="small" rowIndexVar="i" 
-                             styleClass="invisible_header_table" emptyMessage="#{objectBundle.no_results_found}">   
+                             styleClass="invisible_header_table" emptyMessage="#{objectBundle.no_data}">   
                   <p:column styleClass="col-10">
                     <h:outputText value="#{rsc.contactTypeLabel}: #{rsc.value}"/>
                   </p:column> 

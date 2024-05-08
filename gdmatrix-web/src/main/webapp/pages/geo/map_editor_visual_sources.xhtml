@@ -11,7 +11,7 @@
   <p:dataTable id="map_sources_table" size="small" 
                showGridlines="true" stripedRows="true"
                value="#{geoMapSourcesBean.sourceIds}" var="sourceId"
-               emptyMessage="#{objectBundle.no_results_found}">
+               emptyMessage="#{objectBundle.no_data}">
 
     <f:facet name="header">
       <div class="flex align-items-center">
@@ -237,7 +237,7 @@
               <p:dataTable id="source_tile_table" 
                            value="#{geoMapSourcesBean.editingSource.tiles}" var="tile"
                            rowIndexVar="tileIndex" size="small"
-                           emptyMessage="#{objectBundle.no_results_found}">
+                           emptyMessage="#{objectBundle.no_data}">
                 <p:column styleClass="w-full">
                   <f:facet name="header">
                     Url

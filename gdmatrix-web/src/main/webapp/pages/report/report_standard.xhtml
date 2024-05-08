@@ -143,7 +143,7 @@
                  rowIndexVar="firstRow" first="#{reportObjectBean.firstRow}"
                  styleClass="w-full p-2" editable="true" editMode="cell"
                  rendered="#{empty reportObjectBean.formSelector}"
-                 emptyMessage="#{objectBundle.no_results_found}" >
+                 emptyMessage="#{objectBundle.no_data}" >
 
       <p:column headerText="#{reportBundle.parameterName}" styleClass="col-2">
         <h:outputText value="#{pd.name}" />
