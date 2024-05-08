@@ -187,12 +187,13 @@ public class TemplateBean extends FacesBean implements Serializable
 
   public void changeSection(String mid)
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    userSessionBean.setSelectedMid(mid);
-    userSessionBean.executeSelectedMenuItem();
-    userSessionBean.getAttributes().put(CONTEXT_MID, mid);
     navigatorBean.clearBaseTypeInfos();
     highlightedItems = null;
+
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.getAttributes().put(CONTEXT_MID, mid);
+    userSessionBean.setSelectedMid(mid);
+    userSessionBean.executeSelectedMenuItem();
   }
 
   public void show(String mid)
