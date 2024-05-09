@@ -33,6 +33,7 @@ package org.santfeliu.webapp.util;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.NavigatorBean;
 
 /**
@@ -42,18 +43,33 @@ import org.santfeliu.webapp.NavigatorBean;
 public class GlobalMenuTypesFinder implements MenuTypesFinder
 {
   @Override
-  public MenuItemCursor find(MenuItemCursor currentMenuItem, String typeId)
+  public String findTopMid()
   {
-    MenuItemCursor menuItemCursor = null;
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor currentMenuItem = userSessionBean.getSelectedMenuItem();
+
     MenuItemCursor topWebMenuItem =
       WebUtils.getTopWebMenuItem(currentMenuItem);
-    MatchItem foundMenuItem =
+
+    return topWebMenuItem.getMid();
+  }
+
+  @Override
+  public String findTypeMid(String typeId)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor currentMenuItem = userSessionBean.getSelectedMenuItem();
+
+    MenuItemCursor topWebMenuItem =
+      WebUtils.getTopWebMenuItem(currentMenuItem);
+
+    MatchItem foundMatchItem =
       getMatchItem(topWebMenuItem.getFirstChild(), typeId, null);
 
-    if (foundMenuItem != null)
-      menuItemCursor = foundMenuItem.getCursor();
+    if (foundMatchItem != null)
+      return foundMatchItem.getCursor().getMid();
 
-    return menuItemCursor;
+    return null;
   }
 
   protected MatchItem getMatchItem(MenuItemCursor menuItem, String typeId,

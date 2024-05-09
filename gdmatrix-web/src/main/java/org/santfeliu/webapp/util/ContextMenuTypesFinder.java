@@ -30,9 +30,10 @@
  */
 package org.santfeliu.webapp.util;
 
+import javax.enterprise.inject.spi.CDI;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
-import static org.santfeliu.webapp.TemplateBean.CONTEXT_MID;
+import org.santfeliu.webapp.TemplateBean;
 
 /**
  *
@@ -41,22 +42,31 @@ import static org.santfeliu.webapp.TemplateBean.CONTEXT_MID;
 public class ContextMenuTypesFinder extends GlobalMenuTypesFinder
 {
   @Override
-  public MenuItemCursor find(MenuItemCursor currentMenuItem, String typeId)
+  public String findTopMid()
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    String contextMid = (String)userSessionBean.getAttribute(CONTEXT_MID);
+    TemplateBean templateBean = CDI.current().select(TemplateBean.class).get();
+    return templateBean.getContextMid();
+  }
+
+  @Override
+  public String findTypeMid(String typeId)
+  {
+    TemplateBean templateBean = CDI.current().select(TemplateBean.class).get();
+    String contextMid = templateBean.getContextMid();
+
     if (contextMid != null)
     {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       MenuItemCursor cursor =
         userSessionBean.getMenuModel().getMenuItem(contextMid);
       MatchItem foundMenuItem = getMatchItem(cursor.getFirstChild(), typeId, null);
 
       if (foundMenuItem != null && !foundMenuItem.getCursor().isNull())
       {
-        return foundMenuItem.getCursor();
+        return foundMenuItem.getCursor().getMid();
       }
     }
 
-    return super.find(currentMenuItem, typeId);
+    return super.findTypeMid(typeId);
   }
 }

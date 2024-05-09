@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.util;
 
 import java.io.Serializable;
-import org.santfeliu.faces.menu.model.MenuItemCursor;
 
 /**
  *
@@ -39,5 +38,7 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
  */
 public interface MenuTypesFinder extends Serializable
 {
-  public MenuItemCursor find(MenuItemCursor currentMenuItem, String typeId);
+  public String findTopMid();
+
+  public String findTypeMid(String typeId);
 }

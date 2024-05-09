@@ -48,7 +48,6 @@ import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.util.ContextMenuTypesFinder;
-import org.santfeliu.webapp.util.GlobalMenuTypesFinder;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.santfeliu.webapp.util.WebUtils.TOPWEB_PROPERTY;
 
@@ -61,18 +60,17 @@ import static org.santfeliu.webapp.util.WebUtils.TOPWEB_PROPERTY;
 @RequestScoped
 public class TemplateBean extends FacesBean implements Serializable
 {
-  public static final String CONTEXT_MID = "contextMid";
+  public static final String TOOLBAR_ENABLED_PROPERTY = "toolbarEnabled";
   public static final String HIGHLIGHTED_PROPERTY = "highlighted";
-  public static final String TOOLBAR_ENABLED = "toolbarEnabled";
-  public static final String TOOLBAR_MODE = "toolbarMode";
-  public static final String TOOLBAR_MODE_GLOBAL = "global";
-  public static final String TOOLBAR_MODE_CONTEXT = "context";
+  public static final String CONTEXT_PROPERTY = "context";
+  public static final String CONTEXT_AUTO = "auto";
 
   private String componentTree;
   private String username;
   private String password;
   private List<MenuItemCursor> highlightedItems;
   private String workspaceId;
+  private String contextMid;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -80,14 +78,7 @@ public class TemplateBean extends FacesBean implements Serializable
   @PostConstruct
   public void init()
   {
-    if (TOOLBAR_MODE_CONTEXT.equals(getToolbarMode()))
-    {
-      navigatorBean.setMenuTypesFinder(new ContextMenuTypesFinder());
-    }
-    else
-    {
-      navigatorBean.setMenuTypesFinder(new GlobalMenuTypesFinder());
-    }
+    navigatorBean.setMenuTypesFinder(new ContextMenuTypesFinder());
   }
 
   public String getUsername()
@@ -113,16 +104,8 @@ public class TemplateBean extends FacesBean implements Serializable
   public String getWebTitle()
   {
     ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
-    String toolbarMode = getToolbarMode();
-    MenuItemCursor cursor;
-    if (TOOLBAR_MODE_GLOBAL.equals(toolbarMode))
-    {
-      cursor = getTopwebMenuItem();
-    }
-    else
-    {
-      cursor = getContextMenuItem();
-    }
+    MenuItemCursor cursor = getContextMenuItem();
+
     return applicationBean.translate(cursor.getProperty("description"));
   }
 
@@ -132,18 +115,10 @@ public class TemplateBean extends FacesBean implements Serializable
     {
       workspaceId = UserSessionBean.getCurrentInstance().getWorkspaceId();
       highlightedItems = new ArrayList<>();
-      String toolbarMode = getToolbarMode();
 
-      if (TOOLBAR_MODE_GLOBAL.equals(toolbarMode))
-      {
-        MenuItemCursor cursor = getTopwebMenuItem();
-        addHighlightedMenuItems(cursor);
-      }
-      else
-      {
-        MenuItemCursor cursor = getContextMenuItem();
-        addContextMenuItems(cursor);
-      }
+      MenuItemCursor cursor = getContextMenuItem();
+
+      addHighlightedMenuItems(cursor);
     }
     return highlightedItems;
   }
@@ -185,17 +160,24 @@ public class TemplateBean extends FacesBean implements Serializable
     return displayName.length() > 0 ? displayName.substring(0, 1) : "?";
   }
 
-  public void changeSection(String mid)
+  // execute mid with context chnage
+  public void changeContext(String mid)
   {
-    navigatorBean.clearBaseTypeInfos();
-    highlightedItems = null;
-
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    userSessionBean.getAttributes().put(CONTEXT_MID, mid);
     userSessionBean.setSelectedMid(mid);
+
+    String ctxMid = contextMid;
+    contextMid = getContextMid(true);
+
+    if (!contextMid.equals(ctxMid)) // context has changed
+    {
+      // force toolbar & menu update
+      highlightedItems = null;
+    }
     userSessionBean.executeSelectedMenuItem();
   }
 
+  // execute mid without context change
   public void show(String mid)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -247,15 +229,11 @@ public class TemplateBean extends FacesBean implements Serializable
     }
   }
 
-  public boolean isSectionMenuItem(MenuItemCursor cursor)
+  public boolean isContextChangeMenuItem(MenuItemCursor cursor)
   {
-    if (TOOLBAR_MODE_CONTEXT.equals(getToolbarMode()))
-    {
-      MenuItemCursor parent = cursor.getParent();
-      return !parent.isRoot() &&
-             "true".equals(parent.getDirectProperty(TOPWEB_PROPERTY));
-    }
-    return false;
+    if (cursor.getDirectProperty(CONTEXT_PROPERTY) != null) return true;
+
+    return CONTEXT_AUTO.equals(cursor.getProperty(CONTEXT_PROPERTY));
   }
 
   public void showComponentTree()
@@ -276,53 +254,43 @@ public class TemplateBean extends FacesBean implements Serializable
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     return !"false".equals(userSessionBean.getSelectedMenuItem()
-      .getProperty(TOOLBAR_ENABLED));
+      .getProperty(TOOLBAR_ENABLED_PROPERTY));
+  }
+
+  public String getContextMid()
+  {
+    return getContextMid(false);
+  }
+
+  public String getContextMid(boolean update)
+  {
+    if (contextMid == null || update)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+      MenuItemCursor ctxCursor = cursor.getClone();
+      while (!ctxCursor.isRoot() &&
+             !"true".equals(ctxCursor.getDirectProperty(TOPWEB_PROPERTY)) &&
+             ctxCursor.getDirectProperty(CONTEXT_PROPERTY) == null)
+      {
+        ctxCursor.moveParent();
+      }
+      contextMid = ctxCursor.getMid();
+    }
+    return contextMid;
+  }
+
+  public void setContextMid(String mid)
+  {
+    contextMid = mid;
   }
 
   /* private methods */
 
-  private String getToolbarMode()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
-    String toolbarMode = cursor.getProperty(TOOLBAR_MODE);
-
-    if (toolbarMode == null) toolbarMode = TOOLBAR_MODE_GLOBAL;
-    return toolbarMode;
-  }
-
-  private MenuItemCursor getTopwebMenuItem()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
-    while (!cursor.isRoot() &&
-           !"true".equals(cursor.getDirectProperty(TOPWEB_PROPERTY)))
-    {
-      cursor.moveParent();
-    }
-    return cursor;
-  }
-
   private MenuItemCursor getContextMenuItem()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    String contextMid = (String)userSessionBean.getAttribute(CONTEXT_MID);
-    if (contextMid != null)
-      return userSessionBean.getMenuModel().getMenuItem(contextMid);
-
-    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
-    MenuItemCursor ctxCursor = null;
-    while (!cursor.isRoot() &&
-           !"true".equals(cursor.getDirectProperty(TOPWEB_PROPERTY)))
-    {
-      ctxCursor = cursor.getClone();
-      cursor.moveParent();
-    }
-    if (ctxCursor == null) return userSessionBean.getSelectedMenuItem();
-
-    userSessionBean.getAttributes().put(CONTEXT_MID, ctxCursor.getMid());
-
-    return ctxCursor;
+    return userSessionBean.getMenuModel().getMenuItem(getContextMid());
   }
 
   private void addHighlightedMenuItems(MenuItemCursor cursor)
@@ -339,19 +307,6 @@ public class TemplateBean extends FacesBean implements Serializable
           highlightedItems.add(cursor.getClone());
         }
         addHighlightedMenuItems(cursor);
-        cursor.moveNext();
-      }
-    }
-  }
-
-  private void addContextMenuItems(MenuItemCursor cursor)
-  {
-    if (cursor.hasChildren())
-    {
-      cursor.moveFirstChild();
-      while (!cursor.isNull())
-      {
-        highlightedItems.add(cursor.getClone());
         cursor.moveNext();
       }
     }

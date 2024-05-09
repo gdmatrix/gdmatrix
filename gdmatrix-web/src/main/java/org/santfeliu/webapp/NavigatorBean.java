@@ -102,30 +102,29 @@ public class NavigatorBean extends WebBean implements Serializable
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
-    MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);
 
     String baseTypeId = selectedMenuItem.getProperty(BASE_TYPEID_PROPERTY);
     if (baseTypeId == null) return null;
 
-    return baseTypeInfoMap.getBaseTypeInfo(topMenuItem.getMid(), baseTypeId);
+    if (FacesContext.getCurrentInstance().isPostback()) // POST
+    {
+      return baseTypeInfoMap.getBaseTypeInfo(baseTypeId);
+    }
+    else // GET
+    {
+      return baseTypeInfoMap.getBaseTypeInfo(baseTypeId,
+        selectedMenuItem.getMid());
+    }
   }
 
   public BaseTypeInfo getBaseTypeInfo(String baseTypeId)
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
-    MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);
-
-    return baseTypeInfoMap.getBaseTypeInfo(topMenuItem.getMid(), baseTypeId);
+    return baseTypeInfoMap.getBaseTypeInfo(baseTypeId);
   }
 
   public List<String> getBaseTypeIdList()
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
-    MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);
-
-    return baseTypeInfoMap.getBaseTypeIdList(topMenuItem.getMid());
+    return baseTypeInfoMap.getBaseTypeIdList();
   }
 
   public void clearBaseTypeInfos()
@@ -1119,42 +1118,55 @@ public class NavigatorBean extends WebBean implements Serializable
     HashMap<String, Map<String, BaseTypeInfo>>
   {
 
-    public BaseTypeInfo getBaseTypeInfo(String topMid, String baseTypeId)
+    public BaseTypeInfo getBaseTypeInfo(String baseTypeId)
     {
-      Map<String, BaseTypeInfo> topWebMap = this.get(topMid);
-      if (topWebMap == null)
-        topWebMap = new HashMap<>();
+      return getBaseTypeInfo(baseTypeId, null);
+    }
 
-      BaseTypeInfo baseTypeInfo = topWebMap.get(baseTypeId);
+    public BaseTypeInfo getBaseTypeInfo(String baseTypeId, String baseTypeMid)
+    {
+      String contextKey = getContextKey();
+
+      Map<String, BaseTypeInfo> contextMap = this.get(contextKey);
+      if (contextMap == null)
+      {
+        contextMap = new HashMap<>();
+        this.put(contextKey, contextMap);
+      }
+
+      BaseTypeInfo baseTypeInfo = contextMap.get(baseTypeId);
       if (baseTypeInfo == null)
       {
-        String baseTypeMid = findBaseTypeMid(baseTypeId);
-        if (baseTypeMid == null) return null;
+        if (baseTypeMid == null)
+        {
+          baseTypeMid = menuTypesFinder.findTypeMid(baseTypeId);
+          if (baseTypeMid == null) return null;
+        }
 
         baseTypeInfo = new BaseTypeInfo(baseTypeMid);
-        topWebMap.put(baseTypeId, baseTypeInfo);
-        this.put(topMid, topWebMap);
+        contextMap.put(baseTypeId, baseTypeInfo);
       }
 
       return baseTypeInfo;
     }
 
-    public List<String> getBaseTypeIdList(String topMid)
+    public List<String> getBaseTypeIdList()
     {
-      Map<String, BaseTypeInfo> map = this.get(topMid);
-      if (map != null)
-        return new ArrayList<>(map.keySet());
+      String contextKey = getContextKey();
+
+      Map<String, BaseTypeInfo> contextMap = this.get(contextKey);
+      if (contextMap != null)
+        return new ArrayList<>(contextMap.keySet());
       else
         return Collections.EMPTY_LIST;
     }
 
-    private String findBaseTypeMid(String objectTypeId)
+    private String getContextKey()
     {
-      MenuItemCursor typeMenuItem =
-        menuTypesFinder.find(getSelectedMenuItem(), objectTypeId);
-
-      return typeMenuItem == null || typeMenuItem.isNull() ? null :
-        typeMenuItem.getMid();
+      String topMid = menuTypesFinder.findTopMid();
+      String contextKey = topMid + "/" +
+        UserSessionBean.getCurrentInstance().getWorkspaceId();
+      return contextKey;
     }
   }
 }

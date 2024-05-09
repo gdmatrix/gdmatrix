@@ -29,30 +29,30 @@
                 <p:commandLink action="#{templateBean.show(item.mid)}" 
                                onclick="PF('menuSideBar').hide();" 
                                rendered="#{item.action != 'url' 
-                                           and not templateBean.isSectionMenuItem(item)}"
+                                           and not templateBean.isContextChangeMenuItem(item)}"
                                process="@form:menu_sb" 
                                update="@form:cnt">
-                  <ui:fragment rendered="#{item.properties.icon != null}">
-                    <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                  <ui:fragment rendered="#{item.directProperties.icon != null}">
+                    <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
                   </ui:fragment>
                   #{applicationBean.translate(item.label)}
                 </p:commandLink>
-                <p:commandLink action="#{templateBean.changeSection(item.mid)}" 
+                <p:commandLink action="#{templateBean.changeContext(item.mid)}" 
                                onclick="PF('menuSideBar').hide();" 
                                rendered="#{item.action != 'url'
-                               and templateBean.isSectionMenuItem(item)}"
+                               and templateBean.isContextChangeMenuItem(item)}"
                                process="@form:menu_sb" 
                                update="@form:cnt @form:menubar @form:app_toolbar">
-                  <ui:fragment rendered="#{item.properties.icon != null}">
-                    <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                  <ui:fragment rendered="#{item.directProperties.icon != null}">
+                    <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
                   </ui:fragment>
                   #{applicationBean.translate(item.label)}
                 </p:commandLink>
                 <p:link href="#{item.properties.url}"
                               rendered="#{item.action == 'url'}"
                               target="#{item.properties.target == null ? '_self' : item.properties.target}">
-                  <ui:fragment rendered="#{item.properties.icon != null}">
-                    <i class="ui-icon #{item.properties.icon} mr-1'}" />
+                  <ui:fragment rendered="#{item.directProperties.icon != null}">
+                    <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
                   </ui:fragment>
                   #{applicationBean.translate(item.label)}                
                 </p:link>
@@ -320,6 +320,8 @@
 
     <p:ajaxStatus onstart="showOverlay()" onsuccess="hideOverlay()" delay="2000" />
 
+    <gdm:saveState value="#{templateBean.contextMid}" />
+    
     <p:dialog id="component_tree"
               widgetVar="componentTree" modal="true" closable="true"
               resizable="false">
