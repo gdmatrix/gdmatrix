@@ -58,6 +58,7 @@ public class SecurityUtils
   private static SecurityProvider defaultSecurityProvider;
   private static TimeStampService defaultTimeStampService;
   private static URLCredentialsCipher urlCredentialsCipher;
+  private static boolean timeStampServicePreferred;
   public static final String REPRESENTANT_PATTERN = "\\(R: (\\w+)\\)";
 
   static
@@ -74,6 +75,11 @@ public class SecurityUtils
         "org.santfeliu.security.urlCredentialsCipher.secret");
 
       urlCredentialsCipher = new URLCredentialsCipher(secret);
+
+      String tspPreferred =
+        MatrixConfig.getProperty("org.santfeliu.security.tspPreferred");
+
+      timeStampServicePreferred = "true".equals(tspPreferred);
 
       String tspUrl = MatrixConfig.getProperty("org.santfeliu.security.tspURL");
       if (!StringUtils.isBlank(tspUrl))
@@ -92,6 +98,11 @@ public class SecurityUtils
     {
       throw new RuntimeException(ex);
     }
+  }
+
+  public static boolean isTimeStampServicePreferred()
+  {
+    return timeStampServicePreferred;
   }
 
   public static SecurityProvider getSecurityProvider()

@@ -1342,7 +1342,7 @@ public class XMLSignedDocument implements SignedDocument
 
       byte[] cms;
       TimeStampService timeStampService = SecurityUtils.getTimeStampService();
-      if (timeStampService != null)
+      if (timeStampService != null && SecurityUtils.isTimeStampServicePreferred())
       {
         cms = timeStampService.timestamp(digestTst, HASH_ALGO).getEncoded();
       }
