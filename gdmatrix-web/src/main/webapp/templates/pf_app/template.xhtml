@@ -20,7 +20,11 @@
                        process="@this"
                        update="@form:cnt @form:menubar @form:app_toolbar"
                        value="#{templateBean.webTitle}" 
+                       rendered="#{userSessionBean.selectedMenuItem.properties.topContextEnabled == 'true'}"
                        onstart="PF('menuSideBar').hide();" />
+        <h:outputText styleClass="flex-grow-1 font-bold block" 
+                      value="#{templateBean.webTitle}" 
+                      rendered="#{userSessionBean.selectedMenuItem.properties.topContextEnabled != 'true'}" />
         <p:button onclick="PF('menuSideBar').hide();return false;" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
       </div>
 
