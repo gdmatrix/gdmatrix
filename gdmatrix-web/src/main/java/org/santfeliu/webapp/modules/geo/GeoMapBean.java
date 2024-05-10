@@ -43,6 +43,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -578,8 +579,7 @@ public class GeoMapBean extends WebBean implements Serializable
     String mapName = getProperty(MAP_NAME_PROPERTY);
     if (mapName == null)
     {
-      HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
-      if ("GET".equals(request.getMethod()))
+      if (!FacesContext.getCurrentInstance().isPostback()) // GET
       {
         mapName = (String)parameters.get(MAP_NAME_PROPERTY);
       }
@@ -604,35 +604,51 @@ public class GeoMapBean extends WebBean implements Serializable
       }
       catch (Exception ex)
       {
-        String message = ex.getMessage();
-        if (message != null && message.contains("ACTION_DENIED"))
-        {
-          try
-          {
-            Map<String, List<String>> params = new HashMap<>();
-            for (String name : parameters.keySet())
-            {
-              String value = parameters.get(name);
-              params.put(name, Collections.singletonList(value));
-            }
-            String url = extContext.encodeRedirectURL("/login.faces", params);
-            extContext.redirect(url);
-            getFacesContext().responseComplete();
-          }
-          catch (Exception ioex)
-          {
-            // ignore
-          }
-        }
-        else
-        {
-          error(ex);
-          setView("catalogue");
-        }
+        processError(ex, parameters);
       }
     }
     else
     {
+      setView("catalogue");
+    }
+  }
+
+  void processError(Exception ex, Map<String, String> parameters)
+  {
+    ExternalContext extContext = getExternalContext();
+
+    String message = ex.getMessage();
+    if (message != null && message.contains("ACTION_DENIED"))
+    {
+      try
+      {
+        Map<String, List<String>> params = new HashMap<>();
+        if (FacesContext.getCurrentInstance().isPostback()) // POST
+        {
+          List<String> values = new ArrayList<>();
+          values.add(UserSessionBean.getCurrentInstance().getSelectedMid());
+          params.put("xmid", values);
+        }
+        else // GET
+        {
+          for (String name : parameters.keySet())
+          {
+            String value = parameters.get(name);
+            params.put(name, Collections.singletonList(value));
+          }
+        }
+        String url = extContext.encodeRedirectURL("/login.faces", params);
+        extContext.redirect(url);
+        getFacesContext().responseComplete();
+      }
+      catch (Exception ioex)
+      {
+        // ignore
+      }
+    }
+    else
+    {
+      error(ex);
       setView("catalogue");
     }
   }
