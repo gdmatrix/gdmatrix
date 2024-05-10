@@ -103,6 +103,16 @@ public class TemplateBean extends FacesBean implements Serializable
 
   public String getWebTitle()
   {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    cursor = WebUtils.getTopWebMenuItem(cursor);
+
+    ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
+    return applicationBean.translate(cursor.getProperty("description"));
+  }
+
+  public String getContextTitle()
+  {
     ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
     MenuItemCursor cursor = getContextMenuItem();
 
@@ -160,14 +170,24 @@ public class TemplateBean extends FacesBean implements Serializable
     return displayName.length() > 0 ? displayName.substring(0, 1) : "?";
   }
 
-  // execute mid with context chnage
+  // execute mid with context chnage (if mid is null, mid = topWebMid)
   public void changeContext(String mid)
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    userSessionBean.setSelectedMid(mid);
-
     String ctxMid = contextMid;
-    contextMid = getContextMid(true);
+
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    if (StringUtils.isBlank(mid))
+    {
+      MenuItemCursor topCursor =
+        WebUtils.getTopWebMenuItem(userSessionBean.getSelectedMenuItem());
+      topCursor.select();
+      contextMid = topCursor.getMid();
+    }
+    else
+    {
+      userSessionBean.setSelectedMid(mid);
+      contextMid = getContextMid(true);
+    }
 
     if (!contextMid.equals(ctxMid)) // context has changed
     {
@@ -301,12 +321,18 @@ public class TemplateBean extends FacesBean implements Serializable
       cursor.moveFirstChild();
       while (!cursor.isNull())
       {
-        if ("true".equals(cursor.getDirectProperty(HIGHLIGHTED_PROPERTY))
-            && cursor.getDirectProperty("icon") != null)
+        if (cursor.getDirectProperty(CONTEXT_PROPERTY) == null)
         {
-          highlightedItems.add(cursor.getClone());
+          if ("true".equals(cursor.getDirectProperty(HIGHLIGHTED_PROPERTY))
+              && cursor.getDirectProperty("icon") != null)
+          {
+            highlightedItems.add(cursor.getClone());
+          }
+          else
+          {
+            addHighlightedMenuItems(cursor);
+          }
         }
-        addHighlightedMenuItems(cursor);
         cursor.moveNext();
       }
     }
