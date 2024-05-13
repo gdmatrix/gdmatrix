@@ -360,6 +360,7 @@ public class HtmlFormImporter
         view.setRequired("true".equals(element.getAttribute("required")));
         view.setDisabled(element.getAttribute("disabled"));
         view.setTabindex(getInteger(element.getAttribute("tabindex")));
+        view.setHelpText(element.getAttribute("helptext"));        
         componentView = view;
       }
       else if (name.equalsIgnoreCase("img"))

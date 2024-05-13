@@ -162,6 +162,10 @@ public class HtmlFormExporter
       {
         writer.write(" disabled=\"" + view.getDisabled() + "\"");
       }
+      if (!StringUtils.isBlank(view.getHelpText()))
+      {
+        writer.write(" helptext=\"" + view.getHelpText() + "\"");
+      }
       writer.write(" style=\"" + getStyle(view) + "\"></textarea>\n");
     }
     else if (componentView instanceof InputTextView)

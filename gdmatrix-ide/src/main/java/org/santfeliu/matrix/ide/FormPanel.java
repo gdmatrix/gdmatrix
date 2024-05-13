@@ -96,7 +96,8 @@ public class FormPanel extends DocumentPanel
   private JToggleButton accessibilityButton = new JToggleButton();
   private JButton repairOutputOrderButton = new JButton();
   private JButton repairTabIndexesButton = new JButton();
-  private JButton repairLabelsButton = new JButton();  
+  private JButton repairLabelsButton = new JButton();
+  private JButton repairInfoTextsButton = new JButton();    
   private JCheckBox showIdsCheckBox = new JCheckBox();
   private JCheckBox showTabIndexesCheckBox = new JCheckBox();
   private JCheckBox showCoordinatesCheckBox = new JCheckBox();
@@ -347,6 +348,17 @@ public class FormPanel extends DocumentPanel
             repairLabelsButton_actionPerformed(e);
           }
         });
+
+    repairInfoTextsButton.setText("Repair info texts");
+    repairInfoTextsButton.setVisible(false);
+    repairInfoTextsButton.addActionListener(new ActionListener()
+        {
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            repairInfoTextsButton_actionPerformed(e);
+          }
+        });
     
     showIdsCheckBox.setText("Show ids");
     showIdsCheckBox.setVisible(false);
@@ -410,6 +422,7 @@ public class FormPanel extends DocumentPanel
     toolBar.add(showCoordinatesCheckBox, null);
     toolBar.add(showOutputOrderCheckBox, null);
     toolBar.add(repairLabelsButton, null);
+    toolBar.add(repairInfoTextsButton, null);
     toolBar.add(repairTabIndexesButton, null);
     toolBar.add(repairOutputOrderButton, null);
     
@@ -625,6 +638,7 @@ public class FormPanel extends DocumentPanel
       repairOutputOrderButton.setVisible(true);
       repairTabIndexesButton.setVisible(true);
       repairLabelsButton.setVisible(true);
+      repairInfoTextsButton.setVisible(true);      
       showIdsCheckBox.setVisible(true);
       showTabIndexesCheckBox.setVisible(true);
       showCoordinatesCheckBox.setVisible(true);
@@ -635,6 +649,7 @@ public class FormPanel extends DocumentPanel
       repairOutputOrderButton.setVisible(false);
       repairTabIndexesButton.setVisible(false);
       repairLabelsButton.setVisible(false);
+      repairInfoTextsButton.setVisible(false);      
       showIdsCheckBox.setVisible(false);
       showTabIndexesCheckBox.setVisible(false);
       showCoordinatesCheckBox.setVisible(false);
@@ -663,6 +678,15 @@ public class FormPanel extends DocumentPanel
   private void repairLabelsButton_actionPerformed(ActionEvent e)
   {
     if (AccessibilityUtils.repairLabels(designer.getComponentViews()))
+    {
+      designer.formChanged();
+      setModified(true);
+    }
+  }
+
+  private void repairInfoTextsButton_actionPerformed(ActionEvent e)
+  {
+    if (AccessibilityUtils.repairInfoTexts(designer.getComponentViews()))
     {
       designer.formChanged();
       setModified(true);

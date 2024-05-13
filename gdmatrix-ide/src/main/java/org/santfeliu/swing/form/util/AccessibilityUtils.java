@@ -37,6 +37,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.swing.form.ComponentView;
 import org.santfeliu.swing.form.view.ButtonView;
 import org.santfeliu.swing.form.view.CheckBoxView;
@@ -54,8 +55,10 @@ import org.santfeliu.swing.form.view.SelectBoxView;
 public class AccessibilityUtils
 {
   private static final int COMPONENT_POSITION_ERROR_MARGIN = 8; //px
+  private static final int INFO_TEXTS_MAX_DISTANCE = 16; //px  
   
-  public static boolean repairTabIndexes(Collection<ComponentView> componentViews)
+  public static boolean repairTabIndexes(Collection<ComponentView> 
+    componentViews)
   {    
     boolean changes = false;
     List<ComponentView> auxList = 
@@ -105,10 +108,14 @@ public class AccessibilityUtils
   }
   
   public static boolean repairLabels(Collection<ComponentView> componentViews)
-  {
-    boolean changes = false;
-    Map<ComponentView, List<ComponentView>> candidatesMap = new HashMap(); //Input -> Left/Above Candidates
-    Map<ComponentView, ComponentView> assignationMap = new HashMap(); //Input -> Output    
+  {   
+    boolean changes;
+    //Clear invalid forElement
+    changes = clearAllInvalidForElementValues(componentViews);
+    //Input -> Left/Above Candidates
+    Map<ComponentView, List<ComponentView>> candidatesMap = new HashMap(); 
+    //Input -> Output
+    Map<ComponentView, ComponentView> assignationMap = new HashMap();     
     List<ComponentView> componentsToCreate = new ArrayList();
     List<ComponentView> componentsToRemove = new ArrayList();
     List<ComponentView> inputComponents = getInputComponents(componentViews);
@@ -117,10 +124,12 @@ public class AccessibilityUtils
       if (!hasLabelAssigned(inputComponent, componentViews))
       {  
         candidatesMap.put(inputComponent, new ArrayList());
-        ComponentView horizCandidateComponent = getHorizontalOutputComponent(inputComponent, componentViews);
+        ComponentView horizCandidateComponent = 
+          getHorizontalLabelCandidate(inputComponent, componentViews);
         if (horizCandidateComponent != null) 
           candidatesMap.get(inputComponent).add(horizCandidateComponent);
-        ComponentView vertCandidateComponent = getVerticalOutputComponent(inputComponent, componentViews);
+        ComponentView vertCandidateComponent = 
+          getVerticalLabelCandidate(inputComponent, componentViews);
         if (vertCandidateComponent != null) 
           candidatesMap.get(inputComponent).add(vertCandidateComponent);
       }
@@ -202,6 +211,60 @@ public class AccessibilityUtils
     return changes;
   }
   
+  public static boolean repairInfoTexts(Collection componentViews)
+  {
+    boolean changes = false;
+    //Input -> Right output
+    Map<ComponentView, ComponentView> infoTextMap = new HashMap(); 
+    //Input -> Below output
+    Map<ComponentView, ComponentView> helpTextMap = new HashMap();     
+    
+    List<ComponentView> inputComponents = getInputComponents(componentViews);
+    for (ComponentView inputComponent : inputComponents)
+    {
+      if (inputComponent instanceof InputTextView || 
+        inputComponent instanceof InputTextAreaView || 
+        inputComponent instanceof SelectBoxView)
+      {
+        if (!hasInfoTextAssigned(inputComponent))
+        {
+          ComponentView candidate = getRightComponent(inputComponent, 
+            componentViews, INFO_TEXTS_MAX_DISTANCE);
+          if (candidate != null && isValidInfoTextCandidate(candidate)) 
+            infoTextMap.put(inputComponent, candidate);
+        }
+        if (!hasHelpTextAssigned(inputComponent))
+        {
+          ComponentView candidate = getBelowComponent(inputComponent, 
+            componentViews, INFO_TEXTS_MAX_DISTANCE);
+          if (candidate != null && isValidHelpTextCandidate(candidate)) 
+            helpTextMap.put(inputComponent, candidate);
+        }      
+      }
+    }
+    
+    for (ComponentView inputComponent : infoTextMap.keySet())
+    {
+      ComponentView outputComponent = infoTextMap.get(inputComponent);
+      setInfoText(inputComponent, getText(outputComponent));
+      componentViews.remove(outputComponent);
+      changes = true;
+    }
+
+    for (ComponentView inputComponent : helpTextMap.keySet())
+    {
+      ComponentView outputComponent = helpTextMap.get(inputComponent);
+      if (componentViews.contains(outputComponent)) //not used as infoText
+      {
+        setHelpText(inputComponent, getText(outputComponent));
+        componentViews.remove(outputComponent);
+        changes = true;
+      }
+    }
+    
+    return changes;
+  }  
+  
   public static boolean repairOutputOrder(Collection componentViews)
   {
     boolean changes = false;
@@ -226,9 +289,11 @@ public class AccessibilityUtils
       public int compare(Object o1, Object o2)
       {
         ComponentView c1 = (ComponentView)o1;
-        int outputOrder1 = (c1.getOutputOrder() == null ? 0 : c1.getOutputOrder());
+        int outputOrder1 = 
+          (c1.getOutputOrder() == null ? 0 : c1.getOutputOrder());
         ComponentView c2 = (ComponentView)o2;
-        int outputOrder2 = (c2.getOutputOrder() == null ? 0 : c2.getOutputOrder());
+        int outputOrder2 = 
+          (c2.getOutputOrder() == null ? 0 : c2.getOutputOrder());
         return outputOrder1 - outputOrder2;
       }
     });
@@ -274,11 +339,24 @@ public class AccessibilityUtils
   {
     if (componentView.getId() == null)
     {
-      componentView.setId(componentView.getX() + "-" + componentView.getY());
-    }
+      if (componentView instanceof RadioButtonView)
+      {
+        componentView.setId(componentView.getX() + "-" + componentView.getY());
+      }
+      else
+      {
+        String variable = getVariable(componentView);
+        if (variable != null)
+          componentView.setId(variable);
+        else
+          componentView.setId(componentView.getX() + "-" + 
+            componentView.getY());
+      }
+    }      
   }
 
-  private static List<ComponentView> getInputComponents(Collection<ComponentView> componentViews)
+  private static List<ComponentView> getInputComponents(
+    Collection<ComponentView> componentViews)
   {
     List<ComponentView> result = new ArrayList();
     for (ComponentView component : componentViews)
@@ -288,27 +366,51 @@ public class AccessibilityUtils
     return result;
   }
 
-  private static ComponentView getHorizontalOutputComponent(ComponentView inputComponent, 
-    Collection<ComponentView> componentViews)  
+  private static ComponentView getHorizontalLabelCandidate(
+    ComponentView inputComponent, Collection<ComponentView> componentViews)  
   {
     ComponentView candidateComponent = null;
     if (inputComponent instanceof RadioButtonView ||
       inputComponent instanceof CheckBoxView)
     {
-      candidateComponent = getRightCandidate(inputComponent, componentViews);
+      ComponentView rightComponent = getRightComponent(inputComponent, 
+        componentViews, null);
+      if (rightComponent != null)
+      {
+        String text = getText(rightComponent);
+        if (text != null && !text.endsWith(":"))
+        {
+          candidateComponent = rightComponent;
+        }        
+      }      
+      if (candidateComponent == null) //Search in the left
+      {
+        ComponentView leftComponent = getLeftComponent(inputComponent, 
+          componentViews, null);
+        if (leftComponent != null)
+        {
+          String text = getText(leftComponent);
+          if (text != null && text.endsWith(":"))
+          {
+            candidateComponent = leftComponent;
+          }        
+        }
+      }
     }
     else
     {
-      candidateComponent = getLeftCandidate(inputComponent, componentViews);
+      candidateComponent = getLeftComponent(inputComponent, componentViews, 
+        null);
     }
-    return (isValidCandidate(candidateComponent) ? candidateComponent : null);
+    return (isValidLabelCandidate(candidateComponent) ? candidateComponent : 
+      null);
   }
   
-  private static ComponentView getLeftCandidate(ComponentView inputComponent, 
-    Collection<ComponentView> componentViews)
+  private static ComponentView getLeftComponent(ComponentView inputComponent, 
+    Collection<ComponentView> componentViews, Integer maxDistance)
   {    
     ComponentView candidateComponent = null;    
-    int minX = 0;
+    int minX = (maxDistance == null ? 0 : inputComponent.getX() - maxDistance);
     int maxX = inputComponent.getX();
     int minY = inputComponent.getY() - COMPONENT_POSITION_ERROR_MARGIN;
     int maxY = inputComponent.getY() + inputComponent.getHeight();
@@ -316,7 +418,8 @@ public class AccessibilityUtils
     {
       if (component.getX() >= minX && component.getX() < maxX && 
         component.getY() >= minY && component.getY() <= maxY && 
-        (candidateComponent == null || component.getX() > candidateComponent.getX()))
+        (candidateComponent == null || 
+        component.getX() > candidateComponent.getX()))
       {
         candidateComponent = component;
       }
@@ -324,19 +427,21 @@ public class AccessibilityUtils
     return candidateComponent;    
   }
 
-  private static ComponentView getRightCandidate(ComponentView inputComponent, 
-    Collection<ComponentView> componentViews)
+  private static ComponentView getRightComponent(ComponentView inputComponent, 
+    Collection<ComponentView> componentViews, Integer maxDistance)
   {    
     ComponentView candidateComponent = null;    
     int minX = inputComponent.getX() + inputComponent.getWidth();
-    int maxX = Integer.MAX_VALUE;
+    int maxX = (maxDistance == null ? Integer.MAX_VALUE : 
+      minX + maxDistance + 1);
     int minY = inputComponent.getY() - COMPONENT_POSITION_ERROR_MARGIN;
     int maxY = inputComponent.getY() + inputComponent.getHeight();
     for (ComponentView component : componentViews)
     {
       if (component.getX() >= minX && component.getX() < maxX && 
         component.getY() >= minY && component.getY() <= maxY && 
-        (candidateComponent == null || component.getX() < candidateComponent.getX()))
+        (candidateComponent == null || 
+        component.getX() < candidateComponent.getX()))
       {
         candidateComponent = component;
       }
@@ -344,31 +449,75 @@ public class AccessibilityUtils
     return candidateComponent;
   }
   
-  private static ComponentView getVerticalOutputComponent(ComponentView inputComponent, 
-    Collection<ComponentView> componentViews)
+  private static ComponentView getVerticalLabelCandidate(
+    ComponentView inputComponent, Collection<ComponentView> componentViews)
+  {
+    ComponentView candidateComponent = 
+      getAboveComponent(inputComponent, componentViews, null);
+    return (isValidLabelCandidate(candidateComponent) ? candidateComponent : 
+      null);
+  }
+  
+  private static ComponentView getAboveComponent(ComponentView inputComponent, 
+    Collection<ComponentView> componentViews, Integer maxDistance)
   {
     ComponentView candidateComponent = null;
     int minX = inputComponent.getX() - COMPONENT_POSITION_ERROR_MARGIN;
     int maxX = inputComponent.getX() + inputComponent.getWidth();
-    int minY = 0;
+    int minY = (maxDistance == null ? 0 : inputComponent.getY() - maxDistance);    
     int maxY = inputComponent.getY();
     for (ComponentView component : componentViews)
     {
       if (component.getX() >= minX && component.getX() <= maxX && 
         component.getY() >= minY && component.getY() < maxY && 
-        (candidateComponent == null || component.getY() > candidateComponent.getY()))
+        (candidateComponent == null || 
+        component.getY() > candidateComponent.getY()))
       {
         candidateComponent = component;
       }
     }
-    return (isValidCandidate(candidateComponent) ? candidateComponent : null);
+    return candidateComponent;
   }
   
-  private static boolean isValidCandidate(ComponentView candidateComponent)
+  private static ComponentView getBelowComponent(ComponentView inputComponent, 
+    Collection<ComponentView> componentViews, Integer maxDistance)
+  {
+    ComponentView candidateComponent = null;
+    int minX = inputComponent.getX() - COMPONENT_POSITION_ERROR_MARGIN;
+    int maxX = inputComponent.getX() + inputComponent.getWidth();
+    int minY = inputComponent.getY() + inputComponent.getHeight();
+    int maxY = (maxDistance == null ? Integer.MAX_VALUE : 
+      minY + maxDistance + 1);
+    for (ComponentView component : componentViews)
+    {
+      if (component.getX() >= minX && component.getX() <= maxX && 
+        component.getY() >= minY && component.getY() < maxY && 
+        (candidateComponent == null || 
+        component.getY() < candidateComponent.getY()))
+      {
+        candidateComponent = component;
+      }
+    }
+    return candidateComponent;
+  }  
+  
+  private static boolean isValidLabelCandidate(ComponentView candidateComponent)
   {
     return (candidateComponent != null && isOutputComponent(candidateComponent) 
       && !hasForElementAssigned(candidateComponent));
   }
+  
+  private static boolean isValidInfoTextCandidate(
+    ComponentView candidateComponent)
+  {
+    return (candidateComponent instanceof OutputTextView);
+  }
+
+  private static boolean isValidHelpTextCandidate(
+    ComponentView candidateComponent)
+  {
+    return (candidateComponent instanceof OutputTextView);
+  }  
 
   private static boolean isInputComponent(ComponentView component)
   {
@@ -405,7 +554,8 @@ public class AccessibilityUtils
         if (component instanceof LabelView)
         {
           LabelView labelView = (LabelView)component;
-          if (inputComponent.getId().equals(labelView.getForElement())) return true;        
+          if (inputComponent.getId().equals(labelView.getForElement())) 
+            return true;        
         }
       }
     }
@@ -427,7 +577,8 @@ public class AccessibilityUtils
         {
           return c1.getY() - c2.getY();
         }
-        else if (Math.abs(c1.getX() - c2.getX()) > COMPONENT_POSITION_ERROR_MARGIN)
+        else if (Math.abs(c1.getX() - c2.getX()) > 
+          COMPONENT_POSITION_ERROR_MARGIN)
         {
           return c1.getX() - c2.getX();
         }
@@ -460,7 +611,8 @@ public class AccessibilityUtils
         String inputId = ((LabelView)auxComponent).getForElement();
         if (inputId != null)
         {
-          ComponentView inputComponent = getComponentById(componentViews, inputId);
+          ComponentView inputComponent = 
+            getComponentById(componentViews, inputId);
           if (inputComponent != null)
           {
             labelMap.put(auxComponent, inputComponent);
@@ -496,13 +648,147 @@ public class AccessibilityUtils
     return auxGroupList;
   }
  
-  private static ComponentView getComponentById(Collection<ComponentView> componentViews, String id)
+  private static ComponentView getComponentById(Collection<ComponentView> 
+    componentViews, String id)
   {
     for (ComponentView auxComponent : componentViews)
     {
       if (id.equals(auxComponent.getId())) return auxComponent;
     }
     return null;
+  }
+  
+  private static void setInfoText(ComponentView inputComponent, String text)
+  {
+    if (inputComponent instanceof InputTextAreaView)
+    {
+      ((InputTextAreaView)inputComponent).setInfoText(text);
+    }
+    else if (inputComponent instanceof InputTextView)
+    {
+      ((InputTextView)inputComponent).setInfoText(text);
+    }
+    else if (inputComponent instanceof SelectBoxView)
+    {
+      ((SelectBoxView)inputComponent).setInfoText(text);
+    }    
+  }
+  
+  private static boolean hasInfoTextAssigned(ComponentView inputComponent)
+  {
+    String text = null;
+    if (inputComponent instanceof InputTextAreaView)
+    {
+      text = ((InputTextAreaView)inputComponent).getInfoText();
+    }
+    else if (inputComponent instanceof InputTextView)
+    {
+      text = ((InputTextView)inputComponent).getInfoText();
+    }
+    else if (inputComponent instanceof SelectBoxView)
+    {
+      text = ((SelectBoxView)inputComponent).getInfoText();
+    }
+    return (!StringUtils.defaultString(text).isEmpty());
+  }
+
+  private static void setHelpText(ComponentView inputComponent, String text)
+  {
+    if (inputComponent instanceof InputTextAreaView)
+    {
+      ((InputTextAreaView)inputComponent).setHelpText(text);
+    }
+    else if (inputComponent instanceof InputTextView)
+    {
+      ((InputTextView)inputComponent).setHelpText(text);
+    }
+    else if (inputComponent instanceof SelectBoxView)
+    {
+      ((SelectBoxView)inputComponent).setHelpText(text);
+    }
+  }
+  
+  private static boolean hasHelpTextAssigned(ComponentView inputComponent)
+  {
+    String text = null;
+    if (inputComponent instanceof InputTextAreaView)
+    {
+      text = ((InputTextAreaView)inputComponent).getHelpText();
+    }
+    else if (inputComponent instanceof InputTextView)
+    {
+      text = ((InputTextView)inputComponent).getHelpText();
+    }
+    else if (inputComponent instanceof SelectBoxView)
+    {
+      text = ((SelectBoxView)inputComponent).getHelpText();
+    }    
+    return (!StringUtils.defaultString(text).isEmpty());
+  }  
+  
+  private static String getText(ComponentView outputComponent)
+  {
+    if (outputComponent instanceof OutputTextView)
+    {
+      return ((OutputTextView)outputComponent).getText();
+    }
+    else if (outputComponent instanceof LabelView)
+    {
+      return ((LabelView)outputComponent).getText();
+    }
+    return null;
+  }
+
+  private static String getVariable(ComponentView inputComponent)
+  {
+    String variable = null;
+    if (inputComponent instanceof InputTextView)
+      variable = ((InputTextView)inputComponent).getVariable();
+    else if (inputComponent instanceof InputTextAreaView)
+      variable = ((InputTextAreaView)inputComponent).getVariable();
+    else if (inputComponent instanceof SelectBoxView)
+      variable = ((SelectBoxView)inputComponent).getVariable();
+    else if (inputComponent instanceof RadioButtonView)
+      variable = ((RadioButtonView)inputComponent).getVariable();
+    else if (inputComponent instanceof CheckBoxView)
+      variable = ((CheckBoxView)inputComponent).getVariable();
+    else if (inputComponent instanceof ButtonView)
+      variable = ((ButtonView)inputComponent).getVariable();
+    return variable;
+  }
+  
+  private static boolean clearAllInvalidForElementValues(
+    Collection<ComponentView> componentViews)
+  {
+    boolean changes = false;
+    List<LabelView> labelViews = getAllLabelViews(componentViews);
+    for (LabelView labelView : labelViews)
+    {
+      String forElement = labelView.getForElement();
+      if (forElement != null)
+      {
+        if (getComponentById(componentViews, forElement) == null)
+        {
+          labelView.setForElement(null);
+          changes = true;
+        }
+      }      
+    }
+    return changes;
+  }
+  
+  private static List<LabelView> getAllLabelViews(Collection<ComponentView> 
+    componentViews)
+  {
+    List<LabelView> labelViews = new ArrayList();  
+    for (ComponentView component : componentViews)
+    {
+      if (component instanceof LabelView)
+      {
+        labelViews.add((LabelView)component);
+      }
+    }
+    return labelViews;
   }
   
   private static class ComponentGroup

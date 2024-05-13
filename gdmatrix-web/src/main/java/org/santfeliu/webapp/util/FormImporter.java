@@ -688,9 +688,11 @@ public class FormImporter
       group.setLayout("block");
       parent.getChildren().add(group);
 
+      OutputLabel label = null;
+      
       if (!StringUtils.isBlank(labelText))
       {
-        OutputLabel label =
+        label =
           (OutputLabel)application.createComponent(OutputLabel.COMPONENT_TYPE);
 
         label.setValue(labelText);
@@ -783,6 +785,12 @@ public class FormImporter
           if (infoText != null && !leftText)
               inputgroup.getChildren().add(textAddon);           
             
+          if (label != null)
+          {
+            int idx = inputgroup.getChildren().indexOf(component);
+            label.setFor("@next:@child(" + idx + ")");
+          }
+          
           group.getChildren().add(inputgroup);           
         } 
       }      
