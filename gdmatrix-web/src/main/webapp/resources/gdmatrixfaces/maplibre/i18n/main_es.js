@@ -74,7 +74,7 @@ Bundle.getBundle("main").setTranslations("es", {
   "DrawTool.addPolygon.help": "Haz sucesivos clics para dibujar los vértices del polígono.",
   "DrawTool.delete.help": "Haz clic en la entidad que deseas borrar.",
 
-  "TimeSliderControl.period": "Periode",
+  "TimeSliderControl.period": "Periodo",
   "TimeSliderControl.period.d": "1 día",
   "TimeSliderControl.period.w": "1 semana",
   "TimeSliderControl.period.M": "1 mes",
