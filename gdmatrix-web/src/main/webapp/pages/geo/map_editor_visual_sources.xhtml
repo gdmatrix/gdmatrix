@@ -389,19 +389,19 @@
                     toggleable="true" collapsed="false" 
                     rendered="#{geoMapSourcesBean.editingSource.type == 'geojson'}">
           <div class="ui-fluid formgrid grid">
-            <div class="field col-4">
+            <div class="field col-12 md:col-4">
               <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.generateId}" 
                               styleClass="vertical-align-middle" />
               <p:outputLabel value="GenerateId" for="@previous" styleClass="ml-2" />
             </div>
 
-            <div class="field col-4">
+            <div class="field col-12 md:col-4">
               <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.lineMetrics}" 
                               styleClass="vertical-align-middle" />
               <p:outputLabel value="Line metrics" for="@previous" styleClass="ml-2" />
             </div>
 
-            <div class="field col-4">
+            <div class="field col-12 md:col-4">
               <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.cluster}" 
                               styleClass="vertical-align-middle">
                 <p:ajax update="cluster_max_zoom cluster_min_points cluster_radius" />

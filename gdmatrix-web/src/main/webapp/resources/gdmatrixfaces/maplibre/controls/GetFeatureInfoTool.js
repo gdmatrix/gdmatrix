@@ -12,20 +12,22 @@ class GetFeatureInfoTool extends Tool
 {
   constructor(options)
   {
-    super({...{ 
-            "title": bundle.get("GetFeatureInfoTool.title"), 
+    super({...{
+            "title": bundle.get("GetFeatureInfoTool.title"),
             "iconClass": "fa fa-arrow-pointer",
             "position" : "right"
           }, ...options});
 
     this.highlightCount = 0;
     this.inProgress = false;
-    this.hidePanel = this.options.hidePanel === undefined ? 
+    this.hidePanel = this.options.hidePanel === undefined ?
       false : Boolean(this.options.hidePanel);
     this.tolerance = options?.tolerance === undefined ? 5 : options.tolerance;
+    this.singleForm = options?.singleForm === undefined ?
+      false : Boolean(this.options.singleForm);
     this._onMapClick = (event) => {
       this.getFeatureInfo(event.point, event.lngLat);
-    };    
+    };
   }
 
   activate()
@@ -62,24 +64,38 @@ class GetFeatureInfoTool extends Tool
 
     this.headerDiv = document.createElement("div");
     bodyDiv.appendChild(this.headerDiv);
-    this.headerDiv.textContent = bundle.get("GetFeatureInfoTool.help");    
+    this.headerDiv.textContent = bundle.get("GetFeatureInfoTool.help");
 
     this.infoDiv = document.createElement("div");
     this.infoDiv.className = "custom_form";
     bodyDiv.appendChild(this.infoDiv);
-    
+
     this.createPopup();
   }
-  
+
   createPopup()
   {
     const popup = new maplibregl.Popup(this.options.popup);
     this.popup = popup;
-  }  
+  }
 
   clearHighlight()
   {
     const map = this.map;
+
+    // vector sources (feature-state)
+    const sources = map.getStyle().sources;
+    for (let sourceId in sources)
+    {
+      let source = sources[sourceId];
+      
+      if (source.type === "vector" || source.type === "geojson")
+      {
+        map.removeFeatureState({ "source": sourceId });
+      }
+    }
+
+    // raster sources
     for (let i = 0; i < this.highlightCount; i++)
     {
       map.removeLayer("highlight_" + i + "_point");
@@ -118,7 +134,7 @@ class GetFeatureInfoTool extends Tool
       }
     });
   }
-  
+
   setLastUtm(utm)
   {
     const map = this.map;
@@ -223,41 +239,43 @@ class GetFeatureInfoTool extends Tool
 
       const formPromises = [];
 
+      // selection for vector/geojson layers
       const tolerance = this.tolerance;
       const bbox = [
         [point.x - tolerance, point.y - tolerance],
         [point.x + tolerance, point.y + tolerance]
       ];
-      
+
       const features = this.map.queryRenderedFeatures(bbox);
-      const geojson = { "type": "FeatureCollection", "features": [] };
       for (let feat of features)
-      {
+      {        
         let layer = map.getLayer(feat.layer.id);
+        let sourceId = layer.source;
+
+        // highlight
+        if (layer.metadata?.highlight && feat.id !== undefined)
+        {
+          map.setFeatureState({ source : sourceId, id: feat.id },
+            { "highlighted" : true });
+        }
+        
         if (layer.metadata?.locatable)
         {
           let feature = {
             type: "Feature",
-            geometry: feat.geometry, 
-            properties: feat.properties 
+            geometry: feat.geometry, // CAUTION: geometry may be tesselated!
+            properties: feat.properties
           };
           
-          let sourceId = layer.source;
           let params = serviceParameters[sourceId];
           let service = params?.service ? services[params.service] : null;
           let layerName = params?.layers ? params.layers : layer.id;
-
-          // highlight
-          if (layer.metadata.highlight)
-          {
-            geojson.features.push(feature);
-          }
 
           let form = new FeatureForm(feature);
           form.service = service;
           form.layerName = layerName;
           form.setFormSelectorAndPriority(map);
-          
+
           if (this.isPopupLayer(feat.layer.id)) // is popup layer
           {
             form = await form.render();
@@ -272,19 +290,22 @@ class GetFeatureInfoTool extends Tool
               popup.addTo(map);
               this.infoDiv.innerHTML = "";
               return;
-            }            
+            }
           }
           else
           {
-            formPromises.push(form.render());     
+            formPromises.push(form.render());
+            if (this.singleForm)
+            {
+              let forms = (await Promise.all(formPromises)).flat();
+              this.showForms(forms);
+              return;
+            }
           }
         }
       }
-      if (geojson.features.length > 0)
-      {
-        this.highlight(geojson);        
-      }
-      
+
+      // selection for raster layers
       const layers = map.getStyle().layers;
       for (let lay of layers)
       {
@@ -349,17 +370,17 @@ class GetFeatureInfoTool extends Tool
       this.inProgress = false;
     }
   }
-  
+
   async getForms(lngLat, layer, service, layerName, cqlFilter = "")
   {
     const map = this.map;
     const selectionDistance = layer?.metadata?.selection_distance || 4;
-    
-    const geojson = await this.getFeatures(lngLat, service, layerName, 
+
+    const geojson = await this.getFeatures(lngLat, service, layerName,
       cqlFilter, selectionDistance);
-      
+
     const formPromises = [];
-    
+
     if (geojson && geojson.features)
     {
       // highlight
@@ -390,7 +411,7 @@ class GetFeatureInfoTool extends Tool
   async getFeatures(lngLat, service, layerName, cqlFilter = "", selectionDistance)
   {
     try
-    {      
+    {
       const info = await FeatureTypeInspector.getInfo(service.url, layerName);
       if (info?.geometryColumn)
       {
@@ -408,8 +429,8 @@ class GetFeatureInfoTool extends Tool
           "&srsName=EPSG:4326" +
           "&outputFormat=application/json" +
           "&exceptions=application/json" +
-          "&cql_filter=" + info.geometryColumn + " IS NOT NULL AND DISTANCE(" + 
-          info.geometryColumn + ",SRID=4326;POINT(" + 
+          "&cql_filter=" + info.geometryColumn + " IS NOT NULL AND DISTANCE(" +
+          info.geometryColumn + ",SRID=4326;POINT(" +
           lngLat.lng + " " + lngLat.lat + "))<=" + dist;
 
         if (cqlFilter && cqlFilter.trim().length > 0)
@@ -435,7 +456,7 @@ class GetFeatureInfoTool extends Tool
   isPopupLayer(layerId)
   {
     if (!(this.options.popupLayers instanceof Array)) return false;
-    
+
     return this.options.popupLayers.indexOf(layerId) !== -1;
   }
 
