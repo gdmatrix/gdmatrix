@@ -26,7 +26,16 @@ class DrawTool extends Tool
     this.operation = "edit";
     this.layerName = options?.layerName || null;
     this.cqlFilter = null;
-    this.layers = options.layers || [];
+    this.layers = options.layers || []; 
+    /*
+      where each layer has these properties:
+      {
+        "layerName": "<WFS_LAYER_NAME>",
+        "label": "<label>",
+        "cqlFilter": "<cqlFilter>",
+        "refreshSources: [<sourceId>, ...]
+      }
+    */
     this.maxFeatures = options?.maxFeatures || 5000;
     this.tolerance = options?.tolerance === undefined ? 5 : options.tolerance;
     this.wfsVersion = "1.1.0";
@@ -1189,6 +1198,8 @@ class DrawTool extends Tool
     this.showSaveResult(result);
 
     await this.loadFeatures();
+    
+    this.updateSources(typeName);
   }
 
   insertPropertiesToGML(properties)
@@ -1475,7 +1486,38 @@ class DrawTool extends Tool
     }
     this.cancelFeature();
     this.loadFeatures();      
-  };  
+  };
+  
+  updateSources()
+  {
+    const map = this.map;
+    const sources = map.getStyle().sources;
+    const layers = this.layers;
+    const seed = "_seed=" + Math.random();
+
+    for (let layer of layers)
+    {
+      if (layer.layerName === this.layerName)
+      {
+        let refreshSources = layer.refreshSources || [];
+        for (let sourceId of refreshSources)
+        {
+          const source = sources[sourceId];  
+          let url = source.data;
+          if (url.indexOf("?") === -1)
+          {
+            url += "?" + seed;
+          }
+          else
+          {
+            url += "&" + seed;
+          }
+          console.info("Refresh " + sourceId);
+          map.getSource(sourceId).setData(url);
+        }
+      }
+    }
+  }
 }
 
 export { DrawTool };
