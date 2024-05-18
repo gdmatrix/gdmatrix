@@ -108,12 +108,6 @@ public class LoginWorkflowBean extends WorkflowBean
     return loginByValid;
   }
 
-  @Deprecated
-  public boolean isLoginByMobileid()
-  {
-    return false;
-  }
-
   @Override
   public String show(Form form)
   {
@@ -134,12 +128,21 @@ public class LoginWorkflowBean extends WorkflowBean
   {
     try
     {
-      if (!StringUtils.isBlank(userId) && !StringUtils.isBlank(password))
+      if (!StringUtils.isBlank(userId))
       {
         UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         userSessionBean.login(userId, password);
 
-        instanceBean.forward();
+        String wfInstanceId = instanceBean.getInstanceId();
+        String wfAccessToken = instanceBean.getAccessToken();
+        if (wfAccessToken == null) wfAccessToken = "";
+
+        String mid = userSessionBean.getSelectedMid();
+        String url = "/go.faces?xmid=" + mid + "&" +
+          WorkflowInstanceListBean.INSTANCEID_PARAM + "=" + wfInstanceId + "&" +
+          WorkflowInstanceListBean.ACCESS_TOKEN_PARAM + "=" + wfAccessToken;
+
+        getExternalContext().redirect(url);
       }
     }
     catch (Exception ex)
@@ -173,29 +176,6 @@ public class LoginWorkflowBean extends WorkflowBean
       userSessionBean.setAttribute(RETURN_PARAMS_ATTRIBUTE, returnParams);
       String loginUrl = client.generateOAuthLoginUrl("");
       getExternalContext().redirect(loginUrl);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void loginCertificate()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    try
-    {
-      userSessionBean.loginCertificate();
-    }
-    catch (Exception ex)
-    {
-      userSessionBean.showLoginPage(ex);
-      return;
-    }
-
-    try
-    {
-      instanceBean.forward();
     }
     catch (Exception ex)
     {

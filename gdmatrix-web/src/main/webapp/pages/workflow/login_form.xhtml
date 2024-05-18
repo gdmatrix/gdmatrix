@@ -9,23 +9,14 @@
 
   <ui:define name="form">  
 
-    <h:outputText value="#{workflowInstanceBean.translate(loginWorkflowBean.message)}"
-                  styleClass="workflowMessage" />
+    <div class="mb-4">#{workflowInstanceBean.translate(loginWorkflowBean.message)}</div>
+
     <h:panelGroup layout="block" styleClass="mt-4 mb-4"
-           rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true'}">
+           rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true'
+                      and (loginWorkflowBean.loginByValid or loginWorkflowBean.loginByCertificate)}">
       <p:commandButton value="#{userSessionBean.selectedMenuItem.properties.login_valid == null ? 
                                 'VALid' : userSessionBean.selectedMenuItem.properties.login_valid}"
                        action="#{loginWorkflowBean.loginValid}" />
-    </h:panelGroup>
-
-    <h:panelGroup layout="block" styleClass="mt-4 mb-4"
-           rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true'}">
-      <sf:secureCommandLink action="#{loginWorkflowBean.loginCertificate}"
-                            scheme="https" port="#{applicationBean.clientSecurePort}"
-                            styleClass="workflowCommandLink" style="min-width:200px">
-        <h:outputText value="#{webBundle.certificateAuthentication}"
-                      styleClass="workflowMessage" />
-      </sf:secureCommandLink>
     </h:panelGroup>
 
     <h:panelGroup layout="block" rendered="#{loginWorkflowBean.loginByPassword}" 
@@ -43,12 +34,15 @@
       </div>
       
       <div class="field col-12 text-right">
-        <p:commandButton action="#{loginWorkflowBean.login}"
+        <p:commandButton id="login_password" action="#{loginWorkflowBean.login}"
                          value="#{webBundle.loginByPassword}" 
                          styleClass="w-auto"
+                         icon="pi pi-sign-in"
                          process="@form:cnt"
                          update="@form:cnt" />
       </div>
+      
+      <p:defaultCommand target="login_password" />
       
     </h:panelGroup>
 

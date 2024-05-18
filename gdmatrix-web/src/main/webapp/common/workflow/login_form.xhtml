@@ -10,7 +10,7 @@
     <ui:define name="form">
 
       <t:saveState value="#{loginFormBean}" />
-
+      
       <sf:outputText value="#{loginFormBean.message}"
         translator="#{instanceBean.translationEnabled ?
           applicationBean.translator : null}"
@@ -18,7 +18,9 @@
         styleClass="workflowMessage" />
 
       <t:div style="margin-top:20px;margin-bottom:20px;text-align: center;"
-        rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true'}">
+             rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true' 
+                         and (loginFormBean.loginByValid or loginFormBean.loginByCertificate)}">
+                
         <h:commandLink action="#{loginFormBean.loginValid}" 
                     styleClass="workflowCommandLink" style="min-width:200px">
           <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid == null ? 
@@ -29,7 +31,8 @@
       </t:div>
       
       <t:div style="margin-top:20px;margin-bottom:20px;text-align: center;"
-        rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true'}">
+             rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true' 
+                        and loginFormBean.loginByCertificate}">
         <sf:secureCommandLink action="#{loginFormBean.loginCertificate}"
          scheme="https" port="#{applicationBean.clientSecurePort}"
          styleClass="workflowCommandLink" style="min-width:200px">
