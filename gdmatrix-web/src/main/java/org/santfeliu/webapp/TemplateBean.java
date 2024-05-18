@@ -33,6 +33,7 @@ package org.santfeliu.webapp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
@@ -170,7 +171,7 @@ public class TemplateBean extends FacesBean implements Serializable
     return displayName.length() > 0 ? displayName.substring(0, 1) : "?";
   }
 
-  // execute mid with context chnage (if mid is null, mid = topWebMid)
+  // execute mid with context change (if mid is null, mid = topWebMid)
   public void changeContext(String mid)
   {
     String ctxMid = contextMid;
@@ -203,6 +204,14 @@ public class TemplateBean extends FacesBean implements Serializable
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     userSessionBean.setSelectedMid(mid);
     userSessionBean.executeSelectedMenuItem();
+  }
+
+  public void showObject()
+  {
+    Map<String, String> map = getExternalContext().getRequestParameterMap();
+    String typeId = map.get("typeId");
+    String objectId = map.get("objectId");
+    navigatorBean.show(typeId, objectId);
   }
 
   public void login()
