@@ -309,11 +309,11 @@
   </context-param>
   <context-param>
     <param-name>cat.aoc.psis.serviceURL</param-name>
-    <param-value>http://psis.catcert.net/psis/catcert/dss</param-value>
+    <param-value>https://psis.catcert.net/psis/catcert/dss</param-value>
   </context-param>
   <context-param>
     <param-name>cat.aoc.psis.pdf.serviceURL</param-name>
-    <param-value>http://psis.catcert.net/psis/catcert/dsspdf</param-value>
+    <param-value>https://psis.catcert.net/psis/catcert/dsspdf</param-value>
   </context-param>
   <context-param>
     <param-name>org.santfeliu.security.tspURL</param-name>

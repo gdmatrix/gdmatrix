@@ -530,20 +530,25 @@ public class PSIS implements SecurityProvider
   public byte[] createCMSTimeStamp(byte[] digest,
     String digestMethod, byte[] certEncoded)
   {
+    boolean retry = true;
     int retries = 0;
+
+    SOAPport port = service.getDssPortSoap();
+    WSTracer tracer = WSTracer.bind((BindingProvider)port);
+
+    Map requestContext = ((BindingProvider)port).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+      dssServiceURL);
+    requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+    requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
+
+    LOGGER.log(Level.INFO, "PSIS URL: {0}", dssServiceURL);
+
     while (true)
     {
       try
       {
         // call to PSIS service
-        SOAPport port = service.getDssPortSoap();
-
-        Map requestContext = ((BindingProvider)port).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-          dssServiceURL);
-        requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
-        requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
-
         SignRequest request = new SignRequest();
         request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:timestamping");
         InputDocuments io = new InputDocuments();
@@ -572,7 +577,8 @@ public class PSIS implements SecurityProvider
           }
           catch (Exception ex)
           {
-            throw new RuntimeException(ex);
+            retry = false;
+            throw ex;
           }
         }
         JAXBElement x509Certificate =
@@ -614,7 +620,7 @@ public class PSIS implements SecurityProvider
 
         if (response.getResult().getResultMessage() != null)
         {
-          LOGGER.log(Level.FINE, "ResultMessage: {0}",
+          LOGGER.log(Level.INFO, "ResultMessage: {0}",
             result.getResultMessage().getValue());
         }
         if (resultMajor != null && resultMajor.contains(":Success"))
@@ -622,15 +628,19 @@ public class PSIS implements SecurityProvider
           Timestamp timestamp = response.getSignatureObject().getTimestamp();
           return timestamp.getRFC3161TimeStampToken();
         }
+        retry = false;
         throw new Exception(resultMajor);
       }
       catch (Exception ex)
       {
-        LOGGER.log(Level.SEVERE, ex.toString());
+        LOGGER.log(Level.SEVERE, "TIMESTAMP_GENERATOR_ERROR", ex);
+
+        logMessages(tracer);
+
+        if (!retry || retries >= maxNumRetries)
+          throw new RuntimeException("TIMESTAMP_GENERATOR_ERROR", ex);
 
         retries++;
-        if (retries > maxNumRetries)
-          throw new RuntimeException("TIMESTAMP_GENERATOR_ERROR");
 
         try
         {
@@ -649,19 +659,25 @@ public class PSIS implements SecurityProvider
   public Element createXMLTimeStamp(byte[] digest,
     String digestMethod, byte[] certEncoded)
   {
+    boolean retry = true;
     int retries = 0;
+
+    SOAPport port = service.getDssPortSoap();
+    WSTracer tracer = WSTracer.bind((BindingProvider)port);
+
+    Map requestContext = ((BindingProvider)port).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+      dssServiceURL);
+    requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+    requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
+
+    LOGGER.log(Level.INFO, "PSIS URL: {0}", dssServiceURL);
+
     while (true)
     {
       try
       {
-        SOAPport port = service.getDssPortSoap();
-
-        Map requestContext = ((BindingProvider)port).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-          dssServiceURL);
-        requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
-        requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
-
+        // call to PSIS service
         SignRequest request = new SignRequest();
         request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:timestamping");
 
@@ -692,7 +708,8 @@ public class PSIS implements SecurityProvider
           }
           catch (Exception ex)
           {
-            throw new RuntimeException(ex);
+            retry = false;
+            throw ex;
           }
         }
         JAXBElement x509Certificate =
@@ -717,8 +734,6 @@ public class PSIS implements SecurityProvider
 
         request.setInputDocuments(io);
 
-        WSTracer tracer = WSTracer.bind((BindingProvider)port);
-
         SignResponse response = port.sign(request);
         Result result = response.getResult();
 
@@ -730,7 +745,7 @@ public class PSIS implements SecurityProvider
 
         if (response.getResult().getResultMessage() != null)
         {
-          LOGGER.log(Level.FINE, "ResultMessage: {0}",
+          LOGGER.log(Level.INFO, "ResultMessage: {0}",
             result.getResultMessage().getValue());
         }
         if (resultMajor != null && resultMajor.contains(":Success"))
@@ -747,15 +762,19 @@ public class PSIS implements SecurityProvider
             return (Element)nodeList.item(0);
           }
         }
+        retry = false;
         throw new Exception(resultMajor);
       }
       catch (Exception ex)
       {
-        LOGGER.log(Level.SEVERE, ex.toString());
+        LOGGER.log(Level.SEVERE, "TIMESTAMP_GENERATOR_ERROR", ex);
+
+        logMessages(tracer);
+
+        if (!retry || retries >= maxNumRetries)
+          throw new RuntimeException("TIMESTAMP_GENERATOR_ERROR", ex);
 
         retries++;
-        if (retries > maxNumRetries)
-          throw new RuntimeException("TIMESTAMP_GENERATOR_ERROR");
 
         try
         {
@@ -767,6 +786,30 @@ public class PSIS implements SecurityProvider
           throw new RuntimeException("TIMESTAMP_GENERATOR_ERROR");
         }
       }
+    }
+  }
+
+  private void logMessages(WSTracer tracer)
+  {
+    try
+    {
+      byte[] outBytes = tracer.getOutboundMessage();
+      if (outBytes != null)
+      {
+        String out = new String(outBytes, "UTF-8");
+        LOGGER.log(Level.INFO, "outbound message: {0}", out);
+      }
+
+      byte[] inBytes = tracer.getInboundMessage();
+      if (inBytes != null)
+      {
+        String in = new String(inBytes, "UTF-8");
+        LOGGER.log(Level.INFO, "inbound message: {0}", in);
+      }
+    }
+    catch (Exception ex)
+    {
+      // ignore
     }
   }
 
@@ -881,5 +924,18 @@ public class PSIS implements SecurityProvider
     byte[] ts = psis.createCMSTimeStamp(digest,
       "http://www.w3.org/2001/04/xmlenc#sha256", null);
     System.out.println(Base64.getEncoder().encodeToString(ts));
+  }
+
+  public static void main(String[] args)
+  {
+    try
+    {
+      PSIS psis = new PSIS();
+      psis.testCreateCMSTimeStamp();
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
   }
 }
