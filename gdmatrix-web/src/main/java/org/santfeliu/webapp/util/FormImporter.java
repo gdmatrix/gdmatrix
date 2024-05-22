@@ -733,11 +733,10 @@ public class FormImporter
           if (infoIcon != null)
           {
             String info = String.valueOf(infoIcon);
-            int indx = info.indexOf(":");
-            if (indx > -1)
+            if (info.startsWith("left:"))
             {
-              leftIcon =  info.startsWith("left");             
-              info = info.substring(indx + 1, info.length());
+              leftIcon = true;
+              info = info.substring(5, info.length());
             }
             iconAddon =
               (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE); 
@@ -757,11 +756,10 @@ public class FormImporter
           if (infoText != null)
           {
             String info = String.valueOf(infoText);
-            int indx = info.indexOf(":");
-            if (indx > -1)
+            if (info.startsWith("left:"))
             {
-              leftText =  info.startsWith("left");             
-              info = info.substring(indx + 1, info.length());
+              leftText = true;
+              info = info.substring(5, info.length());
             }
             
             textAddon =
@@ -771,6 +769,7 @@ public class FormImporter
             HtmlOutputText outputText = 
               (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
             outputText.setValue(info);
+            outputText.setEscape(false);
             
             textAddon.getChildren().add(outputText);    
             
@@ -809,6 +808,7 @@ public class FormImporter
             (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE); 
           helpOutputText.setStyleClass("text-xs");
           helpOutputText.setValue(String.valueOf(helpText));
+          helpOutputText.setEscape(false);
           group.getChildren().add(helpOutputText);
         }      
       }    
