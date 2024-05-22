@@ -118,11 +118,11 @@
       
        <!-- Dynamic form -->
       <emcomp:dynamicProperties typeId="#{caseInterventionsTabBean.editing.intTypeId}"
-                                object="#{caseInterventionsTabBean.editing}"
+                                object="#{caseInterventionsTabBean.editing.intId == null ? caseObjectBean.case : caseInterventionsTabBean.editing}"
                                 formSelector="#{caseInterventionsTabBean.formSelector}"
                                 properties="#{caseInterventionsTabBean.editing.property}"
-                                oncomplete="PF('caseInterventionsDialog').resetPosition();" />         
-
+                                oncomplete="PF('caseInterventionsDialog').resetPosition();" />        
+      
     </h:panelGroup>
     
     <div class="text-right">
