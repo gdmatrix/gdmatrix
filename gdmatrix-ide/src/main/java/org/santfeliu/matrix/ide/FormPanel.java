@@ -98,6 +98,8 @@ public class FormPanel extends DocumentPanel
   private JButton repairTabIndexesButton = new JButton();
   private JButton repairLabelsButton = new JButton();
   private JButton repairInfoTextsButton = new JButton();    
+  private JButton adaptStyleClassesButton = new JButton();
+  private JButton convertOutputTextsButton = new JButton();
   private JCheckBox showIdsCheckBox = new JCheckBox();
   private JCheckBox showTabIndexesCheckBox = new JCheckBox();
   private JCheckBox showCoordinatesCheckBox = new JCheckBox();
@@ -359,6 +361,28 @@ public class FormPanel extends DocumentPanel
             repairInfoTextsButton_actionPerformed(e);
           }
         });
+
+    adaptStyleClassesButton.setText("Adapt CSS");
+    adaptStyleClassesButton.setVisible(false);
+    adaptStyleClassesButton.addActionListener(new ActionListener()
+        {
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            adaptStyleClassesButton_actionPerformed(e);
+          }
+        });
+
+    convertOutputTextsButton.setText("Convert output texts");
+    convertOutputTextsButton.setVisible(false);
+    convertOutputTextsButton.addActionListener(new ActionListener()
+        {
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            convertOutputTextsButton_actionPerformed(e);
+          }
+        });
     
     showIdsCheckBox.setText("Show ids");
     showIdsCheckBox.setVisible(false);
@@ -423,6 +447,8 @@ public class FormPanel extends DocumentPanel
     toolBar.add(showOutputOrderCheckBox, null);
     toolBar.add(repairLabelsButton, null);
     toolBar.add(repairInfoTextsButton, null);
+    toolBar.add(adaptStyleClassesButton, null);
+    toolBar.add(convertOutputTextsButton, null);
     toolBar.add(repairTabIndexesButton, null);
     toolBar.add(repairOutputOrderButton, null);
     
@@ -638,7 +664,9 @@ public class FormPanel extends DocumentPanel
       repairOutputOrderButton.setVisible(true);
       repairTabIndexesButton.setVisible(true);
       repairLabelsButton.setVisible(true);
-      repairInfoTextsButton.setVisible(true);      
+      repairInfoTextsButton.setVisible(true);
+      adaptStyleClassesButton.setVisible(true);
+      convertOutputTextsButton.setVisible(true);      
       showIdsCheckBox.setVisible(true);
       showTabIndexesCheckBox.setVisible(true);
       showCoordinatesCheckBox.setVisible(true);
@@ -649,7 +677,9 @@ public class FormPanel extends DocumentPanel
       repairOutputOrderButton.setVisible(false);
       repairTabIndexesButton.setVisible(false);
       repairLabelsButton.setVisible(false);
-      repairInfoTextsButton.setVisible(false);      
+      repairInfoTextsButton.setVisible(false); 
+      adaptStyleClassesButton.setVisible(false);
+      convertOutputTextsButton.setVisible(false);
       showIdsCheckBox.setVisible(false);
       showTabIndexesCheckBox.setVisible(false);
       showCoordinatesCheckBox.setVisible(false);
@@ -687,6 +717,24 @@ public class FormPanel extends DocumentPanel
   private void repairInfoTextsButton_actionPerformed(ActionEvent e)
   {
     if (AccessibilityUtils.repairInfoTexts(designer.getComponentViews()))
+    {
+      designer.formChanged();
+      setModified(true);
+    }
+  }
+
+  private void adaptStyleClassesButton_actionPerformed(ActionEvent e)
+  {
+    if (AccessibilityUtils.adaptStyleClasses(designer))
+    {
+      designer.formChanged();
+      setModified(true);
+    }
+  }
+
+  private void convertOutputTextsButton_actionPerformed(ActionEvent e)
+  {
+    if (AccessibilityUtils.convertOutputTexts(designer.getComponentViews()))
     {
       designer.formChanged();
       setModified(true);

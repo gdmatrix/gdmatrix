@@ -71,6 +71,12 @@ public class ScriptView extends ComponentView
   protected void paintView(Graphics g)
   {
   }
+  
+  @Override
+  protected void paintAccessibility(Graphics g, boolean showIds,
+    boolean showTabIndexes, boolean showCoordinates, boolean showOutputOrder)
+  {
+  }
 
   @Override
   public Object clone() throws CloneNotSupportedException

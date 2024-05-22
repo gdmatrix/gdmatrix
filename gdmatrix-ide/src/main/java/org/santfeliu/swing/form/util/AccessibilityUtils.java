@@ -39,13 +39,16 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.swing.form.ComponentView;
+import org.santfeliu.swing.form.FormDesigner;
 import org.santfeliu.swing.form.view.ButtonView;
 import org.santfeliu.swing.form.view.CheckBoxView;
 import org.santfeliu.swing.form.view.InputTextAreaView;
 import org.santfeliu.swing.form.view.InputTextView;
 import org.santfeliu.swing.form.view.LabelView;
+import org.santfeliu.swing.form.view.OutputTextAreaView;
 import org.santfeliu.swing.form.view.OutputTextView;
 import org.santfeliu.swing.form.view.RadioButtonView;
+import org.santfeliu.swing.form.view.ScriptView;
 import org.santfeliu.swing.form.view.SelectBoxView;
 
 /**
@@ -237,8 +240,18 @@ public class AccessibilityUtils
         {
           ComponentView candidate = getBelowComponent(inputComponent, 
             componentViews, INFO_TEXTS_MAX_DISTANCE);
-          if (candidate != null && isValidHelpTextCandidate(candidate)) 
+          if (candidate != null && isValidHelpTextCandidate(candidate))
+          {
             helpTextMap.put(inputComponent, candidate);
+          }
+          else
+          {
+            candidate = getRightComponent(inputComponent, 
+              componentViews, INFO_TEXTS_MAX_DISTANCE);
+            if (candidate != null && isValidHelpTextCandidate(candidate))
+              helpTextMap.put(inputComponent, candidate);
+            
+          }
         }      
       }
     }
@@ -264,7 +277,58 @@ public class AccessibilityUtils
     
     return changes;
   }  
-  
+
+  public static boolean adaptStyleClasses(FormDesigner panel)
+  {
+    Collection componentViews = panel.getComponentViews();
+    boolean changes = false;
+    if (panel.getMinimumSize() != null)
+    {
+      int panelWidth = (int)Math.round(panel.getMinimumSize().getWidth());
+      if (panelWidth > 0)
+      {
+        List<ComponentView> inputComponents = 
+          getInputComponents(componentViews);
+        for (ComponentView inputComponent : inputComponents)
+        {
+          String originalStyleClass = inputComponent.getStyleClass();
+          if (originalStyleClass == null || 
+            !originalStyleClass.contains("col-"))
+          {
+            String adaptedStyleClass = getAdaptedStyleClass(inputComponent, 
+              panelWidth);
+            if (adaptedStyleClass != null)
+            {
+              StringBuilder sbStyleClass = new StringBuilder();            
+              sbStyleClass.
+                append(StringUtils.defaultString(originalStyleClass)).
+                append(" ").
+                append(adaptedStyleClass);
+              inputComponent.setStyleClass(sbStyleClass.toString().trim());
+              changes = true;
+            }
+          }        
+        }
+      }
+    }
+    return changes;
+  }
+
+  public static boolean convertOutputTexts(Collection componentViews)
+  {
+    boolean changes = false;
+    List<OutputTextView> outputTexts = getOutputTexts(componentViews);
+    for (OutputTextView outputText : outputTexts)
+    {
+      OutputTextAreaView outputTextArea = 
+        convertToOutputTextAreaView(outputText);
+      componentViews.remove(outputText);
+      componentViews.add(outputTextArea);
+      changes = true;
+    }
+    return changes;
+  }
+
   public static boolean repairOutputOrder(Collection componentViews)
   {
     boolean changes = false;
@@ -273,9 +337,12 @@ public class AccessibilityUtils
       getSortedComponentListByPosition(componentViews);
     for (ComponentView view : sortedComponents)
     {
-      Integer newOutputOrder = outputOrder++;      
-      if (!newOutputOrder.equals(view.getOutputOrder())) changes = true;
-      view.setOutputOrder(newOutputOrder);
+      if (!(view instanceof ScriptView)) //ignore scripts
+      {
+        Integer newOutputOrder = outputOrder++;      
+        if (!newOutputOrder.equals(view.getOutputOrder())) changes = true;
+        view.setOutputOrder(newOutputOrder);
+      }
     }
     return changes;
   }
@@ -335,6 +402,42 @@ public class AccessibilityUtils
     return labelView;
   }
   
+  private static OutputTextAreaView convertToOutputTextAreaView(
+    OutputTextView outputTextView)
+  {
+    OutputTextAreaView otaView = new OutputTextAreaView();
+    otaView.setBackground(outputTextView.getBackground());
+    otaView.setBorderBottomColor(outputTextView.getBorderBottomColor());
+    otaView.setBorderBottomStyle(outputTextView.getBorderBottomStyle());
+    otaView.setBorderBottomWidth(outputTextView.getBorderBottomWidth());
+    otaView.setBorderLeftColor(outputTextView.getBorderLeftColor());
+    otaView.setBorderLeftStyle(outputTextView.getBorderLeftStyle());
+    otaView.setBorderLeftWidth(outputTextView.getBorderLeftWidth());
+    otaView.setBorderRightColor(outputTextView.getBorderRightColor());
+    otaView.setBorderRightStyle(outputTextView.getBorderRightStyle());
+    otaView.setBorderRightWidth(outputTextView.getBorderRightWidth());
+    otaView.setBorderTopColor(outputTextView.getBorderTopColor());
+    otaView.setBorderTopStyle(outputTextView.getBorderTopStyle());
+    otaView.setBorderTopWidth(outputTextView.getBorderTopWidth());
+    otaView.setBounds(outputTextView.getBounds());
+    otaView.setContentHeight(outputTextView.getContentHeight());
+    otaView.setContentWidth(outputTextView.getContentWidth());
+    otaView.setFontFamily(outputTextView.getFontFamily());
+    otaView.setFontSize(outputTextView.getFontSize());    
+    otaView.setForeground(outputTextView.getForeground());
+    otaView.setHeight(outputTextView.getHeight());
+    otaView.setId(outputTextView.getId());
+    otaView.setOutputOrder(outputTextView.getOutputOrder());
+    otaView.setRenderer(outputTextView.getRenderer());
+    otaView.setStyleClass(outputTextView.getStyleClass());
+    otaView.setText(outputTextView.getText());
+    otaView.setTextAlign(outputTextView.getTextAlign());
+    otaView.setWidth(outputTextView.getWidth());
+    otaView.setX(outputTextView.getX());
+    otaView.setY(outputTextView.getY());
+    return otaView;
+  }  
+  
   private static void assignComponentId(ComponentView componentView)
   {
     if (componentView.getId() == null)
@@ -362,6 +465,20 @@ public class AccessibilityUtils
     for (ComponentView component : componentViews)
     {
       if (isInputComponent(component)) result.add(component);
+    }
+    return result;
+  }
+  
+  private static List<OutputTextView> getOutputTexts(
+    Collection<ComponentView> componentViews)
+  {
+    List<OutputTextView> result = new ArrayList();
+    for (ComponentView component : componentViews)
+    {
+      if (component instanceof OutputTextView)
+      {
+        result.add((OutputTextView)component);
+      }
     }
     return result;
   }
@@ -510,7 +627,8 @@ public class AccessibilityUtils
   private static boolean isValidInfoTextCandidate(
     ComponentView candidateComponent)
   {
-    return (candidateComponent instanceof OutputTextView);
+    return (candidateComponent instanceof OutputTextView && 
+      ((OutputTextView)candidateComponent).getText().length() <= 4);      
   }
 
   private static boolean isValidHelpTextCandidate(
@@ -789,6 +907,31 @@ public class AccessibilityUtils
       }
     }
     return labelViews;
+  }
+  
+  private static String getAdaptedStyleClass(ComponentView component, 
+    Integer panelWidth)
+  {
+    float ratio = (float)component.getWidth() / (float)panelWidth;
+    if (ratio < 0.33f)
+    {
+      if (component instanceof CheckBoxView)
+      {
+        return "col-12 md:col-2";
+      }
+      else
+      {
+        return "col-12 md:col-4";
+      }
+    }
+    else if (ratio < 0.66f)
+    {
+      return "col-12 md:col-6";              
+    }
+    else
+    {
+      return "col-12";
+    }
   }
   
   private static class ComponentGroup
