@@ -168,7 +168,7 @@ public class AccessibilityUtils
       if (!assignationMap.containsKey(inputComponent))
       {        
         List<ComponentView> candidates = candidatesMap.get(inputComponent);
-        if (candidates.size() > 1)
+        if (candidates.size() >= 1)
         {
           ComponentView assignedCandidate = candidates.get(0);            
           assignationMap.put(inputComponent, assignedCandidate);
@@ -331,7 +331,7 @@ public class AccessibilityUtils
 
   public static boolean repairOutputOrder(Collection componentViews)
   {
-    boolean changes = false;
+    Map<ComponentView, Integer> beforeMap = buildOutputOrderMap(componentViews);
     int outputOrder = 1;
     List<ComponentView> sortedComponents = 
       getSortedComponentListByPosition(componentViews);
@@ -339,14 +339,13 @@ public class AccessibilityUtils
     {
       if (!(view instanceof ScriptView)) //ignore scripts
       {
-        Integer newOutputOrder = outputOrder++;      
-        if (!newOutputOrder.equals(view.getOutputOrder())) changes = true;
-        view.setOutputOrder(newOutputOrder);
+        view.setOutputOrder(outputOrder++);
       }
     }
-    return changes;
+    Map<ComponentView, Integer> afterMap = buildOutputOrderMap(componentViews);
+    return diffOutputOrderMaps(beforeMap, afterMap);
   }
-
+  
   public static List<ComponentView> getSortedComponentListByOutputOrder(
     Collection<ComponentView> componentViews)
   {
@@ -534,7 +533,7 @@ public class AccessibilityUtils
     for (ComponentView component : componentViews)
     {
       if (component.getX() >= minX && component.getX() < maxX && 
-        component.getY() >= minY && component.getY() <= maxY && 
+        component.getY() >= minY && component.getY() < maxY && 
         (candidateComponent == null || 
         component.getX() > candidateComponent.getX()))
       {
@@ -556,7 +555,7 @@ public class AccessibilityUtils
     for (ComponentView component : componentViews)
     {
       if (component.getX() >= minX && component.getX() < maxX && 
-        component.getY() >= minY && component.getY() <= maxY && 
+        component.getY() >= minY && component.getY() < maxY && 
         (candidateComponent == null || 
         component.getX() < candidateComponent.getX()))
       {
@@ -585,7 +584,7 @@ public class AccessibilityUtils
     int maxY = inputComponent.getY();
     for (ComponentView component : componentViews)
     {
-      if (component.getX() >= minX && component.getX() <= maxX && 
+      if (component.getX() >= minX && component.getX() < maxX && 
         component.getY() >= minY && component.getY() < maxY && 
         (candidateComponent == null || 
         component.getY() > candidateComponent.getY()))
@@ -607,7 +606,7 @@ public class AccessibilityUtils
       minY + maxDistance + 1);
     for (ComponentView component : componentViews)
     {
-      if (component.getX() >= minX && component.getX() <= maxX && 
+      if (component.getX() >= minX && component.getX() < maxX && 
         component.getY() >= minY && component.getY() < maxY && 
         (candidateComponent == null || 
         component.getY() < candidateComponent.getY()))
@@ -691,12 +690,11 @@ public class AccessibilityUtils
       {
         ComponentGroup c1 = (ComponentGroup)o1;
         ComponentGroup c2 = (ComponentGroup)o2;
-        if (Math.abs(c1.getY() - c2.getY()) > COMPONENT_POSITION_ERROR_MARGIN)
+        if (Math.abs(c1.getY() - c2.getY()) > 0)
         {
           return c1.getY() - c2.getY();
         }
-        else if (Math.abs(c1.getX() - c2.getX()) > 
-          COMPONENT_POSITION_ERROR_MARGIN)
+        else if (Math.abs(c1.getX() - c2.getX()) > 0)
         {
           return c1.getX() - c2.getX();
         }
@@ -933,6 +931,43 @@ public class AccessibilityUtils
       return "col-12";
     }
   }
+  
+  private static Map<ComponentView, Integer> buildOutputOrderMap(
+    Collection componentViews)
+  {
+    Map<ComponentView, Integer> map = new HashMap();
+    for (Object obj : componentViews)
+    {
+      ComponentView view = (ComponentView)obj;
+      map.put(view, view.getOutputOrder());
+    }
+    return map;
+  }
+  
+  private static boolean diffOutputOrderMaps(
+    Map<ComponentView, Integer> map1, Map<ComponentView, Integer> map2)
+  {
+    if (map1.size() != map2.size()) return true;
+    
+    for (ComponentView view : map1.keySet())
+    {
+      Integer o1 = map1.get(view);
+      Integer o2 = map2.get(view);
+      if (o1 == null && o2 == null) 
+      {
+        //nothing here
+      }
+      else if (o1 != null && o2 != null) 
+      {
+        if (!o1.equals(o2)) return true;
+      }
+      else
+      {
+        return true;
+      }
+    }
+    return false;
+  }  
   
   private static class ComponentGroup
   {
