@@ -8,11 +8,7 @@
                 xmlns:sf="http://faces.santfeliu.org">
 
   <div class="category_header flex align-items-start">
-<!--
-    <ui:fragment rendered="#{mapGroup.category.contentId != null}">
-      <img src="/documents/#{mapGroup.category.contentId}" style="width:3rem" class="mr-2 flex-shrink-0" alt="" />
-    </ui:fragment>
--->    
+
     <h:panelGroup layout="block" rendered="#{mapGroup.category.contentId != null}" 
                   styleClass="image mr-2" 
                   style="mask-image:url(/documents/#{mapGroup.category.contentId});-webkit-mask-image:url(/documents/#{mapGroup.category.contentId});">
@@ -22,7 +18,7 @@
       <div class="font-bold mr-1">#{applicationBean.translate(mapGroup.category.title, 'geo')}</div>
       <div class="flex flex-wrap">
         <ui:fragment rendered="#{mapGroup.category.description != null}">
-          <span class="mr-1">#{mapGroup.category.description}</span>
+          <span class="mr-1">#{applicationBean.translate(mapGroup.category.description, 'geo')}</span>
         </ui:fragment>
         <span>(#{mapGroup.mapCount} #{mapGroup.mapCount == 1 ? geoBundle.map : geoBundle.maps})</span>
       </div>
