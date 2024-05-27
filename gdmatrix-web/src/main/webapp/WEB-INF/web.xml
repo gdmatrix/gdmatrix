@@ -172,7 +172,7 @@
   </context-param>
   <context-param>
     <param-name>org.santfeliu.translation.supportedLanguages</param-name>
-    <param-value>ca,es,en,fr,de,it,pt,ru,ar,zh,ro,bg</param-value>
+    <param-value>ca,es,en,fr,de,it,pt,ru,ar,zh,ro,bg,ja</param-value>
   </context-param>
   <context-param>
     <param-name>org.santfeliu.translation.stringTranslator</param-name>
