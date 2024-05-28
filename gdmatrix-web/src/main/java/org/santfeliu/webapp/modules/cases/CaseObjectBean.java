@@ -209,6 +209,16 @@ public class CaseObjectBean extends ObjectBean
       && pd.isReadOnly());
   }
   
+  /**
+   * Rendered when base type is not instanciable or is the root type.
+   */
+  public boolean isRenderTypeId()
+  {
+    String typeId = getBaseTypeInfo().getBaseTypeId();
+    Type baseType = TypeCache.getInstance().getType(typeId);
+    return (baseType.isRootType() || !baseType.isInstantiable());
+  }
+  
   @Override
   public boolean isRenderedEditTab(EditTab tab)
   {

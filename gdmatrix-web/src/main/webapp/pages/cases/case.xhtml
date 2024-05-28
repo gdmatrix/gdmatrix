@@ -91,7 +91,7 @@
             </p:outputPanel>
 
             <!-- TypeId -->
-            <p:outputPanel class="field col-12" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}">
+            <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderTypeId}">
               <p:outputLabel for="@next" value="#{caseBundle.case_caseTypeId}" />
               <emcomp:typeReference value="#{caseFinderBean.filter.caseTypeId}"
                                     type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
