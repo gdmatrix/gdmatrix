@@ -109,8 +109,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String DEFAULT_SECTION = "default";
   public static final String DEFAULT_THEME = "default";
   public static final String DEFAULT_FONT_SIZE = "12";
-  public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
-  public static final String EDIT_PRIMEFACES_THEME = "saga";
+  public static final String DEFAULT_PRIMEFACES_THEME = "rosa";
+  public static final String EDIT_PRIMEFACES_THEME = "rosa";
 
   public static final String MATRIX_INFO_VIEW = "MATRIX_INFO";
   public static final String RENDER_VIEW = "RENDER";

@@ -563,7 +563,7 @@ DIV.objectForm
   margin-right:2px;
   vertical-align: middle;
   padding:2px 1px 2px 1px;
-  height:14px;
+  min-height:20px;
   overflow:hidden;
 }
 

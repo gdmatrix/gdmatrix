@@ -829,13 +829,7 @@ a.imageButton img:hover
 {  
 }
 
-/* PrimeFaces saga theme */
-
-body .ui-widget,
-body .ui-inputfield
-{
-  font-size: 0.8rem;
-}
+/* PrimeFaces theme */
 
 body .ui-inputfield
 {
