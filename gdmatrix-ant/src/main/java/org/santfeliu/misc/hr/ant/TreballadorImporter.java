@@ -842,7 +842,7 @@ public class TreballadorImporter implements Importer
       CaseCase cc = new CaseCase();
       cc.setCaseId(c.getCaseId());
       cc.setRelCaseId(relCaseId);
-      cc.setCaseCaseTypeId("sf:TreballadorCaseCase");
+      cc.setCaseCaseTypeId("sf:TreballadorBPMCaseCase");
       casesPort.storeCaseCase(cc);
       logTmp("<b>Nou expedient de SDE relacionat: caseId " + c.getCaseId() +
         " relCaseId " + relCaseId + " (" + relCaseIdMap.get(relCaseId) +
