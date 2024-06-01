@@ -48,6 +48,7 @@ import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import static javax.faces.render.ResponseStateManager.VIEW_STATE_PARAM;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -67,11 +68,12 @@ public class LoginBean extends WebBean implements Serializable
   private int requestedAuthenticationLevel = 0;
   private int requestedSignatureLevel = 0;
 
-  // embedded login fields
+  private String username;
+  private String password;
+
+  // login fields for templates
   private transient HtmlInputText usernameInputText = new HtmlInputText();
   private transient HtmlInputSecret passwordInputSecret = new HtmlInputSecret();
-
-  // login message
   private transient String loginMessage;
 
   public LoginBean()
@@ -86,6 +88,26 @@ public class LoginBean extends WebBean implements Serializable
   public String getLoginImage()
   {
     return loginImage;
+  }
+
+  public String getUsername()
+  {
+    return username;
+  }
+
+  public void setUsername(String username)
+  {
+    this.username = username;
+  }
+
+  public String getPassword()
+  {
+    return password;
+  }
+
+  public void setPassword(String password)
+  {
+    this.password = password;
   }
 
   public void setUsernameInputText(HtmlInputText usernameInputText)
@@ -194,15 +216,15 @@ public class LoginBean extends WebBean implements Serializable
 
   // **** action methods ****
 
-  // login from page with username/password
+  // login from page with username/password (for classic templates)
   public String login()
   {
     try
     {
       loginMessage = null;
-      String username = (String)usernameInputText.getValue();
-      String password = (String)passwordInputSecret.getValue();
-      if (username != null && username.trim().length() > 0)
+      username = (String)usernameInputText.getValue();
+      password = (String)passwordInputSecret.getValue();
+      if (!StringUtils.isBlank(username))
       {
         UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         userSessionBean.login(username, password);
@@ -217,37 +239,21 @@ public class LoginBean extends WebBean implements Serializable
     return null;
   }
 
-  // redirect to original page if login successfull
-  public String loginRedirect()
+  // login for login.xhtml page
+  public void loginRedirect()
   {
     try
     {
-      String username = (String)usernameInputText.getValue();
-      String password = (String)passwordInputSecret.getValue();
-      if (username != null && username.trim().length() > 0)
+      if (!StringUtils.isBlank(username))
       {
         UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         userSessionBean.login(username, password);
-
-        FacesContext context = getFacesContext();
-        HttpServletRequest request =
-          (HttpServletRequest)context.getExternalContext().getRequest();
-        HttpServletResponse response =
-          (HttpServletResponse)context.getExternalContext().getResponse();
-
-        String url = HttpUtils.getServerSecureURL(request,
-          CMSListener.GO_URI, queryString);
-
-        response.sendRedirect(url);
-        context.responseComplete();
       }
     }
     catch (Exception ex)
     {
-      FacesMessage message = FacesUtils.getFacesMessage(ex);
-      loginMessage = message.getSummary();
+      FacesUtils.addMessage("login_messages", ex);
     }
-    return null;
   }
 
   // login from page with certificate
@@ -289,6 +295,23 @@ public class LoginBean extends WebBean implements Serializable
 
   public String showLogin()
   {
+    return showLogin(null);
+  }
+
+  public String showLogin(String messageId)
+  {
+    if (messageId != null)
+    {
+      FacesMessage message = FacesUtils.getFacesMessage(messageId, null,
+        FacesMessage.SEVERITY_ERROR);
+      setLoginMessage(message.getSummary()); // for classic templates
+      getFacesContext().addMessage("login_messages", message);
+    }
+    else
+    {
+      setLoginMessage(null);
+    }
+
     ExternalContext extContext = getExternalContext();
     HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
     readParameters(request);
@@ -305,8 +328,10 @@ public class LoginBean extends WebBean implements Serializable
 
     String userId = request.getParameter(SecurityConstants.USERID_PARAMETER);
     if (userId != null && !userSessionBean.getUserId().equals(userId))
+    {
       usernameInputText.setValue(userId);
-
+      username = userId;
+    }
     return "login";
   }
 

@@ -14,16 +14,6 @@
   font-size:var(--font-size);
 }
 
-::-moz-selection {
-  color: var(--primary-color-text);
-  background: var(--primary-color);
-}
-
-::selection {
-  color: var(--primary-color-text);
-  background: var(--primary-color);
-}
-
 h1
 {
   font-family: var(--font-family);

@@ -1191,17 +1191,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public void showLoginPage(String messageId)
   {
     LoginBean loginBean = (LoginBean)getBean("loginBean");
-    if (messageId != null)
-    {
-      FacesMessage message = FacesUtils.getFacesMessage(messageId, null,
-        FacesMessage.SEVERITY_ERROR);
-      loginBean.setLoginMessage(message.getSummary());
-    }
-    else
-    {
-      loginBean.setLoginMessage(null);
-    }
-    String outcome = loginBean.showLogin();
+    String outcome = loginBean.showLogin(messageId);
 
     Application application = getApplication();
     FacesContext context = getFacesContext();

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:gdm="http://gdmatrix.org/faces"
+      lang="#{userSessionBean.viewLanguage}">
+  <f:view locale="#{userSessionBean.viewLocale}">
+    <f:loadBundle basename="org.santfeliu.web.resources.WebBundle" var="webBundle"/>
+    <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle" var="securityBundle"/>  
+    <h:head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width" />
+      <title>${loginBean.loginTitle}</title>
+      <link rel="stylesheet" type="text/css"
+        href="${pageContext.request.contextPath}/topframe/css/topframe.css?v=${applicationBean.resourcesVersion}" />
+      <link rel="stylesheet" type="text/css"
+        href="${pageContext.request.contextPath}/common/security/css/security.css?v=${applicationBean.resourcesVersion}" />
+      <h:outputStylesheet library="webjars" name="primeflex/3.3.0/primeflex.min.css" />  
+      <h:outputStylesheet library="webjars" name="font-awesome/6.4.0/css/all.min-jsf.css" /> 
+      <h:outputStylesheet library="webjars" name="material-icons/1.13.11/css/material-icons.css" />
+      <h:outputStylesheet library="webjars" name="material-icons/1.13.11/iconfont/material-icons-jsf.css" />
+    </h:head>
+    <h:body class="loginPage">
+      <h1 level="1" class="element-invisible">
+        #{applicationBean.translate(loginBean.loginTitle, 'login')}
+      </h1>        
+      <h:form id="mainform" enctype="multipart/form-data">
+        <p:panel style="max-width: 260px;margin-left:auto;margin-right:auto">
+          <f:facet name="header">
+            <div class="text-center"
+              rendered="#{loginBean.loginImage != null}">
+              <h:graphicImage value="#{loginBean.loginImage}" alt="" title="" />
+            </div>
+            <div class="text-center">
+               <i class="pi pi-user" /> #{applicationBean.translate(loginBean.loginTitle, 'login')}
+            </div>
+          </f:facet>
+
+          <p:messages id="login_messages" showSummary="true" styleClass="messages"  
+                      showIcon="true" closable="false" widgetVar="loginMessages" />
+
+          <div class="ui-fluid formgrid grid">
+
+            <ui:fragment rendered="#{not loginBean.loginCertificateFailed}">
+
+              <!-- User/password -->
+              <ui:fragment rendered="#{loginBean.requestedAuthenticationLevel lt 2 and loginBean.requestedSignatureLevel lt 2}">
+
+                <div class="field col-12">
+                  <p:outputLabel value="#{webBundle.outputUsername}:" for="username" />
+                  <p:inputText value="#{loginBean.username}" id="username" pt:spellcheck="false" />
+                </div>
+
+                <div class="field col-12">
+                  <p:outputLabel value="#{webBundle.outputPassword}:" for="password" />
+                  <p:password value="#{loginBean.password}" id="password" 
+                              redisplay="true" toggleMask="true" class="w-full" />
+                </div>
+
+                <div class="field col-12">
+                  <p:commandButton value="#{webBundle.buttonSignin}"
+                    icon="pi pi-sign-in"
+                    onstart="PF('loginMessages').getJQ()[0].innerHTML='';"
+                    oncomplete="doRedirect()"
+                    action="#{loginBean.loginRedirect}" 
+                    update="@form:login_messages" />
+                </div>
+              </ui:fragment>
+
+              <!-- Certificate -->
+              <ui:fragment rendered="#{tuserSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true'}">
+                <div class="field col-12">
+                  <p:linkButton href="#{loginBean.loginCertificateURL}" 
+                    value="#{webBundle.certificateAuthentication}"
+                    icon="fa fa-certificate"
+                    styleClass="no-underline">                
+                  </p:linkButton>
+                </div>
+              </ui:fragment>
+
+              <!-- VALid -->
+              <ui:fragment rendered="#{loginBean.requestedAuthenticationLevel lt 3 and loginBean.requestedSignatureLevel lt 3 and 
+                             (userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true')}">
+                <div class="field col-12">
+                  <p:commandButton action="#{validBean.login}"
+                    value="#{applicationBean.translate('VALID-AOC', 'login')}" 
+                    icon="fa fa-certificate" />
+                </div>
+              </ui:fragment>
+            </ui:fragment>
+
+            <div class="field col-12">
+              <p:linkButton href="#{loginBean.cancelURL}"
+                            value="#{securityBundle.cancel}"
+                            icon="pi pi-times"
+                            styleClass="no-underline" />
+            </div>
+
+          </div>
+
+          <f:facet name="footer">
+            <div class="text-right">
+              <p:link value="#{webBundle.accessibility}"
+                      href="/accessibilitat" 
+                      target="_blank"
+                      styleClass="no-underline">
+              </p:link>
+            </div>
+          </f:facet>
+              
+        </p:panel>
+        <gdm:saveState value="#{loginBean}" />
+      </h:form>
+      <script>
+        function doRedirect()
+        {
+          var error = 
+            document.body.getElementsByClassName("ui-messages-error").length > 0;
+          
+          if (!error)
+          {
+            var search = window.location.search;
+            if (search) search += "&amp;";
+            else search = "?";
+            search += "_lc=" + Math.random(); 
+            window.location = "/go.faces" + search + window.location.hash;
+          }
+        }
+      </script>
+    </h:body>
+  </f:view>
+</html>

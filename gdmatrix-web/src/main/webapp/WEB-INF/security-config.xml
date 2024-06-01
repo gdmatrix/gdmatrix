@@ -107,7 +107,7 @@
 
   <navigation-case>
    <from-outcome>login</from-outcome>
-   <to-view-id>/common/security/login.xhtml</to-view-id>
+    <to-view-id>/pages/security/login.xhtml</to-view-id>
   </navigation-case>
 
   <navigation-case>

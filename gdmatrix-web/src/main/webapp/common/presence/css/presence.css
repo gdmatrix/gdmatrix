@@ -3005,6 +3005,26 @@ input::-moz-focus-inner
 }
 
 /*** Override of PrimeFaces dataTable styles ***/
+body .ui-datatable .ui-datatable-data > tr > td
+{
+  padding: 2px;
+  background-color: #f0f0f0;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+.page_body .tabs
+{
+  box-sizing: border-box;  
+}
+
+body .ui-datepicker a
+{
+  text-decoration: none;
+}
+
 .ui-datatable .ui-state-default
 {
   background: none;

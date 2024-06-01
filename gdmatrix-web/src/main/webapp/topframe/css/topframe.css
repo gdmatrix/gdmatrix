@@ -19,6 +19,16 @@
   font-size:var(--font-size);
 }
 
+::-moz-selection {
+  color: var(--primary-color-text);
+  background: var(--primary-color);
+}
+
+::selection {
+  color: var(--primary-color-text);
+  background: var(--primary-color);
+}
+
 body
 {
   background: #D8D8D8;
