@@ -17,14 +17,15 @@
       <link rel="stylesheet" type="text/css"
         href="${pageContext.request.contextPath}/topframe/css/topframe.css?v=${applicationBean.resourcesVersion}" />
       <h:outputStylesheet library="css" name="security.css" />  
-      <h:outputStylesheet library="webjars" name="primeflex/3.3.0/primeflex.min.css" />  
+      <h:outputStylesheet library="webjars" name="primeflex/3.3.0/primeflex.min.css" />
+      <h:outputStylesheet library="webjars" name="font-awesome/6.4.0/css/all.min-jsf.css" /> 
     </h:head>
     <h:body class="loginPage">
       <h1 level="1" class="element-invisible">
         #{applicationBean.translate(loginBean.loginTitle, 'login')}
       </h1>        
       <h:form id="mainform" enctype="multipart/form-data">
-        <p:panel class="login_form">
+        <p:panel id="login_form" class="login_form">
           <f:facet name="header">
             <div class="text-center"
               rendered="#{loginBean.loginImage != null}">
@@ -94,7 +95,7 @@
 
             <div class="field col-12">
               <p:linkButton href="#{loginBean.cancelURL}"
-                            value="#{securityBundle.cancel}"
+                            value="#{objectBundle.cancel}"
                             icon="pi pi-times"
                             styleClass="no-underline" />
             </div>
@@ -102,12 +103,27 @@
           </div>
 
           <f:facet name="footer">
-            <div class="text-right">
-              <p:link value="#{webBundle.accessibility}"
-                      href="/accessibilitat" 
-                      target="_blank"
-                      styleClass="no-underline">
-              </p:link>
+            <div class="ui-fluid formgrid grid">
+
+              <div class="col-12">
+
+                <p:outputLabel for="@next" value="#{webBundle.language}:" />
+                <p:selectOneMenu value="#{userSessionBean.viewLanguage}"  
+                                 styleClass="mt-2 block">
+                  <p:ajax event="valueChange" process="@this" 
+                          update="@form:login_form" oncomplete="enableUserPassButton()" />
+                  <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale" 
+                                 itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)}" />
+                </p:selectOneMenu>
+              </div>
+
+              <div class="col-12 text-right mt-3">
+                <p:link value="#{webBundle.accessibility}"
+                        href="/accessibilitat" 
+                        target="_blank"
+                        styleClass="no-underline">
+                </p:link>
+              </div>
             </div>
           </f:facet>
               
@@ -152,7 +168,7 @@
           }
         }
         
-        window.onload = enableUserPassButton;
+        $(document).ready(() => enableUserPassButton());
 
       </script>
     </h:body>

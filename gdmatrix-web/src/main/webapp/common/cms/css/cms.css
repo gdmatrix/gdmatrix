@@ -368,7 +368,7 @@ a.imageButton img:hover
 {
   vertical-align:top;
   border: 0;
-  padding-bottom: 4px;
+  padding: 2px;
 }
 
 .rightPanel .propertyTable TR.property TD.col1

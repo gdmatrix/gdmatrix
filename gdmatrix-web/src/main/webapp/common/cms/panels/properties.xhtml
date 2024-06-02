@@ -104,7 +104,7 @@
         </h:column>
         <h:column>
           <p:dataList value="#{nodeEditBean.propertyValues}" var="propertyValue" itemType="none">
-            <p:inputText value="#{propertyValue.value}" styleClass="#{nodeEditBean.propertyValueStyleClass}" />
+            <p:inputText value="#{propertyValue.value}" styleClass="#{nodeEditBean.propertyValueStyleClass} mb-1" />
           </p:dataList>
           <h:outputText rendered="#{nodeEditBean.showPropertyHelp and nodeEditBean.propertyTipRender}"
                         value="#{nodeEditBean.propertyTip}"
