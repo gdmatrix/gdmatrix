@@ -30,6 +30,7 @@
  */
 package org.santfeliu.web;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,6 +43,7 @@ import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -219,6 +221,11 @@ public class ApplicationBean
       Iterator iter = FacesContext.getCurrentInstance().
         getApplication().getSupportedLocales();
       while (iter.hasNext()) locales.add((Locale)iter.next());
+      Collections.sort(locales,
+        (Comparator<Locale>) (Locale locale1, Locale locale2) ->
+      {
+        return locale1.getLanguage().compareTo(locale2.getLanguage());
+      });
     }
     return locales;
   }

@@ -110,10 +110,10 @@
                 <p:outputLabel for="@next" value="#{webBundle.language}:" />
                 <p:selectOneMenu value="#{userSessionBean.viewLanguage}"  
                                  styleClass="mt-2 block">
-                  <p:ajax event="valueChange" process="@this" 
+                  <p:ajax event="valueChange" process="@this username password" 
                           update="@form:login_form" oncomplete="enableUserPassButton()" />
-                  <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale" 
-                                 itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)}" />
+                  <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale"
+                                 itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)} (#{locale.language})" />
                 </p:selectOneMenu>
               </div>
 

@@ -815,7 +815,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     List<Locale> locales =
       ApplicationBean.getCurrentInstance().getSupportedLocales();
 
-    List<Locale> locales2 = new ArrayList<Locale>();
+    List<Locale> locales2 = new ArrayList<>();
 
     List<String> languages =
       getSelectedMenuItem().getMultiValuedProperty(LANGUAGE);
@@ -834,7 +834,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
         }
       }
     }
-    if (locales2.size() > 0)
+    if (!locales2.isEmpty())
     {
       locales = locales2;
     }
