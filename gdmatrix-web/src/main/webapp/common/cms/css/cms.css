@@ -374,6 +374,7 @@ a.imageButton img:hover
 .rightPanel .propertyTable TR.property TD.col1
 {
   width:30%;
+  padding-right: 8px;
 }
 
 .rightPanel .propertyTable TR.property TD.col2
@@ -626,7 +627,7 @@ a.imageButton img:hover
 
 .nodeSyncPanel .syncNodeListPanel .syncNodeTable .colChecked
 {
-  width: 16px;
+  width: 20px;
   text-align: center;
 }
 
@@ -860,8 +861,8 @@ body .ui-datatable .ui-datatable-data > tr > td
 body .ui-chkbox,
 body .ui-chkbox .ui-chkbox-box
 {
-  width: 1rem;
-  height: 1rem;
+/*  width: 1rem;
+  height: 1rem;*/
 }
 
 body .ui-chkbox .ui-chkbox-box .ui-chkbox-icon.ui-icon-check
