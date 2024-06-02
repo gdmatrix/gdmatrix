@@ -4282,7 +4282,8 @@ body .ui-selectonemenu{
 }
 body .ui-selectonemenu .ui-selectonemenu-label{
   background:rgba(0,0,0,0);
-  padding-right:2.357rem
+  padding-right:2.357rem;
+  box-sizing: border-box;
 }
 body .ui-selectonemenu .ui-selectonemenu-trigger{
   border:0 none;
@@ -6883,6 +6884,9 @@ body .ui-fieldset{
   color:rgba(255,255,255,.87);
   padding:1rem;
   border-radius:4px
+}
+body .ui-fieldset * {
+  box-sizing: border-box;
 }
 body .ui-fieldset .ui-fieldset-legend{
   border:1px solid #383838;
