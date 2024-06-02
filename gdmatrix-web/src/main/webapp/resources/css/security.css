@@ -1,3 +1,23 @@
+.ui-panel.login_form
+{
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top:8px;
+  box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.ui-panel.login_form .ui-linkbutton a
+{
+  text-decoration: none;
+  outline: none;
+}
+
+.ui-panel.login_form .ui-panel-titlebar
+{
+  background: #fff;
+}
+
 .rolesTreeSearch .rolesTree .roleLink
 {
 }

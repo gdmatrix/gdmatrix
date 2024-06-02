@@ -1,15 +1,4 @@
 /* security */
-body.loginPage
-{
-  padding:8px;
-  background-color: #F0F0F0;
-}
-
-.ui-linkbutton a
-{
-  text-decoration: none;
-  outline: none;
-}
 
 /* UserInRole */
 

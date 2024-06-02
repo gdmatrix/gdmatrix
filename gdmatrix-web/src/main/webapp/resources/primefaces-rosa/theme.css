@@ -44,9 +44,7 @@
   --focus-ring: 0 0 0 0.2rem #f883b8;
   color-scheme:light
 }
-*{
-  box-sizing:border-box
-}
+
 body .ui-widget{
   font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-size:1rem;
@@ -3556,7 +3554,7 @@ body .ui-input-icon-right>.ui-inputfield{
 }
 body .ui-inputfield{
   color:#495057;
-  background:#fff;
+  background:var(--surface-ground);
   padding:.5rem .5rem;
   border:1px solid #ced4da;
   outline:0 none;
@@ -3653,7 +3651,7 @@ body .ui-inputswitch{
 body .ui-inputswitch .ui-inputswitch-handle{
   top:-4px;
   left:-2px;
-  background:#fff;
+  background:var(--surface-ground);
   border-radius:50%;
   border:2px solid #dee2e6;
   transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
@@ -3676,12 +3674,12 @@ body .ui-inputswitch.ui-inputswitch-checked{
   background:#ab0a53
 }
 body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-handle{
-  background:#fff;
+  background:var(--surface-ground);
   border-color:#890842;
   margin-left:2px
 }
 body .keypad-popup{
-  background:#fff;
+  background:var(--surface-ground);
   color:#495057;
   padding:0;
   border:0 none;
