@@ -319,20 +319,15 @@ public class ContextTreeBean implements Serializable
   {
     String typeId;
     String objectId;
+    String description;
     String icon;
 
     public ObjectData(String typeId, String objectId)
     {
-      this(typeId, objectId, null);
-    }
-    
-    public ObjectData(String typeId, String objectId, String icon)
-    {
       this.typeId = typeId;
       this.objectId = objectId;
-      this.icon = icon;
     }
-
+    
     public String getTypeId()
     {
       return typeId;
@@ -342,17 +337,32 @@ public class ContextTreeBean implements Serializable
     {
       return objectId;
     }
+    
+    public void setDescription(String description)
+    {
+      this.description = description;
+    }
 
     public String getDescription()
     {
-      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-      BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(typeId);
-      if (baseTypeInfo == null)
+      if (description != null)
+        return description;
+      else
       {
-        return typeId + "@" + objectId;
+        NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+        BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(typeId);
+        if (baseTypeInfo == null)
+        {
+          return typeId + "@" + objectId;
+        }
+        TypeBean typeBean = TypeBean.getInstance(baseTypeInfo.getBaseTypeId());
+        return typeBean.getDescription(objectId);
       }
-      TypeBean typeBean = TypeBean.getInstance(baseTypeInfo.getBaseTypeId());
-      return typeBean.getDescription(objectId);
+    }
+
+    public void setIcon(String icon)
+    {
+      this.icon = icon;
     }
 
     public String getIcon()
