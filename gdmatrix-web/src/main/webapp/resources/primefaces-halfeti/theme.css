@@ -49,6 +49,11 @@ body .ui-widget{
   font-size:1rem;
   text-decoration:none
 }
+
+body .ui-widget * {
+  box-sizing: border-box;
+}
+
 body .ui-icon{
   font-size:1rem;
   display:inline-block;
@@ -4349,6 +4354,7 @@ body .ui-selectonemenu-panel{
   box-shadow:0 0 10px 0 rgba(0,0,0,.16);
   border-radius:4px
 }
+
 body .ui-selectonemenu-panel .ui-selectonemenu-filter-container{
   padding:.5rem 1rem;
   margin:0;
