@@ -125,7 +125,7 @@
               <p:outputLabel value="#{webBundle.outputUsername}:" for="@next" />
               <p:inputText value="#{templateBean.username}" pt:spellcheck="false"
                            widgetVar="usernameInput"
-                           onkeyup="enableUserPassButton()"/>
+                           oninput="enableUserPassButton()"/>
             </div>
             <div class="field col-12">
               <p:outputLabel value="#{webBundle.outputPassword}:" for="@next" />

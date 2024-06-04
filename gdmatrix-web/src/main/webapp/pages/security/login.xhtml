@@ -5,6 +5,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:sf="http://faces.santfeliu.org"
       xmlns:gdm="http://gdmatrix.org/faces"
       lang="#{userSessionBean.viewLanguage}">
   <f:view locale="#{userSessionBean.viewLocale}">
@@ -51,7 +52,7 @@
                   <p:inputText value="#{loginBean.username}" 
                                id="username" pt:spellcheck="false" 
                                widgetVar="usernameInput" 
-                               onkeyup="enableUserPassButton()" />
+                               oninput="enableUserPassButton()" />
                 </div>
 
                 <div class="field col-12">
@@ -129,6 +130,7 @@
               
         </p:panel>
         <gdm:saveState value="#{loginBean}" />
+        <sf:overlay />
       </h:form>
       <script>
         function enableUserPassButton()
@@ -160,6 +162,11 @@
           if (!error)
           {
             document.getElementsByClassName("login_form")[0].style.display = "none";
+            var overlay = document.getElementById('_overlay_');
+            if (overlay)
+            {
+              overlay.style.visibility = "visible";
+            }
             var search = window.location.search;
             if (search) search += "&amp;";
             else search = "?";
