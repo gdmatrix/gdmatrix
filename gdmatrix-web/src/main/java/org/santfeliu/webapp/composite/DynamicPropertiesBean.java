@@ -52,6 +52,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
+import org.matrix.doc.ContentInfo;
+import org.matrix.doc.Document;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.santfeliu.dic.Type;
@@ -63,6 +65,7 @@ import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.helpers.PropertyHelper;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.util.ComponentUtils;
 import org.santfeliu.webapp.util.FormImporter;
 import org.santfeliu.webapp.util.WebUtils;
@@ -90,6 +93,7 @@ public class DynamicPropertiesBean implements Serializable
   static final JsonValidator JSON_VALIDATOR = new JsonValidator();
 
   private final Map<String, List<SelectItem>> selectItemMap = new HashMap<>();
+  private final Map<String, Boolean> inspectModeMap = new HashMap<>();  
   private PropertyHelper propertyHelper;
 
   @PostConstruct
@@ -172,6 +176,22 @@ public class DynamicPropertiesBean implements Serializable
     }
   }
 
+  public boolean isInspectMode()
+  {
+    String prefix = getFormBuilderPrefix();
+    if (!inspectModeMap.containsKey(prefix))
+    {
+      inspectModeMap.put(prefix, Boolean.FALSE);
+    }
+    return inspectModeMap.get(prefix);
+  }
+
+  public void setInspectMode(boolean inspectMode)
+  {
+    String prefix = getFormBuilderPrefix();
+    inspectModeMap.put(prefix, inspectMode);
+  }
+
   public List<SelectItem> getSelectItems()
   {
     String prefix = getFormBuilderPrefix();
@@ -216,7 +236,7 @@ public class DynamicPropertiesBean implements Serializable
           new SelectItem("", bundle.getString("type_without_form")));
       }
       selectItemMap.put(formKey, selectItems);
-    }
+    }    
     return selectItems;
   }
 
@@ -224,11 +244,21 @@ public class DynamicPropertiesBean implements Serializable
   {
     UIComponent component = event.getComponent();
     UIComponent panel = component.findComponent("dyn_form");
-
+    
     if (panel != null)
     {
       updateComponents(panel);
     }
+  }
+
+  public void onInspectForm(FacesEvent event)
+  {
+    setInspectMode(!isInspectMode());
+    UIComponent component = event.getComponent();
+    UIComponent panel = component.findComponent("dyn_form");
+    Map<String, Object> panelAttributes = panel.getPassThroughAttributes();
+    panelAttributes.put(FormImporter.INSPECT_OPTION, isInspectMode());
+    onRefreshForm(event);
   }
 
   public void onRefreshForm(FacesEvent event)
@@ -325,6 +355,42 @@ public class DynamicPropertiesBean implements Serializable
     return PROPERTY_EDITOR_SELECTOR.equals(getFormSelector());
   }
 
+  public String getFormDocId()
+  {
+    String selector = getFormSelector();
+    if (!selector.startsWith("doc:"))
+    {
+      return "N/A";
+    }
+    else
+    {
+      return selector.substring(4);
+    }
+  }
+
+  public String getFormName()
+  {
+    String selector = getFormSelector();
+    if (!selector.startsWith("doc:"))
+    {
+      return "N/A";
+    }
+    else
+    {
+      String docId = selector.substring(4);
+      try
+      {       
+        Document document = 
+          DocModuleBean.getPort(true).loadDocument(docId, 0, ContentInfo.ID);
+        return document.getTitle();
+      }
+      catch (Exception ex)
+      {
+        return "";
+      }      
+    }    
+  }
+  
   // --- private methods ---
 
   private void updateComponents(UIComponent panel)

@@ -545,6 +545,39 @@ body .ui-messages-error ul
   margin-top: 4px;
 }
 
+/* Form descriptions */
+
+.formDescription > div
+{
+  border: 1px solid #ced4da;
+  margin-top: 10px;
+  margin-bottom: 10px;  
+  padding: 4px;  
+}
+
+.formDescription .header
+{
+  font-weight: bold;  
+}
+
+.formDescription .row
+{
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.formDescription .row .label
+{
+  width: 100px;  
+}
+
+.formDescription .row .value
+{
+  word-break: break-word;   
+}
+ 
 /* Material icons - avoid default 24px size */
 body .material-icons,
 body .mi

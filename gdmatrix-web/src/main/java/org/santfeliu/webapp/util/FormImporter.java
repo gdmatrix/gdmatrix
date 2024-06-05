@@ -90,6 +90,7 @@ import org.santfeliu.form.type.html.HtmlView;
 public class FormImporter
 {
   public static final String STACKED_OPTION = "stacked";
+  public static final String INSPECT_OPTION = "inspect";
   public static final String SUBMIT_BUTTON_OPTION = "checkExpression";
   public static final String ACTION_METHOD_OPTION = "actionMethod";
   public static final String ACTION_UPDATE_OPTION = "actionUpdate";
@@ -812,7 +813,17 @@ public class FormImporter
           group.getChildren().add(helpOutputText);
         }      
       }    
-
+      
+      if (isInspectMode() && view.getProperty("name") != null)
+      {
+        HtmlOutputText varNameOutputText = (HtmlOutputText)application.
+          createComponent(HtmlOutputText.COMPONENT_TYPE); 
+        varNameOutputText.setStyleClass("text-xs text-red-700 block");
+        varNameOutputText.setStyle("word-break: break-all;" + 
+          varNameOutputText.getStyle());
+        varNameOutputText.setValue(view.getProperty("name"));
+        group.getChildren().add(varNameOutputText);        
+      }      
     }
   }
 
@@ -907,4 +918,12 @@ public class FormImporter
         "#{not empty param['" + submitButton + "']}", Boolean.class));
     }
   }
+  
+  private boolean isInspectMode()
+  {    
+    Map<String, Object> panelAttributes = formRoot.getPassThroughAttributes();
+    Boolean inspectMode = (Boolean)panelAttributes.get(INSPECT_OPTION);
+    return (inspectMode == null ? false : inspectMode);
+  }
+  
 }
