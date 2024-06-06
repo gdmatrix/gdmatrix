@@ -107,8 +107,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String DEFAULT_SECTION = "default";
   public static final String DEFAULT_THEME = "default";
   public static final String DEFAULT_FONT_SIZE = "12";
-  public static final String DEFAULT_PRIMEFACES_THEME = "rosa";
-  public static final String EDIT_PRIMEFACES_THEME = "rosa";
+  public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
+  public static final String MODERN_PRIMEFACES_THEME = "rosa";
 
   public static final String MATRIX_INFO_VIEW = "MATRIX_INFO";
   public static final String RENDER_VIEW = "RENDER";
@@ -1394,15 +1394,22 @@ public final class UserSessionBean extends FacesBean implements Serializable
     this.pfTheme = pfTheme;
   }
 
+  public boolean isLoginPageVisible()
+  {
+    String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+
+    return "/pages/security/login.xhtml".equals(viewId);
+  }
+
   public String getPrimefacesTheme()
   {
     List<String> pfThemes =
       getSelectedMenuItem().getMultiValuedProperty(PRIMEFACES_THEME);
 
     String currentTheme;
-    if (isEditViewSelected() || isRedirViewSelected())
+    if (isEditViewSelected() || isRedirViewSelected() || isLoginPageVisible())
     {
-      currentTheme = EDIT_PRIMEFACES_THEME;
+      currentTheme = MODERN_PRIMEFACES_THEME;
     }
     else if (pfThemes.contains(pfTheme))
     {
@@ -1412,7 +1419,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     {
       currentTheme = pfThemes.get(0);
     }
-    else currentTheme = DEFAULT_PRIMEFACES_THEME;
+    else currentTheme = DEFAULT_PRIMEFACES_THEME; // classic theme (old)
 
     // load theme resource
     try

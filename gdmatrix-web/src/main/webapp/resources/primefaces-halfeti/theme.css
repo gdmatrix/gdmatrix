@@ -50,7 +50,7 @@ body .ui-widget{
   text-decoration:none
 }
 
-body .ui-widget * {
+* {
   box-sizing: border-box;
 }
 
