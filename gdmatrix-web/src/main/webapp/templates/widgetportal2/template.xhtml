@@ -518,8 +518,7 @@
             </sf:treeMenu>
             <sf:outputLink rendered="#{userSessionBean.selectedMenuItem.properties.mobileBrowserLabel != null}"
                            value="/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;btype=mobile"
-                           styleClass="mobileBrowserLink"
-                           ariaHidden="true">
+                           styleClass="mobileBrowserLink">
               <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.mobileBrowserLabel}"
                              translator="#{userSessionBean.translator}"
                              translationGroup="#{userSessionBean.translationGroup}" />
