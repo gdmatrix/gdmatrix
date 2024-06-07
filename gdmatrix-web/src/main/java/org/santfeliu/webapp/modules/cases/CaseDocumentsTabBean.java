@@ -54,6 +54,7 @@ import org.matrix.doc.DocumentConstants;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
+import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -87,7 +88,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private final List<SelectItem> volumeSelectItems = new ArrayList<>();
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper;
 
   public class TabInstance
   {
@@ -127,8 +128,8 @@ public class CaseDocumentsTabBean extends TabBean
       @Override
       public void sortRows()
       {
-        Collections.sort(getCurrentTabInstance().rows, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));             
+        Collections.sort(getCurrentTabInstance().rows,
+          new DataTableRowComparator(getColumns(), getOrderBy()));
       }
 
       @Override
@@ -141,8 +142,8 @@ public class CaseDocumentsTabBean extends TabBean
       public String getFixedColumnValue(Object row, String columnName)
       {
         return null; //No fixed columns
-      }      
-    };    
+      }
+    };
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -153,8 +154,8 @@ public class CaseDocumentsTabBean extends TabBean
   public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
   {
     this.groupableRowsHelper = groupableRowsHelper;
-  }  
-  
+  }
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -214,7 +215,7 @@ public class CaseDocumentsTabBean extends TabBean
   public String getDocumentLanguage(Document document)
   {
     String language = document.getLanguage();
-    if (language == null || 
+    if (language == null ||
       language.equals(DocumentConstants.UNIVERSAL_LANGUAGE))
     {
       return "";
@@ -229,18 +230,7 @@ public class CaseDocumentsTabBean extends TabBean
   public String getViewURL()
   {
     CaseDocumentsDataTableRow docView = WebUtils.getValue("#{row}");
-    if (docView.getDocId() != null)
-    {
-      String docId = docView.getDocId();
-
-      ExternalContext extContext = getExternalContext();
-      HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
-      String contextPath = request.getContextPath();
-
-      return contextPath + "/documents/" + docId;
-    }
-    else
-      return null;
+    return docView.getDocViewUrl();
   }
 
   public CaseDocument getEditing()
@@ -303,8 +293,8 @@ public class CaseDocumentsTabBean extends TabBean
       return activeEditTab.getOrderBy();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
+  }
+
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -312,12 +302,12 @@ public class CaseDocumentsTabBean extends TabBean
       return activeEditTab.getColumns();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
+  }
+
   @Override
   public void load()
   {
-    executeTabAction("preTabLoad", null);    
+    executeTabAction("preTabLoad", null);
     String objectId = getObjectId();
     if (!NEW_OBJECT_ID.equals(objectId))
     {
@@ -353,14 +343,14 @@ public class CaseDocumentsTabBean extends TabBean
         filter.setVolume(getCurrentVolume());
         filter.setCaseId(objectId);
         List<CaseDocumentView> auxListPre = port.findCaseDocumentViews(filter);
-        
-        //Show only rows with document        
+
+        //Show only rows with document
         List<CaseDocumentView> auxList = new ArrayList();
         for (CaseDocumentView cdv : auxListPre)
         {
           if (cdv.getDocument() != null) auxList.add(cdv);
         }
-        
+
         List<CaseDocumentView> result;
         String typeId = getTabBaseTypeId();
         if (typeId == null)
@@ -386,9 +376,9 @@ public class CaseDocumentsTabBean extends TabBean
               // ignore: bad type?
             }
           }
-        }        
+        }
         List<CaseDocumentsDataTableRow> auxList2 = toDataTableRows(result);
-        Collections.sort(auxList2, 
+        Collections.sort(auxList2,
           new DataTableRowComparator(getColumns(), getOrderBy()));
         setRows(auxList2);
       }
@@ -404,7 +394,7 @@ public class CaseDocumentsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
-    executeTabAction("postTabLoad", null);     
+    executeTabAction("postTabLoad", null);
   }
 
   @Override
@@ -417,9 +407,9 @@ public class CaseDocumentsTabBean extends TabBean
       {
         editing.setCaseDocTypeId("CaseDocument");
       }
-      editing = (CaseDocument) executeTabAction("preTabStore", editing);      
+      editing = (CaseDocument) executeTabAction("preTabStore", editing);
       editing = CasesModuleBean.getPort(false).storeCaseDocument(editing);
-      executeTabAction("postTabStore", editing);      
+      executeTabAction("postTabStore", editing);
       refreshHiddenTabInstances();
       load();
       editing = null;
@@ -430,7 +420,7 @@ public class CaseDocumentsTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   public void cancel()
   {
     editing = null;
@@ -440,7 +430,7 @@ public class CaseDocumentsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
+  }
 
   public void create()
   {
@@ -474,7 +464,7 @@ public class CaseDocumentsTabBean extends TabBean
     {
       try
       {
-        editing = 
+        editing =
           CasesModuleBean.getPort(false).loadCaseDocument(row.getRowId());
       }
       catch (Exception ex)
@@ -498,7 +488,7 @@ public class CaseDocumentsTabBean extends TabBean
     try
     {
       caseDocumentToRemove = (CaseDocumentsDataTableRow)executeTabAction(
-        "preTabRemove", caseDocumentToRemove);          
+        "preTabRemove", caseDocumentToRemove);
       switch (removeMode)
       {
         case UNLINK:
@@ -563,7 +553,7 @@ public class CaseDocumentsTabBean extends TabBean
         default:
           break;
       }
-      executeTabAction("postTabRemove", caseDocumentToRemove);      
+      executeTabAction("postTabRemove", caseDocumentToRemove);
       refreshHiddenTabInstances();
       load();
     }
@@ -650,14 +640,14 @@ public class CaseDocumentsTabBean extends TabBean
     List<CaseDocumentsDataTableRow> convertedRows = new ArrayList<>();
     for (CaseDocumentView row : caseDocuments)
     {
-      CaseDocumentsDataTableRow dataTableRow = 
+      CaseDocumentsDataTableRow dataTableRow =
         new CaseDocumentsDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
   }
-  
+
   public class CaseDocumentsDataTableRow extends DataTableRow
   {
     private String docId;
@@ -673,28 +663,31 @@ public class CaseDocumentsTabBean extends TabBean
     private String docCaptureUserId;
     private String docChangeDateTime;
     private String docChangeUserId;
+    private String docViewUrl;
 
     public CaseDocumentsDataTableRow(CaseDocumentView row)
     {
       super(row.getCaseDocId(), row.getCaseDocTypeId());
       if (row.getDocument() != null)
       {
-        docId = row.getDocument().getDocId();
-        docVersion = row.getDocument().getVersion();
-        docTypeId = row.getDocument().getDocTypeId();
-        docTitle = row.getDocument().getTitle();
-        docSummary = row.getDocument().getSummary();
-        docLanguage = getDocumentLanguage(row.getDocument());
-        docLockUserId = row.getDocument().getLockUserId();
-        if (row.getDocument().getState() != null)
+        Document doc = row.getDocument();
+        docId = doc.getDocId();
+        docVersion = doc.getVersion();
+        docTypeId = doc.getDocTypeId();
+        docTitle = doc.getTitle();
+        docSummary = doc.getSummary();
+        docLanguage = getDocumentLanguage(doc);
+        docLockUserId = doc.getLockUserId();
+        if (doc.getState() != null)
         {
-          docState = row.getDocument().getState().value();
+          docState = doc.getState().value();
         }
-        docCreationDate = row.getDocument().getCreationDate();
-        docCaptureDateTime = row.getDocument().getCaptureDateTime();
-        docCaptureUserId = row.getDocument().getCaptureUserId();
-        docChangeDateTime = row.getDocument().getChangeDateTime();
-        docChangeUserId = row.getDocument().getChangeUserId();
+        docCreationDate = doc.getCreationDate();
+        docCaptureDateTime = doc.getCaptureDateTime();
+        docCaptureUserId = doc.getCaptureUserId();
+        docChangeDateTime = doc.getChangeDateTime();
+        docChangeUserId = doc.getChangeUserId();
+        docViewUrl = DocumentUrlBuilder.getDocumentUrl(doc);
       }
     }
 
@@ -828,6 +821,16 @@ public class CaseDocumentsTabBean extends TabBean
       this.docChangeUserId = docChangeUserId;
     }
 
+    public String getDocViewUrl()
+    {
+      return docViewUrl;
+    }
+
+    public void setDocViewUrl(String docViewUrl)
+    {
+      this.docViewUrl = docViewUrl;
+    }
+
     @Override
     protected DataTableRow.Value getDefaultValue(String columnName)
     {
@@ -852,15 +855,17 @@ public class CaseDocumentsTabBean extends TabBean
           case "docState":
             return new DefaultValue(getDocState());
           case "docCreationDate":
-            return new DateValue(getDocCreationDate());            
+            return new DateValue(getDocCreationDate());
           case "docCaptureDateTime":
             return new DateValue(getDocCaptureDateTime());
           case "docCaptureUserId":
             return new DefaultValue(getDocCaptureUserId());
           case "docChangeDateTime":
-            return new DateValue(getDocChangeDateTime());            
+            return new DateValue(getDocChangeDateTime());
           case "docChangeUserId":
-            return new DefaultValue(getDocChangeUserId());            
+            return new DefaultValue(getDocChangeUserId());
+          case "docViewUrl":
+            return new DefaultValue(getDocViewUrl());
           default:
             break;
         }
@@ -868,6 +873,6 @@ public class CaseDocumentsTabBean extends TabBean
       return super.getDefaultValue(columnName);
     }
   }
-  
+
 
 }
