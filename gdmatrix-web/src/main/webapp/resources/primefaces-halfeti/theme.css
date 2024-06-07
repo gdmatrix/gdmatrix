@@ -54,6 +54,16 @@ body .ui-widget{
   box-sizing: border-box;
 }
 
+::-moz-selection {
+  color: var(--primary-color-text);
+  background: var(--primary-color);
+}
+
+::selection {
+  color: var(--primary-color-text);
+  background: var(--primary-color);
+}
+
 body .ui-icon{
   font-size:1rem;
   display:inline-block;
