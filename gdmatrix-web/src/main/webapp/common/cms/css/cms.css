@@ -232,9 +232,20 @@ a.imageButton img:hover
   flex-direction: row;
 }
 
+.tree li .menuItem .selected,
+.tree li .menuItem .found,
+.tree li .menuItem .cut,
+.tree li .menuItem .copy
+{
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 4px;
+}
+
 .tree li .menuItem .selected
 {
-  font-weight: bold;
+  background: gray !important;
+  color: white !important;
 }
 
 .tree li .menuItem .found
@@ -244,12 +255,12 @@ a.imageButton img:hover
 
 .tree li .menuItem .cut
 {
-  color: red;
+  border: 2px solid red;
 }
 
 .tree li .menuItem .copy
 {
-  color: blue;
+  border: 2px solid blue;
 }
 
 .tree li .menuItem > div
