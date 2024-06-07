@@ -863,9 +863,9 @@ public class FormImporter
         sb.append("<").append(childView.getNativeViewType());
         for (String name : childView.getPropertyNames())
         {
-          sb.append(" ").append(name).append("='")
+          sb.append(" ").append(name).append("=\"")
             .append(childView.getProperty(name))
-            .append("'");
+            .append("\"");
         }
         sb.append(" >");
         sb = encodeView(childView, sb);
