@@ -94,7 +94,7 @@
     <div class="font-bold p-1 pt-3">
       <h:outputText value="#{dicBundle.typeProperties_ownProperties}" />
     </div>
-    <p:dataTable id="type_properties_table" value="#{typePropertiesTabBean.rows}"
+    <p:dataTable id="type_properties_table" value="#{typePropertiesTabBean.displayedRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="10"
                  size="small" paginatorPosition="bottom"
@@ -103,11 +103,21 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50" widgetVar="typePropertiesTable"
-                 filteredValue="#{typePropertiesTabBean.filteredRows}" globalFilterOnly="true" emptyMessage="#{objectBundle.no_data}">
+                 multiViewState="true"
+                 filteredValue="#{typePropertiesTabBean.filteredRows}" globalFilterOnly="true" emptyMessage="#{objectBundle.no_data}">                 
 
-      <f:facet name="header">
-        <div class="flex justify-content-end w-12">
-          <p:inputText id="globalFilter" onkeyup="PF('typePropertiesTable').filter()" style="width:10rem"
+      <f:facet name="header">       
+        <div class="flex flex-wrap justify-content-between w-12">
+          <p:selectOneMenu value="#{typePropertiesTabBean.rowsVisibility}">
+              <f:selectItem itemLabel="#{dicBundle.typeProperties_showAll}" itemValue="all"/>
+              <f:selectItem itemLabel="#{dicBundle.typeProperties_onlyVisible}" itemValue="only_visible"/>
+              <f:selectItem itemLabel="#{dicBundle.typeProperties_onlyHidden}" itemValue="only_hidden"/>
+              <p:ajax event="valueChange" 
+                      process="@this" 
+                      listener="#{typePropertiesTabBean.changeVisibility}" />              
+          </p:selectOneMenu>
+          <p:inputText id="globalFilter" onkeyup="PrimeFaces.widgets['typePropertiesTable'].filter()" 
+                       style="width:10rem" styleClass="ml-auto"
                        placeholder="#{dicBundle.typeProperties_name} | #{dicBundle.typeProperties_description}"/>
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{typePropertiesTabBean.create}"
@@ -289,7 +299,7 @@
                              action="#{typePropertiesTabBean.accept}"
                              styleClass="m-1" value="#{objectBundle.accept}"
                              process="type_properties_dialog"
-                             update="type_properties_table type_properties_panel"
+                             update="type_properties_panel"
                              oncomplete="closePFDialog('typePropertiesDialog')" 
                              icon="pi pi-check"/>
             <p:commandButton action="#{typePropertiesTabBean.cancel}"

@@ -43,6 +43,7 @@ import javax.inject.Named;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
 import org.matrix.dic.Type;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -65,6 +66,7 @@ public class TypePropertiesTabBean extends TabBean
   private List<org.santfeliu.dic.Type> supertypes = new ArrayList<>();
   private Map<String, List<PropertyDefinitionEdit>> rowsMap = new HashMap<>();
   private List<PropertyDefinitionEdit> filteredRows;
+  private String rowsVisibility = "all";
   
   @Override
   public ObjectBean getObjectBean()
@@ -91,7 +93,6 @@ public class TypePropertiesTabBean extends TabBean
   {
     this.editing = editing;
   }
-  
 
   public List<PropertyDefinitionEdit> getFilteredRows()
   {
@@ -102,7 +103,17 @@ public class TypePropertiesTabBean extends TabBean
   {
     this.filteredRows = filteredRows;
   }  
-  
+
+  public String getRowsVisibility()
+  {
+    return rowsVisibility;
+  }
+
+  public void setRowsVisibility(String rowsVisibility)
+  {
+    this.rowsVisibility = rowsVisibility;
+  }
+
   public void setEnumTypeId(String enumTypeId)
   {
     if (editing != null)
@@ -123,6 +134,31 @@ public class TypePropertiesTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
   
+  public List<PropertyDefinitionEdit> getDisplayedRows()
+  {
+    List<PropertyDefinitionEdit> result = new ArrayList<>();
+    List<PropertyDefinitionEdit> allRows = getRows();
+    if (allRows != null)
+    {
+      for (PropertyDefinitionEdit pd : allRows)
+      {
+        if ("all".equals(getRowsVisibility()) || 
+          ("only_visible".equals(getRowsVisibility()) && !pd.isHidden()) || 
+          ("only_hidden".equals(getRowsVisibility()) && pd.isHidden()))
+        {
+          result.add(pd);
+        }
+      }
+    }
+    return result;
+  }
+  
+  public void changeVisibility()
+  {
+    PrimeFaces.current().executeScript(
+      "PrimeFaces.widgets['typePropertiesTable'].filter()");
+  }
+
   public List<org.santfeliu.dic.Type> getSupertypes()
   {
     return supertypes;
@@ -150,16 +186,19 @@ public class TypePropertiesTabBean extends TabBean
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       Type type = typeObjectBean.getType();
-      rowsMap.put(type.getTypeId(), getPropertyDefinitionList(type));
+      rowsMap.put(type.getTypeId(), getPropertyDefinitionList(type));      
       
       supertypes = TypeCache.getInstance().getType(type.getTypeId())
-        .getSuperTypes();
+        .getSuperTypes();      
       
       for (org.santfeliu.dic.Type superType : supertypes)
       {
         rowsMap.put(superType.getTypeId(), getPropertyDefinitionList(superType));
-      }      
-    }          
+      }
+      
+      PrimeFaces.current().executeScript(
+        "PrimeFaces.widgets['typePropertiesTable'].filter()");      
+    }
   }
 
   public void create()
@@ -220,6 +259,9 @@ public class TypePropertiesTabBean extends TabBean
     
     editing = null;
     backupEditing = null;
+    
+    PrimeFaces.current().executeScript(
+      "PrimeFaces.widgets['typePropertiesTable'].filter()");          
   }
   
   public void cancel()
