@@ -257,11 +257,15 @@ public class CaseObjectBean extends ObjectBean
     else
     {
       cas = new Case();
-      cas.setCaseTypeId(getBaseTypeInfo().getBaseTypeId());
+      Type baseType = 
+        TypeCache.getInstance().getType(getBaseTypeInfo().getBaseTypeId());
+      if (baseType.isInstantiable())
+        cas.setCaseTypeId(baseType.getTypeId());
     }
+    
     executeAction("postLoad");
   }
-
+  
   @Override
   public void storeObject() throws Exception
   {
