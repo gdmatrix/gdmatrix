@@ -174,7 +174,7 @@ body .ui-tabs.context_tabs .ui-tree
 .context_tree .ui-treenode-leaf.current
 {
   font-weight: bold;
-  color: black;
+  color: var(--text-color);
 }
 
 .recents_tree.ui-tree
@@ -200,7 +200,7 @@ body .ui-tabs.context_tabs .ui-tree
 .recents_tree .ui-treenode-leaf.current
 {
   font-weight: bold;
-  color: black;
+  color: var(--text-color);
 }
 
 .recents_tree > ul > li > div
