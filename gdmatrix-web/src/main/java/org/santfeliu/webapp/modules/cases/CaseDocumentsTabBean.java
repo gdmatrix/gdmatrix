@@ -55,6 +55,7 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.doc.web.DocumentUrlBuilder;
+import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -89,6 +90,7 @@ public class CaseDocumentsTabBean extends TabBean
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private final List<SelectItem> volumeSelectItems = new ArrayList<>();
   private GroupableRowsHelper groupableRowsHelper;
+  private DefaultMatrixClientModel clientModel;
 
   public class TabInstance
   {
@@ -572,6 +574,33 @@ public class CaseDocumentsTabBean extends TabBean
   public void clear()
   {
     tabInstances.clear();
+  }
+
+  public DefaultMatrixClientModel getClientModel()
+  {
+    if (clientModel == null)
+    {
+      clientModel = new DefaultMatrixClientModel();
+    }
+    return clientModel;
+  }
+
+  public void setClientModel(DefaultMatrixClientModel clientModel)
+  {
+    this.clientModel = clientModel;
+  }
+
+  public void documentEdited()
+  {
+    try
+    {
+      clientModel.parseResult();
+      this.load();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public CaseDocumentsDataTableRow getCaseDocumentToRemove()

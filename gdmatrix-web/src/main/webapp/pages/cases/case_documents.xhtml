@@ -3,9 +3,14 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:jsf="http://xmlns.jcp.org/jsf">
   
   <f:subview id="#{tab.subviewId}">
+    
+    <style>
+      .w200 { width: 200px; }
+    </style>
     
     <!-- Results table -->
     <p:dataTable id="case_documents_table" value="#{caseDocumentsTabBean.rows}"
@@ -76,31 +81,60 @@
                       title="#{objectBundle.view}"
                       styleClass="rounded-button ui-button-flat"
                       target="_blank" />
-        <p:commandButton icon="pi pi-arrow-circle-right"
+        <p:commandButton action="#{navigatorBean.show('Document', row.docId)}"
+                         icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this" update="@form:cnt"
-                         action="#{navigatorBean.show('Document', row.docId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
-        <p:commandButton icon="pi pi-pencil"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{caseDocumentsTabBean.edit(row)}"
-                         process="@form:cnt:search_tabs:tabs"
-                         update="@form:cnt:search_tabs:case_documents_dialog"
-                         resetValues="true"
-                         oncomplete="PF('caseDocumentsDialog').show()"
-                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         disabled="#{!caseObjectBean.isRowEditable(row.typeId)}" /> 
-        <p:commandButton icon="pi pi-trash"
-                         action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"
-                         process="@form:cnt:search_tabs:tabs"
-                         update="@form:cnt:search_tabs:remove_document_dialog"
-                         oncomplete="PF('removeDocumentDialog').show()"
-                         styleClass="rounded-button ui-button-flat"
-                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.typeId)}" />
+        <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                      menuStyleClass="w200"
+                      title="#{objectBundle.actions}">
+          <p:menuitem value="#{caseBundle.caseDocuments_edit_row}"
+                      icon="pi pi-pencil"
+                      styleClass="rounded-button ui-button-flat w200"
+                      action="#{caseDocumentsTabBean.edit(row)}"
+                      process="@form:cnt:search_tabs:tabs"
+                      update="@form:cnt:search_tabs:case_documents_dialog"
+                      resetValues="true"
+                      oncomplete="PF('caseDocumentsDialog').show()"
+                      disabled="#{!caseObjectBean.isRowEditable(row.typeId)}" /> 
+          <p:menuitem value="#{caseBundle.caseDocuments_edit_content}"
+                      onclick="javascript:editDocument({docId:'#{row.docId}'});return false"
+                      process="@this" update="case_documents_table"
+                      styleClass="rounded-button ui-button-flat w200"
+                      icon="fa fa-pen-to-square"
+                      disabled="#{row.docLockUserId != null}"
+                      rendered="#{row.docViewUrl != null}" />
+          <p:menuitem value="#{caseBundle.caseDocuments_update_content}"
+                      onclick="javascript:updateDocument({docId:'#{row.docId}'});return false"
+                      process="@this" update="@none"
+                      styleClass="rounded-button ui-button-flat w200"
+                      icon="pi pi-paperclip"
+                      disabled="#{row.docLockUserId != null}"
+                      rendered="#{row.docViewUrl != null}" />
+          <p:menuitem value="#{objectBundle.delete}"
+                      icon="pi pi-trash"
+                      action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"
+                      process="@form:cnt:search_tabs:tabs"
+                      update="@form:cnt:search_tabs:remove_document_dialog"
+                      oncomplete="PF('removeDocumentDialog').show()"
+                      styleClass="rounded-button ui-button-flat w200"
+                      disabled="#{!caseObjectBean.editable or !caseObjectBean.isRowRemovable(row.typeId)}" />
+        </p:menuButton>
       </p:column>
     </p:dataTable>
-    
+
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
+      action="#{caseDocumentsTabBean.documentEdited}"
+      model="#{caseDocumentsTabBean.clientModel}" 
+      function="editDocument"
+      helpUrl="#{matrixClientBean.helpUrl}" />
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.UpdateDocumentCommand"
+      action="#{caseDocumentsTabBean.documentEdited}"
+      model="#{caseDocumentsTabBean.clientModel}" 
+      function="updateDocument"
+      helpUrl="#{matrixClientBean.helpUrl}"/>
+       
   </f:subview>
 
 </ui:composition>

@@ -101,9 +101,14 @@
           <p:inputTextarea value="#{caseDocumentsTabBean.editing.comments}" 
                            readonly="#{!caseObjectBean.editable}"/>
         </div>
-
+        
+        <emcomp:auditData creationUserId="#{caseDocumentsTabBean.editing.creationUserId}" 
+                          creationDateTime="#{caseDocumentsTabBean.editing.creationDateTime}"      
+                          changeUserId="#{caseDocumentsTabBean.editing.changeUserId}" 
+                          changeDateTime="#{caseDocumentsTabBean.editing.changeDateTime}" />          
       </div>
 
+      
     </h:panelGroup>
 
     <f:facet name="footer">
@@ -190,7 +195,7 @@
       <div class="text-right">
         <p:commandButton id="case_documents_remove"
                          action="#{caseDocumentsTabBean.remove}"
-                         styleClass="m-1" value="#{objectBundle.delete}"
+                         styleClass="m-1 ui-button-danger" value="#{objectBundle.delete}"
                          process="remove_document_dialog"
                          update="@form:cnt:search_tabs:tabs @form:cnt:context_panel"
                          oncomplete="closePFDialog('removeDocumentDialog')"
