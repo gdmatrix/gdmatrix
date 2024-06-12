@@ -361,7 +361,19 @@
             </p:outputPanel>       
           </div>
         </p:tab>
-      </p:tabView>         
+
+        <p:tab title="#{objectBundle.auditory}">
+          <div class="ui-fluid formgrid grid">
+            
+            <emcomp:auditData creationUserId="#{casePersonsTabBean.editing.creationUserId}" 
+                              creationDateTime="#{casePersonsTabBean.editing.creationDateTime}"      
+                              changeUserId="#{casePersonsTabBean.editing.changeUserId}" 
+                              changeDateTime="#{casePersonsTabBean.editing.changeDateTime}" />
+          </div>
+        </p:tab>
+
+      </p:tabView>
+    
     </h:panelGroup> 
 
 
