@@ -234,7 +234,7 @@ public class CaseInterventionsTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -476,7 +476,7 @@ public class CaseInterventionsTabBean extends TabBean
       CaseInterventionsDataTableRow dataTableRow =
         new CaseInterventionsDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
-      dataTableRow.setStyleClass(getRowStyleClass(row));      
+      dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
@@ -495,9 +495,8 @@ public class CaseInterventionsTabBean extends TabBean
   
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
-    return new DateTimeRowStyleClassGenerator(
-      "startDate,startTime", "endDate,endTime", 
-      "before,after");
+    return new DateTimeRowStyleClassGenerator("startDate,startTime", 
+      "endDate,endTime", null);
   }
   
   private String getRowStyleClass(Object row)

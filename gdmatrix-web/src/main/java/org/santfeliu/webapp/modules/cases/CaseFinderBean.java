@@ -436,9 +436,8 @@ public class CaseFinderBean extends FinderBean
   
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
-    return new DateTimeRowStyleClassGenerator(
-      "startDate,startTime", "endDate,endTime", 
-      "before,after");
+    return new DateTimeRowStyleClassGenerator("startDate,startTime", 
+      "endDate,endTime", null);
   }
   
   private String getRowStyleClass(Object row)

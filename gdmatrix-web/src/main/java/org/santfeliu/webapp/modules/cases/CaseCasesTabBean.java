@@ -535,7 +535,7 @@ public class CaseCasesTabBean extends TabBean
     {
       CaseCasesDataTableRow dataTableRow = new CaseCasesDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
-      dataTableRow.setStyleClass(getRowStyleClass(row));      
+      dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
@@ -577,8 +577,7 @@ public class CaseCasesTabBean extends TabBean
   
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
-    return new DateTimeRowStyleClassGenerator("startDate", "endDate", 
-      "before,after");
+    return new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
   }
   
   private String getRowStyleClass(Object row)

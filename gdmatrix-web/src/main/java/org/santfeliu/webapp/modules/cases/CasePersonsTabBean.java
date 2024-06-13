@@ -870,8 +870,7 @@ public class CasePersonsTabBean extends TabBean
 
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
-    return new DateTimeRowStyleClassGenerator("startDate", "endDate", 
-      "before,after");
+    return new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
   }
   
   private String getRowStyleClass(Object row)
