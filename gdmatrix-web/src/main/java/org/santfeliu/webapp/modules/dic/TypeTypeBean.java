@@ -106,7 +106,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       ObjectSetup objectSetup = getObjectSetup(type.getTypeId());
       if (objectSetup != null)
       {
-        String publicTypeSymbol = 
+        String publicTypeSymbol =
           objectSetup.getProperties().getString("publicTypeSymbol");
         if (publicTypeSymbol != null)
         {
@@ -222,8 +222,14 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   public List<SelectItem> getSelectItems(String query, String typeId,
     boolean addNavigatorItems, boolean sorted)
   {
+    return getSelectItems(query, typeId, addNavigatorItems, sorted, 0);
+  }
+
+  public List<SelectItem> getSelectItems(String query, String typeId,
+    boolean addNavigatorItems, boolean sorted, int maxResults)
+  {
     List<SelectItem> items = new ArrayList<>();
-    
+
     if (StringUtils.isBlank(query) && addNavigatorItems)
     {
       if (typeId == null) typeId = getRootTypeId();
@@ -238,11 +244,14 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
         String description = getDescription(objectId) +
           " (" + objectId + ")";
         items.add(new SelectItem(objectId, description));
+        if (maxResults > 0 && items.size() >= maxResults) break;
       }
-    }    
+    }
     else
     {
-      List<Type> types = findByQuery(query, typeId);
+      TypeFilter typeFilter = queryToFilter(query, typeId);
+      typeFilter.setMaxResults(maxResults);
+      List<Type> types = find(typeFilter);
       for (Type type : types)
       {
         String objectId = getObjectId(type);
@@ -331,7 +340,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   private ObjectSetup getObjectSetup(String typeId)
   {
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-    NavigatorBean.BaseTypeInfo baseTypeInfo = 
+    NavigatorBean.BaseTypeInfo baseTypeInfo =
       navigatorBean.getBaseTypeInfo(typeId);
     if (baseTypeInfo != null)
     {
@@ -341,9 +350,9 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       }
       catch (Exception ex) { }
     }
-    return null;    
+    return null;
   }
-  
+
   public static void main(String[] args)
   {
     TypeTypeBean bean = new TypeTypeBean();

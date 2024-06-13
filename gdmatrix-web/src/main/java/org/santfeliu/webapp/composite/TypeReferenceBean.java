@@ -69,8 +69,10 @@ public class TypeReferenceBean extends ObjectReferenceBean
     String typeId = getTypeId();
     boolean showNavigatorItems = isShowNavigatorItems();
 
-    List<SelectItem> auxSelectItems =
-      typeTypeBean.getSelectItems(query, typeId, showNavigatorItems, true);
+    int maxResults = getMaxResults();
+
+    List<SelectItem> auxSelectItems = typeTypeBean.getSelectItems(
+      query, typeId, showNavigatorItems, true, maxResults);
 
     if (!isShowNonInstantiableItems())
     {
@@ -160,6 +162,21 @@ public class TypeReferenceBean extends ObjectReferenceBean
   {
     WebUtils.setValue("#{cc.attrs.value}", String.class, null);
     resetFormSelector();
+  }
+
+  public int getMaxResults()
+  {
+    int maxResults;
+    try
+    {
+      String value = WebUtils.getValue("#{cc.attrs.maxResults}");
+      maxResults = Integer.parseInt(value);
+    }
+    catch (NumberFormatException ex)
+    {
+      maxResults = 0;
+    }
+    return maxResults;
   }
 
   public boolean isShowNonInstantiableItems()
