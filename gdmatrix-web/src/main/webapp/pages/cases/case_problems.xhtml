@@ -1,0 +1,182 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="case_problems_table" value="#{caseProblemsTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"  rows="10"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{caseProblemsTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{caseProblemsTabBean.create}"
+                           process="@form:cnt:search_tabs:tabs"
+                           update="@parent:@parent:@parent:case_problems_dialog"
+                           resetValues="true"
+                           oncomplete="PF('problemDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
+
+      <p:column headerText="#{caseBundle.caseProblems_id}" styleClass="col-1">
+        <h:outputText value="#{row.probId}" />
+      </p:column>
+
+      <p:column headerText="#{caseBundle.caseProblems_type}" styleClass="col-5">
+        <h:outputText value="#{caseProblemsTabBean.getProblemTypeDescription(row)}" />
+      </p:column>
+
+      <p:column headerText="#{caseBundle.caseProblems_person}" styleClass="col-5">
+        <h:outputText value="#{row.personView.fullName}" />
+      </p:column>
+      
+      <p:column styleClass="text-right white-space-nowrap">
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{caseProblemsTabBean.edit(row)}"
+                         process="@form:cnt:search_tabs:tabs"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         update="@parent:@parent:@parent:@parent:case_problems_dialog"
+                         resetValues="true"
+                         oncomplete="PF('problemDialog').show()"
+                         />
+        <p:commandButton action="#{caseProblemsTabBean.remove(row)}"
+                         process="@this"
+                         update="@parent:@parent:@parent:@parent:case_problems_dialog case_problems_table"
+                         resetValues="true"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="Esborrar problemàtica #{row.probId}"
+                     message="Segur que vols esborrar aquesta problemàtica?" icon="pi pi-info-circle" />
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+
+  </h:panelGroup>
+
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="case_problems_dialog" widgetVar="problemDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">    
+    
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{caseObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(caseObjectBean.activeEditTab.label)}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{caseProblemsTabBean.editing.probId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>
+    
+    <h:panelGroup styleClass="mt-2" id="case_problems_panel" layout="block"
+             rendered="#{caseProblemsTabBean.editing != null}">
+      
+      <div class="ui-fluid formgrid grid">
+
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="#{caseBundle.caseProblems_type}" />
+          <p:selectOneMenu value="#{caseProblemsTabBean.editing.probTypeId}"
+                           filter="true" autoWidth="false" touchable="true">
+            <f:selectItems value="#{typeTypeBean.getSelectItems(caseProblemsTabBean.rootProblemTypeId)}"
+                           var="item" />
+            <p:column>
+              <h:outputText value="#{item.label}" />
+            </p:column>
+          </p:selectOneMenu>
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseProblems_startDate}"/>
+          <p:datePicker value="#{caseProblemsTabBean.editing.startDate}" 
+                        locale="#{userSessionBean.lastPageLanguage}" 
+                        converter="datePickerConverter"
+                        pattern="dd/MM/yyyy"
+                        placeholder="dd/MM/yyyy"
+                        showOnFocus="false" showIcon="true"
+                        monthNavigator="true"
+                        yearNavigator="true" 
+                        disabled="#{!caseObjectBean.editable}" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseProblems_endDate}"/>
+          <p:datePicker value="#{caseProblemsTabBean.editing.endDate}" 
+                        locale="#{userSessionBean.lastPageLanguage}"
+                        converter="datePickerConverter"
+                        pattern="dd/MM/yyyy"
+                        placeholder="dd/MM/yyyy"
+                        showOnFocus="false" showIcon="true"
+                        monthNavigator="true"
+                        yearNavigator="true" 
+                        disabled="#{!caseObjectBean.editable}" />
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseProblems_person}"/>
+          <p:selectOneMenu value="#{caseProblemsTabBean.editing.personId}"
+                           filter="true" autoWidth="false" touchable="true">
+            <f:selectItems value="#{caseProblemsTabBean.casePersonsSelectItems}"
+                           var="item" />
+            <p:column>
+              <h:outputText value="#{item.label}" />
+            </p:column>
+          </p:selectOneMenu>
+        </div>
+        
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseProblems_comments}" />
+          <p:inputTextarea
+            value="#{caseProblemsTabBean.editing.comments}" />
+        </div>
+
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="text-right">
+        <p:commandButton id="case_problems_store"
+                         action="#{caseProblemsTabBean.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
+                         process="case_problems_dialog"
+                         update="case_problems_table case_problems_panel"
+                         oncomplete="closePFDialog('problemDialog')"
+                         icon="pi pi-save" />
+        <p:commandButton action="#{caseProblemsTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="case_problems_dialog" global="false"
+                         onclick="PF('problemDialog').hide()"
+                         icon="pi pi-times" />
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>

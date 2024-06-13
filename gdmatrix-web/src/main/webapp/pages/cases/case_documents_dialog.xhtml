@@ -199,6 +199,7 @@
                          process="remove_document_dialog"
                          update="@form:cnt:search_tabs:tabs @form:cnt:context_panel"
                          oncomplete="closePFDialog('removeDocumentDialog')"
+                         icon="pi pi-trash"
                          disabled="#{!caseObjectBean.editable}" />
         <p:commandButton styleClass="m-1" value="#{objectBundle.cancel}"
                          action="#{caseDocumentsTabBean.cancelRemove}"
