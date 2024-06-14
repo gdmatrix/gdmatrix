@@ -116,21 +116,24 @@ public class DataTableRow implements Serializable
   {
     this.styleClass = styleClass;
   }
-
+  
   public void setValues(BaseBean baseBean, Object row, List<Column> columns) 
     throws Exception
-  {   
+  {
+    ScriptClient scriptClient = baseBean.getObjectBean().getScriptClient();
+    if (scriptClient == null)
+      scriptClient = newScriptClient();
+    
+    scriptClient.put("row", row); 
+    scriptClient.put("baseBean", baseBean); 
+    
     values = new Value[columns.size()];
     icons = new String[columns.size()];
     for (int i = 0; i < columns.size(); i++)
-    {
-      ScriptClient scriptClient = null;
+    {  
       Column column = columns.get(i);
       if (column.getExpression() != null)
       {
-        scriptClient = newScriptClient();
-        scriptClient.put("row", row);
-        scriptClient.put("baseBean", baseBean);    
         values[i] = new DefaultValue(scriptClient.execute(column.getExpression()));
       }
       else
@@ -148,14 +151,9 @@ public class DataTableRow implements Serializable
       
       if (column.getIcon() != null)
       {
-        if (scriptClient == null) 
-        {
-          scriptClient = newScriptClient();
-          scriptClient.put("row", row);          
-        } 
         icons[i] = (String) scriptClient.execute(column.getIcon());          
       }
-    }
+    }    
   }
   
   public Value getColumnValue(List<Column> columns, String colName)

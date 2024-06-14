@@ -44,6 +44,7 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.util.script.ScriptClient;
+import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -67,7 +68,7 @@ public abstract class ObjectBean extends BaseBean
   private int searchTabSelector;
   private int editTabSelector;
   private transient ObjectSetup objectSetup;
-  private ScriptClient actionsClient;
+  private ScriptClient scriptClient;
   private ScriptActions scriptActions;
 
   @Override
@@ -173,6 +174,11 @@ public abstract class ObjectBean extends BaseBean
   {
     return objectSetup;
   }
+
+  public ScriptClient getScriptClient()
+  {
+    return scriptClient;
+  }
   
   public ScriptActions getScriptActions()
   {
@@ -264,7 +270,19 @@ public abstract class ObjectBean extends BaseBean
     {
       objectSetup = ObjectSetupCache.getConfig(setupName);
     }
+    
+    // Init scriptClient if defined
+    String actionsScriptName = objectSetup.getScriptActions().getScriptName();
+    if (actionsScriptName != null)
+    {
+      scriptClient = new ScriptClient();    
+      scriptClient.put("userSessionBean", 
+        UserSessionBean.getCurrentInstance());
+      scriptClient.put("applicationBean", 
+        ApplicationBean.getCurrentInstance());             
+    }
   }
+  
 
   public void loadActiveEditTab() throws Exception
   {
@@ -299,14 +317,14 @@ public abstract class ObjectBean extends BaseBean
         getObjectSetup().getScriptActions().getActions());
       try
       {
-        actionsClient = new ScriptClient();
-        actionsClient.executeScript(actionsScriptName);
-        Object callable = actionsClient.get("getActions");
+        scriptClient = new ScriptClient();
+        scriptClient.executeScript(actionsScriptName);
+        Object callable = scriptClient.get("getActions");
         if (callable instanceof Callable)
         {
-          actionsClient.put("actionObject", new ActionObject(getObject()));          
+          scriptClient.put("actionObject", new ActionObject(getObject()));          
           List<Action> actionList = 
-            (List<Action>) actionsClient.execute((Callable)callable);
+            (List<Action>) scriptClient.execute((Callable)callable);
           
           if (actionList != null)
             scriptActions.getActions().addAll(actionList);
@@ -315,7 +333,7 @@ public abstract class ObjectBean extends BaseBean
       catch (Exception ex)
       {
         error(ex);
-        actionsClient = null;
+        scriptClient = null;
       }
     }
     else
@@ -337,14 +355,14 @@ public abstract class ObjectBean extends BaseBean
   protected ActionObject executeAction(String actionName, Object[] parameters)
   {
     ActionObject actionObject = new ActionObject(getObject());
-    if (actionsClient != null)
+    if (scriptClient != null)
     {
-      Object callable = actionsClient.get(actionName);
+      Object callable = scriptClient.get(actionName);
       if (callable instanceof Callable)
       {
-        actionsClient.put("actionObject", actionObject);
-        actionsClient.execute((Callable)callable, parameters);
-        actionObject = (ActionObject) actionsClient.get("actionObject");
+        scriptClient.put("actionObject", actionObject);
+        scriptClient.execute((Callable)callable, parameters);
+        actionObject = (ActionObject) scriptClient.get("actionObject");
         if (actionObject != null)
         {
           setActionResult(actionObject);
@@ -361,14 +379,14 @@ public abstract class ObjectBean extends BaseBean
   {
     ActionObject actionObject = 
       new ActionObject(object, getActiveEditTab().getSubviewId());
-    if (actionsClient != null)
+    if (scriptClient != null)
     {
-      Object callable = actionsClient.get(actionName);
+      Object callable = scriptClient.get(actionName);
       if (callable instanceof Callable)
       {
-        actionsClient.put("actionObject", actionObject);
-        actionsClient.execute((Callable)callable);
-        actionObject = (ActionObject) actionsClient.get("actionObject");
+        scriptClient.put("actionObject", actionObject);
+        scriptClient.execute((Callable)callable);
+        actionObject = (ActionObject) scriptClient.get("actionObject");
         addFacesMessages(actionObject.getMessages());
       }
     }
