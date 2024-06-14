@@ -147,6 +147,16 @@ public class TypeCache
       {
         type = new Type(this, getPort().loadType(typeId));
         typeMap.put(typeId, type);
+        String superTypeId = type.getSuperTypeId();
+        if (superTypeId != null)
+        {
+          parentsMap.put(typeId, superTypeId);
+          List children = childrenMap.get(superTypeId);
+          if (children != null)
+          {
+            if (!children.contains(typeId)) children.add(typeId);
+          }
+        }
       }
       catch (Exception ex)
       {
