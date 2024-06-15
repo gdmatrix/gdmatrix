@@ -58,7 +58,7 @@ class TimeSliderControl
     this.div = div;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group";
     div.innerHTML = `
-      <div class="flex flex-column p-1" style="font-family:var(--font-family)">
+      <div class="flex flex-column p-1" style="font-family:var(--font-family);min-width:146px">
         <style>
           #ts_period {
             font-family: var(--font-family);

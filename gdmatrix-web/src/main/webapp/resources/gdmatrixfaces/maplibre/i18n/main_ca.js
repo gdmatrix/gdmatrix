@@ -87,6 +87,9 @@ Bundle.getBundle("main").setTranslations("ca", {
   "SimulateRouteControl.view.navigation" : "Navegació",  
   "SimulateRouteControl.start" : "Inicia ruta",
   "SimulateRouteControl.pause" : "Pausa ruta",
+
+  "ChartControl.loading" : "Carregant",  
+  "ChartControl.noData" : "No hi ha dades.",
   
   "GenericWfsFinder.title": "Cercador WFS",
   "GenericWfsFinder.layer": "Capa",

@@ -12,15 +12,32 @@ class ChartControl
   {
     this.options = options;
     this.layers = options.layers;
+    this.parameters = options.parameters || [];
     this.currentSourceId = null;
     this.markers = {}; // for sourceId: [markers...]
+    this.updatingMarkers = false;
   }
 
-  async updateMarkers()
+  async updateMarkers(recreate = false)
   {
     const map = this.map;
-    const markers = this.markers;
+    if (this.updatingMarkers) return;
     
+    this.updatingMarkers = true;
+    this.setParametersFormEnabled(false);
+    
+    if (recreate)
+    {
+      for (let sourceId in this.markers)
+      {
+        let sourceMarkers = this.markers[sourceId];
+        sourceMarkers.forEach(m => m.remove());
+      }
+      this.markers = {};
+    }
+    const markers = this.markers;
+
+    let visibleLayers = 0;
     for (let layerSetup of this.layers)
     {
       let layerId = layerSetup.layerId;
@@ -30,7 +47,7 @@ class ChartControl
       let source = map.getSource(sourceId);
       if (source.type === "geojson")
       {
-        let sourceMarkers = markers[sourceId];
+        let sourceMarkers = markers[sourceId];        
         let visible = map.getLayoutProperty(layerId, "visibility") !== "none";
         if (map.getZoom() < layer.minzoom || map.getZoom() > layer.maxZoom)
         {
@@ -39,6 +56,7 @@ class ChartControl
         
         if (visible)
         {
+          visibleLayers++;
           if (sourceMarkers)
           {
             sourceMarkers.forEach(m => m.getElement().style.display = "");
@@ -59,18 +77,37 @@ class ChartControl
         }
       }
     }
+    this.setParametersFormVisible(visibleLayers > 0);
+    this.setParametersFormEnabled(true);
+    this.updatingMarkers = false;
   }
   
   async createMarkers(geojson, layerSetup)
   {
-    console.info(layerSetup);
     const map = this.map;
     const chartType = layerSetup.chartType;
     let sourceMarkers = [];
-    
+        
     for (let feature of geojson.features)
     {
-      const url = layerSetup.chartDataUrl(feature);
+      const loadDiv = document.createElement("div");
+      loadDiv.innerHTML = `<div style="width:24px;height:24px;border-radius:50%;background:rgba(240,240,240,0.8);color:black" 
+        class="flex align-items-center justify-content-center">
+        <i class="pi pi-spin pi-spinner"></i>
+      </div>`;
+
+      let marker = new maplibregl.Marker({ element : loadDiv });
+      const centroid = turf.centroid(feature);
+      marker.setLngLat(centroid.geometry.coordinates);
+      marker.addTo(map);
+      marker._feature = feature;
+      sourceMarkers.push(marker);     
+    }
+    
+    for (let marker of sourceMarkers)
+    {
+      const feature = marker._feature;
+      const url = layerSetup.chartDataUrl(this.getParameterValues(), feature);
       const response = await fetch(url);
       const data = await response.json();
       let chart;
@@ -92,11 +129,8 @@ class ChartControl
       }
       if (chart)
       {
-        let marker = new maplibregl.Marker({ element : chart });
-        const centroid = turf.centroid(feature);
-        marker.setLngLat(centroid.geometry.coordinates);
-        marker.addTo(map);
-        sourceMarkers.push(marker);
+        marker.getElement().innerHTML = "";
+        marker.getElement().appendChild(chart);
       }
     }
     return sourceMarkers;
@@ -106,22 +140,110 @@ class ChartControl
   {
     this.map = map;
     const div = document.createElement("div");
+    this.div = div;
     div.className = "maplibregl-ctrl maplibregl-ctrl-group";
-    div.innerHTML = `<button><span class="pi pi-chart-pie"/></button>`;
-    div.title = bundle.get("ChartControl.title");
-    div.addEventListener("contextmenu", (e) => e.preventDefault());
-    div.addEventListener("click", (e) =>
-    {
-      e.preventDefault();
-      console.info("chart");
-    });
-
+    div.innerHTML = `
+      <div class="flex flex-column p-1" style="font-family:var(--font-family);min-width:146px">
+        <style>
+          .param_input {
+            font-family: var(--font-family);
+            font-size: 12px;border-color: var(--surface-border);
+            border-radius: var(--border-radius);
+            outline:none;
+            border-style:solid;
+            border-width:1px;
+            background:var(--surface-ground);
+            transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+          }
+          .param_input:focus
+          {
+            border-color: var(--primary-color);
+            box-shadow: var(--focus-ring);
+          }
+        </style>
+        <div class="flex align-items-center"><i class="pi pi-chart-pie mr-1"></i> <strong>${this.options.title}</strong></div>
+      </div>
+    `;
+    this.createParametersForm();
+    
     map.on("idle", () => this.updateMarkers());
     map.on("zoomend", () => this.updateMarkers());
-    
+
     this.createPanel(map);
 
     return div;
+  }
+  
+  createParametersForm()
+  {
+    const formDiv = this.div.firstElementChild;
+
+    for (let parameter of this.parameters)
+    {
+      let name = parameter.name;
+      let label = parameter.label || name;
+      let values = parameter.values;
+      const labelElem = document.createElement("label");
+      labelElem.textContent = label + ":";
+      labelElem.className = "mt-1";
+      labelElem.htmlFor = name;
+      formDiv.appendChild(labelElem);
+      if (values instanceof Array)
+      {
+        const selectElem = document.createElement("select");
+        selectElem.className = "param_input";
+        selectElem.id = name;
+        formDiv.appendChild(selectElem);
+        for (let value of values)
+        {
+          let optionElem = document.createElement("option");
+          optionElem.value = typeof value === "string" ? value : value[0];
+          optionElem.textContent = typeof value === "string" ? value : value[1];
+          selectElem.appendChild(optionElem);
+        }
+        selectElem.addEventListener("change", () => this.updateMarkers(true));
+      }
+      else
+      {
+        const inputElem = document.createElement("input");
+        inputElem.className = "param_input";
+        inputElem.id = name;
+      }
+    }
+  }
+  
+  getParameterValues()
+  {
+    const parameters = {};
+    for (let parameter of this.parameters)
+    {
+      const name = parameter.name;
+      const inputElem = document.getElementById(name);
+      if (inputElem)
+      {
+        const value = inputElem.value;
+        parameters[name] = value;
+      }
+    }
+    return parameters;
+  }
+  
+  setParametersFormEnabled(enabled)
+  {
+    for (let parameter of this.parameters)
+    {
+      const name = parameter.name;
+      const inputElem = document.getElementById(name);
+      if (inputElem)
+      {
+        inputElem.disabled = !enabled;
+      }
+    }    
+  }
+
+  setParametersFormVisible(visible)
+  {
+    this.div.style.display = visible ? "" : "none";
   }
 
   createDonutChart(feature, data, r = 32, f = 0.5, 
@@ -272,33 +394,65 @@ class ChartControl
 
   async showData(feature, id)
   {
+    this.panel.show();  
+    this.panel.bodyDiv.innerHTML = `<i class="pi pi-spin pi-spinner"></i> ${bundle.get("ChartControl.loading")}...`;
+
     let layerSetup = this.layers[0]; // TODO
     
-    const url = layerSetup.tableDataUrl(feature, id);
+    const url = layerSetup.tableDataUrl(this.getParameterValues(), feature, id);
     
     const response = await fetch(url);
     const json = await response.json();
-    console.info(json);
-        
-    let html = `<table><tr>`;
-    for (let col of layerSetup.tableLabels)
+    
+    let html;
+    if (json.length === 0)
     {
-      html += `<th>${col}</th>`;
+      html = `<div>${bundle.get("ChartControl.noData")}</div>`;
     }
-    html += "</tr>";
-    for (let row of json)
+    else
     {
-      html += "<tr>";
+      html = `
+      <style>
+        table.chart_data
+        {
+          border-spacing: 0;
+          border-collapse: collapse;
+          border: 1px solid var(--surface-400);
+        }
+        table.chart_data td        
+        {
+          border-top: 1px solid var(--surface-300);
+          border-right: 1px solid var(--surface-200);
+        }
+        table.chart_data td:last-child
+        {
+          border-right:none;
+        }        
+      </style>
+      <div style="width:100%;overflow:auto;"><table class="chart_data"><tr>`;
       for (let col of layerSetup.tableColumns)
       {
-        html += `<td>${row[col]}</td>`;     
+        html += `<th>${col.label}</th>`;
       }
       html += "</tr>";
+      for (let row of json)
+      {
+        html += "<tr>";
+        for (let col of layerSetup.tableColumns)
+        {
+          let styleClass = col.class || "text-left";
+          let value = row[col.name];
+          if (typeof col.format === "function")
+          {
+            value = col.format(value);
+          }
+          html += `<td class="${styleClass}">${value}</td>`;
+        }
+        html += "</tr>";
+      }
+      html += "</table></div>";
     }
-    html += "</table>";
-
     this.panel.bodyDiv.innerHTML = html;
-    this.panel.show();  
   }
   
   createPanel(map)
