@@ -12,18 +12,21 @@
 
       <div class="col flex slick-columns w-full pl-0 pr-0">
         <!-- Left column -->
-        <p:panel id="left_colunn"
+        <p:panel id="left_column"
                  widgetVar="leftPanel"
-                 class="side_panel left m-1 first_time">
+                 class="side_panel left m-1 flex-grow-1 first_time #{navigatorBean.finderPanelVisible ? '' : 'display_hidden'}">
           <f:facet name="header">
-            <i class="pi pi-search m-1"></i>
-            <p:outputLabel value="#{not empty userSessionBean.menuModel.selectedMenuItem.properties.searchLabel 
-                                  ? applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.searchLabel) 
-                                  : searchLabel}" />
-            <p:commandLink onclick="return closePanel('leftPanel');"
-                           class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
-              <span class="ui-icon ui-icon-closethick"></span>
-            </p:commandLink>
+            <div class="flex align-items-center">            
+              <i class="pi pi-search m-1"></i>
+              <span class="flex-grow-1">#{not empty userSessionBean.menuModel.selectedMenuItem.properties.searchLabel 
+                                    ? applicationBean.translate(userSessionBean.menuModel.selectedMenuItem.properties.searchLabel) 
+                                    : searchLabel}</span>
+              <p:commandButton action="#{navigatorBean.setFinderPanelVisible(false)}" 
+                               onclick="return closePanel('leftPanel');"
+                               process="@this" update="@none"
+                               class="rounded-button ui-button-flat"
+                               icon="pi pi-times" />
+            </div>
           </f:facet>
 
           <ui:insert name="filter"></ui:insert>
@@ -49,16 +52,20 @@
                                title="#{objectBundle.create}" alt="#{objectBundle.create}"
                                oncomplete="if (PF('objectTabs')) PF('objectTabs').select(0);PF('searchTabs').select(#{objectBean.editModeSelector});"
                                disabled="#{!objectBean.editable}" />
-              <p:button onclick="return showPanel('leftPanel');"
+              <p:commandButton action="#{navigatorBean.setFinderPanelVisible(true)}"
+                        onclick="return showPanel('leftPanel');"
+                        process="@this" update="@none"
                         icon="pi pi-search"
                         title="#{objectBundle.search}"
                         widgetVar="leftPanelButton"
-                        class="rounded-button ui-button-flat first_time side_button"  />
-              <p:button onclick="return showPanel('rightPanel')"
+                        class="side_button first_time rounded-button ui-button-flat #{navigatorBean.finderPanelVisible ? 'display_hidden' : ''}"  />
+              <p:commandButton action="#{navigatorBean.setContextPanelVisible(true)}"
+                        onclick="return showPanel('rightPanel')"
+                        process="@this" update="@none"
                         icon="pi pi-sitemap"
                         title="#{objectBundle.context}"
                         widgetVar="rightPanelButton"
-                        class="rounded-button ui-button-flat first_time side_button" />
+                        class="side_button first_time rounded-button ui-button-flat #{navigatorBean.contextPanelVisible ? 'display_hidden' : ''}" />
               <p:commandButton icon="ui-icon pi pi-times"
                                widgetVar="backButton"
                                action="#{navigatorBean.close}"
@@ -83,15 +90,18 @@
         <!-- Right column -->
         <p:panel id="right_column"
                  widgetVar="rightPanel"
-                 class="side_panel right m-1 first_time">
+                 class="side_panel right m-1 flex-grow-1 first_time #{navigatorBean.contextPanelVisible ? '' : 'display_hidden'}">
           <f:facet name="header">
-            <i class="pi pi-sitemap m-1"></i>
-            <span>#{objectBundle.context}</span>
-            <p:commandLink onclick="return closePanel('rightPanel');"
-                           class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
-              <span class="ui-icon ui-icon-closethick"></span>
-            </p:commandLink>
-          </f:facet>
+            <div class="flex align-items-center">            
+              <i class="pi pi-sitemap m-1"></i>
+              <span class="flex-grow-1">#{objectBundle.context}</span>
+              <p:commandButton action="#{navigatorBean.setContextPanelVisible(false)}" 
+                               onclick="return closePanel('rightPanel');"
+                               process="@this" update="@none"
+                               class="rounded-button ui-button-flat"
+                               icon="pi pi-times" />
+            </div>
+        </f:facet>
 
           <p:outputPanel id="context_panel">
             <p:tabView styleClass="context_tabs"
@@ -116,10 +126,10 @@
           panel.getJQ().css("display", "flex");
           var panelButton = PF(panelVar + "Button");
           panel.getJQ().removeClass("first_time");
-          panelButton.getJQ().removeClass("first_time");
-          panelButton.getJQ().css("display", "none");
+          panelButton.getJQ().removeClass("first_time");          
+          panelButton.getJQ().hide();
           document.dispatchEvent(new CustomEvent('sidePanelChange', { detail: { mode: 'show', panel: panelVar } }));
-          return false;
+          return true;
         }
 
         function closePanel(panelVar)
@@ -127,9 +137,9 @@
           var panel = PF(panelVar);
           panel.close();
           var panelButton = PF(panelVar + "Button");
-          panelButton.getJQ().css("display", "inline");
+          panelButton.getJQ().show();
           document.dispatchEvent(new CustomEvent('sidePanelChange', { detail: { mode: 'close', panel: panelVar } }));
-          return false;
+          return true;
         }
 
         function endPanel(panelVar)

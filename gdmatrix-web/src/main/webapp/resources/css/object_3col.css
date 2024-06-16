@@ -82,7 +82,12 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   .side_button.first_time
   {
     display: inline;
-  }  
+  }
+
+  .side_button.first_time.display_hidden
+  {
+    display: inline;
+  }
 }
 
 .side_panel
@@ -93,12 +98,18 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   min-width: 200px;
 }
 
-.side_panel .ui-panel-titlebar
+.side_panel.display_hidden
 {
+  display: none;
+}
+
+body .side_panel .ui-panel-titlebar
+{
+  padding: 0.5rem;
   flex-grow: 0;
 }
 
-.side_panel .ui-panel-content
+body .side_panel .ui-panel-content
 {
   flex-grow: 1;
   overflow: auto;
@@ -144,7 +155,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   align-items: center;
 }
 
-.side_button
+.side_button.display_hidden
 {
   display: none;
 }

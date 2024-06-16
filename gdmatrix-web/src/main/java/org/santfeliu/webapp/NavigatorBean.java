@@ -94,6 +94,8 @@ public class NavigatorBean extends WebBean implements Serializable
   private int updateCount;
   private Leap inProgressLeap;
   private MenuTypesFinder menuTypesFinder = new GlobalMenuTypesFinder();
+  private boolean finderPanelVisible = true;
+  private boolean contextPanelVisible = true;
 
   private static final List<String> DEFAULT_CONTEXT_PANELS =
     Arrays.asList("recents", "history", "favorites");
@@ -205,6 +207,26 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       return "/pages/obj/empty.xhtml";
     }
+  }
+
+  public boolean isFinderPanelVisible()
+  {
+    return finderPanelVisible;
+  }
+
+  public void setFinderPanelVisible(boolean finderPanelVisible)
+  {
+    this.finderPanelVisible = finderPanelVisible;
+  }
+
+  public boolean isContextPanelVisible()
+  {
+    return contextPanelVisible;
+  }
+
+  public void setContextPanelVisible(boolean contextPanelVisible)
+  {
+    this.contextPanelVisible = contextPanelVisible;
   }
 
   public String show()
