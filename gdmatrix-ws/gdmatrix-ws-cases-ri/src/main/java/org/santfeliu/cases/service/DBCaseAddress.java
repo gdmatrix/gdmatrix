@@ -31,15 +31,16 @@
 package org.santfeliu.cases.service;
 
 import org.matrix.cases.CaseAddress;
-
 import org.santfeliu.jpa.JPAUtils;
+
 import org.santfeliu.kernel.service.DBAddress;
+import org.santfeliu.util.audit.Auditable;
 
 /**
  *
  * @author unknown
  */
-public class DBCaseAddress extends CaseAddress
+public class DBCaseAddress extends CaseAddress implements Auditable
 {
   private DBCase caseObject;
   private DBAddress address;
@@ -52,6 +53,18 @@ public class DBCaseAddress extends CaseAddress
   public DBCaseAddress(CaseAddress caseAddress)
   {
     JPAUtils.copy(caseAddress, this);
+  }
+  
+  public void copyFrom(CaseAddress caseAddress)
+  {
+    this.caseAddressId = caseAddress.getCaseAddressId();
+    this.caseId = caseAddress.getCaseId();
+    this.addressId = caseAddress.getAddressId();
+    this.radius = caseAddress.getRadius();
+    this.comments = caseAddress.getComments();
+    this.startDate = caseAddress.getStartDate();
+    this.endDate = caseAddress.getEndDate();
+    this.caseAddressTypeId = caseAddress.getCaseAddressTypeId();
   }
 
   public void setCaseObject(DBCase caseObject)

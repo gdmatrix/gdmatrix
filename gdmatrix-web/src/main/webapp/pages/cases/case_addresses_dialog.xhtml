@@ -108,6 +108,12 @@
           <p:inputTextarea value="#{caseAddressesTabBean.editing.comments}" 
                            readonly="#{!caseObjectBean.editable}"/>
         </div>
+        
+        <!-- Audit -->
+        <emcomp:auditData creationUserId="#{caseAddressesTabBean.editing.creationUserId}" 
+                          creationDateTime="#{caseAddressesTabBean.editing.creationDateTime}"      
+                          changeUserId="#{caseAddressesTabBean.editing.changeUserId}" 
+                          changeDateTime="#{caseAddressesTabBean.editing.changeDateTime}" />        
 
         <!-- Import persons -->
         <div class="field-checkbox col-12">

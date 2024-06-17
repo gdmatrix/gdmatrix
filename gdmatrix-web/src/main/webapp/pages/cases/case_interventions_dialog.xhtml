@@ -113,7 +113,12 @@
           <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}"
                            readonly="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
-
+        
+        <!-- Audit -->
+        <emcomp:auditData creationUserId="#{caseInterventionsTabBean.editing.creationUserId}" 
+                          creationDateTime="#{caseInterventionsTabBean.editing.creationDateTime}"      
+                          changeUserId="#{caseInterventionsTabBean.editing.changeUserId}" 
+                          changeDateTime="#{caseInterventionsTabBean.editing.changeDateTime}" />          
       </div>
       
        <!-- Dynamic form -->

@@ -127,6 +127,16 @@
       </property>
       <property name="caseAddressTypeId" type="xs:string" minOccurs="0" references="dic:Type">
       </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>      
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>      
     </entity>
 
     <entity name="Intervention">
@@ -150,6 +160,16 @@
       </property>
       <property name="comments" type="xs:string" minOccurs="0">
       </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>      
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>      
       <property name="property" type="dic:Property" minOccurs="0"
         maxOccurs="unbounded" nillable="true">
       </property>

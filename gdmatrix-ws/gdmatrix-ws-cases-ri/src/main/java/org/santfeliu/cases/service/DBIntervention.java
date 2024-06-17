@@ -37,13 +37,14 @@ import org.matrix.dic.Property;
 import org.santfeliu.dic.service.DBType;
 
 import org.santfeliu.jpa.JPAUtils;
+import org.santfeliu.util.audit.Auditable;
 
 
 /**
  *
  * @author unknown
  */
-public class DBIntervention extends Intervention
+public class DBIntervention extends Intervention implements Auditable
 {
   private DBType intType;  
   private DBCase caseObject;
@@ -54,12 +55,22 @@ public class DBIntervention extends Intervention
   
   public DBIntervention(Intervention intervention)
   {
-    copyFrom(intervention);
+    JPAUtils.copy(intervention, this);
+    setProperty(intervention.getProperty());
   }
 
   public void copyFrom(Intervention intervention)
   {
-    JPAUtils.copy(intervention, this);
+    this.intId = intervention.getIntId();
+    this.caseId = intervention.getCaseId();
+    this.intTypeId = intervention.getIntTypeId();
+    this.startDate = intervention.getStartDate();
+    this.startTime = intervention.getStartTime();
+    this.endDate = intervention.getEndDate();
+    this.endTime = intervention.getEndTime();
+    this.personId = intervention.getPersonId();
+    this.userId = intervention.getUserId();
+    this.comments = intervention.getComments();
     setProperty(intervention.getProperty());
   }
   

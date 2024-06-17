@@ -917,30 +917,24 @@ public class CaseManager implements CaseManagerPort
 
       validateCaseAddress(caseAddress);
 
+      Credentials credentials = SecurityUtils.getCredentials(wsContext);
+      User user = UserCache.getUser(credentials); 
+      
       DBCaseAddress dbCaseAddress = null;
       if (caseAddressId == null)
       {
         dbCaseAddress = new DBCaseAddress(caseAddress);
+        Auditor.auditCreation(dbCaseAddress, user.getUserId());
         em.persist(dbCaseAddress);
       }
       else
       {
-        String dbCaseAddressId = getCompositePk(
-          new String[]{caseAddress.getCaseId(),caseAddress.getAddressId()});
-        if (dbCaseAddressId.equals(caseAddressId))
-        {
-          dbCaseAddress = new DBCaseAddress(caseAddress);
-          em.merge(dbCaseAddress);
-        }
-        else
-        {
-          dbCaseAddress =
-            em.getReference(DBCaseAddress.class, 
-              new DBCaseAddressPK(caseAddressId));
-          if (dbCaseAddress != null)
-            em.remove(dbCaseAddress);
-          em.persist(new DBCaseAddress(caseAddress));
-        }
+        dbCaseAddress = 
+          em.getReference(DBCaseAddress.class, 
+            new DBCaseAddressPK(caseAddressId));
+        dbCaseAddress.copyFrom(caseAddress);
+        Auditor.auditChange(dbCaseAddress, user.getUserId());
+        em.merge(dbCaseAddress);
       }
 
       return dbCaseAddress;
@@ -1187,16 +1181,24 @@ public class CaseManager implements CaseManagerPort
         new Object[]{intId != null ? intId : "NEW"});
 
       validateIntervention(intervention);
+      
+      Credentials credentials = SecurityUtils.getCredentials(wsContext);
+      User user = UserCache.getUser(credentials);       
 
-      DBIntervention dbIntervention = new DBIntervention(intervention);
-      if (dbIntervention.getIntId() == null)
+      DBIntervention dbIntervention = null;
+      if (intId == null)
       {
+        dbIntervention = new DBIntervention(intervention);        
+        Auditor.auditCreation(dbIntervention, user.getUserId());        
         em.persist(dbIntervention);
         intervention.setIntId(dbIntervention.getIntId());
         storeInterventionProperties(intervention, false);
       }
       else
       {
+        dbIntervention = em.getReference(DBIntervention.class, intId);        
+        Auditor.auditChange(dbIntervention, user.getUserId()); 
+        dbIntervention.copyFrom(intervention);
         em.merge(dbIntervention);
         storeInterventionProperties(intervention, true);        
       }

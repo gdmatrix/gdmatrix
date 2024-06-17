@@ -493,10 +493,22 @@
         </basic>
         <basic name="endDate">
             <column name="ENDDATE" length="8" />
-        </basic>
+        </basic>      
         <basic name="caseAddressTypeId">
             <column name="CASEADDRESSTYPEID" length="64" />
+        </basic> 
+        <basic name="creationDateTime">
+            <column name="creationDT" length="14" />
+        </basic>
+        <basic name="creationUserId">
+            <column name="creationUserId" length="50" />
         </basic>        
+        <basic name="changeDateTime">
+            <column name="CHANGEDT" length="14" />
+        </basic>
+        <basic name="changeUserId">
+            <column name="CHANGEUSERID" length="50" />
+        </basic>                 
         <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
@@ -628,6 +640,18 @@
         <basic name="comments">
           <column name="COMMENTS" length="2000" />
         </basic>
+        <basic name="creationDateTime">
+            <column name="creationDT" length="14" />
+        </basic>
+        <basic name="creationUserId">
+            <column name="creationUserId" length="50" />
+        </basic>        
+        <basic name="changeDateTime">
+            <column name="CHANGEDT" length="14" />
+        </basic>
+        <basic name="changeUserId">
+            <column name="CHANGEUSERID" length="50" />
+        </basic>        
         <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
