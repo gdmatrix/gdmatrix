@@ -1,0 +1,25 @@
+/***** CASES MODULE CSS *****/
+
+.customProperties
+{
+  width: 100%;
+}
+
+.customProperties .ui-dataview-header
+{
+  display: none;
+}
+
+.customProperties li:last-child
+{
+  border-bottom: 0 !important;
+}
+ 
+.customProperties .row
+{  
+}
+
+.customProperties .cell
+{
+  font-size: 10px;
+}

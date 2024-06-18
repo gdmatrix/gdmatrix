@@ -49,6 +49,7 @@ import org.matrix.cases.CaseDocumentView;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
+import org.matrix.dic.Property;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
@@ -304,6 +305,15 @@ public class CaseDocumentsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  public List<Column> getCustomColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getCustomColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
   @Override
   public void load()
   {
@@ -568,6 +578,14 @@ public class CaseDocumentsTabBean extends TabBean
     this.caseDocumentToRemove = null;
   }
 
+  public void addRowCustomProperty(DataTableRow row, String name, String value)
+  {
+    Property auxProperty = new Property();
+    auxProperty.setName(name);
+    auxProperty.getValue().add(value);
+    row.getCustomProperties().add(auxProperty);
+  }  
+  
   @Override
   public void clear()
   {
@@ -670,6 +688,7 @@ public class CaseDocumentsTabBean extends TabBean
       CaseDocumentsDataTableRow dataTableRow =
         new CaseDocumentsDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setCustomValues(this, row, getCustomColumns());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;

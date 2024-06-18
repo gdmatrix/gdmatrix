@@ -8,6 +8,8 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:jsf="http://xmlns.jcp.org/jsf">
 
+  <h:outputStylesheet library="css" name="cases.css" />  
+  
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
@@ -19,7 +21,8 @@
                  rowStyleClass="#{row.styleClass}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rows="10" rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}">
+                 rows="10" rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}"
+                 rowKey="#{row.rowId}" expandedRow="true">
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
@@ -86,6 +89,18 @@
         </h:panelGroup>
       </p:column>
 
+      <p:rowExpansion rendered="#{not row.customProperties.isEmpty()}">
+        <p:dataView value="#{row.customProperties}" var="customProperty"
+                     styleClass="customProperties">
+          <p:dataViewListItem>
+            <div class="row flex">
+              <div class="cell col-2 #{row.styleClass}">#{customProperty.name}</div>
+              <div class="cell col-10 #{row.styleClass}">#{customProperty.value[0]}</div>
+            </div>
+          </p:dataViewListItem>            
+        </p:dataView>
+      </p:rowExpansion>
+      
     </p:dataTable>
 
   </f:subview>

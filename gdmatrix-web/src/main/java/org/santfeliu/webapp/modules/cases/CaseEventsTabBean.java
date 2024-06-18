@@ -43,6 +43,7 @@ import javax.inject.Named;
 import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
+import org.matrix.dic.Property;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -192,6 +193,15 @@ public class CaseEventsTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
+  
+  public List<Column> getCustomColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getCustomColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
   
   public CaseEvent getEditing()
   {
@@ -370,6 +380,14 @@ public class CaseEventsTabBean extends TabBean
     return (editing != null);
   }  
   
+  public void addRowCustomProperty(DataTableRow row, String name, String value)
+  {
+    Property auxProperty = new Property();
+    auxProperty.setName(name);
+    auxProperty.getValue().add(value);
+    row.getCustomProperties().add(auxProperty);
+  }  
+  
   @Override
   public void clear()
   {
@@ -411,6 +429,7 @@ public class CaseEventsTabBean extends TabBean
     {
       CaseEventsDataTableRow dataTableRow = new CaseEventsDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setCustomValues(this, row, getCustomColumns());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;

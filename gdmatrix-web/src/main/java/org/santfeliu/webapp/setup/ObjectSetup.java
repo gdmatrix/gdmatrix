@@ -356,6 +356,16 @@ public class ObjectSetup implements Serializable
       searchTab.setColumns(columns);
     }
     mergeColumns(defaultColumns, columns);
+    
+    //Custom columns
+    List<Column> defaultCustomColumns = defaultSearchTab.getCustomColumns();
+    List<Column> customColumns = searchTab.getCustomColumns();
+    if (customColumns == null)
+    {
+      customColumns = new ArrayList();
+      searchTab.setCustomColumns(customColumns);
+    }
+    mergeColumns(defaultCustomColumns, customColumns);    
   }
 
   private void mergeEditTab(EditTab defaultEditTab, EditTab editTab)
@@ -379,6 +389,16 @@ public class ObjectSetup implements Serializable
       editTab.setColumns(columns);
     }
     mergeColumns(defaultColumns, columns);
+
+    //Custom columns
+    List<Column> defaultCustomColumns = defaultEditTab.getCustomColumns();
+    List<Column> customColumns = editTab.getCustomColumns();
+    if (customColumns == null)
+    {
+      customColumns = new ArrayList();
+      editTab.setCustomColumns(customColumns);
+    }
+    mergeColumns(defaultCustomColumns, customColumns);
 
     //Roles
     List<String> defaultReadRoles = defaultEditTab.getReadRoles();

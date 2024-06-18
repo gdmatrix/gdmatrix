@@ -187,16 +187,16 @@ body .ui-autocomplete > input
   table-layout: auto;
 }
 
-.ui-datatable tr.between
+.ui-datatable .between
 {
 }
 
-.ui-datatable tr.before
+.ui-datatable .before
 {
   color: var(--surface-500) !important;  
 }
 
-.ui-datatable tr.after
+.ui-datatable .after
 {
   color: var(--blue-500) !important;
 }

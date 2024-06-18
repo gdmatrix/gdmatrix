@@ -40,6 +40,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.matrix.dic.Property;
 import org.santfeliu.classif.ClassCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
@@ -179,6 +180,24 @@ public class CaseFinderBean extends FinderBean
       return Collections.emptyList();
     }
   }
+  
+  public List<Column> getCustomColumns()
+  {
+    try
+    {
+      if (objectSetup == null)
+        loadObjectSetup();
+      
+      List<Column> columns = 
+        objectSetup.getSearchTabs().get(0).getCustomColumns();
+      
+      return columns != null ? columns : Collections.emptyList();
+    }
+    catch (Exception ex)
+    {
+      return Collections.emptyList();
+    }
+  }
 
   public int getFirstRow()
   {
@@ -228,8 +247,8 @@ public class CaseFinderBean extends FinderBean
     {
       doFind(false);
     }
-  }
-
+  }  
+  
   public void clear()
   {
     filter = new CaseFilter();
@@ -238,6 +257,14 @@ public class CaseFinderBean extends FinderBean
     setFinding(false);
     formSelector = null;
   }
+  
+  public void addRowCustomProperty(DataTableRow row, String name, String value)
+  {
+    Property auxProperty = new Property();
+    auxProperty.setName(name);
+    auxProperty.getValue().add(value);
+    row.getCustomProperties().add(auxProperty);
+  }  
 
   @Override
   public Serializable saveState()
@@ -378,6 +405,7 @@ public class CaseFinderBean extends FinderBean
       DataTableRow dataTableRow = 
         new DataTableRow(row.getCaseId(), row.getCaseTypeId());
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setCustomValues(this, row, getCustomColumns());      
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }

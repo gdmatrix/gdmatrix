@@ -43,6 +43,7 @@ import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
+import org.matrix.dic.Property;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -235,6 +236,15 @@ public class CaseInterventionsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  public List<Column> getCustomColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getCustomColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }
+  
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -438,6 +448,14 @@ public class CaseInterventionsTabBean extends TabBean
     }
   }
   
+  public void addRowCustomProperty(DataTableRow row, String name, String value)
+  {
+    Property auxProperty = new Property();
+    auxProperty.setName(name);
+    auxProperty.getValue().add(value);
+    row.getCustomProperties().add(auxProperty);
+  }
+  
   @Override
   public void clear()
   {
@@ -476,6 +494,7 @@ public class CaseInterventionsTabBean extends TabBean
       CaseInterventionsDataTableRow dataTableRow =
         new CaseInterventionsDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setCustomValues(this, row, getCustomColumns());
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }

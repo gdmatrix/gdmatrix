@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.matrix.dic.Property;
@@ -60,6 +61,7 @@ public class DataTableRow implements Serializable
   protected Value[] values;
   protected String[] icons;
   protected String styleClass;
+  protected List<Property> customProperties = new ArrayList<>();
 
   public DataTableRow(String rowId, String typeId)
   {
@@ -117,6 +119,11 @@ public class DataTableRow implements Serializable
     this.styleClass = styleClass;
   }
   
+  public List<Property> getCustomProperties()
+  {
+    return customProperties;
+  }  
+  
   public void setValues(BaseBean baseBean, Object row, List<Column> columns) 
     throws Exception
   {
@@ -154,6 +161,38 @@ public class DataTableRow implements Serializable
         icons[i] = (String) scriptClient.execute(column.getIcon());          
       }
     }    
+  }
+  
+  public void setCustomValues(BaseBean baseBean, 
+    Object row, List<Column> customColumns) throws Exception
+  {
+    ScriptClient scriptClient = baseBean.getObjectBean().getScriptClient();
+    if (scriptClient == null)
+      scriptClient = newScriptClient();
+
+    scriptClient.put("row", row);
+    scriptClient.put("baseBean", baseBean);
+    
+    for (int i = 0; i < customColumns.size(); i++)
+    {
+      Column customColumn = customColumns.get(i);
+      if (customColumn.getExpression() != null)
+      {
+        try
+        {
+          Value value = new DefaultValue(scriptClient.execute(
+            customColumn.getExpression()));
+          if (value.getLabel() != null)
+          {
+            Property property = new Property();
+            property.setName(customColumn.getLabel());
+            property.getValue().add(value.getLabel());
+            getCustomProperties().add(property);            
+          }
+        }
+        catch (Exception ex) { }
+      }
+    }
   }
   
   public Value getColumnValue(List<Column> columns, String colName)

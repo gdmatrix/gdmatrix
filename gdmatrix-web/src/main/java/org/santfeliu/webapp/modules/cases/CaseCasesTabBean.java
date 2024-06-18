@@ -44,6 +44,7 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseCase;
 import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
+import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -213,6 +214,15 @@ public class CaseCasesTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
+  
+  public List<Column> getCustomColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getCustomColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
   
   public CaseCase getEditing()
   {
@@ -449,6 +459,14 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
+  public void addRowCustomProperty(DataTableRow row, String name, String value)
+  {
+    Property auxProperty = new Property();
+    auxProperty.setName(name);
+    auxProperty.getValue().add(value);
+    row.getCustomProperties().add(auxProperty);
+  }
+    
   @Override
   public void clear()
   {
@@ -535,6 +553,7 @@ public class CaseCasesTabBean extends TabBean
     {
       CaseCasesDataTableRow dataTableRow = new CaseCasesDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setCustomValues(this, row, getCustomColumns());      
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }

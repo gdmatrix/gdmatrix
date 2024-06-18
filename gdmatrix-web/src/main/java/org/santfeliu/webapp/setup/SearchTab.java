@@ -42,6 +42,7 @@ public class SearchTab
   private String label;
   private String viewId;
   private List<Column> columns = new ArrayList<>();
+  private List<Column> customColumns = new ArrayList<>();
   private List<String> orderBy = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
 
@@ -81,6 +82,16 @@ public class SearchTab
     this.columns = columns;
   }
 
+  public List<Column> getCustomColumns()
+  {
+    return customColumns;
+  }
+
+  public void setCustomColumns(List<Column> customColumns)
+  {
+    this.customColumns = customColumns;
+  }  
+  
   public List<String> getOrderBy()
   {
     return orderBy;

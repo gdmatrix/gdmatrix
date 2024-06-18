@@ -49,6 +49,7 @@ import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Property;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
 import org.santfeliu.dic.Type;
@@ -271,6 +272,15 @@ public class CaseAddressesTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }  
   
+  public List<Column> getCustomColumns()
+  {
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    if (activeEditTab != null)
+      return activeEditTab.getCustomColumns();
+    else
+      return Collections.EMPTY_LIST;
+  }  
+  
   public void edit(DataTableRow row)
   {
     if (row != null)
@@ -415,6 +425,14 @@ public class CaseAddressesTabBean extends TabBean
     return (editing != null);
   }  
   
+  public void addRowCustomProperty(DataTableRow row, String name, String value)
+  {
+    Property auxProperty = new Property();
+    auxProperty.setName(name);
+    auxProperty.getValue().add(value);
+    row.getCustomProperties().add(auxProperty);
+  }  
+  
   @Override
   public void clear()
   {
@@ -535,6 +553,7 @@ public class CaseAddressesTabBean extends TabBean
       CaseAddressesDataTableRow dataTableRow = 
         new CaseAddressesDataTableRow(row);
       dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setCustomValues(this, row, getCustomColumns());      
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
