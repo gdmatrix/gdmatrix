@@ -281,6 +281,8 @@ public abstract class ObjectBean extends BaseBean
       scriptClient.put("applicationBean", 
         ApplicationBean.getCurrentInstance());             
     }
+    else
+      scriptClient = null;
   }
   
 
