@@ -224,7 +224,7 @@ class GetFeatureInfoTool extends Tool
       headerDiv.appendChild(lngLatDiv);
       lngLatDiv.innerHTML = `Lon/Lat: ${lngLat.lng.toFixed(5)}, ${lngLat.lat.toFixed(5)}`;
 
-      const utm = toUtm(lngLat.lat, lngLat.lng, 7, 'ETRS89');
+      const utm = toUtm(lngLat.lat, lngLat.lng, 31, 'ETRS89');
       this.setLastUtm(utm);
       const utmDiv = document.createElement("div");
       headerDiv.appendChild(utmDiv);

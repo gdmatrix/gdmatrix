@@ -221,8 +221,8 @@ class MeasureAreaTool extends Tool
       let c1 = coordinates[i];
       let c2 = coordinates[i + 1];
 
-      let utm1 = toUtm(c1[1], c1[0], 7, 'ETRS89');
-      let utm2 = toUtm(c2[1], c2[0], 7, 'ETRS89');
+      let utm1 = toUtm(c1[1], c1[0], 31, 'ETRS89');
+      let utm2 = toUtm(c2[1], c2[0], 31, 'ETRS89');
 
       let x1 = utm1.easting;
       let y1 = utm1.northing;

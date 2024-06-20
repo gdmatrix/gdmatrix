@@ -132,8 +132,8 @@ class PrintControl
     const ne = bounds.getNorthEast();
     const ellipsoid = this.options.ellipsoid;
 
-    let utm1 = toUtm(sw.lat, sw.lng, 7, ellipsoid);
-    let utm2 = toUtm(ne.lat, ne.lng, 7, ellipsoid);
+    let utm1 = toUtm(sw.lat, sw.lng, 31, ellipsoid);
+    let utm2 = toUtm(ne.lat, ne.lng, 31, ellipsoid);
     const bbox = utm1.easting + "," + utm1.northing + "," +
      utm2.easting + "," + utm2.northing;
 
