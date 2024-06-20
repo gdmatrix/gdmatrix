@@ -44,6 +44,7 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -71,6 +72,7 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.selectoneradio.SelectOneRadio;
 import org.primefaces.component.toggleswitch.ToggleSwitch;
 import org.santfeliu.faces.codemirror.CodeMirror;
+import org.santfeliu.faces.maplibre.MapLibre;
 import org.santfeliu.faces.quill.Quill;
 import org.santfeliu.faces.tinymce.TinyMCE;
 import org.santfeliu.form.Field;
@@ -80,6 +82,9 @@ import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlRadioView;
 import org.santfeliu.form.type.html.HtmlSelectView;
 import org.santfeliu.form.type.html.HtmlView;
+import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.modules.geo.io.MapDocument;
+import org.santfeliu.webapp.modules.geo.io.MapStore;
 
 
 /**
@@ -179,7 +184,15 @@ public class FormImporter
     else if (tag.equals("div") && !
       "body".equals(view.getParent().getNativeViewType()))
     {
-      importOutputText(view, parent);
+      String renderer = view.getProperty("renderer");
+      if ("maplibre".equalsIgnoreCase(renderer))
+      {
+        importMapLibre(view, parent);
+      }
+      else
+      {
+        importOutputText(view, parent);
+      }
     }
     else
     {
@@ -298,7 +311,7 @@ public class FormImporter
   }
 
   protected void importScript(HtmlView view, UIComponent parent)
-  {       
+  {
     List<View> children = view.getChildren();
     if (!children.isEmpty())
     {
@@ -312,7 +325,7 @@ public class FormImporter
           .append(childView.getProperty("text"))
           .append("</")
           .append(view.getNativeViewType())
-          .append(">");      
+          .append(">");
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Application application = facesContext.getApplication();
@@ -322,27 +335,27 @@ public class FormImporter
         outputText.setValue(sb.toString());
         parent.getChildren().add(outputText);
       }
-    }    
+    }
   }
-  
+
   protected void importImage(HtmlView view, UIComponent parent)
   {
     String url = view.getProperty("src");
     String alt = view.getProperty("alt");
     String styleClass = view.getProperty("class");
     String style = view.getProperty("style");
-    
+
     FacesContext facesContext = FacesContext.getCurrentInstance();
-    Application application = facesContext.getApplication();    
-    
-    HtmlGraphicImage graphicImage = 
-      (HtmlGraphicImage) application.createComponent(HtmlGraphicImage.COMPONENT_TYPE);  
+    Application application = facesContext.getApplication();
+
+    HtmlGraphicImage graphicImage =
+      (HtmlGraphicImage) application.createComponent(HtmlGraphicImage.COMPONENT_TYPE);
     graphicImage.setUrl(url);
     graphicImage.setAlt(alt);
     graphicImage.setStyleClass(styleClass);
     graphicImage.setStyle(style);
-    
-    parent.getChildren().add(graphicImage); 
+
+    parent.getChildren().add(graphicImage);
   }
 
   protected void importFields()
@@ -406,20 +419,20 @@ public class FormImporter
         (InputNumber)application.createComponent(InputNumber.COMPONENT_TYPE);
       inputNumber.setReadonly(field.isReadOnly());
       inputNumber.setPadControl(false);
-      
+
       //Convert value to number.
       NumberConverter converter = new NumberConverter();
       converter.setGroupingUsed(false);
       converter.setLocale(Locale.US);
       inputNumber.setConverter(converter);
-      
+
       //Set separators format
-      DecimalFormatSymbols dfs = 
-        DecimalFormatSymbols.getInstance(facesContext.getViewRoot().getLocale());      
+      DecimalFormatSymbols dfs =
+        DecimalFormatSymbols.getInstance(facesContext.getViewRoot().getLocale());
       inputNumber.setDecimalSeparator(String.valueOf(dfs.getDecimalSeparator()));
       inputNumber.setThousandSeparator(String.valueOf(dfs.getGroupingSeparator()));
       inputNumber.setDecimalPlaces("18");
-      
+
       if (field.getMinOccurs() > 0) setRequired(inputNumber);
       component = inputNumber;
     }
@@ -488,7 +501,7 @@ public class FormImporter
 
         List<View> children = view.getChildren();
 
-        try 
+        try
         {
           if (addEmptyValue && !isMultiple)
           {
@@ -596,7 +609,7 @@ public class FormImporter
               component = codemirror;
             }
             break;
-            
+
             default:
             {
               InputTextarea inputTextarea =
@@ -613,12 +626,12 @@ public class FormImporter
 
           if (inputType == null || "text".equals(inputType))
           {
-            String renderer = 
+            String renderer =
               view != null ? (String)view.getProperty("renderer") : "text";
             if (renderer == null)
               renderer = "text";
             isMultiple = field.getMaxOccurs() != 1;
-            
+
             switch (renderer)
             {
               case "chips":
@@ -626,7 +639,7 @@ public class FormImporter
               case "multivalued": isMultiple = true;
               break;
             }
-            
+
             if (!isMultiple)
             {
               InputText inputText =
@@ -637,7 +650,7 @@ public class FormImporter
             }
             else
             {
-              Chips chips = 
+              Chips chips =
                 (Chips)application.createComponent(Chips.COMPONENT_TYPE);
               if (field.getMaxOccurs() > 1)
               {
@@ -690,7 +703,7 @@ public class FormImporter
       parent.getChildren().add(group);
 
       OutputLabel label = null;
-      
+
       if (!StringUtils.isBlank(labelText))
       {
         label =
@@ -702,7 +715,7 @@ public class FormImporter
 
         group.getChildren().add(label);
       }
-           
+
       String propertyPath = isMultiple ? propertyPathMulti : propertyPathUni;
 
       String expression = "#{" + propertyPath + "[\"" + reference + "\"]}";
@@ -712,25 +725,25 @@ public class FormImporter
         WebUtils.createValueExpression(expression, type);
 
       component.setValueExpression("value", valueExpression);
-      
+
       //Inputgroup
       HtmlPanelGroup inputgroup = null;
       if (view != null)
       {
         Object infoIcon = view.getProperty("infoicon");
         Object infoText = view.getProperty("infotext");
-        
+
         if (infoIcon != null || infoText != null)
         {
           inputgroup =
-            (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE); 
+            (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
           inputgroup.setStyleClass("ui-inputgroup");
-          
+
           boolean leftIcon = false;
           boolean leftText = false;
-          OutputPanel iconAddon = null;          
+          OutputPanel iconAddon = null;
           OutputPanel textAddon = null;
- 
+
           if (infoIcon != null)
           {
             String info = String.valueOf(infoIcon);
@@ -740,20 +753,20 @@ public class FormImporter
               info = info.substring(5, info.length());
             }
             iconAddon =
-              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE); 
-            iconAddon.setStyleClass("ui-inputgroup-addon");        
+              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE);
+            iconAddon.setStyleClass("ui-inputgroup-addon");
 
-            HtmlPanelGroup outputPanel = 
-              (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);            
+            HtmlPanelGroup outputPanel =
+              (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
 
-            outputPanel.setStyleClass(info);    
-            
-            iconAddon.getChildren().add(outputPanel); 
-            
+            outputPanel.setStyleClass(info);
+
+            iconAddon.getChildren().add(outputPanel);
+
             if (leftIcon)
-              inputgroup.getChildren().add(iconAddon);             
+              inputgroup.getChildren().add(iconAddon);
           }
-          
+
           if (infoText != null)
           {
             String info = String.valueOf(infoText);
@@ -762,68 +775,131 @@ public class FormImporter
               leftText = true;
               info = info.substring(5, info.length());
             }
-            
+
             textAddon =
-              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE); 
-            textAddon.setStyleClass("ui-inputgroup-addon");        
-            
-            HtmlOutputText outputText = 
+              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE);
+            textAddon.setStyleClass("ui-inputgroup-addon");
+
+            HtmlOutputText outputText =
               (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
             outputText.setValue(info);
             outputText.setEscape(false);
-            
-            textAddon.getChildren().add(outputText);    
-            
+
+            textAddon.getChildren().add(outputText);
+
             if (leftText)
-              inputgroup.getChildren().add(textAddon);               
+              inputgroup.getChildren().add(textAddon);
           }
-                     
-          inputgroup.getChildren().add(component); 
-          
+
+          inputgroup.getChildren().add(component);
+
           if (infoIcon != null && !leftIcon)
-              inputgroup.getChildren().add(iconAddon); 
+              inputgroup.getChildren().add(iconAddon);
           if (infoText != null && !leftText)
-              inputgroup.getChildren().add(textAddon);           
-            
+              inputgroup.getChildren().add(textAddon);
+
           if (label != null)
           {
             int idx = inputgroup.getChildren().indexOf(component);
             label.setFor("@next:@child(" + idx + ")");
           }
-          
-          group.getChildren().add(inputgroup);           
-        } 
-      }      
-      
+
+          group.getChildren().add(inputgroup);
+        }
+      }
+
       //Component without no inputgrup
       if (inputgroup == null)
         group.getChildren().add(component);
-      
+
       //Help text
       if (view != null)
       {
-        Object helpText = view.getProperty("helptext");         
+        Object helpText = view.getProperty("helptext");
         if (helpText != null)
         {
           HtmlOutputText helpOutputText =
-            (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE); 
+            (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE);
           helpOutputText.setStyleClass("text-xs");
           helpOutputText.setValue(String.valueOf(helpText));
           helpOutputText.setEscape(false);
           group.getChildren().add(helpOutputText);
-        }      
-      }    
-      
+        }
+      }
+
       if (isInspectMode() && view.getProperty("name") != null)
       {
         HtmlOutputText varNameOutputText = (HtmlOutputText)application.
-          createComponent(HtmlOutputText.COMPONENT_TYPE); 
+          createComponent(HtmlOutputText.COMPONENT_TYPE);
         varNameOutputText.setStyleClass("text-xs text-red-700 block");
-        varNameOutputText.setStyle("word-break: break-all;" + 
+        varNameOutputText.setStyle("word-break: break-all;" +
           varNameOutputText.getStyle());
         varNameOutputText.setValue(view.getProperty("name"));
-        group.getChildren().add(varNameOutputText);        
-      }      
+        group.getChildren().add(varNameOutputText);
+      }
+    }
+  }
+
+  protected void importMapLibre(HtmlView view, UIComponent parent)
+  {
+    try
+    {
+      FacesContext facesContext = FacesContext.getCurrentInstance();
+      Application application = facesContext.getApplication();
+
+      String mapName = encodeView(view, new StringBuilder()).toString();
+      if (mapName == null) return;
+
+      String id = view.getId();
+      if (id == null) return;
+
+      InputText hiddenInput =
+        (InputText)application.createComponent(InputText.COMPONENT_TYPE);
+      hiddenInput.setId(id);
+      hiddenInput.setStyleClass("hidden");
+      hiddenInput.setWidgetVar(id);
+
+      String expression = "#{" + propertyPathUni + "[\"" + id + "\"]}";
+      ValueExpression valueExpression =
+        WebUtils.createValueExpression(expression, String.class);
+
+      hiddenInput.setValueExpression("value", valueExpression);
+      parent.getChildren().add(hiddenInput);
+
+      MapLibre mapLibre = (MapLibre)application.
+        createComponent(MapLibre.COMPONENT_TYPE);
+      mapLibre.setStyleClass("m-2 surface-border border-solid border-1");
+
+      String height = "300px";
+      String style = view.getProperty("style");
+      if (style != null)
+      {
+        int index = style.indexOf("height:");
+        if (index != -1)
+        {
+          style = style.substring(index + 7);
+          index = style.indexOf(";");
+          if (index != -1) style = style.substring(0, index);
+          height = style;
+        }
+      }
+
+      mapLibre.setStyle("width:100%;height:" + height);
+
+      MapStore mapStore = CDI.current().select(MapStore.class).get();
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      String userId = userSessionBean.getUserId();
+      String password = userSessionBean.getPassword();
+      mapStore.setCredentials(userId, password);
+      MapDocument mapDocument = mapStore.loadMap(mapName);
+
+      mapLibre.setValue(mapDocument.getStyle());
+
+      parent.getChildren().add(mapLibre);
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
     }
   }
 
@@ -918,12 +994,12 @@ public class FormImporter
         "#{not empty param['" + submitButton + "']}", Boolean.class));
     }
   }
-  
+
   private boolean isInspectMode()
-  {    
+  {
     Map<String, Object> panelAttributes = formRoot.getPassThroughAttributes();
     Boolean inspectMode = (Boolean)panelAttributes.get(INSPECT_OPTION);
     return (inspectMode == null ? false : inspectMode);
   }
-  
+
 }
