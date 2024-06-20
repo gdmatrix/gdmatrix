@@ -34,6 +34,12 @@ function maplibreInit(clientId, style, language)
     antialias: true,
     attributionControl: false
   });
+
+  const _onRender = () => {
+    map.resize();
+    map.off("render", _onRender);
+  };
+  map.on("render", _onRender);
   
   const placeHolderImage = createPlaceHolderImage();
   
