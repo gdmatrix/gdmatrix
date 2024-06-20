@@ -40,6 +40,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.mozilla.javascript.Callable;
+import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.santfeliu.util.script.ScriptClient;
@@ -57,6 +58,9 @@ public class ContextTreeBean implements Serializable
 {
   private final HashMap<String, TreeNode> rootNodes = new HashMap<>();
   private TreeNode selectedNode;
+  private ObjectTreeNode editingNode; 
+  private ScriptClient scriptClient;
+  private String scriptName;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -64,24 +68,33 @@ public class ContextTreeBean implements Serializable
   public void clear()
   {
     selectedNode = null;
+    editingNode = null;
+    scriptClient = null;
+    scriptName = null;
     rootNodes.clear();
   }
 
   public void update()
   {
     selectedNode = null;
-    String scriptName = getScriptName();
+    editingNode = null;
+    scriptClient = null;
     if (scriptName != null)
     {
       rootNodes.remove(scriptName);
     }
+    scriptName = null;
   }
 
   public TreeNode getTreeNode()
   {
-    String scriptName = getScriptName();
-    if (scriptName == null) return null;
-
+    if (scriptName == null || !scriptName.equals(getScriptName()))
+    {
+      scriptName = getScriptName();
+      if (scriptName == null) return null;      
+      scriptClient = new ScriptClient();
+    }
+    
     TreeNode rootNode = rootNodes.get(scriptName);
     if (rootNode == null)
     {
@@ -90,9 +103,8 @@ public class ContextTreeBean implements Serializable
 
       try
       {
-        ScriptClient client = new ScriptClient();
-        client.refreshCache();
-        List<ObjectData> datas = (List<ObjectData>)client
+        scriptClient.refreshCache();
+        List<ObjectData> datas = (List<ObjectData>)scriptClient
           .executeScript(scriptName, "getRoots()");
 
         for (ObjectData data : datas)
@@ -109,22 +121,38 @@ public class ContextTreeBean implements Serializable
     return rootNode;
   }
 
-  public boolean isCurrentBaseType(TreeNode node)
+  public boolean isCurrentBaseType(ObjectTreeNode node)
   {
-    ObjectData data = (ObjectData)node.getData();
-    String typeId = data.getTypeId();
-    BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
-    if (baseTypeInfo == null) return false;
-    return typeId.equals(baseTypeInfo.getBaseTypeId());
+    if (node != null && node.isObjectNode())
+    {
+      ObjectData data = (ObjectData)node.getData();
+      String typeId = data.getTypeId();
+      BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
+      if (baseTypeInfo == null) return false;
+      return typeId.equals(baseTypeInfo.getBaseTypeId());
+    }
+    return false;
   }
 
-  public boolean isSelectedNode(TreeNode node)
+  public boolean isSelectedNode(ObjectTreeNode node)
   {
-    BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
-    if (baseTypeInfo == null) return false;
-    ObjectData data = (ObjectData)node.getData();
-    return data.getObjectId().equals(baseTypeInfo.getObjectId());
+    if (node != null && node.isObjectNode())
+    {
+      BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
+      if (baseTypeInfo == null) return false;
+      ObjectData data = (ObjectData)node.getData();
+      return data.getObjectId().equals(baseTypeInfo.getObjectId());
+    }
+    return false;
   }
+  
+  public boolean isEditingNode(String objectId)
+  {
+    if (editingNode == null)
+      return false;
+    
+    return editingNode.getData().getObjectId().equals(objectId);
+  }  
 
   public String getScriptName()
   {
@@ -141,7 +169,20 @@ public class ContextTreeBean implements Serializable
   {
     return selectedNode;
   }
+  
+  public void onNodeSelect(NodeSelectEvent event) 
+  {
+    ObjectTreeNode treeNode = (ObjectTreeNode) event.getTreeNode();
 
+    if (treeNode.isObjectNode())
+    {     
+      if (isCurrentBaseType(treeNode))
+        view(treeNode);
+      else
+        show(treeNode);
+    }
+  }  
+  
   public String show(TreeNode treeNode)
   {
     ObjectTreeNode objectTreeNode = (ObjectTreeNode)treeNode;
@@ -167,10 +208,14 @@ public class ContextTreeBean implements Serializable
     {
       try
       {
-        ScriptClient client = new ScriptClient();
+        if (scriptName == null || !scriptName.equals(getScriptName()))
+        {
+          scriptClient = new ScriptClient();
+          scriptName = getScriptName();
+        }
         ObjectData data = (ObjectData)selectedNode.getData();
-        client.put("data", data);
-        Object result = client.executeScript(getScriptName(),
+        scriptClient.put("data", data);
+        Object result = scriptClient.executeScript(scriptName,
           "getContextActions()");
         if (result instanceof List)
         {
@@ -195,11 +240,15 @@ public class ContextTreeBean implements Serializable
       System.out.println("ACTION: " + action);
       System.out.println("selectedNode: " + data.getDescription());
 
-      ScriptClient client = new ScriptClient();
-      client.put("data", data);
-      client.executeScript(getScriptName());
-      Callable callable = (Callable) client.get(action.getMethodName());
-      Object result = client.execute(callable, action.getMethodParams());
+      if (scriptName == null || !scriptName.equals(getScriptName()))
+      {
+        scriptClient = new ScriptClient();
+        scriptName = getScriptName();
+      }
+      scriptClient.put("data", data);
+      scriptClient.executeScript(scriptName);
+      Callable callable = (Callable) scriptClient.get(action.getMethodName());
+      Object result = scriptClient.execute(callable, action.getMethodParams());
 
       System.out.println("Result: " + result);
 
@@ -225,7 +274,7 @@ public class ContextTreeBean implements Serializable
         }
       }
       else if (ContextAction.UPDATE.equals(actionType))
-      {
+      { 
         objectTreeNode.update();
       }
       else if (ContextAction.REMOVE.equals(actionType))
@@ -240,6 +289,24 @@ public class ContextTreeBean implements Serializable
           clear();
         }
       }
+      else if (ContextAction.EDIT.equals(actionType))
+      {
+        if (result instanceof ObjectData)
+          editingNode = objectTreeNode;
+        else
+        {
+          if (editingNode.getParent() instanceof ObjectTreeNode)
+          {
+            ObjectTreeNode parentNode = 
+              ((ObjectTreeNode)editingNode.getParent());
+            parentNode.setExpanded(true);          
+            parentNode.update();            
+          }
+          editingNode = null;
+        }
+               
+        objectTreeNode.update();
+      }
     }
     catch (Exception ex)
     {
@@ -248,13 +315,20 @@ public class ContextTreeBean implements Serializable
     return null;
   }
 
-  public static class ObjectTreeNode extends DefaultTreeNode<ObjectData>
+  public class ObjectTreeNode extends DefaultTreeNode<ObjectData>
   {
+    static final String GROUP_TYPE = "GROUP";
+    static final String OBJECT_TYPE = "OBJECT";
+    
     protected boolean loaded;
 
     public ObjectTreeNode(ObjectData data)
     {
       super(data);
+      if (data.getObjectId() == null)
+        setType(GROUP_TYPE);
+      else
+        setType(OBJECT_TYPE);
     }
 
     @Override
@@ -270,6 +344,16 @@ public class ContextTreeBean implements Serializable
     {
       ContextTreeBean contextTreeBean = WebUtils.getBean("contextTreeBean");
       return this == contextTreeBean.getSelectedNode();
+    }
+    
+    public boolean isGroupNode()
+    {
+      return getType().equals(GROUP_TYPE);
+    }
+    
+    public boolean isObjectNode()
+    {
+      return getType().equals(OBJECT_TYPE);
     }
 
     void load()
@@ -300,9 +384,13 @@ public class ContextTreeBean implements Serializable
       {
         ContextTreeBean contextTreeBean = WebUtils.getBean("contextTreeBean");
 
-        ScriptClient client = new ScriptClient();
-        client.put("data", data);
-        List<ObjectData> datas = (List<ObjectData>)client
+        if (scriptName == null || !scriptName.equals(getScriptName()))
+        {
+          scriptClient = new ScriptClient();
+          scriptName = getScriptName();
+        }
+        scriptClient.put("data", data);
+        List<ObjectData> datas = (List<ObjectData>)scriptClient
           .executeScript(contextTreeBean.getScriptName(), "getChildren()");
 
         return datas;
@@ -314,14 +402,19 @@ public class ContextTreeBean implements Serializable
       return Collections.EMPTY_LIST;
     }
   }
-
+  
   public static class ObjectData implements Serializable
   {
     String typeId;
     String objectId;
     String description;
     String icon;
-
+    
+    public ObjectData()
+    {
+      this(null, null);
+    }
+    
     public ObjectData(String typeId, String objectId)
     {
       this.typeId = typeId;
@@ -387,18 +480,20 @@ public class ContextTreeBean implements Serializable
       return typeId + "@" + objectId;
     }
   }
-
+  
   public static class ContextAction implements Serializable
   {
     public static final String NOP = "NOP";
     public static final String ADD = "ADD";
     public static final String UPDATE = "UPDATE";
     public static final String REMOVE = "REMOVE";
-
+    public static final String EDIT = "EDIT";
+   
     String type = NOP;
     String methodName;
     Object[] methodParams;
     String label;
+    String icon;
 
     public ContextAction()
     {
@@ -406,16 +501,23 @@ public class ContextTreeBean implements Serializable
 
     public ContextAction(String type, String methodName, String label)
     {
-      this(type, methodName, null, label);
+      this(type, methodName, null, label, null);
     }
     
+    public ContextAction(String type, String methodName, String label, 
+      String icon)
+    {
+      this(type, methodName, null, label, icon);
+    }    
+    
     public ContextAction(String type, String methodName, Object[] methodParams, 
-      String label)
+      String label, String icon)
     {
       this.type = type;
       this.methodName = methodName;
       this.methodParams = methodParams;
       this.label = label;
+      this.icon = icon;
     }    
     
     public String getType()
@@ -456,6 +558,16 @@ public class ContextTreeBean implements Serializable
     public void setLabel(String label)
     {
       this.label = label;
+    }
+
+    public String getIcon()
+    {
+      return icon;
+    }
+
+    public void setIcon(String icon)
+    {
+      this.icon = icon;
     }
 
     @Override

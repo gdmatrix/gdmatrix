@@ -181,7 +181,7 @@ body .ui-tabs.context_tabs .ui-tree
   border: 0;
 }
 
-.context_tree .ui-treenode.current > div a,
+.context_tree .ui-treenode.current > div,
 .context_tree .ui-treenode-leaf.current
 {
   font-weight: bold;

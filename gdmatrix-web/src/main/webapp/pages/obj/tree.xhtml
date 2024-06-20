@@ -24,25 +24,21 @@
       <p:ajax event="collapse" />
       
       <p:ajax event="contextMenu"
-              update="@parent:context_tree_menu" />      
+              update="@parent:context_tree_menu" />  
       
-      <p:treeNode icon="#{data.icon}"
-                  styleClass="#{contextTreeBean.isSelectedNode(node) ? 'current' : ''}">
-        <p:commandLink value="#{data.description}"
-                       action="#{contextTreeBean.view(node)}"
-                       rendered="#{contextTreeBean.isCurrentBaseType(node)}"
-                       resetValues="true"
-                       process="@form:cnt:context_panel"
-                       update="@form:cnt:central_column @form:cnt:context_panel"
-                       oncomplete="endPanel('rightPanel');"/>
-        <p:commandLink value="#{data.description}"
-                       action="#{contextTreeBean.show(node)}" 
-                       rendered="#{not contextTreeBean.isCurrentBaseType(node)}"
-                       resetValues="true"
-                       process="@form:cnt:context_panel" 
-                       update="@form:cnt"
-                       oncomplete="endPanel('rightPanel');"/>
+      <p:ajax event="select" listener="#{contextTreeBean.onNodeSelect}" 
+              update="#{contextTreeBean.isCurrentBaseType(node) ? '@form:cnt:central_column @form:cnt:context_panel' : '@form:cnt'}" 
+              oncomplete="endPanel('rightPanel');" />
+      
+      <p:treeNode icon="#{data.icon}" type="GROUP">
+        <h:outputText value="#{data.description}"/>
       </p:treeNode>
+      
+      <p:treeNode icon="#{data.icon}" type="OBJECT"
+                  styleClass="#{contextTreeBean.isEditingNode(data.objectId) ? 'current' : ''}">
+        <h:outputText value="#{data.description}"/>
+      </p:treeNode>
+      
     </p:tree>
     
     <p:contextMenu for="context_tree" id="context_tree_menu" 
@@ -50,7 +46,7 @@
       <c:forEach items="#{contextTreeBean.contextActions}" var="contextAction" >
         <p:menuitem value="#{contextAction.label}" 
                     action="#{contextTreeBean.doContextAction(contextAction)}"
-                    update="@form:cnt">
+                    update="@form:cnt" icon="#{contextAction.icon}">
           <p:confirm disabled="#{contextAction.type != 'REMOVE'}"
                      header="#{objectBundle.confirm_remove_header}" 
                      message="#{objectBundle.confirm_remove_message}"  
