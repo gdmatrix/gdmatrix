@@ -54,7 +54,10 @@ public class ObjectSetup implements Serializable
   private List<SearchTab> searchTabs = new ArrayList<>();
   private List<EditTab> editTabs = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
+  @Deprecated
   private ScriptActions scriptActions = new ScriptActions();
+  private String scriptName;
+  private List<Action> actions = new ArrayList();
   private MergeMode mergeMode = MergeMode.ADD;
   public enum MergeMode 
   {
@@ -152,14 +155,36 @@ public class ObjectSetup implements Serializable
     this.properties = properties;
   }
 
+  @Deprecated
   public ScriptActions getScriptActions()
   {
     return scriptActions;
   }
 
+  @Deprecated
   public void setScriptActions(ScriptActions scriptActions)
   {
     this.scriptActions = scriptActions;
+  }
+
+  public String getScriptName()
+  {
+    return scriptName;
+  }
+
+  public void setScriptName(String scriptName)
+  {
+    this.scriptName = scriptName;
+  }
+
+  public List<Action> getActions()
+  {
+    return actions;
+  }
+
+  public void setActions(List<Action> actions)
+  {
+    this.actions = actions;
   }
 
   public MergeMode getMergeMode()

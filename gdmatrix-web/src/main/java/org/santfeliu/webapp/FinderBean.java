@@ -114,8 +114,9 @@ public abstract class FinderBean extends BaseBean
     try
     {
       if (objectSetup == null) loadObjectSetup();      
-      String actionsScriptName = 
-        (String)objectSetup.getScriptActions().getScriptName();
+      String actionsScriptName = objectSetup.getScriptName();
+      if (actionsScriptName == null) //fallback
+        actionsScriptName = objectSetup.getScriptActions().getScriptName();
       if (actionsScriptName != null)
       {
         ScriptClient actionsClient = new ScriptClient();        
