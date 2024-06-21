@@ -217,9 +217,25 @@ public class DictionaryUtils
           if (!(Collection.class.isAssignableFrom(parameterType))
             && value != null)
           {
-            if (parameterType.equals(value.getClass()))
+            Class valueClass = value.getClass();
+            if (parameterType.isPrimitive())
+            {
+              String paramType = parameterType.getTypeName();
+              if (paramType.equals("byte") && valueClass.equals(Byte.class) ||
+                paramType.equals("short") && valueClass.equals(Short.class) ||
+                paramType.equals("int") && valueClass.equals(Integer.class) ||
+                paramType.equals("long") && valueClass.equals(Long.class) ||
+                paramType.equals("float") && valueClass.equals(Float.class) ||
+                paramType.equals("double") && valueClass.equals(Double.class) ||
+                paramType.equals("char") && valueClass.equals(Character.class)||
+                paramType.equals("boolean") && valueClass.equals(Boolean.class))
+              {
+                docClassMethod.invoke(object, new Object[]{value});
+              }
+            }            
+            else if (parameterType.equals(valueClass))
               docClassMethod.invoke(object, new Object[]{value});
-            else if (List.class.isAssignableFrom(value.getClass()))
+            else if (List.class.isAssignableFrom(valueClass))
               docClassMethod.invoke(object, new Object[]{((List)value).get(0)});
           }
           propertyFound = true;
