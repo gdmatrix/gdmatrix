@@ -49,7 +49,7 @@ class ChartControl
       {
         let sourceMarkers = markers[sourceId];        
         let visible = map.getLayoutProperty(layerId, "visibility") !== "none";
-        if (map.getZoom() < layer.minzoom || map.getZoom() > layer.maxZoom)
+        if (map.getZoom() < layer.minzoom || map.getZoom() > layer.maxzoom)
         {
           visible = false;
         }
@@ -114,7 +114,7 @@ class ChartControl
       switch (chartType)
       {
         case "donut":
-          chart = this.createDonutChart(feature, data,
+          chart = this.createDonutChart(layerSetup, feature, data,
             layerSetup.radius, 
             layerSetup.holeFactor, 
             layerSetup.textSize,
@@ -124,7 +124,8 @@ class ChartControl
             layerSetup.value);
           break;
         case "pie":
-          chart = this.createDonutChart(feature, data, layerSetup.radius, 0);
+          chart = this.createDonutChart(layerSetup, feature, data, 
+            layerSetup.radius, 0);
           break;
       }
       if (chart)
@@ -246,7 +247,7 @@ class ChartControl
     this.div.style.display = visible ? "" : "none";
   }
 
-  createDonutChart(feature, data, r = 32, f = 0.5, 
+  createDonutChart(layerSetup, feature, data, r = 32, f = 0.5, 
     textSize = 11, textColor = "#000000", holeColor = "#ffffff", 
     holeOpacity = 1, value)
   {
@@ -319,7 +320,8 @@ class ChartControl
       let sector = sectors[i];
       let path = sector.getElementsByTagName("path")[1];
       sector.style.cursor = "pointer";
-      sector.addEventListener("click", () => this.showData(feature, data[i].id));
+      sector.addEventListener("click", 
+        () => this.showData(layerSetup, feature, data[i].id));
       sector.addEventListener("mouseover", () => 
       { path.setAttribute("fill", "#000000"); });
       sector.addEventListener("mouseout", () => 
@@ -330,7 +332,7 @@ class ChartControl
     {
       let circle = el.getElementsByTagName("circle")[0];
       circle.style.cursor = "pointer";
-      circle.addEventListener("click", () => this.showData(feature, ""));
+      circle.addEventListener("click", () => this.showData(layerSetup, feature, ""));
 
       circle.addEventListener("mouseover", () => 
       { circle.setAttribute("stroke-width", "2"); });
@@ -339,7 +341,7 @@ class ChartControl
 
       let text = el.getElementsByTagName("text")[0];
       text.style.cursor = "pointer";
-      text.addEventListener("click", () => this.showData(feature, ""));
+      text.addEventListener("click", () => this.showData(layerSetup, feature, ""));
 
       text.addEventListener("mouseover", () => 
       { circle.setAttribute("stroke-width", "2"); });
@@ -392,12 +394,10 @@ class ChartControl
     ].join(' ');
   }
 
-  async showData(feature, id)
+  async showData(layerSetup, feature, id)
   {
     this.panel.show();  
     this.panel.bodyDiv.innerHTML = `<i class="pi pi-spin pi-spinner"></i> ${bundle.get("ChartControl.loading")}...`;
-
-    let layerSetup = this.layers[0]; // TODO
     
     const url = layerSetup.tableDataUrl(this.getParameterValues(), feature, id);
     
