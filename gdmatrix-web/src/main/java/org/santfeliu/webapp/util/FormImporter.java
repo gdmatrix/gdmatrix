@@ -58,6 +58,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.NumberConverter;
 import org.apache.commons.lang.StringUtils;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.component.chips.Chips;
 import org.primefaces.component.datepicker.DatePicker;
 import org.primefaces.component.inputnumber.InputNumber;
@@ -493,6 +494,18 @@ public class FormImporter
           select.setReadonly(field.isReadOnly());
           select.setAutoWidth("false");
           select.setTouchable(true);
+          String onChange = (String)view.getProperty("onchange");
+          if (onChange != null)
+          {
+            onChange = onChange.trim();
+            if ("submit()".equals(onChange) || "submit();".equals(onChange))
+            {
+              AjaxBehavior ajax = new AjaxBehavior();
+              ajax.setProcess("@this");
+              ajax.setUpdate("dyn_form");
+              select.addClientBehavior("itemSelect", ajax);
+            }
+          }
           component = select;
         }
 
