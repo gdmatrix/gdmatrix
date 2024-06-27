@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/workflow/instance.xhtml">
+
+    <ui:define name="form">
+
+      <t:saveState value="#{flexFormBean}" />
+
+      <sf:dynamicForm
+        form="#{flexFormBean.form}"
+        rendererTypes="#{instanceBean.formRenderers}"
+        value="#{flexFormBean.data}"
+        action="#{flexFormBean.buttonPressed}" 
+        translator="#{instanceBean.translationEnabled ? 
+          applicationBean.translator : null}"
+        translationGroup="wf:#{instanceBean.workflowName}" />
+    </ui:define>
+  </ui:composition>
+</html>

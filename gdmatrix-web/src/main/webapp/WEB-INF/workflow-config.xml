@@ -120,6 +120,12 @@
  </managed-bean>
 
  <managed-bean>
+  <managed-bean-name>flexFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.FlexFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
   <managed-bean-name>monitorFormBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.workflow.web.MonitorFormBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
@@ -229,6 +235,11 @@
    <navigation-case>
      <from-outcome>dynamic_form</from-outcome>
      <to-view-id>/common/workflow/dynamic_form.xhtml</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>flex_form</from-outcome>
+     <to-view-id>/common/workflow/flex_form.xhtml</to-view-id>
    </navigation-case>
 
    <navigation-case>
