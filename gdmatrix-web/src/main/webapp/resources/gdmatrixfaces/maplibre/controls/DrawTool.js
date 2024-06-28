@@ -9,7 +9,7 @@ import "../turf.js";
 const bundle = Bundle.getBundle("main");
 
 class DrawTool extends Tool
-{
+{    
   constructor(options)
   {
     super({...{
@@ -23,7 +23,53 @@ class DrawTool extends Tool
       useProxy: true
     };
 
-    this.operation = "edit";
+    this.operations = options?.operations;
+    if (!this.operations)
+    {
+       this.operations = [
+        { 
+          name: "edit", 
+          label: bundle.get("DrawTool.edit"),
+          help: bundle.get("DrawTool.edit.help")
+        },
+        { 
+          name: "move", 
+          label: bundle.get("DrawTool.move"), 
+          help: bundle.get("DrawTool.move.help")
+        },
+        { 
+          name: "rotate", 
+          label: bundle.get("DrawTool.rotate"),
+          help: bundle.get("DrawTool.rotate.help")
+        },
+        { 
+          name: "copy", 
+          label: bundle.get("DrawTool.copy"), 
+          help: bundle.get("DrawTool.copy.help") 
+        },
+        { 
+          name: "addPoint", 
+          label: bundle.get("DrawTool.addPoint"),
+          help: bundle.get("DrawTool.addPoint.help") 
+        },
+        { 
+          name: "addLineString", 
+          label: bundle.get("DrawTool.addLineString"), 
+          help: bundle.get("DrawTool.addLineString.help") 
+        },
+        { 
+          name: "addPolygon", 
+          label: bundle.get("DrawTool.addPolygon"), 
+          help: bundle.get("DrawTool.addPolygon.help") 
+        },
+        { 
+          name: "delete", 
+          label: bundle.get("DrawTool.delete"),
+          help: bundle.get("DrawTool.delete.help")
+        }
+      ];      
+    }
+    this.operationIndex = 0; // index to operations array
     this.layerName = options?.layerName || null;
     this.cqlFilter = null;
     this.layers = options.layers || []; 
@@ -45,7 +91,7 @@ class DrawTool extends Tool
     this.editingVertex = null;
     this.editingRing = null;
     this.moveLastPoint = null;
-    this.rotateLastPoint = null;
+    this.rotateLastLngLat = null;
 
     this.editingLayer = {
       "type": "FeatureCollection",
@@ -280,12 +326,25 @@ class DrawTool extends Tool
     this.panel.show();
   }
 
+  getOperation()
+  {
+    return this.operations[this.operationIndex];
+  }
+  
   onClick(event)
   {
     if (!this.featureInfo) return;
 
-    let operation = this.operation;
-    if (operation.startsWith("add"))
+    let operation = this.getOperation();
+    if (operation.name === "addRectangle")
+    {
+      if (this.featureForm === null)
+      {
+        this.addFeature();
+      }      
+      this.addRectangle(event.lngLat);
+    }
+    else if (operation.name.startsWith("add"))
     {
       if (this.featureForm === null)
       {
@@ -293,7 +352,7 @@ class DrawTool extends Tool
       }
       this.addPoint(event.lngLat);
     }
-    else if (operation === "delete")
+    else if (operation.name === "delete")
     {
       this.deleteFeature(event.point);
     }
@@ -308,7 +367,7 @@ class DrawTool extends Tool
 
   onDoubleClick(event)
   {
-    if (this.operation === "edit" && this.geometryType)
+    if (this.getOperation().name === "edit" && this.geometryType)
     {      
       this.insertOrRemovePoint(event);
     }
@@ -317,11 +376,11 @@ class DrawTool extends Tool
   onPointerDown(event)
   {
     const map = this.map;
-    const operation = this.operation;
+    const operation = this.getOperation();
 
     if (this.geometryType)
     {
-      if (operation === "edit")
+      if (operation.name === "edit")
       {
         if (this.findVertex(event))
         {
@@ -330,7 +389,7 @@ class DrawTool extends Tool
           map.on("touchmove", this._onPointerMove);
         }
       }
-      else if (operation === "move" || operation === "copy")
+      else if (operation.name === "move" || operation.name === "copy")
       {
         if (this.isOnEditingGeometry(event.point))
         {
@@ -340,11 +399,11 @@ class DrawTool extends Tool
           map.on("touchmove", this._onPointerMove);
         }
       }
-      else if (operation === "rotate" && this.geometryType !== "Point")
+      else if (operation.name === "rotate" && this.geometryType !== "Point")
       {
         if (this.isOnEditingGeometry(event.point))
         {
-          this.rotateLastPoint = event.point;
+          this.rotateLastLngLat = [event.lngLat.lng, event.lngLat.lat];
           map.dragPan.disable();
           map.on("mousemove", this._onPointerMove);
           map.on("touchmove", this._onPointerMove);
@@ -369,12 +428,12 @@ class DrawTool extends Tool
   onPointerMove(event)
   {
     const map = this.map;
-    const operation = this.operation;
+    const operation = this.getOperation();
 
     if (event.originalEvent?.touches?.length > 1)
       return;
 
-    if (operation === "edit")
+    if (operation.name === "edit")
     {
       if (this.editingVertex)
       {
@@ -394,7 +453,7 @@ class DrawTool extends Tool
         map.getSource("editing_polygon").setData(this.polygon);
       }
     }
-    else if (operation === "move" || operation === "copy")
+    else if (operation.name === "move" || operation.name === "copy")
     {
       const coordinates = this.coordinates;
       const vx = event.point.x - this.moveLastPoint.x;
@@ -416,14 +475,25 @@ class DrawTool extends Tool
       map.getSource("editing_polygon").setData(this.polygon);
       this.moveLastPoint = event.point;
     }
-    else if (operation === "rotate")
+    else if (operation.name === "rotate")
     {
-      const vx = event.point.x - this.rotateLastPoint.x;
-      const angle = vx;
+      const lngLat = [event.lngLat.lng, event.lngLat.lat];
+      
+      const getAngle = (lngLat1, lngLat2) => {
+        const p1 = turf.toMercator(lngLat1);
+        const p2 = turf.toMercator(lngLat2);
+        const dx = p1[0] - p2[0];
+        const dy = p1[1] - p2[1];
+        return turf.radiansToDegrees(Math.atan2(dy, dx));
+      };
       
       if (this.geometryType === "Polygon")
       {
-        let poly = turf.polygon(this.coordinates);
+        const poly = turf.polygon(this.coordinates);
+        const centroid = turf.centroid(poly);
+        const angle1 = getAngle(this.rotateLastLngLat, centroid.geometry.coordinates);
+        const angle2 = getAngle(lngLat, centroid.geometry.coordinates);
+        const angle = angle1 - angle2;
         let rotatedPoly = turf.transformRotate(poly, angle);
         this.coordinates = rotatedPoly.geometry.coordinates;
         this.lineString.geometry.coordinates = this.coordinates;
@@ -431,14 +501,18 @@ class DrawTool extends Tool
       }
       else if (this.geometryType === "LineString")
       {
-        let poly = turf.multiLineString(this.coordinates);
+        const poly = turf.multiLineString(this.coordinates);
+        const centroid = turf.centroid(poly);
+        const angle1 = getAngle(this.rotateLastLngLat, centroid.geometry.coordinates);
+        const angle2 = getAngle(lngLat, centroid.geometry.coordinates);
+        const angle = angle1 - angle2;
         let rotatedPoly = turf.transformRotate(poly, angle);
         this.coordinates = rotatedPoly.geometry.coordinates;        
         this.lineString.geometry.coordinates = this.coordinates;
       }
       map.getSource("editing_linestring").setData(this.lineString);
       map.getSource("editing_polygon").setData(this.polygon);
-      this.rotateLastPoint = event.point;
+      this.rotateLastLngLat = lngLat;
     }
   }
 
@@ -484,7 +558,6 @@ class DrawTool extends Tool
 
     if (!featureForm) return;
 
-    const operation = this.operation;
     const featureInfo = this.featureInfo;
     const idColumn = featureInfo.idColumn;
     const feature = featureForm.feature;
@@ -494,24 +567,18 @@ class DrawTool extends Tool
     {
       this.featureForm.updateProperties(featureInfo);
 
-      let id;
       let action;
 
-      if (operation.startsWith("add") || operation === "copy")
+      let id = feature.properties[idColumn];
+      if (id === undefined)
       {
-        id = feature.properties[idColumn];
-        if (id === undefined)
-        {
-          id = Math.round(Math.random() * 100000) + 100000;
-          feature.properties[idColumn] = id;
-        }
+        id = Math.round(Math.random() * 100000) + 100000;
+        feature.properties[idColumn] = id;
         feature.geometry = this.createGeometry();
         this.editingLayer.features.push(feature);
         action = "insert";
       }
-      else if (operation === "edit" || 
-               operation === "rotate" ||
-               operation === "move")
+      else
       {
         id = feature.properties[idColumn];
         feature.geometry = this.createGeometry();
@@ -544,49 +611,55 @@ class DrawTool extends Tool
   changeOperation()
   {
     const map = this.map;
-    const operation = this.operation;
-    if (operation === "edit")
+    const operation = this.getOperation();
+    if (operation.name === "edit")
     {
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.edit.help");
+      this.panel.helpDiv.textContent = operation.help;
     }
-    else if (operation === "move")
+    else if (operation.name === "move")
     {
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.move.help");
+      this.panel.helpDiv.textContent = operation.help;
     }
-    else if (operation === "rotate")
+    else if (operation.name === "rotate")
     {
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.rotate.help");
+      this.panel.helpDiv.textContent = operation.help;
     }
-    else if (operation === "copy")
+    else if (operation.name === "copy")
     {
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.copy.help");
+      this.panel.helpDiv.textContent = operation.help;
     }
-    else if (operation === "addPoint")
+    else if (operation.name === "addPoint")
     {
       this.geometryType = "Point";
       this.updateLayerVisibility();
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.addPoint.help");
+      this.panel.helpDiv.textContent = operation.help;
     }
-    else if (operation === "addLineString")
+    else if (operation.name === "addLineString")
     {
       this.geometryType = "LineString";
       this.updateLayerVisibility();
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.addLineString.help");
+      this.panel.helpDiv.textContent = operation.help;
     }
-    else if (operation === "addPolygon")
+    else if (operation.name === "addPolygon")
     {
       this.geometryType = "Polygon";
       this.updateLayerVisibility();
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.addPolygon.help");
+      this.panel.helpDiv.textContent = operation.help;
     }
-    else if (operation === "delete")
+    else if (operation.name === "addRectangle")
     {
-      this.panel.helpDiv.textContent = bundle.get("DrawTool.delete.help");
+      this.geometryType = "Polygon";
+      this.updateLayerVisibility();
+      this.panel.helpDiv.textContent = operation.help;
+    }
+    else if (operation.name === "delete")
+    {
+      this.panel.helpDiv.textContent = operation.help;
     }
     this.panel.undoButton.style.display = "none";
     if (!this.geometryType || 
-        operation.startsWith("add") ||
-        operation === "delete")
+        operation.name.startsWith("add") ||
+        operation.name === "delete")
     {
       this.panel.acceptButton.style.display = "none";
       this.panel.cancelButton.style.display = "none";
@@ -615,10 +688,10 @@ class DrawTool extends Tool
   {
     const map = this.map;
     const geometryType = this.geometryType;
-    const operation = this.operation;
+    const operation = this.getOperation();
 
     map.setPaintProperty("editing_points", "circle-stroke-color",
-      operation === "edit" ? "#800000" : "#000000");
+      operation.name === "edit" ? "#800000" : "#000000");
 
     map.setLayoutProperty("editing_linestring", "visibility",
       geometryType === "Point" ? "hidden" : "visible");
@@ -697,7 +770,8 @@ class DrawTool extends Tool
     else
     {
       feature = this.cloneJson(feature);
-      if (this.operation === "copy")
+      const operation = this.getOperation();
+      if (operation.name === "copy")
       {
         delete feature.properties[this.featureInfo.idColumn];
       }
@@ -808,11 +882,32 @@ class DrawTool extends Tool
     this.updateLayerVisibility();
   }
 
+  addRectangle(lngLat)
+  {
+    const map = this.map;
+    const operation = this.getOperation();
+    const halfWidth = 0.5 * (operation.width || 1);
+    const halfHeight = 0.5 * (operation.height || 1);
+    const point = turf.toMercator([lngLat.lng, lngLat.lat]);
+    this.coordinates[0] = [];
+    const ring = this.coordinates[0];
+
+    const x = point[0];
+    const y = point[1];
+    ring.push(turf.toWgs84([x - halfWidth, y - halfHeight]));
+    ring.push(turf.toWgs84([x + halfWidth, y - halfHeight]));
+    ring.push(turf.toWgs84([x + halfWidth, y + halfHeight]));
+    ring.push(turf.toWgs84([x - halfWidth, y + halfHeight]));
+    ring.push(turf.toWgs84([x - halfWidth, y - halfHeight]));
+
+    map.getSource("editing_polygon").setData(this.polygon);
+    map.getSource("editing_linestring").setData(this.lineString);    
+  }
+
   addPoint(lngLat)
   {
     const map = this.map;
     const ring = this.coordinates[0];
-    const operation = this.operation;
     const geometryType = this.geometryType;
     const point = [lngLat.lng, lngLat.lat];
 
@@ -1375,14 +1470,6 @@ class DrawTool extends Tool
         <div class="field col-12">
           <label for="operation">${bundle.get("DrawTool.operation")}:</label>
           <select id="operation" class="w-full">
-            <option value="edit">${bundle.get("DrawTool.edit")}</option>
-            <option value="move">${bundle.get("DrawTool.move")}</option>
-            <option value="rotate">${bundle.get("DrawTool.rotate")}</option>
-            <option value="copy">${bundle.get("DrawTool.copy")}</option>
-            <option value="addPoint">${bundle.get("DrawTool.addPoint")}</option>
-            <option value="addLineString">${bundle.get("DrawTool.addLineString")}</option>
-            <option value="addPolygon">${bundle.get("DrawTool.addPolygon")}</option>
-            <option value="delete">${bundle.get("DrawTool.delete")}</option>
           </select>
         </div>
         <div class="field col-12 help_message"></div>
@@ -1395,7 +1482,7 @@ class DrawTool extends Tool
         </div>
       </div>
     `;
-        
+
     const layerSelector = bodyDiv.querySelector(".layer_selector");
     if (this.layers.length === 0)
     {
@@ -1424,7 +1511,7 @@ class DrawTool extends Tool
       select.addEventListener("change", (e) => {
         e.preventDefault();
         this.loadSelectedLayer();
-      });
+      });    
     }
 
     const loadButton = bodyDiv.querySelector(".load_features");
@@ -1441,9 +1528,21 @@ class DrawTool extends Tool
     });
 
     const operationSelect = bodyDiv.querySelector("#operation");
+    for (let operation of this.operations)
+    {
+      let option = document.createElement("option");
+      option.value = operation.name;
+      option.textContent = operation.label;
+      operationSelect.appendChild(option);
+    }
+
     operationSelect.addEventListener("change", () => {
-      this.acceptFeature();
-      this.operation = operationSelect.value;
+      this.operationIndex = operationSelect.selectedIndex;
+      const operation = this.getOperation();
+      if (["move", "rotate", "edit"].indexOf(operation.name) === -1)
+      {
+        this.acceptFeature();
+      }
       this.changeOperation();
     });
 
