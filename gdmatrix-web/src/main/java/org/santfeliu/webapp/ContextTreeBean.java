@@ -46,6 +46,7 @@ import org.primefaces.model.TreeNode;
 import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -325,7 +326,7 @@ public class ContextTreeBean implements Serializable
     public ObjectTreeNode(ObjectData data)
     {
       super(data);
-      if (data.getObjectId() == null)
+      if (data.getTypeId() == null)
         setType(GROUP_TYPE);
       else
         setType(OBJECT_TYPE);
@@ -412,7 +413,7 @@ public class ContextTreeBean implements Serializable
     
     public ObjectData()
     {
-      this(null, null);
+      this(null, NEW_OBJECT_ID);
     }
     
     public ObjectData(String typeId, String objectId)
@@ -443,13 +444,17 @@ public class ContextTreeBean implements Serializable
       else
       {
         NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-        BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(typeId);
-        if (baseTypeInfo == null)
+        if (typeId != null)
         {
-          return typeId + "@" + objectId;
+          BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(typeId);
+          if (baseTypeInfo == null)
+            return typeId + "@" + objectId;
+        
+          TypeBean typeBean = TypeBean.getInstance(baseTypeInfo.getBaseTypeId());
+          return typeBean.getDescription(objectId);
         }
-        TypeBean typeBean = TypeBean.getInstance(baseTypeInfo.getBaseTypeId());
-        return typeBean.getDescription(objectId);
+        else
+          return objectId;
       }
     }
 
@@ -465,19 +470,25 @@ public class ContextTreeBean implements Serializable
       else
       {
         NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-        BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(typeId);
-        if (baseTypeInfo == null)
+        if (typeId != null)
         {
-          return "pi pi-folder";
+          BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(typeId);
+          if (baseTypeInfo != null)
+            return baseTypeInfo.getIcon();
         }
-        return baseTypeInfo.getIcon();
+        return "pi pi-folder";
       }
     }
 
     @Override
     public String toString()
     {
-      return typeId + "@" + objectId;
+      if (typeId != null)
+        return typeId + "@" + objectId;
+      else if (description != null)
+        return description;
+      else
+        return objectId;
     }
   }
   
