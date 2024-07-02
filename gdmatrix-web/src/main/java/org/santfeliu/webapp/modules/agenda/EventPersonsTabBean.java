@@ -434,6 +434,15 @@ public class EventPersonsTabBean extends TabBean
     }
   }
 
+  @Override
+  protected String getCreationTypeId()
+  {
+    if (getTabBaseTypeId() == null)    
+      return "Attendant";    
+    else 
+      return super.getCreationTypeId();
+  }
+  
   private boolean isNew(Attendant attendant)
   {
     return (attendant != null && attendant.getAttendantId() == null);
