@@ -95,8 +95,10 @@
                      styleClass="customProperties">
           <p:dataViewListItem>
             <div class="row flex">
-              <div class="cell col-2 #{row.styleClass}">#{customProperty.name}</div>
-              <div class="cell col-10 #{row.styleClass}">#{customProperty.value[0]}</div>
+              <div class="cell propName #{row.styleClass}">#{customProperty.name}</div>
+              <div class="cell propValue #{row.styleClass}">
+                <h:outputText value="#{customProperty.value[0]}" escape="false"/>
+              </div>
             </div>
           </p:dataViewListItem>            
         </p:dataView>

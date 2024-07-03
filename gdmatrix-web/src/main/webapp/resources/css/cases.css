@@ -22,4 +22,17 @@
 .customProperties .cell
 {
   font-size: 10px;
+  padding: 0.5rem;
+  word-break: break-word;
+}
+
+.customProperties .cell.propName
+{
+  width: 10%;
+  min-width: 100px;
+}
+
+.customProperties .cell.propValue
+{
+  width: 90%;
 }
