@@ -17,6 +17,7 @@ class TimeSliderControl
       convertDate: function(date, isEndDate), returns the string value to set in the filter.
       enableForLayers: array of layer ids that enable this control when they are visible.
       firstDayOfWeek: number(0-6), first day of the week.
+      sourceUrls: { sourceId: (startDate, endDate) => url, ... } url function for each geojson source (optional).
    */
   constructor(options)
   {
@@ -327,16 +328,28 @@ class TimeSliderControl
     console.info("start: " + startDateString, "end: " + endDateString);
 
     let sources = map.getStyle().sources;
-    for(let sourceId in sources)
+    for (let sourceId in sources)
     {
       let source = sources[sourceId];
-      if (source.type === "geojson" && source.filter)
+      if (source.type === "geojson")
       {
-        source = map.getSource(sourceId);
-        let filter = source.workerOptions.filter;
-        if (this.updateFilter(filter, startDateString, endDateString))
+        const sourceUrls = this.options.sourceUrls || {};
+        let sourceUrl = sourceUrls[sourceId];
+        if (typeof sourceUrl === "function")
         {
+          source = map.getSource(sourceId);
+          let url = sourceUrl(startDateString, endDateString);
+          source.setData(url);
           source.updateData();
+        }
+        else if (source.filter)
+        {
+          source = map.getSource(sourceId);
+          let filter = source.workerOptions.filter;
+          if (this.updateFilter(filter, startDateString, endDateString))
+          {
+            source.updateData();
+          }
         }
       }
     }
