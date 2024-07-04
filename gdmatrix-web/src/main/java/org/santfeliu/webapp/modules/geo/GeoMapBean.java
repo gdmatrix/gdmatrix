@@ -328,6 +328,21 @@ public class GeoMapBean extends WebBean implements Serializable
     }
   }
 
+  public String getHorizonColor()
+  {
+    Sky sky = getStyle().getSky();
+    return sky == null ? null : sky.getHorizonColor();
+  }
+
+  public void setHorizonColor(String color)
+  {
+    Sky sky = getStyle().getSky();
+    if (sky != null)
+    {
+      sky.setHorizonColor(color);
+    }
+  }
+
   public String getFogColor()
   {
     Sky sky = getStyle().getSky();

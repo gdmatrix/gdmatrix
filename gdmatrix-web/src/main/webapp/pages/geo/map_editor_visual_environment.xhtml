@@ -8,22 +8,22 @@
                 xmlns:sf="http://faces.santfeliu.org">
 
   <!-- Terrain -->
-  
-  <p:selectBooleanCheckbox id="terrain_enable" 
+
+  <p:selectBooleanCheckbox id="terrain_enable"
                            value="#{geoMapBean.terrainEnabled}"
                            itemLabel="Enable terrain" styleClass="mb-3">
     <p:ajax update="terrain" listener="#{geoMapBean.onEnableTerrain()}" />
   </p:selectBooleanCheckbox>
-  
+
   <h:panelGroup id="terrain" class="ui-fluid formgrid grid" layout="block">
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Source (raster-dem)" />
       <p:selectOneMenu id="terrain_source"
-                       value="#{geoMapBean.style.terrain.source}" 
+                       value="#{geoMapBean.style.terrain.source}"
                        disabled="#{not geoMapBean.terrainEnabled}">
         <f:selectItem itemValue="" itemLabel="" />
-        <f:selectItems value="#{geoMapSourcesBean.terrainSourceIds}" var="sourceName" 
+        <f:selectItems value="#{geoMapSourcesBean.terrainSourceIds}" var="sourceName"
                        itemValue="#{sourceName}" itemLabel="#{sourceName} (#{geoMapBean.style.sources[sourceName].type})" />
       </p:selectOneMenu>
     </div>
@@ -31,26 +31,26 @@
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Exaggeration" />
       <p:spinner id="terrain_exaggeration"
-                 value="#{geoMapBean.style.terrain.exaggeration}" 
+                 value="#{geoMapBean.style.terrain.exaggeration}"
                  min="0" stepFactor="0.5"
                  disabled="#{not geoMapBean.terrainEnabled}" />
     </div>
 
   </h:panelGroup>
-  
+
   <!-- Light -->
-  
+
   <p:selectBooleanCheckbox id="light_enable"
                            value="#{geoMapBean.lightEnabled}"
                            itemLabel="Enable light" styleClass="mt-3 mb-3">
     <p:ajax update="light" listener="#{geoMapBean.onEnableLight()}" />
   </p:selectBooleanCheckbox>
-  
+
   <h:panelGroup id="light" class="ui-fluid formgrid grid" layout="block">
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Anchor" />
-      <p:selectOneMenu id="light_anchor" 
+      <p:selectOneMenu id="light_anchor"
                        value="#{geoMapBean.style.light.anchor}"
                        disabled="#{not geoMapBean.lightEnabled}">
         <f:selectItem itemValue="map" itemLabel="map" />
@@ -63,27 +63,27 @@
       <div class="ui-inputgroup flex-grow-1">
         <input type="color" value="#{geoMapBean.lightColor}" class="br-1"
                oninput="this.nextElementSibling.value = this.value;" />
-        <p:inputText value="#{geoMapBean.lightColor}" 
+        <p:inputText value="#{geoMapBean.lightColor}"
                      disabled="#{not geoMapBean.lightEnabled}" />
       </div>
     </div>
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Intensity" />
-      <p:spinner id="light_intensity" 
-                 value="#{geoMapBean.style.light.intensity}" 
+      <p:spinner id="light_intensity"
+                 value="#{geoMapBean.style.light.intensity}"
                  min="0" max="1" stepFactor="0.01"
                  disabled="#{not geoMapBean.lightEnabled}" />
       <!--
-      <p:slider id="light_slider" 
-                for="@previous" minValue="0" maxValue="1" step="0.01" 
+      <p:slider id="light_slider"
+                for="@previous" minValue="0" maxValue="1" step="0.01"
                 styleClass="mt-2"
                 disabled="#{not geoMapBean.lightEnabled}" />
       -->
     </div>
 
   </h:panelGroup>
-  
+
   <!-- Sky -->
 
   <p:selectBooleanCheckbox id="sky_enable"
@@ -91,57 +91,75 @@
                            itemLabel="Enable sky" styleClass="mt-3 mb-3">
     <p:ajax update="sky" listener="#{geoMapBean.onEnableSky()}" />
   </p:selectBooleanCheckbox>
-  
-  <h:panelGroup id="sky" class="ui-fluid formgrid grid" layout="block">
 
-    <div class="field col-12 md:col-3">
-      <p:outputLabel for="@next" value="Sky Color" />
-      <div class="ui-inputgroup flex-grow-1">
-        <input type="color" value="#{geoMapBean.skyColor}" class="br-1"
-               oninput="this.nextElementSibling.value = this.value;" />
-        <p:inputText value="#{geoMapBean.skyColor}" 
-                     disabled="#{not geoMapBean.skyEnabled}" />
-      </div>
-    </div>
-    
-    <div class="field col-12 md:col-3">
-      <p:outputLabel for="@next" value="Fog Color" />
-      <div class="ui-inputgroup flex-grow-1">
-        <input type="color" value="#{geoMapBean.fogColor}" class="br-1"
-               oninput="this.nextElementSibling.value = this.value;" />
-        <p:inputText value="#{geoMapBean.fogColor}" 
-                     disabled="#{not geoMapBean.skyEnabled}" />
+  <h:panelGroup id="sky" layout="block">
+
+    <div class="ui-fluid formgrid grid">
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="Sky Color" />
+        <div class="ui-inputgroup flex-grow-1">
+          <input type="color" value="#{geoMapBean.skyColor}" class="br-1"
+                 oninput="this.nextElementSibling.value = this.value;" />
+          <p:inputText value="#{geoMapBean.skyColor}"
+                       disabled="#{not geoMapBean.skyEnabled}" />
+        </div>
       </div>
     </div>
 
-    <div class="field col-12 md:col-3">
-      <p:outputLabel for="@next" value="Horizon blend" />
-      <p:spinner id="horizontal_blend" 
-                 value="#{geoMapBean.style.sky.horizonBlend}"
-                 min="0" max="1" stepFactor="0.01"
-                 disabled="#{not geoMapBean.skyEnabled}" />
-      <!--
-      <p:slider id="blend_slider" for="@previous" 
-                minValue="0" maxValue="1" step="0.01" 
-                styleClass="mt-2"
-                disabled="#{not geoMapBean.skyEnabled}" />
-      -->
+    <div class="ui-fluid formgrid grid">
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="Sky - Horizon blend" />
+        <p:spinner id="sky_horizontal_blend"
+                   value="#{geoMapBean.style.sky.skyHorizonBlend}"
+                   min="0" max="1" stepFactor="0.01"
+                   disabled="#{not geoMapBean.skyEnabled}" />
+      </div>
     </div>
 
-    <div class="field col-12 md:col-3">
-      <p:outputLabel for="@next" value="Fog blend" />
-      <p:spinner id="fog_blend" 
-                 value="#{geoMapBean.style.sky.fogBlend}"
-                 min="0" max="1" stepFactor="0.01"
-                 disabled="#{not geoMapBean.skyEnabled}" />
-      <!--
-      <p:slider id="fog_slider" for="@previous" 
-                minValue="0" maxValue="1" step="0.01" 
-                styleClass="mt-2"
-                disabled="#{not geoMapBean.skyEnabled}" />
-      -->
+    <div class="ui-fluid formgrid grid">
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="Horizon Color" />
+        <div class="ui-inputgroup flex-grow-1">
+          <input type="color" value="#{geoMapBean.horizonColor}" class="br-1"
+                 oninput="this.nextElementSibling.value = this.value;" />
+          <p:inputText value="#{geoMapBean.horizonColor}"
+                       disabled="#{not geoMapBean.skyEnabled}" />
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-fluid formgrid grid">
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="Horizon - fog blend" />
+        <p:spinner id="horizontal_fog_blend"
+                   value="#{geoMapBean.style.sky.horizonFogBlend}"
+                   min="0" max="1" stepFactor="0.01"
+                   disabled="#{not geoMapBean.skyEnabled}" />
+      </div>
+    </div>
+
+    <div class="ui-fluid formgrid grid">
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="Fog Color" />
+        <div class="ui-inputgroup flex-grow-1">
+          <input type="color" value="#{geoMapBean.fogColor}" class="br-1"
+                 oninput="this.nextElementSibling.value = this.value;" />
+          <p:inputText value="#{geoMapBean.fogColor}"
+                       disabled="#{not geoMapBean.skyEnabled}" />
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-fluid formgrid grid">
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="Fog - ground blend" />
+        <p:spinner id="fog_ground_blend"
+                   value="#{geoMapBean.style.sky.fogGroundBlend}"
+                   min="0" max="1" stepFactor="0.01"
+                   disabled="#{not geoMapBean.skyEnabled}" />
+      </div>
     </div>
 
   </h:panelGroup>
-  
+
 </ui:composition>

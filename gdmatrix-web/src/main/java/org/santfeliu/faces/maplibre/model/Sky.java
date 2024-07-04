@@ -43,14 +43,20 @@ public class Sky implements Serializable
   @SerializedName("sky-color")
   String skyColor;
 
+  @SerializedName("sky-horizon-blend")
+  Double skyHorizonBlend;
+
+  @SerializedName("horizon-color")
+  String horizonColor;
+
+  @SerializedName("horizon-fog-blend")
+  Double horizonFogBlend;
+
   @SerializedName("fog-color")
   String fogColor;
 
-  @SerializedName("horizon-blend")
-  Double horizonBlend;
-
-  @SerializedName("fog-blend")
-  Double fogBlend;
+  @SerializedName("fog-ground-blend")
+  Double fogGroundBlend;
 
   public String getSkyColor()
   {
@@ -60,6 +66,16 @@ public class Sky implements Serializable
   public void setSkyColor(String skyColor)
   {
     this.skyColor = isBlank(skyColor) ? null : skyColor;
+  }
+
+  public String getHorizonColor()
+  {
+    return horizonColor;
+  }
+
+  public void setHorizonColor(String horizonColor)
+  {
+    this.horizonColor = isBlank(horizonColor) ? null : horizonColor;
   }
 
   public String getFogColor()
@@ -72,23 +88,33 @@ public class Sky implements Serializable
     this.fogColor = isBlank(fogColor) ? null : fogColor;
   }
 
-  public Double getHorizonBlend()
+  public Double getSkyHorizonBlend()
   {
-    return horizonBlend;
+    return skyHorizonBlend;
   }
 
-  public void setHorizonBlend(Double horizonBlend)
+  public void setSkyHorizonBlend(Double skyHorizonBlend)
   {
-    this.horizonBlend = horizonBlend;
+    this.skyHorizonBlend = skyHorizonBlend;
   }
 
-  public Double getFogBlend()
+  public Double getHorizonFogBlend()
   {
-    return fogBlend;
+    return horizonFogBlend;
   }
 
-  public void setFogBlend(Double fogBlend)
+  public void setHorizonFogBlend(Double horizonFogBlend)
   {
-    this.fogBlend = fogBlend;
+    this.horizonFogBlend = horizonFogBlend;
+  }
+
+  public Double getFogGroundBlend()
+  {
+    return fogGroundBlend;
+  }
+
+  public void setFogGroundBlend(Double fogGroundBlend)
+  {
+    this.fogGroundBlend = fogGroundBlend;
   }
 }
