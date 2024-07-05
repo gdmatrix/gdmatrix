@@ -54,6 +54,7 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
@@ -80,13 +81,45 @@ public class CaseCasesTabBean extends TabBean
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private GroupableRowsHelper groupableRowsHelper;  
-
+  
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseCasesDataTableRow> rows;
     int firstRow = 0;
     boolean relatedByPerson = false;
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    {
+      @Override
+      public List<? extends DataTableRow> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return CaseCasesTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getTabBaseTypeId()
+      {
+        return CaseCasesTabBean.this.getTabBaseTypeId();        
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }      
+    };
+    
+    public TypeSelectHelper getTypeSelectHelper()
+    {
+      return typeSelectHelper;
+    }    
   }
 
   private CaseCase editing;
@@ -134,7 +167,7 @@ public class CaseCasesTabBean extends TabBean
       {
         return null; //No fixed columns
       }      
-    };    
+    };
   }  
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -146,7 +179,7 @@ public class CaseCasesTabBean extends TabBean
   {
     this.groupableRowsHelper = groupableRowsHelper;
   }  
-  
+
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
@@ -164,6 +197,11 @@ public class CaseCasesTabBean extends TabBean
       return EMPTY_TAB_INSTANCE;
   }
 
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  }  
+  
   @Override
   public String getObjectId()
   {
@@ -362,6 +400,7 @@ public class CaseCasesTabBean extends TabBean
             getCurrentTabInstance().rows =
               getResultsByDefault(typeId);
           }
+          getCurrentTabInstance().typeSelectHelper.load();          
         }
       }
       catch (Exception ex)
@@ -374,6 +413,7 @@ public class CaseCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
+      getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
     }
     executeTabAction("postTabLoad", null);     
@@ -458,7 +498,7 @@ public class CaseCasesTabBean extends TabBean
       error(ex);
     }
   }
-
+    
   public void addRowCustomProperty(DataTableRow row, String name, String value)
   {
     Property auxProperty = new Property();

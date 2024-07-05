@@ -13,7 +13,8 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="case_interventions_table" value="#{caseInterventionsTabBean.rows}"
+    <p:dataTable id="case_interventions_table" 
+                 value="#{caseInterventionsTabBean.tabInstances[tab.subviewId].typeSelectHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom"
@@ -25,6 +26,20 @@
                  rowKey="#{row.rowId}" expandedRow="true">
       <f:facet name="header">
         <div class="flex justify-content-end w-12"> 
+          <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
+                         rendered="#{caseInterventionsTabBean.tabInstances[tab.subviewId].typeSelectHelper.renderCurrentTypeSelector}">
+            <p:outputLabel value="#{caseBundle.caseInterventions_type}:"
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{caseInterventionsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeId}" touchable="true">
+              <f:selectItem itemLabel="" itemValue="" />
+              <f:selectItems value="#{caseInterventionsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeSelectItems}" />
+              <p:ajax event="valueChange" 
+                      listener="#{caseInterventionsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeChanged}"
+                      process="@this"
+                      update="case_interventions_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>          
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseInterventionsTabBean.groupableRowsHelper.switchView}"
                            process="case_interventions_table"

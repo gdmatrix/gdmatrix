@@ -48,6 +48,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.agenda.EventTypeBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.Column;
@@ -68,13 +69,45 @@ public class CaseEventsTabBean extends TabBean
   Map<String, TabInstance> tabInstances = new HashMap();
   private String formSelector;
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper; 
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseEventsDataTableRow> rows;
     int firstRow = 0;
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    {
+      @Override
+      public List<? extends DataTableRow> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return CaseEventsTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getTabBaseTypeId()
+      {
+        return CaseEventsTabBean.this.getTabBaseTypeId();        
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }      
+    };
+    
+    public TypeSelectHelper getTypeSelectHelper()
+    {
+      return typeSelectHelper;
+    }    
   }
 
   @Inject
@@ -122,7 +155,7 @@ public class CaseEventsTabBean extends TabBean
       {
         return null; //No fixed columns
       }      
-    };    
+    };
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -134,7 +167,7 @@ public class CaseEventsTabBean extends TabBean
   {
     this.groupableRowsHelper = groupableRowsHelper;
   }  
-  
+
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
@@ -152,6 +185,11 @@ public class CaseEventsTabBean extends TabBean
       return EMPTY_TAB_INSTANCE;
   }
 
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  }  
+  
   @Override
   public String getObjectId()
   {
@@ -302,6 +340,7 @@ public class CaseEventsTabBean extends TabBean
         Collections.sort(auxList, 
           new DataTableRowComparator(getColumns(), getOrderBy()));
         setRows(auxList);
+        getCurrentTabInstance().typeSelectHelper.load();        
       }
       catch (Exception ex)
       {
@@ -313,6 +352,7 @@ public class CaseEventsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
+      getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
     }
     executeTabAction("postTabLoad", null);     

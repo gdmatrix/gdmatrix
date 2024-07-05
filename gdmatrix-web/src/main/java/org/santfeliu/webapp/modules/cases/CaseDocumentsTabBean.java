@@ -61,6 +61,7 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
@@ -88,7 +89,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private final List<SelectItem> volumeSelectItems = new ArrayList<>();
-  private GroupableRowsHelper groupableRowsHelper;
+  private GroupableRowsHelper groupableRowsHelper;  
   private DefaultMatrixClientModel clientModel;
 
   public class TabInstance
@@ -97,6 +98,38 @@ public class CaseDocumentsTabBean extends TabBean
     List<CaseDocumentsDataTableRow> rows;
     int firstRow = 0;
     String currentVolume;
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    {
+      @Override
+      public List<? extends DataTableRow> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return CaseDocumentsTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getTabBaseTypeId()
+      {
+        return CaseDocumentsTabBean.this.getTabBaseTypeId();        
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }      
+    };
+    
+    public TypeSelectHelper getTypeSelectHelper()
+    {
+      return typeSelectHelper;
+    }    
   }
 
   @Inject
@@ -180,6 +213,11 @@ public class CaseDocumentsTabBean extends TabBean
       return EMPTY_TAB_INSTANCE;
   }
 
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  }  
+  
   @Override
   public String getObjectId()
   {
@@ -191,7 +229,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     getCurrentTabInstance().objectId = objectId;
   }
-
+  
   @Override
   public boolean isNew()
   {
@@ -391,6 +429,7 @@ public class CaseDocumentsTabBean extends TabBean
         Collections.sort(auxList2,
           new DataTableRowComparator(getColumns(), getOrderBy()));
         setRows(auxList2);
+        getCurrentTabInstance().typeSelectHelper.load();        
       }
       catch (Exception ex)
       {
@@ -402,6 +441,7 @@ public class CaseDocumentsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
+      getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
     }
     executeTabAction("postTabLoad", null);
@@ -577,7 +617,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     this.caseDocumentToRemove = null;
   }
-
+  
   public void addRowCustomProperty(DataTableRow row, String name, String value)
   {
     Property auxProperty = new Property();

@@ -58,6 +58,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.AddressTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
@@ -81,13 +82,45 @@ public class CaseAddressesTabBean extends TabBean
   Map<String, TabInstance> tabInstances = new HashMap();
   private boolean importPersons;
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper;
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseAddressesDataTableRow> rows;
     int firstRow = 0;
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    {
+      @Override
+      public List<? extends DataTableRow> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return CaseAddressesTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getTabBaseTypeId()
+      {
+        return CaseAddressesTabBean.this.getTabBaseTypeId();        
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }
+    };
+    
+    public TypeSelectHelper getTypeSelectHelper()
+    {
+      return typeSelectHelper;
+    }    
   }
 
   @Inject
@@ -164,6 +197,11 @@ public class CaseAddressesTabBean extends TabBean
     else
       return EMPTY_TAB_INSTANCE;
   }
+  
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  }  
 
   @Override
   public String getObjectId()
@@ -247,11 +285,6 @@ public class CaseAddressesTabBean extends TabBean
       return addressTypeBean.getDescription(editing.getAddressId());
     }
     return "";
-  }
-
-  public Map<String, TabInstance> getTabInstances()
-  {
-    return tabInstances;
   }
 
   public List<String> getOrderBy()
@@ -342,6 +375,7 @@ public class CaseAddressesTabBean extends TabBean
         Collections.sort(auxList2, 
           new DataTableRowComparator(getColumns(), getOrderBy()));
         setRows(auxList2);
+        getCurrentTabInstance().typeSelectHelper.load();        
       }
       catch (Exception ex)
       {
@@ -353,6 +387,7 @@ public class CaseAddressesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
+      getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
     }
     executeTabAction("postTabLoad", null);    
@@ -424,7 +459,7 @@ public class CaseAddressesTabBean extends TabBean
   {
     return (editing != null);
   }  
-  
+ 
   public void addRowCustomProperty(DataTableRow row, String name, String value)
   {
     Property auxProperty = new Property();

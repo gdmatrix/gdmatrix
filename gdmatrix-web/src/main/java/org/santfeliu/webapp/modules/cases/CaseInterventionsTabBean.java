@@ -49,6 +49,7 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRow.Value;
@@ -70,13 +71,45 @@ public class CaseInterventionsTabBean extends TabBean
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper;
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseInterventionsDataTableRow> rows;
     int firstRow = 0;
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    {
+      @Override
+      public List<? extends DataTableRow> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return CaseInterventionsTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getTabBaseTypeId()
+      {
+        return CaseInterventionsTabBean.this.getTabBaseTypeId();        
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }      
+    };
+    
+    public TypeSelectHelper getTypeSelectHelper()
+    {
+      return typeSelectHelper;
+    }    
   }
 
   private Intervention editing;
@@ -121,7 +154,7 @@ public class CaseInterventionsTabBean extends TabBean
       {
         return null; //No fixed columns
       }
-    };    
+    };
   }  
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -133,7 +166,7 @@ public class CaseInterventionsTabBean extends TabBean
   {
     this.groupableRowsHelper = groupableRowsHelper;
   }
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -157,6 +190,11 @@ public class CaseInterventionsTabBean extends TabBean
       return EMPTY_TAB_INSTANCE;
   }
 
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  }  
+  
   @Override
   public String getObjectId()
   {
@@ -363,6 +401,7 @@ public class CaseInterventionsTabBean extends TabBean
         Collections.sort(auxList, 
           new DataTableRowComparator(getColumns(), getOrderBy()));
         setRows(auxList);
+        getCurrentTabInstance().typeSelectHelper.load();        
       }
       catch (Exception ex)
       {
@@ -374,6 +413,7 @@ public class CaseInterventionsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
+      getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
     }
     executeTabAction("postTabLoad", null);     
@@ -421,7 +461,7 @@ public class CaseInterventionsTabBean extends TabBean
   {
     editing = null;
   }
-
+  
   @Override
   public boolean isDialogVisible()
   {
