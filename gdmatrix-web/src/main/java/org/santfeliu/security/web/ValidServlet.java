@@ -80,6 +80,7 @@ public class ValidServlet extends HttpServlet
   public final static String ACCESS_TOKEN_ATTRIBUTE = "validAccessToken";
 
   public final static String URLPARAM_CODE = "code";
+  public final static String URLPARAM_SIGNATURE_CODE = "signatureCode";
   public final static String URLPARAM_ERROR = "error";
 	public final static String URLPARAM_STATE = "state";
   public final static String URLPARAM_ERROR_CANCELLED = "SESSION_CANCEL";
@@ -192,7 +193,12 @@ public class ValidServlet extends HttpServlet
       }
       else if (SIGN_ACTION.equals(validAction))
       {
-        String signatureCode = request.getParameter(URLPARAM_CODE);
+        String signatureCode = request.getParameter(URLPARAM_SIGNATURE_CODE);
+        if (signatureCode == null)
+        {
+          signatureCode = request.getParameter(URLPARAM_CODE); // VALID1
+        }
+
         if (signatureCode == null) throw new Exception("Missing CODE");
 
         // Signature

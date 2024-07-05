@@ -494,7 +494,7 @@
   <!-- END MatrixConfigCertificateStore configuration -->
   <context-param>
     <param-name>valid.baseUrl</param-name>
-    <param-value>https://identitats.aoc.cat</param-value>
+    <param-value>https://valid.aoc.cat</param-value>
   </context-param>
   <context-param>
     <param-name>valid.clientId</param-name>

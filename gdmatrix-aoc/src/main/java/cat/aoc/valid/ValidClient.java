@@ -18,7 +18,7 @@ import org.json.simple.parser.JSONParser;
  */
 public class ValidClient
 {
-  private String baseUrl = "https://identitats.aoc.cat";
+  private String baseUrl = "https://valid.aoc.cat";
   private String clientId;
   private String clientSecret;
   private String redirectUrl;

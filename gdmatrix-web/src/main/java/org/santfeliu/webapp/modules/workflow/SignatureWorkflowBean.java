@@ -328,7 +328,11 @@ public class SignatureWorkflowBean extends WorkflowBean
         WorkflowInstanceListBean.INSTANCEID_PARAM + "=" + instanceId + "&" +
         WorkflowInstanceListBean.ACCESS_TOKEN_PARAM + "=" + wfAccessToken;
 
-      String signatureCode = (String)initResult.get("signature_code");
+      String signatureCode = (String)initResult.get("signatureCode"); // VALID2
+      if (signatureCode == null)
+      {
+        signatureCode = (String)initResult.get("signature_code"); // VALID1
+      }
       System.out.println("\n\nVALID signform>>> SignatureCode: " + signatureCode);
       userSessionBean.setAttribute(ACTION_ATTRIBUTE, SIGN_ACTION);
       userSessionBean.setAttribute(SIGID_ATTRIBUTE, sigId);
