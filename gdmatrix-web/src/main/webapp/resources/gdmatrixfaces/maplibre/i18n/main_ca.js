@@ -87,6 +87,7 @@ Bundle.getBundle("main").setTranslations("ca", {
   "SimulateRouteControl.view.navigation" : "Navegació",  
   "SimulateRouteControl.start" : "Inicia ruta",
   "SimulateRouteControl.pause" : "Pausa ruta",
+  "SimulateRouteControl.showProfile" : "Mostra perfil",
 
   "ChartControl.loading" : "Carregant",  
   "ChartControl.noData" : "No hi ha dades.",

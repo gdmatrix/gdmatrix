@@ -23,7 +23,7 @@ class Panel
   {
     return this.panelDiv.style.display !== "none";
   }
-
+  
   show()
   {
     if (!this.isVisible())
@@ -53,6 +53,10 @@ class Panel
   }
   
   onHide()
+  {    
+  }
+
+  onResize()
   {    
   }
 

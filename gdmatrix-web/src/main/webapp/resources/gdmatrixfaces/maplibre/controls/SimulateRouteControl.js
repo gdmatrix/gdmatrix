@@ -1,5 +1,6 @@
 /** SimulateRouteControl.js **/
 
+import { Panel } from "../ui/Panel.js";
 import { Bundle } from "../i18n/Bundle.js";
 import "../turf.js";
 
@@ -102,6 +103,28 @@ class SimulateRouteControl
     this.pauseButton = div.querySelector("#pause_button");
     this.routeRange = div.querySelector("#route_range");
     this.routeViewElement = div.querySelector("#route_view");
+    
+    if (this.map.getTerrain())
+    {
+      const profileDiv = document.createElement("div");
+      profileDiv.className = "flex mt-2";
+      profileDiv.innerHTML = `
+        <input id="show_profile" type="checkbox" />
+        <label for="show_profile">${bundle.get("SimulateRouteControl.showProfile")}</label>
+      `;
+      this.routeRange.parentElement.appendChild(profileDiv);
+      this.profileCheckbox = profileDiv.querySelector("#show_profile");
+      this.profileCheckbox.addEventListener("change", () => {
+        if (this.profileCheckbox.checked)
+        {
+          this.profilePanel.show();
+        }
+        else
+        {
+          this.profilePanel.hide();          
+        }        
+      });
+    }
 
     if (this.routeViews.length === 0) this.routeViews = ["manual"];
 
@@ -128,10 +151,158 @@ class SimulateRouteControl
       this.centerToPosition();
     });
 
-
     div.addEventListener("contextmenu", (e) => e.preventDefault());
     div.style.display = "none";
     return div;
+  }
+  
+  createProfilePanel(map)
+  {
+    this.profilePanel = new Panel(map, this.options);
+
+    this.profilePanel.onShow = () => this.renderProfile();    
+    this.profilePanel.onHide = () => 
+    {
+      this.profileCheckbox.checked = false;
+    };
+    this.profilePanel.onResize = () =>
+    {
+      this.renderProfile();
+    };
+  }
+
+  renderProfile()
+  {
+    const map = this.map;
+
+    if (!map.getTerrain() || !this.profileCheckbox.checked) return;
+
+    const cssWidth = this.profilePanel.bodyDiv.clientWidth - 10;
+    const cssHeight = 150;
+    
+    const pixelRatio = window.devicePixelRatio || 1;
+    const width = cssWidth * pixelRatio;
+    const height = cssHeight * pixelRatio;
+    
+    this.profilePanel.bodyDiv.innerHTML = `
+       <canvas id="profile_canvas" width="${width}" height="${height}" style="border:1px solid gray;width:${cssWidth}px;height:${cssHeight}px"></canvas>
+    `;
+
+    if (this.turfLine === null) return;
+    
+    const canvas = this.profilePanel.bodyDiv.querySelector("#profile_canvas");
+        
+    let elevations = [];
+    let minElevation = 1000000;
+    let maxElevation = -1000000;
+    let step = 4 * pixelRatio;
+    const marginLeft = 40 * pixelRatio;
+    const marginTop = 10 * pixelRatio;
+    const marginBottom = 10 * pixelRatio;
+    const pointRadius = 5 * pixelRatio;
+    const borderSize = 2 * pixelRatio;
+    const lineWidth = 2 * pixelRatio;
+    const profileWidth = width - marginLeft;
+    const kmPerPixel = this.routeLength / profileWidth;
+    const pixelsPerKm = 1 / kmPerPixel;
+        
+    for (let i = 0; i < profileWidth + step; i += step)
+    {
+      if (i > profileWidth) i = profileWidth; 
+      
+      const distKm = i * kmPerPixel;
+      const coords = turf.along(this.turfLine, distKm,
+        { units: "kilometers"}).geometry.coordinates;
+      const elevation = map.queryTerrainElevation(coords) + map.transform.elevation;
+      
+      elevations.push(elevation);
+      if (elevation < minElevation) minElevation = elevation;
+      if (elevation > maxElevation) maxElevation = elevation;      
+    }
+       
+    const deltaElevation = maxElevation - minElevation;
+    
+    const getElevationHeight = 
+      (elevation) => height - marginBottom - (((height - marginTop - marginBottom) * (elevation - minElevation)) / deltaElevation);
+        
+    const ctx = canvas.getContext("2d");
+
+    // draw profile area
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.fillStyle = "#c3af60";
+    ctx.moveTo(marginLeft, getElevationHeight(elevations[0]));
+    for (let j = 1; j < elevations.length; j++)
+    {
+      ctx.lineTo(marginLeft + step * j, getElevationHeight(elevations[j]));
+    }
+    ctx.lineTo(width, height);
+    ctx.lineTo(marginLeft, height);
+    ctx.fill();
+
+    // draw profile line
+    ctx.beginPath();
+    ctx.strokeStyle = "#604020";
+    ctx.lineWidth = lineWidth;
+    ctx.moveTo(marginLeft, getElevationHeight(elevations[0]));
+    for (let j = 1; j < elevations.length; j++)
+    {
+      ctx.lineTo(marginLeft + step * j, getElevationHeight(elevations[j]));
+    }
+    ctx.stroke();
+
+    // vertical lines (0.1 Km)
+    ctx.setLineDash([2 * pixelRatio, 2 * pixelRatio]);
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+    ctx.lineWidth = 0.5 * lineWidth;
+    for (let km = 0; km < this.routeLength; km += 0.1)
+    {
+      let j = Math.round(km * pixelsPerKm);
+      ctx.beginPath();
+      ctx.moveTo(j + marginLeft, 0);
+      ctx.lineTo(j + marginLeft, height);
+      ctx.stroke();
+    }
+
+    // horizontal lines
+    let meterDivision;
+    if (deltaElevation > 500) meterDivision = 100;
+    else if (deltaElevation > 300) meterDivision = 50;
+    else if (deltaElevation > 100) meterDivision = 20;
+    else if (deltaElevation > 50) meterDivision = 10;
+    else meterDivision = 5;
+        
+    ctx.fillStyle = '#000000';
+    ctx.font = Math.round(12 * pixelRatio) + "px monospace";
+    const startElevation = Math.round(minElevation / meterDivision) * meterDivision;
+    for (let m = startElevation; m < maxElevation; m += meterDivision)
+    {
+      let h = Math.round(getElevationHeight(m));
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      ctx.lineTo(width, h);
+      ctx.stroke();
+      ctx.fillText(m + "m", 2 * pixelRatio, h - 2 * pixelRatio);
+    }
+
+    // draw cursor
+    const currentCoords = turf.along(this.turfLine, this.distance,
+        { units: "kilometers"}).geometry.coordinates;
+    const currentElevation = map.queryTerrainElevation(currentCoords) + map.transform.elevation;
+    
+    let x = marginLeft + this.distance / kmPerPixel;
+    let y = getElevationHeight(currentElevation);
+
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.fillStyle = "#c0c0c0";
+    ctx.arc(x, y, (pointRadius + borderSize), 0, 2 * Math.PI);
+    ctx.fill();        
+    
+    ctx.beginPath();
+    ctx.fillStyle = "#000000";
+    ctx.arc(x, y, pointRadius, 0, 2 * Math.PI);
+    ctx.fill();    
   }
 
   onPlay()
@@ -149,7 +320,7 @@ class SimulateRouteControl
     else if (this.state === "stop")
     {
       this.startAnimation();
-    }
+    }    
   }
 
   onPause()
@@ -169,6 +340,7 @@ class SimulateRouteControl
       this.updateRoute();
       this.stopAnimation();
     }
+    this.renderProfile();
   }
 
   onPointerDown(event)
@@ -251,12 +423,15 @@ class SimulateRouteControl
 
   updateRoute()
   {
+    const map = this.map;
+
     if (this.initRoute())
     {
       this.updateRouteDistance();
       this.updateRoutePosition();
       this.div.style.display = "block";
       map.setLayoutProperty("position_in_route", "visibility", "visible");
+      this.renderProfile();
       this.map.flyTo({ 
         center: this.point.geometry.coordinates, 
         zoom: this.initialZoom 
@@ -267,6 +442,7 @@ class SimulateRouteControl
       this.distance = 0;
       this.currentRouteLayerId = null;
       this.div.style.display = "none";
+      this.turfLine = null;
       map.setLayoutProperty("position_in_route", "visibility", "none");
     }
     this.routeRange.value = 0;
@@ -335,7 +511,7 @@ class SimulateRouteControl
       }
 
       this.routeRange.value = 1000 * (this.distance / this.routeLength);
-
+      this.renderProfile();
       setTimeout(() => this.animate(), 20);
     }
     else
@@ -357,6 +533,7 @@ class SimulateRouteControl
     this.distance = this.routeLength * value / 1000;
     this.updateRoutePosition();
     this.updateRouteDistance();
+    this.renderProfile();
   }
 
   centerToPosition()
@@ -554,6 +731,8 @@ class SimulateRouteControl
     this.addDefaultDirectionImage(map);
 
     map.on("idle", () => this.onIdle());
+
+    this.createProfilePanel(map);
 
     return this.createPanel(map);
   }

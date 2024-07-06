@@ -34,8 +34,19 @@ class PanelManager
     
     this.leftMaxHeight = 0;
     this.rightMaxHeight = 0;
+    
+    this._organizePanels = () => {
+      if (this.controlsElem.isConnected)
+      {
+        this.organizePanels();
+      }
+      else
+      {
+        window.removeEventListener("resize", this._organizePanels);        
+      }
+    };
 
-    window.addEventListener("resize", () => this.organizePanels());
+    window.addEventListener("resize", this._organizePanels);
   }
 
   static getInstance(map)
@@ -315,6 +326,12 @@ class PanelManager
 
     this.updateControlsLayout("right", topRightElem, rightOrientation);
     this.updateControlsLayout("right", bottomRightElem, rightOrientation);
+
+    // TODO: detect which container actually changes
+    leftContainer.notifyOnResize();
+    rightContainer.notifyOnResize();
+    topContainer.notifyOnResize();
+    bottomContainer.notifyOnResize();  
   }
   
   updateControlsLayout(side, elem, orientation)
@@ -531,6 +548,14 @@ class PanelContainer
       this.panels.splice(index, 1);
     }
     panel.position = null;
+  }
+  
+  notifyOnResize()
+  {
+    for (let panel of this.panels)
+    {
+      panel.onResize();
+    }
   }
 }
 

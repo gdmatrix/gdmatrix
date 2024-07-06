@@ -31,9 +31,10 @@ class ZoomControl
     map.on("zoom", (e) => this.updateZoom());
     
     const div = document.createElement("div");    
-    div.className = "maplibregl-ctrl maplibregl-ctrl-group p-1";
+    div.className = "maplibregl-ctrl maplibregl-ctrl-group p-1 text-center";
     div.style.cursor = "pointer";
     div.style.fontFamily = "var(--font-family)";
+    div.style.minWidth = "80px";
     div.title = bundle.get("ZoomControl.title");
     div.addEventListener("contextmenu", (e) => e.preventDefault());
     div.addEventListener("click", (e) =>
