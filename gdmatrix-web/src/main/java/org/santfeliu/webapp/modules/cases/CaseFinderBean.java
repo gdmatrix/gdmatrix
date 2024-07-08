@@ -352,7 +352,9 @@ public class CaseFinderBean extends FinderBean
                 filter.getClassId().addAll(classIds);                
               }   
 
-              setOrderBy(filter);
+              String searchExpression = filter.getSearchExpression();
+              if (searchExpression == null)
+                setOrderBy(filter);
               
               List<Column> columns = getColumns();
               for (Column column : columns)
@@ -362,6 +364,8 @@ public class CaseFinderBean extends FinderBean
               List<Case> cases = 
                 CasesModuleBean.getPort(false).findCases(filter);
               filter.setTitle(title);
+              filter.setSearchExpression(searchExpression);
+              
               CaseFinderBean.this.setClassId(classId);
               return toDataTableRows(cases);     
             }
@@ -458,9 +462,10 @@ public class CaseFinderBean extends FinderBean
           buffer.append(" desc ");
       }
 
-      filter.setSearchExpression(buffer.toString());                    
-    }    
-  }
+      filter.setSearchExpression(buffer.toString()); 
+    } 
+  }   
+
   
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
