@@ -9,7 +9,8 @@
     <ui:param name="css" value="/common/agenda/css/agenda.css" />
     <ui:define name="body">
 
-      <h:outputText value="#{eventDetailBean.emailSharingScripts}" escape="false" />  
+      <h:outputText value="#{eventDetailBean.emailSharingScripts}" escape="false" 
+                    rendered="#{eventDetailBean.renderShareByEmail}" />  
 
       <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle" var="agendaBundle"/>
       <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" var="objectBundle" />
@@ -285,60 +286,65 @@
         </t:div>
       </sf:printableGroup>
 
-      <t:div styleClass="sendEmailDiv" forceId="true" id="sendEmailDiv">
-        <t:div styleClass="titleDiv">
-          <h:outputText value="#{webBundle.sendEmailTitle}"/>
-          <h:outputLink onclick="switchSendEmailDiv(event);return false;" value="#" 
-                  styleClass="closeButton"
-                  title="#{webBundle.sendEmailCancel}">
-            <h:graphicImage url="/images/sn/send_email_close.png" 
-                            alt="#{webBundle.sendEmailCancel}"/>
-          </h:outputLink>
-        </t:div>    
-        <t:div styleClass="labelDiv">
-          <h:outputText value="* #{webBundle.sendEmailRequiredFields}"/>
-        </t:div>
-        <t:div styleClass="labelDiv">
-          <h:outputLabel value="#{webBundle.sendEmailName}:" for="sendEmailName" />
-        </t:div>
-        <t:div styleClass="inputDiv">
-          <t:inputText forceId="true" id="sendEmailName" value="#{eventDetailBean.emailName}"/>
-        </t:div>
-        <t:div styleClass="labelDiv">
-          <label for="sendEmailFrom">#{webBundle.sendEmailFrom}<abbr title="#{webBundle.requiredField}">*</abbr>:</label>          
-        </t:div>
-        <t:div styleClass="inputDiv">
-          <t:inputText forceId="true" id="sendEmailFrom" value="#{eventDetailBean.emailFrom}"/>
-        </t:div>
-        <t:div styleClass="labelDiv">          
-          <label for="sendEmailTo">#{webBundle.sendEmailTo}<abbr title="#{webBundle.requiredField}">*</abbr>:</label>          
-        </t:div>
-        <t:div styleClass="inputDiv">
-          <t:inputText forceId="true" id="sendEmailTo" value="#{eventDetailBean.emailTo}"/>
-        </t:div>
-        <t:div styleClass="labelDiv">
-          <h:outputLabel value="#{webBundle.sendEmailSubject}:" for="sendEmailSubject" />
-        </t:div>
-        <t:div styleClass="inputDiv">
-          <t:inputText forceId="true" id="sendEmailSubject" value="#{eventDetailBean.emailSubject}"/>
-        </t:div>
-        <t:div styleClass="labelDiv">
-          <label for="sendEmailText">#{webBundle.sendEmailText}<abbr title="#{webBundle.requiredField}">*</abbr>:</label>
-        </t:div>
-        <t:div styleClass="inputDiv">
-          <t:inputTextarea forceId="true" id="sendEmailText" value="#{eventDetailBean.emailText}"/>
-        </t:div>    
-        <t:div styleClass="buttonDiv">      
-          <t:div styleClass="errorMessageDiv">
-            <t:outputText value="#{webBundle.sendEmailInvalidForm}" forceId="true" id="sendEmailError" style="display:inline;visibility:hidden;" />
+      <h:panelGroup rendered="#{eventDetailBean.renderShareByEmail}">
+      
+        <t:div styleClass="sendEmailDiv" forceId="true" id="sendEmailDiv">
+          <t:div styleClass="titleDiv">
+            <h:outputText value="#{webBundle.sendEmailTitle}"/>
+            <h:outputLink onclick="switchSendEmailDiv(event);return false;" value="#" 
+                    styleClass="closeButton"
+                    title="#{webBundle.sendEmailCancel}">
+              <h:graphicImage url="/images/sn/send_email_close.png" 
+                              alt="#{webBundle.sendEmailCancel}"/>
+            </h:outputLink>
+          </t:div>    
+          <t:div styleClass="labelDiv">
+            <h:outputText value="* #{webBundle.sendEmailRequiredFields}"/>
           </t:div>
-          <h:outputLink onclick="sendEmail();return false;" value="#" styleClass="sendLink"> 
-            <t:outputText value="#{webBundle.sendEmailButton}" />      
-          </h:outputLink>      
-        </t:div>      
-      </t:div>
+          <t:div styleClass="labelDiv">
+            <h:outputLabel value="#{webBundle.sendEmailName}:" for="sendEmailName" />
+          </t:div>
+          <t:div styleClass="inputDiv">
+            <t:inputText forceId="true" id="sendEmailName" value="#{eventDetailBean.emailName}"/>
+          </t:div>
+          <t:div styleClass="labelDiv">
+            <label for="sendEmailFrom">#{webBundle.sendEmailFrom}<abbr title="#{webBundle.requiredField}">*</abbr>:</label>          
+          </t:div>
+          <t:div styleClass="inputDiv">
+            <t:inputText forceId="true" id="sendEmailFrom" value="#{eventDetailBean.emailFrom}"/>
+          </t:div>
+          <t:div styleClass="labelDiv">          
+            <label for="sendEmailTo">#{webBundle.sendEmailTo}<abbr title="#{webBundle.requiredField}">*</abbr>:</label>          
+          </t:div>
+          <t:div styleClass="inputDiv">
+            <t:inputText forceId="true" id="sendEmailTo" value="#{eventDetailBean.emailTo}"/>
+          </t:div>
+          <t:div styleClass="labelDiv">
+            <h:outputLabel value="#{webBundle.sendEmailSubject}:" for="sendEmailSubject" />
+          </t:div>
+          <t:div styleClass="inputDiv">
+            <t:inputText forceId="true" id="sendEmailSubject" value="#{eventDetailBean.emailSubject}"/>
+          </t:div>
+          <t:div styleClass="labelDiv">
+            <label for="sendEmailText">#{webBundle.sendEmailText}<abbr title="#{webBundle.requiredField}">*</abbr>:</label>
+          </t:div>
+          <t:div styleClass="inputDiv">
+            <t:inputTextarea forceId="true" id="sendEmailText" value="#{eventDetailBean.emailText}"/>
+          </t:div>    
+          <t:div styleClass="buttonDiv">      
+            <t:div styleClass="errorMessageDiv">
+              <t:outputText value="#{webBundle.sendEmailInvalidForm}" forceId="true" id="sendEmailError" style="display:inline;visibility:hidden;" />
+            </t:div>
+            <h:outputLink onclick="sendEmail();return false;" value="#" styleClass="sendLink"> 
+              <t:outputText value="#{webBundle.sendEmailButton}" />      
+            </h:outputLink>      
+          </t:div>      
+        </t:div>
 
-      <t:commandButton style="visibility:hidden" forceId="true" id="sendEmailButton" action="#{eventDetailBean.sendEmail}" styleClass="hiddenButton" /> 
+        <t:commandButton style="display:none" forceId="true" id="sendEmailButton" 
+                         action="#{eventDetailBean.sendEmail}" styleClass="hiddenButton" /> 
+      
+      </h:panelGroup>        
 
     </ui:define>
   </ui:composition>

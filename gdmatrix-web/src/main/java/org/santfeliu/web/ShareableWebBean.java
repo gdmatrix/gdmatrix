@@ -248,6 +248,14 @@ public abstract class ShareableWebBean extends WebBean implements Shareable
     }
     return result;
   }
+  
+  public boolean isRenderShareByEmail()
+  {
+    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+      getMenuModel().getSelectedMenuItem();
+    String value = menuItem.getProperty(DETAILS_SHARE_BY_EMAIL_ENABLED);
+    return (value != null ? value.equals("true") : false);
+  }  
 
   protected List<String> getShareURLList(Map<String, String> propertyMap)
   {
@@ -364,14 +372,6 @@ public abstract class ShareableWebBean extends WebBean implements Shareable
     return (value != null ? value.equals("true") : false);
   }
 
-  private boolean isRenderShareByEmail()
-  {
-    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
-      getMenuModel().getSelectedMenuItem();
-    String value = menuItem.getProperty(DETAILS_SHARE_BY_EMAIL_ENABLED);
-    return (value != null ? value.equals("true") : false);
-  }
-  
   private String getShareByEmailIcon()
   {
     MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
