@@ -7,7 +7,7 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:gdm="http://gdmatrix.org/faces">
 
-  <h:panelGroup>
+  <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
     <p:dataTable id="case_results_table" value="#{personCasesTabBean.rows}" 
@@ -70,6 +70,6 @@
         </h:panelGroup>          
       </p:column> 
     </p:dataTable>
-  </h:panelGroup>
+  </f:subview>
   
 </ui:composition>

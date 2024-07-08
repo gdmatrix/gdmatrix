@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+  <f:subview id="#{tab.subviewId}">
+
+    <!-- Results table -->
+    <p:dataTable id="person_events_table" value="#{personEventsTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom" multiViewState="true"
+                 rowIndexVar="firstRow" first="#{personEventsTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50" rows="10" emptyMessage="#{objectBundle.no_data}">
+      
+      <f:facet name="header">        
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{personEventsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{personEventsTabBean.groupableRowsHelper.switchView}"
+                           process="person_events_table"
+                           update="person_events_table"
+                           resetValues="true"
+                           alt="#{personEventsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{personEventsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{personEventsTabBean.groupableRowsHelper.groupedViewEnabled}" />
+        </div>        
+      </f:facet>       
+      
+      <p:headerRow expandable="true" rendered="#{personEventsTabBean.groupableRowsHelper.groupedView}"
+                   expanded="true" 
+                   groupBy="#{personEventsTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="5">
+          <h:outputText styleClass="ml-2" value="#{personEventsTabBean.groupableRowsHelper.groupByDescription}"/>
+        </p:column>
+      </p:headerRow>  
+      
+      <p:column headerText="#{kernelBundle.personEvents_id}" styleClass="col-1">
+        <h:outputText value="#{row.event.eventId}" />
+      </p:column>
+      
+      <p:column headerText="#{kernelBundle.personEvents_type}" styleClass="col-3"
+                rendered="#{personEventsTabBean.groupableRowsHelper.isColumnRendered('eventTypeId')}">                
+        <h:outputText value="#{typeTypeBean.getDescription(row.event.eventTypeId)}"/>
+      </p:column>        
+      
+      <p:column headerText="#{kernelBundle.personEvents_startDate}" styleClass="col-1"
+                rendered="#{personEventsTabBean.groupableRowsHelper.isColumnRendered('startDateTime')}">
+        <h:outputText value="#{row.event.startDateTime}">
+          <f:converter converterId="DateTimeConverter" />
+          <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+        </h:outputText>
+      </p:column>   
+      
+      <p:column headerText="#{kernelBundle.personEvents_endDate}" styleClass="col-1"
+                rendered="#{personEventsTabBean.groupableRowsHelper.isColumnRendered('endDateTime')}">
+        <h:outputText value="#{row.event.endDateTime}">
+          <f:converter converterId="DateTimeConverter" />
+          <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+        </h:outputText>
+      </p:column>         
+      
+      <p:column headerText="#{kernelBundle.personEvents_summary}" styleClass="col-4"
+                rendered="#{personEventsTabBean.groupableRowsHelper.isColumnRendered('summary')}">
+        <h:outputText value="#{row.event.summary}"/>
+      </p:column> 
+      
+      <p:column headerText="#{kernelBundle.personEvents_attendantType}" styleClass="col-3"
+                rendered="#{personEventsTabBean.groupableRowsHelper.isColumnRendered('attendantTypeId')}">                
+        <h:outputText value="#{typeTypeBean.getDescription(row.attendantTypeId)}"/>
+      </p:column>        
+         
+      <p:column styleClass="text-right white-space-nowrap" exportable="false">
+        <p:commandButton icon="pi pi-arrow-circle-right"
+                         action="#{navigatorBean.show('Event', row.eventId)}"
+                         process="@this"
+                         update="@form:cnt"
+                         styleClass="rounded-button ui-button-flat"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"/>
+      </p:column>
+
+    </p:dataTable>
+
+  </f:subview>
+
+</ui:composition>
