@@ -82,19 +82,19 @@
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 lg:col-6" rendered="#{caseObjectBean.isRenderProperty('state')}">
-        <p:outputLabel for="@next" value="#{caseBundle.case_state}" />
+        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('state', caseBundle.case_state)}" />
         <p:inputText value="#{caseObjectBean.case.state}"
                      readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('description')}">
-        <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
+        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('description', caseBundle.case_description)}" />
         <p:inputTextarea value="#{caseObjectBean.case.description}"
                          readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
-        <p:outputLabel for="@next" value="#{caseBundle.case_comments}" />
+        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('comments', caseBundle.case_comments)}" />
         <p:inputTextarea value="#{caseObjectBean.case.comments}"
                          readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
