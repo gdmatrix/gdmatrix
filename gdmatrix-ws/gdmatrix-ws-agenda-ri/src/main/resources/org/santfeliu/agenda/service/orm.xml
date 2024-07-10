@@ -95,16 +95,17 @@
 
     <named-query name="findAttendants">
       <query>
-         SELECT a
-         FROM DBAttendant a JOIN a.dbEvent e
-         WHERE (a.eventId = :eventId or :eventId is null)
-           AND (a.personId = :personId or :personId is null)           
-           AND (a.incognit is null OR a.incognit = 'N' OR :isAdmin = 'S' OR
-            (a.incognit = 'S' AND
-              (trim(e.creationUserId) = :userId OR
-               trim(e.changeUserId) = :userId OR
-               (exists (select a2.personId from DBAttendant a2 where a2.eventId = a.eventId and a2.personId = :userPersonId)) OR
-               (LOCATE(CONCAT(',', CONCAT(a.personId, ',')), :trustors) &gt; 0) )))
+        SELECT a
+        FROM DBAttendant a JOIN a.dbEvent e
+        WHERE (a.eventId = :eventId or :eventId is null)
+          AND (a.personId = :personId or :personId is null)           
+          AND (a.incognit is null OR a.incognit = 'N' OR :isAdmin = 'S' OR
+           (a.incognit = 'S' AND
+             (trim(e.creationUserId) = :userId OR
+              trim(e.changeUserId) = :userId OR
+              (exists (select a2.personId from DBAttendant a2 where a2.eventId = a.eventId and a2.personId = :userPersonId)) OR
+              (LOCATE(CONCAT(',', CONCAT(a.personId, ',')), :trustors) &gt; 0) )))
+        ORDER BY e.datainici desc, e.horainici desc, e.datafinal desc, e.horafinal desc
       </query>
     </named-query>
 

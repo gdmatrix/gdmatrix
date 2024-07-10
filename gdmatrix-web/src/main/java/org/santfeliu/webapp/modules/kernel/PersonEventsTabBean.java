@@ -187,6 +187,7 @@ public class PersonEventsTabBean extends TabBean
       {
         AttendantFilter filter = new AttendantFilter();
         filter.setPersonId(personObjectBean.getObjectId());
+        filter.setMaxResults(100);
         List<AttendantView> auxList = AgendaModuleBean.getClient(false).
           findAttendantViewsFromCache(filter);
         String typeId = getTabBaseTypeId();      
