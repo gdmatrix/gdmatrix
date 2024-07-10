@@ -23,6 +23,11 @@ class DrawTool extends Tool
       useProxy: true
     };
 
+    this.directEditing = options?.directEditing || false;
+    this.centerFeatures = options?.centerFeatures || false;
+    this.centerZoom = options?.centerZoom || 20;
+    this.onAcceptFeature = options?.onAcceptFeature || null;
+
     this.operations = options?.operations;
     if (!this.operations)
     {
@@ -285,6 +290,12 @@ class DrawTool extends Tool
       }
     });
     
+    if (this.directEditing)
+    {
+      const elem = document.getElementById("layer_name");
+      elem.selectedIndex = 1;
+    }
+    
     if (this.editingLayer.features.length === 0)
     {
       this.loadSelectedLayer();
@@ -519,7 +530,11 @@ class DrawTool extends Tool
   addFeature()
   {
     this.showFeatureForm();
-    this.panel.undoButton.style.display = "";
+    const operation = this.getOperation();
+    if (operation.name === "addLineString" || operation.name === "addPolygon")
+    {
+      this.panel.undoButton.style.display = "";
+    }
     this.panel.acceptButton.style.display = "";
     this.panel.cancelButton.style.display = "";
   }
@@ -549,6 +564,8 @@ class DrawTool extends Tool
       feature.properties._ACTION_ = "delete";
       this.map.getSource("editing_features").setData(this.editingLayer);
       this.panel.formDiv.innerHTML = "";
+
+      if (this.directEditing) this.saveFeatures();
     }
   }
 
@@ -557,6 +574,11 @@ class DrawTool extends Tool
     const featureForm = this.featureForm;
 
     if (!featureForm) return;
+
+    if (typeof this.onAcceptFeature === "function")
+    {
+      this.onAcceptFeature(featureForm);
+    }
 
     const featureInfo = this.featureInfo;
     const idColumn = featureInfo.idColumn;
@@ -594,6 +616,7 @@ class DrawTool extends Tool
         feature.properties._ACTION_ = action;
         this.map.getSource("editing_features").setData(this.editingLayer);
       }
+      if (this.directEditing) this.saveFeatures();
     }
     this.cancelFeature();
   }
@@ -664,6 +687,7 @@ class DrawTool extends Tool
       this.panel.acceptButton.style.display = "none";
       this.panel.cancelButton.style.display = "none";
     }
+    this.panel.formDiv.innerHTML = "";
   }
 
   showSaveResult(result)
@@ -676,11 +700,20 @@ class DrawTool extends Tool
     }
     else
     {
-      this.panel.formDiv.innerHTML = `
-       <div>Inserted: ${result.totalInserted}</div>
-       <div>Updated: ${result.totalUpdated}</div>
-       <div>Deleted: ${result.totalDeleted}</div>
-     `;
+      let messages = [];
+      if (result.totalInserted > 0)
+      {
+        messages.push(`<div>${bundle.get("DrawTool.totalInserted", result.totalInserted)}</div>`);
+      }
+      if (result.totalUpdated > 0)
+      {
+        messages.push(`<div>${bundle.get("DrawTool.totalUpdated", result.totalUpdated)}</div>`);
+      }
+      if (result.totalDeleted > 0)
+      {
+        messages.push(`<div>${bundle.get("DrawTool.totalDeleted", result.totalDeleted)}</div>`);
+      }      
+      this.panel.formDiv.innerHTML = messages.join("");
     }
   }
 
@@ -1513,6 +1546,12 @@ class DrawTool extends Tool
         this.loadSelectedLayer();
       });    
     }
+    if (this.directEditing)
+    {
+      layerSelector.style.display = "none";
+      const buttonBar = bodyDiv.querySelector(".button_bar");
+      buttonBar.style.display = "none";
+    }
 
     const loadButton = bodyDiv.querySelector(".load_features");
     loadButton.addEventListener("click", (e) => {
@@ -1570,7 +1609,7 @@ class DrawTool extends Tool
     this.changeOperation();
   }
   
-  loadSelectedLayer()
+  async loadSelectedLayer()
   {
     const elem = document.getElementById("layer_name");
     this.layerName = elem.value;
@@ -1584,8 +1623,16 @@ class DrawTool extends Tool
       }
     }
     this.cancelFeature();
-    this.loadFeatures();      
+    await this.loadFeatures();
+    if (this.centerFeatures) this.centerEditingFeatures();
   };
+  
+  centerEditingFeatures()
+  {
+    const map = this.map;
+    const center = turf.center(this.editingLayer);
+    map.flyTo({ center: center.geometry.coordinates, zoom: this.centerZoom });
+  }
   
   updateSources()
   {

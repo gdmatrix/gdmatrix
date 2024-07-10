@@ -107,7 +107,7 @@ class SimulateRouteControl
     if (this.map.getTerrain())
     {
       const profileDiv = document.createElement("div");
-      profileDiv.className = "flex mt-2";
+      profileDiv.className = "flex mt-2 align-items-center";
       profileDiv.innerHTML = `
         <input id="show_profile" type="checkbox" />
         <label for="show_profile">${bundle.get("SimulateRouteControl.showProfile")}</label>
@@ -198,13 +198,14 @@ class SimulateRouteControl
     let step = 4 * pixelRatio;
     const marginLeft = 40 * pixelRatio;
     const marginTop = 10 * pixelRatio;
-    const marginBottom = 10 * pixelRatio;
+    const marginBottom = 20 * pixelRatio;
     const pointRadius = 5 * pixelRatio;
     const borderSize = 2 * pixelRatio;
     const lineWidth = 2 * pixelRatio;
     const profileWidth = width - marginLeft;
     const kmPerPixel = this.routeLength / profileWidth;
     const pixelsPerKm = 1 / kmPerPixel;
+    const fontSize = 12;
         
     for (let i = 0; i < profileWidth + step; i += step)
     {
@@ -273,7 +274,7 @@ class SimulateRouteControl
     else meterDivision = 5;
         
     ctx.fillStyle = '#000000';
-    ctx.font = Math.round(12 * pixelRatio) + "px monospace";
+    ctx.font = Math.round(fontSize * pixelRatio) + "px monospace";
     const startElevation = Math.round(minElevation / meterDivision) * meterDivision;
     for (let m = startElevation; m < maxElevation; m += meterDivision)
     {
@@ -293,6 +294,25 @@ class SimulateRouteControl
     let x = marginLeft + this.distance / kmPerPixel;
     let y = getElevationHeight(currentElevation);
 
+    ctx.strokeStyle = "#202020";
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+    
+    let elevationText = Math.floor(currentElevation) + "m";
+    const metrics = ctx.measureText(elevationText);
+    const textY = y + (height - y) / 2 + 0.5 * Math.round(fontSize * pixelRatio);
+
+    if (x < width - (fontSize * 5) * pixelRatio)
+    {
+      ctx.fillText(elevationText, x + 2 * pixelRatio, textY);
+    }
+    else
+    {
+      ctx.fillText(elevationText, x - 2 * pixelRatio - metrics.width * pixelRatio, textY);
+    }
+
     ctx.setLineDash([]);
     ctx.beginPath();
     ctx.fillStyle = "#c0c0c0";
@@ -302,7 +322,7 @@ class SimulateRouteControl
     ctx.beginPath();
     ctx.fillStyle = "#000000";
     ctx.arc(x, y, pointRadius, 0, 2 * Math.PI);
-    ctx.fill();    
+    ctx.fill();        
   }
 
   onPlay()

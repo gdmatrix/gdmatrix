@@ -73,6 +73,9 @@ Bundle.getBundle("main").setTranslations("es", {
   "DrawTool.addLineString.help": "Haz sucesivos clics para dibujar los vértices de la línea.",
   "DrawTool.addPolygon.help": "Haz sucesivos clics para dibujar los vértices del polígono.",
   "DrawTool.delete.help": "Haz clic en la entidad que deseas borrar.",
+  "DrawTool.totalInserted": (num) => num === 1 ? "1 elemento añadido." : `${num} elementos añadidos.`,
+  "DrawTool.totalUpdated": (num) => num === 1 ? "1 elemento modificado." : `${num} elementos modificados.`,
+  "DrawTool.totalDeleted": (num) => num === 1 ? "1 elemento borrado." : `${num} elementos borrados.`,  
 
   "TimeSliderControl.period": "Periodo",
   "TimeSliderControl.period.d": "1 día",

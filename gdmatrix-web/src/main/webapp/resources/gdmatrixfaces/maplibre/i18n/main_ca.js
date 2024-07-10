@@ -73,6 +73,9 @@ Bundle.getBundle("main").setTranslations("ca", {
   "DrawTool.addLineString.help": "Fes successius clics per dibuixar els vèrtexs de la línia.",
   "DrawTool.addPolygon.help": "Fes successius clics per dibuixar els vèrtexs del polígon.",
   "DrawTool.delete.help": "Fes clic a l'entitat que vols esborrar.",
+  "DrawTool.totalInserted": (num) => num === 1 ? "1 element afegit." : `${num} elements afegits.`,
+  "DrawTool.totalUpdated": (num) => num === 1 ? "1 element modificat." : `${num} elements modificats.`,
+  "DrawTool.totalDeleted": (num) => num === 1 ? "1 element esborrat." : `${num} elements esborrats.`,  
 
   "TimeSliderControl.period": "Periode",
   "TimeSliderControl.period.d": "1 dia",
