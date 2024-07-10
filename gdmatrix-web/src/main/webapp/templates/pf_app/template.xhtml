@@ -285,8 +285,14 @@
             <p:commandButton action="#{templateBean.show(item.mid)}"
                              icon="#{item.properties.icon}"
                              styleClass="btn-#{item.mid}"
+                             rendered="#{item.action != 'url'}"
                              process="@this" update="@form:cnt"
                              title="#{item.getProperty('label')}" />
+            <p:linkButton href="#{item.properties.url}"
+                          rendered="#{item.action == 'url'}"
+                          icon="ui-icon #{item.directProperties.icon}" 
+                          target="#{item.properties.target == null ? '_self' : item.properties.target}"
+                          title="#{applicationBean.translate(item.label)}" />
           </ui:repeat>
         </div>
       </h:panelGroup>
