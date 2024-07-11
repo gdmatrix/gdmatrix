@@ -310,7 +310,7 @@ class SimulateRouteControl
     }
     else
     {
-      ctx.fillText(elevationText, x - 2 * pixelRatio - metrics.width * pixelRatio, textY);
+      ctx.fillText(elevationText, x - 2 * pixelRatio - metrics.width, textY);
     }
 
     ctx.setLineDash([]);
