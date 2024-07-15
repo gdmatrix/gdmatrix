@@ -61,11 +61,12 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRow.Value;
@@ -157,7 +158,7 @@ public class CasePersonsTabBean extends TabBean
       }
 
       @Override
-      public List<Column> getColumns()
+      public List<TableProperty> getColumns()
       {
         return CasePersonsTabBean.this.getColumns();
       }
@@ -513,23 +514,19 @@ public class CasePersonsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
     if (activeEditTab != null)
-      return activeEditTab.getColumns();
+      return activeEditTab.getTableProperties();
     else
       return Collections.EMPTY_LIST;
   }
   
-  public List<Column> getCustomColumns()
+  public List<TableProperty> getColumns()
   {
-    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
-    if (activeEditTab != null)
-      return activeEditTab.getCustomColumns();
-    else
-      return Collections.EMPTY_LIST;
-  }  
+    return TablePropertyHelper.getColumnTableProperties(getTableProperties());
+  }
   
   public void create()
   {
@@ -782,8 +779,7 @@ public class CasePersonsTabBean extends TabBean
     for (CasePersonView row : casePersons)
     {
       CasePersonsDataTableRow dataTableRow = new CasePersonsDataTableRow(row);
-      dataTableRow.setValues(this, row, getColumns());      
-      dataTableRow.setCustomValues(this, row, getCustomColumns());      
+      dataTableRow.setValues(this, row, getTableProperties());      
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }

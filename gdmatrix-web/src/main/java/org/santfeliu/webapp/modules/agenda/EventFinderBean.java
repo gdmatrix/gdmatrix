@@ -69,8 +69,9 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.DataTableRow;
 
@@ -167,21 +168,28 @@ public class EventFinderBean extends FinderBean
     this.formSelector = formSelector;
   }
 
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
     try
     {
       if (objectSetup == null)
         loadObjectSetup();
 
-      List<Column> columns = objectSetup.getSearchTabs().get(0).getColumns();
+      List<TableProperty> tableProperties = 
+        objectSetup.getSearchTabs().get(0).getTableProperties();
       
-      return columns != null ? columns : Collections.emptyList();
+      return tableProperties != null ? 
+        tableProperties : Collections.emptyList();
     }
     catch (Exception ex)
     {
       return Collections.emptyList();
     }
+  }
+  
+  public List<TableProperty> getColumns()
+  {
+    return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
 
   public int getFirstRow()
@@ -747,7 +755,7 @@ public class EventFinderBean extends FinderBean
     {
       EventDataTableRow row = new EventDataTableRow(event.getEventId(),
         event.getEventTypeId());
-      row.setValues(this, event, getColumns());
+      row.setValues(this, event, getTableProperties());
       row.setStartDateTime(event.getStartDateTime());
       row.setEndDateTime(event.getEndDateTime());
       row.setSummary(event.getSummary());

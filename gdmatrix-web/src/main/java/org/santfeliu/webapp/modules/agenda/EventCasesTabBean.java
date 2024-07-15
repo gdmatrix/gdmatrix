@@ -47,10 +47,11 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.cases.CaseTypeBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRowComparator;
@@ -100,7 +101,7 @@ public class EventCasesTabBean extends TabBean
       }
 
       @Override
-      public List<Column> getColumns()
+      public List<TableProperty> getColumns()
       {
         return EventCasesTabBean.this.getColumns();
       }
@@ -185,13 +186,18 @@ public class EventCasesTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }  
   
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = eventObjectBean.getActiveEditTab();
     if (activeEditTab != null)
-      return activeEditTab.getColumns();
+      return activeEditTab.getTableProperties();
     else
       return Collections.EMPTY_LIST;
+  }
+  
+  public List<TableProperty> getColumns()
+  {
+    return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
   
   public CaseEvent getEditing()
@@ -412,7 +418,7 @@ public class EventCasesTabBean extends TabBean
     for (CaseEventView row : events)
     {
       CaseEventsDataTableRow dataTableRow = new CaseEventsDataTableRow(row);
-      dataTableRow.setValues(this, row, getColumns());
+      dataTableRow.setValues(this, row, getTableProperties());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;

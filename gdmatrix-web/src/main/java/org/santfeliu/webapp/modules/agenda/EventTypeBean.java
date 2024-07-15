@@ -46,7 +46,7 @@ import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.agenda.AgendaModuleBean.getClient;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.SearchTab;
 
 /**
@@ -105,15 +105,15 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab =
       new SearchTab("Llistat", "/pages/agenda/event_list.xhtml");
-    searchTab.getColumns().add(new Column("eventId",
+    searchTab.getTableProperties().add(new TableProperty("eventId",
       BUNDLE_PREFIX + "event_id", "col-1"));
-    searchTab.getColumns().add(new Column("eventTypeId",
+    searchTab.getTableProperties().add(new TableProperty("eventTypeId",
       BUNDLE_PREFIX + "event_type", "col-2"));
-    searchTab.getColumns().add(new Column("startDateTime",
+    searchTab.getTableProperties().add(new TableProperty("startDateTime",
       BUNDLE_PREFIX + "event_startDate", "col-2"));
-    searchTab.getColumns().add(new Column("endDateTime",
+    searchTab.getTableProperties().add(new TableProperty("endDateTime",
       BUNDLE_PREFIX + "event_endDate", "col-2"));
-    searchTab.getColumns().add(new Column("summary",
+    searchTab.getTableProperties().add(new TableProperty("summary",
       BUNDLE_PREFIX + "event_summary", "col-5"));
     
     List<String> orderBy = searchTab.getOrderBy();
@@ -147,11 +147,11 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
       "/pages/agenda/event_cases.xhtml",
       "eventCasesTabBean", "cases1",
       "/pages/agenda/event_cases_dialog.xhtml");
-    casesEditTab.getColumns().add(new Column("caseId", 
+    casesEditTab.getTableProperties().add(new TableProperty("caseId", 
       BUNDLE_PREFIX + "eventCases_id", "col-1"));
-    casesEditTab.getColumns().add(new Column("caseTitle", 
+    casesEditTab.getTableProperties().add(new TableProperty("caseTitle", 
       BUNDLE_PREFIX + "eventCases_case", "col-8"));    
-    casesEditTab.getColumns().add(new Column("caseEventTypeId", 
+    casesEditTab.getTableProperties().add(new TableProperty("caseEventTypeId", 
       BUNDLE_PREFIX + "eventCases_type", "col-3"));
     casesEditTab.getOrderBy().add("caseId");
     casesEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);

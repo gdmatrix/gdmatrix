@@ -52,7 +52,7 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -99,13 +99,9 @@ public class EventPersonsTabBean extends TabBean
       }
 
       @Override
-      public List<Column> getColumns()
+      public List<TableProperty> getColumns()
       {
-        EditTab activeEditTab = eventObjectBean.getActiveEditTab();
-        if (activeEditTab != null)
-          return activeEditTab.getColumns();
-        else
-          return Collections.EMPTY_LIST;        
+        return Collections.EMPTY_LIST;        
       }
 
       @Override

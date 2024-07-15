@@ -372,25 +372,16 @@ public class ObjectSetup implements Serializable
     }
     mergeProperties(defaultPropertyMap, propertyMap);
 
-    //Columns
-    List<Column> defaultColumns = defaultSearchTab.getColumns();
-    List<Column> columns = searchTab.getColumns();
-    if (columns == null)
+    //Table properties
+    List<TableProperty> defaultTableProperties = 
+      defaultSearchTab.getTableProperties();
+    List<TableProperty> tableProperties = searchTab.getTableProperties();
+    if (tableProperties == null)
     {
-      columns = new ArrayList();
-      searchTab.setColumns(columns);
+      tableProperties = new ArrayList();
+      searchTab.setTableProperties(tableProperties);
     }
-    mergeColumns(defaultColumns, columns);
-    
-    //Custom columns
-    List<Column> defaultCustomColumns = defaultSearchTab.getCustomColumns();
-    List<Column> customColumns = searchTab.getCustomColumns();
-    if (customColumns == null)
-    {
-      customColumns = new ArrayList();
-      searchTab.setCustomColumns(customColumns);
-    }
-    mergeColumns(defaultCustomColumns, customColumns);    
+    mergeTableProperties(defaultTableProperties, tableProperties);    
   }
 
   private void mergeEditTab(EditTab defaultEditTab, EditTab editTab)
@@ -405,25 +396,16 @@ public class ObjectSetup implements Serializable
     }
     mergeProperties(defaultPropertyMap, propertyMap);
 
-    //Columns
-    List<Column> defaultColumns = defaultEditTab.getColumns();
-    List<Column> columns = editTab.getColumns();
-    if (columns == null)
+    //Table properties
+    List<TableProperty> defaultTableProperties = 
+      defaultEditTab.getTableProperties();
+    List<TableProperty> tableProperties = editTab.getTableProperties();
+    if (tableProperties == null)
     {
-      columns = new ArrayList();
-      editTab.setColumns(columns);
+      tableProperties = new ArrayList();
+      editTab.setTableProperties(tableProperties);
     }
-    mergeColumns(defaultColumns, columns);
-
-    //Custom columns
-    List<Column> defaultCustomColumns = defaultEditTab.getCustomColumns();
-    List<Column> customColumns = editTab.getCustomColumns();
-    if (customColumns == null)
-    {
-      customColumns = new ArrayList();
-      editTab.setCustomColumns(customColumns);
-    }
-    mergeColumns(defaultCustomColumns, customColumns);
+    mergeTableProperties(defaultTableProperties, tableProperties);
 
     //Roles
     List<String> defaultReadRoles = defaultEditTab.getReadRoles();
@@ -461,6 +443,14 @@ public class ObjectSetup implements Serializable
     {
       editTab.setGroupBy(defaultGroupBy);
     }
+
+    //TypeId
+    String defaultTypeId = defaultEditTab.getTypeId();
+    String tabTypeId = editTab.getTypeId();
+    if (defaultTypeId != null && tabTypeId == null)
+    {
+      editTab.setTypeId(defaultTypeId);
+    }
     
     //Icons
     if (editTab.getIcon() == null)
@@ -484,16 +474,16 @@ public class ObjectSetup implements Serializable
     }
   }
 
-  private void mergeColumns(List<Column> defaultColumns,
-    List<Column> columns)
+  private void mergeTableProperties(List<TableProperty> defaultTableProperties,
+    List<TableProperty> tableProperties)
   {
-    if (defaultColumns != null && !defaultColumns.isEmpty()
-      && columns != null && columns.isEmpty())
+    if (defaultTableProperties != null && !defaultTableProperties.isEmpty()
+      && tableProperties != null && tableProperties.isEmpty())
     {
-      columns.addAll(defaultColumns);
+      tableProperties.addAll(defaultTableProperties);
     }
-  }
-
+  } 
+  
   private void mergeRoles(List<String> defaultRoles, List<String> roles)
   {
     if (defaultRoles != null && !defaultRoles.isEmpty()

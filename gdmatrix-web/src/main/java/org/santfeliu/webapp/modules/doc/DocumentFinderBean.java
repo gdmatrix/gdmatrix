@@ -54,7 +54,8 @@ import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -125,23 +126,29 @@ public class DocumentFinderBean extends FinderBean
     this.formSelector = formSelector;
   }
 
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
     try
     {
       if (objectSetup == null)
         loadObjectSetup();
       
-      List<Column> columns = 
-        objectSetup.getSearchTabs().get(0).getColumns();
-
-      return columns != null ? columns : Collections.emptyList();
+      List<TableProperty> tableProperties = 
+        objectSetup.getSearchTabs().get(0).getTableProperties();
+      
+      return tableProperties != null ? tableProperties : 
+        Collections.emptyList();
     }
     catch (Exception ex)
     {
       return Collections.emptyList();
     }
   }
+
+  public List<TableProperty> getColumns()
+  {
+    return TablePropertyHelper.getColumnTableProperties(getTableProperties());
+  }  
 
   @Override
   public String getObjectId(int position)
@@ -385,8 +392,8 @@ public class DocumentFinderBean extends FinderBean
                 filter.getClassId().clear();
                 filter.getClassId().addAll(classIds);
               }
-              List<Column> columns = getColumns();
-              for (Column column : columns)
+              List<TableProperty> columns = getColumns();
+              for (TableProperty column : columns)
               {
                 filter.getOutputProperty().add(column.getName());
               }
@@ -463,7 +470,7 @@ public class DocumentFinderBean extends FinderBean
     {
       DocumentDataTableRow dataTableRow =
         new DocumentDataTableRow(document.getDocId(), document.getDocTypeId());
-      dataTableRow.setValues(this, document, getColumns());
+      dataTableRow.setValues(this, document, getTableProperties());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
@@ -507,8 +514,8 @@ public class DocumentFinderBean extends FinderBean
     }
 
     @Override
-    public void setValues(BaseBean baseBean, Object row, List<Column> columns)
-      throws Exception
+    public void setValues(BaseBean baseBean, Object row, 
+      List<TableProperty> columns) throws Exception
     {
       super.setValues(baseBean, row, columns);
       Document document = (Document)row;

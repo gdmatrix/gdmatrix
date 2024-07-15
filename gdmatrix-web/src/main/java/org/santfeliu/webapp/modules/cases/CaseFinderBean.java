@@ -47,7 +47,8 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
 import org.santfeliu.webapp.util.RowStyleClassGenerator;
@@ -164,16 +165,18 @@ public class CaseFinderBean extends FinderBean
     this.formSelector = formSelector;
   }
   
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
     try
     {
       if (objectSetup == null)
         loadObjectSetup();
       
-      List<Column> columns = objectSetup.getSearchTabs().get(0).getColumns();
+      List<TableProperty> tableProperties = 
+        objectSetup.getSearchTabs().get(0).getTableProperties();
       
-      return columns != null ? columns : Collections.emptyList();
+      return tableProperties != null ? 
+        tableProperties : Collections.emptyList();
     }
     catch (Exception ex)
     {
@@ -181,22 +184,9 @@ public class CaseFinderBean extends FinderBean
     }
   }
   
-  public List<Column> getCustomColumns()
+  public List<TableProperty> getColumns()
   {
-    try
-    {
-      if (objectSetup == null)
-        loadObjectSetup();
-      
-      List<Column> columns = 
-        objectSetup.getSearchTabs().get(0).getCustomColumns();
-      
-      return columns != null ? columns : Collections.emptyList();
-    }
-    catch (Exception ex)
-    {
-      return Collections.emptyList();
-    }
+    return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
 
   public int getFirstRow()
@@ -356,8 +346,8 @@ public class CaseFinderBean extends FinderBean
               if (searchExpression == null)
                 setOrderBy(filter);
               
-              List<Column> columns = getColumns();
-              for (Column column : columns)
+              List<TableProperty> columns = getColumns();
+              for (TableProperty column : columns)
               {
                 filter.getOutputProperty().add(column.getName());
               }
@@ -408,8 +398,7 @@ public class CaseFinderBean extends FinderBean
     {
       DataTableRow dataTableRow = 
         new DataTableRow(row.getCaseId(), row.getCaseTypeId());
-      dataTableRow.setValues(this, row, getColumns());
-      dataTableRow.setCustomValues(this, row, getCustomColumns());      
+      dataTableRow.setValues(this, row, getTableProperties());
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
@@ -466,7 +455,6 @@ public class CaseFinderBean extends FinderBean
     } 
   }   
 
-  
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
     return new DateTimeRowStyleClassGenerator("startDate,startTime", 

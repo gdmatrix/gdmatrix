@@ -37,31 +37,34 @@ import java.util.Objects;
  *
  * @author realor
  */
-public class Column implements Serializable, Comparable<Column> 
+public class TableProperty implements Serializable, Comparable<TableProperty> 
 {
   private String label;
   private String name;
   private String styleClass;
   private String expression;
   private String icon;
+  private String mode = "column";
+  private String typeId;
   
-  public Column()
+  public TableProperty()
   {
   }
   
-  public Column(String name, String label)
+  public TableProperty(String name, String label)
   {
     this.name = name;        
     this.label = label;
   }
   
-  public Column(String name, String label, String styleClass)
+  public TableProperty(String name, String label, String styleClass)
   {
     this(name, label);
     this.styleClass = styleClass;
   }
   
-  public Column(String name, String label, String styleClass, String expression)
+  public TableProperty(String name, String label, String styleClass, 
+    String expression)
   {
     this(name, label, styleClass);
     this.expression = expression;
@@ -117,8 +120,28 @@ public class Column implements Serializable, Comparable<Column>
     this.icon = icon;
   }
 
+  public String getMode()
+  {
+    return mode;
+  }
+
+  public void setMode(String mode)
+  {
+    this.mode = mode;
+  }
+
+  public String getTypeId()
+  {
+    return typeId;
+  }
+
+  public void setTypeId(String typeId)
+  {
+    this.typeId = typeId;
+  }
+
   @Override
-  public int compareTo(Column o)
+  public int compareTo(TableProperty o)
   {
     return getName().compareTo(o.getName()); 
   }
@@ -132,7 +155,7 @@ public class Column implements Serializable, Comparable<Column>
     if (this.getClass() != o.getClass())
       return false;
 
-    return getName().equals(((Column)o).getName());
+    return getName().equals(((TableProperty)o).getName());
   }
 
   @Override

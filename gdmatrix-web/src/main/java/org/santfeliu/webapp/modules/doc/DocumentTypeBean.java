@@ -44,7 +44,7 @@ import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.SearchTab;
 
 /**
@@ -103,15 +103,15 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab =
       new SearchTab("List", "/pages/doc/document_list.xhtml");
-    searchTab.getColumns().add(new Column("docId",
+    searchTab.getTableProperties().add(new TableProperty("docId",
       BUNDLE_PREFIX + "documentSearch_docId", "col-1"));
-    searchTab.getColumns().add(new Column("docTypeId",
+    searchTab.getTableProperties().add(new TableProperty("docTypeId",
       BUNDLE_PREFIX + "documentSearch_docTypeId", "col-3"));
-    Column titleColumn = new Column("title",
+    TableProperty titleColumn = new TableProperty("title",
       BUNDLE_PREFIX + "documentSearch_title", "col-8");
     titleColumn.setExpression("org.santfeliu.webapp.modules.doc.DocumentTypeBean.formatTitle(row)");
     titleColumn.setIcon("'text-xl mr-2 ' + org.santfeliu.webapp.modules.doc.DocumentTypeBean.getContentIcon(row)");
-    searchTab.getColumns().add(titleColumn);
+    searchTab.getTableProperties().add(titleColumn);
     
     searchTab.getOrderBy().add("changeDateTime:desc");
 

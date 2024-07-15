@@ -49,7 +49,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -89,7 +89,7 @@ public class PersonEventsTabBean extends TabBean
       }
 
       @Override
-      public List<Column> getColumns()
+      public List<TableProperty> getColumns()
       {
         return Collections.EMPTY_LIST;
       }

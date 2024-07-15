@@ -106,13 +106,7 @@ public class CaseDemandsTabBean extends TabBean
 
   public String getRootDemandTypeId()
   {
-    String typeId = null;
-
-    PropertyMap properties = caseObjectBean.getActiveEditTab().getProperties();
-    if (properties != null)
-    {
-      typeId = (String)properties.get("typeId");
-    }
+    String typeId = caseObjectBean.getActiveEditTab().getBaseTypeId();
     return typeId == null ? "Demand" : typeId;
   }
 

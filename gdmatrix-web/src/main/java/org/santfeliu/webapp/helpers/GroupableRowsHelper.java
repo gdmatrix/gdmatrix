@@ -33,7 +33,7 @@ package org.santfeliu.webapp.helpers;
 import java.util.List;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.WebUtils;
@@ -47,7 +47,7 @@ public abstract class GroupableRowsHelper
   private boolean groupedView = true;
   
   public abstract ObjectBean getObjectBean();
-  public abstract List<Column> getColumns();
+  public abstract List<TableProperty> getColumns();
   public abstract void sortRows();
   public abstract String getRowTypeColumnName();
   public abstract String getFixedColumnValue(Object row, String columnName);
@@ -62,19 +62,20 @@ public abstract class GroupableRowsHelper
     return evaluate(getGroupByDescriptionProperty());
   }
   
-  public boolean isColumnRendered(Column column)
+  public boolean isColumnRendered(TableProperty column)
   {
     return isColumnRendered(column.getName());
   }
   
   public boolean isColumnRendered(String columnName)
   {
+    if (columnName == null) return true;
+    
     if (!isGroupedView())
     {
       if (columnName.equals(getRowTypeColumnName()))
       {
-        String tabTypeId = getObjectBean().getActiveEditTab().getProperties().
-          getString("typeId");
+        String tabTypeId = getObjectBean().getActiveEditTab().getBaseTypeId();
         if (tabTypeId != null)
         {
           return !TypeCache.getInstance().getDerivedTypeIds(tabTypeId).

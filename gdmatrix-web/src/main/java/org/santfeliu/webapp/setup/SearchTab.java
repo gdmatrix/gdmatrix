@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.setup;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +42,10 @@ public class SearchTab
 {
   private String label;
   private String viewId;
-  private List<Column> columns = new ArrayList<>();
-  private List<Column> customColumns = new ArrayList<>();
+  
+  @SerializedName(value="tableProperties", alternate={"columns"})  
+  private List<TableProperty> tableProperties = new ArrayList<>();
+  
   private List<String> orderBy = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
 
@@ -72,25 +75,15 @@ public class SearchTab
     this.viewId = viewId;
   }
 
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
-    return columns;
+    return tableProperties;
   }
 
-  public void setColumns(List<Column> columns)
+  public void setTableProperties(List<TableProperty> tableProperties)
   {
-    this.columns = columns;
+    this.tableProperties = tableProperties;
   }
-
-  public List<Column> getCustomColumns()
-  {
-    return customColumns;
-  }
-
-  public void setCustomColumns(List<Column> customColumns)
-  {
-    this.customColumns = customColumns;
-  }  
   
   public List<String> getOrderBy()
   {

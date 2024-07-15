@@ -50,7 +50,7 @@ import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.cases.CasesModuleBean.getPort;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.SearchTab;
 
 /**
@@ -110,11 +110,11 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab = 
       new SearchTab("Llistat", "/pages/cases/case_list.xhtml");
-    searchTab.getColumns().add(new Column("caseId", 
+    searchTab.getTableProperties().add(new TableProperty("caseId", 
       BUNDLE_PREFIX + "case_caseId", "col-1"));
-    searchTab.getColumns().add(new Column("caseTypeId", 
+    searchTab.getTableProperties().add(new TableProperty("caseTypeId", 
       BUNDLE_PREFIX + "case_type", "col-3"));   
-    searchTab.getColumns().add(new Column("title", 
+    searchTab.getTableProperties().add(new TableProperty("title", 
       BUNDLE_PREFIX + "case_title", "col-8")); 
     searchTab.getOrderBy().add("caseId");
     searchTabs.add(searchTab);
@@ -133,16 +133,16 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       new EditTab(BUNDLE_PREFIX + "tab_persons", "fa fa-person", 
         "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
         "/pages/cases/case_persons_dialog.xhtml");
-    personsTab.getColumns().add(new Column("personId", 
+    personsTab.getTableProperties().add(new TableProperty("personId", 
       BUNDLE_PREFIX + "casePersons_id", "col-1"));
-    personsTab.getColumns().add(new Column("personName", 
+    personsTab.getTableProperties().add(new TableProperty("personName", 
       BUNDLE_PREFIX + "casePersons_person", "col-6"));    
-    personsTab.getColumns().add(new Column("casePersonTypeId", 
+    personsTab.getTableProperties().add(new TableProperty("casePersonTypeId", 
       BUNDLE_PREFIX + "casePersons_type", "col-3"));    
-    personsTab.getColumns().add(new Column("startDate", 
+    personsTab.getTableProperties().add(new TableProperty("startDate", 
       BUNDLE_PREFIX + "casePersons_startDate", 
       "col-1 text-center white-space-nowrap")); 
-    personsTab.getColumns().add(new Column("endDate", 
+    personsTab.getTableProperties().add(new TableProperty("endDate", 
       BUNDLE_PREFIX + "casePersons_endDate", 
       "col-1 text-center white-space-nowrap"));
     personsTab.getOrderBy().add("personId");
@@ -155,18 +155,18 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       new EditTab(BUNDLE_PREFIX + "tab_addresses", "pi pi-building", 
         "/pages/cases/case_addresses.xhtml", "caseAddressesTabBean", 
         "addresses1", "/pages/cases/case_addresses_dialog.xhtml");
-    addressesTab.getColumns().add(new Column("addressId", 
+    addressesTab.getTableProperties().add(new TableProperty("addressId", 
       BUNDLE_PREFIX + "caseAddresses_id", "col-1"));
-    addressesTab.getColumns().add(new Column("addressFullDescription", 
+    addressesTab.getTableProperties().add(new TableProperty("addressFullDescription", 
       BUNDLE_PREFIX + "caseAddresses_address", "col-5"));    
-    addressesTab.getColumns().add(new Column("caseAddressTypeId", 
+    addressesTab.getTableProperties().add(new TableProperty("caseAddressTypeId", 
       BUNDLE_PREFIX + "caseAddresses_type", "col-2"));    
-    addressesTab.getColumns().add(new Column("comments", 
+    addressesTab.getTableProperties().add(new TableProperty("comments", 
       BUNDLE_PREFIX + "caseAddresses_comments", "col-2")); 
-    addressesTab.getColumns().add(new Column("startDate", 
+    addressesTab.getTableProperties().add(new TableProperty("startDate", 
       BUNDLE_PREFIX + "caseAddresses_startDate", 
       "col-1 text-center white-space-nowrap"));    
-    addressesTab.getColumns().add(new Column("endDate", 
+    addressesTab.getTableProperties().add(new TableProperty("endDate", 
       BUNDLE_PREFIX + "caseAddresses_endDate", 
       "col-1 text-center white-space-nowrap"));
     addressesTab.getOrderBy().add("addressId");    
@@ -179,18 +179,18 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       new EditTab(BUNDLE_PREFIX + "tab_documents", "pi pi-file-o", 
         "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
         "/pages/cases/case_documents_dialog.xhtml");
-    documentsTab.getColumns().add(new Column("docId", 
+    documentsTab.getTableProperties().add(new TableProperty("docId", 
       BUNDLE_PREFIX + "caseDocuments_id", "col-1"));
-    documentsTab.getColumns().add(new Column("docLanguage", 
+    documentsTab.getTableProperties().add(new TableProperty("docLanguage", 
       BUNDLE_PREFIX + "caseDocuments_language", "col-1"));    
-    Column titleColumn = new Column("docTitle", 
+    TableProperty titleColumn = new TableProperty("docTitle", 
       BUNDLE_PREFIX + "caseDocuments_title", "col-5");        
     titleColumn.setIcon("org.santfeliu.webapp.modules.doc.DocumentTypeBean." + 
       "getContentIcon(row.getDocument()) + ' text-xl mr-1'");
-    documentsTab.getColumns().add(titleColumn);    
-    documentsTab.getColumns().add(new Column("caseDocTypeId", 
+    documentsTab.getTableProperties().add(titleColumn);    
+    documentsTab.getTableProperties().add(new TableProperty("caseDocTypeId", 
       BUNDLE_PREFIX + "caseDocuments_type", "col-3")); 
-    documentsTab.getColumns().add(new Column("docCreationDate", 
+    documentsTab.getTableProperties().add(new TableProperty("docCreationDate", 
       "$$documentBundle.document_creationDate", 
       "col-2 text-center"));
     documentsTab.getOrderBy().add("docId");
@@ -203,13 +203,13 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       new EditTab(BUNDLE_PREFIX + "tab_interventions", "pi pi-clock", 
         "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
         "act1", "/pages/cases/case_interventions_dialog.xhtml");
-    intEditTab.getColumns().add(new Column("intId", 
+    intEditTab.getTableProperties().add(new TableProperty("intId", 
       BUNDLE_PREFIX + "caseInterventions_id", "col-1")); 
-    intEditTab.getColumns().add(new Column("intTypeId", 
+    intEditTab.getTableProperties().add(new TableProperty("intTypeId", 
       BUNDLE_PREFIX + "caseInterventions_type", "col-9"));
-    intEditTab.getColumns().add(new Column("startDate", 
+    intEditTab.getTableProperties().add(new TableProperty("startDate", 
       BUNDLE_PREFIX + "caseInterventions_startDate", "col-1 text-center white-space-nowrap"));
-    intEditTab.getColumns().add(new Column("endDate", 
+    intEditTab.getTableProperties().add(new TableProperty("endDate", 
       BUNDLE_PREFIX + "caseInterventions_endDate", "col-1 text-center white-space-nowrap" ));
     intEditTab.getOrderBy().add("intId");
     intEditTab.getProperties().put("typeId", INTERVENTION_TYPE);
@@ -220,15 +220,15 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     EditTab casesEditTab = 
       new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", "/pages/cases/case_cases.xhtml", 
         "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml");   
-    casesEditTab.getColumns().add(new Column("caseId", 
+    casesEditTab.getTableProperties().add(new TableProperty("caseId", 
       BUNDLE_PREFIX + "caseCases_id", "col-1"));
-    casesEditTab.getColumns().add(new Column("caseTitle", 
+    casesEditTab.getTableProperties().add(new TableProperty("caseTitle", 
       BUNDLE_PREFIX + "caseCases_title", "col-5"));    
-    casesEditTab.getColumns().add(new Column("caseCaseTypeId", 
+    casesEditTab.getTableProperties().add(new TableProperty("caseCaseTypeId", 
       BUNDLE_PREFIX + "caseCases_type", "col-3"));    
-    casesEditTab.getColumns().add(new Column("startDate", 
+    casesEditTab.getTableProperties().add(new TableProperty("startDate", 
       BUNDLE_PREFIX + "caseCases_startDate", "col-1 text-center white-space-nowrap"));    
-    casesEditTab.getColumns().add(new Column("endDate", 
+    casesEditTab.getTableProperties().add(new TableProperty("endDate", 
       BUNDLE_PREFIX + "caseCases_endDate", "col-1 text-center white-space-nowrap"));
     casesEditTab.getOrderBy().add("caseId");
     casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
@@ -239,13 +239,13 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     EditTab eventsEditTab = new EditTab(BUNDLE_PREFIX + "tab_events", "pi pi-calendar", 
       "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
       "/pages/cases/case_events_dialog.xhtml");
-    eventsEditTab.getColumns().add(new Column("eventId", 
+    eventsEditTab.getTableProperties().add(new TableProperty("eventId", 
       BUNDLE_PREFIX + "caseEvents_id", "col-1"));
-    eventsEditTab.getColumns().add(new Column("eventTitle", 
+    eventsEditTab.getTableProperties().add(new TableProperty("eventTitle", 
       BUNDLE_PREFIX + "caseEvents_event", "col-7"));    
-    eventsEditTab.getColumns().add(new Column("caseEventTypeId", 
+    eventsEditTab.getTableProperties().add(new TableProperty("caseEventTypeId", 
       BUNDLE_PREFIX + "caseEvents_type", "col-3"));    
-    eventsEditTab.getColumns().add(new Column("eventIniDate", 
+    eventsEditTab.getTableProperties().add(new TableProperty("eventIniDate", 
       BUNDLE_PREFIX + "caseEvents_date", 
       "col-1 text-center white-space-nowrap"));
     eventsEditTab.getOrderBy().add("eventId");

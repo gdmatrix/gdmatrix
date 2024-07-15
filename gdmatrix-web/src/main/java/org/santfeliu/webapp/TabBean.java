@@ -130,10 +130,7 @@ public abstract class TabBean extends BaseBean
   public String getTabBaseTypeId()
   {
     EditTab editTab = getObjectBean().getActiveEditTab();
-    if (editTab == null || editTab.getProperties() == null)
-      return null;
-    
-    return editTab.getProperties().getString("typeId");
+    return (editTab != null ? editTab.getBaseTypeId() : null);
   }
   
   public boolean isLeafBaseType()

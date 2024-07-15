@@ -34,6 +34,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
@@ -48,7 +50,8 @@ import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.BaseBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
+import org.santfeliu.webapp.setup.TableProperty;
 
 /**
  *
@@ -61,7 +64,7 @@ public class DataTableRow implements Serializable
   protected Value[] values;
   protected String[] icons;
   protected String styleClass;
-  protected List<Property> customProperties = new ArrayList<>();
+  protected Map<String, Property> customPropertyMap = new HashMap<>();
 
   public DataTableRow(String rowId, String typeId)
   {
@@ -121,10 +124,11 @@ public class DataTableRow implements Serializable
   
   public List<Property> getCustomProperties()
   {
-    return customProperties;
-  }  
+    return new ArrayList(customPropertyMap.values());
+  }
   
-  public void setValues(BaseBean baseBean, Object row, List<Column> columns) 
+  public void setValues(BaseBean baseBean, Object row, 
+    List<TableProperty> tableProperties) 
     throws Exception
   {
     ScriptClient scriptClient = baseBean.getObjectBean().getScriptClient();
@@ -132,70 +136,62 @@ public class DataTableRow implements Serializable
       scriptClient = newScriptClient();
     
     scriptClient.put("row", row); 
-    scriptClient.put("baseBean", baseBean); 
+    scriptClient.put("baseBean", baseBean);
     
-    values = new Value[columns.size()];
-    icons = new String[columns.size()];
-    for (int i = 0; i < columns.size(); i++)
+    TypeCache typeCache = TypeCache.getInstance();
+    Type rowType = typeCache.getType(typeId);
+    
+    //Column properties
+    List<TableProperty> columnTableProperties = 
+      TablePropertyHelper.getColumnTableProperties(tableProperties);
+    values = new Value[columnTableProperties.size()];
+    icons = new String[columnTableProperties.size()];
+    for (int i = 0; i < columnTableProperties.size(); i++)
     {  
-      Column column = columns.get(i);
-      if (column.getExpression() != null)
-      {
-        values[i] = new DefaultValue(scriptClient.execute(column.getExpression()));
-      }
-      else
-      {
-        Property property = DictionaryUtils.getProperty(row, column.getName());
-        if (property != null)
+      TableProperty columnProperty = columnTableProperties.get(i);
+      if (columnProperty.getTypeId() == null || 
+        rowType.isDerivedFrom(columnProperty.getTypeId()))
+      {      
+        values[i] = getTablePropertyValue(scriptClient, columnProperty, row);      
+        if (columnProperty.getIcon() != null)
         {
-          String columnName = column.getName();
-          List<String> value = property.getValue();
-          values[i] = formatValue(typeId, columnName, value);            
+          icons[i] = (String) scriptClient.execute(columnProperty.getIcon());          
         }
-        else
-          values[i] = getDefaultValue(column.getName());
       }
-      
-      if (column.getIcon() != null)
+    }
+    
+    //Row properties
+    List<TableProperty> rowTableProperties = 
+      TablePropertyHelper.getRowTableProperties(tableProperties);    
+    for (int i = 0; i < rowTableProperties.size(); i++)
+    {  
+      TableProperty rowProperty = rowTableProperties.get(i);
+      if (rowProperty.getTypeId() == null || 
+        rowType.isDerivedFrom(rowProperty.getTypeId()))
       {
-        icons[i] = (String) scriptClient.execute(column.getIcon());          
+        Value value = getTablePropertyValue(scriptClient, rowProperty, row);
+        if (value != null && !StringUtils.isBlank(value.getLabel()))
+        {
+          addCustomProperty(rowProperty.getLabel(), value.getLabel());
+        }
       }
     }    
   }
-  
-  public void setCustomValues(BaseBean baseBean, 
-    Object row, List<Column> customColumns) throws Exception
-  {
-    ScriptClient scriptClient = baseBean.getObjectBean().getScriptClient();
-    if (scriptClient == null)
-      scriptClient = newScriptClient();
 
-    scriptClient.put("row", row);
-    scriptClient.put("baseBean", baseBean);
-    
-    for (int i = 0; i < customColumns.size(); i++)
-    {
-      Column customColumn = customColumns.get(i);
-      if (customColumn.getExpression() != null)
-      {
-        try
-        {
-          Value value = new DefaultValue(scriptClient.execute(
-            customColumn.getExpression()));
-          if (value.getLabel() != null)
-          {
-            Property property = new Property();
-            property.setName(customColumn.getLabel());
-            property.getValue().add(value.getLabel());
-            getCustomProperties().add(property);            
-          }
-        }
-        catch (Exception ex) { }
-      }
-    }
+  public void addCustomProperty(String name, String value)
+  {
+    Property property = new Property();
+    property.setName(name);
+    property.getValue().add(value);
+    customPropertyMap.put(name, property);    
+  }
+
+  public boolean removeCustomProperty(String name)
+  {
+    return (customPropertyMap.remove(name) != null);
   }
   
-  public Value getColumnValue(List<Column> columns, String colName)
+  public Value getColumnValue(List<TableProperty> columns, String colName)
   {
     for (int i = 0; i < columns.size(); i++)
     {
@@ -205,7 +201,7 @@ public class DataTableRow implements Serializable
       }
     }
     return null;    
-  }  
+  }
 
   protected ScriptClient newScriptClient() throws Exception
   {
@@ -283,6 +279,28 @@ public class DataTableRow implements Serializable
     return rowValue != null ? rowValue : new DefaultValue("");
   }
 
+  private Value getTablePropertyValue(ScriptClient scriptClient, 
+    TableProperty tableProperty, Object row) throws Exception
+  {
+    if (tableProperty.getExpression() != null)
+    {
+      return new DefaultValue(
+        scriptClient.execute(tableProperty.getExpression()));
+    }
+    else
+    {
+      Property property = 
+        DictionaryUtils.getProperty(row, tableProperty.getName());
+      if (property != null)
+      {
+        List<String> value = property.getValue();
+        return formatValue(typeId, tableProperty.getName(), value);
+      }
+      else
+        return getDefaultValue(tableProperty.getName());
+    }
+  }
+  
   public abstract class Value
   {
     protected Object sorted;
@@ -308,7 +326,7 @@ public class DataTableRow implements Serializable
       this.sorted = label;
     }  
   }
-  
+
   public class DateValue extends Value
   {
     public DateValue(String value)

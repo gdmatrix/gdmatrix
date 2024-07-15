@@ -54,9 +54,10 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
@@ -71,7 +72,6 @@ import org.santfeliu.webapp.util.WebUtils;
 @ViewScoped
 public class CaseCasesTabBean extends TabBean
 {
-  private static final String TYPEID_PROPERTY = "typeId";
   private static final String TYPEID1_PROPERTY = "typeId1";
   private static final String TYPEID2_PROPERTY = "typeId2";
 
@@ -119,8 +119,8 @@ public class CaseCasesTabBean extends TabBean
     public TypeSelectHelper getTypeSelectHelper()
     {
       return typeSelectHelper;
-    }    
-  }
+    }
+  }    
 
   private CaseCase editing;
   private String formSelector;
@@ -144,7 +144,7 @@ public class CaseCasesTabBean extends TabBean
       }
 
       @Override
-      public List<Column> getColumns()
+      public List<TableProperty> getColumns()
       {
         return CaseCasesTabBean.this.getColumns();
       }
@@ -244,23 +244,19 @@ public class CaseCasesTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }  
   
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
     if (activeEditTab != null)
-      return activeEditTab.getColumns();
+      return activeEditTab.getTableProperties();
     else
       return Collections.EMPTY_LIST;
   }
   
-  public List<Column> getCustomColumns()
+  public List<TableProperty> getColumns()
   {
-    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
-    if (activeEditTab != null)
-      return activeEditTab.getCustomColumns();
-    else
-      return Collections.EMPTY_LIST;
-  }  
+    return TablePropertyHelper.getColumnTableProperties(getTableProperties());
+  }
   
   public CaseCase getEditing()
   {
@@ -395,8 +391,7 @@ public class CaseCasesTabBean extends TabBean
           }
           else
           {
-            String typeId =
-              editTab.getProperties().getString(TYPEID_PROPERTY);
+            String typeId = editTab.getBaseTypeId();
             getCurrentTabInstance().rows =
               getResultsByDefault(typeId);
           }
@@ -568,7 +563,7 @@ public class CaseCasesTabBean extends TabBean
       }
     }
     
-    List<CaseCasesDataTableRow> auxList = toDataTableRows(results);    
+    List<CaseCasesDataTableRow> auxList = toDataTableRows(results);
     Collections.sort(auxList, 
       new DataTableRowComparator(getColumns(), getOrderBy()));
     return auxList;
@@ -592,8 +587,7 @@ public class CaseCasesTabBean extends TabBean
     for (CaseCaseView row : caseCaseViews)
     {
       CaseCasesDataTableRow dataTableRow = new CaseCasesDataTableRow(row);
-      dataTableRow.setValues(this, row, getColumns());
-      dataTableRow.setCustomValues(this, row, getCustomColumns());      
+      dataTableRow.setValues(this, row, getTableProperties());
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }

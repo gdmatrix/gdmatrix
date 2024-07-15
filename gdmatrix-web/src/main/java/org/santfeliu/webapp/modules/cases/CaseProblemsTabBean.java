@@ -111,13 +111,7 @@ public class CaseProblemsTabBean extends TabBean
 
   public String getRootProblemTypeId()
   {
-    String typeId = null;
-
-    PropertyMap properties = caseObjectBean.getActiveEditTab().getProperties();
-    if (properties != null)
-    {
-      typeId = (String)properties.get("typeId");
-    }
+    String typeId = caseObjectBean.getActiveEditTab().getBaseTypeId();
     return typeId == null ? "Problem" : typeId;
   }
 

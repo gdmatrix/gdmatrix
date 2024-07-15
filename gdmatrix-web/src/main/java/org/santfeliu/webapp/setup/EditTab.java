@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.setup;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +47,16 @@ public class EditTab implements Serializable
   private String beanName;
   private String subviewId;
   private String dialogViewId;
-  private List<Column> columns = new ArrayList<>();
-  private List<Column> customColumns = new ArrayList<>();
+      
+  @SerializedName(value="tableProperties", alternate={"columns"})  
+  private List<TableProperty> tableProperties = new ArrayList<>();
+  
   private PropertyMap properties = new PropertyMap();
   private List<String> readRoles = new ArrayList();
   private List<String> writeRoles = new ArrayList(); 
   private List<String> orderBy = new ArrayList();
   private String groupBy;
+  private String typeId;
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -135,24 +139,14 @@ public class EditTab implements Serializable
     this.dialogViewId = dialogViewId;
   }
 
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
-    return columns;
+    return tableProperties;
   }
 
-  public void setColumns(List<Column> columns)
+  public void setTableProperties(List<TableProperty> tableProperties)
   {
-    this.columns = columns;
-  }
-
-  public List<Column> getCustomColumns()
-  {
-    return customColumns;
-  }
-
-  public void setCustomColumns(List<Column> customColumns)
-  {
-    this.customColumns = customColumns;
+    this.tableProperties = tableProperties;
   }
 
   public void setProperties(PropertyMap properties)
@@ -205,6 +199,29 @@ public class EditTab implements Serializable
     this.groupBy = groupBy;
   }
 
+  public String getTypeId()
+  {
+    return typeId;
+  }
+
+  public void setTypeId(String typeId)
+  {
+    this.typeId = typeId;
+  }
+
+  public String getBaseTypeId()
+  {
+    if (getTypeId() != null)
+    {
+      return getTypeId();
+    }
+    else if (getProperties() != null)
+    {
+      return getProperties().getString("typeId");
+    }
+    else return null;
+  }
+  
   public static String createSubviewId(String viewId)
   {
     int index = viewId.lastIndexOf("/");

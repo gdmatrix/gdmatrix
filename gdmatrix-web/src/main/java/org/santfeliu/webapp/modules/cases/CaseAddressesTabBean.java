@@ -58,11 +58,12 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.AddressTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRowComparator;
@@ -116,12 +117,12 @@ public class CaseAddressesTabBean extends TabBean
         firstRow = 0;
       }
     };
-    
+
     public TypeSelectHelper getTypeSelectHelper()
     {
       return typeSelectHelper;
-    }    
-  }
+    }
+  }    
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -145,7 +146,7 @@ public class CaseAddressesTabBean extends TabBean
       }
 
       @Override
-      public List<Column> getColumns()
+      public List<TableProperty> getColumns()
       {
         return CaseAddressesTabBean.this.getColumns();
       }
@@ -155,7 +156,7 @@ public class CaseAddressesTabBean extends TabBean
       {
         Collections.sort(getCurrentTabInstance().rows, 
           new DataTableRowComparator(getColumns(), getOrderBy()));      
-      }      
+      }
 
       @Override
       public String getRowTypeColumnName()
@@ -168,7 +169,7 @@ public class CaseAddressesTabBean extends TabBean
       {
         return null; //No fixed columns
       }
-    };    
+    };
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -296,22 +297,18 @@ public class CaseAddressesTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }  
   
-  public List<Column> getColumns()
+  public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
     if (activeEditTab != null)
-      return activeEditTab.getColumns();
+      return activeEditTab.getTableProperties();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
-  public List<Column> getCustomColumns()
+  }
+
+  public List<TableProperty> getColumns()
   {
-    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
-    if (activeEditTab != null)
-      return activeEditTab.getCustomColumns();
-    else
-      return Collections.EMPTY_LIST;
+    return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }  
   
   public void edit(DataTableRow row)
@@ -587,8 +584,7 @@ public class CaseAddressesTabBean extends TabBean
     {
       CaseAddressesDataTableRow dataTableRow = 
         new CaseAddressesDataTableRow(row);
-      dataTableRow.setValues(this, row, getColumns());
-      dataTableRow.setCustomValues(this, row, getCustomColumns());      
+      dataTableRow.setValues(this, row, getTableProperties());      
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }

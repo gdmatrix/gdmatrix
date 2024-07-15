@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow.Value;
 
 /**
@@ -43,11 +43,12 @@ import org.santfeliu.webapp.util.DataTableRow.Value;
  */
 public class DataTableRowComparator implements Comparator<DataTableRow>
 {
-  private final List<Column> columns;
+  private final List<TableProperty> columns;
   private final List<String> orderBy;
   private final Map<String, Integer> columnMap = new HashMap(); //name -> index
 
-  public DataTableRowComparator(List<Column> columns, List<String> orderBy)
+  public DataTableRowComparator(List<TableProperty> columns, 
+    List<String> orderBy)
   {
     this.columns = columns;
     this.orderBy = orderBy;
