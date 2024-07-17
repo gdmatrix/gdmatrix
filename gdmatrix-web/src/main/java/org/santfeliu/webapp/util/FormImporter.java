@@ -84,6 +84,7 @@ import org.santfeliu.form.type.html.HtmlRadioView;
 import org.santfeliu.form.type.html.HtmlSelectView;
 import org.santfeliu.form.type.html.HtmlView;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.converters.SpecialCharsConverter;
 import org.santfeliu.webapp.modules.geo.io.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
 
@@ -592,6 +593,7 @@ public class FormImporter
                 (Quill)application.createComponent(Quill.COMPONENT_TYPE);
               quill.setReadonly(field.isReadOnly());
               if (field.getMinOccurs() > 0) setRequired(quill);
+              quill.setConverter(new SpecialCharsConverter());
               component = quill;
             }
             break;
@@ -602,6 +604,7 @@ public class FormImporter
                 (TinyMCE)application.createComponent(TinyMCE.COMPONENT_TYPE);
               tinymce.setReadonly(field.isReadOnly());
               if (field.getMinOccurs() > 0) setRequired(tinymce);
+              tinymce.setConverter(new SpecialCharsConverter());
               component = tinymce;
             }
             break;
@@ -629,6 +632,7 @@ public class FormImporter
                 (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
               inputTextarea.setReadonly(field.isReadOnly());
               if (field.getMinOccurs() > 0) setRequired(inputTextarea);
+              inputTextarea.setConverter(new SpecialCharsConverter());
               component = inputTextarea;
             }
           }

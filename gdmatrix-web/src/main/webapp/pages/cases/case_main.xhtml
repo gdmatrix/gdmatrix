@@ -36,7 +36,7 @@
         <p:outputLabel for="@next"
                        value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}"
                        indicateRequired="true"/>
-        <p:inputTextarea value="#{caseObjectBean.case.title}"
+        <p:inputTextarea value="#{caseObjectBean.case.title}" converter="specialCharsConverter"
                          required="#{not empty param['mainform:search_tabs:store']}"
                          requiredMessage="'#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}'  #{messageBundle.IS_REQUIRED}"
                          readonly="#{!caseObjectBean.editable}" />
@@ -89,13 +89,13 @@
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('description')}">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('description', caseBundle.case_description)}" />
-        <p:inputTextarea value="#{caseObjectBean.case.description}"
+        <p:inputTextarea value="#{caseObjectBean.case.description}" converter="specialCharsConverter"
                          readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('comments', caseBundle.case_comments)}" />
-        <p:inputTextarea value="#{caseObjectBean.case.comments}"
+        <p:inputTextarea value="#{caseObjectBean.case.comments}" converter="specialCharsConverter"
                          readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
