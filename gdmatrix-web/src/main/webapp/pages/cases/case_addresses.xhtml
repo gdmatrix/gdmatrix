@@ -103,17 +103,16 @@
       </p:column>
       
       <p:rowExpansion rendered="#{not row.customProperties.isEmpty()}">
-        <p:dataView value="#{row.customProperties}" var="customProperty"
-                     styleClass="customProperties">
-          <p:dataViewListItem>
-            <div class="row flex">
-              <div class="cell propName #{row.styleClass}">#{customProperty.name}</div>
-              <div class="cell propValue #{row.styleClass}">
-                <h:outputText value="#{customProperty.value[0]}" escape="false"/>
-              </div>
-            </div>
-          </p:dataViewListItem>            
-        </p:dataView>
+        <p:dataTable value="#{row.customProperties}" var="customProperty"
+                     styleClass="customProperties" rowStyleClass="row" 
+                     showGridlines="false" stripedRows="false">
+          <p:column styleClass="cell propName #{row.styleClass}">
+            <h:outputText value="#{customProperty.name}" />
+          </p:column>
+          <p:column styleClass="cell propValue #{row.styleClass}">
+            <h:outputText value="#{customProperty.value[0]}" escape="false" />
+          </p:column>
+        </p:dataTable>
       </p:rowExpansion>    
       
     </p:dataTable>

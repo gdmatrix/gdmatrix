@@ -786,3 +786,42 @@ body div.field
   outline: 3px solid var(--surface-400);
 }
 
+/***** Custom properties *****/
+
+.customProperties
+{
+  width: 100%;
+}
+
+.customProperties table
+{
+  table-layout: fixed;
+  width: 100%;
+}
+
+.customProperties thead
+{
+  display: none;
+}
+
+.customProperties .row
+{
+  background: unset !important;
+}
+
+.customProperties .cell
+{
+  font-size: 10px;
+  padding: 0.5rem;
+  word-break: break-word;
+  border: 0 !important;
+}
+
+.customProperties .cell.propName
+{
+  width: 100px;  
+}
+
+.customProperties .cell.propValue
+{
+}
