@@ -279,7 +279,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     if (query == null) query = "";
 
     CaseFilter filter = new CaseFilter();
-    if (query.matches(".{0,4}[0-9]+"))
+    if (query.matches("([a-zA-Z0-9]+:[a-zA-Z0-9]+)|(\\d+)"))
     {
       filter.getCaseId().add(query);
     }
