@@ -411,7 +411,7 @@ public class EventFinderBean extends FinderBean
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
     setFromDate(getDefaultFromDate());
-    filter.setDateComparator("1");
+    filter.setDateComparator("S");
     setSearchEventTypeId(null);
     setSearchEventThemeId(null);
     doFind(true);
@@ -428,7 +428,7 @@ public class EventFinderBean extends FinderBean
     if (filter.getStartDateTime() == null)
     {
       setFromDate(getDefaultFromDate());
-      filter.setDateComparator("1");
+      filter.setDateComparator("S");
     }
 
     filter.getEventTypeId().clear();
@@ -483,7 +483,7 @@ public class EventFinderBean extends FinderBean
     filter = new EventFilter();
     smartFilter = null;
     setFromDate(getDefaultFromDate());
-    filter.setDateComparator("1");
+    filter.setDateComparator("S");
     searchEventTypeId = null;
     searchEventThemeId = null;
     rows = null;
