@@ -38,16 +38,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.dic.EnumTypeItem;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
+import org.santfeliu.dic.EnumTypeCache;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
-import org.santfeliu.util.Table;
 import org.santfeliu.util.TextUtils;
-import org.santfeliu.util.data.DataProvider;
-import org.santfeliu.util.data.DataProviderFactory;
 import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
@@ -369,17 +368,11 @@ public class DataTableRow implements Serializable
     public EnumTypeValue(String enumTypeId, Object value, PropertyType propType)
       throws Exception
     {
-      DataProviderFactory factory = DataProviderFactory.getInstance();
-      String ref = "enumtype:" + enumTypeId;
-      DataProvider provider;
-
-      provider = factory.createProvider(ref);
-      HashMap context = new HashMap();
-      context.put("value", value);
-      Table data = provider.getData(context);
-      if (data != null && !data.isEmpty())
+      List<EnumTypeItem> items =
+        EnumTypeCache.getInstance().getItemsByValue(enumTypeId, (String)value);
+      if (items != null && !items.isEmpty())
       {
-        label = (String) data.getElementAt(0, 1); //Label column of first value
+        label = items.get(0).getLabel();
       }
       if (!propType.equals(PropertyType.NUMERIC))
         sorted = label;

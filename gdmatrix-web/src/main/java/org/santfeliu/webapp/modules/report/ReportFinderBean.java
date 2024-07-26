@@ -39,17 +39,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.EnumTypeItem;
-import org.matrix.dic.EnumTypeItemFilter;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.report.Report;
+import org.santfeliu.dic.EnumTypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.modules.dic.DicModuleBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import static org.santfeliu.webapp.modules.report.ReportTypeBean.REPORT_DOC_TYPE;
 
@@ -88,10 +87,7 @@ public class ReportFinderBean extends FinderBean
   {
     try    
     {
-      EnumTypeItemFilter enumTypeFilter = new EnumTypeItemFilter();
-      enumTypeFilter.setEnumTypeId("ReportThemes");      
-      themeItems = 
-        DicModuleBean.getPort(false).findEnumTypeItems(enumTypeFilter);
+      themeItems = EnumTypeCache.getInstance().getItems("ReportThemes");
     }
     catch (Exception ex)
     {

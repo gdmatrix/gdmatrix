@@ -36,10 +36,9 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.dic.DictionaryManagerPort;
 import org.matrix.dic.EnumTypeItem;
-import org.matrix.dic.EnumTypeItemFilter;
 import org.primefaces.event.ReorderEvent;
+import org.santfeliu.dic.EnumTypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -128,9 +127,7 @@ public class EnumTypeItemsTabBean extends TabBean
     {     
       try
       {
-        EnumTypeItemFilter filter = new EnumTypeItemFilter();
-        filter.setEnumTypeId(getObjectId());
-        rows = DicModuleBean.getPort(false).findEnumTypeItems(filter);
+        rows = EnumTypeCache.getInstance().getItems(getObjectId());
       }
       catch (Exception ex)
       {
@@ -157,7 +154,7 @@ public class EnumTypeItemsTabBean extends TabBean
     {
       if (itemId != null)
       {
-        editing = DicModuleBean.getPort(false).loadEnumTypeItem(itemId);
+        editing = EnumTypeCache.getInstance().getItem(itemId);
       }
       else
       {
@@ -230,7 +227,8 @@ public class EnumTypeItemsTabBean extends TabBean
       if (editing != null)
       {
         DicModuleBean.getPort(false).storeEnumTypeItem(editing);
-        growl("STORE_OBJECT");        
+        growl("STORE_OBJECT");
+        EnumTypeCache.getInstance().clear(getObjectId());
         load();        
         editing = null;
       }
@@ -253,6 +251,7 @@ public class EnumTypeItemsTabBean extends TabBean
 
       DicModuleBean.getPort(false).removeEnumTypeItem(rowEnumTypeItemId);
       growl("REMOVE_OBJECT");
+      EnumTypeCache.getInstance().clear(getObjectId());
       load();      
     }
     catch (Exception ex)
@@ -261,10 +260,9 @@ public class EnumTypeItemsTabBean extends TabBean
     }
   }
 
-  public String cancel()
+  public void cancel()
   {
     editing = null;
-    return null;
   }
 
   @Override
@@ -279,8 +277,8 @@ public class EnumTypeItemsTabBean extends TabBean
     {
       EnumTypeItem row = rows.get(event.getToIndex());
       String itemId = row.getEnumTypeItemId();
-      DictionaryManagerPort port = DicModuleBean.getPort(false);
-      EnumTypeItem item = port.loadEnumTypeItem(itemId);
+      EnumTypeItem item = 
+        EnumTypeCache.getInstance().getItem(itemId);      
       if (event.getToIndex() < event.getFromIndex())
       {
         item.setIndex(event.getToIndex() + 1);
@@ -293,8 +291,9 @@ public class EnumTypeItemsTabBean extends TabBean
       {
         return;
       }
-      port.storeEnumTypeItem(item);
-      load();      
+      DicModuleBean.getPort(false).storeEnumTypeItem(item);
+      EnumTypeCache.getInstance().clear(getObjectId());
+      load();
     }
     catch (Exception ex)
     {
@@ -324,24 +323,19 @@ public class EnumTypeItemsTabBean extends TabBean
     }
   }  
   
-  private boolean isNew(EnumTypeItem enumTypeItem)
-  {
-    return (enumTypeItem != null &&
-      enumTypeItem.getEnumTypeItemId() == null);
-  }
-  
   private void swapRow(int bottomRowIndex) throws Exception 
   {
     if (rows != null && rows.size() >= 2)
     {
       EnumTypeItem bottomRow = rows.get(bottomRowIndex);
       String bottomItemId = bottomRow.getEnumTypeItemId();
-      DictionaryManagerPort port = DicModuleBean.getPort(false);
-      EnumTypeItem bottomItem = port.loadEnumTypeItem(bottomItemId);
+      EnumTypeItem bottomItem = 
+        EnumTypeCache.getInstance().getItem(bottomItemId);
       bottomItem.setIndex(bottomRowIndex); //itemIndex = rowIndex + 1
       //store automatically shifts lower items
-      port.storeEnumTypeItem(bottomItem); 
+      DicModuleBean.getPort(false).storeEnumTypeItem(bottomItem);
+      EnumTypeCache.getInstance().clear(getObjectId());
     }
-  }  
+  }
   
 }

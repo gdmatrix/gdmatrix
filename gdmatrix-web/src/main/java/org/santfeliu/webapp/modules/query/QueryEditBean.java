@@ -37,14 +37,12 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.dic.EnumTypeItem;
-import org.matrix.dic.EnumTypeItemFilter;
-import org.santfeliu.dic.TypeCache;
 import org.santfeliu.misc.query.Query;
 import org.santfeliu.misc.query.Query.Output;
 import org.santfeliu.misc.query.Query.Parameter;
 import org.santfeliu.misc.query.Query.Predicate;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.modules.dic.DicModuleBean;
 
 /**
  *
@@ -321,7 +319,7 @@ public class QueryEditBean extends WebBean implements Serializable
   {
     if (queryScopeSelectItems == null)
     {
-      queryScopeSelectItems = getEnumTypeSelectItems(
+      queryScopeSelectItems = DicModuleBean.getEnumTypeSelectItems(
         QueryMainBean.QUERY_SCOPE_TYPEID);
     }
     return queryScopeSelectItems;
@@ -336,7 +334,7 @@ public class QueryEditBean extends WebBean implements Serializable
   {
     if (queryTypeSelectItems == null)
     {
-      queryTypeSelectItems = getEnumTypeSelectItems(
+      queryTypeSelectItems = DicModuleBean.getEnumTypeSelectItems(
         QueryMainBean.QUERY_TYPE_TYPEID);
     }
     return queryTypeSelectItems;
@@ -351,7 +349,7 @@ public class QueryEditBean extends WebBean implements Serializable
   {
     if (queryObjectSelectItems == null)
     {
-      queryObjectSelectItems = getEnumTypeSelectItems(
+      queryObjectSelectItems = DicModuleBean.getEnumTypeSelectItems(
         QueryMainBean.QUERY_OBJECT_TYPEID);
     }
     return queryObjectSelectItems;
@@ -425,24 +423,6 @@ public class QueryEditBean extends WebBean implements Serializable
     {
       error(ex);
     }
-  }
-  
-  private List<SelectItem> getEnumTypeSelectItems(String enumTypeId)
-  {
-    List<SelectItem> selectItems = new ArrayList();
-    TypeCache typeCache = TypeCache.getInstance();
-    EnumTypeItemFilter filter = new EnumTypeItemFilter();
-    filter.setEnumTypeId(enumTypeId);
-    List<EnumTypeItem> items =
-      typeCache.getPort().findEnumTypeItems(filter);
-    for (EnumTypeItem item : items)
-    {
-      SelectItem selectItem = new SelectItem();
-      selectItem.setLabel(item.getLabel());
-      selectItem.setValue(item.getValue());
-      selectItems.add(selectItem);
-    }
-    return selectItems;
   }
 
   private boolean isRenderMoveElementUpButton(List elementList, Object element)

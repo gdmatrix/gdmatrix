@@ -45,8 +45,10 @@ import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.DictionaryManagerPort;
 import org.matrix.dic.DictionaryManagerService;
+import org.matrix.dic.EnumTypeItem;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
+import org.santfeliu.dic.EnumTypeCache;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 
@@ -138,6 +140,24 @@ public class DicModuleBean
     String bundleName = context.getApplication().getMessageBundle();
     ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale);
     return getLocalizedAction(action, bundle);
+  }
+
+  public static List<SelectItem> getEnumTypeSelectItems(String enumTypeId)
+  {
+    List<SelectItem> result = new ArrayList();
+    List<EnumTypeItem> enumItems = 
+      EnumTypeCache.getInstance().getItems(enumTypeId);
+    if (enumItems != null)
+    {
+      for (EnumTypeItem enumItem : enumItems)
+      {
+        SelectItem selectItem = 
+          new SelectItem(enumItem.getValue(), enumItem.getLabel(), 
+            enumItem.getDescription());
+        result.add(selectItem);
+      }
+    }
+    return result;
   }  
 
   private String getLocalizedAction(String action, ResourceBundle bundle)

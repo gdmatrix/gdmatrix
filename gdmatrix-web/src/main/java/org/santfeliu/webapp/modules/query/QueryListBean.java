@@ -43,7 +43,7 @@ import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.OrderByProperty;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.dic.util.DictionaryUtils;
-import org.santfeliu.dic.web.DictionaryConfigBean;
+import org.santfeliu.webapp.modules.dic.DicModuleBean;
 
 /**
  *
@@ -135,7 +135,7 @@ public class QueryListBean extends WebBean implements Serializable
   {
     if (queryScopeSelectItems == null)
     {
-      queryScopeSelectItems = DictionaryConfigBean.getEnumTypeSelectItems(
+      queryScopeSelectItems = DicModuleBean.getEnumTypeSelectItems(
         QueryMainBean.QUERY_SCOPE_TYPEID);
     }
     return queryScopeSelectItems;
@@ -145,7 +145,7 @@ public class QueryListBean extends WebBean implements Serializable
   {
     if (queryTypeSelectItems == null)
     {
-      queryTypeSelectItems = DictionaryConfigBean.getEnumTypeSelectItems(
+      queryTypeSelectItems = DicModuleBean.getEnumTypeSelectItems(
         QueryMainBean.QUERY_TYPE_TYPEID);
     }
     return queryTypeSelectItems;
@@ -155,7 +155,7 @@ public class QueryListBean extends WebBean implements Serializable
   {
     if (queryObjectSelectItems == null)
     {
-      queryObjectSelectItems = DictionaryConfigBean.getEnumTypeSelectItems(
+      queryObjectSelectItems = DicModuleBean.getEnumTypeSelectItems(
         QueryMainBean.QUERY_OBJECT_TYPEID);
     }
     return queryObjectSelectItems;

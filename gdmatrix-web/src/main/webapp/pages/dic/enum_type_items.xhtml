@@ -176,7 +176,8 @@
                          icon="pi pi-save"/>
         <p:commandButton action="#{enumTypeItemsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
-                         immediate="true" update="enum_type_items_panel" global="false"
+                         process="@this"
+                         update="enum_type_items_dialog" global="false"
                          onclick="PF('enumTypeItemsDialog').hide()"
                          icon="pi pi-times" />
       </div>
