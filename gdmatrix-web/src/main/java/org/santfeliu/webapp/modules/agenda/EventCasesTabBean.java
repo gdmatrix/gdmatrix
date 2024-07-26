@@ -109,8 +109,11 @@ public class EventCasesTabBean extends TabBean
       @Override
       public void sortRows()
       {
-        Collections.sort(getCurrentTabInstance().rows, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));
+        if (getOrderBy() != null)
+        {
+          Collections.sort(getCurrentTabInstance().rows, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
       }
 
       @Override
@@ -297,8 +300,11 @@ public class EventCasesTabBean extends TabBean
         List<CaseEventView> events = 
           CasesModuleBean.getPort(false).findCaseEventViews(filter);
         List<CaseEventsDataTableRow> auxList = toDataTableRows(events);
-        Collections.sort(auxList, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));
+        if (getOrderBy() != null)
+        {        
+          Collections.sort(auxList, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
         setRows(auxList);
       }
       catch (Exception ex)

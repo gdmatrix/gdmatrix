@@ -1,37 +1,39 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,14 +66,15 @@ public class DataTableRow implements Serializable
   protected Value[] values;
   protected String[] icons;
   protected String styleClass;
-  protected Map<String, Property> customPropertyMap = new HashMap<>();
+  //name -> CustomProperty
+  protected Map<String, CustomProperty> customPropertyMap = new HashMap<>();
 
   public DataTableRow(String rowId, String typeId)
   {
     this.rowId = rowId;
     this.typeId = typeId;
   }
- 
+
   public String getRowId()
   {
     return rowId;
@@ -101,12 +104,12 @@ public class DataTableRow implements Serializable
   {
     this.icons = icons;
   }
-  
+
   public Value[] getValues()
   {
     return values;
   }
-  
+
   public void setValues(Value[] values)
   {
     this.values = values;
@@ -121,119 +124,142 @@ public class DataTableRow implements Serializable
   {
     this.styleClass = styleClass;
   }
-  
-  public List<Property> getCustomProperties()
+
+  public List<CustomProperty> getCustomProperties()
   {
-    return new ArrayList(customPropertyMap.values());
+    List<CustomProperty> auxList = new ArrayList(customPropertyMap.values());
+    Collections.sort(auxList, new Comparator<CustomProperty>()
+    {
+      @Override
+      public int compare(CustomProperty cp1, CustomProperty cp2)
+      {
+        String s1 = StringUtils.defaultString(cp1.getLabel()).toLowerCase();
+        String s2 = StringUtils.defaultString(cp2.getLabel()).toLowerCase();
+        return s1.compareTo(s2);
+      }
+    });
+    return auxList;
   }
-  
-  public void setValues(BaseBean baseBean, Object row, 
-    List<TableProperty> tableProperties) 
+
+  public void setValues(BaseBean baseBean, Object row,
+    List<TableProperty> tableProperties)
     throws Exception
   {
     ScriptClient scriptClient = baseBean.getObjectBean().getScriptClient();
     if (scriptClient == null)
       scriptClient = newScriptClient();
-    
-    scriptClient.put("row", row); 
+
+    scriptClient.put("row", row);
     scriptClient.put("baseBean", baseBean);
-    
+
     TypeCache typeCache = TypeCache.getInstance();
     Type rowType = typeCache.getType(typeId);
-    
+
     //Column properties
-    List<TableProperty> columnTableProperties = 
+    List<TableProperty> columnTableProperties =
       TablePropertyHelper.getColumnTableProperties(tableProperties);
     values = new Value[columnTableProperties.size()];
     icons = new String[columnTableProperties.size()];
     for (int i = 0; i < columnTableProperties.size(); i++)
-    {  
+    {
       TableProperty columnProperty = columnTableProperties.get(i);
-      if (columnProperty.getTypeId() == null || 
+      if (columnProperty.getTypeId() == null ||
         rowType.isDerivedFrom(columnProperty.getTypeId()))
-      {      
-        values[i] = getTablePropertyValue(scriptClient, columnProperty, row);      
+      {
+        values[i] = getTablePropertyValue(scriptClient, columnProperty, row);
         if (columnProperty.getIcon() != null)
         {
-          icons[i] = (String) scriptClient.execute(columnProperty.getIcon());          
+          icons[i] = (String) scriptClient.execute(columnProperty.getIcon());
         }
       }
     }
-    
+
     //Row properties
-    List<TableProperty> rowTableProperties = 
-      TablePropertyHelper.getRowTableProperties(tableProperties);    
+    List<TableProperty> rowTableProperties =
+      TablePropertyHelper.getRowTableProperties(tableProperties);
     for (int i = 0; i < rowTableProperties.size(); i++)
-    {  
+    {
       TableProperty rowProperty = rowTableProperties.get(i);
-      if (rowProperty.getTypeId() == null || 
+      if (rowProperty.getTypeId() == null ||
         rowType.isDerivedFrom(rowProperty.getTypeId()))
       {
         Value value = getTablePropertyValue(scriptClient, rowProperty, row);
         if (value != null && !StringUtils.isBlank(value.getLabel()))
         {
-          addCustomProperty(rowProperty.getLabel(), value.getLabel());
+          customPropertyMap.put(rowProperty.getName(), new CustomProperty(
+            rowProperty.getName(), rowProperty.getLabel(), value));
         }
       }
-    }    
+    }
   }
 
-  public void addCustomProperty(String name, String value)
+  public void addCustomProperty(String name, String label, String value)
   {
-    Property property = new Property();
-    property.setName(name);
-    property.getValue().add(value);
-    customPropertyMap.put(name, property);    
+    customPropertyMap.put(name, new CustomProperty(
+      name, label, new DefaultValue(value)));
+  }
+
+  public CustomProperty getCustomProperty(String name)
+  {
+    return customPropertyMap.get(name);
   }
 
   public boolean removeCustomProperty(String name)
   {
     return (customPropertyMap.remove(name) != null);
   }
-  
-  public Value getColumnValue(List<TableProperty> columns, String colName)
+
+  public Value getValueByPropertyName(List<TableProperty> columns,
+    String propertyName)
   {
+    //Search in columns
     for (int i = 0; i < columns.size(); i++)
     {
-      if (colName.equals(columns.get(i).getName()))
+      if (propertyName.equals(columns.get(i).getName()))
       {
         return values[i];
       }
     }
-    return null;    
+
+    //Column not found, search in custom properties
+    CustomProperty cp = getCustomProperty(propertyName);
+    if (cp != null) return cp.getValue();
+
+    //Not found
+    return null;
   }
 
   protected ScriptClient newScriptClient() throws Exception
   {
     ScriptClient scriptClient = new ScriptClient();
-   
-    scriptClient.put("userSessionBean", 
+
+    scriptClient.put("userSessionBean",
       UserSessionBean.getCurrentInstance());
-    scriptClient.put("applicationBean", 
+    scriptClient.put("applicationBean",
       ApplicationBean.getCurrentInstance());
-    scriptClient.put("WebUtils", 
-      WebUtils.class.getConstructor().newInstance());   
-    scriptClient.put("DictionaryUtils", 
-      DictionaryUtils.class.getConstructor().newInstance());   
-    
+    scriptClient.put("WebUtils",
+      WebUtils.class.getConstructor().newInstance());
+    scriptClient.put("DictionaryUtils",
+      DictionaryUtils.class.getConstructor().newInstance());
+
     return scriptClient;
   }
-      
+
   protected Value getDefaultValue(String columnName)
   {
     return new DefaultValue("");
   }
-  
-  protected Value formatValue(String rowTypeId, Object key, 
+
+  protected Value formatValue(String rowTypeId, Object key,
     List<String> values) throws Exception
   {
-    Value rowValue = null;   
-    
+    Value rowValue = null;
+
     if (values == null || values.isEmpty())
       return new DefaultValue("");
 
     String skey = String.valueOf(key);
-    
+
     if (rowTypeId != null)
     {
       Type type = TypeCache.getInstance().getType(rowTypeId);
@@ -241,7 +267,7 @@ public class DataTableRow implements Serializable
       {
         PropertyDefinition pd = type.getPropertyDefinition((String) key);
         if (pd != null)
-        {    
+        {
           if (pd.getMaxOccurs() > 1)
           {
             rowValue = new DefaultValue(values.toString());
@@ -256,7 +282,7 @@ public class DataTableRow implements Serializable
                 rowValue = new DateValue(value);
               else if (pd.getEnumTypeId() != null)
               {
-                rowValue = 
+                rowValue =
                   new EnumTypeValue(pd.getEnumTypeId(), value, propType);
               }
               else if (skey.endsWith("TypeId"))
@@ -275,11 +301,11 @@ public class DataTableRow implements Serializable
       else
         rowValue = new DefaultValue(values.get(0));
     }
-    
+
     return rowValue != null ? rowValue : new DefaultValue("");
   }
 
-  private Value getTablePropertyValue(ScriptClient scriptClient, 
+  private Value getTablePropertyValue(ScriptClient scriptClient,
     TableProperty tableProperty, Object row) throws Exception
   {
     if (tableProperty.getExpression() != null)
@@ -289,7 +315,7 @@ public class DataTableRow implements Serializable
     }
     else
     {
-      Property property = 
+      Property property =
         DictionaryUtils.getProperty(row, tableProperty.getName());
       if (property != null)
       {
@@ -300,7 +326,7 @@ public class DataTableRow implements Serializable
         return getDefaultValue(tableProperty.getName());
     }
   }
-  
+
   public abstract class Value
   {
     protected Object sorted;
@@ -309,14 +335,14 @@ public class DataTableRow implements Serializable
     public String getLabel()
     {
       return label;
-    } 
+    }
 
     public Object getSorted()
     {
       return sorted;
-    } 
+    }
   }
-  
+
   public class DefaultValue extends Value
   {
     public DefaultValue(Object value)
@@ -324,25 +350,25 @@ public class DataTableRow implements Serializable
       if (value != null)
         this.label = value.toString();
       this.sorted = label;
-    }  
+    }
   }
 
   public class DateValue extends Value
   {
     public DateValue(String value)
     {
-      String pattern = (value != null && value.length() == 14 ? 
+      String pattern = (value != null && value.length() == 14 ?
         "dd/MM/yyyy HH:mm:ss" : "dd/MM/yyyy");
       label = TextUtils.formatInternalDate(value, pattern);
       sorted = value;
-    }  
+    }
   }
-  
+
   public class EnumTypeValue extends Value
-  {  
-    public EnumTypeValue(String enumTypeId, Object value, PropertyType propType) 
+  {
+    public EnumTypeValue(String enumTypeId, Object value, PropertyType propType)
       throws Exception
-    {    
+    {
       DataProviderFactory factory = DataProviderFactory.getInstance();
       String ref = "enumtype:" + enumTypeId;
       DataProvider provider;
@@ -354,7 +380,7 @@ public class DataTableRow implements Serializable
       if (data != null && !data.isEmpty())
       {
         label = (String) data.getElementAt(0, 1); //Label column of first value
-      }    
+      }
       if (!propType.equals(PropertyType.NUMERIC))
         sorted = label;
       else
@@ -367,24 +393,24 @@ public class DataTableRow implements Serializable
         catch(NumberFormatException ex)
         {
           sorted = label;
-        }        
+        }
       }
     }
-  }   
+  }
 
   public class TypeValue extends Value
   {
     public TypeValue(String value)
     {
       label = value;
-      Type keyType = TypeCache.getInstance().getType(value); 
+      Type keyType = TypeCache.getInstance().getType(value);
       if (keyType != null)
         label = keyType.getDescription();
 
-      sorted = label;         
+      sorted = label;
     }
-  }  
-  
+  }
+
   public class NumericValue extends Value
   {
     public NumericValue(String value)
@@ -402,5 +428,49 @@ public class DataTableRow implements Serializable
       }
     }
   }
-  
+
+  public class CustomProperty
+  {
+    private String name;
+    private String label;
+    private Value value;
+
+    public CustomProperty(String name, String label, Value value)
+    {
+      this.name = name;
+      this.label = label;
+      this.value = value;
+    }
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public void setName(String name)
+    {
+      this.name = name;
+    }
+
+    public String getLabel()
+    {
+      return label;
+    }
+
+    public void setLabel(String label)
+    {
+      this.label = label;
+    }
+
+    public Value getValue()
+    {
+      return value;
+    }
+
+    public void setValue(Value value)
+    {
+      this.value = value;
+    }
+  }
+
 }

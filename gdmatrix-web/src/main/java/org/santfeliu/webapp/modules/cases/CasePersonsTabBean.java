@@ -51,7 +51,6 @@ import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.dic.Property;
 import org.matrix.kernel.Contact;
 import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
@@ -166,8 +165,11 @@ public class CasePersonsTabBean extends TabBean
       @Override
       public void sortRows()
       {
-        Collections.sort(getCurrentTabInstance().rows, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));        
+        if (getOrderBy() != null)
+        {
+          Collections.sort(getCurrentTabInstance().rows, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
       }
 
       @Override
@@ -554,8 +556,11 @@ public class CasePersonsTabBean extends TabBean
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
 
         List<CasePersonsDataTableRow> auxList = toDataTableRows(casePersons);
-        Collections.sort(auxList, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));
+        if (getOrderBy() != null)
+        {        
+          Collections.sort(auxList, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
         setRows(auxList);
         getCurrentTabInstance().typeSelectHelper.load();
       }
@@ -659,14 +664,6 @@ public class CasePersonsTabBean extends TabBean
     }
   }
 
-  public void addRowCustomProperty(DataTableRow row, String name, String value)
-  {
-    Property auxProperty = new Property();
-    auxProperty.setName(name);
-    auxProperty.getValue().add(value);
-    row.getCustomProperties().add(auxProperty);
-  }
-  
   @Override
   public void clear()
   {

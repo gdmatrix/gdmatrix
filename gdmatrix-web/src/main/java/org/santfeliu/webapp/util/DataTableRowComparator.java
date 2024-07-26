@@ -31,10 +31,9 @@
 package org.santfeliu.webapp.util;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.santfeliu.webapp.setup.TableProperty;
+import org.santfeliu.webapp.util.DataTableRow.CustomProperty;
 import org.santfeliu.webapp.util.DataTableRow.Value;
 
 /**
@@ -45,14 +44,12 @@ public class DataTableRowComparator implements Comparator<DataTableRow>
 {
   private final List<TableProperty> columns;
   private final List<String> orderBy;
-  private final Map<String, Integer> columnMap = new HashMap(); //name -> index
 
-  public DataTableRowComparator(List<TableProperty> columns, 
+  public DataTableRowComparator(List<TableProperty> columns,
     List<String> orderBy)
   {
     this.columns = columns;
     this.orderBy = orderBy;
-    loadColumnMap();
   }
 
   @Override
@@ -61,7 +58,7 @@ public class DataTableRowComparator implements Comparator<DataTableRow>
     for (String orderByItem : orderBy)
     {
       boolean desc = false;
-      int compare;
+      int compare = 0;
       if (orderByItem.endsWith(":desc"))
       {
         orderByItem = orderByItem.substring(0, orderByItem.length() - 5);
@@ -71,41 +68,43 @@ public class DataTableRowComparator implements Comparator<DataTableRow>
       {
         orderByItem = orderByItem.substring(0, orderByItem.length() - 4);
       }
-      Integer iCol = columnMap.get(orderByItem);
-      if (iCol != null)
+      Value val1 = row1.getValueByPropertyName(columns, orderByItem);
+      Object sort1 = (val1 == null ? null : val1.getSorted());      
+      Value val2 = row2.getValueByPropertyName(columns, orderByItem);
+      Object sort2 = (val2 == null ? null : val2.getSorted());
+      if (sort1 != null || sort2 != null)
       {
-        Value val1 = row1.getValues()[iCol];
-        Object sort1 = (val1 == null ? null : val1.getSorted());
-        Value val2 = row2.getValues()[iCol];
-        Object sort2 = (val2 == null ? null : val2.getSorted());
-        if (sort1 instanceof Double && sort2 instanceof Double)
-        {
-          double d1 = (Double)sort1;
-          double d2 = (Double)sort2;
-          if (d1 == d2)
-            compare = 0;
-          else
-            compare = (d1 > d2 ? 1 : -1);
-        }
+        if (sort1 == null && sort2 != null)
+          return 1;
+        if (sort1 != null && sort2 == null)
+          return -1;
         else
         {
-          String s1 = (sort1 == null ? "" : String.valueOf(sort1));
-          String s2 = (sort2 == null ? "" : String.valueOf(sort2));
-          compare = s1.compareTo(s2);
+          if (sort1 instanceof Double && sort2 instanceof Double)
+          {
+            double d1 = (Double)sort1;
+            double d2 = (Double)sort2;
+            if (d1 != d2) compare = (d1 > d2 ? 1 : -1);
+          }
+          else
+          {
+            String s1 = String.valueOf(sort1).toLowerCase().trim();
+            String s2 = String.valueOf(sort2).toLowerCase().trim();
+            if (s1.isEmpty() || s2.isEmpty())
+            {
+              compare = s2.length() - s1.length(); //non-nulls first
+            }
+            else
+            {
+              compare = s1.compareTo(s2);
+            }
+          }
         }
-        if (compare != 0) return (desc ? -compare : compare);
       }
+      if (compare != 0) return (desc ? -compare : compare);
     }
     return 0;
   }
 
-  private void loadColumnMap()
-  {
-    columnMap.clear();
-    for (int i = 0; i < columns.size(); i++)
-    {
-      columnMap.put(columns.get(i).getName(), i);
-    }
-  }
 }
 

@@ -44,7 +44,6 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseCase;
 import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
-import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -152,8 +151,11 @@ public class CaseCasesTabBean extends TabBean
       @Override
       public void sortRows()
       {
-        Collections.sort(getCurrentTabInstance().rows, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));            
+        if (getOrderBy() != null)
+        {        
+          Collections.sort(getCurrentTabInstance().rows, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));            
+        }
       }
 
       @Override
@@ -494,14 +496,6 @@ public class CaseCasesTabBean extends TabBean
     }
   }
     
-  public void addRowCustomProperty(DataTableRow row, String name, String value)
-  {
-    Property auxProperty = new Property();
-    auxProperty.setName(name);
-    auxProperty.getValue().add(value);
-    row.getCustomProperties().add(auxProperty);
-  }
-    
   @Override
   public void clear()
   {
@@ -564,8 +558,11 @@ public class CaseCasesTabBean extends TabBean
     }
     
     List<CaseCasesDataTableRow> auxList = toDataTableRows(results);
-    Collections.sort(auxList, 
-      new DataTableRowComparator(getColumns(), getOrderBy()));
+    if (getOrderBy() != null)
+    {            
+      Collections.sort(auxList, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));
+    }
     return auxList;
   }
 
@@ -575,8 +572,11 @@ public class CaseCasesTabBean extends TabBean
     CaseCaseMatcher matcher = new CaseCaseMatcher(caseObjectBean.getCase());    
     List<CaseCasesDataTableRow> auxList = 
       toDataTableRows(matcher.matchByPersons(cpTypeId1, cpTypeId2));
-    Collections.sort(auxList, 
-      new DataTableRowComparator(getColumns(), getOrderBy()));
+    if (getOrderBy() != null)
+    {            
+      Collections.sort(auxList, 
+        new DataTableRowComparator(getColumns(), getOrderBy()));
+    }
     return auxList;
   }
 

@@ -49,7 +49,6 @@ import org.matrix.cases.CaseDocumentView;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
-import org.matrix.dic.Property;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
@@ -163,8 +162,11 @@ public class CaseDocumentsTabBean extends TabBean
       @Override
       public void sortRows()
       {
-        Collections.sort(getCurrentTabInstance().rows,
-          new DataTableRowComparator(getColumns(), getOrderBy()));
+        if (getOrderBy() != null)
+        {
+          Collections.sort(getCurrentTabInstance().rows,
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
       }
 
       @Override
@@ -423,8 +425,11 @@ public class CaseDocumentsTabBean extends TabBean
           }
         }
         List<CaseDocumentsDataTableRow> auxList2 = toDataTableRows(result);
-        Collections.sort(auxList2,
-          new DataTableRowComparator(getColumns(), getOrderBy()));
+        if (getOrderBy() != null)
+        {                
+          Collections.sort(auxList2,
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
         setRows(auxList2);
         getCurrentTabInstance().typeSelectHelper.load();        
       }
@@ -614,14 +619,6 @@ public class CaseDocumentsTabBean extends TabBean
   {
     this.caseDocumentToRemove = null;
   }
-  
-  public void addRowCustomProperty(DataTableRow row, String name, String value)
-  {
-    Property auxProperty = new Property();
-    auxProperty.setName(name);
-    auxProperty.getValue().add(value);
-    row.getCustomProperties().add(auxProperty);
-  }  
   
   @Override
   public void clear()

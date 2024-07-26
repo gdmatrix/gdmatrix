@@ -122,10 +122,10 @@
                      styleClass="customProperties" rowStyleClass="row" 
                      showGridlines="false" stripedRows="false">
           <p:column styleClass="cell propName #{row.styleClass}">
-            <h:outputText value="#{customProperty.name}" />
+            <h:outputText value="#{customProperty.label}" />
           </p:column>
           <p:column styleClass="cell propValue #{row.styleClass}">
-            <h:outputText value="#{customProperty.value[0]}" escape="false" />
+            <h:outputText value="#{customProperty.value.label}" escape="false" />
           </p:column>
         </p:dataTable>
       </p:rowExpansion>     

@@ -36,6 +36,7 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRow.Value;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -147,8 +148,8 @@ public abstract class GroupableRowsHelper
         {
           if (row instanceof DataTableRow) //Dynamic columns
           {
-            DataTableRow.Value val = 
-              ((DataTableRow)row).getColumnValue(getColumns(), propertyValue);
+            Value val = ((DataTableRow)row).getValueByPropertyName(
+              getColumns(), propertyValue);
             if (val != null) return val.getLabel();
           }
           else //Fixed columns

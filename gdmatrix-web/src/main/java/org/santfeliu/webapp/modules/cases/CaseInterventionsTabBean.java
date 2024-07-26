@@ -43,7 +43,6 @@ import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
-import org.matrix.dic.Property;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -140,8 +139,11 @@ public class CaseInterventionsTabBean extends TabBean
       @Override
       public void sortRows()
       {
-        Collections.sort(getCurrentTabInstance().rows, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));        
+        if (getOrderBy() != null)
+        {
+          Collections.sort(getCurrentTabInstance().rows, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));        
+        }
       }
 
       @Override
@@ -395,8 +397,11 @@ public class CaseInterventionsTabBean extends TabBean
 
         List<CaseInterventionsDataTableRow> auxList = 
           toDataTableRows(interventions);
-        Collections.sort(auxList, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));
+        if (getOrderBy() != null)
+        {        
+          Collections.sort(auxList, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
         setRows(auxList);
         getCurrentTabInstance().typeSelectHelper.load();        
       }
@@ -483,14 +488,6 @@ public class CaseInterventionsTabBean extends TabBean
     {
       error(ex);
     }
-  }
-  
-  public void addRowCustomProperty(DataTableRow row, String name, String value)
-  {
-    Property auxProperty = new Property();
-    auxProperty.setName(name);
-    auxProperty.getValue().add(value);
-    row.getCustomProperties().add(auxProperty);
   }
   
   @Override

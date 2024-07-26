@@ -43,7 +43,6 @@ import javax.inject.Named;
 import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
-import org.matrix.dic.Property;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -141,8 +140,11 @@ public class CaseEventsTabBean extends TabBean
       @Override
       public void sortRows()
       {
-        Collections.sort(getCurrentTabInstance().rows, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));             
+        if (getOrderBy() != null)
+        {                
+          Collections.sort(getCurrentTabInstance().rows, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));             
+        }
       }
 
       @Override
@@ -334,8 +336,11 @@ public class CaseEventsTabBean extends TabBean
         List<CaseEventView> events = 
           CasesModuleBean.getPort(false).findCaseEventViews(filter);
         List<CaseEventsDataTableRow> auxList = toDataTableRows(events);
-        Collections.sort(auxList, 
-          new DataTableRowComparator(getColumns(), getOrderBy()));
+        if (getOrderBy() != null)
+        {                
+          Collections.sort(auxList, 
+            new DataTableRowComparator(getColumns(), getOrderBy()));
+        }
         setRows(auxList);
         getCurrentTabInstance().typeSelectHelper.load();        
       }
@@ -415,14 +420,6 @@ public class CaseEventsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
-  public void addRowCustomProperty(DataTableRow row, String name, String value)
-  {
-    Property auxProperty = new Property();
-    auxProperty.setName(name);
-    auxProperty.getValue().add(value);
-    row.getCustomProperties().add(auxProperty);
   }  
   
   @Override
