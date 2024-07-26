@@ -13,7 +13,8 @@
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowIndexVar="rowIndex"
-               rendered="true" emptyMessage="#{objectBundle.no_data}">
+               rendered="true" emptyMessage="#{objectBundle.no_data}"
+               rowKey="#{row.rowId}" expandedRow="true">
     <p:columns value="#{eventFinderBean.columns}" var="column"  columnIndexVar="i"
                filterable="false" sortable="false" resizable="false"
                headerText="#{applicationBean.translate(column.label)}"
@@ -39,6 +40,20 @@
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}" />
     </p:column>
+    
+    <p:rowExpansion rendered="#{not row.customProperties.isEmpty()}">
+      <p:dataTable value="#{row.customProperties}" var="customProperty"
+                   styleClass="customProperties" rowStyleClass="row" 
+                   showGridlines="false" stripedRows="false">
+        <p:column styleClass="cell propName #{row.styleClass}">
+          <h:outputText value="#{customProperty.label}" />
+        </p:column>
+        <p:column styleClass="cell propValue #{row.styleClass}">
+          <h:outputText value="#{customProperty.value.label}" escape="false" />
+        </p:column>
+      </p:dataTable>        
+    </p:rowExpansion>     
+    
   </p:dataTable>
 
 </ui:composition>

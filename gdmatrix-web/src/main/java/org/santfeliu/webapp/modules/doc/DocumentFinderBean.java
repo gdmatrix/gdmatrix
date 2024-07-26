@@ -392,10 +392,10 @@ public class DocumentFinderBean extends FinderBean
                 filter.getClassId().clear();
                 filter.getClassId().addAll(classIds);
               }
-              List<TableProperty> columns = getColumns();
-              for (TableProperty column : columns)
+              List<TableProperty> tableProperties = getTableProperties();
+              for (TableProperty tableProperty : tableProperties)
               {
-                filter.getOutputProperty().add(column.getName());
+                filter.getOutputProperty().add(tableProperty.getName());
               }
               filter.setIncludeContentMetadata(true);
               

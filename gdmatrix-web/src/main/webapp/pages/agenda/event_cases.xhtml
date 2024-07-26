@@ -16,7 +16,8 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50"
-                 emptyMessage="#{objectBundle.no_data}">
+                 emptyMessage="#{objectBundle.no_data}"
+                 rowKey="#{row.rowId}" expandedRow="true">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -86,6 +87,20 @@
                      icon="pi pi-info-circle" />
         </p:commandButton>
       </p:column>
+      
+      <p:rowExpansion rendered="#{not row.customProperties.isEmpty()}">
+        <p:dataTable value="#{row.customProperties}" var="customProperty"
+                     styleClass="customProperties" rowStyleClass="row" 
+                     showGridlines="false" stripedRows="false">
+          <p:column styleClass="cell propName #{row.styleClass}">
+            <h:outputText value="#{customProperty.label}" />
+          </p:column>
+          <p:column styleClass="cell propValue #{row.styleClass}">
+            <h:outputText value="#{customProperty.value.label}" escape="false" />
+          </p:column>
+        </p:dataTable>        
+      </p:rowExpansion>     
+      
     </p:dataTable>
 
   </f:subview>
