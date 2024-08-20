@@ -31,7 +31,7 @@
                            rendered="#{eventCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventCasesTabBean.create}"
-                           process="@form:cnt:search_tabs:tabs"
+                           process="@this"
                            update="@form:cnt:search_tabs:event_cases_dialog"
                            resetValues="true"
                            oncomplete="PF('eventCasesDialog').show()"
@@ -68,7 +68,7 @@
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          action="#{eventCasesTabBean.edit(row)}"
-                         process="@form:cnt:search_tabs:tabs"
+                         process="@this"
                          update="@form:cnt:search_tabs:event_cases_dialog"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"

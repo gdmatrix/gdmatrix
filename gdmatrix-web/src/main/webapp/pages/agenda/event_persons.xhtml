@@ -29,7 +29,7 @@
                            rendered="#{eventPersonsTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventPersonsTabBean.create}"
-                           process="@form:cnt:search_tabs:tabs"
+                           process="@this"
                            update="@form:cnt:search_tabs:event_persons_dialog"
                            resetValues="true"
                            oncomplete="PF('eventPersonsDialog').show()"
@@ -80,7 +80,7 @@
                          icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         process="@form:cnt:search_tabs:tabs"
+                         process="@this"
                          update="@form:cnt:search_tabs:event_persons_dialog"
                          resetValues="true"
                          oncomplete="PF('eventPersonsDialog').show()" />

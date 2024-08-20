@@ -50,7 +50,7 @@
                            rendered="#{caseInterventionsTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
                            action="#{caseInterventionsTabBean.create}"
-                           process="@form:cnt:search_tabs:tabs"
+                           process="@this"
                            update="@form:cnt:search_tabs:case_interventions_dialog"
                            resetValues="true"
                            oncomplete="PF('caseInterventionsDialog').show()"
@@ -83,7 +83,7 @@
                            rendered="#{row.values[0] != null}"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           process="@form:cnt:search_tabs:tabs"
+                           process="@this"
                            update="@form:cnt:search_tabs:case_interventions_dialog"
                            resetValues="true"
                            oncomplete="PF('caseInterventionsDialog').show()"

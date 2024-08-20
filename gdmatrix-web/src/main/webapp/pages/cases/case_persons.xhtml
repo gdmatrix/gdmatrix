@@ -49,7 +49,7 @@
                            rendered="#{casePersonsTabBean.groupableRowsHelper.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
                            action="#{casePersonsTabBean.create}"
-                           process="@form:cnt:search_tabs:tabs"
+                           process="@this"
                            update="@form:cnt:search_tabs:case_persons_dialog"
                            resetValues="true"
                            oncomplete="PF('casePersonsDialog').show()"
@@ -85,7 +85,7 @@
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          action="#{casePersonsTabBean.edit(row)}"
-                         process="@form:cnt:search_tabs:tabs"
+                         process="@this"
                          update="@form:cnt:search_tabs:case_persons_dialog"
                          resetValues="true"
                          oncomplete="PF('casePersonsDialog').show()"

@@ -26,7 +26,8 @@
       <f:facet name="header">
         <div class="flex justify-content-end w-12">     
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
-                           action="#{personContactsTabBean.create}" 
+                           action="#{personContactsTabBean.create}"
+                           process="@this"
                            update="@form:cnt:search_tabs:tabs:person_contacts_dialog"
                            oncomplete="PF('personContactsDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
@@ -49,10 +50,12 @@
                            styleClass="rounded-button ui-button-flat"                               
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            ajax="true" update="@form:cnt:search_tabs:tabs:person_contacts_dialog"
+                           process="@this"
                            resetValues="true"
                            oncomplete="PF('personContactsDialog').show()" />
           <p:commandButton action="#{personContactsTabBean.remove(row)}"
                            ajax="true" update="contact_results_table"
+                           process="@this"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.contactId != null}"

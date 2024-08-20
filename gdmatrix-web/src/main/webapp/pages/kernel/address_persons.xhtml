@@ -47,6 +47,7 @@
                        styleClass="rounded-button ui-button-flat"
                        alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
       <p:commandButton action="#{addressPersonsTabBean.remove(row)}"
+                       process="@this"
                        update="address_persons_table"
                        icon="pi pi-trash"
                        alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

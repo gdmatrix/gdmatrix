@@ -62,7 +62,7 @@
         <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{documentACLTabBean.create}"
-                           process="@form:cnt:search_tabs:tabs"
+                           process="@this"
                            update="@parent:@parent:@parent:document_acl_dialog"
                            resetValues="true"
                            oncomplete="PF('documentACLDialog').show()"                                 
@@ -90,7 +90,7 @@
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          styleClass="rounded-button ui-button-flat" 
                          action="#{documentACLTabBean.edit(row)}" 
-                         process="@form:cnt:search_tabs:tabs" 
+                         process="@this" 
                          update="@parent:@parent:@parent:@parent:document_acl_dialog"
                          resetValues="true"
                          oncomplete="PF('documentACLDialog').show()"

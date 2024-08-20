@@ -22,7 +22,7 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{roleUsersTabBean.create}"
-                           process="@form:cnt:search_tabs:tabs"
+                           process="@this"
                            update="@parent:@parent:@parent:role_users_dialog"
                            resetValues="true"
                            oncomplete="PF('roleUsersDialog').show()"
@@ -47,7 +47,7 @@
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          action="#{roleUsersTabBean.edit(row)}"
-                         process="@form:cnt:search_tabs:tabs"
+                         process="@this"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          update="@parent:@parent:@parent:@parent:role_users_dialog"
                          resetValues="true"

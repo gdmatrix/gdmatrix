@@ -50,30 +50,33 @@
                     title="#{objectBundle.actions}">
         <p:menuitem value="#{objectBundle.moveUp}" 
                     action="#{enumTypeItemsTabBean.moveUpItem(rowIndex)}"
-                    process="@form:cnt" update="enum_type_items_table"
+                    process="@this" 
+                    update="enum_type_items_table"
                     icon="pi pi-arrow-up"  
                     rendered="#{enumTypeItemsTabBean.isRenderUpButton(rowIndex)}" />        
         <p:menuitem value="#{objectBundle.moveDown}" 
                     action="#{enumTypeItemsTabBean.moveDownItem(rowIndex)}"
-                    process="@form:cnt" update="enum_type_items_table"
+                    process="@this" 
+                    update="enum_type_items_table"
                     icon="pi pi-arrow-down"  
                     rendered="#{enumTypeItemsTabBean.isRenderDownButton(rowIndex)}" />        
         <p:menuitem value="#{objectBundle.insertHere}" 
                     action="#{enumTypeItemsTabBean.insertItem(rowIndex)}"
-                    process="@form:cnt:search_tabs:tabs"
+                    process="@this"
                     update="@form:cnt:search_tabs:tabs:enum_type_items_dialog"                    
                     icon="pi pi-plus"  
                     rendered="#{enumTypeItemsTabBean.sortedEnumType}" 
                     oncomplete="PF('enumTypeItemsDialog').show()" />        
         <p:menuitem value="#{objectBundle.edit}" 
                     action="#{enumTypeItemsTabBean.edit(row)}"
-                    process="@form:cnt:search_tabs:tabs"
+                    process="@this"
                     update="@form:cnt:search_tabs:tabs:enum_type_items_dialog"                    
                     icon="pi pi-pencil"  
                     oncomplete="PF('enumTypeItemsDialog').show()" />        
         <p:menuitem value="#{objectBundle.delete}"
                     action="#{enumTypeItemsTabBean.remove(row)}"
-                    process="@form:cnt" update="enum_type_items_table"
+                    process="@this" 
+                    update="enum_type_items_table"
                     icon="pi pi-trash">
           <p:confirm header="#{objectBundle.confirm_remove_header}"
                      message="#{objectBundle.confirm_remove_message}"
