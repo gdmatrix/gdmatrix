@@ -55,10 +55,27 @@ class MapInfoControl
       attribUl.className = "attributions";
       bodyDiv.appendChild(attribUl);
 
+      // attribution format: attribution text [url]
       for (let attribution of attributions)
       {
+        let url = null;
+        let index1 = attribution.indexOf("[");
+        let index2 = attribution.indexOf("]");
+        if (index1 > 0 && index2 > index1)
+        {
+          url = attribution.substring(index1 + 1, index2).trim();
+          attribution = attribution.substring(0, index1).trim();
+        }
+        
         let attribLi = document.createElement("li");
-        attribLi.innerHTML = `<div class="flex"><span class="pi pi-info-circle mt-1 mr-1"></span><span>${attribution}</span></div>`;
+        if (url)
+        {
+          attribLi.innerHTML = `<div class="flex"><span class="pi pi-info-circle mt-1 mr-1"></span><a href="${url}" target="_blank" class="no-underline">${attribution}</a></div>`;
+        }
+        else
+        {
+          attribLi.innerHTML = `<div class="flex"><span class="pi pi-info-circle mt-1 mr-1"></span><span>${attribution}</span></div>`;
+        }
         attribUl.appendChild(attribLi);
       }
     }
