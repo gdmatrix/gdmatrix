@@ -8,6 +8,14 @@ const bundle = Bundle.getBundle("main");
 
 class SimulateRouteControl
 {
+  /*
+   * options:
+   *   views: enabled views: "manual", "centered" or "navigation. All enabled by default.
+   *   directionImage: cursor image. Default: "route_direction".
+   *   speed: cursor speed in km/h. Default: 50 km/h.
+   *   initialZoom: initial zoom. Default: 17.
+   *   queryElevationZoom: zoom to query elevation. Default: 10. When 0, use current zoom.
+   */
   constructor(options)
   {
     this.options = options || {};
@@ -174,6 +182,7 @@ class SimulateRouteControl
   renderProfile()
   {
     const map = this.map;
+    const queryElevationZoom = this.options.queryElevationZoom || 10;
 
     if (!map.getTerrain() || !this.profileCheckbox.checked) return;
 
@@ -214,7 +223,16 @@ class SimulateRouteControl
       const distKm = i * kmPerPixel;
       const coords = turf.along(this.turfLine, distKm,
         { units: "kilometers"}).geometry.coordinates;
-      const elevation = map.queryTerrainElevation(coords) + map.transform.elevation;
+      let elevation;
+      if (queryElevationZoom === 0)
+      {
+        elevation = map.queryTerrainElevation(coords) + map.transform.elevation;
+      }
+      else
+      {
+        const lngLat = new maplibregl.LngLat(coords[0], coords[1]);
+        elevation = map.terrain.getElevationForLngLatZoom(lngLat, queryElevationZoom); 
+      }
       
       elevations.push(elevation);
       if (elevation < minElevation) minElevation = elevation;
@@ -289,8 +307,17 @@ class SimulateRouteControl
     // draw cursor
     const currentCoords = turf.along(this.turfLine, this.distance,
         { units: "kilometers"}).geometry.coordinates;
-    const currentElevation = map.queryTerrainElevation(currentCoords) + map.transform.elevation;
-    
+
+    let currentElevation;
+    if (queryElevationZoom === 0)
+    {
+      currentElevation = map.queryTerrainElevation(currentCoords) + map.transform.elevation;
+    }
+    else
+    {
+      const lngLat = new maplibregl.LngLat(currentCoords[0], currentCoords[1]);
+      currentElevation = map.terrain.getElevationForLngLatZoom(lngLat, queryElevationZoom);     
+    }
     let x = marginLeft + this.distance / kmPerPixel;
     let y = getElevationHeight(currentElevation);
 
