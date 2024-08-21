@@ -14,10 +14,13 @@ class TimeSliderControl
       scales: object { "d": number of days, "w": number of weeks, "M": number of months, "y": number of years }.
       startDateVar: string, start date variable to change in the filters (using let), "startDate" by default.
       endDateVar: string, end date variable to change in the filters (using let), "endDate" by default.
+      daysVar: string, variable that contains the number of days of period, "days" by default.
       convertDate: function(date, isEndDate), returns the string value to set in the filter.
       enableForLayers: array of layer ids that enable this control when they are visible.
       firstDayOfWeek: number(0-6), first day of the week.
       sourceUrls: { sourceId: (startDate, endDate) => url, ... } url function for each geojson source (optional).
+      paintProperties : array of [layerId, property name], the Paint properties to apply the variable values
+      layoutProperties : array of [layerId, property name], the Layout properties to apply the variable values
    */
   constructor(options)
   {
@@ -324,8 +327,9 @@ class TimeSliderControl
     const map = this.map;
     let startDateString = this.options.convertDate(this.startDate, false);
     let endDateString = this.options.convertDate(this.endDate, true);
+    let days = Math.ceil((this.endDate - this.startDate) / (1000 * 60 * 60 * 24));
     
-    console.info("start: " + startDateString, "end: " + endDateString);
+    console.info("start: " + startDateString, "end: " + endDateString, "days: " + days);
 
     let sources = map.getStyle().sources;
     for (let sourceId in sources)
@@ -346,43 +350,75 @@ class TimeSliderControl
         {
           source = map.getSource(sourceId);
           let filter = source.workerOptions.filter;
-          if (this.updateFilter(filter, startDateString, endDateString))
+          if (this.updateExpression(filter, startDateString, endDateString, days))
           {
             source.updateData();
           }
         }
       }
     }
-    
+        
+    // apply filter
     let layers = map.getStyle().layers;
     for (let layer of layers)
     {
       let layerId = layer.id;
       let filter = map.getFilter(layerId);
-
-      if (this.updateFilter(filter, startDateString, endDateString))
+      if (this.updateExpression(filter, startDateString, endDateString, days))
       {
         map.setFilter(layerId, filter);
+      }      
+    }
+    
+    // apply variables to paint properties
+    const paintProperties = this.options.paintProperties || [];    
+    for (let layerIdProperty of paintProperties)
+    {
+      let layerId = layerIdProperty[0];
+      let property = layerIdProperty[1];      
+      console.info("getPaintProperty", layerId, property);
+      let expr = map.getPaintProperty(layerId, property);
+      if (this.updateExpression(expr, startDateString, endDateString, days))
+      {
+        map.setPaintProperty(layerId, property, expr);
+      }
+    }
+
+    // apply variables to layout properties
+    const layoutProperties = this.options.layoutProperties || [];
+    for (let layerIdProperty of layoutProperties)
+    {
+      let layerId = layerIdProperty[0];
+      let property = layerIdProperty[1];      
+      console.info("layout property", property);
+      let expr = map.getLayoutProperty(layerId, property);
+      if (this.updateExpression(expr, startDateString, endDateString, days))
+      {
+        map.setLayoutProperty(layerId, property, expr);          
       }
     }
   }
   
-  updateFilter(filter, startDateString, endDateString)
+  updateExpression(expression, startDateString, endDateString, days)
   {
-    if (filter instanceof Array)
+    if (expression instanceof Array)
     {
       let startDateVar = this.options.startDateVar || "startDate";
       let endDateVar = this.options.endDateVar || "endDate";  
-      
-      if (filter.indexOf("let") !== 0) return false;
+      let daysVar = this.options.daysVar || "days";
 
-      let index1 = filter.indexOf(startDateVar);
-      if (index1 !== -1) filter[index1 + 1] = startDateString;
+      if (expression.indexOf("let") !== 0) return false;
 
-      let index2 = filter.indexOf(endDateVar);
-      if (index2 !== -1) filter[index2 + 1] = endDateString;
+      let index1 = expression.indexOf(startDateVar);
+      if (index1 !== -1) expression[index1 + 1] = startDateString;
 
-      if (index1 === -1 && index2 === -1) return false;
+      let index2 = expression.indexOf(endDateVar);
+      if (index2 !== -1) expression[index2 + 1] = endDateString;
+
+      let index3 = expression.indexOf(daysVar);
+      if (index3 !== -1) expression[index3 + 1] = days;
+
+      if (index1 === -1 && index2 === -1 && index3 === -1) return false;    
     }
     return true;
   }
