@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.util.script.function;
@@ -47,9 +47,9 @@ import org.mozilla.javascript.Scriptable;
 /**
  *
  * @author blanquepa
- * 
- * Usage examples: 
- *        var json = new JSON();
+ *
+ * Usage examples:
+ *        var json = new Json();
   *        // Stringify (JS object --> string)
  *        var jsonString = json.stringify({atr1: value1, atr2: value2});
   *        // Parse (string --> JS Object)
@@ -57,9 +57,9 @@ import org.mozilla.javascript.Scriptable;
  */
 public class JSONFunction extends BaseFunction
 {
-  private StringifyFunction stringifyFunction = new StringifyFunction();
-  private ParseFunction parseFunction = new ParseFunction();
-  
+  private final StringifyFunction stringifyFunction = new StringifyFunction();
+  private final ParseFunction parseFunction = new ParseFunction();
+
   @Override
   public Object call(Context cx, Scriptable scope, Scriptable thisObj,
     Object[] args)
@@ -70,7 +70,7 @@ public class JSONFunction extends BaseFunction
     thisObj.put("parse", thisObj, parseFunction);
 
     return thisObj;
-  } 
+  }
 
   private static class StringifyFunction extends BaseFunction
   {
@@ -97,7 +97,7 @@ public class JSONFunction extends BaseFunction
       }
       return false;
     }
-    
+
     private Object toJSON(Object object)
     {
       if (object instanceof Object[])
@@ -110,8 +110,8 @@ public class JSONFunction extends BaseFunction
         return jsonArray;
       }
       else if (object instanceof Map)
-      { 
-        JSONObject jsonObject = new JSONObject(); 
+      {
+        JSONObject jsonObject = new JSONObject();
         for (Object key : ((Map)object).keySet())
         {
           Object value = ((Map)object).get(key);
@@ -121,10 +121,10 @@ public class JSONFunction extends BaseFunction
       }
       else if (object != null)
         return object;
-      else 
+      else
         return "";
     }
-    
+
     private Object jsToJava(Object jsObject)
     {
       if (jsObject == null)   return null;
@@ -141,42 +141,42 @@ public class JSONFunction extends BaseFunction
       return jsObject;
     }
 
-    private Object[] convertArray(NativeArray jsArray) 
-    { 
-        Object[] ids = jsArray.getIds(); 
-        Object[] result = new Object[ids.length]; 
-        for (int i = 0; i < ids.length; i++) 
-        { 
-            Object id = ids[i]; 
-            int index = (Integer) id; 
-            Object jsValue = jsArray.get(index, jsArray); 
-            result[i] = jsToJava(jsValue); 
-        } 
-        return result; 
-    }   
+    private Object[] convertArray(NativeArray jsArray)
+    {
+        Object[] ids = jsArray.getIds();
+        Object[] result = new Object[ids.length];
+        for (int i = 0; i < ids.length; i++)
+        {
+            Object id = ids[i];
+            int index = (Integer) id;
+            Object jsValue = jsArray.get(index, jsArray);
+            result[i] = jsToJava(jsValue);
+        }
+        return result;
+    }
 
     private Object convertObject(NativeObject jsObject)
     {
       Object[] ids = jsObject.getIds();
       Map result = new HashMap(ids.length);
-      for (Object id : ids) 
+      for (Object id : ids)
       {
-        if (id instanceof String) 
+        if (id instanceof String)
         {
           Object jsValue = jsObject.get((String)id, jsObject);
           result.put(id, jsToJava(jsValue));
         }
-        else if (id instanceof Integer) 
+        else if (id instanceof Integer)
         {
           Object jsValue = jsObject.get((Integer)id,jsObject);
           result.put(id, jsToJava(jsValue));
         }
-        else     
+        else
           throw new AssertionError();
       }
       return result;
-    }    
-  
+    }
+
   }
 
   private static class ParseFunction extends BaseFunction
@@ -197,11 +197,11 @@ public class JSONFunction extends BaseFunction
       }
       catch (Exception ex)
       {
-        ex.printStackTrace(); 
+        ex.printStackTrace();
       }
       return false;
     }
-    
+
     private Scriptable toJSObject(Context cx, Scriptable scope, JSONObject jsonObject)
     {
       Scriptable object = cx.newObject(scope);
@@ -221,22 +221,22 @@ public class JSONFunction extends BaseFunction
       }
 
       return object;
-    }     
+    }
   }
-  
+
   public static void main(String args[])
   {
     JSONObject obj = new JSONObject();
     obj.put("key1", new String("value1"));
-    
+
     Object[] array = new Object[3];
     array[0] = new String("AA");
     array[1] = new String("BB");
     array[2] = new String("CC");
     obj.put("key2", array);
     System.out.println(obj.toJSONString());
-    
+
   }
-  
- 
+
+
 }
