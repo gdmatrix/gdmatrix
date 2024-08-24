@@ -79,7 +79,7 @@ public class FirewallFilter implements Filter
   static final String PATTERN_PREFIX = "pattern.";
   static final String MBEAN_NAME = "Firewall";
   static final String AUTO_UNTRUST_ADDRESSES = "autoUntrustAddresses";
-  static final int LAST_BLOCKED_REQUEST_COUNT = 1000;
+  static final String LAST_BLOCKED_REQUEST_COUNT = "lastBlockedRequestCount";
   static final String UNTRUSTED_ADDRESSES_FILENAME = ".untrusted_addresses.txt";
 
   final List<Check> checks = new ArrayList<>();
@@ -89,11 +89,12 @@ public class FirewallFilter implements Filter
   int totalRequestCount = 0;
   int untrustedRequestCount = 0;
   int maliciousRequestCount = 0;
+  int lastBlockedRequestCount = 100;
   Map<String, Integer> maliciousRequestCountByType = new HashMap<>();
   LinkedList<String> lastBlockedRequests = new LinkedList<>();
   CompositeType compositeType;
   FirewallMBean mbean;
-  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 
   @Override
   public void init(FilterConfig config) throws ServletException
@@ -125,6 +126,18 @@ public class FirewallFilter implements Filter
 
     autoUntrustAddresses =
       !"false".equals(config.getInitParameter(AUTO_UNTRUST_ADDRESSES));
+
+    String value = config.getInitParameter(LAST_BLOCKED_REQUEST_COUNT);
+    if (value != null)
+    {
+      try
+      {
+        lastBlockedRequestCount = Integer.parseInt(value);
+      }
+      catch (Exception ex)
+      {
+      }
+    }
 
     try
     {
@@ -251,7 +264,7 @@ public class FirewallFilter implements Filter
     maliciousRequestCountByType.put(type, count);
     String dateString = dateFormat.format(new Date());
     lastBlockedRequests.add(dateString + ", " + ip + ", " + type + " => " + path);
-    if (lastBlockedRequests.size() > LAST_BLOCKED_REQUEST_COUNT)
+    if (lastBlockedRequests.size() > lastBlockedRequestCount)
     {
       lastBlockedRequests.removeFirst();
     }
