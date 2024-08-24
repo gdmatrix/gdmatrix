@@ -79,7 +79,7 @@ public class FirewallFilter implements Filter
   static final String PATTERN_PREFIX = "pattern.";
   static final String MBEAN_NAME = "Firewall";
   static final String AUTO_UNTRUST_ADDRESSES = "autoUntrustAddresses";
-  static final int LAST_BLOCKED_REQUEST_COUNT = 10;
+  static final int LAST_BLOCKED_REQUEST_COUNT = 1000;
   static final String UNTRUSTED_ADDRESSES_FILENAME = ".untrusted_addresses.txt";
 
   final List<Check> checks = new ArrayList<>();
@@ -165,12 +165,7 @@ public class FirewallFilter implements Filter
 
     String ip = httpRequest.getRemoteAddr();
 
-    if (isUntrustedAddress(ip))
-    {
-      untrustedRequestCount++;
-      httpResponse.sendError(403, "Untrusted IP address");
-    }
-    else if ("GET".equals(httpRequest.getMethod()))
+    if ("GET".equals(httpRequest.getMethod()))
     {
       String path = httpRequest.getServletPath();
       String query = httpRequest.getQueryString();
@@ -180,11 +175,23 @@ public class FirewallFilter implements Filter
       if (type != null)
       {
         registerBlockedRequest(ip, decodedPath, type);
-        if (autoUntrustAddresses)
+        if (isUntrustedAddress(ip))
         {
-          addUntrustedAddress(ip);
+          httpResponse.sendError(403, "Untrusted IP address");
         }
-        httpResponse.sendError(400, "Malicious request detected");
+        else
+        {
+          httpResponse.sendError(400, "Malicious request detected");
+          if (autoUntrustAddresses)
+          {
+            addUntrustedAddress(ip);
+          }
+        }
+      }
+      else if (isUntrustedAddress(ip))
+      {
+        untrustedRequestCount++;
+        httpResponse.sendError(403, "Untrusted IP address");
       }
       else
       {
@@ -243,7 +250,7 @@ public class FirewallFilter implements Filter
     count++;
     maliciousRequestCountByType.put(type, count);
     String dateString = dateFormat.format(new Date());
-    lastBlockedRequests.add(dateString + ", " + ip + ", " + path);
+    lastBlockedRequests.add(dateString + ", " + ip + ", " + type + " => " + path);
     if (lastBlockedRequests.size() > LAST_BLOCKED_REQUEST_COUNT)
     {
       lastBlockedRequests.removeFirst();
@@ -327,6 +334,11 @@ public class FirewallFilter implements Filter
     untrustedAddresses.clear();
   }
 
+  private synchronized void clearLastBlockedRequests()
+  {
+    lastBlockedRequests.clear();
+  }
+
   static class Check
   {
     final String type;
@@ -365,6 +377,7 @@ public class FirewallFilter implements Filter
     void restoreUntrastedAddresses() throws Exception;
     void saveUntrastedAddresses() throws Exception;
     void clearUntrustedAddresses();
+    void clearLastBlockedRequests();
     void resetCounters();
   }
 
@@ -458,6 +471,12 @@ public class FirewallFilter implements Filter
     public void clearUntrustedAddresses()
     {
       FirewallFilter.this.clearUntrustedAddresses();
+    }
+
+    @Override
+    public void clearLastBlockedRequests()
+    {
+      FirewallFilter.this.clearLastBlockedRequests();
     }
 
     @Override
