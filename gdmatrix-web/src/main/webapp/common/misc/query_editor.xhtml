@@ -139,6 +139,11 @@
         <p:tab title="#{queryBundle.connection}">
           <t:div id="connection_panel" forceId="true">
             <t:div>
+              <t:outputLabel value="#{queryBundle.dsn}:" styleClass="output_label" for="conn_dsn" />
+              <t:inputText id="conn_dsn" value="#{queryBean.query.connection.dsn}" 
+                styleClass="input_text" forceId="true" />
+            </t:div>
+            <t:div>
               <t:outputLabel value="#{queryBundle.driver}:" styleClass="output_label" for="conn_driver" />
               <t:inputText id="conn_driver" value="#{queryBean.query.connection.driver}" 
                 styleClass="input_text" forceId="true" />

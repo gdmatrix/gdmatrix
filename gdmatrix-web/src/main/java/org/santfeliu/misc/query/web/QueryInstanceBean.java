@@ -209,10 +209,19 @@ public class QueryInstanceBean extends FacesBean implements Savable
         QueryParameters parameters = new QueryParameters();
         try
         {
-          QueryTable result = sqlPort.executeDriverQuery(parameter.getSql(),
-            parameters, conn.getDriver(), conn.getUrl(),
-            conn.getUsername(), conn.getPassword());
-
+          QueryTable result;
+          if (!StringUtils.isBlank(conn.getDsn()))
+          {
+            result = sqlPort.executeAliasQuery(parameter.getSql(),
+              parameters, conn.getDsn(), conn.getUsername(), 
+              conn.getPassword());
+          }
+          else
+          {          
+            result = sqlPort.executeDriverQuery(parameter.getSql(),
+              parameters, conn.getDriver(), conn.getUrl(),
+              conn.getUsername(), conn.getPassword());
+          }
           for (QueryRow row : result.getQueryRow())
           {
             List values = row.getValues();
@@ -907,10 +916,18 @@ public class QueryInstanceBean extends FacesBean implements Savable
     SqlWebBean sqlWebBean = (SqlWebBean)getBean("sqlWebBean");
     Query query = getQuery();
     Query.Connection connection = query.getConnection();
+    if (!StringUtils.isBlank(connection.getDsn()))
+    {
+      sqlWebBean.setDsn(connection.getDsn());     
+    }
+    else
+    {
+      sqlWebBean.setDsn(null);      
+    }
     sqlWebBean.setDriver(connection.getDriver());
     sqlWebBean.setUrl(connection.getUrl());
     sqlWebBean.setUsername(connection.getUsername());
-    sqlWebBean.setPassword(connection.getPassword());
+    sqlWebBean.setPassword(connection.getPassword());    
     sqlWebBean.setTitle(query.getTitle());
     sqlWebBean.setSql(selectedInstance.generateSql());
     sqlWebBean.setEditMode(queryBean.isEditionEnabled());

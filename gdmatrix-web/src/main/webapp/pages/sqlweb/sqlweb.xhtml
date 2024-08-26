@@ -30,6 +30,12 @@
       <h:panelGroup id="sqlweb_edit_panel" 
                     rendered="#{sqlwebBean.editMode}" 
                     styleClass="ui-fluid formgrid grid">
+        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-2">
+          <p:outputLabel value="#{sqlWebBundle.dsn}:" for="@next" />
+          <p:inputText value="#{sqlwebBean.dsn}"
+                       disabled="#{!sqlwebBean.dsnEnabled}"
+                       pt:spellcheck="false" styleClass="code" />    
+        </p:outputPanel>
         <div class="field col-12 md:col-6 xl:col-4">
           <p:outputLabel value="#{sqlWebBundle.driver}:" for="@next" />
           <p:inputText value="#{sqlwebBean.driver}" 
@@ -40,11 +46,11 @@
           <p:inputText value="#{sqlwebBean.url}" 
                        pt:spellcheck="false" styleClass="code" />    
         </div>
-        <div class="field col-12 md:col-6 xl:col-2">
+        <div class="field col-12 md:col-6 xl:col-1">
           <p:outputLabel value="#{sqlWebBundle.username}:" for="@next" />
           <p:inputText value="#{sqlwebBean.username}" pt:spellcheck="false" />
         </div>
-        <div class="field col-12 md:col-6 xl:col-2">
+        <div class="field col-12 md:col-6 xl:col-1">
           <p:outputLabel value="#{sqlWebBundle.password}:" for="@next" />
           <p:password value="#{sqlwebBean.password}" redisplay="true" />    
         </div>

@@ -54,6 +54,10 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import org.apache.commons.lang.StringUtils;
 import org.primefaces.component.export.CSVOptions;
 import org.primefaces.component.export.ExporterOptions;
 import org.santfeliu.web.UserSessionBean;
@@ -69,6 +73,8 @@ import org.santfeliu.web.bean.CMSProperty;
 public class SqlwebBean extends WebBean implements Serializable
 {
   @CMSProperty
+  public static final String JDBC_DSN_PROPERTY = "jdbc_dsn";
+  @CMSProperty
   public static final String JDBC_DRIVER_PROPERTY = "jdbc_driver";
   @CMSProperty
   public static final String JDBC_URL_PROPERTY = "jdbc_url";
@@ -76,6 +82,7 @@ public class SqlwebBean extends WebBean implements Serializable
   public static final String JDBC_USERNAME_PROPERTY = "jdbc_username";
 
   private String title;
+  private String dsn;
   private String driver;
   private String url;
   private String username;
@@ -100,7 +107,7 @@ public class SqlwebBean extends WebBean implements Serializable
 
   @PostConstruct
   public void init()
-  {
+  {    
     restoreParameters();
   }
 
@@ -132,6 +139,16 @@ public class SqlwebBean extends WebBean implements Serializable
   public void setEditMode(boolean editMode)
   {
     this.editMode = editMode;
+  }
+
+  public String getDsn()
+  {
+    return dsn;
+  }
+
+  public void setDsn(String dsn)
+  {
+    this.dsn = dsn;
   }
 
   public String getDriver()
@@ -233,6 +250,11 @@ public class SqlwebBean extends WebBean implements Serializable
     this.showNullAsEmpty = showNullAsEmpty;
   }
 
+  public boolean isDsnEnabled()
+  {
+    return UserSessionBean.getCurrentInstance().isUserInRole("QUERY_EDITOR");
+  }
+  
   public String getContent()
   {
     return "/pages/sqlweb/sqlweb.xhtml";
@@ -261,9 +283,8 @@ public class SqlwebBean extends WebBean implements Serializable
     exception = null;
     long t0 = System.currentTimeMillis();
     try
-    {
-      Class.forName(driver);
-      try (Connection conn = DriverManager.getConnection(url, username, password))
+    {      
+      try (Connection conn = getConnection())
       {
         conn.setAutoCommit(false);
         try (Statement statement = conn.createStatement())
@@ -324,19 +345,21 @@ public class SqlwebBean extends WebBean implements Serializable
           else // is update
           {
             updateCount = statement.getUpdateCount();
-          }
-          saveParameters();
+          }          
+          if (deferredExecution) 
+            removeParameters();
+          else
+            saveParameters();
         }
       }
     }
-    catch (ClassNotFoundException | SQLException ex)
+    catch (ClassNotFoundException | SQLException | NamingException ex)
     {
       exception = ex.getMessage();
       error(exception);
     }
     long t1 = System.currentTimeMillis();
     duration = t1 - t0;
-    deferredExecution = false;
   }
 
   public String getException()
@@ -516,12 +539,14 @@ public class SqlwebBean extends WebBean implements Serializable
   private void restoreParameters()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    dsn = (String)userSessionBean.getAttribute("sqlweb.dsn");
     driver = (String)userSessionBean.getAttribute("sqlweb.driver");
     url = (String)userSessionBean.getAttribute("sqlweb.url");
     username = (String)userSessionBean.getAttribute("sqlweb.username");
     password = (String)userSessionBean.getAttribute("sqlweb.password");
     sql = (String)userSessionBean.getAttribute("sqlweb.sql");
 
+    if (dsn == null) dsn = getProperty(JDBC_DSN_PROPERTY);    
     if (driver == null) driver = getProperty(JDBC_DRIVER_PROPERTY);
     if (url == null) url = getProperty(JDBC_URL_PROPERTY);
     if (username == null) username = getProperty(JDBC_USERNAME_PROPERTY);
@@ -530,10 +555,40 @@ public class SqlwebBean extends WebBean implements Serializable
   private void saveParameters()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.setAttribute("sqlweb.dsn", dsn);
     userSessionBean.setAttribute("sqlweb.driver", driver);
     userSessionBean.setAttribute("sqlweb.url", url);
     userSessionBean.setAttribute("sqlweb.username", username);
     userSessionBean.setAttribute("sqlweb.password", password);
     userSessionBean.setAttribute("sqlweb.sql", sql);
+  }
+  
+  private void removeParameters()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.getAttributes().remove("sqlweb.dsn");
+    userSessionBean.getAttributes().remove("sqlweb.driver");
+    userSessionBean.getAttributes().remove("sqlweb.url");
+    userSessionBean.getAttributes().remove("sqlweb.username");
+    userSessionBean.getAttributes().remove("sqlweb.password");
+    userSessionBean.getAttributes().remove("sqlweb.sql");
+  }
+  
+  private Connection getConnection() 
+    throws NamingException, SQLException, ClassNotFoundException
+  {
+    if (!StringUtils.isBlank(dsn))
+    {
+      javax.naming.Context initContext = new InitialContext();
+      javax.naming.Context envContext  =
+         (javax.naming.Context)initContext.lookup("java:/comp/env");
+      DataSource ds = (DataSource)envContext.lookup(dsn);
+      return ds.getConnection();      
+    }
+    else
+    {
+      Class.forName(driver);
+      return DriverManager.getConnection(url, username, password);
+    }
   }
 }

@@ -44,7 +44,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.beansaver.Savable;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
@@ -57,6 +62,8 @@ import org.santfeliu.web.bean.CMSProperty;
 public class SqlWebBean extends WebBean implements Savable
 {
   @CMSProperty
+  public static final String JDBC_DSN_PROPERTY = "jdbc_dsn";  
+  @CMSProperty
   public static final String JDBC_DRIVER_PROPERTY = "jdbc_driver";
   @CMSProperty
   public static final String JDBC_URL_PROPERTY = "jdbc_url";
@@ -64,6 +71,7 @@ public class SqlWebBean extends WebBean implements Savable
   public static final String JDBC_USERNAME_PROPERTY = "jdbc_username";
 
   private String title;
+  private String dsn;
   private String driver;
   private String url;
   private String username;
@@ -82,6 +90,7 @@ public class SqlWebBean extends WebBean implements Savable
 
   public SqlWebBean()
   {
+    dsn = getProperty(JDBC_DSN_PROPERTY);
     driver = getProperty(JDBC_DRIVER_PROPERTY);
     url = getProperty(JDBC_URL_PROPERTY);
     username = getProperty(JDBC_USERNAME_PROPERTY);
@@ -115,6 +124,16 @@ public class SqlWebBean extends WebBean implements Savable
   public void setEditMode(boolean editMode)
   {
     this.editMode = editMode;
+  }
+
+  public String getDsn()
+  {
+    return dsn;
+  }
+
+  public void setDsn(String dsn)
+  {
+    this.dsn = dsn;
   }
 
   public String getDriver()
@@ -177,6 +196,11 @@ public class SqlWebBean extends WebBean implements Savable
     this.maxRows = maxRows;
   }
 
+  public boolean isDsnEnabled()
+  {
+    return UserSessionBean.getCurrentInstance().isUserInRole("QUERY_EDITOR");
+  }  
+  
   public Map<String, String> getColumnDescriptionMap() 
   {
     if (columnDescriptionMap == null)
@@ -225,8 +249,7 @@ public class SqlWebBean extends WebBean implements Savable
     long t0 = System.currentTimeMillis();
     try
     {
-      Class.forName(driver);
-      Connection conn = DriverManager.getConnection(url, username, password);
+      Connection conn = getConnection();
       try
       {
         conn.setAutoCommit(false);
@@ -302,7 +325,7 @@ public class SqlWebBean extends WebBean implements Savable
         conn.close();
       }
     }
-    catch (ClassNotFoundException | SQLException ex)
+    catch (ClassNotFoundException | SQLException | NamingException ex)
     {
       exception = ex.getMessage();
     }
@@ -375,6 +398,24 @@ public class SqlWebBean extends WebBean implements Savable
     }
     return buffer.toString();
   }
+  
+  private Connection getConnection() 
+    throws NamingException, SQLException, ClassNotFoundException
+  {
+    if (!StringUtils.isBlank(dsn))
+    {
+      javax.naming.Context initContext = new InitialContext();
+      javax.naming.Context envContext  =
+         (javax.naming.Context)initContext.lookup("java:/comp/env");
+      DataSource ds = (DataSource)envContext.lookup(dsn);
+      return ds.getConnection();      
+    }
+    else
+    {
+      Class.forName(driver);
+      return DriverManager.getConnection(url, username, password);
+    }
+  }  
 
   public class Column implements Serializable
   {

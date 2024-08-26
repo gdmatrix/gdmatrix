@@ -113,24 +113,28 @@ public class QueryWriter
 
       startTag("connection", true);
       Query.Connection connection = query.getConnection();
-      Query.Connection baseConnection = query.getConnection();
-      if (baseQuery == null ||
-        !StringUtils.equals(connection.getDriver(), baseConnection.getDriver()))
+      if (baseQuery == null || !StringUtils.equals(connection.getDsn(), 
+        baseQuery.getConnection().getDsn()))
+      {
+        writeTagValue("dsn", connection.getDsn());
+      }
+      if (baseQuery == null || !StringUtils.equals(connection.getDriver(), 
+        baseQuery.getConnection().getDriver()))
       {
         writeTagValue("driver", connection.getDriver());
       }
-      if (baseQuery == null ||
-        !StringUtils.equals(connection.getUrl(), baseConnection.getUrl()))
+      if (baseQuery == null || !StringUtils.equals(connection.getUrl(), 
+        baseQuery.getConnection().getUrl()))
       {
         writeTagValue("url", connection.getUrl());
       }
-      if (baseQuery == null ||
-        !StringUtils.equals(connection.getUsername(), baseConnection.getUsername()))
+      if (baseQuery == null || !StringUtils.equals(connection.getUsername(), 
+        baseQuery.getConnection().getUsername()))
       {
         writeTagValue("username", connection.getUsername());
       }
-      if (baseQuery == null ||
-        !StringUtils.equals(connection.getPassword(), baseConnection.getPassword()))
+      if (baseQuery == null || !StringUtils.equals(connection.getPassword(), 
+        baseQuery.getConnection().getPassword()))
       {
         writeTagValue("password", connection.getPassword());
       }

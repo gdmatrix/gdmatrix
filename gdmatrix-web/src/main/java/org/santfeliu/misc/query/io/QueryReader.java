@@ -171,6 +171,10 @@ public class QueryReader
       
       Query.Connection connection = query.getConnection();
       Query.Connection baseConnection = baseQuery.getConnection();
+      if (StringUtils.isBlank(connection.getDsn()))
+      {
+        connection.setDsn(baseConnection.getDsn());
+      }
       if (StringUtils.isBlank(connection.getDriver()))
       {
         connection.setDriver(baseConnection.getDriver());
@@ -275,6 +279,9 @@ public class QueryReader
   {
     Query.Connection conn = query.getConnection();
     Element element;
+
+    element = getChild(connElement, "dsn");
+    if (element != null) conn.setDsn(element.getTextContent());
 
     element = getChild(connElement, "driver");
     if (element != null) conn.setDriver(element.getTextContent());

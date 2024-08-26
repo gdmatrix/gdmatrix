@@ -467,10 +467,21 @@ public class Query implements Serializable
   /*** class Query.Connection ***/
   public class Connection implements Serializable
   {
+    private String dsn;
     private String driver;
     private String url;
     private String username;
     private String password;
+
+    public String getDsn()
+    {
+      return dsn;
+    }
+
+    public void setDsn(String dsn)
+    {
+      this.dsn = dsn;
+    }
 
     public String getDriver()
     {

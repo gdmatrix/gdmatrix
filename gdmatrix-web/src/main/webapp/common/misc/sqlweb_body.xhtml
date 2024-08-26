@@ -28,6 +28,11 @@
       <t:div id="sqlweb_editor" forceId="true">
         <h:panelGroup rendered="#{sqlWebBean.editMode}">
           <t:div>
+            <t:outputLabel value="#{sqlWebBundle.dsn}:" for="dsn" styleClass="output_label" />
+            <t:inputText id="dsn" value="#{sqlWebBean.dsn}" forceId="true" styleClass="input_text" 
+                         disabled="#{!sqlWebBean.dsnEnabled}" />    
+          </t:div>
+          <t:div>
             <t:outputLabel value="#{sqlWebBundle.driver}:" for="driver" styleClass="output_label" />
             <t:inputText id="driver" value="#{sqlWebBean.driver}" forceId="true" styleClass="input_text" />    
           </t:div>
