@@ -43,6 +43,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.cases.CaseObjectBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
@@ -68,6 +69,8 @@ public class AddressCasesTabBean extends TabBean
   private List<CaseAddressView> rows;
   private int firstRow;
   GroupableRowsHelper groupableRowsHelper;
+  private TypeSelectHelper typeSelectHelper;
+  
 
   @PostConstruct
   public void init()
@@ -125,6 +128,39 @@ public class AddressCasesTabBean extends TabBean
         }
       }      
     };
+    typeSelectHelper = new TypeSelectHelper<CaseAddressView>()
+    {
+      @Override
+      public List<CaseAddressView> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return getGroupableRowsHelper().isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getBaseTypeId()
+      {
+        return getTabBaseTypeId();
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }
+
+      @Override
+      public String getRowTypeId(CaseAddressView row)
+      {
+        return row.getCaseAddressTypeId();
+      }
+    };
+
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -135,6 +171,11 @@ public class AddressCasesTabBean extends TabBean
   public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
   {
     this.groupableRowsHelper = groupableRowsHelper;
+  }
+
+  public TypeSelectHelper getTypeSelectHelper()
+  {
+    return typeSelectHelper;
   }
 
   @Override
@@ -174,13 +215,18 @@ public class AddressCasesTabBean extends TabBean
         CaseAddressFilter filter = new CaseAddressFilter();
         filter.setAddressId(addressObjectBean.getObjectId());
         rows = CasesModuleBean.getPort(false).findCaseAddressViews(filter);
+        getTypeSelectHelper().load();
       }
       catch (Exception ex)
       {
         error(ex);
       }
     }
-    else rows = Collections.EMPTY_LIST;
+    else 
+    {
+      rows = Collections.EMPTY_LIST;
+      getTypeSelectHelper().load();      
+    }
   }
 
   @Override

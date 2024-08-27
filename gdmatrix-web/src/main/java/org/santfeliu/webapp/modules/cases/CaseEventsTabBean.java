@@ -76,10 +76,11 @@ public class CaseEventsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseEventsDataTableRow> rows;
     int firstRow = 0;
-    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    TypeSelectHelper typeSelectHelper = 
+      new TypeSelectHelper<CaseEventsDataTableRow>()
     {
       @Override
-      public List<? extends DataTableRow> getRows()
+      public List<CaseEventsDataTableRow> getRows()
       {
         return rows;
       }
@@ -92,7 +93,7 @@ public class CaseEventsTabBean extends TabBean
       }
 
       @Override
-      public String getTabBaseTypeId()
+      public String getBaseTypeId()
       {
         return CaseEventsTabBean.this.getTabBaseTypeId();        
       }
@@ -102,6 +103,12 @@ public class CaseEventsTabBean extends TabBean
       {
         firstRow = 0;
       }      
+
+      @Override
+      public String getRowTypeId(CaseEventsDataTableRow row)
+      {
+        return row.getTypeId();
+      }
     };
     
     public TypeSelectHelper getTypeSelectHelper()

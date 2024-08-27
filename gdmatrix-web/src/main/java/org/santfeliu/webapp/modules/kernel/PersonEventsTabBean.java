@@ -49,6 +49,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
@@ -71,6 +72,43 @@ public class PersonEventsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<AttendantView> rows;
     int firstRow = 0;
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper<AttendantView>()
+    {
+      @Override
+      public List<AttendantView> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return getGroupableRowsHelper().isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getBaseTypeId()
+      {
+        return getTabBaseTypeId();        
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }      
+
+      @Override
+      public String getRowTypeId(AttendantView row)
+      {
+        return row.getAttendantTypeId();        
+      }
+    }; 
+
+    public TypeSelectHelper getTypeSelectHelper()
+    {
+      return typeSelectHelper;
+    }
   }
 
   @Inject
@@ -129,6 +167,11 @@ public class PersonEventsTabBean extends TabBean
     else return EMPTY_TAB_INSTANCE;
   }
 
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  }
+
   @Override
   public String getObjectId()
   {
@@ -145,6 +188,8 @@ public class PersonEventsTabBean extends TabBean
   {
     return groupableRowsHelper;
   }
+  
+  
 
   @Override
   public boolean isNew()
@@ -210,6 +255,7 @@ public class PersonEventsTabBean extends TabBean
           }
           getCurrentTabInstance().rows = result;
         }
+        getCurrentTabInstance().typeSelectHelper.load();   
       }
       catch (Exception ex)
       {
@@ -222,6 +268,7 @@ public class PersonEventsTabBean extends TabBean
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
+      getCurrentTabInstance().typeSelectHelper.load();         
     }
   }
   

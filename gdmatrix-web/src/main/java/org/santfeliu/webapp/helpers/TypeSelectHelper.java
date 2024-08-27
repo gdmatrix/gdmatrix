@@ -1,34 +1,5 @@
-/*
- * GDMatrix
- *  
- * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
- * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
- * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
- * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
- * https://www.gnu.org/licenses/lgpl.txt
- */
 package org.santfeliu.webapp.helpers;
+
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,22 +10,22 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.webapp.util.DataTableRow;
 
 /**
  *
  * @author lopezrj-sf
  */
-public abstract class TypeSelectHelper
+public abstract class TypeSelectHelper<T>
 {  
   private List<SelectItem> currentTypeSelectItems = new ArrayList<>();
   private String currentTypeId;
-  private List<? extends DataTableRow> filteredRows;
+  private List<T> filteredRows;
   
-  public abstract List<? extends DataTableRow> getRows();
+  public abstract List<T> getRows();
   public abstract boolean isGroupedViewEnabled();
-  public abstract String getTabBaseTypeId();
+  public abstract String getBaseTypeId();
   public abstract void resetFirstRow();
+  public abstract String getRowTypeId(T row);
 
   public List<SelectItem> getCurrentTypeSelectItems()
   {
@@ -76,12 +47,12 @@ public abstract class TypeSelectHelper
     this.currentTypeId = currentTypeId;
   }
 
-  public List<? extends DataTableRow> getFilteredRows()
+  public List<T> getFilteredRows()
   {
     return filteredRows;
   }
 
-  public void setFilteredRows(List<? extends DataTableRow> filteredRows)
+  public void setFilteredRows(List<T> filteredRows)
   {
     this.filteredRows = filteredRows;
   }
@@ -98,17 +69,17 @@ public abstract class TypeSelectHelper
   
   public void currentTypeChanged(AjaxBehaviorEvent e)
   {
-    List<? extends DataTableRow> allRows = getRows();
+    List<T> allRows = getRows();
     if (currentTypeId == null)
     {
       setFilteredRows(allRows);
     }
     else
     {
-      List<DataTableRow> auxFilteredRows = new ArrayList<>();      
-      for (DataTableRow row : allRows)
+      List<T> auxFilteredRows = new ArrayList<>();      
+      for (T row : allRows)
       {
-        if (row.getTypeId().equals(currentTypeId))
+        if (currentTypeId.equals(getRowTypeId(row)))
         {
           auxFilteredRows.add(row);
         }
@@ -128,7 +99,7 @@ public abstract class TypeSelectHelper
       return false;
     }    
     
-    String typeId = getTabBaseTypeId();
+    String typeId = getBaseTypeId();
     if (typeId != null)
     {
       Type type = TypeCache.getInstance().getType(typeId);
@@ -146,7 +117,7 @@ public abstract class TypeSelectHelper
   
   public void loadCurrentTypeSelectItems()
   {
-    List<? extends DataTableRow> allRows = getRows();    
+    List<T> allRows = getRows();    
     getCurrentTypeSelectItems().clear();
     if (allRows != null && !allRows.isEmpty())
     {
@@ -155,10 +126,13 @@ public abstract class TypeSelectHelper
       for (String itemTypeId : itemTypeIds)
       {
         Type type = typeCache.getType(itemTypeId);
-        String itemTypeDescription = type.getDescription();
-        SelectItem selectItem = new SelectItem(itemTypeId, 
-          itemTypeDescription);
-        getCurrentTypeSelectItems().add(selectItem);            
+        if (type != null)
+        {
+          String itemTypeDescription = type.getDescription();
+          SelectItem selectItem = new SelectItem(itemTypeId, 
+            itemTypeDescription);
+          getCurrentTypeSelectItems().add(selectItem);            
+        }
       }
       getCurrentTypeSelectItems().sort(new Comparator<SelectItem>()
       {
@@ -173,13 +147,14 @@ public abstract class TypeSelectHelper
   
   private Set<String> getItemTypeIds()
   {
-    List<? extends DataTableRow> allRows = getRows();
+    List<T> allRows = getRows();
     Set<String> itemTypeIds = new HashSet<>();
-    for (DataTableRow row : allRows)
+    for (T row : allRows)
     {
-      itemTypeIds.add(row.getTypeId());
+      String typeId = getRowTypeId(row);
+      if (typeId != null)
+        itemTypeIds.add(typeId);
     }
     return itemTypeIds;    
   }
-  
 }

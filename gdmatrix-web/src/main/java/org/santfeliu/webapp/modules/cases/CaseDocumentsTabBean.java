@@ -98,10 +98,11 @@ public class CaseDocumentsTabBean extends TabBean
     List<CaseDocumentsDataTableRow> rows;
     int firstRow = 0;
     String currentVolume;
-    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    TypeSelectHelper typeSelectHelper = 
+      new TypeSelectHelper<CaseDocumentsDataTableRow>()
     {
       @Override
-      public List<? extends DataTableRow> getRows()
+      public List<CaseDocumentsDataTableRow> getRows()
       {
         return rows;
       }
@@ -114,7 +115,7 @@ public class CaseDocumentsTabBean extends TabBean
       }
 
       @Override
-      public String getTabBaseTypeId()
+      public String getBaseTypeId()
       {
         return CaseDocumentsTabBean.this.getTabBaseTypeId();        
       }
@@ -124,6 +125,12 @@ public class CaseDocumentsTabBean extends TabBean
       {
         firstRow = 0;
       }      
+
+      @Override
+      public String getRowTypeId(CaseDocumentsDataTableRow row)
+      {
+        return row.getTypeId();
+      }
     };
     
     public TypeSelectHelper getTypeSelectHelper()

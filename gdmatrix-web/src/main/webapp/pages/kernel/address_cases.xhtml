@@ -10,7 +10,7 @@
   <h:panelGroup>
     
     <!-- Results table -->
-    <p:dataTable id="case_results_table" value="#{addressCasesTabBean.rows}" 
+    <p:dataTable id="case_results_table" value="#{addressCasesTabBean.typeSelectHelper.filteredRows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom" 
@@ -24,6 +24,20 @@
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">  
+          <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
+                         rendered="#{addressCasesTabBean.typeSelectHelper.renderCurrentTypeSelector}">
+            <p:outputLabel value="#{caseBundle.caseCases_type}:"
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{addressCasesTabBean.typeSelectHelper.currentTypeId}" touchable="true">
+              <f:selectItem itemLabel="" itemValue="" />
+              <f:selectItems value="#{addressCasesTabBean.typeSelectHelper.currentTypeSelectItems}" />
+              <p:ajax event="valueChange" 
+                      listener="#{addressCasesTabBean.typeSelectHelper.currentTypeChanged}"
+                      process="@this"
+                      update="case_results_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>              
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{addressCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{addressCasesTabBean.groupableRowsHelper.switchView}"
                            process="case_results_table"

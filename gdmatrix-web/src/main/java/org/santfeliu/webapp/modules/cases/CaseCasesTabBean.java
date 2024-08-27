@@ -87,10 +87,10 @@ public class CaseCasesTabBean extends TabBean
     List<CaseCasesDataTableRow> rows;
     int firstRow = 0;
     boolean relatedByPerson = false;
-    TypeSelectHelper typeSelectHelper = new TypeSelectHelper()
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper<CaseCasesDataTableRow>()
     {
       @Override
-      public List<? extends DataTableRow> getRows()
+      public List<CaseCasesDataTableRow> getRows()
       {
         return rows;
       }
@@ -103,7 +103,7 @@ public class CaseCasesTabBean extends TabBean
       }
 
       @Override
-      public String getTabBaseTypeId()
+      public String getBaseTypeId()
       {
         return CaseCasesTabBean.this.getTabBaseTypeId();        
       }
@@ -113,6 +113,12 @@ public class CaseCasesTabBean extends TabBean
       {
         firstRow = 0;
       }      
+
+      @Override
+      public String getRowTypeId(CaseCasesDataTableRow row)
+      {
+        return row.getTypeId();        
+      }
     };
     
     public TypeSelectHelper getTypeSelectHelper()
