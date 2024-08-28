@@ -81,8 +81,7 @@ public class FunctionFactory
     scriptable.put("inputMultiple", scriptable, inputMultipleFunction);
     scriptable.put("today", scriptable, todayFunction);
     scriptable.put("webCounter", scriptable, webCounterFunction);
-    scriptable.put("JSON", scriptable, jsonFunction); // deprecated
-    scriptable.put("Json", scriptable, jsonFunction);
+    scriptable.put("Json", scriptable, jsonFunction); // decrecated
     scriptable.put("include", scriptable, includeFunction);
     scriptable.put("wsport", scriptable, wsCallFunction);
     scriptable.put("linkDocuments", scriptable, linkDocumentsFunction);

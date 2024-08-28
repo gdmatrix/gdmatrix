@@ -54,10 +54,10 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.ScriptOrFnNode;
 import org.mozilla.javascript.Scriptable;
 
 import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.AstRoot;
 import org.santfeliu.util.script.ScriptableBase;
 
 /**
@@ -200,7 +200,7 @@ public class Template
       if (fragment.type == EXPRESSION_FRAGMENT)
       {
         String expression = fragment.text;
-        ScriptOrFnNode node = parser.parse(expression, "", 1);
+        AstRoot node = parser.parse(expression, "", 1);
         exploreVariables(node, variables);
       }
     }

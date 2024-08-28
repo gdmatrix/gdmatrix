@@ -46,9 +46,9 @@ import java.util.Set;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ScriptOrFnNode;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.AstRoot;
 import org.santfeliu.util.script.ScriptableBase;
 
 /**
@@ -193,7 +193,7 @@ public class JSTemplate
       org.mozilla.javascript.Parser parser =
         new org.mozilla.javascript.Parser(new CompilerEnvirons(), null);
       variables = new HashSet<>();
-      ScriptOrFnNode node = parser.parse(script, "", 1);
+      AstRoot node = parser.parse(script, "", 1);
       exploreVariables(node, variables);
       variables.remove("_out_");
       variables.remove("String");

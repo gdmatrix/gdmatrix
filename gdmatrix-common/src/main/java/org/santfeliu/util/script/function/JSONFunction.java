@@ -55,6 +55,7 @@ import org.mozilla.javascript.Scriptable;
   *        // Parse (string --> JS Object)
  *        var object = json.parse("{atr1: value1, atr2: value2}");
  */
+@Deprecated
 public class JSONFunction extends BaseFunction
 {
   private final StringifyFunction stringifyFunction = new StringifyFunction();
