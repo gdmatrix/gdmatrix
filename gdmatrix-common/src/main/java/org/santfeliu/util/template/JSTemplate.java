@@ -39,6 +39,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,6 +49,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.AstRoot;
 import org.santfeliu.util.script.ScriptableBase;
 
@@ -223,20 +225,17 @@ public class JSTemplate
     return scriptable;
   }
 
-  private void exploreVariables(org.mozilla.javascript.Node node,
-    Set<String> variables)
+  private void exploreVariables(AstRoot node, final Collection variables)
   {
-    org.mozilla.javascript.Node n = node.getFirstChild();
-    while (n != null)
+    node.visit((AstNode n) ->
     {
       if (n.getType() == Token.NAME)
       {
         String variable = n.getString();
         variables.add(variable);
       }
-      exploreVariables(n, variables);
-      n = n.getNext();
-    }
+      return true;
+    });
   }
 
   private void parse(Reader reader) throws IOException

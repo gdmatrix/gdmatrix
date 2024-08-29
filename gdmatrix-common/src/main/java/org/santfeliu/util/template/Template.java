@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -52,11 +51,11 @@ import java.util.Set;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Scriptable;
 
 import org.mozilla.javascript.Token;
+import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.AstRoot;
 import org.santfeliu.util.script.ScriptableBase;
 
@@ -194,12 +193,12 @@ public class Template
 
   public void loadReferencedVariables(Collection variables)
   {
-    Parser parser = new Parser(new CompilerEnvirons(), null);
     for (Fragment fragment : fragments)
     {
       if (fragment.type == EXPRESSION_FRAGMENT)
       {
         String expression = fragment.text;
+        Parser parser = new Parser(new CompilerEnvirons(), null);
         AstRoot node = parser.parse(expression, "", 1);
         exploreVariables(node, variables);
       }
@@ -375,8 +374,7 @@ public class Template
         case 4:
           if (ch == '\"')
           {
-            state = 2;
-          }
+            state = 2;         }
           buffer.append(ch);
           break;
       }
@@ -388,57 +386,34 @@ public class Template
     }
   }
 
-  private void exploreVariables(Node node, Collection variables)
+  private void exploreVariables(AstRoot node, final Collection variables)
   {
-    Node n = node.getFirstChild();
-    while (n != null)
+    node.visit((AstNode n) ->
     {
       if (n.getType() == Token.NAME)
       {
         String variable = n.getString();
         variables.add(variable);
       }
-      exploreVariables(n, variables);
-      n = n.getNext();
-    }
+      return true;
+    });
   }
 
   public static void main(String[] args)
   {
     try
     {
-      //String s = "aaa$${}${decimalFormat(alfa, '#0.00')}bbb${alfa + 1}";
-      //String s = "${(alfa > 9) ? 'aa' : 'bb'; Math.sin(alfa) + (b + 4) + blankNull() + b + a}";
-      String s = "esto es cuest ${if (alfa > 0) {alfa = '{2'} else {alfa = 0}} fff";
-      Template template = new Template(s);
-      template.printFragments();
       HashMap vars = new HashMap();
-      vars.put("alfa", 8.7854);
-      System.out.println(template.merge(vars));
-      System.out.println(template.getReferencedVariables());
-
-      HashMap vars2 = new HashMap();
-      HashMap vars3 = new HashMap();
-      vars2.put("beta", "aaa${2 + 2}");
-      vars2.put("gamma", "aaa${alfa + 2}");
-      Template.merge(vars2, vars3, vars);
-      System.out.println(vars);
-      System.out.println(vars2);
-      System.out.println(vars3);
-      System.out.println("[" + Template.create("").merge(vars) + "]");
-
       vars.clear();
       vars.put("precio", 56.6);
-      Template t = Template.create("esto cuesta ${precio} euros ${precio}");
+      Template t = Template.create("El resultado es " +
+        " ${function iva(p) {return 1.21 * p;}; iva(67)}. " +
+        " Código: ${s = 1; s = s + 442;}. Cuesta ${precio} euros." +
+        "+IVA: ${iva(precio)}");
       System.out.println(t.merge(vars));
       System.out.println(t.getExpressionFragmentCount());
       System.out.println(t.getFragmentCount());
       System.out.println(t.getReferencedVariables());
-
-      PrintWriter w = new PrintWriter(System.out);
-      t.write(w);
-      w.flush();
-      w.close();
     }
     catch (Exception ex)
     {
