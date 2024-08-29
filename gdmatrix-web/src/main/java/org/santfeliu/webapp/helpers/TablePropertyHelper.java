@@ -56,16 +56,18 @@ public class TablePropertyHelper
     List<TableProperty> tableProperties, String mode)
   {
     List<TableProperty> auxList = new ArrayList<>();
-    for (TableProperty tableProperty : tableProperties)
+    if (tableProperties != null)
     {
-      if (mode.equals(tableProperty.getMode()) || 
-        "both".equals(tableProperty.getMode()))
+      for (TableProperty tableProperty : tableProperties)
       {
-        auxList.add(tableProperty);
+        if (mode.equals(tableProperty.getMode()) || 
+          "both".equals(tableProperty.getMode()))
+        {
+          auxList.add(tableProperty);
+        }
       }
     }
     return auxList;
   }
-  
   
 }
