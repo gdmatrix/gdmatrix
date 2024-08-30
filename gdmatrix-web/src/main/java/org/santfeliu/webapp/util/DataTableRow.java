@@ -37,6 +37,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.EnumTypeItem;
 import org.matrix.dic.Property;
@@ -132,9 +133,7 @@ public class DataTableRow implements Serializable
       @Override
       public int compare(CustomProperty cp1, CustomProperty cp2)
       {
-        String s1 = StringUtils.defaultString(cp1.getLabel()).toLowerCase();
-        String s2 = StringUtils.defaultString(cp2.getLabel()).toLowerCase();
-        return s1.compareTo(s2);
+        return cp1.getIndex() - cp2.getIndex();
       }
     });
     return auxList;
@@ -176,6 +175,7 @@ public class DataTableRow implements Serializable
     //Row properties
     List<TableProperty> rowTableProperties =
       TablePropertyHelper.getRowTableProperties(tableProperties);
+    int index = 1;
     for (int i = 0; i < rowTableProperties.size(); i++)
     {
       TableProperty rowProperty = rowTableProperties.get(i);
@@ -185,8 +185,13 @@ public class DataTableRow implements Serializable
         Value value = getTablePropertyValue(scriptClient, rowProperty, row);
         if (value != null && !StringUtils.isBlank(value.getLabel()))
         {
-          customPropertyMap.put(rowProperty.getName(), new CustomProperty(
-            rowProperty.getName(), rowProperty.getLabel(), value));
+          String propertyName = rowProperty.getName();
+          if (propertyName == null) //Set random property name
+          {
+            propertyName = RandomStringUtils.randomAlphanumeric(8);
+          }
+          customPropertyMap.put(propertyName, new CustomProperty(index++, 
+            propertyName, rowProperty.getLabel(), value));
         }
       }
     }
@@ -194,8 +199,9 @@ public class DataTableRow implements Serializable
 
   public void addCustomProperty(String name, String label, String value)
   {
-    customPropertyMap.put(name, new CustomProperty(
-      name, label, new DefaultValue(value)));
+    int index = getMaxCustomPropertyIndex() + 1;
+    customPropertyMap.put(name, new CustomProperty(index, name, label, 
+      new DefaultValue(value)));
   }
 
   public CustomProperty getCustomProperty(String name)
@@ -207,7 +213,7 @@ public class DataTableRow implements Serializable
   {
     return (customPropertyMap.remove(name) != null);
   }
-
+  
   public Value getValueByPropertyName(List<TableProperty> columns,
     String propertyName)
   {
@@ -325,6 +331,19 @@ public class DataTableRow implements Serializable
         return getDefaultValue(tableProperty.getName());
     }
   }
+  
+  private int getMaxCustomPropertyIndex()
+  {
+    int maxIndex = 0;
+    List<CustomProperty> customProperties = 
+      new ArrayList(customPropertyMap.values());    
+    for (CustomProperty customProperty : customProperties)
+    {
+      if (customProperty.getIndex() > maxIndex) 
+        maxIndex = customProperty.getIndex();
+    }
+    return maxIndex;
+  }  
 
   public abstract class Value
   {
@@ -424,15 +443,27 @@ public class DataTableRow implements Serializable
 
   public class CustomProperty
   {
+    private int index;
     private String name;
     private String label;
     private Value value;
 
-    public CustomProperty(String name, String label, Value value)
+    public CustomProperty(int index, String name, String label, Value value)
     {
+      this.index = index;
       this.name = name;
       this.label = label;
       this.value = value;
+    }
+
+    public int getIndex()
+    {
+      return index;
+    }
+
+    public void setIndex(int index)
+    {
+      this.index = index;
     }
 
     public String getName()
