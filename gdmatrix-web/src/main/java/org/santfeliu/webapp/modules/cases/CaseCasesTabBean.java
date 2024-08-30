@@ -652,6 +652,8 @@ public class CaseCasesTabBean extends TabBean
     private String caseId;
     private String caseTypeId;
     private String caseTitle;
+    private String caseIniDateTime;
+    private String caseEndDateTime;
     private String personId; //If is related by person
 
     public CaseCasesDataTableRow(CaseCaseView row)
@@ -665,10 +667,20 @@ public class CaseCasesTabBean extends TabBean
       reverseRelation = objectId.equals(relCase.getCaseId())
         && !objectId.equals(mainCase.getCaseId());
 
-      caseId = reverseRelation ? mainCase.getCaseId() : relCase.getCaseId();
-      caseTypeId = reverseRelation ? mainCase.getCaseTypeId() :
-        relCase.getCaseTypeId();
-      caseTitle = reverseRelation ? mainCase.getTitle() : relCase.getTitle();
+      Case cas = reverseRelation ? mainCase : relCase;
+      caseId = cas.getCaseId();
+      caseTypeId = cas.getCaseTypeId();
+      caseTitle = cas.getTitle();
+      if (cas.getStartDate() != null)
+      {
+        caseIniDateTime = cas.getStartDate() + 
+          (cas.getStartTime() != null ? cas.getStartTime() : "000000");
+      }
+      if (cas.getEndDate() != null)
+      {
+        caseEndDateTime = cas.getEndDate() + 
+          (cas.getEndTime() != null ? cas.getEndTime() : "000000");
+      }
       personId =
         DictionaryUtils.getPropertyValue(row.getProperty(), "personId");
     }
@@ -708,6 +720,36 @@ public class CaseCasesTabBean extends TabBean
       this.caseId = caseId;
     }
 
+    public String getCaseIniDateTime()
+    {
+      return caseIniDateTime;
+    }
+
+    public void setCaseIniDateTime(String caseIniDateTime)
+    {
+      this.caseIniDateTime = caseIniDateTime;
+    }
+
+    public String getCaseEndDateTime()
+    {
+      return caseEndDateTime;
+    }
+
+    public void setCaseEndDateTime(String caseEndDateTime)
+    {
+      this.caseEndDateTime = caseEndDateTime;
+    }
+    
+    public String getCaseIniDate()
+    {
+      return (caseIniDateTime == null ? null : caseIniDateTime.substring(0, 8));      
+    }
+    
+    public String getCaseEndDate()
+    {
+      return (caseEndDateTime == null ? null : caseEndDateTime.substring(0, 8));      
+    }
+
     public String getPersonId()
     {
       return personId;
@@ -732,6 +774,14 @@ public class CaseCasesTabBean extends TabBean
             return new DefaultValue(getCaseTitle());
           case "caseTypeId":
             return new TypeValue(getCaseTypeId());
+          case "caseIniDate":
+            return new DateValue(getCaseIniDate());
+          case "caseIniDateTime":
+            return new DateValue(getCaseIniDateTime());
+          case "caseEndDate":
+            return new DateValue(getCaseEndDate());
+          case "caseEndDateTime":
+            return new DateValue(getCaseEndDateTime());
           case "person":
             return new DefaultValue(getPerson());
           default:
