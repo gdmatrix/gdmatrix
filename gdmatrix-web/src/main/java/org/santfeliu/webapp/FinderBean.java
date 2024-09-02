@@ -44,6 +44,7 @@ import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.util.script.ScriptClient;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
+import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
 import org.santfeliu.webapp.util.WebUtils;
@@ -78,6 +79,12 @@ public abstract class FinderBean extends BaseBean
   public abstract void find();
 
   public abstract void smartFind();
+  
+  public abstract Object getFilter();
+  
+  protected void setActionResult(ActionObject scriptObject)
+  {
+  }  
 
   public int getObjectCount()
   {
@@ -124,7 +131,12 @@ public abstract class FinderBean extends BaseBean
         Object callable = actionsClient.get("putDefaultFilter");
         if (callable instanceof Callable)
         {
+          ActionObject actionObject  =  new ActionObject(getFilter());
+          actionsClient.put("actionObject", actionObject); 
           actionsClient.execute((Callable)callable);
+          actionObject = (ActionObject) actionsClient.get("actionObject");
+          if (actionObject != null)
+            setActionResult(actionObject);
         }        
       }
     }                

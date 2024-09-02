@@ -71,6 +71,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.DataTableRow;
@@ -621,6 +622,19 @@ public class EventFinderBean extends FinderBean
     return String.valueOf((char)0x24CC);
   }
 
+  @Override
+  protected void setActionResult(ActionObject actionObject)
+  {
+    filter = (EventFilter) actionObject.getObject();
+    if (filter != null)
+    {
+      if (!filter.getEventTypeId().isEmpty())
+        searchEventTypeId = filter.getEventTypeId().get(0);
+      if (!filter.getThemeId().isEmpty())
+        searchEventThemeId = filter.getThemeId().get(0);
+    }
+  }
+  
   @Override
   public Serializable saveState()
   {
