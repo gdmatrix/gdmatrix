@@ -412,6 +412,7 @@ public class FormImporter
       String maxYear = df.format(maxDate);
       datePicker.setYearRange(minYear + ":" + maxYear);
       datePicker.setReadonly(field.isReadOnly());
+      datePicker.setDisabled(field.isReadOnly());
       if (field.getMinOccurs() > 0) setRequired(datePicker);
       component = datePicker;
     }
@@ -493,6 +494,7 @@ public class FormImporter
           SelectOneMenu select =
             (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
           select.setReadonly(field.isReadOnly());
+          select.setDisabled(field.isReadOnly());
           select.setAutoWidth("false");
           select.setTouchable(true);
           String onChange = (String)view.getProperty("onchange");
