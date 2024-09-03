@@ -31,10 +31,10 @@
 package org.santfeliu.dic.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
@@ -118,7 +118,7 @@ public class PropertyConverter
 
   public Map toPropertyMap(List<Property> properties)
   {
-    Map map = new HashMap();
+    Map map = new TreeMap();
     for (Property property : properties)
     {
       String propertyName = property.getName();
@@ -268,5 +268,5 @@ public class PropertyConverter
       }
       else
         return svalue;
-  }
+  }  
 }
