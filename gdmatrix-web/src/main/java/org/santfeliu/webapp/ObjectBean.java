@@ -211,8 +211,8 @@ public abstract class ObjectBean extends BaseBean
     try
     {
       clear();
+      loadObjectSetup();      
       loadObject();
-      loadObjectSetup();
       loadActiveEditTab();
       loadActions();
 
@@ -277,11 +277,12 @@ public abstract class ObjectBean extends BaseBean
     
     if (actionsScriptName != null)
     {
-      scriptClient = new ScriptClient();    
+      scriptClient = new ScriptClient();
       scriptClient.put("userSessionBean", 
         UserSessionBean.getCurrentInstance());
       scriptClient.put("applicationBean", 
         ApplicationBean.getCurrentInstance());             
+      scriptClient.executeScript(actionsScriptName);
     }
     else
       scriptClient = null;
