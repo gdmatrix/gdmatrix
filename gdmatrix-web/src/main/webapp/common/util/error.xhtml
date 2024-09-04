@@ -1,27 +1,39 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="/templates/#{userSessionBean.template}/template.xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      lang="#{userSessionBean.viewLanguage}">
 
-  <ui:define name="body">
-    <style>
-      .error_panel { margin: 20px 20px 20px 20px }
-    </style>
-    
-    <p:accordionPanel class="error_panel">
-      <p:tab title="Unhandled error">
-        <p>An error has occurred: #{userSessionBean.unhandledError}</p>
-      </p:tab>
-      <p:tab title="Details">
-        <pre>
+  <f:view locale="#{userSessionBean.viewLocale}">
+    <h:head>
+      <meta charset="utf-8" />
+    </h:head>
+
+    <h:body>
+      <style>
+        .error_panel {
+          margin: 20px 20px 20px 20px
+        }
+
+        .error_panel * {
+          font-size: 13px;
+        }
+      </style>
+
+      <p:accordionPanel class="error_panel">
+        <p:tab title="Unhandled error">
+          <p>An error has occurred: #{userSessionBean.unhandledError}</p>
+        </p:tab>
+        <p:tab title="Details">
+          <pre>
           <h:outputText value="#{userSessionBean.unhandledErrorTrace}" />
-        </pre>
-      </p:tab>  
-    </p:accordionPanel>
+          </pre>
+        </p:tab>  
+      </p:accordionPanel>
 
-  </ui:define>
-</ui:composition>
+    </h:body>
+  </f:view>
+</html>
