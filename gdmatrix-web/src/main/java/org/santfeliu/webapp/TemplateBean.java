@@ -206,12 +206,12 @@ public class TemplateBean extends FacesBean implements Serializable
     userSessionBean.executeSelectedMenuItem();
   }
 
-  public void showObject()
+  public String showObject()
   {
     Map<String, String> map = getExternalContext().getRequestParameterMap();
     String typeId = map.get("typeId");
     String objectId = map.get("objectId");
-    navigatorBean.show(typeId, objectId);
+    return navigatorBean.show(typeId, objectId);
   }
 
   public void login()
