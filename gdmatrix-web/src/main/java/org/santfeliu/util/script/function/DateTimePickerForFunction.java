@@ -45,7 +45,7 @@ public class DateTimePickerForFunction extends BaseFunction
   public Object call(Context cx, Scriptable scope, Scriptable thisObj,
     Object[] args)
   {
-    String fieldName = (String)args[0];
+    String fieldName = String.valueOf(args[0]);
     String language = UserSessionBean.getCurrentInstance().getViewLanguage();
 
     StringBuilder buffer = new StringBuilder();

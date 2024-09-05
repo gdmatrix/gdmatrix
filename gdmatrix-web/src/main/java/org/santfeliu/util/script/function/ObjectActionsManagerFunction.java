@@ -91,8 +91,8 @@ public class ObjectActionsManagerFunction extends BaseFunction {
         if (definitions == null)
           definitions = new ArrayList<ObjectAction>();
 
-        String description = (String)args[0];
-        String expression = (String)args[1];
+        String description = String.valueOf(args[0]);
+        String expression = String.valueOf(args[1]);
         ObjectAction oa = new ObjectAction();
         oa.setDescription(description);
         oa.setExpression(expression);

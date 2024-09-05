@@ -50,7 +50,7 @@ public class GetBeanFunction extends BaseFunction
     {
       FacesContext facesContext = FacesContext.getCurrentInstance();
       Application application = facesContext.getApplication();
-      return application.getVariableResolver().resolveVariable(facesContext, (String)args[0]);
+      return application.getVariableResolver().resolveVariable(facesContext, String.valueOf(args[0]));
     }
 
     return null;

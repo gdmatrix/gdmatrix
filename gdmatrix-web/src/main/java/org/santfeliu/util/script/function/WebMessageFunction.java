@@ -50,9 +50,9 @@ public class WebMessageFunction extends BaseFunction
     {
       String message = null;
       String severity = "info";
-      message = (String)args[0];
+      message = String.valueOf(args[0]);
       if (args.length == 2)
-        severity = (String)args[1];
+        severity = String.valueOf(args[1]);
 
       if ("info".equals(severity))
         FacesUtils.addMessage(message, null, FacesMessage.SEVERITY_INFO);

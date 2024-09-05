@@ -54,8 +54,8 @@ public class CloneDocumentFunction extends BaseFunction
     if (args.length >= 3 && args.length <= 4)
     {
       String docId = String.valueOf(args[0]);
-      String title = (String) args[1];
-      String docTypeId = (String) args[2];
+      String title = String.valueOf(args[1]);
+      String docTypeId = String.valueOf(args[2]);
       
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       DocumentManagerClient client = 
@@ -72,7 +72,7 @@ public class CloneDocumentFunction extends BaseFunction
       
       if (args.length == 4)
       {  
-        String role = (String) args[3];
+        String role = String.valueOf(args[3]);
         AccessControl acl1 = new org.matrix.security.AccessControl();
         acl1.setAction("Read");
         acl1.setRoleId(role);

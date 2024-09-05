@@ -53,10 +53,10 @@ public class HtmlEditorFunction extends BaseFunction
   public Object call(Context cx, Scriptable scope, Scriptable thisObj,
     Object[] args)
   {
-    String fieldName = (String)args[0];
+    String fieldName = String.valueOf(args[0]);
     String toolbarset = "Reduced";
     if (args.length > 1)
-      toolbarset = (String)args[1];
+      toolbarset = String.valueOf(args[1]);
 
     StringBuilder buffer = new StringBuilder();
 
@@ -93,8 +93,8 @@ public class HtmlEditorFunction extends BaseFunction
       String width = "";
       if (args.length >= 4)
       {
-        int w = Integer.parseInt((String) args[2]) - 2;
-        int h = Integer.parseInt((String) args[3]) - 78; //Toolbar height
+        int w = Integer.parseInt(String.valueOf(args[2])) - 2;
+        int h = Integer.parseInt(String.valueOf(args[3])) - 78; //Toolbar height
         height = String.valueOf(h);
         width = String.valueOf(w);
       }
