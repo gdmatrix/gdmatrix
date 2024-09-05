@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.util.script.function;
@@ -101,9 +101,9 @@ public class WSPortFunction extends BaseFunction
 
     services.put("kernel", org.matrix.kernel.KernelManagerService.class);
     ports.put("kernel", org.matrix.kernel.KernelManagerPort.class);
-    
+
     services.put("job", org.matrix.job.JobManagerService.class);
-    ports.put("job", org.matrix.job.JobManagerPort.class);    
+    ports.put("job", org.matrix.job.JobManagerPort.class);
 
     services.put("news", org.matrix.news.NewsManagerService.class);
     ports.put("news", org.matrix.news.NewsManagerPort.class);
@@ -112,8 +112,8 @@ public class WSPortFunction extends BaseFunction
     ports.put("policy", org.matrix.policy.PolicyManagerPort.class);
 
     services.put("presence", org.matrix.presence.PresenceManagerService.class);
-    ports.put("presence", org.matrix.presence.PresenceManagerPort.class);      
-    
+    ports.put("presence", org.matrix.presence.PresenceManagerPort.class);
+
     services.put("report", org.matrix.report.ReportManagerService.class);
     ports.put("report", org.matrix.report.ReportManagerPort.class);
 
@@ -147,37 +147,37 @@ public class WSPortFunction extends BaseFunction
 
     if (args.length >= 1)
     {
-      String module = null;      
+      String module = null;
       String userId = null;
       String password = null;
       String url = null;
 
-      module = (String)Context.toString(args[0]);
+      module = String.valueOf(Context.toString(args[0]));
       if (args.length >= 2)
       {
-        userId = (String)Context.toString(args[1]);
+        userId = String.valueOf(Context.toString(args[1]));
         if (args.length >= 3)
         {
-          password = (String)Context.toString(args[2]);
+          password = String.valueOf(Context.toString(args[2]));
           if (args.length >= 4)
           {
-            url = (String)Context.toString(args[3]);
+            url = String.valueOf(Context.toString(args[3]));
           }
         }
       }
 
-      if ("news".equals(module)) 
+      if ("news".equals(module))
       {
         port = getManagerClient(NewsManagerClient.class, url, userId, password);
       }
-      else if ("feed".equals(module)) 
+      else if ("feed".equals(module))
       {
         port = getManagerClient(FeedManagerClient.class, url, userId, password);
-      }      
-      else if ("agenda".equals(module)) 
+      }
+      else if ("agenda".equals(module))
       {
         port = getManagerClient(AgendaManagerClient.class, url, userId, password);
-      }      
+      }
       else if (services.containsKey(module))
       {
         WSDirectory directory;
@@ -202,7 +202,7 @@ public class WSPortFunction extends BaseFunction
         else
         {
           port = endpoint.getPort(portClass, userId, password);
-        }        
+        }
       }
       else
       {
@@ -211,7 +211,7 @@ public class WSPortFunction extends BaseFunction
     }
     return port;
   }
-  
+
   private Object getManagerClient(Class clientClass, String url, String userId, String password)
   {
     Object client;
@@ -225,18 +225,18 @@ public class WSPortFunction extends BaseFunction
         arguments = new Object[]{userId, password};
       }
       else
-      {        
+      {
         argTypes = new Class[]{URL.class, String.class, String.class};
         arguments = new Object[]{new URL(url), userId, password};
       }
-      Constructor constructor = clientClass.getDeclaredConstructor(argTypes); 
-      client = constructor.newInstance(arguments); 
+      Constructor constructor = clientClass.getDeclaredConstructor(argTypes);
+      client = constructor.newInstance(arguments);
     }
     catch (Exception ex)
     {
       throw new RuntimeException(ex);
-    }                  
+    }
     return client;
-  }  
-  
+  }
+
 }

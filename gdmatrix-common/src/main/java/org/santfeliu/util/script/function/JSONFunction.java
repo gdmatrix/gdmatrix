@@ -38,6 +38,7 @@ import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.mozilla.javascript.BaseFunction;
+import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeJavaObject;
@@ -162,9 +163,9 @@ public class JSONFunction extends BaseFunction
       Map result = new HashMap(ids.length);
       for (Object id : ids)
       {
-        if (id instanceof String)
+        if (id instanceof String || id instanceof ConsString)
         {
-          Object jsValue = jsObject.get((String)id, jsObject);
+          Object jsValue = jsObject.get(String.valueOf(id), jsObject);
           result.put(id, jsToJava(jsValue));
         }
         else if (id instanceof Integer)
@@ -191,7 +192,7 @@ public class JSONFunction extends BaseFunction
         if (args != null && args.length == 1)
         {
           JSONParser parser = new JSONParser();
-          Object obj = parser.parse((String)args[0]);
+          Object obj = parser.parse(String.valueOf(args[0]));
           Object jsObj = toJSObject(cx, scope, (JSONObject)obj);
           return jsObj;
         }
