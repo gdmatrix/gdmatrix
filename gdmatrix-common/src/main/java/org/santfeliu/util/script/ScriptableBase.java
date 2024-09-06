@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.mozilla.javascript.ConsString;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -148,8 +149,12 @@ public class ScriptableBase extends ScriptableObject
 
   public Object toJavaPrimitive(Object object)
   {
-    if (object instanceof Scriptable)
-    {
+    if (object instanceof ConsString)
+    { 
+      object = object.toString();
+    }    
+    else if (object instanceof Scriptable)
+    {  
       String className = ((Scriptable)object).getClassName();
       if (className.equals("Boolean"))
       {
@@ -161,8 +166,8 @@ public class ScriptableBase extends ScriptableObject
       }
       else if (className.equals("String"))
       {
-         object = object.toString();
-      }
+        object = object.toString();
+      }     
       else if (object instanceof NativeJavaObject)
       {
         Object javaObject = ((NativeJavaObject)object).unwrap();
