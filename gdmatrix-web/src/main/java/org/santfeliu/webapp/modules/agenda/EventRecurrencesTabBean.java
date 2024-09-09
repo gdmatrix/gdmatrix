@@ -58,6 +58,7 @@ public class EventRecurrencesTabBean extends TabBean
   public static final String FIRST_AVAILABLE_DATE = "00010102000000";
 
   private List<Event> rows;
+  private List<Event> selectedRows;
 
   private int firstRow;
 
@@ -96,6 +97,16 @@ public class EventRecurrencesTabBean extends TabBean
   public void setRows(List<Event> rows)
   {
     this.rows = rows;
+  }
+
+  public List<Event> getSelectedRows()
+  {
+    return selectedRows;
+  }
+
+  public void setSelectedRows(List<Event> selectedRows)
+  {
+    this.selectedRows = selectedRows;
   }
 
   public int getFirstRow()
@@ -185,7 +196,11 @@ public class EventRecurrencesTabBean extends TabBean
     try
     {
       int deleteCount = 0;
-      if (deleteMode.equals("1"))
+      if (deleteMode.equals("2"))
+      {
+        deleteCount = deleteSelectedRecurrences();
+      }
+      else if (deleteMode.equals("1"))
       {
         deleteCount = deleteAllRecurrences();
       }
@@ -247,6 +262,7 @@ public class EventRecurrencesTabBean extends TabBean
         rows = new ArrayList();
         if (masterEvent != null)
           rows.add(masterEvent);
+        selectedRows = new ArrayList();
 
         if (filterEventId != null)
         {
@@ -336,6 +352,16 @@ public class EventRecurrencesTabBean extends TabBean
     }
     return deleteCount;
   }
+  
+  private int deleteSelectedRecurrences() throws Exception
+  {
+    int deleteCount = 0;
+    if (selectedRows != null && !selectedRows.isEmpty())
+    {
+      deleteCount = deleteRecurrences(selectedRows);
+    }
+    return deleteCount;
+  }    
 
   private int deleteRecurrences(List<Event> events)
     throws Exception

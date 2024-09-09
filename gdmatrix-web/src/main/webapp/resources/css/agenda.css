@@ -104,6 +104,13 @@
   font-size: 15px;
 }
 
+/*** event_persons.xhtml ***/
+
+.unavailableAttendant
+{
+  background-image: url(/common/agenda/images/blink.gif) !important;
+}
+
 /*** event_recurrences.xhtml and event_copy_*.xhtml ***/
 
 .eventRecurrences.dialog
@@ -198,6 +205,11 @@
   margin-right: 4px;
 }
 
+.eventRecurrences .eventSelected .ui-chkbox
+{
+  margin-right: 0;
+}
+
 .eventRecurrences .inputBox
 {
   margin: 0px 8px 0px 8px;
@@ -252,6 +264,11 @@
 .eventRecurrencesTable .actionBar
 {
   text-align: right;
+}
+
+.eventRecurrencesDeletePanel .field-radiobutton
+{
+  min-height: 30px;  
 }
 
 .eventRecurrences .eventCopyTabView

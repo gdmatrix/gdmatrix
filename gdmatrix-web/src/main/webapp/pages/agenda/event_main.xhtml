@@ -44,35 +44,57 @@
                      readonly="#{!eventObjectBean.editable}"/>
       </div>
 
-      <div class="field col-12 md:col-3">
-        <p:outputLabel for="@next" value="#{agendaBundle.event_startDate}" />
-        <!-- TODO: disable if not editable -->
-        <p:datePicker value="#{eventObjectBean.startDateTime}"
+      <div class="field col-6 md:col-3">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_startDate}" 
+                       styleClass="w-12" />
+        <p:datePicker value="#{eventObjectBean.startDate}"
                       locale="#{eventObjectBean.language}"
-                      showIcon="true" showTime="true"
+                      showIcon="true" 
                       autocomplete="off"
-                      pattern="dd/MM/yyyy HH:mm"
-                      placeholder="dd/MM/yyyy HH:mm"
+                      pattern="dd/MM/yyyy"
+                      placeholder="dd/MM/yyyy"
                       showOnFocus="false"
                       monthNavigator="true" yearNavigator="true"
-                      disabled="#{!eventObjectBean.editable}"/>
+                      disabled="#{!eventObjectBean.editable}" />
       </div>
 
-      <div class="field col-12 md:col-3">
-        <p:outputLabel for="@next" value="#{agendaBundle.event_endDate}" />
-        <!-- TODO: disable if not editable -->
-        <p:datePicker value="#{eventObjectBean.endDateTime}"
+      <div class="field col-6 md:col-3">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_startTime}" 
+                       styleClass="w-12" />
+        <p:datePicker value="#{eventObjectBean.startTime}"
                       locale="#{eventObjectBean.language}"
-                      showIcon="true" showTime="true"
+                      timeOnly="true"
                       autocomplete="off"
-                      pattern="dd/MM/yyyy HH:mm"
-                      placeholder="dd/MM/yyyy HH:mm"
+                      pattern="HH:mm"
+                      placeholder="HH:mm"
+                      disabled="#{!eventObjectBean.editable}" />        
+      </div>      
+      
+      <div class="field col-6 md:col-3">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_endDate}" 
+                       styleClass="w-12" />
+        <p:datePicker value="#{eventObjectBean.endDate}"
+                      locale="#{eventObjectBean.language}"
+                      showIcon="true" 
+                      autocomplete="off"
+                      pattern="dd/MM/yyyy"
+                      placeholder="dd/MM/yyyy"
                       showOnFocus="false"
                       monthNavigator="true" yearNavigator="true"
-                      disabled="#{!eventObjectBean.editable}"/>
+                      disabled="#{!eventObjectBean.editable}" />
       </div>
 
-      <div class="field col-12 md:col-6"></div>
+      <div class="field col-6 md:col-3">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_endTime}" 
+                       styleClass="w-12" />
+        <p:datePicker value="#{eventObjectBean.endTime}"
+                      locale="#{eventObjectBean.language}"
+                      timeOnly="true"
+                      autocomplete="off"
+                      pattern="HH:mm"
+                      placeholder="HH:mm"
+                      disabled="#{!eventObjectBean.editable}" />        
+      </div>      
 
       <emcomp:auditData creationDateTime="#{eventObjectBean.event.creationDateTime}"
                         creationUserId="#{eventObjectBean.event.creationUserId}"

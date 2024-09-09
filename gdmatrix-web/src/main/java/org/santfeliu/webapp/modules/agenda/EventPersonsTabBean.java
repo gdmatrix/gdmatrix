@@ -34,9 +34,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -67,6 +69,7 @@ public class EventPersonsTabBean extends TabBean
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
   private Attendant editing;
+  private Set<String> unavailableAttendants;
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private GroupableRowsHelper groupableRowsHelper;  
 
@@ -209,6 +212,30 @@ public class EventPersonsTabBean extends TabBean
     this.editing = editing;
   }
 
+  public Set<String> getUnavailableAttendants()
+  {
+    if (unavailableAttendants == null)
+    {
+      unavailableAttendants = new HashSet();
+      try
+      {
+        List<Attendant> unavailableList = AgendaModuleBean.getClient().
+          findAttendantsOccupancyFromCache(eventObjectBean.getObjectId());
+        for (Attendant unavailable : unavailableList)
+        {        
+          unavailableAttendants.add(unavailable.getPersonId());
+        }      
+      }
+      catch (Exception ex) { }
+    }
+    return unavailableAttendants;
+  }
+
+  public void setUnavailableAttendants(Set<String> unavailableAttendants)
+  {    
+    this.unavailableAttendants = unavailableAttendants;
+  }
+
   public void setAttendantTypeId(String attendantTypeId)
   {
     if (editing != null)
@@ -331,6 +358,7 @@ public class EventPersonsTabBean extends TabBean
           }
           getCurrentTabInstance().rows = result;
         }
+        unavailableAttendants = null;
       }
       catch (Exception ex)
       {
@@ -409,6 +437,11 @@ public class EventPersonsTabBean extends TabBean
     tabInstances.clear();
   }
 
+  public boolean isAttendantAvailable(AttendantView row)
+  {
+    return !getUnavailableAttendants().contains(row.getPersonId());
+  }
+  
   @Override
   public Serializable saveState()
   {

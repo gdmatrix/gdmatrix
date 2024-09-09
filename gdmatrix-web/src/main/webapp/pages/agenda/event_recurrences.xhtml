@@ -16,7 +16,10 @@
                  rowIndexVar="firstRow" first="#{eventRecurrencesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50" rows="10" emptyMessage="#{objectBundle.no_data}">
+                 rowsPerPageTemplate="5,10,25,50" rows="10" emptyMessage="#{objectBundle.no_data}"
+                 rowKey="#{row.eventId}"
+                 selection="#{eventRecurrencesTabBean.selectedRows}"
+                 selectionPageOnly="false">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -31,6 +34,8 @@
         </div>
       </f:facet>
 
+      <p:column selectionMode="multiple" styleClass="eventSelected" />      
+      
       <p:column headerText="#{agendaBundle.event_id}" styleClass="col-1 eventId"
                 rendered="#{row.eventId != eventObjectBean.objectId}">
         <h:outputText value="#{row.eventId}" />
@@ -80,6 +85,7 @@
                           layout="custom" converter="#{Integer}">
           <f:selectItem itemValue="0" />
           <f:selectItem itemValue="1" />
+          <f:selectItem itemValue="2" />
           <f:facet name="custom">
             <span class="field-radiobutton flex" role="radio">
               <p:radioButton for="deleteRecurrencesRadio" itemIndex="0"/>
@@ -98,6 +104,10 @@
               <p:radioButton for="deleteRecurrencesRadio" itemIndex="1"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteAllRecurrences}" />
             </span>
+            <span class="field-radiobutton" role="radio">
+              <p:radioButton for="deleteRecurrencesRadio" itemIndex="2"/>
+              <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteSelectedRecurrences}" />
+            </span>
           </f:facet>
         </p:selectOneRadio>
       </p:outputPanel>
@@ -107,8 +117,8 @@
                          title="#{agendaBundle.eventRecurrences_deleteRecurrences}"
                          value="#{agendaBundle.eventRecurrences_deleteRecurrences}"
                          styleClass="removeButton"
-                         process="delete_recurrences_panel"
-                         update="event_recurrences_table delete_recurrences_panel">
+                         process="event_recurrences_table delete_recurrences_panel"
+                         update="event_recurrences_panel">
           <p:confirm header="#{objectBundle.confirm_remove_header}"
                      message="#{agendaBundle.eventRecurrences_confirmDeleteRecurrences}"
                      icon="pi pi-info-circle" />

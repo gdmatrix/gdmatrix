@@ -31,7 +31,10 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,14 +42,12 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.AgendaConstants;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.Attendant;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.security.AccessControl;
-import org.matrix.security.SecurityConstants;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.security.User;
@@ -66,10 +67,21 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 public class EventObjectBean extends ObjectBean
 {
   private static final String AUTO_ATTENDANT_TYPE = "_autoAttendantTypeId";
+  private static final DateTimeFormatter DH_FORMATTER = 
+    DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+  private static final DateTimeFormatter DAY_FORMATTER = 
+    DateTimeFormatter.ofPattern("yyyyMMdd");
+  private static final DateTimeFormatter HOUR_FORMATTER = 
+    DateTimeFormatter.ofPattern("HHmmss");
 
   private Event event = new Event();
   private boolean autoAttendant;
   private String formSelector;
+  
+  private LocalDate startDate;
+  private LocalTime startTime;
+  private LocalDate endDate;
+  private LocalTime endTime;
 
   @Inject
   EventTypeBean eventTypeBean;
@@ -77,6 +89,9 @@ public class EventObjectBean extends ObjectBean
   @Inject
   EventFinderBean eventFinderBean;
 
+  @Inject
+  EventPersonsTabBean eventPersonsTabBean;
+  
   @Inject
   TypeTypeBean typeTypeBean;
 
@@ -165,38 +180,44 @@ public class EventObjectBean extends ObjectBean
     }
   }
 
-  public Date getStartDateTime()
+  public LocalDate getStartDate()
   {
-    if (event != null && event.getStartDateTime() != null)
-      return getDate(event.getStartDateTime());
-    else
-      return null;
+    return startDate;
   }
 
-  public Date getEndDateTime()
+  public void setStartDate(LocalDate startDate)
   {
-    if (event != null && event.getEndDateTime() != null)
-      return getDate(event.getEndDateTime());
-    else
-      return null;
+    this.startDate = startDate;
   }
 
-  public void setStartDateTime(Date date)
+  public LocalTime getStartTime()
   {
-    if (event != null)
-    {
-      if (date == null)
-        date = new Date();
-      event.setStartDateTime(TextUtils.formatDate(date, "yyyyMMddHHmmss"));
-    }
+    return startTime;
   }
 
-  public void setEndDateTime(Date date)
+  public void setStartTime(LocalTime startTime)
   {
-    if (date != null && event != null)
-    {
-      event.setEndDateTime(TextUtils.formatDate(date, "yyyyMMddHHmmss"));
-    }
+    this.startTime = startTime;
+  }
+
+  public LocalDate getEndDate()
+  {
+    return endDate;
+  }
+
+  public void setEndDate(LocalDate endDate)
+  {
+    this.endDate = endDate;
+  }
+
+  public LocalTime getEndTime()
+  {
+    return endTime;
+  }
+
+  public void setEndTime(LocalTime endTime)
+  {
+    this.endTime = endTime;
   }
 
   public Date getCreationDateTime()
@@ -258,13 +279,35 @@ public class EventObjectBean extends ObjectBean
     if (!NEW_OBJECT_ID.equals(objectId))
     {
       event = AgendaModuleBean.getClient(false).loadEvent(objectId);
+      startDate = LocalDate.parse(
+        event.getStartDateTime().substring(0, 8), DAY_FORMATTER);
+      startTime = LocalTime.parse(
+        event.getStartDateTime().substring(8), HOUR_FORMATTER);
+      endDate = LocalDate.parse(
+        event.getEndDateTime().substring(0, 8), DAY_FORMATTER);
+      endTime = LocalTime.parse(
+        event.getEndDateTime().substring(8), HOUR_FORMATTER);
     }
-    else event = new Event();
+    else 
+    {
+      startDate = null;
+      startTime = null;
+      endDate = null;
+      endTime = null;
+      event = new Event();
+    }
   }
 
   @Override
   public void storeObject() throws Exception
   {
+    setDefaultDateTimes();
+    String startDateTime = 
+      LocalDateTime.of(startDate, startTime).format(DH_FORMATTER);
+    event.setStartDateTime(startDateTime);
+    String endDateTime = 
+      LocalDateTime.of(endDate, endTime).format(DH_FORMATTER);
+    event.setEndDateTime(endDateTime);    
     event = AgendaModuleBean.getClient().storeEvent(event);
     if (isAutoAttendant() && isNew())
     {
@@ -290,6 +333,7 @@ public class EventObjectBean extends ObjectBean
     }
     setObjectId(event.getEventId());
     eventFinderBean.outdate();
+    eventPersonsTabBean.setUnavailableAttendants(null); //reset availability
   }
 
   @Override
@@ -354,18 +398,31 @@ public class EventObjectBean extends ObjectBean
     return TextUtils.parseInternalDate(dateTime);
   }
 
-  private boolean isPublicType(String typeId)
+  private void setDefaultDateTimes()
   {
-    if (!StringUtils.isBlank(typeId))
+    if (startDate == null)
     {
-      Type type = TypeCache.getInstance().getType(typeId);
-      if (type != null)
-      {
-        return type.canPerformAction(DictionaryConstants.READ_ACTION,
-            Collections.singleton(SecurityConstants.EVERYONE_ROLE));
-      }
+      LocalDateTime now = LocalDateTime.now();
+      startDate = now.toLocalDate();
+      startTime = now.toLocalTime();
+      endDate = null;
+      endTime = null;
     }
-    return false;
+    if (startTime == null)
+    {
+      startTime = LocalTime.parse("000000", HOUR_FORMATTER);
+    }
+    if (endDate == null)
+    {
+      LocalDateTime later = 
+        LocalDateTime.of(startDate, startTime).plusMinutes(30);
+      endDate = later.toLocalDate();
+      endTime = later.toLocalTime();      
+    }
+    if (endTime == null)
+    {
+      endTime = startTime.plusMinutes(30);      
+    }
   }
 
 }
