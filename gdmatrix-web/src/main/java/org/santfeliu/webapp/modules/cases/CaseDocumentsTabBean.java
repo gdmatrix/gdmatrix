@@ -438,7 +438,8 @@ public class CaseDocumentsTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList2);
-        getCurrentTabInstance().typeSelectHelper.load();        
+        getCurrentTabInstance().typeSelectHelper.load();
+        executeTabAction("postTabLoad", null);        
       }
       catch (Exception ex)
       {
@@ -453,7 +454,6 @@ public class CaseDocumentsTabBean extends TabBean
       getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
     }
-    executeTabAction("postTabLoad", null);
   }
 
   @Override

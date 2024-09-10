@@ -547,18 +547,18 @@ public class CasePersonsTabBean extends TabBean
   @Override
   public void load()
   {
-    executeTabAction("preTabLoad", null);
+    executeTabAction("preTabLoad", null);    
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
-      {
+      {    
         CasePersonFilter filter = new CasePersonFilter();
         filter.setCaseId(getObjectId());
 
         String typeId = getTabBaseTypeId();
         if (typeId != null)
           filter.setCasePersonTypeId(typeId);
-        
+
         List<CasePersonView> casePersons =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
 
@@ -570,6 +570,7 @@ public class CasePersonsTabBean extends TabBean
         }
         setRows(auxList);
         getCurrentTabInstance().typeSelectHelper.load();
+        executeTabAction("postTabLoad", null);         
       }
       catch (Exception ex)
       {
@@ -583,8 +584,7 @@ public class CasePersonsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       getCurrentTabInstance().typeSelectHelper.load();
       tabInstance.firstRow = 0;
-    }
-    executeTabAction("postTabLoad", null);     
+    } 
   }
 
   public void edit(DataTableRow row)

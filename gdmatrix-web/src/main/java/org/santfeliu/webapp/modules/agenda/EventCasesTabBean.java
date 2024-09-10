@@ -306,6 +306,7 @@ public class EventCasesTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
+        executeTabAction("postTabLoad", null);         
       }
       catch (Exception ex)
       {
@@ -318,8 +319,7 @@ public class EventCasesTabBean extends TabBean
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
-    }
-    executeTabAction("postTabLoad", null);     
+    }    
   }
 
   public void create()

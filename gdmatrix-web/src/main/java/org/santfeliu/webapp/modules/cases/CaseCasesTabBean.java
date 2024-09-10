@@ -403,7 +403,8 @@ public class CaseCasesTabBean extends TabBean
             getCurrentTabInstance().rows =
               getResultsByDefault(typeId);
           }
-          getCurrentTabInstance().typeSelectHelper.load();          
+          getCurrentTabInstance().typeSelectHelper.load();
+          executeTabAction("postTabLoad", null); 
         }
       }
       catch (Exception ex)
@@ -418,8 +419,7 @@ public class CaseCasesTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
-    }
-    executeTabAction("postTabLoad", null);     
+    }    
   }
 
   public void edit(DataTableRow row)

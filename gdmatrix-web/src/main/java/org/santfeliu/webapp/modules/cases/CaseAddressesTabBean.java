@@ -384,7 +384,8 @@ public class CaseAddressesTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList2);
-        getCurrentTabInstance().typeSelectHelper.load();        
+        getCurrentTabInstance().typeSelectHelper.load(); 
+        executeTabAction("postTabLoad", null);         
       }
       catch (Exception ex)
       {
@@ -398,8 +399,7 @@ public class CaseAddressesTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       getCurrentTabInstance().typeSelectHelper.load();      
       tabInstance.firstRow = 0;
-    }
-    executeTabAction("postTabLoad", null);    
+    }   
   }
 
   public void create()

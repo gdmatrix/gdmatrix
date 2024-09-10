@@ -276,6 +276,7 @@ public class EventObjectBean extends ObjectBean
   {
     formSelector = null;
 
+    executeAction("preLoad");
     if (!NEW_OBJECT_ID.equals(objectId))
     {
       event = AgendaModuleBean.getClient(false).loadEvent(objectId);
@@ -296,6 +297,7 @@ public class EventObjectBean extends ObjectBean
       endTime = null;
       event = new Event();
     }
+    executeAction("postLoad");
   }
 
   @Override
@@ -307,7 +309,8 @@ public class EventObjectBean extends ObjectBean
     event.setStartDateTime(startDateTime);
     String endDateTime = 
       LocalDateTime.of(endDate, endTime).format(DH_FORMATTER);
-    event.setEndDateTime(endDateTime);    
+    event.setEndDateTime(endDateTime); 
+    executeAction("preStore");   
     event = AgendaModuleBean.getClient().storeEvent(event);
     if (isAutoAttendant() && isNew())
     {
@@ -332,6 +335,7 @@ public class EventObjectBean extends ObjectBean
       AgendaModuleBean.getClient().storeAttendant(attendant);
     }
     setObjectId(event.getEventId());
+    executeAction("postStore");
     eventFinderBean.outdate();
     eventPersonsTabBean.setUnavailableAttendants(null); //reset availability
   }
@@ -339,7 +343,9 @@ public class EventObjectBean extends ObjectBean
   @Override
   public void removeObject() throws Exception
   {
+    executeAction("preRemove");
     AgendaModuleBean.getClient(false).removeEvent(event.getEventId());
+    executeAction("postRemove");
     eventFinderBean.outdate();
   }
 

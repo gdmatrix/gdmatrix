@@ -174,6 +174,7 @@ public class EventPlacesTabBean extends TabBean
   @Override
   public void load()
   {
+    executeTabAction("preTabLoad", null);      
     if (!isNew())
     {
       try
@@ -181,13 +182,14 @@ public class EventPlacesTabBean extends TabBean
         EventPlaceFilter filter = new EventPlaceFilter();
         filter.setEventId(eventObjectBean.getObjectId());
         rows = AgendaModuleBean.getClient(false).findEventPlaceViews(filter);
+        executeTabAction("postTabLoad", null);          
       }
       catch (Exception ex)
       {
         error(ex);
       }
     }
-    else rows = Collections.EMPTY_LIST;
+    else rows = Collections.EMPTY_LIST;   
   }
 
   public void create()
@@ -211,7 +213,9 @@ public class EventPlacesTabBean extends TabBean
 
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
+        editing = (EventPlace) executeTabAction("preTabStore", editing);           
         AgendaModuleBean.getClient(false).storeEventPlace(editing);
+        executeTabAction("postTabStore", editing);        
         editing = null;
         load();
         growl("STORE_OBJECT");
@@ -237,8 +241,11 @@ public class EventPlacesTabBean extends TabBean
       {
         editing = null;
       }
-
+      
+      row = (EventPlaceView)executeTabAction("preTabRemove", row);
       AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
+      executeTabAction("postTabRemove", row);      
+      
       load();
       growl("REMOVE_OBJECT");
     }

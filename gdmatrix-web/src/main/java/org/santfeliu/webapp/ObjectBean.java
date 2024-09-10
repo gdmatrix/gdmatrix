@@ -40,6 +40,7 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.PropertyDefinition;
 import org.mozilla.javascript.Callable;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.FacesUtils;
@@ -406,6 +407,18 @@ public abstract class ObjectBean extends BaseBean
         scriptClient.put("actionObject", actionObject);
         scriptClient.execute((Callable)callable);
         actionObject = (ActionObject) scriptClient.get("actionObject");
+        if (actionObject.isRefresh())
+          load();  
+        if (actionObject.isFullRefresh())
+        {
+          getBaseTypeInfo().visit(objectId);
+          TypeBean typeBean = getTypeBean();
+          if (typeBean != null)
+          {
+            typeBean.updateDescription(objectId, getObject());
+          }
+          PrimeFaces.current().ajax().update("mainform:cnt");
+        }
         addFacesMessages(actionObject.getMessages());
       }
     }

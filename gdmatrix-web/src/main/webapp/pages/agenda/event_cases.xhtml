@@ -63,7 +63,7 @@
                          styleClass="rounded-button ui-button-flat"
                          process="@this"
                          update="@form:cnt"
-                         action="#{navigatorBean.show('Case', row.caseId)}"
+                         action="#{navigatorBean.show(row.caseTypeId, row.caseId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"

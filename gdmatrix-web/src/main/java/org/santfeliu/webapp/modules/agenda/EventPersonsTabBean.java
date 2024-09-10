@@ -331,6 +331,7 @@ public class EventPersonsTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
+    executeTabAction("preTabLoad", null);      
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -372,6 +373,7 @@ public class EventPersonsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
+    executeTabAction("postTabLoad", null);      
   }
 
   public void create()
@@ -389,7 +391,9 @@ public class EventPersonsTabBean extends TabBean
       {
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
+        editing = (Attendant) executeTabAction("preTabStore", editing);        
         AgendaModuleBean.getClient(false).storeAttendant(editing);
+        executeTabAction("postTabStore", editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -408,7 +412,9 @@ public class EventPersonsTabBean extends TabBean
     {
       try
       {
+        row = (AttendantView)executeTabAction("preTabRemove", row);
         AgendaModuleBean.getClient(false).removeAttendant(row.getAttendantId());
+        executeTabAction("postTabRemove", row);        
         refreshHiddenTabInstances();
         load();
         growl("REMOVE_OBJECT");

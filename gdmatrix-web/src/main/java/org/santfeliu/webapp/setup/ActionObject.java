@@ -42,6 +42,7 @@ public class ActionObject
 {
   private Object object;
   private boolean refresh = false;
+  private boolean fullRefresh = false;
   private final List<Message> messages = new ArrayList();
   private String subviewId;
   
@@ -76,6 +77,18 @@ public class ActionObject
     this.refresh = refresh;
   }
 
+  public boolean isFullRefresh()
+  {
+    return fullRefresh;
+  }
+
+  public void setFullRefresh(boolean fullRefresh)
+  {
+    this.fullRefresh = fullRefresh;
+    if (fullRefresh)
+      this.refresh = fullRefresh;
+  }
+  
   public String getSubviewId()
   {
     return subviewId;
