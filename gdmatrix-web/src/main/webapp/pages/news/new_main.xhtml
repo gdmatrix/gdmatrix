@@ -23,33 +23,49 @@
       <p:inputText value="#{newObjectBean.objectId}" readonly="true" styleClass="text-color-secondary"/>
     </div>
 
-    <div class="field col-12 lg:col-5 xl:col-3">
+    <div class="field col-8 lg:col-3">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_startDay}" />
       <!-- TODO: disable if not editable -->
-      <p:datePicker value="#{newObjectBean.startDateTime}"
+      <p:datePicker value="#{newObjectBean.startDate}"
                     locale="#{newObjectBean.language}"
-                    showIcon="true" showTime="true"
+                    showIcon="true" 
                     autocomplete="off"
-                    pattern="dd/MM/yyyy HH:mm"
-                    placeholder="dd/MM/yyyy HH:mm"
+                    pattern="dd/MM/yyyy"
+                    placeholder="dd/MM/yyyy"
                     showOnFocus="false"
                     monthNavigator="true" yearNavigator="true"
                     disabled="#{!newObjectBean.editable}"/>
     </div>
+    
+    <div class="field col-4 lg:col-2">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_startHour}" />
+        <p:inputText value="#{newObjectBean.newObject.startTime}"
+                      placeholder="HH:mm:ss"
+                      disabled="#{!newObjectBean.editable}" 
+                      converter="TimeConverter" />      
+    </div>    
 
-    <div class="field col-12 lg:col-5 xl:col-3">
+    <div class="field col-8 lg:col-3">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_endDay}" />
       <!-- TODO: disable if not editable -->
-      <p:datePicker value="#{newObjectBean.endDateTime}"
+      <p:datePicker value="#{newObjectBean.endDate}"
                     locale="#{newObjectBean.language}"
-                    showIcon="true" showTime="true"
+                    showIcon="true"
                     autocomplete="off"
-                    pattern="dd/MM/yyyy HH:mm"
-                    placeholder="dd/MM/yyyy HH:mm"
+                    pattern="dd/MM/yyyy"
+                    placeholder="dd/MM/yyyy"
                     showOnFocus="false"
                     monthNavigator="true" yearNavigator="true"
                     disabled="#{!newObjectBean.editable}"/>
     </div>  
+    
+    <div class="field col-4 lg:col-2">
+      <p:outputLabel for="@next" value="#{newsBundle.new_main_endHour}" />
+        <p:inputText value="#{newObjectBean.newObject.endTime}"
+                      placeholder="HH:mm:ss"
+                      disabled="#{!newObjectBean.editable}" 
+                      converter="TimeConverter" />      
+    </div>     
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_headline}" />

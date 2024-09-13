@@ -126,11 +126,11 @@ public class NewObjectBean extends ObjectBean
     this.sources = sources;
   }
   
-  public Date getStartDateTime()
+  public Date getStartDate()
   {
     if (newObject != null && newObject.getStartDate() != null)
     {
-      return getDate(newObject.getStartDate(), newObject.getStartTime());
+      return TextUtils.parseInternalDate(newObject.getStartDate());
     }
     else
     {
@@ -138,11 +138,11 @@ public class NewObjectBean extends ObjectBean
     }
   }
 
-  public Date getEndDateTime()
+  public Date getEndDate()
   {
     if (newObject != null && newObject.getEndDate() != null)
     {
-      return getDate(newObject.getEndDate(), newObject.getEndTime());
+      return TextUtils.parseInternalDate(newObject.getEndDate());
     }
     else
     {
@@ -150,7 +150,7 @@ public class NewObjectBean extends ObjectBean
     }
   }
 
-  public void setStartDateTime(Date date)
+  public void setStartDate(Date date)
   {
     if (newObject != null)
     {
@@ -163,12 +163,11 @@ public class NewObjectBean extends ObjectBean
     }
   }
 
-  public void setEndDateTime(Date date)
+  public void setEndDate(Date date)
   {
     if (date != null && newObject != null)
     {
       newObject.setEndDate(TextUtils.formatDate(date, "yyyyMMdd"));
-      newObject.setEndTime(TextUtils.formatDate(date, "HHmmss"));
     }
     else if (date == null && newObject != null)
     {

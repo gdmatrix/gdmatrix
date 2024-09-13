@@ -52,36 +52,54 @@
                                        process="@form:cnt:search_tabs:tabs" 
                                        disabled="#{!caseObjectBean.editable}" />
       </p:outputPanel>
-
-      <div class="field col-12 lg:col-3">
+      
+      <div class="field col-8 lg:col-4 xl:col-3">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
         <!-- TODO: disable if not editable -->
-        <p:datePicker value="#{caseObjectBean.startDateTime}"
+        <p:datePicker value="#{caseObjectBean.startDate}"
                       autocomplete="off"
-                      placeholder="dd/MM/yyyy HH:mm"
-                      pattern="dd/MM/yyyy HH:mm"
+                      placeholder="dd/MM/yyyy"
+                      pattern="dd/MM/yyyy"
                       locale="#{caseObjectBean.language}"
                       showOnFocus="false"
-                      showIcon="true" showTime="true"
+                      showIcon="true" showTime="false"
                       monthNavigator="true" yearNavigator="true"
                       disabled="#{!caseObjectBean.editable}" />
-      </div>
+      </div>     
+      
+      <div class="field col-4 lg:col-2 xl:col-3">
+        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startTime', caseBundle.case_startTime)}" />
+        <!-- TODO: disable if not editable -->
+        <p:inputText value="#{caseObjectBean.case.startTime}"
+                      placeholder="HH:mm:ss"
+                      disabled="#{!caseObjectBean.editable}" 
+                      converter="TimeConverter" />
+      </div>      
 
-      <p:outputPanel class="field col-12 lg:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
+      <p:outputPanel class="field col-8 lg:col-4 xl:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
         <!-- TODO: disable if not editable -->
-        <p:datePicker value="#{caseObjectBean.endDateTime}"
+        <p:datePicker value="#{caseObjectBean.endDate}"
                       autocomplete="off"
-                      placeholder="dd/MM/yyyy HH:mm"
-                      pattern="dd/MM/yyyy HH:mm"
+                      placeholder="dd/MM/yyyy"
+                      pattern="dd/MM/yyyy"
                       locale="#{caseObjectBean.language}"
                       showOnFocus="false"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true"
                       disabled="#{!caseObjectBean.editable}" />
       </p:outputPanel>
+      
+      <div class="field col-4 lg:col-2 xl:col-3">
+        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endTime', caseBundle.case_endTime)}" />
+        <!-- TODO: disable if not editable -->
+        <p:inputText value="#{caseObjectBean.case.endTime}"
+                      placeholder="HH:mm:ss"
+                      disabled="#{!caseObjectBean.editable}" 
+                      converter="TimeConverter"/>
+      </div>       
 
-      <p:outputPanel class="field col-12 lg:col-6" rendered="#{caseObjectBean.isRenderProperty('state')}">
+      <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('state')}">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('state', caseBundle.case_state)}" />
         <p:inputText value="#{caseObjectBean.case.state}"
                      readonly="#{!caseObjectBean.editable}" />

@@ -30,7 +30,6 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +52,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.EditTab;
+import java.io.Serializable;
 
 /**
  *
@@ -138,31 +138,32 @@ public class CaseObjectBean extends ObjectBean
       }
     }
   }
-  public Date getStartDateTime()
+  
+  public Date getStartDate()
   {
     if (cas != null && cas.getStartDate() != null)
     {
-      return getDate(cas.getStartDate(), cas.getStartTime());
+      return TextUtils.parseInternalDate(cas.getStartDate());
     }
     else
     {
       return null;
-    }
+    }    
   }
-
-  public Date getEndDateTime()
+   
+  public Date getEndDate()
   {
-    if (cas != null && cas.getEndDate() != null)
+    if (cas != null && cas.getStartDate() != null)
     {
-      return getDate(cas.getEndDate(), cas.getEndTime());
+      return TextUtils.parseInternalDate(cas.getEndDate());
     }
     else
     {
       return null;
-    }
+    }    
   }
 
-  public void setStartDateTime(Date date)
+  public void setStartDate(Date date)
   {
     if (cas != null)
     {
@@ -173,22 +174,20 @@ public class CaseObjectBean extends ObjectBean
       cas.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
       cas.setStartTime(TextUtils.formatDate(date, "HHmmss"));
     }
-  }
+  }  
 
-  public void setEndDateTime(Date date)
+  public void setEndDate(Date date)
   {
     if (date != null && cas != null)
     {
       cas.setEndDate(TextUtils.formatDate(date, "yyyyMMdd"));
-      cas.setEndTime(TextUtils.formatDate(date, "HHmmss"));
     }
     else if (date == null && cas != null)
     {
       cas.setEndDate(null);
       cas.setEndTime(null);
     }
-      
-  }
+  }   
 
   public String getPropertyLabel(String propName, String altName)
   {
