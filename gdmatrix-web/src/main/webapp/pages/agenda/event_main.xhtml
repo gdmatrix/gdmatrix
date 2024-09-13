@@ -52,7 +52,7 @@
                       showIcon="true" 
                       autocomplete="off"
                       pattern="dd/MM/yyyy"
-                      placeholder="dd/MM/yyyy"
+                      placeholder="DD/MM/YYYY"
                       showOnFocus="false"
                       monthNavigator="true" yearNavigator="true"
                       disabled="#{!eventObjectBean.editable}" />
@@ -61,13 +61,10 @@
       <div class="field col-6 md:col-3">
         <p:outputLabel for="@next" value="#{agendaBundle.event_startTime}" 
                        styleClass="w-12" />
-        <p:datePicker value="#{eventObjectBean.startTime}"
-                      locale="#{eventObjectBean.language}"
-                      timeOnly="true"
-                      autocomplete="off"
-                      pattern="HH:mm"
-                      placeholder="HH:mm"
-                      disabled="#{!eventObjectBean.editable}" />        
+        <p:inputText value="#{eventObjectBean.startTime}"
+                     placeholder="HH:MM:SS"
+                     disabled="#{!eventObjectBean.editable}" 
+                     converter="TimeConverter" />        
       </div>      
       
       <div class="field col-6 md:col-3">
@@ -78,7 +75,7 @@
                       showIcon="true" 
                       autocomplete="off"
                       pattern="dd/MM/yyyy"
-                      placeholder="dd/MM/yyyy"
+                      placeholder="DD/MM/YYYY"
                       showOnFocus="false"
                       monthNavigator="true" yearNavigator="true"
                       disabled="#{!eventObjectBean.editable}" />
@@ -87,13 +84,10 @@
       <div class="field col-6 md:col-3">
         <p:outputLabel for="@next" value="#{agendaBundle.event_endTime}" 
                        styleClass="w-12" />
-        <p:datePicker value="#{eventObjectBean.endTime}"
-                      locale="#{eventObjectBean.language}"
-                      timeOnly="true"
-                      autocomplete="off"
-                      pattern="HH:mm"
-                      placeholder="HH:mm"
-                      disabled="#{!eventObjectBean.editable}" />        
+        <p:inputText value="#{eventObjectBean.endTime}"
+                     placeholder="HH:MM:SS"                     
+                     disabled="#{!eventObjectBean.editable}" 
+                     converter="TimeConverter" />                
       </div>      
 
       <emcomp:auditData creationDateTime="#{eventObjectBean.event.creationDateTime}"

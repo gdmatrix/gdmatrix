@@ -67,8 +67,6 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 public class EventObjectBean extends ObjectBean
 {
   private static final String AUTO_ATTENDANT_TYPE = "_autoAttendantTypeId";
-  private static final DateTimeFormatter DH_FORMATTER = 
-    DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
   private static final DateTimeFormatter DAY_FORMATTER = 
     DateTimeFormatter.ofPattern("yyyyMMdd");
   private static final DateTimeFormatter HOUR_FORMATTER = 
@@ -79,9 +77,9 @@ public class EventObjectBean extends ObjectBean
   private String formSelector;
   
   private LocalDate startDate;
-  private LocalTime startTime;
+  private String startTime;
   private LocalDate endDate;
-  private LocalTime endTime;
+  private String endTime;
 
   @Inject
   EventTypeBean eventTypeBean;
@@ -190,12 +188,12 @@ public class EventObjectBean extends ObjectBean
     this.startDate = startDate;
   }
 
-  public LocalTime getStartTime()
+  public String getStartTime()
   {
     return startTime;
   }
 
-  public void setStartTime(LocalTime startTime)
+  public void setStartTime(String startTime)
   {
     this.startTime = startTime;
   }
@@ -210,12 +208,12 @@ public class EventObjectBean extends ObjectBean
     this.endDate = endDate;
   }
 
-  public LocalTime getEndTime()
+  public String getEndTime()
   {
     return endTime;
   }
 
-  public void setEndTime(LocalTime endTime)
+  public void setEndTime(String endTime)
   {
     this.endTime = endTime;
   }
@@ -282,12 +280,10 @@ public class EventObjectBean extends ObjectBean
       event = AgendaModuleBean.getClient(false).loadEvent(objectId);
       startDate = LocalDate.parse(
         event.getStartDateTime().substring(0, 8), DAY_FORMATTER);
-      startTime = LocalTime.parse(
-        event.getStartDateTime().substring(8), HOUR_FORMATTER);
+      startTime = event.getStartDateTime().substring(8);
       endDate = LocalDate.parse(
         event.getEndDateTime().substring(0, 8), DAY_FORMATTER);
-      endTime = LocalTime.parse(
-        event.getEndDateTime().substring(8), HOUR_FORMATTER);
+      endTime = event.getEndDateTime().substring(8);
     }
     else 
     {
@@ -304,12 +300,8 @@ public class EventObjectBean extends ObjectBean
   public void storeObject() throws Exception
   {
     setDefaultDateTimes();
-    String startDateTime = 
-      LocalDateTime.of(startDate, startTime).format(DH_FORMATTER);
-    event.setStartDateTime(startDateTime);
-    String endDateTime = 
-      LocalDateTime.of(endDate, endTime).format(DH_FORMATTER);
-    event.setEndDateTime(endDateTime); 
+    event.setStartDateTime(startDate.format(DAY_FORMATTER) + startTime);
+    event.setEndDateTime(endDate.format(DAY_FORMATTER) + endTime);    
     executeAction("preStore");   
     event = AgendaModuleBean.getClient().storeEvent(event);
     if (isAutoAttendant() && isNew())
@@ -410,24 +402,26 @@ public class EventObjectBean extends ObjectBean
     {
       LocalDateTime now = LocalDateTime.now();
       startDate = now.toLocalDate();
-      startTime = now.toLocalTime();
+      startTime = now.toLocalTime().format(HOUR_FORMATTER);
       endDate = null;
       endTime = null;
     }
     if (startTime == null)
     {
-      startTime = LocalTime.parse("000000", HOUR_FORMATTER);
+      startTime = "000000";
     }
     if (endDate == null)
     {
+      LocalTime ltStartTime = LocalTime.parse(startTime, HOUR_FORMATTER);
       LocalDateTime later = 
-        LocalDateTime.of(startDate, startTime).plusMinutes(30);
+        LocalDateTime.of(startDate, ltStartTime).plusMinutes(30);
       endDate = later.toLocalDate();
-      endTime = later.toLocalTime();      
+      endTime = later.toLocalTime().format(HOUR_FORMATTER);      
     }
     if (endTime == null)
     {
-      endTime = startTime.plusMinutes(30);      
+      LocalTime ltStartTime = LocalTime.parse(startTime, HOUR_FORMATTER);
+      endTime = ltStartTime.plusMinutes(30).format(HOUR_FORMATTER);
     }
   }
 
