@@ -1629,9 +1629,12 @@ class DrawTool extends Tool
   
   centerEditingFeatures()
   {
-    const map = this.map;
-    const center = turf.center(this.editingLayer);
-    map.flyTo({ center: center.geometry.coordinates, zoom: this.centerZoom });
+    if (this.editingLayer.features.length > 0)
+    {
+      const map = this.map;
+      const center = turf.center(this.editingLayer);
+      map.flyTo({ center: center.geometry.coordinates, zoom: this.centerZoom });
+    }
   }
   
   updateSources()
