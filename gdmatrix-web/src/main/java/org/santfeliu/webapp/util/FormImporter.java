@@ -870,20 +870,21 @@ public class FormImporter
       if (mapName == null) return;
 
       String id = view.getId();
-      if (id == null) return;
+      if (id != null)
+      {
+        InputText hiddenInput =
+          (InputText)application.createComponent(InputText.COMPONENT_TYPE);
+        hiddenInput.setId(id);
+        hiddenInput.setStyleClass("hidden");
+        hiddenInput.setWidgetVar(id);
 
-      InputText hiddenInput =
-        (InputText)application.createComponent(InputText.COMPONENT_TYPE);
-      hiddenInput.setId(id);
-      hiddenInput.setStyleClass("hidden");
-      hiddenInput.setWidgetVar(id);
+        String expression = "#{" + propertyPathUni + "[\"" + id + "\"]}";
+        ValueExpression valueExpression =
+          WebUtils.createValueExpression(expression, String.class);
 
-      String expression = "#{" + propertyPathUni + "[\"" + id + "\"]}";
-      ValueExpression valueExpression =
-        WebUtils.createValueExpression(expression, String.class);
-
-      hiddenInput.setValueExpression("value", valueExpression);
-      parent.getChildren().add(hiddenInput);
+        hiddenInput.setValueExpression("value", valueExpression);
+        parent.getChildren().add(hiddenInput);
+      }
 
       MapLibre mapLibre = (MapLibre)application.
         createComponent(MapLibre.COMPONENT_TYPE);
