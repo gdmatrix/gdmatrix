@@ -34,23 +34,23 @@
         </div>
       </f:facet>
 
-      <p:column selectionMode="multiple" styleClass="eventSelected" />      
+      <p:column selectionMode="multiple" styleClass="eventSelected" selectRow="false" />      
       
       <p:column headerText="#{agendaBundle.event_id}" styleClass="col-1 eventId"
-                rendered="#{row.eventId != eventObjectBean.objectId}">
+                rendered="#{row.eventId != eventObjectBean.objectId}"
+                selectRow="false">
         <h:outputText value="#{row.eventId}" />
       </p:column>
 
       <p:column headerText="#{agendaBundle.event_summary}" styleClass="col-11 eventSummary"
-                rendered="#{row.eventId != eventObjectBean.objectId}">
+                rendered="#{row.eventId != eventObjectBean.objectId}"
+                selectRow="false">
         <div>
-          <h:outputText value="#{eventRecurrencesTabBean.startDateTime}"
-                        styleClass="#{row.eventId == eventObjectBean.objectId ? 'selected' : ''}">
+          <h:outputText value="#{eventRecurrencesTabBean.startDateTime}">
             <f:convertDateTime pattern="dd/MM/yyyy (HH:mm)"/>
           </h:outputText>
           <h:outputLabel value=" - " />
-          <h:outputText value="#{eventRecurrencesTabBean.endDateTime}"
-                        styleClass="#{row.eventId == eventObjectBean.objectId ? 'selected' : ''}">
+          <h:outputText value="#{eventRecurrencesTabBean.endDateTime}">          
             <f:convertDateTime pattern="dd/MM/yyyy (HH:mm)"/>
           </h:outputText>
         </div>
@@ -60,7 +60,8 @@
       </p:column>
 
       <p:column styleClass="eventActions text-right white-space-nowrap" exportable="false"
-                rendered="#{row.eventId != eventObjectBean.objectId}">
+                rendered="#{row.eventId != eventObjectBean.objectId}"
+                selectRow="false">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.view(row.eventId)}"
