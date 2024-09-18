@@ -33,12 +33,8 @@ package org.santfeliu.util.data;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.matrix.dic.DictionaryManagerPort;
-import org.matrix.dic.DictionaryManagerService;
 import org.matrix.dic.EnumTypeItem;
-import org.matrix.dic.EnumTypeItemFilter;
-import org.matrix.util.WSDirectory;
-import org.matrix.util.WSEndpoint;
+import org.santfeliu.dic.EnumTypeCache;
 import org.santfeliu.util.Table;
 
 /**
@@ -49,6 +45,7 @@ public class EnumTypeDataProvider implements DataProvider
 {
   private String enumTypeId;
 
+  @Override
   public void init(String reference)
   {
     enumTypeId = reference;
@@ -64,20 +61,23 @@ public class EnumTypeDataProvider implements DataProvider
     this.enumTypeId = enumTypeId;
   }
 
+  @Override
   public Table getData(Map context)
   {
-    WSDirectory dir = WSDirectory.getInstance();
-    WSEndpoint endpoint = dir.getEndpoint(DictionaryManagerService.class);
-    DictionaryManagerPort port = endpoint.getPort(DictionaryManagerPort.class);
-    EnumTypeItemFilter filter = new EnumTypeItemFilter();
-    filter.setEnumTypeId(enumTypeId);
+    List<EnumTypeItem> items;
+    String value = null;
     if (context != null && !context.isEmpty())
     {
-      String value = (String) context.get("value");
-      if (value != null)
-        filter.setValue(value);
+      value = (String)context.get("value");
     }
-    List<EnumTypeItem> items = port.findEnumTypeItems(filter);
+    if (value == null)
+    {
+      items = EnumTypeCache.getInstance().getItems(enumTypeId);
+    }
+    else
+    {
+      items = EnumTypeCache.getInstance().getItemsByValue(enumTypeId, value);  
+    }    
     Table table = new Table("value", "label", "title");
     for (EnumTypeItem item : items)
     {
@@ -86,6 +86,7 @@ public class EnumTypeDataProvider implements DataProvider
     return table;
   }
 
+  @Override
   public List<String> getParameters()
   {
     return Collections.EMPTY_LIST;
