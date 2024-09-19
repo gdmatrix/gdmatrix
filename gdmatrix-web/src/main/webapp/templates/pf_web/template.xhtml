@@ -188,6 +188,7 @@
     <h:outputScript name="locales/locale-#{userSessionBean.viewLanguage}.js"
                     library="primefaces"/>
     
+    <div class="abs_body_back"> </div>
     <div class="abs_body flex flex-column">
 
       <!-- header -->
@@ -269,15 +270,16 @@
                       <i class="fa fa-caret-right" />
                     </a>
                   </ui:fragment>
+                  <p:link href="#{item.properties.url}"
+                                rendered="#{item.action == 'url'}"
+                                styleClass="entry"
+                                target="#{item.properties.target == null ? '_self' : item.properties.target}">
+                    <ui:fragment rendered="#{item.directProperties.icon != null}">
+                      <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
+                    </ui:fragment>
+                    #{applicationBean.translate(item.label)}
+                  </p:link>
                 </div>
-                <p:link href="#{item.properties.url}"
-                              rendered="#{item.action == 'url'}"
-                              target="#{item.properties.target == null ? '_self' : item.properties.target}">
-                  <ui:fragment rendered="#{item.directProperties.icon != null}">
-                    <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
-                  </ui:fragment>
-                  #{applicationBean.translate(item.label)}
-                </p:link>
               </ui:fragment>
             </f:facet>
           </sf:treeMenu>
