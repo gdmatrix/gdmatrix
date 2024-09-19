@@ -702,13 +702,16 @@ public class FormImporter
 
       HtmlPanelGroup group =
         (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-      if (isStacked ||
-          component instanceof InputTextarea ||
-          component instanceof Quill ||
-          component instanceof TinyMCE ||
-          component instanceof CodeMirror)
+      if (isStacked)
       {
         styleClass = "col-12";
+      }
+      else if (component instanceof InputTextarea ||
+        component instanceof Quill ||
+        component instanceof TinyMCE ||
+        component instanceof CodeMirror)
+      {
+        if (styleClass == null) styleClass = "col-12";
       }
       else
       {
@@ -729,6 +732,7 @@ public class FormImporter
           (OutputLabel)application.createComponent(OutputLabel.COMPONENT_TYPE);
 
         label.setValue(labelText);
+        label.setEscape(false);
         label.setFor("@next");
         if (field.getMinOccurs() > 1) label.setIndicateRequired("true");
 
