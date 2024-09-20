@@ -287,7 +287,9 @@
 
                 <div class="field col-12 md:col-4 white-space-nowrap">
                   <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.visible}" 
-                                  styleClass="vertical-align-middle"/>
+                                  styleClass="vertical-align-middle">
+                    <p:ajax update="layer_roleid" />
+                  </p:toggleSwitch>
                   <i class="pi pi-eye ml-1" />
                   <p:outputLabel value="Visible" for="@previous" styleClass="ml-2" />
                 </div>
@@ -308,16 +310,29 @@
                   <p:outputLabel value="Highlight" for="@previous" styleClass="ml-2" />
                 </div>
 
-                <div class="field col-12">
+                <div class="field col-12 md:col-4">
+                  <p:outputLabel value="Only visible for role" for="@next" />
+                  <p:autoComplete id="layer_roleid" 
+                                  value="#{geoMapLayersBean.editingLayer.roleId}" var="roleId"
+                                  maxResults="20" minQueryLength="1" 
+                                  itemLabel="#{roleId}" itemValue="#{roleId}" 
+                                  scrollHeight="200" emptyMessage=""
+                                  disabled="#{not geoMapLayersBean.editingLayer.visible}"
+                                  completeMethod="#{roleTypeBean.findIdsByQuery}">
+                    <p:column>
+                      #{roleTypeBean.getDescription(roleId)}
+                    </p:column>
+                  </p:autoComplete>
+                </div>
+
+                <div class="field col-12 md:col-4">
                   <p:outputLabel value="Selection distance (px)" for="@next" />
-                  <div style="max-width: 200px">
                   <p:spinner id="sel_radius"          
                              value="#{geoMapLayersBean.editingLayer.selectionDistance}"
                              min="1" stepFactor="1"
                              disabled="#{not geoMapLayersBean.editingLayer.locatable}" /> 
-                  </div>
                 </div>
-
+               
               </div>
             </p:tab>            
             

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -62,11 +63,15 @@ import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
 import org.santfeliu.faces.maplibre.encoder.TranslateStyleEncoder;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.faces.maplibre.model.Layer;
 import org.santfeliu.faces.maplibre.model.Light;
 import org.santfeliu.faces.maplibre.model.Sky;
 import org.santfeliu.faces.maplibre.model.Terrain;
 import org.santfeliu.webapp.modules.geo.io.MapAccessLogger;
 import org.santfeliu.webapp.modules.geo.io.MapAccessLogger.Access;
+import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
+import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
+import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
 import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
@@ -153,6 +158,56 @@ public class GeoMapBean extends WebBean implements Serializable
   public Style getStyle()
   {
     return mapDocument.getStyle();
+  }
+
+  /**
+   * Returns the style filtered by user roles
+   *
+   * @return Style
+   */
+  public Style getUserStyle()
+  {
+    try
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      Style style = mapDocument.getStyle();
+      List<Layer> layers = style.getLayers();
+      HashSet<String> removedLayerIds = new HashSet<>();
+      for (Layer layer : layers)
+      {
+        String roleId = layer.getRoleId();
+        if (roleId != null && !userSessionBean.isUserInRole(roleId))
+        {
+          removedLayerIds.add(layer.getId());
+        }
+      }
+      if (removedLayerIds.isEmpty()) return style;
+
+      Style userStyle = new Style();
+      userStyle.fromString(style.toString()); // clone style
+      layers = userStyle.getLayers();
+
+      for (int i = layers.size() - 1; i >= 0; i--)
+      {
+        Layer layer = layers.get(i);
+        if (removedLayerIds.contains(layer.getId()))
+        {
+          layers.remove(i);
+        }
+      }
+
+      StyleMetadata styleMetadata = new StyleMetadata(userStyle);
+      LegendGroup legend = styleMetadata.getLegend(false);
+      if (legend != null)
+      {
+        removeLegendLayers(legend, removedLayerIds);
+      }
+      return userStyle;
+    }
+    catch (Exception ex)
+    {
+      throw new RuntimeException(ex);
+    }
   }
 
   public StyleEncoder getEncoder()
@@ -585,6 +640,28 @@ public class GeoMapBean extends WebBean implements Serializable
   }
 
   // non public methods
+
+  void removeLegendLayers(LegendGroup group, HashSet<String> removedLayerIds)
+  {
+    List<LegendItem> items = group.getChildren();
+    for (int i = items.size() - 1; i >= 0; i--)
+    {
+      LegendItem item = items.get(i);
+      if (item instanceof LegendLayer)
+      {
+        LegendLayer layer = (LegendLayer)item;
+        if (removedLayerIds.contains(layer.getLayerId()))
+        {
+          items.remove(i);
+        }
+      }
+      else if (item instanceof LegendGroup)
+      {
+        LegendGroup subGroup = (LegendGroup)item;
+        removeLegendLayers(subGroup, removedLayerIds);
+      }
+    }
+  }
 
   void loadFromParameters()
   {

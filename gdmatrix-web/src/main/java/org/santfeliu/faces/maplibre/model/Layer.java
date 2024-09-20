@@ -197,6 +197,16 @@ public class Layer implements Serializable
     metadata.put("selection_distance", distance);
   }
 
+  public String getRoleId()
+  {
+    return (String)metadata.get("roleId");
+  }
+
+  public void setRoleId(String roleId)
+  {
+    metadata.put("roleId", roleId);
+  }
+
   public Map<String, Object> getPaint()
   {
     return paint;
