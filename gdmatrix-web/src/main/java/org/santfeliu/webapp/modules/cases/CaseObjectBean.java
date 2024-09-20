@@ -250,7 +250,6 @@ public class CaseObjectBean extends ObjectBean
   {
     formSelector = null;
 
-    executeAction("preLoad");
     if (!NEW_OBJECT_ID.equals(objectId))
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
     else
@@ -261,26 +260,24 @@ public class CaseObjectBean extends ObjectBean
       if (baseType.isInstantiable())
         cas.setCaseTypeId(baseType.getTypeId());
     }
-    
-    executeAction("postLoad");
   }
   
   @Override
   public void storeObject() throws Exception
   {
-    executeAction("preStore");
+    executeAction(PRE_STORE_ACTION);
     cas = CasesModuleBean.getPort(false).storeCase(cas);
     setObjectId(cas.getCaseId());
-    executeAction("postStore");
+    executeAction(POST_STORE_ACTION);
     caseFinderBean.outdate();
   }
          
   @Override
   public void removeObject() throws Exception
   {
-    executeAction("preRemove");
+    executeAction(PRE_REMOVE_ACTION);
     CasesModuleBean.getPort(false).removeCase(cas.getCaseId());
-    executeAction("postRemove");
+    executeAction(POST_REMOVE_ACTION);
 
     caseFinderBean.outdate();
   }

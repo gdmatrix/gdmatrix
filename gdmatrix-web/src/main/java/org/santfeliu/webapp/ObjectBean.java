@@ -64,6 +64,12 @@ import org.santfeliu.webapp.util.ComponentUtils;
  */
 public abstract class ObjectBean extends BaseBean
 {
+  public static final String POST_LOAD_ACTION = "postLoad";
+  public static final String PRE_STORE_ACTION = "preStore";
+  public static final String POST_STORE_ACTION = "postStore";
+  public static final String PRE_REMOVE_ACTION = "preRemove";
+  public static final String POST_REMOVE_ACTION = "postRemove";
+    
   protected String objectId = NEW_OBJECT_ID;
   private int searchTabSelector;
   private int editTabSelector;
@@ -211,9 +217,10 @@ public abstract class ObjectBean extends BaseBean
   {
     try
     {
-      clear();
-      loadObjectSetup();      
-      loadObject();
+      clear(); 
+      loadObject();           
+      loadObjectSetup();
+      executeAction(POST_LOAD_ACTION);      
       loadActiveEditTab();
       loadActions();
 
@@ -346,7 +353,7 @@ public abstract class ObjectBean extends BaseBean
     else
       actions = null;
   }
-
+  
   public void callAction(String actionName)
   {
     Action action = getAction(actionName);
@@ -386,7 +393,7 @@ public abstract class ObjectBean extends BaseBean
         if (actionObject != null)
         {
           setActionResult(actionObject);
-          if (actionObject.isRefresh())
+          if (actionObject.isRefresh() && !actionName.equals(POST_LOAD_ACTION))
             load();
           addFacesMessages(actionObject.getMessages());
         }
