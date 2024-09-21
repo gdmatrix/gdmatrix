@@ -128,6 +128,40 @@ function dropMenu(elem)
   }
 }
 
+function updateItemHeight(item)
+{
+  let height = 0;
+
+  let list = item.querySelector("ul");
+  if (list)
+  {
+    if (item.classList.contains("drop"))
+    {
+      let subItems = item.querySelectorAll(":scope > ul > li");
+      for (let subItem of subItems)
+      {
+        let menuitem = subItem.querySelector(".menuitem");
+        let itemHeight = updateItemHeight(subItem);
+        height += (menuitem.offsetHeight + itemHeight);
+      }
+    }
+    list.style.maxHeight = height + "px";
+  }
+  return height;
+}
+
+function updateMenuHeights()
+{
+  const mainMenuClass = menuSetup.mainMenuClass;
+  const items = document.querySelectorAll("." + mainMenuClass + " > ul > li");
+
+  for (let i = 0; i < items.length; i++)
+  {
+    let item = items[i];
+    updateItemHeight(item);
+  }
+}
+
 function showMenuPanel()
 {
   const mainMenuClass = menuSetup.mainMenuClass;
@@ -168,6 +202,7 @@ function toggleMenu(elem)
       {
         dropMenu(elem);
       }            
+      updateMenuHeights();
       return;
     }
     ancestorElem = ancestorElem.parentElement;
@@ -247,6 +282,7 @@ function initMenu()
   window.addEventListener("resize", () =>
   {
     doLayout();
+    updateMenuHeights();
   });
   
   doLayout();

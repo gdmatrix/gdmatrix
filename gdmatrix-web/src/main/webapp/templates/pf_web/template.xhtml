@@ -13,7 +13,7 @@
 
     <h:outputScript name="js/pf_template.js" />
 
-    <p:sidebar id="login_sb" widgetVar="loginSideBar" modal="false"
+    <p:sidebar id="login_sb" widgetVar="loginSideBar" modal="false" class="sidebar"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" position="right" showCloseIcon="false" >
 
       <div class="flex align-items-center p-3 border-bottom-1 border-300">
@@ -119,7 +119,7 @@
       </div>
     </p:sidebar>
 
-    <p:sidebar id="config_sb" widgetVar="configSideBar" modal="false"
+    <p:sidebar id="config_sb" widgetVar="configSideBar" modal="false" class="sidebar"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')" position="right" showCloseIcon="false" >
 
       <div class="flex align-items-center p-3 border-bottom-1 border-300">
@@ -171,7 +171,7 @@
       </div>
     </p:sidebar>
 
-    <p:sidebar id="chat_sb" widgetVar="chatSideBar" modal="false"
+    <p:sidebar id="chat_sb" widgetVar="chatSideBar" modal="false" class="sidebar"
                style="width: 300px; max-width:80%"
                onShow="setBannerZIndex(0)" onHide="setBannerZIndex('')"
                position="right" showCloseIcon="false" >
@@ -195,7 +195,7 @@
       <h:panelGroup id="menubar" layout="block" class="app_menubar flex align-items-center">
         <div class="menu_button flex-grow-0 flex-shrink-0 align-items-center">
           <p:button onclick="toggleMenuPanel(event); return false;" icon="pi pi-bars"
-                    class="rounded-button ui-button-flat" style="color:white" />
+                    class="rounded-button" />
         </div>
 
         <a href="#" class="logo flex-shrink-1" />
@@ -295,7 +295,7 @@
                            update="@form:cnt @form:nav_path @form:side_menu_panel"><span>#{applicationBean.translate(item.label)}</span>
             </p:commandLink>
             <ui:fragment rendered="#{not item.leaf}">
-              <i class="pi pi-angle-right ml-1 mr-1" />
+              <i class="pi pi-angle-right ml-1 mr-1 text-color" />
             </ui:fragment>
           </ui:repeat>
         </p:outputPanel>
