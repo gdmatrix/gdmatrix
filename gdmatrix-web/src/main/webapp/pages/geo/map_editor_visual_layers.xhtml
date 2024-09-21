@@ -287,9 +287,7 @@
 
                 <div class="field col-12 md:col-4 white-space-nowrap">
                   <p:toggleSwitch value="#{geoMapLayersBean.editingLayer.visible}" 
-                                  styleClass="vertical-align-middle">
-                    <p:ajax update="layer_roleid" />
-                  </p:toggleSwitch>
+                                  styleClass="vertical-align-middle" />
                   <i class="pi pi-eye ml-1" />
                   <p:outputLabel value="Visible" for="@previous" styleClass="ml-2" />
                 </div>
@@ -311,13 +309,12 @@
                 </div>
 
                 <div class="field col-12 md:col-4">
-                  <p:outputLabel value="Only visible for role" for="@next" />
+                  <p:outputLabel value="Enabled for role" for="@next" />
                   <p:autoComplete id="layer_roleid" 
                                   value="#{geoMapLayersBean.editingLayer.roleId}" var="roleId"
                                   maxResults="20" minQueryLength="1" 
                                   itemLabel="#{roleId}" itemValue="#{roleId}" 
-                                  scrollHeight="200" emptyMessage=""
-                                  disabled="#{not geoMapLayersBean.editingLayer.visible}"
+                                  scrollHeight="200" emptyMessage=""                                  
                                   completeMethod="#{roleTypeBean.findIdsByQuery}">
                     <p:column>
                       #{roleTypeBean.getDescription(roleId)}
