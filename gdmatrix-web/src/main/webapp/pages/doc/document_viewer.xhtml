@@ -64,7 +64,7 @@
 
     <gdm:tinyMCE value="#{documentViewerBean.editor.documentData}" 
                  rendered="#{documentViewerBean.editing}" />
-    <p:outputPanel id="pnlPrint">
+    <p:outputPanel id="pnlPrint" styleClass="p-2">
       <sf:browser url="#{documentViewerBean.url}"
                   port="#{applicationBean.defaultPort}"
                   rendered="#{!documentViewerBean.editing}" 
