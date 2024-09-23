@@ -11,7 +11,7 @@
     <p:dataTable id="person_events_table" value="#{personEventsTabBean.tabInstances[tab.subviewId].typeSelectHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
-                 size="small" paginatorPosition="bottom" multiViewState="true"
+                 size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow" first="#{personEventsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"

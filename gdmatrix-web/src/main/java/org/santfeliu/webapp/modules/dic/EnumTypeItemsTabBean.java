@@ -135,7 +135,10 @@ public class EnumTypeItemsTabBean extends TabBean
       }    
     }
     else
+    {
       rows = Collections.emptyList();        
+      firstRow = 0;
+    }
   }
 
   public void create()

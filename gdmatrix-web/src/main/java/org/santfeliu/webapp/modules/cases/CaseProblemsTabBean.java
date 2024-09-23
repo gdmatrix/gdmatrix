@@ -49,7 +49,6 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import static org.santfeliu.webapp.modules.cases.CasesModuleBean.getPort;
-import org.santfeliu.webapp.setup.PropertyMap;
 
 /**
  *
@@ -166,7 +165,11 @@ public class CaseProblemsTabBean extends TabBean
         error(ex);
       }
     }
-    else rows = Collections.EMPTY_LIST;
+    else 
+    {
+      rows = Collections.EMPTY_LIST;
+      firstRow = 0;
+    }
   }
 
   @Override

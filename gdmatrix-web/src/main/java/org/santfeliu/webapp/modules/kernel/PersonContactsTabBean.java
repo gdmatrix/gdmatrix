@@ -130,7 +130,10 @@ public class PersonContactsTabBean extends TabBean
       }
     }
     else
+    {
       rows = Collections.emptyList();        
+      firstRow = 0;
+    }      
   }
 
   public void create()

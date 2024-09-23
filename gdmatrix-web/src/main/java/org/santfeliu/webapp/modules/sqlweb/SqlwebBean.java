@@ -100,6 +100,7 @@ public class SqlwebBean extends WebBean implements Serializable
   private boolean deferredExecution = false;
   private boolean showLobValues = false;
   private boolean showNullAsEmpty = false;
+  private int firstRow = 0;
 
   public SqlwebBean()
   {
@@ -211,6 +212,16 @@ public class SqlwebBean extends WebBean implements Serializable
     this.maxRows = maxRows;
   }
 
+  public int getFirstRow()
+  {
+    return firstRow;
+  }
+
+  public void setFirstRow(int firstRow)
+  {
+    this.firstRow = firstRow;
+  }
+
   public Map<String, String> getColumnDescriptionMap()
   {
     if (columnDescriptionMap == null)
@@ -278,6 +289,7 @@ public class SqlwebBean extends WebBean implements Serializable
   public void execute()
   {
     columns = null;
+    firstRow = 0;
     rows = null;
     updateCount = -1;
     exception = null;

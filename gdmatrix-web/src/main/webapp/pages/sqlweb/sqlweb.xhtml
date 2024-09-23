@@ -99,7 +99,7 @@
                    paginatorPosition="bottom" size="small" pageLinks="10" stripedRows="true"
                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                    paginator="true" rows="10" rowsPerPageTemplate="10, 50, 100"
-                   var="row" rowIndexVar="rowIndex"
+                   var="row" rowIndexVar="rowIndex" widgetVar="dataTable" first="#{sqlwebBean.firstRow}"
                    emptyMessage="#{objectBundle.no_data}">
         <f:facet name="header">
           <div class="flex flex-wrap justify-content-between">

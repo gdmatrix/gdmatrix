@@ -132,7 +132,11 @@ public class RoleUsersTabBean extends TabBean
         error(ex);
       }
     }
-    else rows = Collections.EMPTY_LIST;
+    else 
+    {
+      rows = Collections.EMPTY_LIST;
+      firstRow = 0;      
+    }
   }
 
   @Override

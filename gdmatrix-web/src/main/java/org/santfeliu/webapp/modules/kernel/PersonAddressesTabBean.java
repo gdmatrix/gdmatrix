@@ -145,7 +145,10 @@ public class PersonAddressesTabBean extends TabBean
       }    
     }
     else
+    {
       rows = Collections.emptyList();        
+      firstRow = 0;
+    }
   }
 
   public void create()

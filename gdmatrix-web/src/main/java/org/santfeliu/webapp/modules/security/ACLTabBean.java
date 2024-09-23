@@ -121,6 +121,8 @@ public abstract class ACLTabBean extends TabBean
   public void load()
   {
     createAccessControlEdits(getAccessControlList(), rows);
+    if (NEW_OBJECT_ID.equals(getObjectId()))
+      firstRow = 0;    
   }
 
   @Override

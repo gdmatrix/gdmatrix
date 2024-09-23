@@ -225,6 +225,7 @@ public class AddressCasesTabBean extends TabBean
     else 
     {
       rows = Collections.EMPTY_LIST;
+      firstRow = 0;
       getTypeSelectHelper().load();      
     }
   }
