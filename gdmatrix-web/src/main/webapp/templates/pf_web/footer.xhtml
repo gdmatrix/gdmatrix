@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <div class="app_footer">
+
+    <sf:treeMenu id="social_menu" var="item" expandDepth="1" styleClass="social_networks"
+                 baseMid="#{userSessionBean.selectedMenuItem.properties.socialNetworksMid}">
+      <f:facet name="data">
+        <ui:fragment rendered="#{item.rendered}">
+          <p:link href="#{item.properties.url}"
+                  rendered="#{item.action == 'url'}"
+                  target="#{item.properties.target == null ? '_self' : item.properties.target}">
+            <ui:fragment rendered="#{item.directProperties.icon != null}">
+              <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
+            </ui:fragment>
+            #{applicationBean.translate(item.label)}
+          </p:link>
+        </ui:fragment>
+      </f:facet>
+    </sf:treeMenu>
+
+  </div>
+
+</ui:composition>

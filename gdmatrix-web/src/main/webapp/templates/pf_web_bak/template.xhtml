@@ -14,12 +14,14 @@
     <h:outputScript name="js/pf_template.js" />
     <h:outputScript name="locales/locale-#{userSessionBean.viewLanguage}.js"
                     library="primefaces"/>
-    <div class="flex flex-column h-full overflow-hidden">
+    
+    <div class="abs_body_back"> </div>
+    <div class="abs_body flex flex-column">
+
       <ui:include src="header.xhtml"></ui:include>
-      <div class="content_footer">
-        <ui:include src="content.xhtml"></ui:include>
-        <ui:include src="footer.xhtml"></ui:include>
-      </div>      
+
+      <ui:include src="content.xhtml"></ui:include>
+
     </div>
 
     <p:ajaxStatus onstart="showOverlay()" onsuccess="hideOverlay()" delay="2000" />

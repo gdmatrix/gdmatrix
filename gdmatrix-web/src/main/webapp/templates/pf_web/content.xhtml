@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <p:outputPanel id="cnt" 
+                 styleClass="app_content"
+                 style="max-width:#{userSessionBean.selectedMenuItem.properties.maxWidth};">
+
+    <div class="nav_path_panel flex flex-row align-items-center flex-shrink-0">
+      <p:outputPanel id="nav_path"
+                     class="nav_path flex-grow-1">
+        <ui:repeat value="#{userSessionBean.selectedMenuItem.cursorPath}" var="item" offset="1">
+          <p:commandLink action="#{templateBean.show(item.mid)}"
+                         process="@this"
+                         update="@form:cnt"><span>#{applicationBean.translate(item.label)}</span>
+          </p:commandLink>
+          <ui:fragment rendered="#{not item.leaf}">
+            <i class="pi pi-angle-right" />
+          </ui:fragment>
+        </ui:repeat>
+      </p:outputPanel>
+      <p:button icon="pi pi-ellipsis-h" onclick="return toggleSideMenu(event);"
+                class="ui-button-flat flex-grow-0 flex-shrink-0 side_menu_button" 
+                rendered="#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible != 'false'}"/>
+    </div>
+
+    <div class="flex-grow-1 flex flex-row overflow-hidden">
+      <p:outputPanel id="side_menu_panel" styleClass="flex-grow-0 side_menu_panel"
+                     rendered="#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible != 'false'}">
+
+        <div class="p-2 font-bold">#{userSessionBean.selectedMenuItem.parent.parent.label}</div> 
+
+        <sf:treeMenu id="side_menu" var="item" expandDepth="3" styleClass="side_menu"
+                     expandSelected="true"
+                     baseMid="#{userSessionBean.selectedMenuItem.parent.parent.mid}">
+          <f:facet name="data">
+            <ui:fragment rendered="#{item.rendered}">
+              <p:commandLink action="#{templateBean.show(item.mid)}"
+                             rendered="#{item.action != 'url'}"
+                             process="@form:side_menu_panel"
+                             styleClass="#{item.selected ? 'selected' : ''}"
+                             update="@form:cnt">
+                <ui:fragment rendered="#{item.directProperties.icon != null}">
+                  <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
+                </ui:fragment>
+                #{applicationBean.translate(item.label)}
+              </p:commandLink>
+              <p:link href="#{item.properties.url}"
+                      rendered="#{item.action == 'url'}"
+                      target="#{item.properties.target == null ? '_self' : item.properties.target}">
+                <ui:fragment rendered="#{item.directProperties.icon != null}">
+                  <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
+                </ui:fragment>
+                #{applicationBean.translate(item.label)}
+              </p:link>
+            </ui:fragment>
+          </f:facet>
+        </sf:treeMenu>
+      </p:outputPanel>
+
+      <div class="flex-grow-1 overflow-auto">
+        <ui:include src="#{templateBean.content}"></ui:include>
+      </div>
+    </div>
+
+    <script>
+      showContent("#{userSessionBean.selectedMenuItem.mid}");
+      var elem = document.querySelector(".content_footer");
+      var hideFooter = "#{userSessionBean.selectedMenuItem.properties.footerVisible}" === "false";
+      if (hideFooter)
+      {
+        elem.classList.add("no_footer");
+      }
+      else
+      {
+        elem.classList.remove("no_footer");        
+      }
+    </script>      
+ 
+  </p:outputPanel>
+
+</ui:composition>

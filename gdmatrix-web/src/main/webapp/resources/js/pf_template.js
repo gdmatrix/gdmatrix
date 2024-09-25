@@ -89,8 +89,9 @@ function onResize()
 
 function getMenuMode()
 {
-  const responsiveWidth = menuSetup?.responsiveWidth || 1050;
-  return (window.innerWidth > responsiveWidth) ? "horizontal" : "vertical";  
+  const style = getComputedStyle(document.body);
+  let mode = style.getPropertyValue("--menu-mode");
+  return mode;
 }
 
 function getMenuOptions()
