@@ -93,7 +93,7 @@ public class DynamicPropertiesBean implements Serializable
   static final JsonValidator JSON_VALIDATOR = new JsonValidator();
 
   private final Map<String, List<SelectItem>> selectItemMap = new HashMap<>();
-  private final Map<String, Boolean> inspectModeMap = new HashMap<>();  
+  private final Map<String, Boolean> inspectModeMap = new HashMap<>();
   private PropertyHelper propertyHelper;
 
   @PostConstruct
@@ -145,7 +145,7 @@ public class DynamicPropertiesBean implements Serializable
 
     PropertyConverter converter = new PropertyConverter(type);
     Map map = converter.toPropertyMap(properties);
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     return gson.toJson(map);
   }
@@ -236,7 +236,7 @@ public class DynamicPropertiesBean implements Serializable
           new SelectItem("", bundle.getString("type_without_form")));
       }
       selectItemMap.put(formKey, selectItems);
-    }    
+    }
     return selectItems;
   }
 
@@ -244,7 +244,7 @@ public class DynamicPropertiesBean implements Serializable
   {
     UIComponent component = event.getComponent();
     UIComponent panel = component.findComponent("dyn_form");
-    
+
     if (panel != null)
     {
       updateComponents(panel);
@@ -379,18 +379,18 @@ public class DynamicPropertiesBean implements Serializable
     {
       String docId = selector.substring(4);
       try
-      {       
-        Document document = 
+      {
+        Document document =
           DocModuleBean.getPort(true).loadDocument(docId, 0, ContentInfo.ID);
         return document.getTitle();
       }
       catch (Exception ex)
       {
         return "";
-      }      
-    }    
+      }
+    }
   }
-  
+
   // --- private methods ---
 
   private void updateComponents(UIComponent panel)
