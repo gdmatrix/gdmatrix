@@ -20,7 +20,8 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50"
-                 emptyMessage="#{objectBundle.no_data}">
+                 emptyMessage="#{objectBundle.no_data}"
+                 sortMode="multiple" allowUnsorting="true">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">     
@@ -32,13 +33,13 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
       </f:facet>      
-      <p:column headerText="#{kernelBundle.personContacts_type}" styleClass="col-2">
+      <p:column headerText="#{kernelBundle.personContacts_type}" styleClass="col-2" sortBy="#{row.contactTypeLabel}">
         <h:outputText value="#{row.contactTypeLabel}" />
       </p:column>
-      <p:column headerText="#{kernelBundle.personContacts_contact}" styleClass="col-5">
+      <p:column headerText="#{kernelBundle.personContacts_contact}" styleClass="col-5" sortBy="#{row.value}">
         <h:outputText value="#{row.value}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personContacts_comments}" styleClass="col-5">
+      <p:column headerText="#{kernelBundle.personContacts_comments}" styleClass="col-5" sortBy="#{row.comments}">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
       <p:column styleClass="text-right white-space-nowrap">

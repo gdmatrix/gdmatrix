@@ -16,7 +16,8 @@
                  rowIndexVar="firstRow" first="#{policyClassesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}">
+                 rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}"
+                 sortMode="multiple" allowUnsorting="true">
       
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -30,19 +31,23 @@
         </div>
       </f:facet>        
 
-      <p:column headerText="#{policyBundle.policyClasses_classId}" styleClass="col-1">
+      <p:column headerText="#{policyBundle.policyClasses_classId}" styleClass="col-1"
+                sortBy="#{row.clazz.classId}">
         <h:outputText value="#{row.clazz.classId}" />
       </p:column>
 
-      <p:column headerText="#{policyBundle.policyClasses_title}" styleClass="col-7">
+      <p:column headerText="#{policyBundle.policyClasses_title}" styleClass="col-7"
+                sortBy="#{policyClassesTabBean.getClassTitle(row)}">
         <h:outputText value="#{policyClassesTabBean.getClassTitle(row)}" />
       </p:column> 
       
-      <p:column headerText="#{policyBundle.policyClasses_startDate}" styleClass="col-2">
+      <p:column headerText="#{policyBundle.policyClasses_startDate}" styleClass="col-2"
+                sortBy="#{row.classPolicy.startDate}">
         <h:outputText value="#{row.classPolicy.startDate}"><f:converter converterId="dateConverter" /></h:outputText>
       </p:column>
 
-      <p:column headerText="#{policyBundle.policyClasses_endDate}" styleClass="col-2">
+      <p:column headerText="#{policyBundle.policyClasses_endDate}" styleClass="col-2"
+                sortBy="#{row.classPolicy.endDate}">
         <h:outputText value="#{row.classPolicy.endDate}"><f:converter converterId="dateConverter" /></h:outputText>
       </p:column>      
 

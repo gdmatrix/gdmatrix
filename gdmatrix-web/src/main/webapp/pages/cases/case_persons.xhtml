@@ -20,7 +20,8 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rows="10" rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}"
-                 rowKey="#{row.rowId}" expandedRow="true">
+                 rowKey="#{row.rowId}" expandedRow="true"
+                 sortMode="multiple" allowUnsorting="true">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">

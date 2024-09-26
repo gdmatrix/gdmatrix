@@ -17,7 +17,8 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50"
-                 emptyMessage="#{objectBundle.no_data}">
+                 emptyMessage="#{objectBundle.no_data}"
+                 sortMode="multiple" allowUnsorting="true">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -31,11 +32,13 @@
         </div>
       </f:facet>
 
-      <p:column headerText="#{securityBundle.role_role}" styleClass="col-4">
+      <p:column headerText="#{securityBundle.role_role}" styleClass="col-4"
+                sortBy="#{row.includedRole.roleId}">
         <h:outputText value="#{row.includedRole.roleId}" />
       </p:column>
 
-      <p:column headerText="#{securityBundle.role_name}" styleClass="col-8">
+      <p:column headerText="#{securityBundle.role_name}" styleClass="col-8"
+                sortBy="#{row.includedRole.name}">
         <h:outputText value="#{row.includedRole.name}" />
       </p:column>
 

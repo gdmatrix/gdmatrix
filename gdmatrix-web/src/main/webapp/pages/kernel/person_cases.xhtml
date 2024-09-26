@@ -20,7 +20,8 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50"
-                 emptyMessage="#{objectBundle.no_data}">
+                 emptyMessage="#{objectBundle.no_data}"
+                 sortMode="multiple" allowUnsorting="true">
 
       <f:facet name="header">        
         <div class="flex justify-content-end w-12">
@@ -60,19 +61,23 @@
       </p:headerRow>
       
       <p:column headerText="#{kernelBundle.personCases_id}" styleClass="col-1"
-                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseId')}">
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseId')}"
+                sortBy="#{row.caseObject.caseId}">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
       <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-5"
-                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseTitle')}">
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseTitle')}"
+                sortBy="#{row.caseObject.title}">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>       
       <p:column headerText="#{kernelBundle.personCases_type}" styleClass="col-3"
-                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseTypeId')}">
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseTypeId')}"
+                sortBy="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
       <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="col-3"
-                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}">
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}"
+                sortBy="#{row.comments}">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
       <p:column styleClass="text-right white-space-nowrap">

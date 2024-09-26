@@ -46,32 +46,39 @@
                      rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                     rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}">
+                     rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}"
+                     sortMode="multiple" allowUnsorting="true">
 
-          <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-3 white-space-nowrap">
+          <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-3 white-space-nowrap"
+                    sortBy="#{srow.name}">
             <i class="mr-2 #{srow.type == 'TEXT' ? 'fa fa-font' : (srow.type == 'DATE' ? 'pi pi-calendar' : (srow.type == 'NUMERIC' ? 'fa fa-hashtag' : (srow.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
             <h:outputText value="#{srow.name}" style="#{srow.hidden ? 'color: var(--blue-500)' : ''}" />
           </p:column>
 
-          <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3">
+          <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3"
+                    sortBy="#{srow.description}">
             <h:outputText value="#{srow.description}"/>
           </p:column>
 
-          <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-2">
+          <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-2"
+                    sortBy="#{srow.enumTypeId}">
             <h:outputText value="#{srow.enumTypeId}"/>
           </p:column>
 
-          <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center">
+          <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center"
+                    sortBy="#{srow.size}">
             <h:outputText value="#{srow.size}"/>
           </p:column>
 
-          <p:column headerText="#{dicBundle.typeProperties_occurs}" styleClass="col-1 text-center">
+          <p:column headerText="#{dicBundle.typeProperties_occurs}" styleClass="col-1 text-center"
+                    sortBy="#{srow.minOccurs}">
             <h:outputText value="#{srow.minOccurs == srow.maxOccurs ? '' : srow.minOccurs}
                           #{srow.minOccurs == srow.maxOccurs ? '' : '..'}
                           #{srow.maxOccurs == '0' ? '*' : srow.maxOccurs}" />
           </p:column>
 
-          <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center">
+          <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center"
+                    sortBy="#{srow.stringValue}">
             <h:outputText value="#{srow.stringValue}"/>
           </p:column>
 
@@ -104,7 +111,8 @@
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50" widgetVar="typePropertiesTable"
                  multiViewState="true"
-                 filteredValue="#{typePropertiesTabBean.filteredRows}" globalFilterOnly="true" emptyMessage="#{objectBundle.no_data}">                 
+                 filteredValue="#{typePropertiesTabBean.filteredRows}" globalFilterOnly="true" emptyMessage="#{objectBundle.no_data}"
+                 sortMode="multiple" allowUnsorting="true">                 
 
       <f:facet name="header">       
         <div class="flex flex-wrap justify-content-between w-12">
@@ -129,30 +137,36 @@
         </div>
       </f:facet>
 
-      <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-3 white-space-nowrap" filterBy="#{row.name}" filterMatchMode="contains">
+      <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-3 white-space-nowrap" filterBy="#{row.name}" filterMatchMode="contains"
+                sortBy="#{row.name}">
         <i class="mr-2 #{row.type == 'TEXT' ? 'fa fa-font' : (row.type == 'DATE' ? 'pi pi-calendar' : (row.type == 'NUMERIC' ? 'fa fa-hashtag' : (row.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
         <h:outputText value="#{row.name}" style="#{row.hidden ? 'color: var(--blue-500)' : ''}"/>
       </p:column>
 
-      <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3" filterBy="#{row.description}" filterMatchMode="contains">
+      <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3" filterBy="#{row.description}" filterMatchMode="contains"
+                sortBy="#{row.description}">
         <h:outputText value="#{row.description}"/>
       </p:column>
 
-      <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-2">
+      <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-2"
+                sortBy="#{row.enumTypeId}">
         <h:outputText value="#{row.enumTypeId}"/>
       </p:column>
 
-      <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center">
+      <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center"
+                sortBy="#{row.size}">
         <h:outputText value="#{row.size}"/>
       </p:column>
 
-      <p:column headerText="#{dicBundle.typeProperties_occurs}" styleClass="col-1 text-center">
+      <p:column headerText="#{dicBundle.typeProperties_occurs}" styleClass="col-1 text-center"
+                sortBy="#{row.minOccurs}">
         <h:outputText value="#{row.minOccurs == row.maxOccurs ? '' : row.minOccurs}
                       #{row.minOccurs == row.maxOccurs ? '' : '..'}
                       #{row.maxOccurs == '0' ? '*' : row.maxOccurs}"/>
       </p:column>
 
-      <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center">
+      <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center"
+                sortBy="#{row.stringValue}">
         <h:outputText value="#{row.stringValue}"/>
       </p:column>
 
