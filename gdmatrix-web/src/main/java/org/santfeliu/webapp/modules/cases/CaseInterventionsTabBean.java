@@ -379,9 +379,11 @@ public class CaseInterventionsTabBean extends TabBean
 
   public void create()
   {
+    executeTabAction("preTabEdit", null);
     editing = new Intervention();
     editing.setIntTypeId(getCreationTypeId());
     formSelector = null;
+    executeTabAction("postTabEdit", null);
   }
 
   @Override
@@ -437,14 +439,16 @@ public class CaseInterventionsTabBean extends TabBean
     try
     {
       if (intId != null)
-      {       
+      {
+        executeTabAction("preTabEdit", row);
         editing = CasesModuleBean.getPort(false).loadIntervention(intId);
+        executeTabAction("postTabEdit", row);
       }
       else
       {
         create();
       }
-      formSelector = null;        
+      formSelector = null;      
     }
     catch (Exception ex)
     {

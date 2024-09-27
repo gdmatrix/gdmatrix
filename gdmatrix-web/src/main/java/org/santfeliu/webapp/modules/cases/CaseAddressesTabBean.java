@@ -326,8 +326,10 @@ public class CaseAddressesTabBean extends TabBean
     {
       try
       {
+        executeTabAction("preTabEdit", row);
         editing = 
           CasesModuleBean.getPort(false).loadCaseAddress(row.getRowId());
+        executeTabAction("postTabEdit", row);
       }
       catch (Exception ex)
       {
@@ -404,8 +406,10 @@ public class CaseAddressesTabBean extends TabBean
 
   public void create()
   {
+    executeTabAction("preTabEdit", null);    
     editing = new CaseAddress();
     editing.setCaseAddressTypeId(getCreationTypeId());
+    executeTabAction("postTabEdit", null);    
   }
 
   @Override

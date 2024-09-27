@@ -539,9 +539,11 @@ public class CasePersonsTabBean extends TabBean
   
   public void create()
   {
+    executeTabAction("preTabEdit", null);    
     editing = new CasePerson();
     editing.setCasePersonTypeId(getCreationTypeId());
     tabIndex = 0;
+    executeTabAction("postTabEdit", null);    
   }
   
   @Override
@@ -593,12 +595,14 @@ public class CasePersonsTabBean extends TabBean
     {
       try
       {
+        executeTabAction("preTabEdit", row);        
         editing = CasesModuleBean.getPort(false).loadCasePerson(row.getRowId());
         personContacts =
           getPersonContacts(editing.getPersonId());
         representantContacts =
           getPersonContacts(editing.getRepresentantPersonId());
         tabIndex = 0;
+        executeTabAction("postTabEdit", row);        
       }
       catch (Exception ex)
       {

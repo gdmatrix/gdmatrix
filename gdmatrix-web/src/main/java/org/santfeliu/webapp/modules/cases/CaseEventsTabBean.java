@@ -313,7 +313,9 @@ public class CaseEventsTabBean extends TabBean
     {
       try
       {      
+        executeTabAction("preTabEdit", row);    
         editing = CasesModuleBean.getPort(false).loadCaseEvent(row.getRowId());
+        executeTabAction("postTabEdit", row);    
       }
       catch (Exception ex)
       {
@@ -369,9 +371,11 @@ public class CaseEventsTabBean extends TabBean
 
   public void create()
   {
+    executeTabAction("preTabEdit", null);    
     editing = new CaseEvent();
     editing.setCaseEventTypeId(getCreationTypeId());
-    formSelector = null;    
+    formSelector = null;
+    executeTabAction("postTabEdit", null);    
   }
 
   @Override

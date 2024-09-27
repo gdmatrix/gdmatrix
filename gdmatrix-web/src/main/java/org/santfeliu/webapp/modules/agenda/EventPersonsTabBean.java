@@ -314,8 +314,10 @@ public class EventPersonsTabBean extends TabBean
     {
       try
       {
+        executeTabAction("preTabEdit", row);
         editing = AgendaModuleBean.getClient(false).
           loadAttendant(row.getAttendantId());
+        executeTabAction("postTabEdit", row);
       }
       catch (Exception ex)
       {
@@ -378,8 +380,10 @@ public class EventPersonsTabBean extends TabBean
 
   public void create()
   {
+    executeTabAction("preTabEdit", null);    
     editing = new Attendant();
     editing.setAttendantTypeId(getCreationTypeId());
+    executeTabAction("postTabEdit", null);    
   }
 
   @Override
