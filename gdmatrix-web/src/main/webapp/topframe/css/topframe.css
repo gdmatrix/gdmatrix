@@ -361,3 +361,24 @@ div.skipDiv#templateSkipBottom a
   font-size: 20px;
   text-align: center;
 }
+
+/* Standard blink effect */
+
+.standardBlink
+{
+  animation: standardBlink 2s infinite;
+}
+
+@keyframes standardBlink 
+{
+  0%, 100% 
+  {
+    background-color: transparent;
+    color: var(--text-color);
+  }
+  50% 
+  {
+    background-color: var(--blink-bg-color);
+    color: var(--blink-fg-color);
+  }
+}

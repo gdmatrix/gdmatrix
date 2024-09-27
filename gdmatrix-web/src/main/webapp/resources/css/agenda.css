@@ -108,7 +108,7 @@
 
 .eventPersonsTable .standardBlink
 {
-  --blink-color: rgb(255, 255, 115);
+  --blink-bg-color: var(--surface-300);  
 }
 
 /*** event_recurrences.xhtml and event_copy_*.xhtml ***/

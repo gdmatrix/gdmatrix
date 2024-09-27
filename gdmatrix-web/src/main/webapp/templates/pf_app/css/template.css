@@ -825,22 +825,3 @@ body div.field
 .customProperties .cell.propValue
 {
 }
-
-/* Standard blink effect */
-
-.standardBlink
-{
-  animation: standardBlink 2s infinite;
-}
-
-@keyframes standardBlink 
-{
-  0%, 100% 
-  {
-    background-color: transparent;
-  }
-  50% 
-  {
-    background-color: var(--blink-color);
-  }
-}
