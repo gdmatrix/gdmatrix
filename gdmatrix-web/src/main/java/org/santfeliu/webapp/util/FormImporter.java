@@ -711,7 +711,12 @@ public class FormImporter
         component instanceof TinyMCE ||
         component instanceof CodeMirror)
       {
-        if (styleClass == null) styleClass = "col-12";
+        if (styleClass == null) styleClass = "col-12";        
+        else if (!styleClass.startsWith("col-") && 
+          !styleClass.contains(" col-"))
+        {
+          styleClass += " col-12";
+        }
       }
       else
       {
