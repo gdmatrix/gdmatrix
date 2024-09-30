@@ -2138,15 +2138,15 @@ public class CaseManager implements CaseManagerPort
 
       validateCaseCase(caseCase);
 
+      dbCaseCase = new DBCaseCase(caseCase);
       if (caseCaseId == null) //insert
       {
-        dbCaseCase = new DBCaseCase(caseCase);
         em.persist(dbCaseCase);
         storeCaseCaseProperties(dbCaseCase, false);        
       }
       else //update
       {
-        dbCaseCase = em.merge(new DBCaseCase(caseCase));
+        em.merge(dbCaseCase);
         storeCaseCaseProperties(caseCase, true);        
       }
       
