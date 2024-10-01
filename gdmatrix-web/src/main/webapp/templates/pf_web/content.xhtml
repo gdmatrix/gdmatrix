@@ -25,13 +25,14 @@
           </ui:fragment>
         </ui:repeat>
       </p:outputPanel>
-      <p:button icon="pi pi-ellipsis-h" onclick="return toggleSideMenu(event);"
-                class="ui-button-flat flex-grow-0 flex-shrink-0 side_menu_button" 
+      <p:button icon="pi pi-ellipsis-h" onclick="return toggleDialogPanel('side_menu_panel', event);"
+                class="ui-button-flat flex-grow-0 flex-shrink-0 side_menu_button mr-1" 
                 rendered="#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible != 'false'}"/>
     </div>
 
     <div class="flex-grow-1 flex flex-row overflow-hidden">
-      <p:outputPanel id="side_menu_panel" styleClass="flex-grow-0 side_menu_panel"
+      <p:outputPanel id="side_menu_panel" 
+                     styleClass="flex-grow-0 side_menu_panel dialog_panel"
                      rendered="#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible != 'false'}">
 
         <div class="p-2 font-bold">#{userSessionBean.selectedMenuItem.parent.parent.label}</div> 
@@ -44,6 +45,7 @@
               <p:commandLink action="#{templateBean.show(item.mid)}"
                              rendered="#{item.action != 'url'}"
                              process="@form:side_menu_panel"
+                             onclick="hideDialogPanel('side_menu_panel')"
                              styleClass="#{item.selected ? 'selected' : ''}"
                              update="@form:cnt">
                 <ui:fragment rendered="#{item.directProperties.icon != null}">
@@ -53,6 +55,7 @@
               </p:commandLink>
               <p:link href="#{item.properties.url}"
                       rendered="#{item.action == 'url'}"
+                      onclick="hideDialogPanel('side_menu_panel')"
                       target="#{item.properties.target == null ? '_self' : item.properties.target}">
                 <ui:fragment rendered="#{item.directProperties.icon != null}">
                   <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
@@ -72,15 +75,11 @@
     <script>
       showContent("#{userSessionBean.selectedMenuItem.mid}");
       var elem = document.querySelector(".content_footer");
-      var hideFooter = "#{userSessionBean.selectedMenuItem.properties.footerVisible}" === "false";
-      if (hideFooter)
-      {
-        elem.classList.add("no_footer");
-      }
-      else
-      {
-        elem.classList.remove("no_footer");        
-      }
+      elem.classList.remove("normal");
+      elem.classList.remove("minimal");
+      elem.classList.remove("none");
+      var footerMode = "#{userSessionBean.selectedMenuItem.properties.footerMode == null ? 'normal' : userSessionBean.selectedMenuItem.properties.footerMode}";
+      elem.classList.add(footerMode);
     </script>      
  
   </p:outputPanel>

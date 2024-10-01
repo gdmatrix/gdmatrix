@@ -11,9 +11,12 @@
 
   <ui:define name="template">
 
+    <h:outputStylesheet library="css" name="common.css" />
+
     <h:outputScript name="js/pf_template.js" />
     <h:outputScript name="locales/locale-#{userSessionBean.viewLanguage}.js"
                     library="primefaces"/>
+
     <div class="flex flex-column h-full overflow-hidden">
       <ui:include src="header.xhtml"></ui:include>
       <div class="content_footer">

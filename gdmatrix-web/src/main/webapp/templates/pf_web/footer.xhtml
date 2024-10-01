@@ -8,7 +8,7 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
 
-  <div class="app_footer">
+  <p:outputPanel id="app_footer" styleClass="app_footer">
 
     <sf:treeMenu id="social_menu" var="item" expandDepth="1" styleClass="social_networks"
                  baseMid="#{userSessionBean.selectedMenuItem.properties.socialNetworksMid}">
@@ -26,6 +26,24 @@
       </f:facet>
     </sf:treeMenu>
 
-  </div>
+    <sf:treeMenu id="footer_menu" var="item" expandDepth="1" styleClass="footer_menu"
+                 baseMid="#{userSessionBean.selectedMenuItem.properties.footerMenuMid}">
+      <f:facet name="data">
+          <p:commandLink action="#{templateBean.show(item.mid)}"
+                         rendered="#{item.action != 'url'}"
+                         process="@form:app_footer"
+                         onclick="scrollUp()"
+                         update="@form:cnt">
+            #{applicationBean.translate(item.label)}
+          </p:commandLink>
+          <p:link href="#{item.properties.url}"
+                  rendered="#{item.action == 'url'}"
+                  target="#{item.properties.target == null ? '_self' : item.properties.target}">
+            #{applicationBean.translate(item.label)}
+          </p:link>
+      </f:facet>
+    </sf:treeMenu>
+    
+  </p:outputPanel>
 
 </ui:composition>
