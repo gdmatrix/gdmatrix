@@ -126,7 +126,8 @@
                                 object="#{caseInterventionsTabBean.editing.intId == null ? caseObjectBean.case : caseInterventionsTabBean.editing}"
                                 formSelector="#{caseInterventionsTabBean.formSelector}"
                                 properties="#{caseInterventionsTabBean.editing.property}"
-                                oncomplete="PF('caseInterventionsDialog').resetPosition();" />        
+                                oncomplete="PF('caseInterventionsDialog').resetPosition();"
+                                dataHash="#{caseInterventionsTabBean.editing.intId}-#{caseInterventionsTabBean.editing.changeDateTime}"/>        
       
     </h:panelGroup>
     
