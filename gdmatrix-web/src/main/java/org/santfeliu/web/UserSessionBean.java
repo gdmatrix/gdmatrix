@@ -30,6 +30,7 @@
  */
 package org.santfeliu.web;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -618,6 +619,12 @@ public final class UserSessionBean extends FacesBean implements Serializable
     return themes.size() > 1;
   }
 
+  public String getNodeCSSAsJson()
+  {
+    Gson gson = new Gson();
+    return gson.toJson(getNodeCSS());
+  }
+
   public List<String> getNodeCSS()
   {
     List<String> result = new ArrayList<>();
@@ -633,7 +640,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
         String id = (String)cursor.getDirectProperty(NODE_CSS);
         if (id != null)
         {
-          String nodeCSS = "/documents/" + id;
+          String nodeCSS = toUuid("/documents/" + id);
           result.add(0, nodeCSS);
         }
         cursor = cursor.getParent();
@@ -645,8 +652,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       String id = (String)cursor.getProperties().get(NODE_CSS);
       if (id != null)
       {
-        // TODO: depends on document servlet mapping
-        String nodeCSS = "/documents/" + id;
+        String nodeCSS = toUuid("/documents/" + id);
         result.add(nodeCSS);
       }
     }

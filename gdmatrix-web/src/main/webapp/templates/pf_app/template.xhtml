@@ -303,6 +303,7 @@
         <ui:include src="#{templateBean.content}"></ui:include>
 
         <script>
+          loadNodeCss("#{pageContext.request.contextPath}", #{userSessionBean.getNodeCSSAsJson()});
           showContent("#{userSessionBean.selectedMenuItem.mid}");
         </script>      
       </p:outputPanel>

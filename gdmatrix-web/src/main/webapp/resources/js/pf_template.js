@@ -543,7 +543,6 @@ function toggleDialogPanel(panelClass, event)
 
 function scrollUp()
 {
-  console.info("scrollUp");
   var cnt = document.body.querySelector(".content_footer");
   if (cnt)
   {
@@ -552,6 +551,33 @@ function scrollUp()
      left: 0,
      behavior: "smooth"
     });
+  }
+}
+
+function loadNodeCss(baseUrl, urls)
+{
+  if (urls instanceof Array)
+  {
+    const head = document.getElementsByTagName("head")[0];
+    
+    var links = [...head.querySelectorAll("link")];
+    for (var link of links)
+    {
+      if (link.title === "nodecss")
+      {
+        head.removeChild(link);
+      }
+    }
+    
+    for (var url of urls)
+    {
+      link = document.createElement("link");
+      link.type = "text/css";
+      link.rel = "stylesheet";
+      link.href = baseUrl + url;
+      link.title = "nodecss";
+      head.appendChild(link);
+    }
   }
 }
 

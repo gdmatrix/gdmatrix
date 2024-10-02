@@ -11,7 +11,7 @@
   <p:outputPanel id="cnt" 
                  styleClass="app_content"
                  style="max-width:#{userSessionBean.selectedMenuItem.properties.maxWidth};">
-
+    
     <div class="nav_path_panel flex flex-row align-items-center flex-shrink-0">
       <p:outputPanel id="nav_path"
                      class="nav_path flex-grow-1">
@@ -73,6 +73,7 @@
     </div>
 
     <script>
+      loadNodeCss("#{pageContext.request.contextPath}", #{userSessionBean.getNodeCSSAsJson()});
       showContent("#{userSessionBean.selectedMenuItem.mid}");
       var elem = document.querySelector(".content_footer");
       elem.classList.remove("normal");
