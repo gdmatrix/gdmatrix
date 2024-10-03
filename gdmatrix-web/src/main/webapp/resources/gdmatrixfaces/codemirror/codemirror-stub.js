@@ -12,24 +12,18 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
 
   const inputElem = document.getElementById(inputId);
 
-  const { basicSetup } = CM["@codemirror/basic-setup"];
-  const { keymap, highlightSpecialChars, highlightActiveLine,
-    drawSelection, EditorView } = CM["@codemirror/view"];
-  const { lineNumbers, highlightActiveLineGutter} = CM["@codemirror/gutter"];
-  const { history, historyKeymap } = CM["@codemirror/history"];
-  const { defaultKeymap } = CM["@codemirror/commands"];
-  const { bracketMatching } = CM["@codemirror/matchbrackets"];
-  const { foldGutter, foldKeymap } = CM["@codemirror/fold"];
-  const { javascript, javascriptLanguage } = CM["@codemirror/lang-javascript"];
-  const { json, jsonLanguage } = CM["@codemirror/lang-json"];
-  const { xml, xmlLanguage } = CM["@codemirror/lang-xml"];
-  const { sql, sqlLanguage } = CM["@codemirror/lang-sql"];
-  const { html, htmlLanguage } = CM["@codemirror/lang-html"];  
-  const { defaultHighlightStyle } = CM["@codemirror/highlight"];
+  const { keymap, highlightSpecialChars, drawSelection, 
+          highlightActiveLine, dropCursor,
+          rectangularSelection, crosshairCursor, EditorView,
+          lineNumbers, highlightActiveLineGutter } = CM["@codemirror/view"];
+  const { Extension, EditorState } = CM["@codemirror/state"];
+  const { defaultHighlightStyle, syntaxHighlighting, indentOnInput, 
+          bracketMatching, foldGutter, foldKeymap} = CM["@codemirror/language"]
+  const { defaultKeymap, history, historyKeymap } = CM["@codemirror/commands"];
   const { searchKeymap, highlightSelectionMatches } = CM["@codemirror/search"];
-  const { indentOnInput } = CM["@codemirror/language"];
-  const { EditorState } = CM["@codemirror/state"];
-  const { autocompletion } = CM["@codemirror/autocomplete"];
+  const { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap } =
+          CM["@codemirror/autocomplete"];
+  const { lintKeymap } = CM["@codemirror/lint"];
 
   let theme = EditorView.theme({
     "&.cm-focused .cm-cursor" : {
@@ -41,16 +35,16 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
       "color" : "black"
     },
     "&.ͼ2 .cm-activeLine" : {
-      "backgroundColor" : "var(--surface-hover)"
+      "backgroundColor" : "rgba(128, 128, 128, 0.1)"
+    },
+    "&.ͼ2 .cm-activeLineGutter" : {
+      "backgroundColor" : "rgba(128, 128, 128, 0.1)"
     },
     "&.ͼ2 .cm-tooltip" : {
       "backgroundColor" : "var(--surface-overlay)"
     },
     "&.ͼ2 .cm-gutters" : {
-      "backgroundColor" : "transparent"      
-    },
-    "&.ͼ2 .cm-activeLineGutter" : {
-      "backgroundColor" : "var(--surface-hover)"      
+      "backgroundColor" : "var(--surface-overlay)"
     },
     "& .ͼa" : {
       "color" : "#666",
@@ -59,20 +53,30 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     "& .ͼl" : {
       "color" : "#808080"
     },
-    "& .ͼf" : {
-      "color" : "#8080e0"
-    },
     "& .ͼd" : {
       "color" : "#2020ff"
-    },
-    "& .ͼb" : {
-      "color" : "#008000"
     },
     "& .cm-wrap" : {
       "height" : "100%"
     },
     "& .cm-scroller" : {
       "overflow" : "auto"
+    },
+    "& .ͼb" : {
+      "color" : "#444",
+      "fontWeight" : "bold"
+    },
+    "& .ͼe" : {
+      "color" : "#2020ff"
+    },
+    "& .ͼf" : {
+      "color" : "#8080e0"
+    },
+    "& .ͼg" : {
+      "color" : "#444"
+    },
+    "& .ͼm" : {
+      "color" : "#808080"
     }
   });
 
@@ -81,7 +85,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     parent: editorElem
   });
 
-  let updateListenerExtension = EditorView.updateListener.of((update) => 
+  let updateListenerExtension = EditorView.updateListener.of((update) =>
   {
     if (update.docChanged)
     {
@@ -89,45 +93,78 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     }
   });
 
-  let langExtension;
-  if (language === "json") langExtension = json();
-  else if (language === "sql") langExtension = sql();
-  else if (language === "html") langExtension = html();
-  else if (language === "xml") langExtension = xml();
-  else langExtension = javascript();
-  
   const extensions = [
     highlightActiveLineGutter(),
     highlightSpecialChars(),
     history(),
     drawSelection(),
+    dropCursor(),
     EditorState.allowMultipleSelections.of(true),
     indentOnInput(),
-    defaultHighlightStyle.fallback,
+    syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
     bracketMatching(),
+    closeBrackets(),
+    autocompletion(),
+    rectangularSelection(),
+    crosshairCursor(),
     highlightActiveLine(),
     highlightSelectionMatches(),
     keymap.of([
+      ...closeBracketsKeymap,
       ...defaultKeymap,
       ...searchKeymap,
       ...historyKeymap,
-      ...foldKeymap
+      ...foldKeymap,
+      ...completionKeymap,
+      ...lintKeymap
     ]),
-    langExtension,
     updateListenerExtension,
     theme];
+
+  switch (language)
+  {
+    case "html":
+      const { html } = CM["@codemirror/lang-html"];
+      extensions.push(html());
+      break;
+
+    case "json":
+      const { json } = CM["@codemirror/lang-json"];
+      extensions.push(json());
+      break;
+
+    case "xml":
+      const { xml } = CM["@codemirror/lang-xml"];
+      extensions.push(xml({ autoCloseTags : true }));
+      break;
+
+    case "sql":
+      const { sql } = CM["@codemirror/lang-sql"];
+      extensions.push(sql());
+      break;
+
+    case "css":
+      const { css } = CM["@codemirror/lang-css"];
+      extensions.push(css());
+      break;    
+    
+    default:
+      const { javascript } = CM["@codemirror/lang-javascript"];
+      extensions.push(javascript());
+      break;      
+  }
 
   if (showLineNumbers)
   {
     extensions.push(lineNumbers());
     extensions.push(foldGutter());
   }
-  
+
   if (completion)
   {
     extensions.push(autocompletion({override: [completion]}));
   }
-  
+
   let editorState = EditorState.create(
   {
     doc: inputElem.value,

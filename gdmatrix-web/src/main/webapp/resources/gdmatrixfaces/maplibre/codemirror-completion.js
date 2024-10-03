@@ -265,8 +265,8 @@ if (!window.MapLibreCompletion)
         }
         
         let option = {
-          "label": '"' + functionName + '"', 
-          "type": "constant",
+          "label": functionName, 
+          "type": "function",
           "info": this.maplibreFnInfo(key) 
         };
         options.push(option);
@@ -284,7 +284,7 @@ if (!window.MapLibreCompletion)
       {
         let key = "paint-" + layerType + "-" + property;  
         let option = {
-          "label": '"' + property + '"', 
+          "label": property, 
           "type": "constant", 
           "info": this.maplibreInfo(key) 
         };
@@ -304,7 +304,7 @@ if (!window.MapLibreCompletion)
       {
         let key = "layout-" + layerType + "-" + property;  
         let option = {
-          "label": '"' + property + '"', 
+          "label": property, 
           "type": "constant", 
           "info": this.maplibreInfo(key) 
         };
@@ -338,21 +338,21 @@ if (!window.MapLibreCompletion)
       if (!functionOptions) 
         return null;
 
-      let word = context.matchBefore(/\[\"(\w|\-)*/);
+      let word = context.matchBefore(/\[\"(\w|\-)*/); // functions
       if (word)
       {
         return {
-          from: word.from + 1,
+          from: word.from + 2,
           options: functionOptions
         };
       };
 
       if (!propertyOptions) 
-        return null;  
+        return null;
 
-      word = context.matchBefore(/\"(\w|\-)*/);
+      word = context.matchBefore(/\"(\w|\-)*/); // properties
       if (word === null) return null;
-
+      
       let text = context.state.doc.toString();
       let index = word.from - 1;
       let auto = false;
@@ -381,7 +381,7 @@ if (!window.MapLibreCompletion)
       if (!auto) return null;
 
       return {
-        from: word.from,
+        from: word.from + 1,
         options: propertyOptions
       };
     }
