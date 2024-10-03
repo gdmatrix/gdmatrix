@@ -43,6 +43,7 @@ import javax.inject.Named;
 import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
+import org.matrix.dic.DictionaryConstants;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -337,10 +338,14 @@ public class CaseEventsTabBean extends TabBean
     {
       try
       {
+        CaseEventFilter filter = new CaseEventFilter();  
         String typeId = getTabBaseTypeId();
-        CaseEventFilter filter = new CaseEventFilter();
-        filter.setCaseId(caseObjectBean.getObjectId());
+        EditTab tab = caseObjectBean.getActiveEditTab();          
+        if (tab.isShowAllTypes())
+          typeId = DictionaryConstants.CASE_EVENT_TYPE;
         filter.setCaseEventTypeId(typeId);
+        
+        filter.setCaseId(caseObjectBean.getObjectId());
         filter.setExcludeMetadata(false);
         List<CaseEventView> events = 
           CasesModuleBean.getPort(false).findCaseEventViews(filter);

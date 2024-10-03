@@ -558,6 +558,9 @@ public class CasePersonsTabBean extends TabBean
         filter.setCaseId(getObjectId());
 
         String typeId = getTabBaseTypeId();
+        EditTab tab = caseObjectBean.getActiveEditTab();   
+        if (tab.isShowAllTypes())
+          typeId = DictionaryConstants.CASE_PERSON_TYPE;
         if (typeId != null)
           filter.setCasePersonTypeId(typeId);
 

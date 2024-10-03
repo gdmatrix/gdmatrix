@@ -357,7 +357,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }  
-  
+    
   @Override
   public void load()
   {
@@ -407,7 +407,7 @@ public class CaseDocumentsTabBean extends TabBean
 
         List<CaseDocumentView> result;
         String typeId = getTabBaseTypeId();
-        if (typeId == null)
+        if (typeId == null || tab.isShowAllTypes())
         {
           result = auxList;
         }

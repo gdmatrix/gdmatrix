@@ -356,9 +356,10 @@ public class CaseAddressesTabBean extends TabBean
         List<CaseAddressView> auxList = 
           CasesModuleBean.getPort(false).findCaseAddressViews(filter);
         
-        List<CaseAddressView> result;        
+        List<CaseAddressView> result;      
+        EditTab tab = caseObjectBean.getActiveEditTab();          
         String typeId = getTabBaseTypeId();
-        if (typeId == null)
+        if (typeId == null || (tab != null && tab.isShowAllTypes()))
         {
           result = auxList;          
         }

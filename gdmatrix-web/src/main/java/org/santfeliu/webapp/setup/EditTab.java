@@ -57,6 +57,7 @@ public class EditTab implements Serializable
   private List<String> orderBy = new ArrayList();
   private String groupBy;
   private String typeId;
+  private boolean showAllTypes = false;
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -207,6 +208,16 @@ public class EditTab implements Serializable
   public void setTypeId(String typeId)
   {
     this.typeId = typeId;
+  }
+
+  public boolean isShowAllTypes()
+  {
+    return showAllTypes;
+  }
+
+  public void setShowAllTypes(boolean showAllTypes)
+  {
+    this.showAllTypes = showAllTypes;
   }
 
   public String getBaseTypeId()

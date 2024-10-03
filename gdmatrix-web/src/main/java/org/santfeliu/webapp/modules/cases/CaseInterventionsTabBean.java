@@ -43,6 +43,7 @@ import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
+import org.matrix.dic.DictionaryConstants;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -398,9 +399,12 @@ public class CaseInterventionsTabBean extends TabBean
         filter.setCaseId(getObjectId());
 
         String typeId = getTabBaseTypeId();
-        if (typeId != null)
+        EditTab tab = caseObjectBean.getActiveEditTab();         
+        if (tab.isShowAllTypes())
+          typeId = DictionaryConstants.INTERVENTION_TYPE;
+        if (typeId != null)        
           filter.setIntTypeId(typeId);
-
+        
         List<InterventionView> interventions =
           CasesModuleBean.getPort(false).findInterventionViews(filter);
 

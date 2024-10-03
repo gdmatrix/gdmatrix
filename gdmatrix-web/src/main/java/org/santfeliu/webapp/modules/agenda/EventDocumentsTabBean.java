@@ -273,7 +273,8 @@ public class EventDocumentsTabBean extends TabBean
         List<EventDocumentView> auxList = AgendaModuleBean.getClient(false).
           findEventDocumentViewsFromCache(filter);
         String typeId = getTabBaseTypeId();
-        if (typeId == null)
+        EditTab tab = eventObjectBean.getActiveEditTab();          
+        if (typeId == null || tab.isShowAllTypes())
         {
           getCurrentTabInstance().rows = auxList;
         }

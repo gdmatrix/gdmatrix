@@ -44,6 +44,7 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseCase;
 import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -400,10 +401,11 @@ public class CaseCasesTabBean extends TabBean
             tabInstance.relatedByPerson = true;
           }
           else
-          {
+          {             
             String typeId = editTab.getBaseTypeId();
-            getCurrentTabInstance().rows =
-              getResultsByDefault(typeId);
+            typeId = editTab.isShowAllTypes() ? 
+              DictionaryConstants.CASE_CASE_TYPE : typeId;
+            getCurrentTabInstance().rows = getResultsByDefault(typeId);
           }
           getCurrentTabInstance().typeSelectHelper.load();
           executeTabAction("postTabLoad", null); 

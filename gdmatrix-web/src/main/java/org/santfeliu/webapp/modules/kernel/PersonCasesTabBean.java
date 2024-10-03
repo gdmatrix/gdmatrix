@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import org.matrix.dic.DictionaryConstants;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -265,8 +266,10 @@ public class PersonCasesTabBean extends TabBean
         filter.setPersonId(personObjectBean.getObjectId());
         
         String typeId = getTabBaseTypeId();
-        if (typeId != null)
-          filter.setCasePersonTypeId(typeId);        
+        EditTab tab = caseObjectBean.getActiveEditTab();   
+        if (tab.isShowAllTypes())
+          typeId = DictionaryConstants.CASE_PERSON_TYPE;
+        filter.setCasePersonTypeId(typeId);        
         
         List<CasePersonView> auxList = 
           CasesModuleBean.getPort(false).findCasePersonViews(filter);

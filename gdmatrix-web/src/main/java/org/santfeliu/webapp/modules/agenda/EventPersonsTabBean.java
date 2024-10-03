@@ -343,7 +343,8 @@ public class EventPersonsTabBean extends TabBean
         List<AttendantView> auxList = AgendaModuleBean.getClient(false).
           findAttendantViewsFromCache(filter);
         String typeId = getTabBaseTypeId();
-        if (typeId == null)
+        EditTab tab = eventObjectBean.getActiveEditTab();  
+        if (typeId == null || tab.isShowAllTypes())
         {
           getCurrentTabInstance().rows = auxList;
         }
