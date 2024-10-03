@@ -222,7 +222,6 @@ public abstract class ObjectBean extends BaseBean
       loadObjectSetup();
       executeAction(POST_LOAD_ACTION);      
       loadActiveEditTab();
-      loadActions();
 
       Object object = getObject();
       TypeBean typeBean = getTypeBean();
@@ -291,6 +290,8 @@ public abstract class ObjectBean extends BaseBean
       scriptClient.put("applicationBean", 
         ApplicationBean.getCurrentInstance());             
       scriptClient.executeScript(actionsScriptName);
+      
+      loadActions();
     }
     else
       scriptClient = null;
@@ -318,40 +319,31 @@ public abstract class ObjectBean extends BaseBean
     }
   }
   
-  public void loadActions()
+  private void loadActions()
   {
-    String scriptName = objectSetup.getScriptName();
-    if (scriptName == null) //fallback
-      scriptName = objectSetup.getScriptActions().getScriptName();
-
-    if (scriptName != null)
+    actions = new ArrayList();
+    actions.addAll(getObjectSetup().getActions());
+    actions.addAll(getObjectSetup().getScriptActions().getActions()); //fallback     
+    try
     {
-      actions = new ArrayList();
-      actions.addAll(getObjectSetup().getActions());
-      actions.addAll(getObjectSetup().getScriptActions().getActions()); //fallback     
-      try
+      if (scriptClient != null)
       {
-        scriptClient = new ScriptClient();
-        scriptClient.executeScript(scriptName);
         Object callable = scriptClient.get("getActions");
         if (callable instanceof Callable)
         {
           scriptClient.put("actionObject", new ActionObject(getObject()));          
           List<Action> actionList = 
             (List<Action>) scriptClient.execute((Callable)callable);
-          
+
           if (actionList != null)
             actions.addAll(actionList);
         }        
-      }                
-      catch (Exception ex)
-      {
-        error(ex);
-        scriptClient = null;
       }
+    }                
+    catch (Exception ex)
+    {
+      error(ex);
     }
-    else
-      actions = null;
   }
   
   public void callAction(String actionName)
@@ -498,7 +490,6 @@ public abstract class ObjectBean extends BaseBean
       }
 
       loadObjectSetup();
-      loadActions();
 
       growl("STORE_OBJECT");
     }
