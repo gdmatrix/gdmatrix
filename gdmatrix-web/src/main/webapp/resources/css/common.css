@@ -5,7 +5,8 @@ body .ui-commandlink.ui-state-loading.ui-state-disabled *
   display: inline-block;
 }
 
-body
+body,
+body .frame
 {
   background-color: var(--surface-0);
 }

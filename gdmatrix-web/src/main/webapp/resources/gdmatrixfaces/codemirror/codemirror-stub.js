@@ -56,6 +56,9 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     "& .ͼd" : {
       "color" : "#2020ff"
     },
+    "& .cm-line" : {
+      "color" : "var(--text-color)"
+    },
     "& .cm-wrap" : {
       "height" : "100%"
     },
