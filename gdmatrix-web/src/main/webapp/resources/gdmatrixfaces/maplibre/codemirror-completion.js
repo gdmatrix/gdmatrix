@@ -282,7 +282,7 @@ if (!window.MapLibreCompletion)
 
       for (let property of properties)
       {
-        let key = "paint-" + layerType + "-" + property;  
+        let key = property;  
         let option = {
           "label": property, 
           "type": "constant", 
@@ -302,7 +302,7 @@ if (!window.MapLibreCompletion)
 
       for (let property of properties)
       {
-        let key = "layout-" + layerType + "-" + property;  
+        let key = property;  
         let option = {
           "label": property, 
           "type": "constant", 

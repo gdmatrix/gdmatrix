@@ -85,7 +85,8 @@ public class JSONUtils
 
   public static String getJSONString(String nodeId, String basePath)
   {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder()
+      .setPrettyPrinting().disableHtmlEscaping().create();
     return gson.toJson(getJSON(nodeId, basePath));
   }
 
@@ -270,7 +271,7 @@ public class JSONUtils
       return String.valueOf(jsonValue);
     }
   }
-  
+
   private static CNode getNode(String nodeId) throws Exception
   {
     MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();

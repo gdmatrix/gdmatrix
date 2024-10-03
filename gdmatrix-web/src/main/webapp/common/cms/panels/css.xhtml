@@ -2,7 +2,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:pe="http://primefaces.org/ui/extensions">
+                xmlns:gdm="http://gdmatrix.org/faces">
 
   <p:outputPanel styleClass="nodeCSSPanel contentPanel" 
          rendered="#{nodeEditBean.cssTabSelected}">
@@ -30,11 +30,10 @@
     </p:outputPanel>
     <p:outputPanel id="cssTextPanel" styleClass="cssTextPanel expand"
            rendered="#{nodeEditBean.validCSS}">
-      <pe:codeMirror mode="css" 
-                     theme="elegant"
-                     value="#{nodeEditBean.cssText}"
-                     lineNumbers="true"
-                     matchBrackets="true" />      
+      <gdm:codemirror language="css" 
+                      styleClass="w-full"
+                      value="#{nodeEditBean.cssText}"
+                      lineNumbers="true" />      
     </p:outputPanel>
 
   </p:outputPanel>  
