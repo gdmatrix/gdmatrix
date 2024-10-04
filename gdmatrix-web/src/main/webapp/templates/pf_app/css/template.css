@@ -207,26 +207,28 @@ h1
   flex-direction: column;
   position: fixed;
   border-radius: 0;
+  left: 0;
   top: 0;
   bottom: 0;
-  left: calc(var(--menu-width-small) * -1 - 10px);
+  transform:translateX(-100%);
   width: var(--menu-width-small);
   height: 100%;
   max-width: 100%;
   align-items:start;
   z-index: 1000;
-  transition: left 0.3s ease-in-out;
   margin: 0;
   -webkit-box-shadow: var(--box-shadow);
   -moz-box-shadow: var(--box-shadow);
   background-color: var(--menuitem-d3-background);
-  box-shadow: var(--box-shadow);
+  box-shadow: none;
+  transition: box-shadow 0s 0.3s, transform 0.3s ease-in-out;
 }
 
 .main_menu_panel.show
 {
-  left: 0;
-  transition: left 0.3s ease-in-out;
+  transform: translateX(0);
+  transition: box-shadow 0s, transform 0.3s ease-in-out;
+  box-shadow: var(--box-shadow);
 }  
 
 .main_menu_panel .header
@@ -246,13 +248,17 @@ h1
 .main_menu
 {
   display: flex;
-  align-items: var(--menu-align);
   justify-content: start;
   width: 100%;
-  background-color: var(--menuitem-d1-background);
+  height: 100%;
   border-radius: var(--border-radius);
   padding-left: 10px;
-  left: calc(var(--menu-width-small) * -1 - 10px);
+  scrollbar-gutter: stable;
+  background-color: var(--menuitem-d3-background);
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: start;
 }
 
 .main_menu ul
@@ -292,36 +298,6 @@ h1
 .main_menu ul ul ul
 {
   margin-left: 2px;
-  left: calc(var(--menuitem-width) + var(--submenu-offset));  
-}
-
-.main_menu > ul > li > ul
-{
-  display: none;
-  position: absolute;
-  top: inherit;
-}
-
-.main_menu ul li.drop > ul
-{
-  display:inherit;
-  animation: fade_in 0.3s;
-  transition: margin-left 0.3s ease-in-out;
-}
-
-.main_menu li.drop > ul
-{
-  -webkit-box-shadow: var(--box-shadow);
-  -moz-box-shadow: var(--box-shadow);
-  box-shadow: var(--box-shadow);
-}
-
-.main_menu ul ul li
-{
-  width: var(--menuitem-width);
-  float:none;
-  display:list-item;
-  position: relative;
 }
 
 .main_menu .menuitem
@@ -337,7 +313,6 @@ h1
   flex-direction: row;
   align-items: center;
   padding:0 6px;
-  font-size:14px;
   text-decoration:none;
   cursor: pointer;
   user-select: none;
@@ -447,29 +422,11 @@ h1
   color: var(--menuitem-caret-hover-color) !important;
 }
 
-.main_menu ul li.scroll .menuitem,
-.main_menu ul ul li.scroll .menuitem,
-.main_menu ul ul ul li.scroll .menuitem
+.main_menu li.drop ul
 {
-  display: block;
-  text-decoration: none;
-  text-align: center;
-  color: var(--text-color);
-  padding: 6px;
-}
-
-.main_menu ul li.scroll .menuitem:hover,
-.main_menu ul ul li.scroll .menuitem:hover,
-.main_menu ul ul ul li.scroll .menuitem:hover
-{
-  color: var(--menuitem-hover-color);
-}
-
-.main_menu ul li.invisible,
-.main_menu ul ul li.invisible,
-.main_menu ul ul ul li.invisible
-{
-  display: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
 }
 
 .main_menu ul li.disabled,
@@ -477,30 +434,6 @@ h1
 .main_menu ul ul ul li.disabled
 {
   display: none;
-}
-
-.main_menu
-{
-  height: 100%;
-  scrollbar-gutter: stable;
-  background-color: var(--menuitem-d3-background);
-  flex-grow: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  align-items: start;
-}
-
-.main_menu::-webkit-scrollbar
-{
-  width: 0px;
-  height: 0px;
-}
-
-.main_menu li.drop ul
-{
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
 }
 
 .main_menu ul li.invisible,

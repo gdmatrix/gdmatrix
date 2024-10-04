@@ -61,8 +61,7 @@
                          process="@this"
                          update="@form:cnt @form:menubar @form:app_toolbar"
                          value="#{templateBean.webTitle}" 
-                         rendered="#{userSessionBean.selectedMenuItem.properties.topContextEnabled == 'true'}"
-                         onstart="PF('menuSideBar').hide();" />
+                         rendered="#{userSessionBean.selectedMenuItem.properties.topContextEnabled == 'true'}" />
           <h:outputText styleClass="flex-grow-1 font-bold block" 
                         value="#{templateBean.webTitle}" 
                         rendered="#{userSessionBean.selectedMenuItem.properties.topContextEnabled != 'true'}" />
@@ -92,7 +91,7 @@
                 <p:commandLink action="#{templateBean.changeContext(item.mid)}" 
                                rendered="#{item.action != 'url'
                                          and templateBean.isContextChangeMenuItem(item)}"
-                               process="@form:menubar" 
+                               process="@form:menubar"
                                styleClass="entry"
                                update="@form:cnt @form:menubar @form:app_toolbar">
                   <ui:fragment rendered="#{item.directProperties.icon != null}">

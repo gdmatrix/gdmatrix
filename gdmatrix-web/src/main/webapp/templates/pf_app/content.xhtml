@@ -8,41 +8,6 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
 
-  <!-- header -->
-  <!--
-  <h:panelGroup id="menubar" layout="block" class="app_menubar flex align-items-center">
-    <div class="menu_button flex-grow-0 flex-shrink-0 flex align-items-center">
-      <p:button onclick="PF('loginSideBar').hide(); PF('configSideBar').hide(); PF('menuSideBar').show(); return false;" icon="pi pi-bars"
-                class="rounded-button ui-button-flat" />
-    </div>
-
-    <div class="logo flex-shrink-1" />
-    
-    <h1 class="flex-grow-1 text-left">#{templateBean.contextTitle}</h1>
-    <div class="flex justify-content-end align-items-center flex-grow-0 flex-shrink-0">
-      <p:link href="#" styleClass="login_button ml-2 mr-2" 
-              title="#{webBundle.identification}"
-              onclick="PF('menuSideBar').hide(); PF('loginSideBar').show();enableUserPassButton();return false;" 
-              rendered="#{userSessionBean.anonymousUser}">
-        <i class="pi pi-user" />
-      </p:link>
-
-      <p:link href="#" styleClass="login_button ml-2 mr-2"
-              title="#{userSessionBean.displayName}"
-              onclick="PF('menuSideBar').hide(); PF('loginSideBar').show();return false;" 
-              rendered="#{not userSessionBean.anonymousUser}">
-  #{templateBean.userInitial}
-</p:link>
-
-<p:link href="#" styleClass="login_button ml-2 mr-2"
-        title="#{webBundle.configuration}"
-        onclick="PF('menuSideBar').hide(); PF('configSideBar').show();return false;">
-  <i class="pi pi-cog" />
-</p:link>
-</div>
-</h:panelGroup>
-  -->
-
   <div class="app_content">
     <h:panelGroup id="app_toolbar" styleClass="app_toolbar" 
                   rendered="#{templateBean.isToolbarEnabled()}" layout="block">

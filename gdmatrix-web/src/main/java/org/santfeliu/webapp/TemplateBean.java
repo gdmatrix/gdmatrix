@@ -262,7 +262,8 @@ public class TemplateBean extends FacesBean implements Serializable
   {
     if (cursor.getDirectProperty(CONTEXT_PROPERTY) != null) return true;
 
-    return CONTEXT_AUTO.equals(cursor.getProperty(CONTEXT_PROPERTY));
+    return CONTEXT_AUTO.equals(cursor.getProperty(CONTEXT_PROPERTY)) &&
+      !getContextMid().equals(getContextMid(cursor));
   }
 
   public void showComponentTree()
@@ -297,16 +298,21 @@ public class TemplateBean extends FacesBean implements Serializable
     {
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
-      MenuItemCursor ctxCursor = cursor.getClone();
-      while (!ctxCursor.isRoot() &&
-             !"true".equals(ctxCursor.getDirectProperty(TOPWEB_PROPERTY)) &&
-             ctxCursor.getDirectProperty(CONTEXT_PROPERTY) == null)
-      {
-        ctxCursor.moveParent();
-      }
-      contextMid = ctxCursor.getMid();
+      contextMid = getContextMid(cursor);
     }
     return contextMid;
+  }
+
+  public String getContextMid(MenuItemCursor cursor)
+  {
+    MenuItemCursor ctxCursor = cursor.getClone();
+    while (!ctxCursor.isRoot() &&
+           !"true".equals(ctxCursor.getDirectProperty(TOPWEB_PROPERTY)) &&
+           ctxCursor.getDirectProperty(CONTEXT_PROPERTY) == null)
+    {
+      ctxCursor.moveParent();
+    }
+    return ctxCursor.getMid();
   }
 
   public void setContextMid(String mid)
