@@ -1,0 +1,79 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <!-- header -->
+  <!--
+  <h:panelGroup id="menubar" layout="block" class="app_menubar flex align-items-center">
+    <div class="menu_button flex-grow-0 flex-shrink-0 flex align-items-center">
+      <p:button onclick="PF('loginSideBar').hide(); PF('configSideBar').hide(); PF('menuSideBar').show(); return false;" icon="pi pi-bars"
+                class="rounded-button ui-button-flat" />
+    </div>
+
+    <div class="logo flex-shrink-1" />
+    
+    <h1 class="flex-grow-1 text-left">#{templateBean.contextTitle}</h1>
+    <div class="flex justify-content-end align-items-center flex-grow-0 flex-shrink-0">
+      <p:link href="#" styleClass="login_button ml-2 mr-2" 
+              title="#{webBundle.identification}"
+              onclick="PF('menuSideBar').hide(); PF('loginSideBar').show();enableUserPassButton();return false;" 
+              rendered="#{userSessionBean.anonymousUser}">
+        <i class="pi pi-user" />
+      </p:link>
+
+      <p:link href="#" styleClass="login_button ml-2 mr-2"
+              title="#{userSessionBean.displayName}"
+              onclick="PF('menuSideBar').hide(); PF('loginSideBar').show();return false;" 
+              rendered="#{not userSessionBean.anonymousUser}">
+  #{templateBean.userInitial}
+</p:link>
+
+<p:link href="#" styleClass="login_button ml-2 mr-2"
+        title="#{webBundle.configuration}"
+        onclick="PF('menuSideBar').hide(); PF('configSideBar').show();return false;">
+  <i class="pi pi-cog" />
+</p:link>
+</div>
+</h:panelGroup>
+  -->
+
+  <div class="app_content">
+    <h:panelGroup id="app_toolbar" styleClass="app_toolbar" 
+                  rendered="#{templateBean.isToolbarEnabled()}" layout="block">
+      <div class="scroll">
+        <ui:repeat value="#{templateBean.highlightedItems}" var="item">
+          <p:commandButton action="#{templateBean.show(item.mid)}"
+                           icon="#{item.properties.icon}"
+                           styleClass="btn-#{item.mid}"
+                           rendered="#{item.action != 'url'}"
+                           process="@this" update="@form:cnt"
+                           title="#{item.getProperty('label')}" />
+          <p:linkButton href="#{item.properties.url}"
+                        rendered="#{item.action == 'url'}"
+                        icon="ui-icon #{item.directProperties.icon}" 
+                        target="#{item.properties.target == null ? '_self' : item.properties.target}"
+                        title="#{applicationBean.translate(item.label)}" />
+        </ui:repeat>
+      </div>
+    </h:panelGroup>
+
+    <p:outputPanel id="cnt" styleClass="app_body">
+      <ui:include src="#{templateBean.content}"></ui:include>
+
+      <script>
+          loadNodeCss("#{pageContext.request.contextPath}", #{userSessionBean.getNodeCSSAsJson()});
+          showContent("#{userSessionBean.selectedMenuItem.mid}");
+      </script>      
+    </p:outputPanel>
+  </div>
+
+</ui:composition>
+
+
+

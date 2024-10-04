@@ -26,23 +26,8 @@
 
         <div class="flex align-items-center flex-grow-1 flex-shrink-0 p-0 justify-content-end">
 
-          <div class="app_toolbar flex-grow-1 flex-shrink-0 text-right pr-2">
-            <ui:repeat value="#{templateBean.highlightedItems}" var="item">
-              <p:commandButton action="#{templateBean.show(item.mid)}"
-                               value="#{applicationBean.translate(item.label)}"
-                               icon="#{item.properties.icon}"
-                               styleClass="mr-1"
-                               rendered="#{item.action != 'url'}"
-                               process="@this" update="@form:cnt"
-                               title="#{item.getProperty('label')}" />
-              <p:linkButton href="#{item.properties.url}"
-                            rendered="#{item.action == 'url'}"
-                            icon="ui-icon #{item.directProperties.icon}"
-                            target="#{item.properties.target == null ? '_self' : item.properties.target}"
-                            title="#{applicationBean.translate(item.label)}" />
-            </ui:repeat>
-          </div>
-
+          <h1 class="flex-grow-1 text-left">#{templateBean.contextTitle}</h1>          
+          
           <div class="user_toolbar flex flex-row flex-grow-0 flex-shrink-0">
             <p:link href="#" styleClass="login_button ml-2 mr-2"
                     title="#{webBundle.identification}"
@@ -70,22 +55,31 @@
 
       <div class="main_menu_panel dialog_panel">
 
-        <div class="header p-3">
-          <div class="flex-grow-1 font-bold">
-            #{applicationBean.translate(userSessionBean.selectedMenuItem.properties.description)}
-          </div>
+        <div class="header flex align-items-center p-3">
+          <p:commandLink action="#{templateBean.changeContext('')}"
+                         styleClass="flex-grow-1 font-bold block" 
+                         process="@this"
+                         update="@form:cnt @form:menubar @form:app_toolbar"
+                         value="#{templateBean.webTitle}" 
+                         rendered="#{userSessionBean.selectedMenuItem.properties.topContextEnabled == 'true'}"
+                         onstart="PF('menuSideBar').hide();" />
+          <h:outputText styleClass="flex-grow-1 font-bold block" 
+                        value="#{templateBean.webTitle}" 
+                        rendered="#{userSessionBean.selectedMenuItem.properties.topContextEnabled != 'true'}" />
           <p:button onclick="return hideDialogPanel('main_menu_panel', event)"
                     icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
-        </div>
-
+        </div> 
+        
         <sf:treeMenu id="main_menu" var="item" expandDepth="6"
                      styleClass="main_menu flex-grow-0"
                      baseMid="#{userSessionBean.selectedMenuItem.path[1]}">
           <f:facet name="data">
             <ui:fragment rendered="#{item.rendered}">
               <div class="menuitem">
+
                 <p:commandLink action="#{templateBean.show(item.mid)}"
-                               rendered="#{item.action != 'url'}"
+                               rendered="#{item.action != 'url'
+                                          and not templateBean.isContextChangeMenuItem(item)}"
                                process="@form:menubar"
                                update="@form:cnt"
                                styleClass="entry">
@@ -94,6 +88,19 @@
                   </ui:fragment>
                   <div>#{applicationBean.translate(item.label)}</div>
                 </p:commandLink>
+                
+                <p:commandLink action="#{templateBean.changeContext(item.mid)}" 
+                               rendered="#{item.action != 'url'
+                                         and templateBean.isContextChangeMenuItem(item)}"
+                               process="@form:menubar" 
+                               styleClass="entry"
+                               update="@form:cnt @form:menubar @form:app_toolbar">
+                  <ui:fragment rendered="#{item.directProperties.icon != null}">
+                    <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
+                  </ui:fragment>
+                  #{applicationBean.translate(item.label)}
+                </p:commandLink>
+
                 <ui:fragment rendered="#{not item.leaf}">
                   <a href="#" title="obre/tanca menu" class="caret">
                     <i class="pi pi-chevron-right" />

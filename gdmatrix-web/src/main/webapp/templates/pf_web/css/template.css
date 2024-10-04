@@ -739,7 +739,6 @@
     width: 100%;
     align-items: center;
     padding: 6px;
-    border: 1px solid var(--surface-300);    
   }  
   
   .main_menu
@@ -827,11 +826,11 @@
     margin-bottom: var(--menuitem-margin);
   }
 
-  .main_menu ul li .menuitem a.caret,
+/*  .main_menu ul li .menuitem a.caret,
   .main_menu ul ul li .menuitem a.caret
   {
     padding: 4px 16px;    
-  }
+  }*/
 
   .main_menu ul ul li .menuitem
   {

@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces">
+  <h:panelGroup id="config_sb" layout="block" 
+                class="config_panel right_panel dialog_panel" >
+    <div class="ui-widget flex flex-column w-full h-full">
+      <div class="flex align-items-center p-3 border-bottom-1 border-300 flex-grow-0">
+        <div class="flex-grow-1"><i class="pi pi-cog mr-1" /><h:outputText id="config_label" class="font-bold" value="#{webBundle.configuration}" /></div>
+        <p:button onclick="return hideDialogPanel('config_panel', event)" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
+      </div>
+
+      <p:outputPanel class="overflow-auto p-3 pt-1 flex-grow-1">
+
+        <div class="mt-3">
+          <p:outputLabel id="language_label"
+                         value="#{webBundle.language}:" for="@next" />
+          <p:selectOneMenu value="#{userSessionBean.viewLanguage}"
+                           styleClass="mt-2 block">
+            <p:ajax event="valueChange" process="@this"
+                    update="menubar login_sb config_label language_label font_label theme_label save_prefs @form:cnt" />
+            <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale"
+                           itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)} (#{locale.language})" />
+          </p:selectOneMenu>
+        </div>
+        <div class="mt-3">
+          <p:outputLabel id="theme_label"
+                         value="#{webBundle.themes}:" for="@next" />
+          <p:selectOneMenu value="#{userSessionBean.primefacesTheme}"
+                           styleClass="mt-2 block"
+                           widgetVar="themeSelector">
+            <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
+            <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
+          </p:selectOneMenu>
+        </div>
+        <div class="font_resizer mt-3">
+          <h:panelGroup id="font_label">
+            <label for="font_range" class="block">#{webBundle.fontSize}:</label>
+          </h:panelGroup>
+          <input id="font_range" class="block w-full mt-3"
+                 type="range" min="12" max="14" step="1"
+                 value="#{userSessionBean.fontSize}"
+                 oninput="updateFontSize(this.value)"
+                 onchange="rcUpdateFontSize([{'name': 'fontSize', 'value': this.value}])" />
+          <p:remoteCommand action="#{userSessionBean.updateFontSize}" name="rcUpdateFontSize" />
+        </div>
+        <div class="mt-5 w-full">
+          <p:commandButton id="save_prefs"
+                           action="#{templateBean.savePreferences}" icon="pi pi-save"
+                           value="#{webBundle.savePreferences}" styleClass="w-full"
+                           rendered="#{userSessionBean.isPersistentUser()}"
+                           process="@this" update="@none" />
+        </div>
+      </p:outputPanel>
+    </div>
+  </h:panelGroup>
+
+</ui:composition>
