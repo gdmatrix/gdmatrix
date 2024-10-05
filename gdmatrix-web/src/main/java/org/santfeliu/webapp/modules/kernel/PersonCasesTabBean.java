@@ -63,9 +63,9 @@ import org.santfeliu.webapp.util.WebUtils;
 public class PersonCasesTabBean extends TabBean
 {
   private final Map<String, TabInstance> tabInstances = new HashMap();
-  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
-  private GroupableRowsHelper groupableRowsHelper;  
-  
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
+  private GroupableRowsHelper groupableRowsHelper;
+
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
@@ -88,14 +88,14 @@ public class PersonCasesTabBean extends TabBean
       @Override
       public String getBaseTypeId()
       {
-        return getTabBaseTypeId();        
+        return getTabBaseTypeId();
       }
 
       @Override
       public void resetFirstRow()
       {
         firstRow = 0;
-      }   
+      }
 
       @Override
       public String getRowTypeId(CasePersonView row)
@@ -104,19 +104,19 @@ public class PersonCasesTabBean extends TabBean
           getTabBaseTypeId();
       }
 
-    }; 
-    
+    };
+
     public TypeSelectHelper getTypeSelectHelper()
     {
       return typeSelectHelper;
-    }    
-  }  
+    }
+  }
 
   public Map<String, TabInstance> getTabInstances()
   {
     return tabInstances;
   }
-  
+
   @Inject
   private PersonObjectBean personObjectBean;
 
@@ -124,8 +124,8 @@ public class PersonCasesTabBean extends TabBean
   private CaseObjectBean caseObjectBean;
 
   @Inject
-  TypeTypeBean typeTypeBean;  
-  
+  TypeTypeBean typeTypeBean;
+
   @PostConstruct
   public void init()
   {
@@ -141,7 +141,7 @@ public class PersonCasesTabBean extends TabBean
       @Override
       public List<TableProperty> getColumns()
       {
-        return Collections.EMPTY_LIST;        
+        return Collections.EMPTY_LIST;
       }
 
       @Override
@@ -154,7 +154,7 @@ public class PersonCasesTabBean extends TabBean
       {
         return "casePersonTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
@@ -180,7 +180,7 @@ public class PersonCasesTabBean extends TabBean
         {
           return null;
         }
-      }      
+      }
     };
   }
 
@@ -193,13 +193,13 @@ public class PersonCasesTabBean extends TabBean
   {
     this.groupableRowsHelper = groupableRowsHelper;
   }
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
     return personObjectBean;
   }
-  
+
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = personObjectBean.getActiveEditTab();
@@ -216,7 +216,7 @@ public class PersonCasesTabBean extends TabBean
     else
       return EMPTY_TAB_INSTANCE;
   }
-  
+
   @Override
   public String getObjectId()
   {
@@ -233,8 +233,8 @@ public class PersonCasesTabBean extends TabBean
   public boolean isNew()
   {
     return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
-  }  
-  
+  }
+
   public List<CasePersonView> getRows()
   {
     return getCurrentTabInstance().rows;
@@ -254,27 +254,27 @@ public class PersonCasesTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-  
+
   @Override
   public void load()
   {
     if (!NEW_OBJECT_ID.equals(getObjectId()))
-    {       
+    {
       try
       {
         CasePersonFilter filter = new CasePersonFilter();
         filter.setPersonId(personObjectBean.getObjectId());
-        
+
         String typeId = getTabBaseTypeId();
-        EditTab tab = caseObjectBean.getActiveEditTab();   
+        EditTab tab = personObjectBean.getActiveEditTab();
         if (tab.isShowAllTypes())
           typeId = DictionaryConstants.CASE_PERSON_TYPE;
-        filter.setCasePersonTypeId(typeId);        
-        
-        List<CasePersonView> auxList = 
+        filter.setCasePersonTypeId(typeId);
+
+        List<CasePersonView> auxList =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
         setRows(auxList);
-        getCurrentTabInstance().typeSelectHelper.load();         
+        getCurrentTabInstance().typeSelectHelper.load();
       }
       catch (Exception ex)
       {
@@ -286,8 +286,8 @@ public class PersonCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load(); 
-      tabInstance.firstRow = 0;      
+      getCurrentTabInstance().typeSelectHelper.load();
+      tabInstance.firstRow = 0;
     }
   }
 
@@ -295,8 +295,8 @@ public class PersonCasesTabBean extends TabBean
   public void clear()
   {
     tabInstances.clear();
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {
