@@ -156,7 +156,7 @@
             value="#{instance.activeNodes == null ?
                      workflowBundle.show : workflowBundle['continue']}"
             action="#{workflowInstanceListBean.forward}"
-            styleClass='m-1'
+            styleClass="m-1 vertical-align-middle"
             process="@this" update="@form:cnt" 
             icon="pi #{instance.activeNodes == null ? 'pi-eye' : 'pi-arrow-right'}" 
             iconPos="#{instance.activeNodes == null ? 'left' : 'right'}" />
@@ -164,7 +164,7 @@
                            title="#{objectBundle.delete}"
                            action="#{workflowInstanceListBean.destroyInstance}" 
                            process="@this" update="@form:cnt"
-                           icon="pi pi-trash" styleClass="ui-button-danger mini"
+                           icon="pi pi-trash" styleClass="ui-button-danger mini vertical-align-middle"
                            rendered="#{workflowInstanceListBean.workflowAdmin ||
                                        instance.destroyButtonEnabled}">
             <p:confirm header="#{workflowBundle.destroy}" 
