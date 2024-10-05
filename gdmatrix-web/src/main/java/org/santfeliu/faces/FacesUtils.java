@@ -63,8 +63,9 @@ import org.santfeliu.util.TextUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
+
 public class FacesUtils
 {
   public static final String UNKNOWN_ERROR = "UNKNOWN_ERROR";
@@ -241,7 +242,7 @@ public class FacesUtils
   public static List<SelectItem> getListSelectItems(Collection list,
     String valueProperty, String labelProperty, boolean nullable)
   {
-    List<SelectItem> selectItems = new ArrayList<SelectItem>();
+    List<SelectItem> selectItems = new ArrayList<>();
     try
     {
       if (nullable)
@@ -345,14 +346,11 @@ public class FacesUtils
 
   public static List<SelectItem> sortSelectItems(List<SelectItem> selectItems)
   {
-    Collections.sort(selectItems, new Comparator<SelectItem>()
+    Collections.sort(selectItems, (SelectItem o1, SelectItem o2) ->
     {
-      public int compare(SelectItem o1, SelectItem o2)
-      {
-        String o1Label = TextUtils.unAccent(o1.getLabel());
-        String o2Label = TextUtils.unAccent(o2.getLabel());
-        return o1Label.compareTo(o2Label);
-      }
+      String o1Label = TextUtils.unAccent(o1.getLabel());
+      String o2Label = TextUtils.unAccent(o2.getLabel());
+      return o1Label.compareTo(o2Label);
     });
     return selectItems;
   }
