@@ -122,6 +122,9 @@ h1
 
 .app_content > .app_toolbar > .scroll
 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   height: 100%;
   width: var(--toolbar-button-size);
   overflow-y: auto;
@@ -587,6 +590,9 @@ h1
   
   .app_content > .app_toolbar > .scroll
   {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     width: 100%;
     height: var(--toolbar-button-size);
     overflow-x: auto;
