@@ -391,9 +391,12 @@ function initMenu()
   {
     link.addEventListener("click", (event) => 
     {
-      event.preventDefault();
-      event.cancelBubble = true;
-      onMenuClick(event);
+      if (!link.classList.contains("ui-link"))
+      {
+        event.preventDefault();
+        event.cancelBubble = true;
+        onMenuClick(event);
+      }
     });
     link.addEventListener("mousemove", (event) => onMenuOver(event));
   }
