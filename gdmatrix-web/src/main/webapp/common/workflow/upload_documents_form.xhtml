@@ -67,10 +67,11 @@
         </t:dataTable>
 
         <t:div rendered="#{!uploadDocumentsFormBean.renderDocumentForm}">
-          <t:outputText value="#{workflowBundle.attach}: " styleClass="workflowMessage" />
+          <label for="mainform:fileinput" class="workflowButton" tabindex="0">#{workflowBundle.attach}</label>
           <t:inputFileUpload id="fileinput" styleClass="fileUploadButton" size="0"
             value="#{uploadDocumentsFormBean.uploadedFile}" storage="file"
             valueChangeListener="#{uploadDocumentsFormBean.uploadFile}"
+            style="visibility:hidden"
             onchange="showOverlay();submit();" />
         </t:div>
 
