@@ -299,12 +299,15 @@ public class ColumnDefinition implements Serializable
       if (!columnName.equals(this.name))
       {
         ColumnDefinition colDef = resultsManager.getColumnDefinition(columnName);
-        String columnValue = String.valueOf(colDef.getValue(row, true));
+        if (colDef != null)
+        {
+          String columnValue = String.valueOf(colDef.getValue(row, true));
 
-        if (colDef.getAlias() != null)
-          properties.setProperty(colDef.getAlias(), columnValue);
-        else
-          properties.setProperty(columnName, columnValue);
+          if (colDef.getAlias() != null)
+            properties.setProperty(colDef.getAlias(), columnValue);
+          else
+            properties.setProperty(columnName, columnValue);
+        }
       }
       else
         properties.setProperty(columnName, 
