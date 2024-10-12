@@ -21,13 +21,13 @@ function onUnload()
 if (window.addEventListener)
 {
   window.addEventListener("load", onLoad, false);
-  window.addEventListener("unload", onUnload, false);
+  window.addEventListener("beforeunload", onUnload, false);
   window.addEventListener("resize", onResize, false);
 }
 else // IE8
 {
   window.attachEvent("onload", onLoad);  
-  window.attachEvent("onunload", onUnload);  
+  window.attachEvent("onbeforeunload", onUnload);  
   window.attachEvent("onresize", onResize);  
 }
 

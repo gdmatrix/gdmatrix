@@ -18,9 +18,10 @@
       <p:outputPanel class="overflow-auto p-3 pt-1 flex-grow-1">
 
         <div class="mt-3">
-          <p:outputLabel id="language_label"
-                         value="#{webBundle.language}:" for="@next" />
-          <p:selectOneMenu value="#{userSessionBean.viewLanguage}"
+          <h:outputLabel id="language_label" styleClass="ui-outputlabel ui-widget"
+                         value="#{webBundle.language}:"
+                         pt:for="mainform:language_selector_input" />
+          <p:selectOneMenu id="language_selector" value="#{userSessionBean.viewLanguage}"
                            styleClass="mt-2 block">
             <p:ajax event="valueChange" process="@this"
                     update="menubar login_sb config_label language_label font_label theme_label save_prefs @form:cnt" />
@@ -29,9 +30,11 @@
           </p:selectOneMenu>
         </div>
         <div class="mt-3">
-          <p:outputLabel id="theme_label"
-                         value="#{webBundle.themes}:" for="@next" />
-          <p:selectOneMenu value="#{userSessionBean.primefacesTheme}"
+          <h:outputLabel id="theme_label" styleClass="ui-outputlabel ui-widget"
+                         value="#{webBundle.themes}:"
+                         pt:for="mainform:theme_selector_input" />          
+          <p:selectOneMenu id="theme_selector"
+                           value="#{userSessionBean.primefacesTheme}"
                            styleClass="mt-2 block"
                            widgetVar="themeSelector">
             <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
