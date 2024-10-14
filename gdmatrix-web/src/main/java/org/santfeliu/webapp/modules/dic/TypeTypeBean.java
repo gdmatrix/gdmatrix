@@ -110,11 +110,13 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
           objectSetup.getProperties().getString("publicTypeSymbol");
         if (publicTypeSymbol != null)
         {
-          return type.getDescription() + " " + publicTypeSymbol;
+          return type.getDescription() 
+            + " (" + type.getTypeId() + ")" 
+            + " " + publicTypeSymbol;
         }
       }
     }
-    return type.getDescription();
+    return type.getDescription() + " (" + type.getTypeId() + ")";
   }
 
   @Override
@@ -241,8 +243,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       for (org.santfeliu.dic.Type derived : type.getDerivedTypes(true))
       {
         String objectId = derived.getTypeId();
-        String description = getDescription(objectId) +
-          " (" + objectId + ")";
+        String description = getDescription(objectId);
         items.add(new SelectItem(objectId, description));
         if (maxResults > 0 && items.size() >= maxResults) break;
       }
@@ -255,8 +256,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       for (Type type : types)
       {
         String objectId = getObjectId(type);
-        String description = getDescription(type.getTypeId()) +
-          " (" + type.getTypeId() + ")";
+        String description = getDescription(type.getTypeId());
         items.add(new SelectItem(objectId, description));
       }
     }
@@ -352,16 +352,4 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     }
     return null;
   }
-
-  public static void main(String[] args)
-  {
-    TypeTypeBean bean = new TypeTypeBean();
-    String query = "sf:Familia";
-    List<Type> list = bean.findByQuery(query);
-    for (Type item : list)
-    {
-      System.out.println(item.getDescription());
-    }
-  }
-
 }
