@@ -399,6 +399,8 @@ public class CaseFinderBean extends FinderBean
     
   private String setWildcards(String text)
   {
+    if (text != null)
+      text = text.trim();
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
       text = "%" + text.replaceAll("^%|%$", "") + "%" ;
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))

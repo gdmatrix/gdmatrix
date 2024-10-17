@@ -276,8 +276,11 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
   @Override
   public CaseFilter queryToFilter(String query, String typeId)
   {
-    if (query == null) query = "";
-
+    if (query == null) 
+      query = "";
+    else
+      query = query.trim();
+    
     CaseFilter filter = new CaseFilter();
     if (query.matches("([a-zA-Z0-9]+:[a-zA-Z0-9]+)|(\\d+)"))
     {
@@ -307,7 +310,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     }
     else if (filter.getTitle() != null)
     {
-      String query = filter.getTitle();
+      String query = filter.getTitle().trim();
       if (query.startsWith("%")) query = query.substring(1);
       if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
       return query;

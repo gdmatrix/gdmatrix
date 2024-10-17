@@ -2795,7 +2795,7 @@ public class KernelManager implements KernelManagerPort
     {
       return "";
     }
-    return "%" + text.toLowerCase() + "%";
+    return "%" + text.toLowerCase().trim() + "%";
   }
 
   private String likePattern(String pattern)
@@ -3025,6 +3025,7 @@ public class KernelManager implements KernelManagerPort
     String countryName = filter.getCountryName();
     if (countryName != null)
     {
+      countryName = countryName.trim();
       countryName = likePattern(countryName);
     }
     query.setParameter("countryName", countryName);
@@ -3032,6 +3033,7 @@ public class KernelManager implements KernelManagerPort
     String cityName = filter.getCityName();
     if (cityName != null)
     {
+      cityName = cityName.trim();
       cityName = likePattern(cityName);
     }
     query.setParameter("cityName", cityName);
@@ -3039,6 +3041,7 @@ public class KernelManager implements KernelManagerPort
     String streetName = filter.getStreetName();
     if (streetName != null)
     {
+      streetName = streetName.trim();
       streetName = likePattern(streetName);
     }
     query.setParameter("streetName", streetName);

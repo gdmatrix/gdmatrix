@@ -156,7 +156,7 @@ public class TypeFinderBean extends FinderBean
     String typeId = (String) event.getObject();
     if (!StringUtils.isBlank(typeId))
     {
-      String typePath = "%" + DictionaryConstants.TYPE_PATH_SEPARATOR + typeId +
+      String typePath = DictionaryConstants.TYPE_PATH_SEPARATOR + typeId +
           DictionaryConstants.TYPE_PATH_SEPARATOR + "%";
       filter.setTypePath(typePath);
     }
@@ -196,10 +196,10 @@ public class TypeFinderBean extends FinderBean
     if (!StringUtils.isBlank(typePath) && 
       !typeTypeBean.getRootTypeId().equals(typePath))
     {
-      if (!typePath.startsWith("%" + DictionaryConstants.TYPE_PATH_SEPARATOR) 
+      if (!typePath.startsWith(DictionaryConstants.TYPE_PATH_SEPARATOR) 
         || !typePath.endsWith(DictionaryConstants.TYPE_PATH_SEPARATOR + "%"))
       {
-        typePath = "%" + DictionaryConstants.TYPE_PATH_SEPARATOR + typePath +
+        typePath = DictionaryConstants.TYPE_PATH_SEPARATOR + typePath +
           DictionaryConstants.TYPE_PATH_SEPARATOR + "%";
       }
       filter.setTypePath(typePath);
