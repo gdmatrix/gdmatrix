@@ -337,10 +337,10 @@ public class CaseFinderBean extends FinderBean
               if (searchExpression == null)
                 setOrderBy(filter);
               
-              List<TableProperty> columns = getColumns();
-              for (TableProperty column : columns)
+              List<TableProperty> tableProperties = getTableProperties();
+              for (TableProperty tableProperty : tableProperties)
               {
-                filter.getOutputProperty().add(column.getName());
+                filter.getOutputProperty().add(tableProperty.getName());
               }
               List<Case> cases = 
                 CasesModuleBean.getPort(false).findCases(filter);
