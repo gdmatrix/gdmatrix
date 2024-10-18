@@ -317,7 +317,7 @@ public class EventPersonsTabBean extends TabBean
         executeTabAction("preTabEdit", row);
         editing = AgendaModuleBean.getClient(false).
           loadAttendant(row.getAttendantId());
-        executeTabAction("postTabEdit", row);
+        executeTabAction("postTabEdit", editing);
       }
       catch (Exception ex)
       {
@@ -384,7 +384,7 @@ public class EventPersonsTabBean extends TabBean
     executeTabAction("preTabEdit", null);    
     editing = new Attendant();
     editing.setAttendantTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", null);    
+    executeTabAction("postTabEdit", editing);    
   }
 
   @Override

@@ -351,7 +351,7 @@ public class CaseCasesTabBean extends TabBean
       editing.setRelCaseId(getObjectId());
     }
     formSelector = null;
-    executeTabAction("postTabEdit", null);    
+    executeTabAction("postTabEdit", editing);    
   }
 
   public String getCaseDescription()
@@ -438,7 +438,7 @@ public class CaseCasesTabBean extends TabBean
       {
         executeTabAction("preTabEdit", row);
         editing = CasesModuleBean.getPort(false).loadCaseCase(caseCaseId);
-        executeTabAction("postTabEdit", row);
+        executeTabAction("postTabEdit", editing);
       }
       else
       {

@@ -496,7 +496,7 @@ public class CaseDocumentsTabBean extends TabBean
     executeTabAction("preTabEdit", null);    
     editing = new CaseDocument();
     editing.setCaseDocTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", null);    
+    executeTabAction("postTabEdit", editing);    
   }
 
   public String getCurrentVolume()
@@ -528,7 +528,7 @@ public class CaseDocumentsTabBean extends TabBean
         executeTabAction("preTabEdit", row);
         editing =
           CasesModuleBean.getPort(false).loadCaseDocument(row.getRowId());
-        executeTabAction("postTabEdit", row);
+        executeTabAction("postTabEdit", editing);
       }
       catch (Exception ex)
       {

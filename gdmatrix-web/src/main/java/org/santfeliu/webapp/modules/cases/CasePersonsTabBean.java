@@ -543,7 +543,7 @@ public class CasePersonsTabBean extends TabBean
     editing = new CasePerson();
     editing.setCasePersonTypeId(getCreationTypeId());
     tabIndex = 0;
-    executeTabAction("postTabEdit", null);    
+    executeTabAction("postTabEdit", editing);    
   }
   
   @Override
@@ -605,7 +605,7 @@ public class CasePersonsTabBean extends TabBean
         representantContacts =
           getPersonContacts(editing.getRepresentantPersonId());
         tabIndex = 0;
-        executeTabAction("postTabEdit", row);        
+        executeTabAction("postTabEdit", editing);        
       }
       catch (Exception ex)
       {

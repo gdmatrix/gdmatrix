@@ -247,7 +247,7 @@ public class EventDocumentsTabBean extends TabBean
         executeTabAction("preTabEdit", row);
         editing = AgendaModuleBean.getClient(false).
           loadEventDocument(row.getEventDocId());
-        executeTabAction("postTabEdit", row);
+        executeTabAction("postTabEdit", editing);
       }
       catch (Exception ex)
       {
@@ -313,7 +313,7 @@ public class EventDocumentsTabBean extends TabBean
     executeTabAction("preTabEdit", null);    
     editing = new EventDocument();
     editing.setEventDocTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", null);    
+    executeTabAction("postTabEdit", editing);    
   }
 
   @Override

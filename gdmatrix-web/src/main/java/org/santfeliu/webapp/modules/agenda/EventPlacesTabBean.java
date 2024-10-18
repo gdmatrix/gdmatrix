@@ -168,9 +168,9 @@ public class EventPlacesTabBean extends TabBean
     String eventPlaceId = null;
     if (row != null)
       eventPlaceId = row.getEventPlaceId();
-    executeTabAction("postTabEdit", row);
-
-    return editPlace(eventPlaceId);
+    String result = editPlace(eventPlaceId);
+    executeTabAction("postTabEdit", editing);
+    return result;
   }
 
   @Override
@@ -202,7 +202,7 @@ public class EventPlacesTabBean extends TabBean
   {
     executeTabAction("preTabEdit", null);    
     editing = new EventPlace();
-    executeTabAction("postTabEdit", null);    
+    executeTabAction("postTabEdit", editing);    
   }
 
   @Override
