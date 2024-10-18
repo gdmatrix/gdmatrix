@@ -373,7 +373,13 @@ public abstract class ObjectBean extends BaseBean
 
   protected ActionObject executeAction(String actionName, Object[] parameters)
   {
-    ActionObject actionObject = new ActionObject(getObject());
+    return executeAction(actionName, parameters, getObject());
+  }
+  
+  protected ActionObject executeAction(String actionName, Object[] parameters, 
+    Object object)
+  {
+    ActionObject actionObject = new ActionObject(object);
     if (scriptClient != null)
     {
       Object callable = scriptClient.get(actionName);

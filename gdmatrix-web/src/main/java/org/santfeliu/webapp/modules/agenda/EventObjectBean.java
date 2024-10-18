@@ -300,7 +300,7 @@ public class EventObjectBean extends ObjectBean
     setDefaultDateTimes();
     event.setStartDateTime(startDate.format(DAY_FORMATTER) + startTime);
     event.setEndDateTime(endDate.format(DAY_FORMATTER) + endTime);    
-    executeAction(PRE_STORE_ACTION);   
+    executeAction(PRE_STORE_ACTION, null, event);
     event = AgendaModuleBean.getClient().storeEvent(event);
     if (isAutoAttendant() && isNew())
     {

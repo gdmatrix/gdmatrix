@@ -265,7 +265,7 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    executeAction(PRE_STORE_ACTION);
+    executeAction(PRE_STORE_ACTION, null, cas);
     cas = CasesModuleBean.getPort(false).storeCase(cas);
     setObjectId(cas.getCaseId());
     executeAction(POST_STORE_ACTION);
