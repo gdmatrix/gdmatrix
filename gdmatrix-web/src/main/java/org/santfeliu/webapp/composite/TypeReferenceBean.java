@@ -75,7 +75,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
       query, typeId, showNavigatorItems, true, maxResults);
 
     if (!isShowNonInstantiableItems())
-    {
+    {     
       selectItems = new ArrayList();
       TypeCache typeCache = TypeCache.getInstance();
       for (SelectItem item : auxSelectItems)
@@ -92,28 +92,27 @@ public class TypeReferenceBean extends ObjectReferenceBean
     {
       selectItems = auxSelectItems;
     }
-
-    if (StringUtils.isBlank(query) && showNavigatorItems)
+    
+    String objectId = WebUtils.getValue("#{cc.attrs.value}");
+    if (!StringUtils.isBlank(objectId))
     {
-      String objectId = WebUtils.getValue("#{cc.attrs.value}");
-      if (!StringUtils.isBlank(objectId))
+      boolean found = false;
+      Iterator<SelectItem> iter = selectItems.iterator();
+      while (iter.hasNext() && !found)
       {
-        boolean found = false;
-        Iterator<SelectItem> iter = selectItems.iterator();
-        while (iter.hasNext() && !found)
+        SelectItem item = iter.next();
+        if (item.getValue().equals(objectId))
         {
-          if (iter.next().getValue().equals(objectId))
-          {
-            found = true;
-          }
-        }
-        if (!found)
-        {
-          selectItems.add(0,
-            new SelectItem(objectId, typeTypeBean.getDescription(objectId)));
+          found = true;
         }
       }
+      if (!found)
+      {
+        selectItems.add(0,
+          new SelectItem(objectId, typeTypeBean.getDescription(objectId)));
+      }
     }
+      
     return selectItems;
   }
 

@@ -65,27 +65,25 @@ public class ObjectReferenceBean
     List<SelectItem> selectItems =
       typeBean.getSelectItems(query, typeId, showNavigatorItems, true);
 
-    if (StringUtils.isBlank(query) && showNavigatorItems)
+    String objectId = WebUtils.getValue("#{cc.attrs.value}");
+    if (!StringUtils.isBlank(objectId))
     {
-      String objectId = WebUtils.getValue("#{cc.attrs.value}");
-      if (!StringUtils.isBlank(objectId))
+      boolean found = false;
+      Iterator<SelectItem> iter = selectItems.iterator();
+      while (iter.hasNext() && !found)
       {
-        boolean found = false;
-        Iterator<SelectItem> iter = selectItems.iterator();
-        while (iter.hasNext() && !found)
+        if (iter.next().getValue().equals(objectId))
         {
-          if (iter.next().getValue().equals(objectId))
-          {
-            found = true;
-          }
-        }
-        if (!found)
-        {
-          selectItems.add(0,
-            new SelectItem(objectId, typeBean.getDescription(objectId)));
+          found = true;
         }
       }
+      if (!found)
+      {
+        selectItems.add(0,
+          new SelectItem(objectId, typeBean.getDescription(objectId)));
+      }
     }
+
     return selectItems;
   }
 
