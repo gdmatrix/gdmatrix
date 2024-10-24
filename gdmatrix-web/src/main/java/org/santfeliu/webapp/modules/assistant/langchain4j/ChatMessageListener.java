@@ -28,12 +28,29 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.assistant.openai;
+package org.santfeliu.webapp.modules.assistant.langchain4j;
+
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.model.output.FinishReason;
 
 /**
  *
  * @author realor
  */
-public class FileList extends OpenAIList<File>
+public interface ChatMessageListener
 {
+  default void onNext(String token) {};
+
+  default void onMessage(ChatMessage message) {};
+
+  default String onExecute(ToolExecutionRequest toolRequest)
+  {
+    return "Not implemented.";
+  }
+
+  default void onError(Throwable t) {};
+
+  default void onComplete(FinishReason reason) {};
 }
+

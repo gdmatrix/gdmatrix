@@ -31,24 +31,17 @@
 package org.santfeliu.webapp.modules.assistant;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.DocumentManagerPort;
-import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.security.util.Credentials;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.assistant.openai.Assistant;
-import org.santfeliu.webapp.modules.assistant.openai.Model;
-import org.santfeliu.webapp.modules.assistant.openai.ModelList;
-import org.santfeliu.webapp.modules.assistant.openai.OpenAI;
+import org.santfeliu.webapp.modules.assistant.langchain4j.Assistant;
+import org.santfeliu.webapp.modules.assistant.langchain4j.AssistantStore;
+import org.santfeliu.webapp.modules.assistant.langchain4j.AssistantStore.AssistantSummary;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 
 /**
@@ -68,24 +61,14 @@ public class AssistantBean extends WebBean implements Serializable
   public static final String WRITE_ROLEID_METADATA = "writeRole";
 
   String view = "threads"; // threads || assistant
-  String assistantId;
   Assistant assistant;
-  List<SelectItem> modelSelectItems;
   boolean dialogVisible;
   int activeTabIndex;
 
-  transient OpenAI openAI = new OpenAI();
-  transient List<Assistant> assistants;
+  List<AssistantSummary> assistants;
 
   @Inject
   ThreadsBean threadsBean;
-
-  @PostConstruct
-  public void init()
-  {
-    String apiKey = MatrixConfig.getProperty("openai.apiKey");
-    openAI.setApiKey(apiKey);
-  }
 
   public int getActiveTabIndex()
   {
@@ -109,7 +92,7 @@ public class AssistantBean extends WebBean implements Serializable
 
   // Assistant
 
-  public List<Assistant> getAssistants()
+  public List<AssistantSummary> getAssistants()
   {
     if (assistants == null)
     {
@@ -125,44 +108,9 @@ public class AssistantBean extends WebBean implements Serializable
     return assistants;
   }
 
-  public void setAssistantId(String assistantId)
-  {
-    this.assistantId = assistantId;
-  }
-
   public String getAssistantId()
   {
-    return assistantId;
-  }
-
-  public String getCreationUserId()
-  {
-    return (String)assistant.getMetadataValue(CREATION_USERID_METADATA);
-  }
-
-  public String getChangeUserId()
-  {
-    return (String)assistant.getMetadataValue(CHANGE_USERID_METADATA);
-  }
-
-  public String getReadRoleId()
-  {
-    return (String)assistant.getMetadataValue(READ_ROLEID_METADATA);
-  }
-
-  public void setReadRoleId(String roleId)
-  {
-    assistant.setMetadataValue(READ_ROLEID_METADATA, roleId);
-  }
-
-  public String getWriteRoleId()
-  {
-    return (String)assistant.getMetadataValue(WRITE_ROLEID_METADATA);
-  }
-
-  public void setWriteRoleId(String roleId)
-  {
-    assistant.setMetadataValue(WRITE_ROLEID_METADATA, roleId);
+    return assistant.getAssistantId();
   }
 
   public Assistant getAssistant()
@@ -170,11 +118,17 @@ public class AssistantBean extends WebBean implements Serializable
     return assistant;
   }
 
+  public AssistantStore getAssistantStore()
+  {
+    Credentials credentials =
+      UserSessionBean.getCurrentInstance().getCredentials();
+    return AssistantStore.getInstance(credentials);
+  }
+
   public void createAssistant()
   {
     assistant = new Assistant();
     assistant.setName("New assistant");
-    assistantId = null;
     activeTabIndex = 0;
   }
 
@@ -182,7 +136,11 @@ public class AssistantBean extends WebBean implements Serializable
   {
     try
     {
-      assistant = openAI.retrieveAssistant(assistantId);
+      if (assistant.isPersistent())
+      {
+        assistant = getAssistantStore().loadAssistant(assistant.getAssistantId());
+        growl("RELOAD_OBJECT");
+      }
     }
     catch (Exception ex)
     {
@@ -194,25 +152,9 @@ public class AssistantBean extends WebBean implements Serializable
   {
     try
     {
-      String userId = getUserId();
-      if (assistant.getMetadataValue(CREATION_USERID_METADATA) == null)
-      {
-        assistant.setMetadataValue(CREATION_USERID_METADATA, userId);
-      }
-      assistant.setMetadataValue(CHANGE_USERID_METADATA, userId);
-
-      if (assistantId == null)
-      {
-        if (!isAdminUser()) throw new Exception("ACCESS_DENIED");
-        assistant = openAI.createAssistant(assistant);
-        assistantId = assistant.getId();
-      }
-      else
-      {
-        assistant = openAI.modifyAssistant(assistant);
-      }
-      assistants = null;
+      getAssistantStore().saveAssistant(assistant);
       growl("STORE_OBJECT");
+      assistants = null;
     }
     catch (Exception ex)
     {
@@ -224,9 +166,9 @@ public class AssistantBean extends WebBean implements Serializable
   {
     try
     {
-      if (assistantId != null)
+      if (assistant.isPersistent())
       {
-        openAI.deleteAssistant(assistantId);
+        getAssistantStore().deleteAssistant(assistant.getAssistantId());
         createAssistant();
         growl("REMOVE_OBJECT");
         assistants = null;
@@ -244,33 +186,16 @@ public class AssistantBean extends WebBean implements Serializable
     return userSessionBean.isUserInRole(ASSISTANT_ADMIN_ROLEID);
   }
 
-  public void changeAssistant(Assistant assistant)
+  public void changeAssistant(String assistantId)
   {
-    this.assistant = assistant;
-    this.assistantId = assistant.getId();
-    activeTabIndex = 0;
-  }
-
-  // Models
-
-  public List<SelectItem> getModelSelectItems()
-  {
-    return modelSelectItems;
-  }
-
-  public void updateModelSelectItems() throws Exception
-  {
-    modelSelectItems = new ArrayList<>();
-    ModelList models = openAI.listModels();
-    Collections.sort(models.getData(),
-      (a, b) -> a.getId().compareTo(b.getId()));
-
-    for (Model m : models.getData())
+    try
     {
-      SelectItem selectItem = new SelectItem();
-      selectItem.setLabel(m.getId());
-      selectItem.setValue(m.getId());
-      modelSelectItems.add(selectItem);
+      assistant = getAssistantStore().loadAssistant(assistantId);
+      activeTabIndex = 0;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
     }
   }
 
@@ -278,32 +203,18 @@ public class AssistantBean extends WebBean implements Serializable
   {
     try
     {
-      threadsBean.updateThreads();
-      updateAssistants();
-      updateModelSelectItems();
-
-      String preferredAssistantId = getProperty(ASSISTANTID_PROPERTY);
-      if (!assistants.isEmpty())
+      String assistantId =
+        UserSessionBean.getCurrentInstance().getSelectedMenuItem()
+          .getProperty(ASSISTANTID_PROPERTY);
+      if (assistantId != null)
       {
-        if (assistants.stream().anyMatch(
-          a -> a.getId().equals(preferredAssistantId)))
-        {
-          assistantId = preferredAssistantId;
-        }
-        else
-        {
-          assistantId = (String)assistants.get(0).getId();
-        }
-      }
-
-      if (StringUtils.isBlank(assistantId))
-      {
-        createAssistant();
+        assistant = getAssistantStore().loadAssistant(assistantId);
       }
       else
       {
-        assistant = openAI.retrieveAssistant(assistantId);
+        createAssistant();
       }
+      threadsBean.createThread();
     }
     catch (Exception ex)
     {
@@ -327,13 +238,20 @@ public class AssistantBean extends WebBean implements Serializable
   public void setView(String view)
   {
     this.view = view;
+    threadsBean.createThread();
   }
 
   public void updateAssistants() throws Exception
   {
-    assistants = openAI.listAssistants().getData().stream().filter(
-      a -> isVisible(a)).collect(Collectors.toList());
-    Collections.sort(assistants, (a, b) -> a.getName().compareTo(b.getName()));
+    try
+    {
+      assistants = getAssistantStore().getAssistants();
+      System.out.println("\n" + assistants);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public DocumentManagerPort getDocPort()
@@ -355,7 +273,7 @@ public class AssistantBean extends WebBean implements Serializable
     if (isEditable(assistant)) return true;
 
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    String readRoleId = (String)assistant.getMetadataValue(READ_ROLEID_METADATA);
+    String readRoleId = (String)assistant.getReadRoleId();
     return userSessionBean.isUserInRole(readRoleId);
   }
 
@@ -364,7 +282,7 @@ public class AssistantBean extends WebBean implements Serializable
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     if (userSessionBean.isUserInRole(ASSISTANT_ADMIN_ROLEID)) return true;
 
-    String writeRoleId = (String)assistant.getMetadataValue(WRITE_ROLEID_METADATA);
+    String writeRoleId = (String)assistant.getWriteRoleId();
     return userSessionBean.isUserInRole(writeRoleId);
   }
 }

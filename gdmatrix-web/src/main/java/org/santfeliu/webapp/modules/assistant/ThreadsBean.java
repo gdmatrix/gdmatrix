@@ -30,54 +30,42 @@
  */
 package org.santfeliu.webapp.modules.assistant;
 
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.ToolExecutionResultMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.output.FinishReason;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.activation.DataHandler;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import org.mozilla.javascript.Callable;
-import org.primefaces.PrimeFaces;
-import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.assistant.openai.FunctionCall;
-import org.santfeliu.webapp.modules.assistant.openai.FunctionExecutor;
-import org.santfeliu.webapp.modules.assistant.openai.MessageList;
-import org.santfeliu.webapp.modules.assistant.openai.OpenAI;
-import org.santfeliu.webapp.modules.assistant.openai.Thread;
-import org.santfeliu.webapp.modules.assistant.openai.ThreadStore;
-import org.santfeliu.webapp.modules.assistant.openai.Message;
-import org.santfeliu.webapp.modules.assistant.openai.Run;
-import static org.santfeliu.webapp.modules.assistant.openai.Message.ASSISTANT_ROLE;
-import static org.santfeliu.webapp.modules.assistant.openai.Message.USER_ROLE;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
+import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MimeTypeMap;
-import org.santfeliu.util.markdown.MarkdownToHtml;
-import org.santfeliu.webapp.modules.assistant.openai.ContentItem;
-import org.santfeliu.webapp.modules.assistant.openai.Error;
-import org.santfeliu.webapp.modules.assistant.openai.Text;
+import org.santfeliu.web.servlet.stream.StreamQueue;
+import org.santfeliu.webapp.modules.assistant.langchain4j.Assistant;
+import org.santfeliu.webapp.modules.assistant.langchain4j.ChatMessageListener;
+import org.santfeliu.webapp.modules.assistant.langchain4j.AssistantStore;
+import org.santfeliu.webapp.modules.assistant.langchain4j.ChatMessageAdapter;
+import org.santfeliu.webapp.modules.assistant.langchain4j.Thread;
+import org.santfeliu.webapp.modules.assistant.langchain4j.ThreadStore;
+import org.santfeliu.webapp.modules.assistant.langchain4j.ThreadSummary;
+import org.santfeliu.webapp.modules.assistant.langchain4j.ToolExecutor;
 
 /**
  *
@@ -85,8 +73,7 @@ import org.santfeliu.webapp.modules.assistant.openai.Text;
  */
 @Named
 @RequestScoped
-public class ThreadsBean extends WebBean
-  implements Serializable, FunctionExecutor
+public class ThreadsBean extends WebBean implements Serializable
 {
   public static final String TEXT_PLACEHOLDER_PROPERTY = "textPlaceholder";
   public static final String ATTACH_PLACEHOLDER_PROPERTY = "attachPlaceholder";
@@ -94,55 +81,48 @@ public class ThreadsBean extends WebBean
   public static final String ATTACHMENT_DOCTYPEID_PROPERTY = "Document";
   public static final String ATTACHMENT_THREADID_PROPERTY = "threadId";
 
-  String threadId;
   Thread thread;
+  List<ThreadSummary> threads;
   String text;
-  List<Thread> threads;
-  MessageList messageList;
-  String runId;
   boolean debugEnabled = false;
-  boolean assistEnabled = true;
   String attachedFilename;
-  File attachedFile;
-
-  transient OpenAI openAI = new OpenAI();
-  transient MarkdownToHtml md2html = new MarkdownToHtml();
-  transient SimpleDateFormat dateFormat;
-  transient SimpleDateFormat timeFormat;
+  String attachedDocId;
 
   @Inject
   AssistantBean assistantBean;
 
-  @PostConstruct
-  public void init()
+  public Thread getThread()
   {
-    String apiKey = MatrixConfig.getProperty("openai.apiKey");
-    openAI.setApiKey(apiKey);
-    openAI.setFunctionExecutor(this);
-
-    Locale locale = getFacesContext().getViewRoot().getLocale();
-    dateFormat = new SimpleDateFormat("EEE, dd/MM/yyyy", locale);
-    timeFormat = new SimpleDateFormat("HH:mm:ss", locale);
+    return thread;
   }
 
   public String getThreadId()
   {
-    return threadId;
+    return thread.getThreadId();
   }
 
-  public void setThreadId(String threadId)
+  public List<ChatMessage> getMessages()
   {
-    this.threadId = threadId;
+    return thread.getMessages();
   }
 
-  public List<Thread> getThreads()
+  public List<ThreadSummary> getThreads()
   {
+    if (threads == null)
+    {
+      updateThreads(true);
+    }
     return threads;
   }
 
-  public MessageList getMessageList()
+  public boolean isDebugEnabled()
   {
-    return messageList;
+    return debugEnabled;
+  }
+
+  public void setDebugEnabled(boolean debugEnabled)
+  {
+    this.debugEnabled = debugEnabled;
   }
 
   public String getText()
@@ -159,18 +139,8 @@ public class ThreadsBean extends WebBean
   {
     try
     {
-      messageList = null;
-      if (StringUtils.isBlank(threadId))
-      {
-        this.threadId = null;
-        thread = null;
-      }
-      else
-      {
-        this.threadId = threadId;
-        thread = openAI.retrieveThread(threadId);
-        updateMessages();
-      }
+      thread = getThreadStore().loadThread(threadId);
+      repaintThread();
     }
     catch (Exception ex)
     {
@@ -178,26 +148,28 @@ public class ThreadsBean extends WebBean
     }
   }
 
+  public void repaintThread()
+  {
+    StreamQueue queue = StreamQueue.getInstance(getThreadId(), true);
+    for (ChatMessage message : thread.getMessages())
+    {
+      pushMessage(queue, message, true);
+    }
+    queue.push(0);
+  }
+
   public void createThread()
   {
-    thread = null;
-    threadId = null;
-    messageList = null;
+    thread = new Thread();
   }
 
   public void deleteThread()
   {
     try
     {
-      if (threadId != null)
-      {
-        openAI.deleteThread(threadId);
-        getThreadStore().removeThread(threadId);
-        updateThreads();
-        thread = null;
-        threadId = null;
-        messageList = null;
-      }
+      getThreadStore().deleteThread(getThreadId());
+      updateThreads(true);
+      createThread();
     }
     catch (Exception ex)
     {
@@ -205,22 +177,23 @@ public class ThreadsBean extends WebBean
     }
   }
 
-  public String getThreadTitle(String threadId)
+  public void updateThreads(boolean reload)
   {
-    if (isBlank(threadId)) return "";
-
-    if (threads == null) return threadId;
-
-    Thread selectedThread = threads.stream().filter(
-      t -> StringUtils.equals(threadId, t.getId())).findFirst().orElse(null);
-
-    return selectedThread == null ?
-      threadId : (String)selectedThread.getMetadata().get("title");
-  }
-
-  public void updateThreads() throws Exception
-  {
-    threads = getThreadStore().findThreads();
+    if (reload)
+    {
+      threads = getThreadStore().getThreads();
+    }
+    else
+    {
+      for (ThreadSummary t : threads)
+      {
+        if (t.getThreadId().equals(getThreadId()))
+        {
+          t.setDescription(getThread().getDescription());
+          break;
+        }
+      }
+    }
   }
 
   // Messages
@@ -237,89 +210,89 @@ public class ThreadsBean extends WebBean
     }
   }
 
-  public String formatMessageDate(Message message, int index)
+  public void sendMessage()
   {
-    Date date = message.getCreationDate();
-    String formattedTime = timeFormat.format(date);
+    final StreamQueue queue = StreamQueue.getInstance(getThreadId(), true);
+    String userId = UserSessionBean.getCurrentInstance().getUserId();
+    String threadId = getThreadId();
+    attachedFilename = null;
+    attachedDocId = null;
 
-    if (index == 0)
-    {
-      String formattedDate = dateFormat.format(date);
-      return formattedDate + " " + formattedTime;
-    }
-    else
-    {
-      Message prevMessage = messageList.getData().get(index - 1);
-      if (message.getCreatedAt() - prevMessage.getCreatedAt() > 300) // 5 min
-      {
-        String formattedDate = dateFormat.format(date);
-        return formattedDate + " " + formattedTime;
-      }
-    }
-    return formattedTime;
-  }
-
-  public String formatMessageContent(Message message)
-  {
-    List<ContentItem> content = message.getContent();
-    if (content != null && !content.isEmpty())
-    {
-      Text msgText = content.get(0).getText();
-      if (msgText != null)
-      {
-        String md = msgText.getValue();
-        return md2html.transform(md);
-      }
-    }
-    return null;
-  }
-
-  public void createMessage()
-  {
     try
     {
-      if (isBlank(threadId))
+      queue.clear();
+      if (!StringUtils.isBlank(text))
       {
-        thread = openAI.createThread();
-        threadId = thread.getId();
-        String title = text;
-        if (title.length() > 100) title = title.substring(0, 100) + "...";
-        thread.getMetadata().put("title", title);
-        getThreadStore().storeThread(thread);
-        updateThreads();
-      }
-
-      if (text.startsWith("#") && assistantBean.isAdminUser())
-      {
-        String cmd = text;
-        if (messageList == null) messageList = new MessageList();
-        Message message = processCommand(cmd);
-        messageList.getData().add(message);
-      }
-      else
-      {
-        if (attachedFile == null || !attachedFile.exists())
-        {
-          openAI.createMessage(threadId, "user", text);
-          deleteAttachedFile();
-        }
-        else
-        {
-          String docId = storeAttachedFile();
-          String attachText = text +
-            "\n(docId: [" + docId + "](/documents/" + docId + "))";
-          openAI.createMessage(threadId, "user", attachText);
-        }
-        updateMessages();
-        if (assistEnabled)
-        {
-          PrimeFaces.current().executeScript("assistImmediately()");
-        }
+        getMessages().add(UserMessage.from(text));
       }
       text = null;
+
+      // save thread with the user message
+      ThreadStore threadStore = getThreadStore();
+      boolean reload = !thread.isPersistent();
+      threadStore.saveThread(thread);
+      updateThreads(reload);
+
+      Assistant assistant = assistantBean.getAssistant();
+
+      assistant.generate(getMessages(), new ChatMessageListener()
+      {
+        boolean started = false;
+
+        @Override
+        public void onNext(String tokens)
+        {
+          if (!started)
+          {
+            queue.push(1);
+            started = true;
+          }
+          if (!StringUtils.isEmpty(tokens))
+          {
+            queue.push(tokens);
+          }
+        }
+
+        @Override
+        public void onMessage(ChatMessage message)
+        {
+          getMessages().add(message);
+          pushMessage(queue, message, false);
+        }
+
+        @Override
+        public String onExecute(ToolExecutionRequest toolRequest)
+        {
+          ToolExecutor executor = new ToolExecutor();
+          executor.put("userId", userId);
+          executor.put("threadId", threadId);
+          return executor.execute(toolRequest);
+        }
+
+        @Override
+        public void onComplete(FinishReason reason)
+        {
+          queue.push(0);
+          try
+          {
+            threadStore.saveThread(thread);
+          }
+          catch (Exception ex)
+          {
+          }
+        }
+
+        @Override
+        public void onError(Throwable t)
+        {
+          queue.push(t.toString());
+          queue.push(0);
+        }
+      });
     }
     catch (Exception ex)
     {
+      queue.push(0);
       error(ex);
     }
   }
@@ -329,12 +302,25 @@ public class ThreadsBean extends WebBean
     return attachedFilename;
   }
 
+  public String getAttachedDocId()
+  {
+    return attachedDocId;
+  }
+
   public void deleteAttachedFile()
   {
-    attachedFilename = null;
-    if (attachedFile != null)
+    try
     {
-      attachedFile.delete();
+      if (attachedDocId != null)
+      {
+        assistantBean.getDocPort().removeDocument(attachedDocId, -4);
+      }
+      attachedFilename = null;
+      attachedDocId = null;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
     }
   }
 
@@ -343,23 +329,37 @@ public class ThreadsBean extends WebBean
     UploadedFile fileToUpload = event.getFile();
     try
     {
-      if (attachedFile != null)
-      {
-        attachedFile.delete();
-        attachedFile = null;
-      }
-
       attachedFilename = fileToUpload.getFileName();
       int index = attachedFilename.lastIndexOf(".");
       String extension = index == -1 ? "bin" :
         attachedFilename.substring(index + 1);
 
-      attachedFile = java.io.File.createTempFile("attach", "." + extension);
+      File attachedFile = java.io.File.createTempFile("attach", "." + extension);
 
       try (InputStream is = fileToUpload.getInputStream())
       {
         IOUtils.writeToFile(is, attachedFile);
       }
+
+      Document document = new Document();
+      document.setTitle(attachedFilename);
+      document.setDocTypeId(ATTACHMENT_DOCTYPEID_PROPERTY);
+
+      Property property = new Property();
+      property.setName(ATTACHMENT_THREADID_PROPERTY);
+      property.getValue().add("0");
+      document.getProperty().add(property);
+
+      String contentType = MimeTypeMap.getMimeTypeMap().getContentType(attachedFile);
+
+      Content content = new Content();
+      content.setData(new DataHandler(new FileDataSource(attachedFile)));
+      content.setContentType(contentType);
+      document.setContent(content);
+      document = assistantBean.getDocPort().storeDocument(document);
+      attachedDocId = document.getDocId();
+
+      attachedFile.delete();
     }
     catch (IOException ex)
     {
@@ -367,282 +367,50 @@ public class ThreadsBean extends WebBean
     }
   }
 
-  public void assist()
+  public AssistantStore getAssistantStore()
   {
-    try
-    {
-      Run run;
-
-      if (runId == null)
-      {
-        String assistantId = assistantBean.getAssistantId();
-        if (assistantId == null) return;
-
-        run = openAI.createRun(threadId, assistantId);
-        runId = run.getId();
-      }
-      else
-      {
-        run = openAI.retrieveRun(threadId, runId);
-      }
-
-      if (run.isQueued() || run.isInProgress() || run.isCancelling())
-      {
-        PrimeFaces.current().executeScript("assistDelayed()");
-      }
-      else if (run.isRequiresAction())
-      {
-        openAI.executeRequiredAction(run);
-        PrimeFaces.current().executeScript("assistImmediately()");
-      }
-      else if (run.isCompleted())
-      {
-        runId = null;
-      }
-      else // cancel, failed, expired
-      {
-        runId = null;
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("Run ").append(run.getStatus());
-        Error lastError = run.getLastError();
-        if (lastError != null)
-        {
-          buffer.append(", [");
-          buffer.append(lastError.getCode());
-          buffer.append("]: ");
-          buffer.append(lastError.getMessage());
-        }
-        Message message = Message.create(ASSISTANT_ROLE, buffer.toString());
-        getMessageList().getData().add(message);
-      }
-      updateMessages();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  @Override
-  public String execute(FunctionCall function)
-  {
-    String functionName = function.getName();
-    String functionArgs = function.getArguments();
-    String resultText;
-    try
-    {
-      resultText = executeFunction(functionName, functionArgs);
-      if (resultText == null) resultText = "Function executed";
-    }
-    catch (Exception ex)
-    {
-      // hide error to assistant
-      resultText = "Function not available";
-    }
-
-    if (debugEnabled)
-    {
-      if (functionArgs == null) functionArgs = "";
-      Message message = Message.create(ASSISTANT_ROLE,
-        "@" + functionName + " " + functionArgs + "\n" + resultText);
-      messageList.getData().add(message);
-    }
-    return resultText;
+    Credentials credentials =
+      UserSessionBean.getCurrentInstance().getCredentials();
+    return AssistantStore.getInstance(credentials);
   }
 
   public ThreadStore getThreadStore()
   {
-    ThreadStore threadStore = CDI.current().select(ThreadStore.class).get();
     String userId = UserSessionBean.getCurrentInstance().getUserId();
-    threadStore.setUserId(userId);
+    ThreadStore threadStore = ThreadStore.getInstance(userId);
     return threadStore;
   }
 
-  private String storeAttachedFile() throws Exception
+  private void pushMessage(StreamQueue queue, ChatMessage message,
+    boolean listing)
   {
-    Document document = new Document();
-    document.setTitle(attachedFilename);
-    document.setDocTypeId(ATTACHMENT_DOCTYPEID_PROPERTY);
-
-    Property property = new Property();
-    property.setName(ATTACHMENT_THREADID_PROPERTY);
-    property.getValue().add(threadId);
-    document.getProperty().add(property);
-
-    String contentType = MimeTypeMap.getMimeTypeMap().getContentType(attachedFile);
-
-    Content content = new Content();
-    content.setData(new DataHandler(new FileDataSource(attachedFile)));
-    content.setContentType(contentType);
-    document.setContent(content);
-    document = assistantBean.getDocPort().storeDocument(document);
-
-    deleteAttachedFile();
-
-    return document.getDocId();
-  }
-
-  private Message processCommand(String cmd)
-  {
-    String cmdName;
-    String cmdArgs;
-    int index = cmd.indexOf(" ");
-    if (index == -1)
+    if (message instanceof ToolExecutionResultMessage)
     {
-      cmdName = cmd.trim();
-      cmdArgs = null;
+      if (debugEnabled)
+      {
+        queue.push(ChatMessageAdapter.toMap(message));
+      }
     }
-    else
+    else if (message instanceof AiMessage)
     {
-      cmdName = cmd.substring(0, index).trim();
-      cmdArgs = cmd.substring(index).trim();
+      AiMessage aiMessage = (AiMessage)message;
+      if (aiMessage.hasToolExecutionRequests())
+      {
+        if (debugEnabled)
+        {
+          queue.push(ChatMessageAdapter.toMap(message));
+        }
+      }
+      else if (listing)
+      {
+        queue.push(ChatMessageAdapter.toMap(message));
+      }
     }
-
-    switch (cmdName)
+    else if (message instanceof UserMessage)
     {
-      case "#debug":
+      if (listing)
       {
-        if (cmdArgs != null)
-        {
-          if ("on".equals(cmdArgs)) debugEnabled = true;
-          else if ("off".equals(cmdArgs)) debugEnabled = false;
-        }
-        String stateMessage = debugEnabled ?
-          "Debug mode is enabled." : "Debug mode is disabled.";
-
-        return Message.create(USER_ROLE, cmd + "\n" + stateMessage);
-      }
-      case "#assist":
-      {
-        if (cmdArgs != null)
-        {
-          if ("on".equals(cmdArgs)) assistEnabled = true;
-          else if ("off".equals(cmdArgs)) assistEnabled = false;
-        }
-        String stateMessage = assistEnabled ?
-          "Assist mode is enabled." : "Assist mode is disabled.";
-
-        return Message.create(USER_ROLE, cmd + "\n" + stateMessage);
-      }
-      case "#call":
-      {
-        String result;
-        if (cmdArgs != null)
-        {
-          String functionName;
-          String functionArgs;
-          index = cmdArgs.indexOf(" ");
-          if (index == -1)
-          {
-            functionName = cmdArgs.trim();
-            functionArgs = null;
-          }
-          else
-          {
-            functionName = cmdArgs.substring(0, index).trim();
-            functionArgs = cmdArgs.substring(index).trim();
-          }
-          try
-          {
-            result = executeFunction(functionName, functionArgs);
-          }
-          catch (Exception ex)
-          {
-            result = ex.toString();
-          }
-        }
-        else
-        {
-          result = "Function name not specified.";
-        }
-        return Message.create(USER_ROLE, cmd + "\n" + result);
-      }
-      case "#log":
-      {
-        Logger logger = Logger.getLogger("OpenAI");
-        if (cmdArgs != null)
-        {
-          String level = cmdArgs;
-          if ("info".equalsIgnoreCase(level)) logger.setLevel(Level.INFO);
-          else if ("fine".equalsIgnoreCase(level)) logger.setLevel(Level.FINE);
-          else if ("finer".equalsIgnoreCase(level)) logger.setLevel(Level.FINER);
-        }
-        String level = logger.getLevel() == null ?
-          "default" : logger.getLevel().toString();
-        String stateMessage = "Logging level is " + level;
-
-        return Message.create(Message.USER_ROLE, cmd + "\n" + stateMessage);
-      }
-      case "#help":
-      {
-        return Message.create(Message.USER_ROLE, cmd +
-          "\nSupported commands:\n " +
-          "#debug [on|off]\n" +
-          "#assist [on|off]\n" +
-          "#call functionName [argumentsMap]\n" +
-          "#log [info|fine|finer]\n" +
-          "#help");
-      }
-      default:
-        return Message.create(Message.USER_ROLE, cmd +
-          "\nUnknown command. Type #help to list the supported commands.");
-    }
-  }
-
-  private String executeFunction(String functionName, String functionArgs)
-    throws Exception
-  {
-    ScriptClient scriptClient = new ScriptClient();
-    scriptClient.put("userId", assistantBean.getUserId());
-    scriptClient.executeScript(functionName);
-
-    Object value = scriptClient.get(functionName);
-    if (value instanceof Callable)
-    {
-      StringBuilder buffer = new StringBuilder();
-      buffer.append(functionName);
-      buffer.append("(");
-      if (!StringUtils.isBlank(functionArgs))
-      {
-        buffer.append(functionArgs);
-      }
-      buffer.append(")");
-      String cmd = buffer.toString();
-      Object result = scriptClient.execute(cmd);
-      return String.valueOf(result);
-    }
-    return null;
-  }
-
-  private void updateMessages() throws Exception
-  {
-    Map<String, Object> parameters = new HashMap<>();
-    parameters.put("limit", 100);
-    parameters.put("order", "desc");
-
-    if (messageList == null || messageList.getData().isEmpty())
-    {
-      messageList = openAI.listMessages(threadId, parameters);
-      messageList.reverse();
-    }
-    else
-    {
-      if (messageList.getLastId() != null)
-      {
-        parameters.put("before", messageList.getLastId());
-      }
-      MessageList newMessages = openAI.listMessages(threadId, parameters);
-      if (!newMessages.getData().isEmpty())
-      {
-        newMessages.reverse();
-        for (Message newMessage : newMessages.getData())
-        {
-          if (newMessage.isCompleted())
-          {
-            messageList.getData().add(newMessage);
-            messageList.setLastId(newMessage.getId());
-          }
-        }
+        queue.push(ChatMessageAdapter.toMap(message));
       }
     }
   }

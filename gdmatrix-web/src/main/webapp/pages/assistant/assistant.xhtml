@@ -10,7 +10,7 @@
   <h:outputStylesheet library="css" name="assistant.css" />
 
   <div class="flex flex-column h-full overflow-x-hidden">
-    <div id="assistant_toolbar"
+    <h:panelGroup layout="block" id="assistant_toolbar"
          class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
       <div class="flex-grow-0 text-left align-items-center flex" style="color:var(--text-color)">
@@ -61,25 +61,24 @@
                        message="#{assistantBundle.deleteAssistant}"
                        icon="pi pi-info-circle" />
           </p:commandButton>
-            
         </div>
       </div>
-    </div>
-
+    </h:panelGroup>
+      
     <div id="assistant_body" class="p-3 flex-grow-1 overflow-auto flex flex-column"
          style="color:var(--text-color)">
 
-      <p:messages showSummary="true" styleClass="messages" 
+      <p:messages showSummary="true" styleClass="messages"
                   rendered="#{not assistantBean.dialogVisible}"
                   showIcon="true" closable="true" forIgnores="growl">
         <p:autoUpdate />
       </p:messages>
 
-      <h:outputText value="#{assistantBundle.noEditPermission}" 
+      <h:outputText value="#{assistantBundle.noEditPermission}"
                     styleClass="block"
                     rendered="#{not assistantBean.isEditable(assistantBean.assistant)}" />
-      
-      <p:tabView id="assistant_tabs" dynamic="true" 
+
+      <p:tabView id="assistant_tabs" dynamic="true"
                  activeIndex="#{assistantBean.activeTabIndex}"
                               rendered="#{assistantBean.isEditable(assistantBean.assistant)}">
         <p:ajax event="tabChange" process="@this" update="@none" />
@@ -91,25 +90,26 @@
         </p:tab>
         <p:tab>
           <f:facet name="title">
-            <span class="pi pi-copy mr-2"/>#{assistantBundle.files}
-          </f:facet>
-          <ui:include src="/pages/assistant/assistant_files.xhtml" />
-        </p:tab>
-        <p:tab>
-          <f:facet name="title">
             <span class="pi pi-cog mr-2"/>#{assistantBundle.tools}
           </f:facet>
           <ui:include src="/pages/assistant/assistant_tools.xhtml" />
         </p:tab>
+        <!--
+        <p:tab>
+          <f:facet name="title">
+            <span class="pi pi-copy mr-2"/>#{assistantBundle.files}
+          </f:facet>
+          <ui:include src="/pages/assistant/assistant_files.xhtml" />
+        </p:tab>
+        -->
       </p:tabView>
     </div>
   </div>
-  
+
   <ui:include src="/pages/assistant/assistants_dialog.xhtml" />
 
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
-  <gdm:saveBean value="assistantFilesBean" />
   <gdm:saveBean value="assistantToolsBean" />
 
   <p:growl for="growl" life="1500" >

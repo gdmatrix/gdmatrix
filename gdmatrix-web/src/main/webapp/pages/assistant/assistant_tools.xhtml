@@ -8,14 +8,14 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <p:dataTable id="assistant_tools_table" value="#{assistantBean.assistant.tools}"
-               var="tool" stripedRows="true" size="small" 
+  <p:dataTable id="assistant_tools_table" value="#{assistantBean.assistant.toolNames}"
+               var="toolName" stripedRows="true" size="small" 
                resizableColumns="false" showGridlines="true"
                emptyMessage="#{objectBundle.no_data}">
 
     <f:facet name="header">
       <div class="flex align-items-center">
-        <div class="font-normal flex-grow-1">#{assistantBean.assistant.tools.size()} #{assistantBundle.tools}</div>
+        <div class="font-normal flex-grow-1">#{assistantBean.assistant.toolNames.size()} #{assistantBundle.tools}</div>
         <p:commandButton action="#{assistantToolsBean.addTool()}"
                          icon="pi pi-plus-circle"
                          alt="#{objectBundle.add}" title="#{objectBundle.add}"
@@ -27,26 +27,27 @@
       </div>
     </f:facet>    
     
-    <p:column headerText="#{assistantBundle.type}" styleClass="col-5 white-space-nowrap" >
-      <span class="pi pi-cog mr-1"/><h:outputText value="#{tool.type}" />
+    <p:column headerText="#{assistantBundle.functionName}" 
+              styleClass="white-space-nowrap" >
+      <span class="code">#{toolName}</span>
     </p:column>
 
-    <p:column headerText="#{assistantBundle.functionName}" styleClass="col-7 white-space-nowrap" >
-      <span class="code">#{tool.function.name}</span>
+    <p:column headerText="#{assistantBundle.description}" 
+              styleClass="col-12" >
+      #{assistantToolsBean.getToolDescription(toolName)}
     </p:column>
     
     <p:column styleClass="text-right white-space-nowrap">
-      <p:commandButton action="#{assistantToolsBean.editTool(tool)}"
+      <p:commandButton action="#{assistantToolsBean.editTool(toolName)}"
                        icon="pi pi-pencil"
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"
-                       rendered="#{tool.type == 'function'}"
                        process="@this"
                        update="@form:cnt:assistant_tabs:assistant_tools_dialog"
                        resetValues="true"
                        oncomplete="PF('assistantToolsDialog').show()"
                        />
-      <p:commandButton action="#{assistantToolsBean.removeTool(tool)}"
+      <p:commandButton action="#{assistantToolsBean.removeTool(toolName)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"
                        icon="pi pi-trash"
@@ -72,40 +73,25 @@
     </p:messages>
     
     <h:panelGroup id="assistant_tools_panel" class="mt-2" layout="block"
-                  rendered="#{assistantToolsBean.editingTool != null}">
+                  rendered="#{assistantToolsBean.editingToolName != null}">
       <div class="ui-fluid formgrid grid">
-
-        <div class="field col-12 md:col-6">
-          <p:outputLabel value="#{assistantBundle.type}:" for="@next" />
-          <p:selectOneMenu value="#{assistantToolsBean.editingTool.type}">
-            <p:ajax event="valueChange" process="@this" update="assistant_tools_panel" />
-            <f:selectItem itemValue="code_interpreter" itemLabel="code_interpreter" />
-            <f:selectItem itemValue="retrieval" itemLabel="retrieval" />
-            <f:selectItem itemValue="function" itemLabel="function" />            
-          </p:selectOneMenu>
-        </div>
         
-        <h:panelGroup rendered="#{assistantToolsBean.editingTool.type == 'function'}">
+        <h:panelGroup>
           <div class="field col-12 md:col-6">
             <p:outputLabel for="@next" value="#{assistantBundle.name}" indicateRequired="true" />
-            <p:autoComplete value="#{assistantToolsBean.editingTool.function.name}" 
+            <p:autoComplete value="#{assistantToolsBean.editingToolName}" 
                             maxResults="50" var="toolName" 
                             required="#{not empty param['mainform:assistant_tabs:accept_tool']}"
-                            scrollHeight="200" widgetVar="filenameSelector"
-                            readonly="#{assistantFilesBean.phase == 2}"
+                            scrollHeight="200"
                             itemLabel="#{toolName}" itemValue="#{toolName}"
                             completeMethod="#{assistantToolsBean.completeToolName}" 
                             forceSelection="true" styleClass="code"
                             pt:spellcheck="false"
                             emptyMessage="">
               <p:ajax event="itemSelect"
-                      listener="#{assistantToolsBean.loadFunction()}"
-                      process="@this"
-                      update="function_desc function_params" />
-              <p:ajax event="blur"
-                      listener="#{assistantToolsBean.onBlur()}"
-                      process="@this"
-                      update="@none" />
+                      listener="#{assistantToolsBean.loadToolSpecification()}"
+                      update="tool_desc tool_params"
+                      process="@this" />
               <p:column>
                 <span class="code">#{toolName}</span>
               </p:column>
@@ -114,13 +100,14 @@
 
           <h:panelGroup class="field col-12" layout="block">
             <p:outputLabel value="#{assistantBundle.description}:" for="@next" />
-            <p:inputTextarea id="function_desc"
-                             value="#{assistantToolsBean.editingTool.function.description}" readonly="true" />
+            <p:inputTextarea id="tool_desc"
+                             value="#{assistantToolsBean.toolSpecification.description()}" readonly="true" />
           </h:panelGroup>
 
           <div class="field col-12">          
-            <p:dataTable id="function_params"
-                         value="#{assistantToolsBean.functionParameterNames}" var="name"
+            <p:dataTable id="tool_params"
+                         value="#{assistantToolsBean.toolSpecification.parameters().properties().keySet()}" 
+                         var="paramName"
                          stripedRows="true" size="small"
                          resizableColumns="false" showGridlines="true"
                          emptyMessage="#{objectBundle.no_data}">
@@ -128,15 +115,15 @@
                 #{assistantBundle.parameters}
               </f:facet>
               <p:column headerText="#{assistantBundle.name}" styleClass="col-3">
-                <span class="code white-space-nowrap #{assistantToolsBean.isFunctionParameterRequired(name) ? 'font-semibold' : ''}">
-                  #{name} #{assistantToolsBean.isFunctionParameterRequired(name) ? "*" : ""}
+                <span class="code white-space-nowrap #{assistantToolsBean.isParameterRequired(paramName) ? 'font-semibold' : ''}">
+                  #{paramName}#{assistantToolsBean.isParameterRequired(paramName) ? "*" : ""}
                 </span>
               </p:column>
               <p:column headerText="#{assistantBundle.type}" styleClass="col-3">
-                <span class="code">#{assistantToolsBean.getFunctionParameter(name).type}</span>
+                <span class="code">#{assistantToolsBean.getParameterType(paramName)}</span>
               </p:column>
               <p:column headerText="#{assistantBundle.description}" styleClass="col-6">
-                #{assistantToolsBean.getFunctionParameter(name).description}
+                #{assistantToolsBean.getParameterDescription(paramName)}
               </p:column>
             </p:dataTable>
           </div>

@@ -9,10 +9,12 @@
                 xmlns:sf="http://faces.santfeliu.org">
 
   <h:outputStylesheet library="css" name="assistant.css" />
+  <h:outputScript library="js" name="showdown.js" />
+  <h:outputScript library="js" name="assistant.js" />
 
   <div class="flex flex-column h-full">
-    <div id="assistant_toolbar"
-         class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+    <h:panelGroup layout="block" id="assistant_toolbar"
+         styleClass="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
       <div class="flex-grow-0 text-left align-items-center flex" style="color:var(--text-color)">
         <p:commandButton title="#{assistantBundle.assistants}"
@@ -29,9 +31,9 @@
                          rendered="#{assistantBean.isEditable(assistantBean.assistant)}"
                          process="@form:cnt" update="@form:cnt" />
       </div>
-    </div>
+    </h:panelGroup>
 
-    <p:messages showSummary="true" styleClass="messages pl-3 pr-3"
+    <p:messages showSummary="true" styleClass="messages pl-3 pr-3 mr-3"
                 showIcon="true" closable="true" forIgnores="growl">
       <p:autoUpdate />
     </p:messages>
@@ -44,17 +46,22 @@
 
         <h:panelGroup id="floating_bar" layout="block"
                       styleClass="absolute top-0 right-0 p-2 flex surface-0 border-round">
+            <p:selectBooleanButton value="#{threadsBean.debugEnabled}" styleClass="mini"
+                                   onIcon="fa fa-bug" offIcon="fa fa-bug"
+                                   onLabel="Debug on" offLabel="Debug off"> 
+              <p:ajax process="@this" update="@none" />
+            </p:selectBooleanButton>
             <p:commandButton value="#{objectBundle.create}"
                              title="#{objectBundle.create}"
                              action="#{threadsBean.createThread}"
                              icon="pi pi-plus-circle"
-                             rendered="#{threadsBean.threadId != null}"
-                             styleClass="white-space-nowrap mini"
+                             rendered="#{threadsBean.thread.isPersistent()}"
+                             styleClass="white-space-nowrap mini ml-2"
                              process="@form:cnt" update="@form:cnt" />
             <p:commandButton value="#{objectBundle.delete}"
                              title="#{objectBundle.delete}"
                              action="#{threadsBean.deleteThread}"
-                             rendered="#{threadsBean.threadId != null}"
+                             rendered="#{threadsBean.thread.isPersistent()}"
                              icon="pi pi-trash"
                              styleClass="ml-2 white-space-nowrap mini"
                              process="@form:cnt" update="@form:cnt">
@@ -70,49 +77,26 @@
                       styleClass="ml-2 mini white-space-nowrap threads_panel_button first_time" />
         </h:panelGroup>
 
-        <h:panelGroup id="message_list" layout="block"
-                      styleClass="flex-grow-1 flex-shrink-1 message_list overflow-y-auto overflow-x-hidden">
-
+        <h:panelGroup layout="block" id="message_list"
+             class="flex-grow-1 flex-shrink-1 message_list overflow-y-auto overflow-x-hidden">
           <ul class="list-none pl-0">
-            <ui:repeat value="#{threadsBean.messageList.data}" var="message" varStatus="status">
-              <li>
-                <div class="flex m-2 mb-4 message #{message.role} #{message.id == null ? 'internal' : ''}">
-                  <div class="flex-grow-0">
-                    <div class="avatar">
-                      <span />
-                    </div>
-                  </div>
-                  <div class="flex-grow-1 flex flex-column ml-2 overflow-x-hidden">
-                    <div>
-                      <span class="role">#{message.role == 'user' ? assistantBundle.you : assistantBundle.assistant}</span>
-                      <span class="time">#{threadsBean.formatMessageDate(message, status.index)}</span>
-                    </div>
-                    <div class="content mt-1">
-                      <h:outputText value="#{threadsBean.formatMessageContent(message)}" escape="false" />
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ui:repeat>
-
-            <li id="typing" class="hidden">
-              <div class="stage ml-5">
-                <div class="dot-typing" />
-              </div>
-            </li>
           </ul>
         </h:panelGroup>
 
         <h:panelGroup id="uploaded_file" layout="block">
           <h:panelGroup styleClass="mb-1"
                         rendered="#{threadsBean.attachedFilename != null}">
-            <span class="pi pi-file" /> #{threadsBean.attachedFilename}
+            <a href="/documents/#{threadsBean.attachedDocId}" target="_blank" 
+               class="no-underline">
+              <span class="pi pi-file" /> #{threadsBean.attachedFilename}
+            </a>
             <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
                              process="@this" update="input_panel uploaded_file"
                              title="#{objectBundle.delete}"
                              icon="pi pi-trash"
                              styleClass="rounded-button ui-button-flat" />
           </h:panelGroup>
+          <div class="attached_docid hidden" aria-hidden="true">#{threadsBean.attachedDocId}</div>
         </h:panelGroup>
 
         <p:fileUpload listener="#{threadsBean.uploadFile}"
@@ -130,14 +114,17 @@
                            pt:spellcheck="false"
                            widgetVar="textarea"
                            onkeyup="updateSendButton()"
-                           styleClass="w-full" rows="3" 
+                           styleClass="w-full" rows="3"
                            placeholder="#{threadsBean.inputPlaceholder}" />
           <div class="flex flex-column">
-            <p:commandButton action="#{threadsBean.createMessage()}"
-                             process="@form:cnt" update="@form:cnt"
+            <p:commandButton action="#{threadsBean.sendMessage()}"
+                             process="@form:cnt" 
+                             update="question threads_panel uploaded_file floating_bar"
                              widgetVar="sendButton"
                              title="#{objectBundle.send}"
-                             oncomplete="scrollMessages()"
+                             onclick="sendMessage()"
+                             global="false"
+                             oncomplete="showResponse('#{threadsBean.threadId}')"
                              icon="pi pi-send" styleClass="ui-button-outlined ml-2" />
             <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
                              process="@this" update="uploaded_file"
@@ -149,7 +136,7 @@
 
       </div>
 
-      <p:panel styleClass="threads_panel flex-grow-0 v-full first_time"
+      <p:panel id="threads_panel" styleClass="threads_panel flex-grow-0 v-full first_time"
                widgetVar="threadsPanel" closeSpeed="50">
         <f:facet name="header">
           <i class="fa fa-comment-dots vertical-align-middle m-1"></i>
@@ -162,101 +149,34 @@
         </f:facet>
         <ul>
           <ui:repeat value="#{threadsBean.threads}" var="thread">
-            <li class="p-2">
-              <p:commandLink value="#{thread.metadata.title}"
-                             action="#{threadsBean.changeThread(thread.id)}"
+            <li class="p-2 #{threadsBean.threadId == thread.threadId ? 'current' : ''}">
+              <p:commandLink action="#{threadsBean.changeThread(thread.threadId)}"
                              process="@this"
-                             update="@form:cnt:message_list @form:cnt:floating_bar"
-                             oncomplete="endPanel();scrollMessages()" />
+                             update="@form:cnt:input_panel @form:cnt:message_list @form:cnt:threads_panel @form:cnt:floating_bar"
+                             styleClass="flex flex-column no-underline"
+                             oncomplete="endPanel();showResponse('#{thread.threadId}');">
+                
+                <h:outputText value="#{thread.dateTime}" styleClass="time"
+                              converter="DateTimeConverter" /> 
+                <div>#{thread.description}</div>                
+              </p:commandLink>
             </li>
           </ui:repeat>
         </ul>
       </p:panel>
 
     </div>
-  </div>    
-    
-  <p:remoteCommand action="#{threadsBean.assist}" name="assist"
-                   process="@this" update="@form:cnt:message_list @form:cnt:question"
-                   global="false"
-                   onstart="console.info('assist')"
-                   oncomplete="scrollMessages()" />
+  </div>
 
-  <ui:include src="/pages/assistant/assistants_dialog.xhtml" />  
-  
+  <ui:include src="/pages/assistant/assistants_dialog.xhtml" />
+
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
 
   <script>
-    function updateSendButton()
-    {
-      var text = PF("textarea").getJQ().val().trim();
-      var sendButton = PF("sendButton");
-      if (text.length === 0)
-      {
-        sendButton.disable();
-      }
-      else
-      {
-        sendButton.enable();
-      }
-    }
-
-    function assistImmediately()
-    {
-      document.getElementById("typing").classList.remove("hidden");
-      assist();
-    }
-
-    function assistDelayed()
-    {
-      document.getElementById("typing").classList.remove("hidden");
-      setTimeout(assist, 1000);
-    }
-
-    function showPanel()
-    {
-      var panel = PF("threadsPanel");
-      panel.show();
-      panel.getJQ().css("display", "flex");
-      panel.getJQ().removeClass("first_time");
-
-      var threadsPanelButton = PF("threadsPanelButton");
-      threadsPanelButton.getJQ().css("display", "none");
-      threadsPanelButton.getJQ().removeClass("first_time");
-
-      return false;
-    }
-
-    function closePanel()
-    {
-      var panel = PF("threadsPanel");
-      panel.close();
-
-      var threadsPanelButton = PF("threadsPanelButton");
-      threadsPanelButton.getJQ().css("display", "inline");
-
-      return false;
-    }
-
-    function endPanel()
-    {
-      if (700 > window.innerWidth)
-      {
-        closePanel();
-      }
-    }
-
-    function scrollMessages()
-    {
-      var elems = document.getElementsByClassName("message_list");
-      if (elems.length > 0)
-      {
-        var elem = elems[0];
-        elem.scrollTop = elem.scrollHeight;
-      }
-    }
-
+    var aiLabel = "#{assistantBundle.assistant}";
+    var userLabel = "#{assistantBundle.you}";
+    
     jQuery(document).ready(() => updateSendButton());
 
     if (window.assistantResizeDetection === undefined)
@@ -264,9 +184,8 @@
       window.addEventListener("resize", scrollMessages);
       window.assistantResizeDetection = true;
     }
-
     window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
     document.title = "#{userSessionBean.selectedMenuItem.label}";
   </script>
-
+    
 </ui:composition>

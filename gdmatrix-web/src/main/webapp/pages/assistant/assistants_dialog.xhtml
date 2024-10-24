@@ -24,8 +24,10 @@
     <ul class="assistant_list">
       <ui:repeat value="#{assistantBean.assistants}" var="assistant">
         <li>
-          <p:commandLink action="#{assistantBean.changeAssistant(assistant)}"
-                         process="@this" update="@form:cnt" styleClass="block"
+          <p:commandLink action="#{assistantBean.changeAssistant(assistant.assistantId)}"
+                         process="@this" 
+                         update="#{assistantBean.view == 'threads' ? '@form:cnt:assistants_dialog @form:cnt:assistant_toolbar' : '@form:cnt'}" 
+                         styleClass="block"
                          oncomplete="if (scrollMessages) scrollMessages()">
             #{assistant.name}
           </p:commandLink>

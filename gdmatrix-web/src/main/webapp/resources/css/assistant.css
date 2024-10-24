@@ -12,6 +12,11 @@
   padding-left:0;
 }
 
+.ui-panel.threads_panel .time
+{
+  color: var(--surface-500);
+}
+
 .ui-panel.threads_panel > .ui-panel-content
 {
   height: 100%;
@@ -27,6 +32,11 @@
 .threads_panel_button.first_time
 {
   display: none;
+}
+
+.ui-panel.threads_panel ul > li.current
+{
+  font-weight: bold;
 }
 
 @media only screen and (max-width: 700px) 
@@ -59,7 +69,7 @@
   }  
 }
 
-.message_list li:first-child
+.message_list > ul > li:first-child
 {
   margin-top:50px;
 }
@@ -71,29 +81,54 @@
   width: 32px;
   height: 32px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.message.user .avatar
+.message.USER .avatar
 {
   background: var(--primary-color);
 }
 
-.message.assistant .avatar
+.message.USER .avatar > span
+{
+  color: var(--primary-color-text);
+}
+
+.message.AI .avatar
 {
   background-color: #c0c0c0;
 }
 
-.message.user .avatar > span
+.message.AI .avatar > span
 {
-  background-color: var(--primary-color-text);
-  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 26 26" fill="currentColor" color="currentColor"><path d="M16.8035889,14.4605103c2.0820923-1.2811279,3.4776611-3.5723267,3.4776611-6.1885376  C20.28125,4.262207,17.0146484,1,13,1S5.71875,4.262207,5.71875,8.2719727c0,2.6162109,1.3955688,4.9074097,3.4776611,6.1885376  c-4.4957886,1.0071411-7.6505127,3.7583618-7.6505127,7.0878296C1.5458984,24.2729492,8.7460938,25,13,25  s11.4541016-0.7270508,11.4541016-3.4516602C24.4541016,18.2188721,21.2993774,15.4676514,16.8035889,14.4605103z   M7.21875,8.2719727C7.21875,5.0893555,9.8125,2.5,13,2.5s5.78125,2.5893555,5.78125,5.7719727S16.1875,14.043457,13,14.043457  S7.21875,11.4545898,7.21875,8.2719727z M13,23.5c-6.1149902,0-9.7753906-1.289978-9.9536743-1.9567261  C3.0509644,18.2345581,7.5145874,15.543457,13,15.543457c5.4848633,0,9.9481201,2.6906128,9.9536133,5.9988403  C22.7797852,22.2085571,19.1190186,23.5,13,23.5z" /></svg>') no-repeat center / contain;
-  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 26 26" fill="currentColor" color="currentColor"><path d="M16.8035889,14.4605103c2.0820923-1.2811279,3.4776611-3.5723267,3.4776611-6.1885376  C20.28125,4.262207,17.0146484,1,13,1S5.71875,4.262207,5.71875,8.2719727c0,2.6162109,1.3955688,4.9074097,3.4776611,6.1885376  c-4.4957886,1.0071411-7.6505127,3.7583618-7.6505127,7.0878296C1.5458984,24.2729492,8.7460938,25,13,25  s11.4541016-0.7270508,11.4541016-3.4516602C24.4541016,18.2188721,21.2993774,15.4676514,16.8035889,14.4605103z   M7.21875,8.2719727C7.21875,5.0893555,9.8125,2.5,13,2.5s5.78125,2.5893555,5.78125,5.7719727S16.1875,14.043457,13,14.043457  S7.21875,11.4545898,7.21875,8.2719727z M13,23.5c-6.1149902,0-9.7753906-1.289978-9.9536743-1.9567261  C3.0509644,18.2345581,7.5145874,15.543457,13,15.543457c5.4848633,0,9.9481201,2.6906128,9.9536133,5.9988403  C22.7797852,22.2085571,19.1190186,23.5,13,23.5z" /></svg>') no-repeat center / contain;
-  width: 16px;
-  height: 16px;
-  display: block;  
+  color: #404040;
+  font-size: 16px;
 }
 
-.message.assistant .avatar > span
+.message.TOOL_EXECUTION_RESULT .avatar
+{
+  background-color: #c0c020;
+}
+
+.message.TOOL_EXECUTION_RESULT .avatar > span
+{
+  color: black;
+}
+
+.message.TOOL_EXECUTION_RESULT .content
+{
+  font-family: monospace;
+}
+
+._message.TOOL_EXECUTION_RESULT .avatar
+{
+  background: orange;
+}
+
+._message.TOOL_EXECUTION_RESULT .avatar > span
 {
   background-color: black;
   mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 24 24" color="currentColor"><path d="M22.418 9.822a5.903 5.903 0 0 0-.52-4.91 6.1 6.1 0 0 0-2.822-2.513 6.204 6.204 0 0 0-3.78-.389A6.055 6.055 0 0 0 13.232.518 6.129 6.129 0 0 0 10.726 0a6.185 6.185 0 0 0-3.615 1.153A6.052 6.052 0 0 0 4.88 4.187a6.102 6.102 0 0 0-2.344 1.018A6.008 6.008 0 0 0 .828 7.087a5.981 5.981 0 0 0 .754 7.09 5.904 5.904 0 0 0 .52 4.911 6.101 6.101 0 0 0 2.821 2.513 6.205 6.205 0 0 0 3.78.389 6.057 6.057 0 0 0 2.065 1.492 6.13 6.13 0 0 0 2.505.518 6.185 6.185 0 0 0 3.617-1.154 6.052 6.052 0 0 0 2.232-3.035 6.101 6.101 0 0 0 2.343-1.018 6.009 6.009 0 0 0 1.709-1.883 5.981 5.981 0 0 0-.756-7.088Zm-9.143 12.609a4.583 4.583 0 0 1-2.918-1.04c.037-.02.102-.056.144-.081l4.844-2.76a.783.783 0 0 0 .397-.68v-6.738L17.79 12.3a.072.072 0 0 1 .04.055v5.58a4.473 4.473 0 0 1-1.335 3.176 4.596 4.596 0 0 1-3.219 1.321Zm-9.793-4.127a4.432 4.432 0 0 1-.544-3.014c.036.021.099.06.144.085l4.843 2.76a.796.796 0 0 0 .795 0l5.913-3.369V17.1a.071.071 0 0 1-.029.062L9.708 19.95a4.617 4.617 0 0 1-3.458.447 4.556 4.556 0 0 1-2.768-2.093ZM2.208 7.872A4.527 4.527 0 0 1 4.58 5.9l-.002.164v5.52a.768.768 0 0 0 .397.68l5.913 3.369-2.047 1.166a.075.075 0 0 1-.069.006l-4.896-2.792a4.51 4.51 0 0 1-2.12-2.73 4.45 4.45 0 0 1 .452-3.411Zm16.818 3.861-5.913-3.368 2.047-1.166a.074.074 0 0 1 .07-.006l4.896 2.789a4.526 4.526 0 0 1 1.762 1.815 4.448 4.448 0 0 1-.418 4.808 4.556 4.556 0 0 1-2.049 1.494v-5.686a.767.767 0 0 0-.395-.68Zm2.038-3.025a6.874 6.874 0 0 0-.144-.085l-4.843-2.76a.797.797 0 0 0-.796 0L9.368 9.23V6.9a.072.072 0 0 1 .03-.062l4.895-2.787a4.608 4.608 0 0 1 4.885.207 4.51 4.51 0 0 1 1.599 1.955c.333.788.433 1.654.287 2.496ZM8.255 12.865 6.208 11.7a.071.071 0 0 1-.04-.056v-5.58c0-.854.248-1.69.713-2.412a4.54 4.54 0 0 1 1.913-1.658 4.614 4.614 0 0 1 4.85.616c-.037.02-.102.055-.144.08L8.657 5.452a.782.782 0 0 0-.398.68l-.004 6.734ZM9.367 10.5 12.001 9l2.633 1.5v3L12.001 15l-2.634-1.5v-3Z"></path></svg>') no-repeat center / contain;
@@ -101,21 +136,6 @@
   width: 16px;
   height: 16px;
   display: block;
-}
-
-.message.internal .content
-{
-  font-family: monospace;
-}
-
-.message.internal .avatar
-{
-  background: orange;
-}
-
-.message.internal .avatar > span
-{
-  background-color: black;  
 }
 
 .message .content
@@ -134,6 +154,16 @@
   margin-left: 0.25rem;
 }
 
+@keyframes blink
+{
+  from, to {
+    color: transparent;
+  }
+  50% {
+    color: var(--text-color);
+  }
+}
+
 .message .content pre
 {
   background-color: var(--surface-200);
@@ -149,7 +179,12 @@
   font-family: monospace !important;
 }
 
-.dot-typing {
+.dot-typing
+{
+  margin-left: 24px;
+}
+
+.dot-typing > div {
   position: relative;
   left: -9999px;
   width: 8px;

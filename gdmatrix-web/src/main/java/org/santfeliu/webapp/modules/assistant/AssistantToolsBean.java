@@ -31,32 +31,22 @@
 package org.santfeliu.webapp.modules.assistant;
 
 import com.google.gson.Gson;
+import dev.langchain4j.agent.tool.ToolParameters;
+import dev.langchain4j.agent.tool.ToolSpecification;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Scriptable;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.util.DictionaryUtils;
-import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.assistant.openai.FunctionParameter;
-import org.santfeliu.webapp.modules.assistant.openai.FunctionParameters;
-import org.santfeliu.webapp.modules.assistant.openai.FunctionDefinition;
-import org.santfeliu.webapp.modules.assistant.openai.OpenAI;
-import org.santfeliu.webapp.modules.assistant.openai.Tool;
-import static org.santfeliu.webapp.modules.assistant.openai.Tool.FUNCTION_TOOL;
+import org.santfeliu.webapp.modules.assistant.langchain4j.ToolStore;
 
 /**
  *
@@ -72,24 +62,38 @@ public class AssistantToolsBean extends WebBean implements Serializable
   public static final String ASSISTANT_TOOL_PURPOSE_VALUE = "assistant";
   public static final String ASSISTANT_TOOL_DEF_FUNCTION = "getFunctionDefinition";
 
-  Tool editingTool;
-  Tool previousTool;
-
-  transient OpenAI openAI = new OpenAI();
+  private String editingToolName;
+  ToolSpecification toolSpecification;
 
   @Inject
   AssistantBean assistantBean;
 
-  @PostConstruct
-  public void init()
+  public String getEditingToolName()
   {
-    String apiKey = MatrixConfig.getProperty("openai.apiKey");
-    openAI.setApiKey(apiKey);
+    return editingToolName;
   }
 
-  public Tool getEditingTool()
+  public void setEditingToolName(String toolName)
   {
-    return editingTool;
+    editingToolName = toolName;
+  }
+
+  public ToolSpecification getToolSpecification()
+  {
+    return toolSpecification;
+  }
+
+  public String getToolDescription(String toolName)
+  {
+    try
+    {
+      return ToolStore.getInstance().getToolSpecification(toolName).description();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
   }
 
   public List<String> completeToolName(String name)
@@ -99,13 +103,17 @@ public class AssistantToolsBean extends WebBean implements Serializable
     {
       DocumentFilter filter = new DocumentFilter();
       filter.setDocTypeId(ASSISTANT_TOOL_DOCTYPEID);
+
       Property property = new Property();
       property.setName(ASSISTANT_TOOL_PURPOSE_PROPERTY);
       property.getValue().add(ASSISTANT_TOOL_PURPOSE_VALUE);
       filter.getProperty().add(property);
+
       property = new Property();
       property.setName(ASSISTANT_TOOL_NAME_PROPERTY);
       property.getValue().add("%" + name + "%");
+      filter.getProperty().add(property);
+
       filter.getOutputProperty().add(ASSISTANT_TOOL_NAME_PROPERTY);
       List<Document> documents =
         assistantBean.getDocPort().findDocuments(filter);
@@ -123,57 +131,12 @@ public class AssistantToolsBean extends WebBean implements Serializable
     return results;
   }
 
-  public void loadFunction()
+  public void loadToolSpecification()
   {
     try
     {
-      FunctionDefinition function = editingTool.getFunction();
-      String functionName = function.getName();
-
-      FunctionParameters functionParameters = new FunctionParameters();
-      function.setParameters(functionParameters);
-      Map<String, FunctionParameter> properties = new HashMap<>();
-      List<String> requiredParameters = new ArrayList<>();
-      functionParameters.setProperties(properties);
-      functionParameters.setRequired(requiredParameters);
-
-      ScriptClient scriptClient = new ScriptClient();
-      scriptClient.refreshCache();
-      scriptClient.executeScript(functionName);
-      Scriptable scope = scriptClient.getScope();
-      Object value = scriptClient.get(ASSISTANT_TOOL_DEF_FUNCTION);
-      if (value instanceof Callable)
-      {
-        Callable fn = (Callable)value;
-        Scriptable definition = (Scriptable)scriptClient.execute(fn);
-        function.setDescription((String)definition.get("description", scope));
-        Scriptable parameters = (Scriptable)definition.get("parameters", scope);
-        if (parameters != null)
-        {
-          for (Object id : parameters.getIds())
-          {
-            if (id instanceof String)
-            {
-              String paramName = (String)id;
-              Scriptable scriptParam = (Scriptable)parameters.get(paramName, scope);
-
-              FunctionParameter parameter = new FunctionParameter();
-              parameter.setType((String)scriptParam.get("type", scope));
-              parameter.setDescription((String)scriptParam.get("description", scope));
-              boolean required = Boolean.TRUE.equals(scriptParam.get("required", scope));
-              properties.put(paramName, parameter);
-              if (required)
-              {
-                requiredParameters.add(paramName);
-              }
-            }
-          }
-        }
-      }
-      else
-      {
-        function.setDescription(functionName);
-      }
+      toolSpecification =
+        ToolStore.getInstance().getToolSpecification(editingToolName, true);
     }
     catch (Exception ex)
     {
@@ -181,116 +144,69 @@ public class AssistantToolsBean extends WebBean implements Serializable
     }
   }
 
-  public void onBlur()
+  public boolean isParameterRequired(String name)
   {
-    System.out.println("ON BLUR: " + editingTool.getFunction().getName());
-    FunctionDefinition function = editingTool.getFunction();
-    if (function.getName() == null)
-    {
-      function.setDescription(null);
-      function.setParameters(null);
-      PrimeFaces.current().ajax().update(
-        "mainform:assistant_tabs:function_desc",
-        "mainform:assistant_tabs:function_params");
-    }
+    if (toolSpecification == null) return false;
+    return toolSpecification.parameters().required().contains(name);
   }
 
-  public List<String> getFunctionParameterNames()
+  public String getParameterType(String name)
   {
-    FunctionDefinition function = editingTool.getFunction();
-    if (function == null) return Collections.EMPTY_LIST;
-
-    FunctionParameters parameters = function.getParameters();
-    if (parameters == null) return Collections.EMPTY_LIST;
-
-    Map<String, FunctionParameter> properties = parameters.getProperties();
-    if (properties == null) return Collections.EMPTY_LIST;
-
-    return new ArrayList<>(properties.keySet());
+    if (toolSpecification == null) return null;
+    return (String)toolSpecification.parameters().properties().get(name).get("type");
   }
 
-  public FunctionParameter getFunctionParameter(String name)
+  public String getParameterDescription(String name)
   {
-    return editingTool.getFunction().getParameters().getProperties().get(name);
-  }
-
-  public boolean isFunctionParameterRequired(String name)
-  {
-    return editingTool.getFunction().getParameters().getRequired().contains(name);
+    if (toolSpecification == null) return null;
+    return (String)toolSpecification.parameters().properties().get(name).get("description");
   }
 
   public void addTool()
   {
-    previousTool = null;
-    editingTool = new Tool();
-    editingTool.setType(FUNCTION_TOOL);
-    editingTool.setFunction(new FunctionDefinition());
+    this.editingToolName = "";
+    toolSpecification = null;
     assistantBean.setDialogVisible(true);
   }
 
-  public void editTool(Tool tool)
+  public void editTool(String toolName)
   {
-    previousTool = tool;
-    Gson gson = new Gson();
-    String json = gson.toJson(tool);
-    editingTool = gson.fromJson(json, Tool.class);
-    assistantBean.setDialogVisible(true);
+    try
+    {
+      toolSpecification =
+        ToolStore.getInstance().getToolSpecification(toolName, true);
+      this.editingToolName = toolName;
+      assistantBean.setDialogVisible(true);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
-  public void removeTool(Tool tool)
+  public void removeTool(String toolName)
   {
-    assistantBean.getAssistant().getTools().remove(tool);
+    assistantBean.getAssistant().getToolNames().remove(toolName);
   }
 
   public void acceptTool()
   {
-    if (!FUNCTION_TOOL.equals(editingTool.getType()))
+    if (!StringUtils.isBlank(editingToolName))
     {
-      editingTool.setFunction(null);
-    }
-
-    List<Tool> tools = assistantBean.getAssistant().getTools();
-
-    if (previousTool != null && !sameTool(previousTool, editingTool))
-    {
-      tools.remove(previousTool);
-    }
-
-    int i = 0;
-    while (i < tools.size())
-    {
-      if (sameTool(tools.get(i), editingTool))
+      editingToolName = editingToolName.trim();
+      List<String> toolNames = assistantBean.getAssistant().getToolNames();
+      if (!toolNames.contains(editingToolName))
       {
-        break;
+        toolNames.add(editingToolName);
       }
-      i++;
     }
-    if (i == tools.size())
-    {
-      tools.add(editingTool);
-    }
-    else
-    {
-      tools.set(i, editingTool);
-    }
-    editingTool = null;
-    previousTool = null;
+    editingToolName = null;
     assistantBean.setDialogVisible(false);
   }
 
   public void cancelTool()
   {
-    editingTool = null;
-    previousTool = null;
+    editingToolName = null;
     assistantBean.setDialogVisible(false);
-  }
-
-  public boolean sameTool(Tool a, Tool b)
-  {
-    if (!a.getType().equals(b.getType())) return false;
-
-    if (!FUNCTION_TOOL.equals(a.getType())) return true;
-
-    return a.getFunction().getName().equals(b.getFunction().getName());
   }
 }

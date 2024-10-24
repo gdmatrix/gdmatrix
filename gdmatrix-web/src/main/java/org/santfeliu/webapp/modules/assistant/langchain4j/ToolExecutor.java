@@ -28,49 +28,50 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.assistant.openai;
+package org.santfeliu.webapp.modules.assistant.langchain4j;
 
-import com.google.gson.annotations.SerializedName;
-import java.util.Map;
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import org.apache.commons.lang.StringUtils;
+import org.mozilla.javascript.Callable;
+import org.santfeliu.util.script.ScriptClient;
 
 /**
  *
  * @author realor
  */
-public class Thread extends OpenAIObject
+public class ToolExecutor extends ScriptClient
 {
-  String id;
-  @SerializedName("created_at")
-  long createdAt;
-  Map metadata;
-
-  public String getId()
+  public String execute(ToolExecutionRequest request)
   {
-    return id;
-  }
+    String functionName = request.name();
+    String functionArgs = request.arguments();
+    String resultText = null;
+    try
+    {
+      executeScript(functionName);
 
-  public void setId(String id)
-  {
-    this.id = id;
-  }
-
-  public long getCreatedAt()
-  {
-    return createdAt;
-  }
-
-  public void setCreatedAt(long createdAt)
-  {
-    this.createdAt = createdAt;
-  }
-
-  public Map getMetadata()
-  {
-    return metadata;
-  }
-
-  public void setMetadata(Map metadata)
-  {
-    this.metadata = metadata;
+      Object value = get(functionName);
+      if (value instanceof Callable)
+      {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(functionName);
+        buffer.append("(");
+        if (!StringUtils.isBlank(functionArgs))
+        {
+          buffer.append(functionArgs);
+        }
+        buffer.append(")");
+        String cmd = buffer.toString();
+        Object result = execute(cmd);
+        resultText = String.valueOf(result);
+      }
+      if (resultText == null) resultText = "Function executed";
+    }
+    catch (Exception ex)
+    {
+      // hide error to assistant
+      resultText = "Function not available";
+    }
+    return resultText;
   }
 }

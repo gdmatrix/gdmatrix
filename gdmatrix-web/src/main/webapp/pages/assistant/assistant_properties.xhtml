@@ -6,16 +6,17 @@
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <div class="ui-fluid formgrid grid">
-    <div class="field col-12 md:col-6 lg:col-4">
+    <div class="field col-12 md:col-6">
       <p:outputLabel for="@next" value="AssistantId:" />
-      <p:inputText value="#{assistantBean.assistant.id}" 
+      <p:inputText value="#{assistantBean.assistant.assistantId}" 
                    readonly="true" styleClass="code" />
     </div>
 
-    <div class="field col-12">
+    <div class="field col-12 md:col-6">
       <p:outputLabel for="@next" value="#{assistantBundle.name}:" />
       <p:inputText value="#{assistantBean.assistant.name}" />
     </div>
@@ -31,15 +32,53 @@
     </div>
 
     <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="#{assistantBundle.model}:" />
-      <p:selectOneMenu value="#{assistantBean.assistant.model}">
-        <f:selectItems value="#{assistantBean.modelSelectItems}" />
+      <p:outputLabel for="@next" value="Provider:" />
+      <p:selectOneMenu value="#{assistantBean.assistant.provider}">   
+        <f:selectItem itemValue="" itemLabel="" />
+        <f:selectItem itemValue="openai" itemLabel="Open AI" />
+        <f:selectItem itemValue="ollama" itemLabel="Ollama" />        
       </p:selectOneMenu>
+    </div>    
+    
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="#{assistantBundle.model}:" />
+      <p:inputText value="#{assistantBean.assistant.modelName}" />
     </div>
 
-    <div class="field col-12 md:col-3">
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="Api key:" />
+      <p:inputText value="#{assistantBean.assistant.apiKey}" 
+                   styleClass="code" pt:spellcheck="false" />
+    </div>
+    
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="Base url:" />
+      <p:inputText value="#{assistantBean.assistant.baseUrl}" pt:spellcheck="false" />
+    </div>
+
+    <div class="field col-6 md:col-3">
+      <p:outputLabel for="@next" value="Seed:" />
+      <p:inputNumber value="#{assistantBean.assistant.seed}" />
+    </div>
+
+    <div class="field col-6 md:col-3">
+      <p:outputLabel for="@next" value="Max tokens:" />
+      <p:inputNumber value="#{assistantBean.assistant.maxTokens}" />
+    </div>
+    
+    <div class="field col-6 md:col-3">
+      <p:outputLabel for="@next" value="Temperature:" />
+      <p:inputNumber value="#{assistantBean.assistant.temperature}" />
+    </div>
+
+    <div class="field col-6 md:col-3 flex flex-column">
+      <p:outputLabel for="@next" value="Streaming:" />
+      <p:toggleSwitch value="#{assistantBean.assistant.streaming}" />
+    </div>
+    
+    <div class="field col-6 md:col-3">
       <p:outputLabel for="@next" value="#{assistantBundle.readRole}:" />
-      <p:autoComplete value="#{assistantBean.readRoleId}" var="roleId"
+      <p:autoComplete value="#{assistantBean.assistant.readRoleId}" var="roleId"
                       maxResults="20" minQueryLength="1" 
                       itemLabel="#{roleId}" itemValue="#{roleId}" 
                       scrollHeight="200" emptyMessage=""
@@ -50,9 +89,9 @@
       </p:autoComplete>
     </div>
 
-    <div class="field col-12 md:col-3">
+    <div class="field col-6 md:col-3">
       <p:outputLabel for="@next" value="#{assistantBundle.writeRole}:" />
-      <p:autoComplete value="#{assistantBean.writeRoleId}" var="roleId"
+      <p:autoComplete value="#{assistantBean.assistant.writeRoleId}" var="roleId"
                       maxResults="20" minQueryLength="1" 
                       itemLabel="#{roleId}" itemValue="#{roleId}" 
                       scrollHeight="200" emptyMessage=""
@@ -63,14 +102,14 @@
       </p:autoComplete>
     </div>
     
-    <div class="field col-12 md:col-3">
+    <div class="field col-6 md:col-3">
       <p:outputLabel for="@next" value="#{objectBundle.createdBy}:" />
-      <p:inputText value="#{assistantBean.creationUserId}" readonly="true" />
+      <p:inputText value="#{assistantBean.assistant.creationUserId}" readonly="true" />
     </div>
 
-    <div class="field col-12 md:col-3">
+    <div class="field col-6 md:col-3">
       <p:outputLabel for="@next" value="#{objectBundle.changedBy}:" />
-      <p:inputText value="#{assistantBean.changeUserId}" readonly="true" />
+      <p:inputText value="#{assistantBean.assistant.changeUserId}" readonly="true" />
     </div>
     
   </div>

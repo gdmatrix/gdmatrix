@@ -28,33 +28,60 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.assistant.openai;
+package org.santfeliu.webapp.modules.assistant.langchain4j;
 
-import com.google.gson.Gson;
 import java.io.Serializable;
 
 /**
  *
  * @author realor
  */
-public class OpenAIObject implements Serializable
+public class ThreadSummary implements Serializable
 {
-  String object;
+  String threadId;
+  String dateTime;
+  String description;
 
-  public String getObject()
+  public ThreadSummary(String threadId, String dateTime, String description)
   {
-    return object;
+    this.threadId = threadId;
+    this.dateTime = dateTime;
+    this.description = description;
   }
 
-  public void setObject(String object)
+  public String getThreadId()
   {
-    this.object = object;
+    return threadId;
+  }
+
+  public void setThreadId(String threadId)
+  {
+    this.threadId = threadId;
+  }
+
+  public String getDateTime()
+  {
+    return dateTime;
+  }
+
+  public void setDateTime(String dateTime)
+  {
+    this.dateTime = dateTime;
+  }
+
+  public String getDescription()
+  {
+    return description == null ? "" : description;
+  }
+
+  public void setDescription(String description)
+  {
+    this.description = description;
   }
 
   @Override
   public String toString()
   {
-    Gson gson = new Gson();
-    return gson.toJson(this);
+    return threadId + "/" + description;
   }
 }

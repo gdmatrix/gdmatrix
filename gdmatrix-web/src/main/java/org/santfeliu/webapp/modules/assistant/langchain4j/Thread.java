@@ -28,27 +28,75 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.assistant.openai;
+package org.santfeliu.webapp.modules.assistant.langchain4j;
 
+import dev.langchain4j.data.message.ChatMessage;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  *
  * @author realor
  */
-public class FunctionParameter implements Serializable
+public class Thread implements Serializable
 {
-  String type;
-  String description;
+  private String threadId;
 
-  public String getType()
+  private String docId;
+
+  private String description;
+
+  private String dateTime;
+
+  private String userId;
+
+  private List<ChatMessage> messages = new ArrayList<>();
+
+  public Thread()
   {
-    return type;
+    this(UUID.randomUUID().toString());
   }
 
-  public void setType(String type)
+  public Thread(String threadId)
   {
-    this.type = type;
+    this.threadId = threadId;
+  }
+
+  public String getThreadId()
+  {
+    return threadId;
+  }
+
+  public void setThreadId(String threadId)
+  {
+    this.threadId = threadId;
+  }
+
+  public String getDateTime()
+  {
+    return dateTime;
+  }
+
+  public void setDateTime(String dateTime)
+  {
+    this.dateTime = dateTime;
+  }
+
+  public String getDocId()
+  {
+    return docId;
+  }
+
+  public void setDocId(String docId)
+  {
+    this.docId = docId;
+  }
+
+  public boolean isPersistent()
+  {
+    return docId != null;
   }
 
   public String getDescription()
@@ -59,5 +107,25 @@ public class FunctionParameter implements Serializable
   public void setDescription(String description)
   {
     this.description = description;
+  }
+
+  public String getUserId()
+  {
+    return userId;
+  }
+
+  public void setUserId(String userId)
+  {
+    this.userId = userId;
+  }
+
+  public List<ChatMessage> getMessages()
+  {
+    return messages;
+  }
+
+  public void setMessages(List<ChatMessage> messages)
+  {
+    this.messages = messages;
   }
 }
