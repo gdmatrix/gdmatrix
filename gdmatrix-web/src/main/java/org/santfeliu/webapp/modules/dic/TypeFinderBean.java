@@ -196,11 +196,12 @@ public class TypeFinderBean extends FinderBean
     if (!StringUtils.isBlank(typePath) && 
       !typeTypeBean.getRootTypeId().equals(typePath))
     {
-      if (!typePath.startsWith(DictionaryConstants.TYPE_PATH_SEPARATOR) 
-        || !typePath.endsWith(DictionaryConstants.TYPE_PATH_SEPARATOR + "%"))
+      if (!typePath.contains("%"))
       {
-        typePath = DictionaryConstants.TYPE_PATH_SEPARATOR + typePath +
-          DictionaryConstants.TYPE_PATH_SEPARATOR + "%";
+        boolean isRoot = DictionaryConstants.rootTypeIds.contains(typePath);
+        typePath = (!isRoot ? "%" : "") + 
+          DictionaryConstants.TYPE_PATH_SEPARATOR + typePath +
+          DictionaryConstants.TYPE_PATH_SEPARATOR + "%";        
       }
       filter.setTypePath(typePath);
     }

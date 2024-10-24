@@ -211,7 +211,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
     public void construct(ObjectBean objectBean)
     {
       TypeFinderBean typeFinderBean = (TypeFinderBean)objectBean.getFinderBean();
-      typeFinderBean.getFilter().setTypePath("%/" + typeId + "/%");
+      typeFinderBean.getFilter().setTypePath(typeId);
       typeFinderBean.setFilterTabSelector(1);
 
       objectBean.setObjectId(NEW_OBJECT_ID);
