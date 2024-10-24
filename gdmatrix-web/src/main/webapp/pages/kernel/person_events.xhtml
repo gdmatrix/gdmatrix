@@ -97,7 +97,7 @@
          
       <p:column styleClass="text-right white-space-nowrap" exportable="false">
         <p:commandButton icon="pi pi-arrow-circle-right"
-                         action="#{navigatorBean.show('Event', row.eventId)}"
+                         action="#{navigatorBean.show(row.event.eventTypeId, row.eventId)}"
                          process="@this"
                          update="@form:cnt"
                          styleClass="rounded-button ui-button-flat"
