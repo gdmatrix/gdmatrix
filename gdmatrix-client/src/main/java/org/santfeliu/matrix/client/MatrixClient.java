@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.client;
@@ -95,7 +95,7 @@ public class MatrixClient extends javax.swing.JFrame
   private boolean setupComplete = false;
   private boolean minimize = false;
   private static final Logger LOGGER = Logger.getLogger("MatrixClient");
-  
+
   public MatrixClient()
   {
     this(null);
@@ -118,7 +118,7 @@ public class MatrixClient extends javax.swing.JFrame
         logDir.mkdir();
       SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
       String today = df.format(new Date());
-      String logFile = 
+      String logFile =
         logDir.getAbsolutePath() + "/client-" + today + ".log";
       Handler handler = new FileHandler(logFile, true);
       handler.setFormatter(new SimpleFormatter());
@@ -190,6 +190,19 @@ public class MatrixClient extends javax.swing.JFrame
             configURL.length() > MATRIX_PROTOCOL.length() + 1) //avoid '/' separator
         {
           servletUrl = configURL.substring(MATRIX_PROTOCOL.length());
+
+          if (servletUrl != null)
+          {
+            // Fix chrome/edge error
+            if (servletUrl.startsWith("https//"))
+            {
+              servletUrl = "https://" + servletUrl.substring(7);
+            }
+            else if (configURL.startsWith("http//"))
+            {
+              servletUrl = "http://" + servletUrl.substring(6);
+            }
+          }
         }
         else
         {
@@ -253,15 +266,15 @@ public class MatrixClient extends javax.swing.JFrame
           }
         }
       }
-      
+
       version = Integer.parseInt(MatrixInfo.getRevision());
-      
+
       String pattern = bundle.getString("VERSION");
-      versionLabel.setText(MessageFormat.format(pattern, 
+      versionLabel.setText(MessageFormat.format(pattern,
         String.valueOf(version)));
-      
+
       setIconImages(loadIcons(
-        "icon_red_16.png", "icon_red_32.png", "icon_red_64.png", 
+        "icon_red_16.png", "icon_red_32.png", "icon_red_64.png",
         "icon_red_128.png", "icon_red_256.png"));
 
       setupComplete = true;
@@ -289,7 +302,7 @@ public class MatrixClient extends javax.swing.JFrame
     }
     return icons;
   }
-  
+
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
@@ -452,8 +465,8 @@ public class MatrixClient extends javax.swing.JFrame
 
       if (setupComplete)
       {
-        // Only if client setup is complete to avoid change events in 
-        // combo first load        
+        // Only if client setup is complete to avoid change events in
+        // combo first load
         String url = ((SelectItem) hostsComboBox.getSelectedItem()).getId();
         if (url != null && !url.equals(servletUrl))
         {
@@ -544,7 +557,7 @@ public class MatrixClient extends javax.swing.JFrame
     finally
     {
       System.exit(0);
-    }    
+    }
   }
 
   private void loadClientProperties()
@@ -634,9 +647,9 @@ public class MatrixClient extends javax.swing.JFrame
             if (minimize) setState(java.awt.Frame.ICONIFIED);
           }
 
-          LOGGER.log(Level.INFO, "readNextCommandParameters {0}] {1} {2}", 
-            new Object[]{Thread.currentThread().getId(), 
-              runningCommands.size(), 
+          LOGGER.log(Level.INFO, "readNextCommandParameters {0}] {1} {2}",
+            new Object[]{Thread.currentThread().getId(),
+              runningCommands.size(),
               System.currentTimeMillis() - lastCommandTime});
 
           Map properties = readNextCommandProperties();
@@ -674,7 +687,7 @@ public class MatrixClient extends javax.swing.JFrame
         }
 
         long ellapsedMillis = System.currentTimeMillis() - lastCommandTime;
-        if (runningCommands.isEmpty() && 
+        if (runningCommands.isEmpty() &&
           (ellapsedMillis > inactionTimeout * 1000))
         {
           LOGGER.info("Closing by inaction timeout");
@@ -683,7 +696,7 @@ public class MatrixClient extends javax.swing.JFrame
 
         if (Thread.interrupted())
         {
-          LOGGER.log(Level.INFO, "Closing abandoned thread {0}", 
+          LOGGER.log(Level.INFO, "Closing abandoned thread {0}",
             Thread.currentThread().getId());
           end = true;
         }
@@ -791,7 +804,7 @@ public class MatrixClient extends javax.swing.JFrame
     }
     return old;
   }
-  
+
   private Map sendData(String method, Map properties)
     throws Exception
   {
@@ -860,17 +873,17 @@ public class MatrixClient extends javax.swing.JFrame
   {
     String protocol = null;
 
-    if (url != null && 
+    if (url != null &&
         (url.indexOf("https://") > 0 || url.startsWith("https://")))
     {
       protocol = "https";
     }
-    else if (url != null && 
+    else if (url != null &&
       (url.indexOf("http://") > 0 || url.startsWith("http://")))
     {
       protocol = "http";
     }
-    
+
     String host = url;
     if (protocol != null && url != null)
     {
@@ -879,7 +892,7 @@ public class MatrixClient extends javax.swing.JFrame
     }
     return host;
   }
-  
+
   class InvalidClientException extends Exception
   {
   }
