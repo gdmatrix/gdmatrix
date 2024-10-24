@@ -1039,8 +1039,6 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       objectBean.setObjectId(objectId);
       boolean showObject = (searchTabSelector == -1);
-      objectBean.setSearchTabSelector(showObject ?
-        objectBean.getEditModeSelector() : searchTabSelector);
       objectBean.setEditTabSelector(editTabSelector);
 
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
@@ -1064,6 +1062,8 @@ public class NavigatorBean extends WebBean implements Serializable
 
       finderBean.setObjectPosition(-1);
       objectBean.load();
+      objectBean.setSearchTabSelector(showObject ?
+        objectBean.getEditModeSelector() : searchTabSelector);      
     }
 
     @Override
