@@ -44,6 +44,7 @@ import org.matrix.policy.DocumentPolicy;
 import org.matrix.policy.DocumentPolicyFilter;
 import org.matrix.policy.DocumentPolicyView;
 import org.matrix.policy.PolicyState;
+import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.UserSessionBean;
@@ -151,6 +152,14 @@ public class DocumentPolicyFinderBean extends BaseBean
       return "/documents/" + contentId + "/" + name + "." + extension;
     }
     return url;    
+  }
+  
+  public String getDocumentSize(Document document)
+  {
+    if (document != null && document.getContent() != null)
+      return DocumentUtils.getSizeString(document.getContent().getSize());
+    else
+      return "0";
   }
   
   public void setRowState(PolicyState newValue)

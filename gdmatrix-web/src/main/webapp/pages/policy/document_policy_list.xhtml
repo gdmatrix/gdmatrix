@@ -26,9 +26,12 @@
 
       <div class="mb-1">
         <h:outputText styleClass="#{documentTypeBean.getContentIcon(row.document)} mr-2 text-lg" rendered="#{row.document != null}" />        
-        <h:outputText value="#{typeTypeBean.getDescription(row.document.docTypeId)}" rendered="#{row.document != null}"
-                      />
+        <h:outputText value="#{typeTypeBean.getDescription(row.document.docTypeId)}" rendered="#{row.document != null}" />
       </div>
+      <div class="mb-1">
+        <h:outputText styleClass="pi pi-box mr-2 text-lg" rendered="#{row.document != null}" />        
+        <h:outputText value="#{documentPolicyFinderBean.getDocumentSize(row.document)}" rendered="#{row.document != null}"  />
+      </div>      
       <p:outputPanel rendered="#{row.document != null and not empty row.document.classId}">
         <i class="pi pi-tag mr-2 nowrap" />
         <h:outputText value="#{classTypeBean.getDescription(row.document.classId.get(0))}"/>
