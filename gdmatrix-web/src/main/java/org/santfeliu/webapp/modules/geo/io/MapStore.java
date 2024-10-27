@@ -252,6 +252,7 @@ public class MapStore
     document.getAccessControl().addAll(mapDocument.getAccessControl());
 
     Content content = new Content();
+    content.setContentType("application/json");
     byte[] bytes = style.toString().getBytes("UTF-8");
     ByteArrayDataSource ds = new ByteArrayDataSource(bytes, "application/json");
     content.setData(new DataHandler(ds));
