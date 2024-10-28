@@ -272,7 +272,6 @@ public class AssistantData
           String result = listener.onExecute(toolRequest);
           ToolExecutionResultMessage resultMessage =
             ToolExecutionResultMessage.from(toolRequest, result);
-          System.out.println(">> Execute tool " + toolRequest.name() + "(" + toolRequest.arguments() + ") = " + result);
           memory.add(resultMessage);
           listener.onMessage(resultMessage);
         }

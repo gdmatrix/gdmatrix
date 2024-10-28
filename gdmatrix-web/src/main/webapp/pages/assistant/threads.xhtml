@@ -28,7 +28,7 @@
         <p:commandButton value="#{objectBundle.setup}"
                          action="#{assistantBean.setView('assistant')}"
                          icon="pi pi-cog"
-                         rendered="#{assistantBean.isEditable(assistantBean.assistant)}"
+                         rendered="#{assistantBean.isAssistantEditable()}"
                          process="@form:cnt" update="@form:cnt" />
       </div>
     </h:panelGroup>
@@ -48,11 +48,22 @@
                       styleClass="absolute top-0 right-0 p-2 flex surface-0 border-round">
             <p:selectBooleanButton value="#{threadsBean.debugEnabled}" styleClass="mini"
                                    onIcon="fa fa-bug" offIcon="fa fa-bug"
-                                   onLabel="Debug on" offLabel="Debug off"> 
+                                   onLabel="Debug on" offLabel="Debug off"
+                                   rendered="#{assistantBean.isAssistantEditable()}"> 
               <p:ajax process="@this" update="@none" />
             </p:selectBooleanButton>
-            <p:commandButton value="#{objectBundle.create}"
-                             title="#{objectBundle.create}"
+            <p:commandButton id="info" 
+                             rendered="#{threadsBean.thread.isPersistent()}"
+                             value="Info" type="button" icon="pi pi-info-circle" 
+                             styleClass="ml-2 mini" />
+            <p:overlayPanel for="info" style="width:400px;" appendTo="@(body)">
+              <p:outputLabel value="#{assistantBundle.threadId}:" for="@next" />
+              <p:inputText id="thread_id" value="#{threadsBean.threadId}" size="36" 
+                           readonly="true" styleClass="code ml-2" />
+              <pe:clipboard trigger="thread_id" action="copy" target="thread_id" /> 
+            </p:overlayPanel>
+            <p:commandButton value="#{assistantBundle.newThread}"
+                             title="#{assistantBundle.newThread}"
                              action="#{threadsBean.createThread}"
                              icon="pi pi-plus-circle"
                              rendered="#{threadsBean.thread.isPersistent()}"
@@ -154,7 +165,7 @@
                              process="@this"
                              update="@form:cnt:input_panel @form:cnt:message_list @form:cnt:threads_panel @form:cnt:floating_bar"
                              styleClass="flex flex-column no-underline"
-                             oncomplete="endPanel();showResponse('#{thread.threadId}');">
+                             oncomplete="endPanel();">
                 
                 <h:outputText value="#{thread.dateTime}" styleClass="time"
                               converter="DateTimeConverter" /> 

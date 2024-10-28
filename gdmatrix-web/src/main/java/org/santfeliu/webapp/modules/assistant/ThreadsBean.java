@@ -43,6 +43,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +52,8 @@ import org.santfeliu.web.WebBean;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
+import org.matrix.security.SecurityConstants;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.security.util.Credentials;
@@ -150,12 +153,14 @@ public class ThreadsBean extends WebBean implements Serializable
 
   public void repaintThread()
   {
-    StreamQueue queue = StreamQueue.getInstance(getThreadId(), true);
+    String threadId = getThreadId();
+    StreamQueue queue = StreamQueue.getInstance(threadId, true);
     for (ChatMessage message : thread.getMessages())
     {
       pushMessage(queue, message, true);
     }
     queue.push(0);
+    PrimeFaces.current().executeScript("showResponse('" + threadId + "')");
   }
 
   public void createThread()
@@ -376,7 +381,16 @@ public class ThreadsBean extends WebBean implements Serializable
 
   public ThreadStore getThreadStore()
   {
-    String userId = UserSessionBean.getCurrentInstance().getUserId();
+    String userId;
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    if (userSessionBean.isAnonymousUser() || userSessionBean.isAutoLoginUser())
+    {
+      userId = getExternalContext().getSessionId(true);
+    }
+    else
+    {
+      userId = userSessionBean.getUserId();
+    }
     ThreadStore threadStore = ThreadStore.getInstance(userId);
     return threadStore;
   }

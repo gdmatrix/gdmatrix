@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.assistant.langchain4j;
 
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import java.util.logging.Level;
 import org.apache.commons.lang.StringUtils;
 import org.mozilla.javascript.Callable;
 import org.santfeliu.util.script.ScriptClient;
@@ -72,6 +73,9 @@ public class ToolExecutor extends ScriptClient
       // hide error to assistant
       resultText = "Function not available";
     }
+    LOGGER.log(Level.INFO, "Call function {0} with args {1} = {2}",
+      new Object[]{ functionName, functionArgs, resultText });
+
     return resultText;
   }
 }

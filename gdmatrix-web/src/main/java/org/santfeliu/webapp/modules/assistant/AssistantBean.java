@@ -36,6 +36,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.DocumentManagerPort;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -201,26 +202,43 @@ public class AssistantBean extends WebBean implements Serializable
 
   public String show()
   {
-    try
+    threadsBean.createThread();
+
+    if (!getFacesContext().isPostback())
     {
-      String assistantId =
-        UserSessionBean.getCurrentInstance().getSelectedMenuItem()
-          .getProperty(ASSISTANTID_PROPERTY);
-      if (assistantId != null)
+      try
+      {
+        String threadId = getExternalContext().getRequestParameterMap().get("threadid");
+        if (threadId != null)
+        {
+          threadsBean.changeThread(threadId);
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+
+    String assistantId =
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem()
+        .getProperty(ASSISTANTID_PROPERTY);
+    if (assistantId != null)
+    {
+      try
       {
         assistant = getAssistantStore().loadAssistant(assistantId);
       }
-      else
+      catch (Exception ex)
       {
         createAssistant();
+        error(ex);
       }
-      threadsBean.createThread();
     }
-    catch (Exception ex)
+    else
     {
-      error(ex);
+      createAssistant();
     }
-
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
   }
@@ -246,7 +264,6 @@ public class AssistantBean extends WebBean implements Serializable
     try
     {
       assistants = getAssistantStore().getAssistants();
-      System.out.println("\n" + assistants);
     }
     catch (Exception ex)
     {
@@ -268,17 +285,10 @@ public class AssistantBean extends WebBean implements Serializable
     return userSessionBean.getUserId();
   }
 
-  public boolean isVisible(Assistant assistant)
+  public boolean isAssistantEditable()
   {
-    if (isEditable(assistant)) return true;
+    if (assistant == null) return false;
 
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    String readRoleId = (String)assistant.getReadRoleId();
-    return userSessionBean.isUserInRole(readRoleId);
-  }
-
-  public boolean isEditable(Assistant assistant)
-  {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     if (userSessionBean.isUserInRole(ASSISTANT_ADMIN_ROLEID)) return true;
 
