@@ -396,7 +396,7 @@ public class DocumentObjectBean extends ObjectBean
       String contentType = dh.getContentType();
       if ("application/octet-stream".equals(contentType))
         contentType = null;
-      content.setContentType(contentType);      
+      content.setContentType(contentType);
       document.setContent(content);
     }
     else if (!StringUtils.isBlank(urlToStore))
@@ -404,7 +404,7 @@ public class DocumentObjectBean extends ObjectBean
       Content content = new Content();
       content.setUrl(urlToStore.trim());
       URLDataSource ds = new URLDataSource(new URL(urlToStore));
-      content.setContentType(ds.getContentType());      
+      content.setContentType(ds.getContentType());
       document.setContent(content);
       urlToStore = null;
     }
@@ -434,8 +434,16 @@ public class DocumentObjectBean extends ObjectBean
   public void removeObject() throws Exception
   {
     DocumentManagerPort port = getPort(false);
-    port.removeDocument(document.getDocId(), DocumentConstants.DELETE_ALL_VERSIONS);
-
+    if (document.getState().equals(State.DELETED))
+    {
+      // second remove
+      port.removeDocument(document.getDocId(), DocumentConstants.PERSISTENT_DELETE);
+    }
+    else
+    {
+      // first remove
+      port.removeDocument(document.getDocId(), DocumentConstants.DELETE_ALL_VERSIONS);
+    }
     documentFinderBean.outdate();
   }
 
@@ -447,7 +455,7 @@ public class DocumentObjectBean extends ObjectBean
       port.lockDocument(document.getDocId(), document.getVersion());
       document = port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
-      info("DOCUMENT_LOCKED_BY_ANOTHER_USER", 
+      info("DOCUMENT_LOCKED_BY_ANOTHER_USER",
         new Object[]{document.getLockUserId()});
     }
     catch (Exception ex)
@@ -590,22 +598,22 @@ public class DocumentObjectBean extends ObjectBean
     this.document = (Document) array[0];
     this.formSelector = (String)array[1];
   }
-  
+
   @Override
   public boolean isEditable()
   {
     if (UserSessionBean.getCurrentInstance().isUserInRole(
       DocumentConstants.DOC_ADMIN_ROLE))
       return true;
-    
+
     if (!super.isEditable()) return false; //tab protection
 
-    if (document == null || document.getDocId() == null || 
+    if (document == null || document.getDocId() == null ||
       document.getDocTypeId() == null)
       return true;
 
-    if (isVersionDeleted(document)) return false;    
-        
+    if (isVersionDeleted(document)) return false;
+
     Type currentType =
       TypeCache.getInstance().getType(document.getDocTypeId());
     if (currentType == null) return true;
@@ -625,7 +633,7 @@ public class DocumentObjectBean extends ObjectBean
     }
     return false;
   }
-  
+
   private void loadVersions(String docId)
   {
     try
@@ -655,6 +663,6 @@ public class DocumentObjectBean extends ObjectBean
     {
       error(ex);
     }
-  }  
+  }
 
 }
