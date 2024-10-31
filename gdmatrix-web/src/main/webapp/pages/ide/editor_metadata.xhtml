@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <div class="flex flex-column h-full">
+    <ui:fragment rendered="#{ideBean.document.docId != null}">
+      <div class="flex-grow-0 flex flex-row align-items-center pb-2 pt-2">
+        <div>Name: #{ideBean.document.name}</div>
+        <div class="ml-2">DocId: #{ideBean.document.docId}</div>
+        <div class="ml-2">Version: #{ideBean.document.version}</div>
+      </div>
+    </ui:fragment>
+
+    <div class="flex-grow-0 flex flex-row align-items-center pb-2 pt-2">
+      <p:outputLabel value="Title:" for="@next" />
+      <p:inputText value="#{ideBean.document.title}" class="flex-grow-1 ml-2" />
+    </div>
+
+    <gdm:codemirror lineNumbers="true" language="json" styleClass="flex-grow-1"
+                    value="#{ideBean.document.metadata}" />            
+  </div>
+
+</ui:composition>

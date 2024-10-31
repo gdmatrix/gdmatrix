@@ -34,6 +34,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -232,7 +233,7 @@ public class DictionaryUtils
               {
                 docClassMethod.invoke(object, new Object[]{value});
               }
-            }            
+            }
             else if (parameterType.equals(valueClass))
               docClassMethod.invoke(object, new Object[]{value});
             else if (List.class.isAssignableFrom(valueClass))
@@ -374,6 +375,24 @@ public class DictionaryUtils
     }
 
     return properties;
+  }
+
+  public static Map<String, Object> getMapFromProperties(List<Property> props,
+    Type type)
+  {
+    Map<String, Object> map = null;
+    if (props != null && !props.isEmpty())
+    {
+      map = new HashMap<>();
+      for (Property prop : props)
+      {
+        String propName = prop.getName();
+        List<String> values = prop.getValue();
+        boolean multiValued = values.size() > 1;
+        map.put(propName, type.getPropertyValue(prop, multiValued));
+      }
+    }
+    return map;
   }
 
   public static List<Property> getPropertiesFromMap(Map map)

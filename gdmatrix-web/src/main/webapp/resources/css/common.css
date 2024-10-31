@@ -186,7 +186,7 @@ body div.field
 div, ul
 {
   scrollbar-width: thin;
-  scrollbar-color: var(--surface-200) transparent;
+  scrollbar-color: var(--surface-300) transparent;
 }
 
 ::-webkit-scrollbar

@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <h:outputStylesheet library="css" name="ide.css" />
+  
+  <h:outputScript library="js" name="ide.js" />
+  
+  <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                var="documentBundle"/>
+
+  <div class="ide_body p-0 flex flex-column h-full">
+
+    <p:outputPanel id="header" class="header flex-grow-0 flex p-2">
+      <div class="flex align-items-center">
+        <p:outputLabel for="@next" value="Type:" styleClass="mr-2" />
+        <p:selectOneMenu value="#{ideBean.typeName}">
+          <f:selectItems value="#{ideBean.typeSelectItems}" />
+          <p:ajax event="valueChange"
+                  listener="#{ideBean.onTypeChange}"
+                  update="@form:cnt:editor @form:cnt:name"
+                  process="@this editor" />
+        </p:selectOneMenu>
+      </div>
+      <div class="flex align-items-center">
+        <p:outputLabel for="@next" value="Name:" styleClass="mr-2" />
+        <p:autoComplete id="name"
+                        value="#{ideBean.name}" 
+                        maxResults="50" var="docName"
+                        scrollHeight="200"
+                        itemLabel="#{docName}" itemValue="#{docName}"
+                        completeMethod="#{ideBean.completeDocumentName}" 
+                        forceSelection="false" styleClass="name code"
+                        pt:spellcheck="false"
+                        minQueryLength="2"
+                        emptyMessage="">
+          <p:ajax event="itemSelect"
+                  listener="#{ideBean.onNameSelect}"
+                  update="editor docs_panel"
+                  process="@this editor" />
+          <p:column>
+            <span class="code">#{docName}</span>
+          </p:column>
+        </p:autoComplete>
+        <div class="ui-inputgroup ml-1">
+          <p:commandButton action="#{ideBean.save}"
+                           process="@form:cnt" update="@form:cnt:docs_panel"
+                           icon="pi pi-save" />
+          <p:commandButton action="#{ideBean.create}"
+                           process="@form:cnt" update="@form:cnt"
+                           icon="pi pi-plus-circle" />
+          <p:commandButton action="#{ideBean.load}"
+                           process="@form:cnt" update="@form:cnt"
+                           icon="pi pi-refresh" />
+        </div>
+        <p:button title="Documents"
+                  widgetVar="docsPanelButton"
+                  onclick="return showPanel()"
+                  icon="pi pi-copy"
+                  styleClass="ml-2 mini white-space-nowrap docs_panel_button first_time" />
+      </div>
+    </p:outputPanel>
+    
+    <div class="flex-grow-1 pt-0 flex w-full overflow-x-hidden overflow-y-hidden">
+      <p:tabView dynamic="true" styleClass="editor h-full overflow-hidden flex-grow-1" id="editor">
+        <c:forEach items="#{ideBean.tabs}" var="tab">
+          <p:tab>
+            <f:facet name="title">
+              <span class="#{tab.icon} mr-2"/>#{tab.label}
+            </f:facet>
+            <ui:include src="#{tab.viewId}" />
+          </p:tab>
+        </c:forEach>
+      </p:tabView>
+
+      <p:panel id="docs_panel" styleClass="docs_panel flex-grow-0 v-full first_time h-full"
+               widgetVar="docsPanel" closeSpeed="50" style="min-width:300px;">
+        <f:facet name="header">
+          <i class="pi pi-copy vertical-align-middle m-1"></i>
+
+          <span>Documents</span>
+          <p:commandLink onclick="return closePanel();"
+                         class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
+            <span class="ui-icon ui-icon-closethick"></span>
+          </p:commandLink>
+        </f:facet>
+        
+        <ul>
+          <ui:repeat value="#{ideDocumentCacheBean.documents}" var="document">
+            <li class="flex w-full align-items-center">
+              <p:commandLink action="#{ideBean.loadCache(document.reference)}"
+                             process="@form:cnt" update="@form:cnt" class="flex-grow-1 no-underline p-2">
+                <span class="#{ideBean.getDocumentIcon(document)} ml-1 mr-1" />
+                <span class="code">#{document.name}</span>                
+              </p:commandLink>
+              
+              <p:commandButton styleClass="ui-button-flat ml-3 flex-grow-0" icon="pi pi-times" 
+                               action="#{ideBean.remove(document.reference)}"
+                               process="@form:cnt" update="@form:cnt:docs_panel" />
+            </li>
+          </ui:repeat>
+        </ul>        
+      </p:panel>
+    </div>
+
+  </div>
+
+  <gdm:saveBean value="ideBean" /> 
+  
+  <p:growl for="growl" life="1500" >
+    <p:autoUpdate />
+  </p:growl>            
+  
+  <script>
+    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+  </script>    
+
+</ui:composition>

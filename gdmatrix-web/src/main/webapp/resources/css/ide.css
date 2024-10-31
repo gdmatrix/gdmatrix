@@ -1,0 +1,142 @@
+/* ide.css */
+
+.ide_body .header
+{
+  background-color: var(--surface-ground);
+  border-bottom: 1px solid var(--surface-300);
+  padding: 1rem;
+}
+
+.editor.ui-tabs
+{
+  padding: 0.5rem;
+  display:flex;
+  flex-direction: column;
+}
+
+.editor .ui-tabs-nav
+{
+  flex-grow: 0;
+}
+
+.editor .ui-tabs-panels
+{
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.editor .ui-tabs-panels > div
+{
+  height: 100%;
+  padding: 6px 4px 0 4px !important;
+  overflow: auto;
+}
+
+.editor .ui-tabs-panels > div .codemirror-container
+{
+  height: 100%;
+  overflow: auto;
+}
+
+.editor .ui-tabs-panels > div .codemirror-container .cm-editor-holder
+{
+  height: 100%;
+}
+
+.editor .ui-tabs-panels > div .codemirror-container .cm-editor
+{
+  height: 100%;
+}
+
+.ui-panel.docs_panel
+{
+  width: 30%;
+  min-width: 220px;
+  max-width: 300px;
+  height: 100%;
+  display:flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.ui-panel.docs_panel ul
+{
+  list-style: none;
+  padding-left: 0;
+}
+
+.ui-panel.docs_panel ul li:hover
+{
+  background: var(--surface-200);
+}
+
+.ui-panel.docs_panel > .ui-panel-content
+{
+  height: 100%;
+  overflow: auto;
+}
+
+.docs_panel_button.first_time
+{
+  display: none;
+}
+
+.ide_body .header
+{
+  gap: 4px;
+}
+
+@media only screen and (max-width: 700px) 
+{  
+  .ide_body .header
+  {
+    flex-direction: column;
+  }
+  
+  .ide_body .header > div > label
+  {
+    min-width: 50px;
+  }
+
+  .ide_body .header > div .name
+  {
+    flex-grow: 1;
+  }
+  
+  .ui-panel.docs_panel
+  {
+    position:absolute;
+    top:0;
+    bottom: 0;
+    z-index: 10 !important;
+    background: var(--surface-0);
+    overflow:auto;
+    width: 400px !important;
+    max-width: 100%;
+    margin: 0 !important;
+    right:0;
+    padding: 0;
+    box-shadow: -5px 0px 3px -3px rgb(50 50 50 / 30%);
+  }
+
+  .ui-panel.docs_panel.first_time
+  {
+    display: none;
+    opacity: 1;
+  }        
+
+  .docs_panel_button.first_time
+  {
+    display: inline;
+  }  
+}
+
+.code,
+.code > .ui-inputfield
+{
+  font-family: monospace !important;
+}
+
+
+
