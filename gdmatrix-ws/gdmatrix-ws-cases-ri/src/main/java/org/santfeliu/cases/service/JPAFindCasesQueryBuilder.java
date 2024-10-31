@@ -207,17 +207,10 @@ public class JPAFindCasesQueryBuilder extends FindCasesQueryBuilder
   protected void appendCaseIdFilter(StringBuilder buffer)
   {
     List<String> caseIds = filter.getCaseId();
-    if (caseIds != null && caseIds.size() > 0)
+    if (caseIds != null && !caseIds.isEmpty())
     {
       appendOperator(buffer, "AND");
-      buffer.append("(");
-      for (int i = 0; i < caseIds.size(); i++)
-      {
-        if (i != 0) buffer.append(" OR ");
-        buffer.append("c.caseId=:caseId").append(i);
-        parameters.put("caseId" + i, caseIds.get(i));
-      }
-      buffer.append(")");
+      appendInOperator(buffer, "c.caseId", ":", "caseId", caseIds);
     }
   }
 
