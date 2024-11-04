@@ -82,7 +82,6 @@ public class DynamicPropertiesBean implements Serializable
   static final String PROPERTY_EDITOR_SELECTOR = "editor";
   static final String PROPERTY_EDITOR_ID = "editor_id";
   static final String FORM_ID = "formid";
-  static final String DATA_HASH = "datahash";
 
   static final Map<String, Object> FILTER_OPTIONS = new HashMap();
   static
@@ -285,16 +284,7 @@ public class DynamicPropertiesBean implements Serializable
     {
       if (isPanelRendered(panel))
       {
-        Map<String, Object> panelAttributes = panel.getPassThroughAttributes();
-        String renderedDataHash = (String)panelAttributes.get(DATA_HASH);
-        String dataHash = getDataHash();
-        String formSelector = getFormSelector();
-
-        if (formSelector == null ||
-            renderedDataHash == null || !renderedDataHash.equals(dataHash))
-        {
-          updateComponents(panel);
-        }
+        updateComponents(panel);
       }
     }
   }
@@ -320,9 +310,10 @@ public class DynamicPropertiesBean implements Serializable
     WebUtils.setValue("#{cc.attrs.formSelector}", String.class, formSelector);
   }
 
+  @Deprecated
   public String getDataHash()
   {
-    return WebUtils.getValue("#{cc.attrs.dataHash}");
+    return null;
   }
 
   public String getTypeId()
@@ -480,15 +471,6 @@ public class DynamicPropertiesBean implements Serializable
             getOptions());
           panelAttributes.put(FORM_ID, form.getId());
         }
-      }
-      String dataHash = getDataHash();
-      if (dataHash != null)
-      {
-        panelAttributes.put(DATA_HASH, dataHash);
-      }
-      else
-      {
-        panelAttributes.remove(DATA_HASH);
       }
     }
     catch (Exception ex)

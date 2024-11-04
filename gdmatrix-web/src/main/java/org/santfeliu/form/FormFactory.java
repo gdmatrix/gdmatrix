@@ -30,6 +30,7 @@
  */
 package org.santfeliu.form;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class FormFactory
     builders.add(new URLFormBuilder());
     builders.add(new TypeFormBuilder());
     builders.add(new DocumentFormBuilder());
-    formCache = new LRUMap(50);
+    formCache = new LRUMap(100);
   }
 
   public static FormFactory getInstance()
@@ -92,10 +93,12 @@ public class FormFactory
   public Form getForm(String selector, Map context, boolean updated)
     throws Exception
   {
+    String contextHash = hash(context);
+
     // when updated == true, returned form is updated when
     // method form.isOutdated() returns true
     // look for evaluated form for this context in cache
-    Form form = restoreForm(selector, updated);
+    Form form = restoreForm(selector, contextHash, updated);
 
     if (form == null) // form not in cache or is outdated
     {
@@ -108,7 +111,7 @@ public class FormFactory
       }
       if (form != null)
       {
-        saveForm(selector, form); // save new form (non evaluated)
+        saveForm(selector, "", form); // save new form (non evaluated)
       }
     }
 
@@ -116,7 +119,7 @@ public class FormFactory
     {
       form = form.evaluate(context);
       System.out.println("Evaluate form " + selector + " for " + context + " = " + form);
-      if (form.isCacheable()) saveForm(selector, form);
+      saveForm(selector, contextHash, form);
     }
     return form;
   }
@@ -152,19 +155,50 @@ public class FormFactory
     return Collections.unmodifiableList(builders);
   }
 
-  // Form cache entries
-
-  private synchronized void saveForm(String selector, Form form)
+  private String hash(Map context)
   {
-    formCache.put(selector, form);
+    if (context == null || context.isEmpty()) return "";
+
+    try
+    {
+      String text = context.toString(); // TODO: do not assume toString prints key/value
+      MessageDigest digester = MessageDigest.getInstance("SHA-256");
+      byte[] bytes = digester.digest(text.getBytes("UTF-8"));
+      StringBuilder hexString = new StringBuilder(2 * bytes.length);
+      for (int i = 0; i < bytes.length; i++)
+      {
+        String hex = Integer.toHexString(0xff & bytes[i]);
+        if(hex.length() == 1)
+        {
+          hexString.append('0');
+        }
+        hexString.append(hex);
+      }
+      return hexString.toString();
+    }
+    catch (Exception ex)
+    {
+      return "";
+    }
   }
 
-  private synchronized Form restoreForm(String selector, boolean updated)
+  // Form cache entries
+
+  private synchronized void saveForm(String selector,
+    String contextHash, Form form)
   {
-    Form form = (Form)formCache.get(selector);
+    String key = selector + "/" + contextHash;
+    formCache.put(key, form);
+  }
+
+  private synchronized Form restoreForm(String selector,
+    String contextHash, boolean updated)
+  {
+    String key = selector + "/" + contextHash;
+    Form form = (Form)formCache.get(key);
     if (form != null && updated && form.isOutdated())
     {
-      formCache.remove(selector);
+      formCache.remove(key);
       form = null;
     }
     return form;
@@ -172,6 +206,14 @@ public class FormFactory
 
   private synchronized void removeForm(String selector)
   {
-    formCache.remove(selector);
+    Iterator iter = formCache.keySet().iterator();
+    while (iter.hasNext())
+    {
+      String key = (String)iter.next();
+      if (key.startsWith(selector + "/"))
+      {
+        iter.remove();
+      }
+    }
   }
 }
