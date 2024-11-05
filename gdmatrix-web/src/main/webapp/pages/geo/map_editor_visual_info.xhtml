@@ -13,18 +13,19 @@
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Name" />
-      <p:inputText value="#{geoMapBean.mapDocument.name}" styleClass="code">
+      <p:inputText value="#{geoMapBean.mapDocument.name}" 
+                   pt:spellcheck="false" styleClass="code" required="true">
         <p:ajax event="valueChange" listener="#{geoMapBean.onMapNameChanged}"
                 update="@none"/>
       </p:inputText>
     </div>
 
-    <div class="field col-12 md:col-5">
+    <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Title" />
-      <p:inputText value="#{geoMapBean.mapDocument.title}" />
+      <p:inputText value="#{geoMapBean.mapDocument.title}" required="true" />
     </div>
 
-    <div class="field col-12 md:col-4">
+    <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Category" />
       <div class="ui-inputgroup">
         <p:selectOneMenu id="category_list" styleClass="border-round-left"
@@ -46,6 +47,25 @@
                          title="#{objectBundle.update}"
                          process="@this" update="category_list" />
       </div>
+    </div>    
+    
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="Base map name" />
+      <p:autoComplete value="#{geoMapBean.mapDocument.baseMapName}"
+                      maxResults="100" minQueryLength="2"
+                      var="mapView"
+                      itemLabel="#{mapView}"                      
+                      itemValue="#{mapView}"
+                      onclick="this.setSelectionRange(0, this.value.length)"
+                      scrollHeight="200" emptyMessage=""
+                      forceSelection="true"
+                      pt:spellcheck="false"
+                      styleClass="code"
+                      completeMethod="#{geoCatalogueBean.findMapViews}">
+        <p:column>
+          <span class="code">#{mapView.mapName}</span> <span>(#{mapView.title})</span>
+        </p:column>
+      </p:autoComplete>
     </div>
     
     <div class="field col-12">

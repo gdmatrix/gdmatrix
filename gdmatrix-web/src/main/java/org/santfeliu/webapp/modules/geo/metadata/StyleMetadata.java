@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.santfeliu.faces.maplibre.model.Layer;
+import org.santfeliu.faces.maplibre.model.Source;
 import org.santfeliu.faces.maplibre.model.Style;
 
 /**
@@ -230,4 +232,132 @@ public class StyleMetadata
     }
     return legendGroup;
   }
+
+  public void importStyle(StyleMetadata other)
+  {
+    importStyle(other, 4, "top", "top");
+  }
+
+  public void importStyle(StyleMetadata other, int dataToImport)
+  {
+    importStyle(other, dataToImport, "top", "top");
+  }
+
+  public void importStyle(StyleMetadata other,
+    int dataToImport, String layersPosition)
+  {
+    importStyle(other, dataToImport, layersPosition, "top");
+  }
+
+  public void importStyle(StyleMetadata other,
+    int dataToImport, String layersPosition, String legendPosition)
+  {
+    if (dataToImport >= 1)
+    {
+      importServices(other);
+      if (dataToImport >= 2)
+      {
+        importSources(other);
+        if (dataToImport >= 3)
+        {
+          importLayers(other, layersPosition);
+          if (dataToImport >= 4)
+          {
+            importLegend(other, legendPosition);
+          }
+        }
+      }
+    }
+  }
+
+  private void importServices(StyleMetadata other)
+  {
+    Map<String, Service> serviceMap = getServiceMap(true);
+    Map<String, Service> impServiceMap = other.getServiceMap(true);
+
+    impServiceMap.forEach((serviceName, service) ->
+      serviceMap.putIfAbsent(serviceName, service));
+  }
+
+  private void importSources(StyleMetadata other)
+  {
+    Map<String, Source> sources = getStyle().getSources();
+    Map<String, Source> impSources = other.getStyle().getSources();
+
+    Map<String, ServiceParameters> serviceParametersMap =
+      getServiceParametersMap(true);
+    Map<String, ServiceParameters> impServiceParametersMap =
+      other.getServiceParametersMap(true);
+
+    impSources.forEach(
+      (sourceId, source) -> sources.putIfAbsent(sourceId, source));
+    impServiceParametersMap.forEach(
+      (sourceId, params) -> serviceParametersMap.putIfAbsent(sourceId, params));
+  }
+
+  private void importLayers(StyleMetadata other, String position)
+  {
+    List<Layer> layers = getStyle().getLayers();
+    List<Layer> impLayers = other.getStyle().getLayers();
+
+    int index = 0;
+
+    for (Layer impLayer : impLayers)
+    {
+      String impLayerId = impLayer.getId();
+      if (indexOfLayer(layers, impLayerId) == -1) // layer not found
+      {
+        if ("bottom".equals(position))
+        {
+          layers.add(impLayer);
+        }
+        else
+        {
+          if (index >= layers.size())
+          {
+            layers.add(impLayer);
+          }
+          else
+          {
+            layers.add(index, impLayer);
+          }
+          index++;
+        }
+      }
+    }
+  }
+
+  private void importLegend(StyleMetadata other, String position)
+  {
+    LegendGroup legendGroup = getLegend(true);
+    LegendGroup impLegendGroup = other.getLegend(true);
+
+    List<LegendItem> items = impLegendGroup.getChildren();
+    if ("bottom".equals(position) || legendGroup.getChildren().isEmpty())
+    {
+      legendGroup.getChildren().addAll(items);
+    }
+    else
+    {
+      int index = 0;
+      for (LegendItem item : items)
+      {
+        legendGroup.getChildren().add(index, item);
+        index++;
+      }
+    }
+  }
+
+  private int indexOfLayer(List<Layer> layers, String layerId)
+  {
+    for (int index = 0; index < layers.size(); index++)
+    {
+      if (layers.get(index).getId().equals(layerId))
+      {
+        return index;
+      }
+    }
+    return -1;
+  }
+
 }

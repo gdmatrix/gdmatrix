@@ -39,6 +39,7 @@ import java.io.Serializable;
 public class MapFilter implements Serializable
 {
   String title;
+  String mapName;
   String categoryName;
   String keywords;
 
@@ -50,6 +51,16 @@ public class MapFilter implements Serializable
   public void setTitle(String title)
   {
     this.title = title;
+  }
+
+  public String getMapName()
+  {
+    return mapName;
+  }
+
+  public void setMapName(String mapName)
+  {
+    this.mapName = mapName;
   }
 
   public String getCategoryName()

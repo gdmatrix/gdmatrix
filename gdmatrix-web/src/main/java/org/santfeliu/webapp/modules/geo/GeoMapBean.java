@@ -47,7 +47,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
@@ -169,9 +168,24 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     try
     {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       Style style = mapDocument.getStyle();
-      List<Layer> layers = style.getLayers();
+      Style userStyle = new Style(); // clone style
+      userStyle.fromString(style.toString());
+      StyleMetadata styleMetadata = new StyleMetadata(userStyle);
+
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      String baseMapName = mapDocument.getBaseMapName();
+      if (!isBlank(baseMapName))
+      {
+        MapDocument baseMapDocument = getMapStore().loadMap(baseMapName);
+        Style baseStyle = baseMapDocument.getStyle();
+        StyleMetadata baseStyleMetadata = new StyleMetadata(baseStyle);
+        styleMetadata.importStyle(baseStyleMetadata);
+        userStyle = styleMetadata.getStyle();
+      }
+
+      // filter layers by user roles
+      List<Layer> layers = userStyle.getLayers();
       HashSet<String> removedLayerIds = new HashSet<>();
       for (Layer layer : layers)
       {
@@ -181,10 +195,8 @@ public class GeoMapBean extends WebBean implements Serializable
           removedLayerIds.add(layer.getId());
         }
       }
-      if (removedLayerIds.isEmpty()) return style;
+      if (removedLayerIds.isEmpty()) return userStyle;
 
-      Style userStyle = new Style();
-      userStyle.fromString(style.toString()); // clone style
       layers = userStyle.getLayers();
 
       for (int i = layers.size() - 1; i >= 0; i--)
@@ -196,7 +208,6 @@ public class GeoMapBean extends WebBean implements Serializable
         }
       }
 
-      StyleMetadata styleMetadata = new StyleMetadata(userStyle);
       LegendGroup legend = styleMetadata.getLegend(false);
       if (legend != null)
       {

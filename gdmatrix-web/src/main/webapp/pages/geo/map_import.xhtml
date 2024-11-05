@@ -5,6 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
   <p:dialog id="map_import_dialog" widgetVar="mapImportDialog"
@@ -29,19 +30,20 @@
           <p:autoComplete value="#{geoMapImportBean.mapName}"
                           maxResults="100" minQueryLength="2"
                           var="mapView" 
-                          itemLabel="#{mapView.title}"
-                          itemValue="#{mapView.mapName}"
+                          itemLabel="#{mapView}"
+                          itemValue="#{mapView}"
                           required="true"
                           onclick="this.setSelectionRange(0, this.value.length)"
                           scrollHeight="200" emptyMessage=""
-                          forceSelection="true"
-                          completeMethod="#{geoMapImportBean.findMapViews}">
+                          forceSelection="true" styleClass="code"
+                          pt:spellcheck="false"
+                          completeMethod="#{geoCatalogueBean.findMapViews}">
             <p:column>
-              #{mapView.title}
+              <span class="code">#{mapView.mapName}</span> <span>(#{mapView.title})</span>
             </p:column>
           </p:autoComplete>
         </div>
-        <div class="field col-12 md:col-6">
+        <div class="field col-12 md:col-4">
           <p:outputLabel for="@next" value="Data to import" />
           <p:selectOneMenu value="#{geoMapImportBean.dataToImport}">
             <f:selectItem itemLabel="Services" itemValue="1" />
@@ -50,9 +52,16 @@
             <f:selectItem itemLabel="Legend" itemValue="4" />
           </p:selectOneMenu>
         </div>
-        <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Import position" />
-          <p:selectOneMenu value="#{geoMapImportBean.importPosition}">
+        <div class="field col-12 md:col-4">
+          <p:outputLabel for="@next" value="Layers position" />
+          <p:selectOneMenu value="#{geoMapImportBean.layersPosition}">
+            <f:selectItem itemLabel="Insert top" itemValue="top" />
+            <f:selectItem itemLabel="Add to bottom" itemValue="bottom" />
+          </p:selectOneMenu>
+        </div>
+        <div class="field col-12 md:col-4">
+          <p:outputLabel for="@next" value="Legend position" />
+          <p:selectOneMenu value="#{geoMapImportBean.legendPosition}">
             <f:selectItem itemLabel="Insert top" itemValue="top" />
             <f:selectItem itemLabel="Add to bottom" itemValue="bottom" />
           </p:selectOneMenu>

@@ -69,6 +69,7 @@ public class MapStore
   public static final String MAP_TYPEID = "GMAP";
   public static final String MAP_CATEGORY_TYPEID = "GMAPCAT";
   public static final String MAP_NAME_PROPERTY = "mapName";
+  public static final String BASE_MAP_NAME_PROPERTY = "baseMapName";
   public static final String MAP_SUMMARY_PROPERTY = "summary";
   public static final String MAP_DESCRIPTION_PROPERTY = "description";
   public static final String MAP_KEYWORDS_PROPERTY = "keywords";
@@ -93,8 +94,8 @@ public class MapStore
 
   public MapGroup findMaps(MapFilter mapFilter)
   {
-    LOGGER.log(Level.INFO, "Finding maps with keywords {0}",
-      mapFilter.getKeywords());
+    LOGGER.log(Level.INFO, "Finding maps with name {0} and keywords {1}",
+      new Object[]{mapFilter.getMapName(), mapFilter.getKeywords()});
 
     HashMap<String, MapGroup> mapGroupMap = new HashMap<>();
     MapGroup rootGroup = new MapGroup();
@@ -106,6 +107,14 @@ public class MapStore
     if (!isBlank(mapFilter.getTitle()))
     {
       filter.setTitle("%" + mapFilter.getTitle() + "%");
+    }
+
+    if (!isBlank(mapFilter.getMapName()))
+    {
+      Property property = new Property();
+      property.setName(MAP_NAME_PROPERTY);
+      property.getValue().add("%" + mapFilter.getMapName() + "%");
+      filter.getProperty().add(property);
     }
 
     if (!isBlank(mapFilter.getCategoryName()))
@@ -206,6 +215,15 @@ public class MapStore
     property.setName(MAP_NAME_PROPERTY);
     property.getValue().add(mapName);
     document.getProperty().add(property);
+
+    String baseMapName = mapDocument.getBaseMapName();
+    if (!isBlank(baseMapName))
+    {
+      property = new Property();
+      property.setName(BASE_MAP_NAME_PROPERTY);
+      property.getValue().add(baseMapName);
+      document.getProperty().add(property);
+    }
 
     String mapSummary = mapDocument.getSummary();
     if (!isBlank(mapSummary))

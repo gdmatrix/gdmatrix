@@ -33,7 +33,9 @@ package org.santfeliu.webapp.modules.geo;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -181,6 +183,24 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     this.filter = filter;
   }
 
+  public List<MapView> findMapViews(String name)
+  {
+    MapStore mapStore = getMapStore();
+    List<MapView> mapViews = new ArrayList<>();
+    try
+    {
+      MapFilter mapFilter = new MapFilter();
+      mapFilter.setMapName(name);
+      MapGroup mapGroupFound = mapStore.findMaps(mapFilter);
+      explodeMapViews(mapGroupFound, mapViews);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return mapViews;
+  }
+
   public void findMaps()
   {
     try
@@ -290,5 +310,15 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     mapStore.setCredentials(userSessionBean.getUserId(), userSessionBean.getPassword());
     return mapStore;
+  }
+
+  private void explodeMapViews(MapGroup mapGroup, List<MapView> mapViews)
+  {
+    mapViews.addAll(mapGroup.getMapViews());
+
+    for (MapGroup subGroup : mapGroup.getMapGroups())
+    {
+      explodeMapViews(subGroup, mapViews);
+    }
   }
 }

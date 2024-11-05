@@ -31,24 +31,13 @@
 package org.santfeliu.webapp.modules.geo;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.santfeliu.faces.maplibre.model.Layer;
-import org.santfeliu.faces.maplibre.model.Source;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.geo.io.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
-import org.santfeliu.webapp.modules.geo.io.MapFilter;
-import org.santfeliu.webapp.modules.geo.io.MapGroup;
-import org.santfeliu.webapp.modules.geo.io.MapView;
-import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
-import org.santfeliu.webapp.modules.geo.metadata.Service;
-import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
 import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 /**
@@ -62,7 +51,8 @@ public class GeoMapImportBean extends WebBean implements Serializable
   String mapName;
   boolean dialogVisible;
   int dataToImport;
-  String importPosition;
+  String layersPosition;
+  String legendPosition;
 
   @Inject
   GeoMapBean geoMapBean;
@@ -98,32 +88,24 @@ public class GeoMapImportBean extends WebBean implements Serializable
     this.dataToImport = dataToImport;
   }
 
-  public String getImportPosition()
+  public String getLayersPosition()
   {
-    return importPosition;
+    return layersPosition;
   }
 
-  public void setImportPosition(String importPosition)
+  public void setLayersPosition(String layersPosition)
   {
-    this.importPosition = importPosition;
+    this.layersPosition = layersPosition;
   }
 
-  public List<MapView> findMapViews(String name)
+  public String getLegendPosition()
   {
-    MapStore mapStore = geoMapBean.getMapStore();
-    List<MapView> mapViews = new ArrayList<>();
-    try
-    {
-      MapFilter mapFilter = new MapFilter();
-      mapFilter.setKeywords(name);
-      MapGroup mapGroup = mapStore.findMaps(mapFilter);
-      explodeMapViews(mapGroup, mapViews);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return mapViews;
+    return legendPosition;
+  }
+
+  public void setLegendPosition(String legendPosition)
+  {
+    this.legendPosition = legendPosition;
   }
 
   public void acceptImport()
@@ -139,17 +121,8 @@ public class GeoMapImportBean extends WebBean implements Serializable
       StyleMetadata styleMetadata = new StyleMetadata(style);
       StyleMetadata impStyleMetadata = new StyleMetadata(impStyle);
 
-      importServices(styleMetadata, impStyleMetadata);
-
-      if (dataToImport >= 2)
-      {
-        importSources(styleMetadata, impStyleMetadata);
-
-        if (dataToImport >= 3)
-        {
-          importLayers(styleMetadata, impStyleMetadata);
-        }
-      }
+      styleMetadata.importStyle(impStyleMetadata, dataToImport,
+        layersPosition, legendPosition);
 
       geoMapBean.setDialogVisible(false);
       geoMapBean.refresh();
@@ -169,96 +142,5 @@ public class GeoMapImportBean extends WebBean implements Serializable
   {
     geoMapBean.setDialogVisible(false);
     dialogVisible = false;
-  }
-
-  private void explodeMapViews(MapGroup mapGroup, List<MapView> mapViews)
-  {
-    mapViews.addAll(mapGroup.getMapViews());
-
-    for (MapGroup subGroup : mapGroup.getMapGroups())
-    {
-      explodeMapViews(subGroup, mapViews);
-    }
-  }
-
-  private void importServices(
-    StyleMetadata styleMetadata,
-    StyleMetadata impStyleMetadata)
-  {
-    Map<String, Service> serviceMap = styleMetadata.getServiceMap(true);
-    Map<String, Service> impServiceMap = impStyleMetadata.getServiceMap(true);
-
-    serviceMap.putAll(impServiceMap);
-  }
-
-  private void importSources(
-    StyleMetadata styleMetadata,
-    StyleMetadata impStyleMetadata)
-  {
-    Map<String, Source> sources = styleMetadata.getStyle().getSources();
-    Map<String, Source> impSources = impStyleMetadata.getStyle().getSources();
-
-    Map<String, ServiceParameters> serviceParametersMap =
-      styleMetadata.getServiceParametersMap(true);
-    Map<String, ServiceParameters> impServiceParametersMap =
-      impStyleMetadata.getServiceParametersMap(true);
-
-    sources.putAll(impSources);
-    serviceParametersMap.putAll(impServiceParametersMap);
-  }
-
-  private void importLayers(
-    StyleMetadata styleMetadata,
-    StyleMetadata impStyleMetadata)
-  {
-    List<Layer> layers = styleMetadata.getStyle().getLayers();
-    List<Layer> impLayers = impStyleMetadata.getStyle().getLayers();
-
-    int position = 0;
-
-    for (Layer impLayer : impLayers)
-    {
-      String impLayerId = impLayer.getId();
-      if (indexOfLayer(layers, impLayerId) == -1)
-      {
-        if ("top".equals(importPosition))
-        {
-          if (position >= layers.size())
-          {
-            layers.add(impLayer);
-          }
-          else
-          {
-            layers.add(position, impLayer);
-          }
-          position++;
-        }
-        else // bottom
-        {
-          layers.add(impLayer);
-        }
-      }
-    }
-  }
-
-  private void importLegend(
-    StyleMetadata styleMetadata,
-    StyleMetadata impStyleMetadata)
-  {
-    LegendGroup legendGroup = styleMetadata.getLegend(true);
-    LegendGroup impLegendGroup = impStyleMetadata.getLegend(true);
-
-  }
-
-  private int indexOfLayer(List<Layer> layers, String layerId)
-  {
-    for (int index = 0; index < layers.size(); index++)
-    {
-      if (layers.get(index).getId().equals(layerId))
-      {
-        return index;
-      }
-    }
-    return -1;
   }
 }

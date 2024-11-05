@@ -47,6 +47,7 @@ import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_DESCRIPTION_PROPE
 import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_KEYWORDS_PROPERTY;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_NAME_PROPERTY;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_SUMMARY_PROPERTY;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.BASE_MAP_NAME_PROPERTY;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
@@ -61,6 +62,7 @@ public class MapDocument implements Serializable
   String name;
   String title;
   String summary;
+  String baseMapName;
   String description;
   String keywords;
   String categoryName;
@@ -137,6 +139,16 @@ public class MapDocument implements Serializable
   public void setDescription(String description)
   {
     this.description = description;
+  }
+
+  public String getBaseMapName()
+  {
+    return baseMapName;
+  }
+
+  public void setBaseMapName(String baseMapName)
+  {
+    this.baseMapName = baseMapName;
   }
 
   public String getMergedSummary()
@@ -331,6 +343,9 @@ public class MapDocument implements Serializable
       {
         case MAP_NAME_PROPERTY:
           name = value;
+          break;
+        case BASE_MAP_NAME_PROPERTY:
+          baseMapName = value;
           break;
         case MAP_SUMMARY_PROPERTY:
           summary = value;

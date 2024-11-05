@@ -64,6 +64,6 @@ public class MapView implements Serializable
   @Override
   public String toString()
   {
-    return "MapView{" + mapName + "}";
+    return mapName;
   }
 }
