@@ -22,11 +22,19 @@
                        icon="pi pi-copy" styleClass="mini" />
       <c:choose>
         <c:when test="${queryMainBean.persistent}">
-          <p:commandButton id="query_store_button" 
-                           value="#{objectBundle.store}" action="#{queryEditBean.saveQuery}" 
-                           rendered="#{queryMainBean.saveEnabled}"
-                           process="@form:cnt" update="query_tabs" 
-                           icon="pi pi-save" styleClass="mini" />      
+          <p:splitButton id="query_store_button"
+                         value="#{objectBundle.store}" title="#{objectBundle.store}" 
+                         action="#{queryEditBean.saveQuery}" 
+                         process="@form:cnt" update="query_tabs" 
+                         icon="pi pi-save" 
+                         rendered="#{queryMainBean.saveEnabled}" 
+                         styleClass="mini">
+            <p:menuitem value="#{objectBundle.storeNewVersion}" 
+                        title="#{objectBundle.storeNewVersion}" 
+                        action="#{queryEditBean.saveQueryNewVersion}" 
+                        process="@form:cnt"  update="query_tabs"  
+                        icon="pi pi-save" styleClass="mini" />
+          </p:splitButton>   
         </c:when>
         <c:otherwise>
           <p:commandButton id="query_store_button" 
@@ -113,14 +121,6 @@
                          lineNumbers="false"
                          style="font-size:14px" />                 
       </div>
-
-      <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
-                     styleClass="output_label mt-2">
-        <p:outputLabel for="@next" value="#{queryBundle.create_new_version}" />
-        <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
-                        styleClass="ml-2 vertical-align-middle" />
-      </p:outputPanel>      
-
     </p:panel>
     
     <p:panel styleClass="mt-3 top_rounded_panel">

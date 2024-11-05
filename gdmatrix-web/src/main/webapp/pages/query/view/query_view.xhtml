@@ -14,10 +14,18 @@
                        icon="pi pi-refresh" title="#{queryBundle.reload}" styleClass="mini"
                        process="@this" update="@form:cnt"
                        rendered="#{queryMainBean.persistent}" />
-      <p:commandButton value="#{objectBundle.store}" action="#{queryViewBean.saveQuery}" 
-                       icon="pi pi-save" title="#{objectBundle.store}" styleClass="mini"
-                       process="@form:cnt" 
-                       rendered="#{queryMainBean.saveEnabled}" />
+      <p:splitButton value="#{objectBundle.store}" title="#{objectBundle.store}" 
+                     action="#{queryViewBean.saveQuery}" 
+                     process="@form:cnt" 
+                     icon="pi pi-save" 
+                     rendered="#{queryMainBean.saveEnabled}" 
+                     styleClass="mini splitButton">
+        <p:menuitem value="#{objectBundle.storeNewVersion}" 
+                    title="#{objectBundle.storeNewVersion}" 
+                    action="#{queryViewBean.saveQueryNewVersion}" 
+                    process="@form:cnt" 
+                    icon="pi pi-save" styleClass="mini" />
+      </p:splitButton>   
     </p:outputPanel>
 
   </ui:define>
@@ -125,13 +133,6 @@
           <p:inputText styleClass="max_results ml-2 w-6rem flex-grow-0" 
                        value="#{queryViewBean.selectedInstance.maxResults}" />
         </div>
-        <p:outputPanel rendered="#{queryMainBean.saveEnabled}" 
-                       styleClass="flex-grow-0">
-          <p:outputLabel for="@next" value="#{queryBundle.create_new_version}"
-                         styleClass="output_label" />
-          <p:toggleSwitch value="#{queryMainBean.createNewVersion}" 
-                          styleClass="ml-2 vertical-align-middle" />
-        </p:outputPanel>                
       </div>
 
       <p:commandButton value="#{queryBundle.execute_query}" 

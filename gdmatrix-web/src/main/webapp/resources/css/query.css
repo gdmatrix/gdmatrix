@@ -201,6 +201,18 @@
   width: 70%;  
 }
 
+.query_view .buttons .ui-splitbutton .ui-button:first-child
+{
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.query_view .buttons .ui-splitbutton .ui-button:last-child
+{
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
 .expression
 {
   display: block;
@@ -480,6 +492,18 @@
 .query_edit .tabbed_panel .edit_panel .left .item_list .item.inherited
 {
   color: blue;
+}
+
+.query_edit .buttons .ui-splitbutton .ui-button:first-child
+{
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.query_edit .buttons .ui-splitbutton .ui-button:last-child
+{
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .query_component_row1

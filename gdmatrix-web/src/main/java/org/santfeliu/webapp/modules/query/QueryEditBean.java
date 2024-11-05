@@ -384,6 +384,7 @@ public class QueryEditBean extends WebBean implements Serializable
   {
     try
     {
+      queryMainBean.setCreateNewVersion(false);      
       queryMainBean.saveQuery();
       info("QUERY_SAVED");
     }
@@ -392,6 +393,20 @@ public class QueryEditBean extends WebBean implements Serializable
       error(ex);
     }
   }
+  
+  public void saveQueryNewVersion()
+  {
+    try
+    {
+      queryMainBean.setCreateNewVersion(true);
+      queryMainBean.saveQuery();
+      info("QUERY_SAVED");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
   
   public void saveNewQuery()
   {
