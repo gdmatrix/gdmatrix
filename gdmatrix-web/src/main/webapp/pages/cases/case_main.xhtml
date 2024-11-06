@@ -7,128 +7,128 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-    <div class="ui-fluid formgrid grid">
+  <div class="ui-fluid formgrid grid">
 
-      <div class="field col-12 md:col-3">
-        <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
-        <p:inputText value="#{caseObjectBean.objectId}" readonly="true" />
-      </div>
-      <p:outputPanel class="field col-12 md:col-9" rendered="#{caseObjectBean.isRenderProperty('caseTypeId')}">
-        <p:outputLabel for="@next"
-                       value="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)}"
-                       indicateRequired="true" />
-        <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
-                              type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
-                              showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"
-                              showNonInstantiableItems="false"
-                              scrollHeight="200"
-                              queryDelay="1000"
-                              minQueryLength="3"
-                              required="#{not empty param['mainform:search_tabs:store']}"
-                              requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
-                              formSelector="#{caseObjectBean.formSelector}"
-                              process="@form:cnt:search_tabs:tabs"
-                              update="@form:cnt:search_tabs:tabs">
-        </emcomp:typeReference>
-      </p:outputPanel>
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
+      <p:inputText value="#{caseObjectBean.objectId}" readonly="true" />
+    </div>
+    <p:outputPanel class="field col-12 md:col-9" rendered="#{caseObjectBean.isRenderProperty('caseTypeId')}">
+      <p:outputLabel for="@next"
+                     value="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)}"
+                     indicateRequired="true" />
+      <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
+                            type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
+                            showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"
+                            showNonInstantiableItems="false"
+                            scrollHeight="200"
+                            queryDelay="1000"
+                            minQueryLength="3"
+                            required="#{not empty param['mainform:search_tabs:store']}"
+                            requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                            formSelector="#{caseObjectBean.formSelector}"
+                            process="@form:cnt:search_tabs:tabs"
+                            update="@form:cnt:search_tabs:tabs:case_main_dynamic_properties">
+      </emcomp:typeReference>
+    </p:outputPanel>
 
-      <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next"
-                       value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}"
-                       indicateRequired="true"/>
-        <p:inputTextarea value="#{caseObjectBean.case.title}" converter="specialCharsConverter"
-                         required="#{not empty param['mainform:search_tabs:store']}"
-                         requiredMessage="'#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}'  #{messageBundle.IS_REQUIRED}"
-                         readonly="#{!caseObjectBean.editable}" />
-      </div>
-
-      <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderClassId}">
-        <p:outputLabel for="@next" value="#{caseBundle.case_classification}" />
-        <emcomp:multipleClassReference value="#{caseObjectBean.case.classId}"
-                                       newClassId="#{caseObjectBean.newClassId}"
-                                       scrollHeight="200"
-                                       queryDelay="1000"
-                                       minQueryLength="3"
-                                       process="@form:cnt:search_tabs:tabs" 
-                                       disabled="#{!caseObjectBean.editable}" />
-      </p:outputPanel>
-      
-      <div class="field col-8 lg:col-4 xl:col-3">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
-        <!-- TODO: disable if not editable -->
-        <p:datePicker value="#{caseObjectBean.startDate}"
-                      autocomplete="off"
-                      placeholder="dd/MM/yyyy"
-                      pattern="dd/MM/yyyy"
-                      locale="#{caseObjectBean.language}"
-                      showOnFocus="false"
-                      showIcon="true" 
-                      monthNavigator="true" yearNavigator="true"
-                      disabled="#{!caseObjectBean.editable}" />
-      </div>     
-      
-      <div class="field col-4 lg:col-2 xl:col-3">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startTime', caseBundle.case_startTime)}" />
-        <!-- TODO: disable if not editable -->
-        <p:inputText value="#{caseObjectBean.case.startTime}"
-                      placeholder="HH:mm:ss"
-                      disabled="#{!caseObjectBean.editable}" 
-                      converter="TimeConverter" />
-      </div>      
-
-      <p:outputPanel class="field col-8 lg:col-4 xl:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
-        <!-- TODO: disable if not editable -->
-        <p:datePicker value="#{caseObjectBean.endDate}"
-                      autocomplete="off"
-                      placeholder="dd/MM/yyyy"
-                      pattern="dd/MM/yyyy"
-                      locale="#{caseObjectBean.language}"
-                      showOnFocus="false"
-                      showIcon="true"
-                      monthNavigator="true" yearNavigator="true"
-                      disabled="#{!caseObjectBean.editable}" />
-      </p:outputPanel>
-      
-      <div class="field col-4 lg:col-2 xl:col-3">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endTime', caseBundle.case_endTime)}" />
-        <!-- TODO: disable if not editable -->
-        <p:inputText value="#{caseObjectBean.case.endTime}"
-                      placeholder="HH:mm:ss"
-                      disabled="#{!caseObjectBean.editable}" 
-                      converter="TimeConverter"/>
-      </div>       
-
-      <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('state')}">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('state', caseBundle.case_state)}" />
-        <p:inputText value="#{caseObjectBean.case.state}"
-                     readonly="#{!caseObjectBean.editable}" />
-      </p:outputPanel>
-
-      <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('description')}">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('description', caseBundle.case_description)}" />
-        <p:inputTextarea value="#{caseObjectBean.case.description}" converter="specialCharsConverter"
-                         readonly="#{!caseObjectBean.editable}" />
-      </p:outputPanel>
-
-      <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('comments', caseBundle.case_comments)}" />
-        <p:inputTextarea value="#{caseObjectBean.case.comments}" converter="specialCharsConverter"
-                         readonly="#{!caseObjectBean.editable}" />
-      </p:outputPanel>
-
-      <emcomp:auditData creationDateTime="#{caseObjectBean.case.creationDateTime}"
-                        creationUserId="#{caseObjectBean.case.creationUserId}"
-                        changeDateTime="#{caseObjectBean.case.changeDateTime}"
-                        changeUserId="#{caseObjectBean.case.changeUserId}"
-                        rendered="#{!caseObjectBean.new}" />
-
+    <div class="field col-12 md:col-12">
+      <p:outputLabel for="@next"
+                     value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}"
+                     indicateRequired="true"/>
+      <p:inputTextarea value="#{caseObjectBean.case.title}" converter="specialCharsConverter"
+                       required="#{not empty param['mainform:search_tabs:store']}"
+                       requiredMessage="'#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}'  #{messageBundle.IS_REQUIRED}"
+                       readonly="#{!caseObjectBean.editable}" />
     </div>
 
-    <emcomp:dynamicProperties typeId="#{caseObjectBean.case.caseTypeId}"
-                              object="#{caseObjectBean.case}"
-                              formSelector="#{caseObjectBean.formSelector}"
-                              dataHash="#{caseObjectBean.objectId}-#{caseObjectBean.case.changeDateTime}"
-                              options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}"/>
+    <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderClassId}">
+      <p:outputLabel for="@next" value="#{caseBundle.case_classification}" />
+      <emcomp:multipleClassReference value="#{caseObjectBean.case.classId}"
+                                     newClassId="#{caseObjectBean.newClassId}"
+                                     scrollHeight="200"
+                                     queryDelay="1000"
+                                     minQueryLength="3"
+                                     process="@form:cnt:search_tabs:tabs" 
+                                     disabled="#{!caseObjectBean.editable}" />
+    </p:outputPanel>
 
+    <div class="field col-8 lg:col-4 xl:col-3">
+      <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
+      <!-- TODO: disable if not editable -->
+      <p:datePicker value="#{caseObjectBean.startDate}"
+                    autocomplete="off"
+                    placeholder="dd/MM/yyyy"
+                    pattern="dd/MM/yyyy"
+                    locale="#{caseObjectBean.language}"
+                    showOnFocus="false"
+                    showIcon="true" 
+                    monthNavigator="true" yearNavigator="true"
+                    disabled="#{!caseObjectBean.editable}" />
+    </div>     
+
+    <div class="field col-4 lg:col-2 xl:col-3">
+      <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startTime', caseBundle.case_startTime)}" />
+      <!-- TODO: disable if not editable -->
+      <p:inputText value="#{caseObjectBean.case.startTime}"
+                   placeholder="HH:mm:ss"
+                   disabled="#{!caseObjectBean.editable}" 
+                   converter="TimeConverter" />
+    </div>      
+
+    <p:outputPanel class="field col-8 lg:col-4 xl:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
+      <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
+      <!-- TODO: disable if not editable -->
+      <p:datePicker value="#{caseObjectBean.endDate}"
+                    autocomplete="off"
+                    placeholder="dd/MM/yyyy"
+                    pattern="dd/MM/yyyy"
+                    locale="#{caseObjectBean.language}"
+                    showOnFocus="false"
+                    showIcon="true"
+                    monthNavigator="true" yearNavigator="true"
+                    disabled="#{!caseObjectBean.editable}" />
+    </p:outputPanel>
+
+    <div class="field col-4 lg:col-2 xl:col-3">
+      <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endTime', caseBundle.case_endTime)}" />
+      <!-- TODO: disable if not editable -->
+      <p:inputText value="#{caseObjectBean.case.endTime}"
+                   placeholder="HH:mm:ss"
+                   disabled="#{!caseObjectBean.editable}" 
+                   converter="TimeConverter"/>
+    </div>       
+
+    <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('state')}">
+      <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('state', caseBundle.case_state)}" />
+      <p:inputText value="#{caseObjectBean.case.state}"
+                   readonly="#{!caseObjectBean.editable}" />
+    </p:outputPanel>
+
+    <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('description')}">
+      <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('description', caseBundle.case_description)}" />
+      <p:inputTextarea value="#{caseObjectBean.case.description}" converter="specialCharsConverter"
+                       readonly="#{!caseObjectBean.editable}" />
+    </p:outputPanel>
+
+    <p:outputPanel class="field col-12 md:col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
+      <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('comments', caseBundle.case_comments)}" />
+      <p:inputTextarea value="#{caseObjectBean.case.comments}" converter="specialCharsConverter"
+                       readonly="#{!caseObjectBean.editable}" />
+    </p:outputPanel>
+
+    <emcomp:auditData creationDateTime="#{caseObjectBean.case.creationDateTime}"
+                      creationUserId="#{caseObjectBean.case.creationUserId}"
+                      changeDateTime="#{caseObjectBean.case.changeDateTime}"
+                      changeUserId="#{caseObjectBean.case.changeUserId}"
+                      rendered="#{!caseObjectBean.new}" />
+
+  </div>
+
+  <emcomp:dynamicProperties id="case_main_dynamic_properties" typeId="#{caseObjectBean.case.caseTypeId}"
+                            object="#{caseObjectBean.case}"
+                            formSelector="#{caseObjectBean.formSelector}"
+                            dataHash="#{caseObjectBean.objectId}-#{caseObjectBean.case.changeDateTime}"
+                            options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}"/>
+  
 </ui:composition>

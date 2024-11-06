@@ -27,7 +27,7 @@
                               requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{eventObjectBean.formSelector}"
                               process="@form:cnt:search_tabs:tabs"
-                              update="@form:cnt:search_tabs:tabs"
+                              update="@form:cnt:search_tabs:tabs:event_main_dynamic_properties"
                               disabled="#{!eventObjectBean.editable}">
         </emcomp:typeReference>
       </div>
@@ -131,7 +131,8 @@
 
     </div>
 
-    <emcomp:dynamicProperties typeId="#{eventObjectBean.event.eventTypeId}"
+    <emcomp:dynamicProperties id="event_main_dynamic_properties" 
+                              typeId="#{eventObjectBean.event.eventTypeId}"
                               object="#{eventObjectBean.event}"
                               formSelector="#{eventObjectBean.formSelector}"
                               properties="#{eventObjectBean.event.property}" />

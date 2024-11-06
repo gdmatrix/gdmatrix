@@ -39,7 +39,6 @@ import javax.faces.el.CompositeComponentExpressionHolder;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -64,24 +63,26 @@ public class ObjectReferenceBean
 
     List<SelectItem> selectItems =
       typeBean.getSelectItems(query, typeId, showNavigatorItems, true);
-
+    
     String objectId = WebUtils.getValue("#{cc.attrs.value}");
     if (!StringUtils.isBlank(objectId))
     {
-      boolean found = false;
+      SelectItem found = null;
       Iterator<SelectItem> iter = selectItems.iterator();
-      while (iter.hasNext() && !found)
+      while (iter.hasNext() && found == null)
       {
-        if (iter.next().getValue().equals(objectId))
+        SelectItem item = iter.next();
+        if (item.getValue().equals(objectId))
         {
-          found = true;
+          found = item;
         }
       }
-      if (!found)
+      if (found != null)
       {
-        selectItems.add(0,
-          new SelectItem(objectId, typeBean.getDescription(objectId)));
+        selectItems.remove(found);
       }
+      selectItems.add(0,
+        new SelectItem(objectId, typeBean.getDescription(objectId)));      
     }
 
     return selectItems;
@@ -112,15 +113,7 @@ public class ObjectReferenceBean
       WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);
     }
   }
-
-  public void onItemSelect(SelectEvent event)
-  {
-    SelectItem selectItem = (SelectItem)event.getObject();
-    String objectId = (String)selectItem.getValue();
-    if (NEW_OBJECT_ID.equals(objectId)) objectId = null;
-    WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);
-  }
-
+    
   public void onClear()
   {
     WebUtils.setValue("#{cc.attrs.value}", String.class, null);
@@ -156,7 +149,7 @@ public class ObjectReferenceBean
   {
     return WebUtils.getValue("#{cc.attrs.type}");
   }
-
+  
   public boolean isShowNavigatorItems()
   {
     Object value = WebUtils.getValue("#{cc.attrs.showNavigatorItems}");
@@ -176,7 +169,7 @@ public class ObjectReferenceBean
   {
     return WebUtils.getValue("#{cc.attrs.onselect}");
   }
-
+  
   public class CreateObjectLeap extends NavigatorBean.Leap
   {
     String typeId;

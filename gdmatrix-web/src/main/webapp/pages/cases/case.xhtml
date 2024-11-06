@@ -101,9 +101,9 @@
                                     minQueryLength="3"
                                     renderShowButton="false"
                                     formSelector="#{caseFinderBean.formSelector}"
-                                    onselect="showPanel('leftPanel')"                                    
+                                    onselect="showPanel('leftPanel')" 
                                     process="@form:cnt:find_selector"
-                                    update="@form:cnt:find_selector">
+                                    update="@form:cnt:find_selector:case_dynamic_properties">
               </emcomp:typeReference>
             </p:outputPanel>
 
@@ -162,12 +162,13 @@
 
           </div>
 
-          <emcomp:dynamicProperties typeId="#{caseFinderBean.filter.caseTypeId}"
+          <emcomp:dynamicProperties id="case_dynamic_properties" 
+                                    typeId="#{caseFinderBean.filter.caseTypeId}"
                                     formSelector="#{caseFinderBean.formSelector}"
                                     formBuilderPrefix="searchtype@flex"
                                     options="#{dynamicPropertiesBean.filterOptions}"
                                     properties="#{caseFinderBean.filter.property}" />
-
+          
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{caseFinderBean.clear}"

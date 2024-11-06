@@ -64,7 +64,7 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseEventsTabBean.caseEventTypeId}"
                                 process="@form:cnt:search_tabs:case_events_dialog"
-                                update="@form:cnt:search_tabs:case_events_panel"
+                                update="@form:cnt:search_tabs:case_events_dynamic_properties"
                                 oncomplete="PF('caseEventsDialog').hide();"
                                 onselect="PF('caseEventsDialog').show();"
                                 type="#{caseEventsTabBean.tabBaseTypeId != null ? caseEventsTabBean.tabBaseTypeId : 'CaseEvent'}"
@@ -91,7 +91,8 @@
 
       </div>
 
-      <emcomp:dynamicProperties typeId="#{caseEventsTabBean.editing.caseEventTypeId}"
+      <emcomp:dynamicProperties id="case_events_dynamic_properties" 
+                                typeId="#{caseEventsTabBean.caseEventTypeId}"
                                 formSelector="#{caseEventsTabBean.formSelector}"
                                 properties="#{caseEventsTabBean.editing.property}"
                                 oncomplete="PF('caseEventsDialog').resetPosition();" />

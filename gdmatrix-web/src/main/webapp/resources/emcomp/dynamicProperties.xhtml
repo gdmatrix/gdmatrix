@@ -4,12 +4,14 @@
       xmlns:composite="http://xmlns.jcp.org/jsf/composite"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
   <h:head>
     <title>Dynamic properties component</title>
   </h:head>
   <h:body>
     <composite:interface>
+      <composite:attribute name="id" required="false" />
       <composite:attribute name="typeId" required="true" />
       <composite:attribute name="object" required="false" />
       <composite:attribute name="properties" required="false" />
@@ -20,51 +22,53 @@
       <composite:attribute name="oncomplete" required="false" />
     </composite:interface>
     <composite:implementation>
-      <div class="ui-fluid formgrid grid">
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="#{objectBundle.forms}:" />
-          <div class="ui-inputgroup">
-            <p:selectOneMenu value="#{cc.attrs.formSelector}" 
-                             styleClass="min-w-0 border-round-left"
-                             autoWidth="false" touchable="true">
-              <p:ajax event="itemSelect" 
-                      listener="#{dynamicPropertiesBean.onSelectForm}"
-                      process="@this dyn_form" update="dyn_form form_description_panel"
-                      oncomplete="#{cc.attrs.oncomplete}" />
-              <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
-            </p:selectOneMenu>            
-            <p:commandButton icon="pi pi-question-circle"
-                             actionListener="#{dynamicPropertiesBean.onInspectForm}" 
-                             title="#{dynamicPropertiesBean.inspectMode ? objectBundle.inspect_off : objectBundle.inspect_on}"
-                             styleClass="#{dynamicPropertiesBean.inspectMode ? 'ui-button-outlined' : ''}"
-                             process="@this" update="@this dyn_form form_description_panel" />
-            <p:commandButton icon="pi pi-refresh"
-                             actionListener="#{dynamicPropertiesBean.onRefreshForm}" 
-                             title="#{objectBundle.update}"
-                             process="@this" update="dyn_form" />
+      <div id="#{cc.clientId}">
+        <div class="ui-fluid formgrid grid">
+          <div class="field col-12">
+            <p:outputLabel for="@next" value="#{objectBundle.forms}:" />
+            <div class="ui-inputgroup">
+              <p:selectOneMenu value="#{cc.attrs.formSelector}" 
+                               styleClass="min-w-0 border-round-left"
+                               autoWidth="false" touchable="true">
+                <p:ajax event="itemSelect" 
+                        listener="#{dynamicPropertiesBean.onSelectForm}"
+                        process="@this dyn_form" update="dyn_form form_description_panel"
+                        oncomplete="#{cc.attrs.oncomplete}" />
+                <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
+              </p:selectOneMenu>            
+              <p:commandButton icon="pi pi-question-circle"
+                               actionListener="#{dynamicPropertiesBean.onInspectForm}" 
+                               title="#{dynamicPropertiesBean.inspectMode ? objectBundle.inspect_off : objectBundle.inspect_on}"
+                               styleClass="#{dynamicPropertiesBean.inspectMode ? 'ui-button-outlined' : ''}"
+                               process="@this" update="@this dyn_form form_description_panel" />
+              <p:commandButton icon="pi pi-refresh"
+                               actionListener="#{dynamicPropertiesBean.onRefreshForm}" 
+                               title="#{objectBundle.update}"
+                               process="@this" update="dyn_form" />
+            </div>
           </div>
         </div>
-      </div>
-      <p:outputPanel id="form_description_panel"
-                     styleClass="formDescription">
-        <p:outputPanel rendered="#{dynamicPropertiesBean.inspectMode}">
-          <div class="header">Dades del formulari</div>
-          <div class="row">
-            <div class="label">Selector:</div><div class="value">#{dynamicPropertiesBean.formSelector}</div>
-          </div>
-          <div class="row">
-            <div class="label">DocId:</div><div class="value">#{dynamicPropertiesBean.formDocId}</div>
-          </div>
-          <div class="row">
-            <div class="label">Nom:</div><div class="value">#{dynamicPropertiesBean.formName}</div>
-          </div>
+        <p:outputPanel id="form_description_panel"
+                       styleClass="formDescription">
+          <p:outputPanel rendered="#{dynamicPropertiesBean.inspectMode}">
+            <div class="header">Dades del formulari</div>
+            <div class="row">
+              <div class="label">Selector:</div><div class="value">#{dynamicPropertiesBean.formSelector}</div>
+            </div>
+            <div class="row">
+              <div class="label">DocId:</div><div class="value">#{dynamicPropertiesBean.formDocId}</div>
+            </div>
+            <div class="row">
+              <div class="label">Nom:</div><div class="value">#{dynamicPropertiesBean.formName}</div>
+            </div>
+          </p:outputPanel>
         </p:outputPanel>
-      </p:outputPanel>
-      <h:panelGroup id="dyn_form"
-                    styleClass="ui-fluid formgrid grid" layout="block">
-        <f:event type="postAddToView"
-                 listener="#{dynamicPropertiesBean.loadDynamicComponents}" />
-      </h:panelGroup>
+        <h:panelGroup id="dyn_form"
+                      styleClass="ui-fluid formgrid grid" layout="block">
+          <f:event type="postAddToView"
+                   listener="#{dynamicPropertiesBean.loadDynamicComponents}" />
+        </h:panelGroup>
+      </div>
     </composite:implementation>
   </h:body>
 </html>

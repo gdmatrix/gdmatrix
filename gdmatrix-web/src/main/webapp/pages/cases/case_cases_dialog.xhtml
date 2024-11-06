@@ -76,7 +76,7 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 process="@form:cnt:search_tabs:case_cases_dialog"
-                                update="@form:cnt:search_tabs:case_cases_panel"
+                                update="@form:cnt:search_tabs:case_cases_dynamic_properties"
                                 disabled="#{!caseObjectBean.editable}">
           </emcomp:typeReference>
         </p:outputPanel>
@@ -116,7 +116,8 @@
 
       </div>
       
-      <emcomp:dynamicProperties typeId="#{caseCasesTabBean.editing.caseCaseTypeId}"
+      <emcomp:dynamicProperties id="case_cases_dynamic_properties" 
+                                typeId="#{caseCasesTabBean.editing.caseCaseTypeId}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 properties="#{caseCasesTabBean.editing.property}"
                                 oncomplete="PF('caseCasesDialog').resetPosition();" 

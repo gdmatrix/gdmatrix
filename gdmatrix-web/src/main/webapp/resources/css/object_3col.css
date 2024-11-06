@@ -1,6 +1,7 @@
 /* obj.css */
 
-tr.current { font-weight: bold; }    
+tr.current,
+td.current { font-weight: bold; }    
 
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content 

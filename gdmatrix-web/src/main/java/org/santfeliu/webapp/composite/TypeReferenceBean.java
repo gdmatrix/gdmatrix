@@ -96,26 +96,27 @@ public class TypeReferenceBean extends ObjectReferenceBean
     String objectId = WebUtils.getValue("#{cc.attrs.value}");
     if (!StringUtils.isBlank(objectId))
     {
-      boolean found = false;
+      SelectItem found = null;
       Iterator<SelectItem> iter = selectItems.iterator();
-      while (iter.hasNext() && !found)
+      while (iter.hasNext() && found == null)
       {
         SelectItem item = iter.next();
         if (item.getValue().equals(objectId))
         {
-          found = true;
+          found = item;
         }
       }
-      if (!found)
+      if (found != null)
       {
-        selectItems.add(0,
-          new SelectItem(objectId, typeTypeBean.getDescription(objectId)));
+        selectItems.remove(found);
       }
+      selectItems.add(0,
+        new SelectItem(objectId, typeTypeBean.getDescription(objectId)));      
     }
-      
+       
     return selectItems;
   }
-
+  
   @Override
   public SelectItem getSelectItem()
   {
@@ -123,13 +124,13 @@ public class TypeReferenceBean extends ObjectReferenceBean
     if (StringUtils.isBlank(objectId))
     {
       return new SelectItem(NEW_OBJECT_ID, "");
-    }
+    }  
     else
     {
       return new SelectItem(objectId, typeTypeBean.getDescription(objectId));
     }
   }
-
+  
   @Override
   public String show()
   {
@@ -149,13 +150,15 @@ public class TypeReferenceBean extends ObjectReferenceBean
       getValueExpression().getExpressionString(), getOnSelect());
   }
 
-  @Override
   public void onItemSelect(SelectEvent event)
   {
-    super.onItemSelect(event);
-    resetFormSelector();
+    SelectItem selectItem = (SelectItem)event.getObject();
+    String objectId = (String)selectItem.getValue();
+    if (NEW_OBJECT_ID.equals(objectId)) objectId = null;
+    WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);
+    resetFormSelector();    
   }
-
+    
   @Override
   public void onClear()
   {
@@ -196,7 +199,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
       WebUtils.setValue("#{cc.attrs.formSelector}", String.class, null);
     }
   }
-
+    
   public class SelectTypeLeap extends Leap
   {
     String typeId;

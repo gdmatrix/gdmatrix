@@ -32,7 +32,7 @@
                             requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                             formSelector="#{policyObjectBean.formSelector}"
                             process="@form:cnt:search_tabs:tabs"
-                            update="@form:cnt:search_tabs:tabs"
+                            update="@form:cnt:search_tabs:tabs:policy_main_dynamic_properties"
                             disabled="#{!policyObjectBean.editable}" />      
     </div>
 
@@ -76,7 +76,8 @@
 
   </div>
 
-  <emcomp:dynamicProperties typeId="#{policyObjectBean.policy.policyTypeId}"
+  <emcomp:dynamicProperties id="policy_main_dynamic_properties" 
+                            typeId="#{policyObjectBean.policy.policyTypeId}"
                             formSelector="#{policyObjectBean.formSelector}"
                             properties="#{policyObjectBean.policy.property}" 
                             options="#{dynamicPropertiesBean.getEditOptions('mainform:search_tabs:store')}"/> 

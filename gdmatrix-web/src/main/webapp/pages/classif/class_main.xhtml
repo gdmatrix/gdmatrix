@@ -89,7 +89,7 @@
                               required="#{not empty param['mainform:search_tabs:store']}"
                               formSelector="#{classObjectBean.formSelector}"
                               process="@form:cnt:search_tabs:tabs"
-                              update="@form:cnt:search_tabs:tabs">
+                              update="@form:cnt:search_tabs:tabs:class_main_dynamic_properties">
         </emcomp:typeReference>
       </div>
 
@@ -133,7 +133,8 @@
 
     </div>
 
-    <emcomp:dynamicProperties typeId="#{classObjectBean.classObject.classTypeId}"
+    <emcomp:dynamicProperties id="class_main_dynamic_properties" 
+                              typeId="#{classObjectBean.classObject.classTypeId}"
                               formSelector="#{classObjectBean.formSelector}"
                               properties="#{classObjectBean.classObject.property}" />
 </ui:composition>

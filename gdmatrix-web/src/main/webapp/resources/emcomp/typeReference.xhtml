@@ -57,23 +57,24 @@
                         size="#{cc.attrs.size}"
                         scrollHeight="#{cc.attrs.scrollHeight}"
                         onclick="this.setSelectionRange(0, this.value.length)"
+                        onchange="this.input.trigger('select')"
                         required="#{cc.attrs.required}"
                         disabled="#{cc.attrs.disabled}"
                         widgetVar="#{cc.attrs.widgetVar}">
-
+          
           <c:if test="#{not empty cc.attrs.requiredMessage}">
             <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
           </c:if>
 
           <c:if test="#{cc.attrs.autoUpdate}">
             <p:ajax event="itemSelect" listener="#{typeReferenceBean.onItemSelect}"
-                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
-
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />  
+            
             <p:ajax event="clear" listener="#{typeReferenceBean.onClear}"
                     process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
           </c:if>
 
-          <p:column>
+          <p:column styleClass="#{item.value == typeReferenceBean.selectItem.value ? 'current' : ''}">
             <h:outputText value="#{item.label}" />
           </p:column>
         </p:autoComplete>

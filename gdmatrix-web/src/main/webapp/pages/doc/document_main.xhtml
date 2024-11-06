@@ -37,7 +37,7 @@
                               requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{documentObjectBean.formSelector}"
                               process="@form:cnt:search_tabs:tabs"
-                              update="@form:cnt:search_tabs:tabs"
+                              update="@form:cnt:search_tabs:tabs:document_main_dynamic_properties"
                               disabled="#{!documentObjectBean.editable}">
         </emcomp:typeReference>
       </div>
@@ -135,7 +135,8 @@
 
     </div>
 
-    <emcomp:dynamicProperties typeId="#{documentObjectBean.document.docTypeId}"
+    <emcomp:dynamicProperties id="document_main_dynamic_properties" 
+                              typeId="#{documentObjectBean.document.docTypeId}"
                               object="#{documentObjectBean.document}"
                               formSelector="#{documentObjectBean.formSelector}"
                               dataHash="#{documentObjectBean.objectId}-#{documentObjectBean.document.changeDateTime}"

@@ -174,13 +174,13 @@
                                     formSelector="#{documentFinderBean.formSelector}"
                                     onselect="showPanel('leftPanel')"
                                     process="@form:cnt:find_selector"
-                                    update="@form:cnt:find_selector">
+                                    update="@form:cnt:find_selector:document_dynamic_properties">
               </emcomp:typeReference>
             </div>
 
           </div>
 
-          <emcomp:dynamicProperties typeId="#{documentFinderBean.filter.docTypeId}"
+          <emcomp:dynamicProperties id="document_dynamic_properties" typeId="#{documentFinderBean.filter.docTypeId}"
                                     formSelector="#{documentFinderBean.formSelector}"
                                     formBuilderPrefix="searchtype@flex"
                                     options="#{dynamicPropertiesBean.filterOptions}"

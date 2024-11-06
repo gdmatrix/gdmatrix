@@ -89,7 +89,7 @@
                                     formSelector="#{eventFinderBean.formSelector}"
                                     onselect="showPanel('leftPanel')"
                                     process="@form:cnt:find_selector"
-                                    update="@form:cnt:find_selector">
+                                    update="@form:cnt:find_selector:event_dynamic_properties">
               </emcomp:typeReference>
             </p:outputPanel>
 
@@ -179,7 +179,7 @@
 
           </div>
 
-          <emcomp:dynamicProperties typeId="#{eventFinderBean.searchEventTypeId}"
+          <emcomp:dynamicProperties id="event_dynamic_properties" typeId="#{eventFinderBean.searchEventTypeId}"
                                     formSelector="#{eventFinderBean.formSelector}"
                                     formBuilderPrefix="searchtype@flex"
                                     options="#{dynamicPropertiesBean.filterOptions}"
