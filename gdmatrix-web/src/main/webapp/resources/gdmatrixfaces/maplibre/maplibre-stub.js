@@ -439,8 +439,12 @@ function getSourceUrl(sourceId, style)
   if (service.useProxy)
   {
     url = "https://" + document.location.host + "/proxy?url=" +
-          serviceUrl + "&" + urlParams +
-          "&_CHG=" + sourceId + "&_CHR=_seed";
+          serviceUrl + "&" + urlParams;
+    if (service.type !== "wmts")
+    {
+      // enable cache if service type is not wmts
+      url += "&_CHG=" + sourceId + "&_CHR=_seed";
+    }
   }
   else
   {
