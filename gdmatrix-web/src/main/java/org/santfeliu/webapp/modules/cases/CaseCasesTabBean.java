@@ -635,8 +635,15 @@ public class CaseCasesTabBean extends TabBean
           String sourceTypeId = pd.getValue().get(0);
           return caseType.isDerivedFrom(sourceTypeId);
         }
+        else
+        {
+          String objectId = getObjectId();
+          return objectId.equals(editing.getCaseId())
+            && !objectId.equals(editing.getRelCaseId());             
+        }
       }
     }
+  
     return true;
   }
   
