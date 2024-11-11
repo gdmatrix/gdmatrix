@@ -67,6 +67,9 @@
           </c:if>
 
           <c:if test="#{cc.attrs.autoUpdate}">     
+            <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+            
             <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
                     process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
           </c:if>

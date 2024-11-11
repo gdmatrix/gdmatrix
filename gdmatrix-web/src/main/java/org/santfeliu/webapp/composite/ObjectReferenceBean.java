@@ -39,6 +39,7 @@ import javax.faces.el.CompositeComponentExpressionHolder;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -113,7 +114,15 @@ public class ObjectReferenceBean
       WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);
     }
   }
-    
+  
+  public void onItemSelect(SelectEvent event)
+  {
+    SelectItem selectItem = (SelectItem)event.getObject();
+    String objectId = (String)selectItem.getValue();
+    if (NEW_OBJECT_ID.equals(objectId)) objectId = null;
+    WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);  
+  }  
+  
   public void onClear()
   {
     WebUtils.setValue("#{cc.attrs.value}", String.class, null);

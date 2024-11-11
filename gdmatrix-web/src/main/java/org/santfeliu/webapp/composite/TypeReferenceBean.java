@@ -149,14 +149,12 @@ public class TypeReferenceBean extends ObjectReferenceBean
     return navigatorBean.execute(new SelectTypeLeap(getTypeId()), true,
       getValueExpression().getExpressionString(), getOnSelect());
   }
-
+    
+  @Override
   public void onItemSelect(SelectEvent event)
   {
-    SelectItem selectItem = (SelectItem)event.getObject();
-    String objectId = (String)selectItem.getValue();
-    if (NEW_OBJECT_ID.equals(objectId)) objectId = null;
-    WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);
-    resetFormSelector();    
+    super.onItemSelect(event);
+    resetFormSelector();
   }
     
   @Override
