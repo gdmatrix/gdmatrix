@@ -134,14 +134,18 @@
     
     function setCategoryExpand(elem, expanded)
     {
-      let categoryElem = elem.parentElement.parentElement.parentElement;
+      while (!elem.classList.contains("category"))
+      {
+        elem = elem.parentElement;        
+      }
       if (expanded)
       {
-        categoryElem.classList.add("expanded");
+        elem.classList.add("expanded");
+        elem.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
       }
       else
       {
-        categoryElem.classList.remove("expanded");        
+        elem.classList.remove("expanded");        
       }
     }
     

@@ -15,7 +15,11 @@
     </h:panelGroup>
     
     <div class="flex-grow-1 flex-shrink-1 flex flex-column">
-      <div class="font-bold mr-1">#{applicationBean.translate(mapGroup.category.title, 'geo')}</div>
+      <div class="font-bold mr-1">
+        <p:commandLink value="#{applicationBean.translate(mapGroup.category.title, 'geo')}"
+                       process="@this" update="@none"
+                       onclick="setCategoryExpand(this, true)" />
+      </div>
       <div class="flex flex-wrap">
         <ui:fragment rendered="#{mapGroup.category.description != null}">
           <span class="mr-1">#{applicationBean.translate(mapGroup.category.description, 'geo')}</span>
