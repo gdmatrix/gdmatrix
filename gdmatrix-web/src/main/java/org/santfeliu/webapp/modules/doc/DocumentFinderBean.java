@@ -93,6 +93,8 @@ public class DocumentFinderBean extends FinderBean
   public void init()
   {
     System.out.println("Creating " + this);
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter.setDocTypeId(baseTypeId);     
   }
 
 

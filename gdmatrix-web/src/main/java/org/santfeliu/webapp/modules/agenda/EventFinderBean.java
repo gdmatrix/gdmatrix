@@ -121,6 +121,9 @@ public class EventFinderBean extends FinderBean
   @PostConstruct
   public void init()
   {
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter.getEventTypeId().clear();
+    filter.getEventTypeId().add(baseTypeId);
   }
 
   @Override
