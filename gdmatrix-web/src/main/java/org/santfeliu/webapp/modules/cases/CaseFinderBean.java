@@ -34,7 +34,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -76,14 +75,7 @@ public class CaseFinderBean extends FinderBean
 
   @Inject
   CaseObjectBean caseObjectBean;
-   
-  @PostConstruct
-  public void init()
-  {
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter.setCaseTypeId(baseTypeId);    
-  }
-  
+     
   @Override
   public ObjectBean getObjectBean()
   {
@@ -103,6 +95,11 @@ public class CaseFinderBean extends FinderBean
   @Override
   public CaseFilter getFilter()
   {
+    if (filter != null && StringUtils.isBlank(filter.getCaseTypeId()))
+    {
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      filter.setCaseTypeId(baseTypeId);        
+    }
     return filter;
   }
 

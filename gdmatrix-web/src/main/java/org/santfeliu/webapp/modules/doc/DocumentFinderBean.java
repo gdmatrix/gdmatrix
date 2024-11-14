@@ -92,9 +92,7 @@ public class DocumentFinderBean extends FinderBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter.setDocTypeId(baseTypeId);     
+    System.out.println("Creating " + this);    
   }
 
 
@@ -108,8 +106,14 @@ public class DocumentFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }
 
+  @Override
   public DocumentFilter getFilter()
   {
+    if (filter != null && StringUtils.isBlank(filter.getDocTypeId()))
+    {
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      filter.setDocTypeId(baseTypeId);        
+    }    
     return filter;
   }
 

@@ -43,7 +43,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -118,14 +117,6 @@ public class EventFinderBean extends FinderBean
   @Inject
   TypeTypeBean typeTypeBean;
 
-  @PostConstruct
-  public void init()
-  {
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter.getEventTypeId().clear();
-    filter.getEventTypeId().add(baseTypeId);
-  }
-
   @Override
   public ObjectBean getObjectBean()
   {
@@ -142,8 +133,16 @@ public class EventFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }
 
+  @Override
   public EventFilter getFilter()
   {
+    if (filter != null && 
+      (filter.getEventTypeId() == null || filter.getEventTypeId().isEmpty()))
+    {    
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      filter.getEventTypeId().clear();
+      filter.getEventTypeId().add(baseTypeId);
+    }
     return filter;
   }
 
