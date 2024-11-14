@@ -188,6 +188,7 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     {
       filter.getEventTypeId().add(typeId);
     }
+    filter.setStartDateTime("00010102000000"); //Avoid deleted events
     return filter;
   }
 
