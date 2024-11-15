@@ -3,6 +3,7 @@
 .ide_body .header
 {
   background-color: var(--surface-ground);
+  color: var(--text-color);
   border-bottom: 1px solid var(--surface-300);
   padding: 1rem;
 }
@@ -136,6 +137,34 @@
 .code > .ui-inputfield
 {
   font-family: monospace !important;
+}
+
+#js_console
+{
+  font-family: monospace;
+  border-radius: var(--border-radius);
+}
+
+#js_console > div
+{
+  margin-bottom: 2px;
+}
+
+#js_console > div > div
+{
+  padding: 2px;  
+}
+
+#js_console div.error
+{
+  background-color: #ffb0b0;
+  color: #800000;
+}
+
+#js_console div.warn
+{
+  background-color: #efef80;
+  color: #404000;
 }
 
 

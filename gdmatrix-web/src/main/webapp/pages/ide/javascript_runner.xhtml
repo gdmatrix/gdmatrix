@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces">
+   
+  <div class="flex flex-column h-full">
+    <gdm:codemirror lineNumbers="true" language="javascript" 
+                    value="#{javascriptIdeBean.code}" 
+                    style="height:auto;max-height:50%" styleClass="flex-grow-0 flex-shrink-0" />
+
+    <p:outputPanel id="js_toolbar" class="flex-grow-0 pt-2 pb-2 text-left">
+      <p:commandButton value="Execute" 
+                       process="@form"
+                       update="@parent"
+                       rendered="#{not javascriptIdeBean.isRunning()}"
+                       action="#{javascriptIdeBean.execute}" icon="pi pi-play" 
+                       oncomplete="readConsole('#{javascriptIdeBean.consoleId}', true)" />    
+      <p:commandButton value="Interrupt" 
+                       process="@form"
+                       update="@parent" class="ml-1"
+                       rendered="#{javascriptIdeBean.isRunning()}"
+                       action="#{javascriptIdeBean.interrupt}" icon="pi pi-stop-circle" />
+      <ui:fragment rendered="#{javascriptIdeBean.isRunning()}">
+        <span class="pi pi-spin pi-spinner ml-2 mr-2" />Running...
+      </ui:fragment>
+    </p:outputPanel>  
+
+    <div id="js_console" class="flex-grow-1 overflow-auto" 
+         style="border:1px solid var(--surface-300)">
+    </div>
+  </div>
+    
+  <gdm:saveBean value="javascriptIdeBean" />
+  <p:remoteCommand name="updateToolbar" update="js_toolbar" />    
+    
+</ui:composition>

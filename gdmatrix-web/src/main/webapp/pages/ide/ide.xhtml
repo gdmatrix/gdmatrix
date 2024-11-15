@@ -16,6 +16,11 @@
   <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
                 var="documentBundle"/>
 
+  <p:messages showSummary="true" styleClass="messages ml-3 mr-3" 
+              showIcon="true" closable="true" forIgnores="growl login_messages">
+    <p:autoUpdate />
+  </p:messages>
+  
   <div class="ide_body p-0 flex flex-column h-full">
 
     <p:outputPanel id="header" class="header flex-grow-0 flex p-2">
