@@ -106,7 +106,7 @@ public class SecurityManager implements SecurityManagerPort
   public static final String PK_SEPARATOR = ";";
   public static final int ROLE_DESCRIPTION_MAX_SIZE = 400;
   public static final int ROLE_ID_MAX_SIZE = 20;
-  public static final int ROLE_NAME_MAX_SIZE = 100;
+  public static final int ROLE_NAME_MAX_SIZE = 200;
   public static final int USER_DISPLAY_NAME_MAX_SIZE = 60;
   public static final int USER_ID_MAX_SIZE = 20;
 
@@ -146,13 +146,13 @@ public class SecurityManager implements SecurityManagerPort
   public static final String DEFAULT_PERSONID = "defaultPersonId";
   /* Lock user control mode: all|noldap|off */
   private static final String USER_LOCK_CONTROL_MODE = "userLockControlMode";
-  /* Max failed login attempts before block */  
-  private static final String MAX_FAILED_LOGIN_ATTEMPTS = 
+  /* Max failed login attempts before block */
+  private static final String MAX_FAILED_LOGIN_ATTEMPTS =
     "maxFailedLoginAttempts";
-  /* Margin time to unlock a locked user */  
+  /* Margin time to unlock a locked user */
   private static final String AUTO_UNLOCK_MARGIN_TIME = "autoUnlockMarginTime";
-  /* Min login attempts to log an intrusion attempt */  
-  private static final String MIN_INTRUSION_ATTEMPTS = "minIntrusionAttempts";  
+  /* Min login attempts to log an intrusion attempt */
+  private static final String MIN_INTRUSION_ATTEMPTS = "minIntrusionAttempts";
 
   @Resource
   WebServiceContext wsContext;
@@ -202,7 +202,7 @@ public class SecurityManager implements SecurityManagerPort
         userLockControlMode = props.getString(USER_LOCK_CONTROL_MODE, "off");
         maxFailedLoginAttempts = props.getInteger(MAX_FAILED_LOGIN_ATTEMPTS, 5);
         autoUnlockMarginTime = props.getInteger(AUTO_UNLOCK_MARGIN_TIME, 600);
-        minIntrusionAttempts = props.getInteger(MIN_INTRUSION_ATTEMPTS, 10);    
+        minIntrusionAttempts = props.getInteger(MIN_INTRUSION_ATTEMPTS, 10);
       }
       catch (Exception ex)
       {
@@ -300,7 +300,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "getSecurityMetaData");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
 
       SecurityMetaData metaData = new SecurityMetaData();
@@ -328,7 +328,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "findUsers");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
 
       List<DBUser> dbUsers = new ArrayList();
@@ -352,10 +352,10 @@ public class SecurityManager implements SecurityManagerPort
           catch (NumberFormatException ex)
           {
             dbUser.setFailedLoginAttempts(0);
-          }                    
+          }
         }
         if (row[2] != null)
-        {          
+        {
           dbUser.setLastSuccessLoginDateTime((String)row[2]);
         }
         if (row[3] != null)
@@ -366,7 +366,7 @@ public class SecurityManager implements SecurityManagerPort
         {
           dbUser.setLastIntrusionDateTime((String)row[4]);
         }
-        dbUsers.add(dbUser);        
+        dbUsers.add(dbUser);
       }
 
       List<User> users = new ArrayList<>();
@@ -391,7 +391,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "countUsers");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
 
       int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
@@ -419,7 +419,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "loadUser userId:{0}", userId);
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
 
       // checkRoles
@@ -453,16 +453,16 @@ public class SecurityManager implements SecurityManagerPort
       if (!StringUtils.isBlank(password))
       {
         // password change
-        String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);        
-        String autoLoginUserId = 
-          MatrixConfig.getProperty("org.santfeliu.web.autoLogin.userId");      
+        String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
+        String autoLoginUserId =
+          MatrixConfig.getProperty("org.santfeliu.web.autoLogin.userId");
 
-        if (userId.equals(adminUserId) || userId.equals(autoLoginUserId) || 
+        if (userId.equals(adminUserId) || userId.equals(autoLoginUserId) ||
           isUserInLDAP(userId))
         {
           throw new Exception("security:CAN_NOT_CHANGE_PASSWORD");
         }
-        
+
         password = password.trim();
         checkPasswordFormat(password);
       }
@@ -584,7 +584,7 @@ public class SecurityManager implements SecurityManagerPort
       }
       else
       {
-        Date now = new java.util.Date();        
+        Date now = new java.util.Date();
         DBUser dbUser = selectUser(userId);
         if (dbUser != null)
         {
@@ -596,16 +596,16 @@ public class SecurityManager implements SecurityManagerPort
 
           try
           {
-            boolean userLockControlEnabled = 
+            boolean userLockControlEnabled =
               checkUserLockControlEnabled(userId);
             boolean userLocked = false;
-            
+
             if (userLockControlEnabled)
             {
               unlockUserIfNeeded(dbUser, now);
               userLocked = isUserLocked(dbUser);
             }
-            
+
             // persistent user
             if (isMasterPassword(userId, password) ||
                 isValidPassword(userId, password, dbUser.getPassword()))
@@ -617,7 +617,7 @@ public class SecurityManager implements SecurityManagerPort
               if (userLockControlEnabled)
               {
                 checkUserLock(dbUser);
-                resetUserLock(dbUser);              
+                resetUserLock(dbUser);
               }
               user = new User();
               dbUser.copyTo(user);
@@ -633,7 +633,7 @@ public class SecurityManager implements SecurityManagerPort
               if (!userLocked)
               {
                 updateLastFailedLoginDateTime(dbUser, now);
-              }              
+              }
               if (userLockControlEnabled)
               {
                 incrementFailedLoginAttempts(dbUser, now);
@@ -650,10 +650,10 @@ public class SecurityManager implements SecurityManagerPort
           }
         }
         else if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
-        {          
+        {
           // unregistered certificate user: #NUMBER
           user = new User();
-          user.setUserId(userId.trim());          
+          user.setUserId(userId.trim());
           if (isMasterPassword(userId, password) ||
               getAuthUserPassword(userId).equals(password))
           {
@@ -662,7 +662,7 @@ public class SecurityManager implements SecurityManagerPort
             loadLockUserProperties(user);
             updateLastSuccessLoginDateTime(user, now);
           }
-          else 
+          else
           {
             updateLastFailedLoginDateTime(user, now);
             //commit before exception
@@ -688,8 +688,8 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "loginCertificate");
-      
-      Date now = new java.util.Date();      
+
+      Date now = new java.util.Date();
       String userId = null;
       String displayName = null;
       String givenName = null;
@@ -797,9 +797,9 @@ public class SecurityManager implements SecurityManagerPort
       LOGGER.log(Level.INFO, "changePassword userId:{0}", userId);
 
       String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
-      String autoLoginUserId = 
-        MatrixConfig.getProperty("org.santfeliu.web.autoLogin.userId");      
-      
+      String autoLoginUserId =
+        MatrixConfig.getProperty("org.santfeliu.web.autoLogin.userId");
+
       if (adminUserId.equals(userId) || autoLoginUserId.equals(userId))
         throw new Exception("security:CAN_NOT_CHANGE_PASSWORD");
 
@@ -844,9 +844,9 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "findRoles");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
-    
+
       int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
       Query query;
       if (roleCount > 1)
@@ -877,9 +877,9 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "countRoles");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
-      
+
       int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
       Query query;
       if (roleCount > 1)
@@ -906,8 +906,8 @@ public class SecurityManager implements SecurityManagerPort
     {
       Role role;
       LOGGER.log(Level.INFO, "loadRole roleId:{0}", roleId);
-      if (!isMatrixAdmin() && !isUserAdmin()) 
-        throw new Exception("ACTION_DENIED");        
+      if (!isMatrixAdmin() && !isUserAdmin())
+        throw new Exception("ACTION_DENIED");
 
       DBRole dbRole = entityManager.find(DBRole.class, roleId);
       if (dbRole == null)
@@ -921,7 +921,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       LOGGER.log(Level.SEVERE, "loadRole failed");
       throw WSExceptionFactory.create(ex);
-    }    
+    }
   }
 
   @Override
@@ -992,7 +992,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "findUserInRoles");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
 
       List<UserInRole> userInRoles = new ArrayList<>();
@@ -1060,9 +1060,9 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "findUserInRoleViews");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
-    
+
       List<UserInRoleView> userInRoleViews = new ArrayList<>();
       if (filter.getUserId() == null)
       {
@@ -1128,8 +1128,8 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "loadUserInRole userInRoleId:{0}", userInRoleId);
-      if (!isMatrixAdmin() && !isUserAdmin()) 
-        throw new Exception("ACTION_DENIED");      
+      if (!isMatrixAdmin() && !isUserAdmin())
+        throw new Exception("ACTION_DENIED");
       DBUserInRole dbUserInRole = selectUserInRole(userInRoleId);
       if (dbUserInRole == null) return null;
       userInRole = new UserInRole();
@@ -1241,7 +1241,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "findRoleInRoles");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
 
       Query query = entityManager.createNamedQuery("findRoleInRoles");
@@ -1272,9 +1272,9 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "findRoleInRoleViews");
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
-    
+
       List<RoleInRoleView> roleInRoleViews = new ArrayList<>();
       if (filter.getContainerRoleId() == null)
       {
@@ -1324,8 +1324,8 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "loadRoleInRole:{0}", roleInRoleId);
-      if (!isMatrixAdmin() && !isUserAdmin()) 
-        throw new Exception("ACTION_DENIED");      
+      if (!isMatrixAdmin() && !isUserAdmin())
+        throw new Exception("ACTION_DENIED");
       DBRoleInRole dbRoleInRole =
         entityManager.find(DBRoleInRole.class, new DBRoleInRolePK(roleInRoleId));
       if (dbRoleInRole == null) return null;
@@ -1422,7 +1422,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       LOGGER.log(Level.INFO, "findUserProperties userId:{0} " +
         "name:{1} value:{2}", new Object[]{userId, name, value});
-      if (!isMatrixAdmin() && !isUserAdmin()) 
+      if (!isMatrixAdmin() && !isUserAdmin())
         throw new Exception("ACTION_DENIED");
 
       if (userId == null || userId.trim().isEmpty())
@@ -1448,7 +1448,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       LOGGER.log(Level.INFO, "storeUserProperties userId:{0} incremental:{1}",
         new Object[]{userId, incremental});
-      if (!isUserAdmin()) throw new Exception("ACTION_DENIED");      
+      if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
 
       if (userId == null || userId.trim().isEmpty())
         throw new WebServiceException("security:USERID_IS_MANDATORY");
@@ -1491,17 +1491,17 @@ public class SecurityManager implements SecurityManagerPort
   }
 
   @Override
-  public boolean isUserLockControlEnabled(String userId) 
+  public boolean isUserLockControlEnabled(String userId)
   {
     try
     {
       LOGGER.log(Level.INFO, "isUserLockControlEnabled userId:{0}", userId);
-      if (!isMatrixAdmin() && !isUserAdmin()) 
-        throw new Exception("ACTION_DENIED");           
-      
+      if (!isMatrixAdmin() && !isUserAdmin())
+        throw new Exception("ACTION_DENIED");
+
       if (userId == null || userId.trim().isEmpty())
         throw new WebServiceException("security:USERID_IS_MANDATORY");
-      
+
       try
       {
         Query query = entityManager.createNamedQuery("selectUser");
@@ -1511,7 +1511,7 @@ public class SecurityManager implements SecurityManagerPort
       catch (NoResultException ex)
       {
         throw new WebServiceException("security:USER_NOT_FOUND");
-      }       
+      }
       return checkUserLockControlEnabled(userId);
     }
     catch (Exception ex)
@@ -1520,7 +1520,7 @@ public class SecurityManager implements SecurityManagerPort
       throw WSExceptionFactory.create(ex);
     }
   }
-  
+
   /**** private methods ****/
 
   private int persistProperty(String userId, Property property,
@@ -1845,10 +1845,10 @@ public class SecurityManager implements SecurityManagerPort
     Set<String> userRoles = UserCache.getUser(wsContext).getRoles();
     return userRoles.contains(SecurityConstants.SECURITY_ADMIN_ROLE);
   }
-  
+
   private boolean isMatrixAdmin()
   {
-    Credentials credentials = SecurityUtils.getCredentials(wsContext);    
+    Credentials credentials = SecurityUtils.getCredentials(wsContext);
     String userId = credentials.getUserId();
     String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
     if (userId.equals(adminUserId))
@@ -2053,7 +2053,7 @@ public class SecurityManager implements SecurityManagerPort
   private void loadLockUserProperties(User user)
   {
     if (user == null) return;
-    
+
     String userId = user.getUserId().trim();
     Query query = entityManager.createNamedQuery("findUserLockProperties");
     query.setParameter("userId", userId);
@@ -2064,7 +2064,7 @@ public class SecurityManager implements SecurityManagerPort
       {
         try
         {
-          int failedLoginAttempts = 
+          int failedLoginAttempts =
             Integer.valueOf(dbUserProperty.getValue());
           user.setFailedLoginAttempts(failedLoginAttempts);
         }
@@ -2084,17 +2084,17 @@ public class SecurityManager implements SecurityManagerPort
       else if ("lastIntrusionDateTime".equals(dbUserProperty.getName()))
       {
         user.setLastIntrusionDateTime(dbUserProperty.getValue());
-      }      
-    }    
+      }
+    }
   }
 
   private boolean isUserLocked(User user)
   {
     int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
-      user.getFailedLoginAttempts());            
+      user.getFailedLoginAttempts());
     return (failedLoginAttempts >= config.maxFailedLoginAttempts);
   }
-  
+
   private void unlockUserIfNeeded(User user, Date now) throws Exception
   {
     if (isUserLocked(user))
@@ -2110,7 +2110,7 @@ public class SecurityManager implements SecurityManagerPort
       }
     }
   }
-  
+
   private void checkUserLock(User user) throws Exception
   {
     if (isUserLocked(user))
@@ -2118,28 +2118,28 @@ public class SecurityManager implements SecurityManagerPort
       throw new Exception("security:INVALID_IDENTIFICATION");
     }
   }
-  
+
   private void resetUserLock(User user)
   {
-    if (user.getFailedLoginAttempts() == null || 
+    if (user.getFailedLoginAttempts() == null ||
       user.getFailedLoginAttempts() > 0)
     {
       storeFailedLoginAttempts(user.getUserId(), 0);
       user.setFailedLoginAttempts(0);
     }
   }
-  
+
   private void incrementFailedLoginAttempts(User user, Date now)
   {
     int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
-      user.getFailedLoginAttempts());    
+      user.getFailedLoginAttempts());
     int newFailedLoginAttempts = failedLoginAttempts + 1;
     storeFailedLoginAttempts(user.getUserId(), newFailedLoginAttempts);
     user.setFailedLoginAttempts(newFailedLoginAttempts);
     if (newFailedLoginAttempts == config.minIntrusionAttempts)
     {
       String nowDateTime = TextUtils.formatDate(now, "yyyyMMddHHmmss");
-      storeDateTimeInProperty(user.getUserId(), nowDateTime, 
+      storeDateTimeInProperty(user.getUserId(), nowDateTime,
         "lastIntrusionDateTime");
       user.setLastIntrusionDateTime(nowDateTime);
     }
@@ -2148,15 +2148,15 @@ public class SecurityManager implements SecurityManagerPort
   private void updateLastSuccessLoginDateTime(User user, Date now)
   {
     String nowDateTime = TextUtils.formatDate(now, "yyyyMMddHHmmss");
-    storeDateTimeInProperty(user.getUserId(), nowDateTime, 
-      "lastSuccessLoginDateTime");    
+    storeDateTimeInProperty(user.getUserId(), nowDateTime,
+      "lastSuccessLoginDateTime");
   }
 
   private void updateLastFailedLoginDateTime(User user, Date now)
   {
     String nowDateTime = TextUtils.formatDate(now, "yyyyMMddHHmmss");
-    storeDateTimeInProperty(user.getUserId(), nowDateTime, 
-      "lastFailedLoginDateTime");    
+    storeDateTimeInProperty(user.getUserId(), nowDateTime,
+      "lastFailedLoginDateTime");
     user.setLastFailedLoginDateTime(nowDateTime);
   }
 
@@ -2164,13 +2164,13 @@ public class SecurityManager implements SecurityManagerPort
   {
     String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
     String autoLoginUserId = MatrixConfig.getProperty(
-      "org.santfeliu.web.autoLogin.userId");      
-    if (userId.equals(adminUserId) || userId.equals(autoLoginUserId) || 
+      "org.santfeliu.web.autoLogin.userId");
+    if (userId.equals(adminUserId) || userId.equals(autoLoginUserId) ||
       userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
     {
       return false;
     }
-    
+
     String userLockControlMode = config.userLockControlMode;
     if ("all".equals(userLockControlMode))
     {
@@ -2182,11 +2182,11 @@ public class SecurityManager implements SecurityManagerPort
       {
         return !isUserInLDAP(userId);
       }
-      catch (Exception ex) 
-      { 
+      catch (Exception ex)
+      {
         return false;
       }
-    }    
+    }
     return false;
   }
 
@@ -2196,16 +2196,16 @@ public class SecurityManager implements SecurityManagerPort
     {
       Property property = new Property();
       property.setName("failedLoginAttempts");
-      property.getValue().add(String.valueOf(attempts));        
+      property.getValue().add(String.valueOf(attempts));
       persistProperty(userId, property, false);
       entityManager.flush();
     }
-    catch (Exception ex) 
+    catch (Exception ex)
     {
     }
   }
 
-  private void storeDateTimeInProperty(String userId, String dateTime, 
+  private void storeDateTimeInProperty(String userId, String dateTime,
     String propertyName)
   {
     try
@@ -2219,9 +2219,9 @@ public class SecurityManager implements SecurityManagerPort
       persistProperty(userId, property, false);
       entityManager.flush();
     }
-    catch (Exception ex) 
+    catch (Exception ex)
     {
-    }    
+    }
   }
 
   private Date getAutoUnlockDate(User user)
@@ -2237,9 +2237,9 @@ public class SecurityManager implements SecurityManagerPort
     catch (Exception ex)
     {
       return null;
-    }    
+    }
   }
-  
+
   private void txCommit()
   {
     if (entityManager.getTransaction().isActive())
