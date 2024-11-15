@@ -63,7 +63,8 @@
           </emcomp:objectReference>
         </div>
 
-        <div class="field col-12 md:col-6">
+        <p:outputPanel styleClass="field col-12 md:col-6" 
+                       rendered="#{!eventPersonsTabBean.leafBaseType}">          
           <p:outputLabel for="@next"
                          value="#{agendaBundle.attendants_type}"
                          indicateRequired="true" />
@@ -83,7 +84,7 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 disabled="#{!eventObjectBean.editable}">
           </emcomp:typeReference>
-        </div>
+        </p:outputPanel>
 
         <p:outputPanel styleClass="field-checkbox col-12"
                        rendered="#{eventPersonsTabBean.editing.personId != null}">
