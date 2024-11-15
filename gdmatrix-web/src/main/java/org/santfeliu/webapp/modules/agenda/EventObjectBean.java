@@ -67,15 +67,15 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 public class EventObjectBean extends ObjectBean
 {
   private static final String AUTO_ATTENDANT_TYPE = "_autoAttendantTypeId";
-  private static final DateTimeFormatter DAY_FORMATTER = 
+  private static final DateTimeFormatter DAY_FORMATTER =
     DateTimeFormatter.ofPattern("yyyyMMdd");
-  private static final DateTimeFormatter HOUR_FORMATTER = 
+  private static final DateTimeFormatter HOUR_FORMATTER =
     DateTimeFormatter.ofPattern("HHmmss");
 
   private Event event = new Event();
-  private boolean autoAttendant;
+  private boolean autoAttendant = true;
   private String formSelector;
-  
+
   private LocalDate startDate;
   private String startTime;
   private LocalDate endDate;
@@ -89,7 +89,7 @@ public class EventObjectBean extends ObjectBean
 
   @Inject
   EventPersonsTabBean eventPersonsTabBean;
-  
+
   @Inject
   TypeTypeBean typeTypeBean;
 
@@ -170,7 +170,7 @@ public class EventObjectBean extends ObjectBean
     try
     {
       if (getObjectSetup() == null) loadObjectSetup();
-      return getSearchTabs().size();      
+      return getSearchTabs().size();
     }
     catch (Exception ex)
     {
@@ -284,7 +284,7 @@ public class EventObjectBean extends ObjectBean
         event.getEndDateTime().substring(0, 8), DAY_FORMATTER);
       endTime = event.getEndDateTime().substring(8);
     }
-    else 
+    else
     {
       startDate = null;
       startTime = null;
@@ -299,7 +299,7 @@ public class EventObjectBean extends ObjectBean
   {
     setDefaultDateTimes();
     event.setStartDateTime(startDate.format(DAY_FORMATTER) + startTime);
-    event.setEndDateTime(endDate.format(DAY_FORMATTER) + endTime);    
+    event.setEndDateTime(endDate.format(DAY_FORMATTER) + endTime);
     executeAction(PRE_STORE_ACTION, null, event);
     event = AgendaModuleBean.getClient().storeEvent(event);
     if (isAutoAttendant() && isNew())
@@ -411,10 +411,10 @@ public class EventObjectBean extends ObjectBean
     if (endDate == null)
     {
       LocalTime ltStartTime = LocalTime.parse(startTime, HOUR_FORMATTER);
-      LocalDateTime later = 
+      LocalDateTime later =
         LocalDateTime.of(startDate, ltStartTime).plusMinutes(30);
       endDate = later.toLocalDate();
-      endTime = later.toLocalTime().format(HOUR_FORMATTER);      
+      endTime = later.toLocalTime().format(HOUR_FORMATTER);
     }
     if (endTime == null)
     {
