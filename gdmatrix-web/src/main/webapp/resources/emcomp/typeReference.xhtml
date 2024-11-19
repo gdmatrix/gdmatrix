@@ -67,11 +67,13 @@
           </c:if>
 
           <c:if test="#{cc.attrs.autoUpdate}">
-            <p:ajax event="itemSelect" listener="#{typeReferenceBean.onItemSelect}"
-                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />  
+            <p:ajax event="itemSelect" listener="#{typeReferenceBean.onItemSelect}" 
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" 
+                    oncomplete="#{cc.attrs.onselect}" />  
             
             <p:ajax event="clear" listener="#{typeReferenceBean.onClear}"
-                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}"
+                    oncomplete="#{cc.attrs.onselect}" />
           </c:if>
 
           <p:column styleClass="#{item.value == typeReferenceBean.selectItem.value ? 'current' : ''}">

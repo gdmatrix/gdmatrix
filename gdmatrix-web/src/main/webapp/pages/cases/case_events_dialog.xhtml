@@ -66,7 +66,7 @@
                                 process="@form:cnt:search_tabs:case_events_dialog"
                                 update="@form:cnt:search_tabs:case_events_dynamic_properties"
                                 oncomplete="PF('caseEventsDialog').hide();"
-                                onselect="PF('caseEventsDialog').show();"
+                                onselect="PF('caseEventsDialog').show();PF('caseEventsDialog').resetPosition();"
                                 type="#{caseEventsTabBean.tabBaseTypeId != null ? caseEventsTabBean.tabBaseTypeId : 'CaseEvent'}"
                                 showNavigatorItems="#{caseEventsTabBean.tabBaseTypeId != 'CaseEvent' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false"                                

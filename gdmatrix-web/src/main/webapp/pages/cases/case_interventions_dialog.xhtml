@@ -46,7 +46,7 @@
                                 showNavigatorItems="#{caseInterventionsTabBean.tabBaseTypeId != 'Intervention' ? 'false' : 'true'}"
                                 showNonInstantiableItems="false" 
                                 oncomplete="PF('caseInterventionsDialog').hide();"
-                                onselect="PF('caseInterventionsDialog').show();"
+                                onselect="PF('caseInterventionsDialog').show();PF('caseInterventionsDialog').resetPosition();"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
