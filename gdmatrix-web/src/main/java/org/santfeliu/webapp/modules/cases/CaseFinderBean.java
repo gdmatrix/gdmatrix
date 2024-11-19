@@ -340,7 +340,7 @@ public class CaseFinderBean extends FinderBean
               }   
 
               String searchExpression = filter.getSearchExpression();
-              if (searchExpression == null)
+              if (StringUtils.isBlank(searchExpression))
                 setOrderBy(filter);
               
               List<TableProperty> tableProperties = getTableProperties();
