@@ -157,6 +157,21 @@ public class IdeDocumentType implements Serializable
       new Tab("html_preview.xhtml", "HTML preview", "pi pi-eye"),
       metadata);
 
+    registerType("template", "Template report", "REPORT", "report",
+      "text/xml", "fa fa-file-code",
+      new Tab("html_editor.xhtml", "HTML Editor", "fa fa-file-code"),
+      metadata);
+
+    registerType("xsl", "XSL template", "TEMPLATE", "workflow.xsl",
+      "text/xml", "fa fa-code",
+      new Tab("xml_editor.xhtml", "XSL Editor", "fa fa-code"),
+      metadata);
+
+    registerType("ant", "ANT project", "ANT", "ide.ant",
+      "text/xml", "fa fa-bug",
+      new Tab("xml_editor.xhtml", "ANT Editor", "fa fa-bug"),
+      metadata);
+
     registerType("ObjectSetup", "Object setup", "ObjectSetup", "setupName",
       "application/json", "fa fa-gear",
       new Tab("json_editor.xhtml", "JSON Editor", "fa fa-gear"), metadata);
