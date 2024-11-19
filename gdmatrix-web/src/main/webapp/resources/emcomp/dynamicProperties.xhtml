@@ -27,14 +27,18 @@
           <div class="field col-12">
             <p:outputLabel for="@next" value="#{objectBundle.forms}:" />
             <div class="ui-inputgroup">
-              <p:selectOneMenu value="#{cc.attrs.formSelector}" 
+              <p:selectOneMenu value="#{cc.attrs.formSelector}" var="formDesc"
                                styleClass="min-w-0 border-round-left"
                                autoWidth="false" touchable="true">
+                <f:selectItems value="#{dynamicPropertiesBean.formDescriptors}" 
+                               var="item" itemLabel="#{item.title}" itemValue="#{item}" />
+                <p:column>
+                  <h:outputText value="#{formDesc.title}" />
+                </p:column>
                 <p:ajax event="itemSelect" 
                         listener="#{dynamicPropertiesBean.onSelectForm}"
                         process="@this dyn_form" update="dyn_form form_description_panel"
                         oncomplete="#{cc.attrs.oncomplete}" />
-                <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
               </p:selectOneMenu>            
               <p:commandButton icon="pi pi-question-circle"
                                actionListener="#{dynamicPropertiesBean.onInspectForm}" 

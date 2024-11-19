@@ -47,7 +47,6 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -91,7 +90,7 @@ public class DynamicPropertiesBean implements Serializable
   }
   static final JsonValidator JSON_VALIDATOR = new JsonValidator();
 
-  private final Map<String, List<SelectItem>> selectItemMap = new HashMap<>();
+  private final Map<String, List<FormDescriptor>> formDescriptorMap = new HashMap<>();
   private final Map<String, Boolean> inspectModeMap = new HashMap<>();
   private PropertyHelper propertyHelper;
 
@@ -191,33 +190,28 @@ public class DynamicPropertiesBean implements Serializable
     inspectModeMap.put(prefix, inspectMode);
   }
 
-  public List<SelectItem> getSelectItems()
+  public List<FormDescriptor> getFormDescriptors()
   {
     String prefix = getFormBuilderPrefix();
     String typeId = getTypeId();
     String formKey = prefix + ":" + typeId;
 
-    List<SelectItem> selectItems = selectItemMap.get(formKey);
-    if (selectItems == null)
+    List<FormDescriptor> descriptors = formDescriptorMap.get(formKey);
+    if (descriptors == null)
     {
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
 
-      selectItems = new ArrayList<>();
-      if (!StringUtils.isBlank(typeId))
+      if (StringUtils.isBlank(typeId))
+      {
+        descriptors = new ArrayList<>();
+      }
+      else
       {
         String selectorBase = formKey +
           TypeFormBuilder.USERID + userSessionBean.getUserId() +
           TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
 
-        List<FormDescriptor> descriptors =
-          FormFactory.getInstance().findForms(selectorBase);
-
-        for (FormDescriptor descriptor : descriptors)
-        {
-          String selector = descriptor.getSelector();
-          String label = descriptor.getTitle();
-          selectItems.add(new SelectItem(selector, label));
-        }
+        descriptors = FormFactory.getInstance().findForms(selectorBase);
       }
       ResourceBundle bundle = ResourceBundle.getBundle(
         "org.santfeliu.web.obj.resources.ObjectBundle",
@@ -225,18 +219,18 @@ public class DynamicPropertiesBean implements Serializable
 
       if (userSessionBean.isUserInRole("DOC_ADMIN"))
       {
-        selectItems.add(new SelectItem(PROPERTY_EDITOR_SELECTOR,
+        descriptors.add(new FormDescriptor(PROPERTY_EDITOR_SELECTOR,
           bundle.getString("property_editor")));
       }
 
-      if (selectItems.isEmpty())
+      if (descriptors.isEmpty())
       {
-        selectItems.add(
-          new SelectItem("", bundle.getString("type_without_form")));
+        descriptors.add(
+          new FormDescriptor("", bundle.getString("type_without_form")));
       }
-      selectItemMap.put(formKey, selectItems);
+      formDescriptorMap.put(formKey, descriptors);
     }
-    return selectItems;
+    return descriptors;
   }
 
   public void onSelectForm(FacesEvent event)
@@ -390,14 +384,14 @@ public class DynamicPropertiesBean implements Serializable
     {
       Map<String, Object> panelAttributes = panel.getPassThroughAttributes();
 
-      List<SelectItem> selectItems = getSelectItems();
+      List<FormDescriptor> descriptors = getFormDescriptors();
       String formSelector = getFormSelector();
 
       if (StringUtils.isBlank(formSelector) ||
-          !isValidFormSelector(formSelector, selectItems))
+          !isValidFormSelector(formSelector, descriptors))
       {
         // set first formSelector
-        formSelector = (String)selectItems.get(0).getValue();
+        formSelector = (String)descriptors.get(0).getSelector();
         setFormSelector(formSelector);
       }
 
@@ -492,13 +486,13 @@ public class DynamicPropertiesBean implements Serializable
   }
 
   private boolean isValidFormSelector(String formSelector,
-    List<SelectItem> selectItems)
+    List<FormDescriptor> descriptors)
   {
     if (PROPERTY_EDITOR_SELECTOR.equals(formSelector)) return true;
 
-    for (SelectItem selectItem : selectItems)
+    for (FormDescriptor descriptor : descriptors)
     {
-      if (formSelector.equals(selectItem.getValue())) return true;
+      if (formSelector.equals(descriptor.getSelector())) return true;
     }
     return false;
   }
