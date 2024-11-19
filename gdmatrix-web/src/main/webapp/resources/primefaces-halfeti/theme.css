@@ -251,17 +251,17 @@ body .ui-button.ui-state-active,body .ui-button.ui-state-down{
 }
 body .ui-button.ui-button-outlined{
   background-color:rgba(0,0,0,0);
-  color:#a90a51;
+  color:#f90a81;
   border:1px solid
 }
 body .ui-button.ui-button-outlined.ui-state-hover{
   background:rgba(169,10,81,.04);
-  color:#a90a51;
+  color:#f90a81;
   border:1px solid
 }
 body .ui-button.ui-button-outlined.ui-state-active,body .ui-button.ui-button-outlined.ui-state-down{
   background:rgba(169,10,81,.16);
-  color:#a90a51;
+  color:#f90a81;
   border:1px solid
 }
 body .ui-button.ui-button-outlined.ui-button-plain{
@@ -278,17 +278,17 @@ body .ui-button.ui-button-outlined.ui-button-plain.ui-state-active,body .ui-butt
 }
 body .ui-button.ui-button-flat{
   background-color:rgba(0,0,0,0);
-  color:#a90a51;
+  color:#f90a81;
   border-color:rgba(0,0,0,0)
 }
 body .ui-button.ui-button-flat.ui-state-hover{
   background:rgba(169,10,81,.04);
-  color:#a90a51;
+  color:#f90a81;
   border-color:rgba(0,0,0,0)
 }
 body .ui-button.ui-button-flat.ui-state-active,body .ui-button.ui-button-flat.ui-state-down{
   background:rgba(169,10,81,.16);
-  color:#a90a51;
+  color:#f90a81;
   border-color:rgba(0,0,0,0)
 }
 body .ui-button.ui-button-flat.ui-button-plain{
@@ -749,15 +749,15 @@ body .ui-button.ui-button-danger.ui-button-flat.ui-state-active,body .ui-splitbu
   color:#f48fb1
 }
 body .ui-commandlink,body .ui-link{
-  color:#a90a51;
+  color:#f90a81;
   transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s
 }
 body .ui-commandlink:hover,body .ui-link:hover{
-  color:#980949;
+  color:#ff0a81;
   text-decoration:underline
 }
 body .ui-commandlink:active,body .ui-link:active{
-  color:#870841
+  color:#ff0a81;
 }
 body .ui-splitbutton{
   padding:0
@@ -1126,11 +1126,11 @@ body .ui-datatable thead th.ui-state-hover{
 }
 body .ui-datatable thead th.ui-state-active{
   background:#1e1e1e;
-  color:#a90a51
+  color:#f90a81
 }
 body .ui-datatable thead th.ui-state-active.ui-state-hover{
   background:rgba(255,255,255,.03);
-  color:#a90a51
+  color:#f90a81
 }
 body .ui-datatable .ui-datatable-data>tr{
   background:#1e1e1e;
@@ -2493,11 +2493,11 @@ body .ui-treetable thead th.ui-state-hover{
 }
 body .ui-treetable thead th.ui-state-active{
   background:#1e1e1e;
-  color:#a90a51
+  color:#f90a81
 }
 body .ui-treetable thead th.ui-state-active.ui-state-hover{
   background:rgba(255,255,255,.03);
-  color:#a90a51
+  color:#f90a81
 }
 body .ui-treetable .ui-treetable-data>tr{
   background:#1e1e1e;
@@ -3230,7 +3230,7 @@ body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-today>a:hover,body 
 }
 body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-today>a,body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-today>span,body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-current-day>a,body .ui-datepicker .ui-datepicker-calendar td.ui-datepicker-current-day>span{
   background:rgba(0,0,0,0);
-  color:#a90a51;
+  color:#f90a81;
   font-weight:600;
   border:0 none
 }
@@ -3944,7 +3944,7 @@ body .ui-rating .ui-rating-star-on a{
   font-size:1.25rem;
   height:1.25rem;
   width:1.25rem;
-  color:#a90a51
+  color:#f90a81
 }
 body .ui-rating .ui-rating-star-on a:before{
   content:""
@@ -4606,7 +4606,7 @@ body .ui-fluid .ui-spinner .ui-spinner-input{
   fill:#a90a51
 }
 .ui-texteditor .ql-snow.ql-toolbar button.ql-active .ql-picker-label,.ui-texteditor .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-picker-label,.ui-texteditor .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-picker-label{
-  color:#a90a51
+  color:#f90a81
 }
 .ui-texteditor.ui-state-error .ui-editor-toolbar.ql-snow,.ui-texteditor.ui-state-error .ql-container.ql-snow{
   border-color:#ef9a9a
@@ -5346,10 +5346,10 @@ body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active{
   border-color:#a90a51
 }
 body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active a{
-  color:#a90a51
+  color:#f90a81
 }
 body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active a .ui-icon{
-  color:#a90a51
+  color:#f90a81
 }
 body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-menuitem-outline{
   outline:0 none;
@@ -7188,10 +7188,10 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active{
   background:#1e1e1e
 }
 body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a{
-  color:#a90a51
+  color:#f90a81;
 }
 body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active .ui-icon{
-  color:#a90a51
+  color:#f90a81;
 }
 body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-error a{
   color:#ef9a9a

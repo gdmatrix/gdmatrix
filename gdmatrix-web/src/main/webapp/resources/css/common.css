@@ -397,6 +397,21 @@ body .ui-datepicker .ui-datepicker-calendar td
   padding: 0;
 }
 
+body .ui-datepicker .ui-datepicker-month,
+body .ui-datepicker .ui-datepicker-year
+{
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: var(--surface-overlay);
+  outline: 0 none;
+  border-color: var(--surface-border);
+  border-radius: var(--border-radius);
+  border-style: solid;
+  border-width: 1px;
+  box-sizing: border-box;
+  transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, opacity .2s;
+}
+
 body .edit_data_dialog
 {
   max-height: 85%;
