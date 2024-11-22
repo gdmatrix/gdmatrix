@@ -254,7 +254,7 @@ public class HtmlFormRenderer extends FormRenderer
           {
             try
             {
-              valueList.add(new Double(stringValue));
+              valueList.add(Double.valueOf(stringValue));
             }
             catch (NumberFormatException ex)
             {

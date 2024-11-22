@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.cms.service;
@@ -91,16 +91,16 @@ public class CMSManager implements CMSManagerPort
 
   @PersistenceContext(unitName="cms_ri")
   public EntityManager entityManager;
-  
+
   @State
-  Configuration config;  
+  Configuration config;
 
   public class Configuration
   {
     long dbRemovedNodeLifetime;
     long dbRemoveTime;
     long lastDBRemoveMillis;
-    
+
     Configuration(String endpointName)
     {
       try
@@ -109,7 +109,7 @@ public class CMSManager implements CMSManagerPort
           new WSProperties(endpointName, CMSManager.class);
         dbRemovedNodeLifetime = getDBRemovedNodeLifetime(props);
         dbRemoveTime = getDBRemoveTime(props);
-        lastDBRemoveMillis = System.currentTimeMillis();        
+        lastDBRemoveMillis = System.currentTimeMillis();
       }
       catch (Exception ex)
       {
@@ -117,11 +117,11 @@ public class CMSManager implements CMSManagerPort
       }
     }
   };
-  
+
   @Initializer
   public void initialize(String endpointName)
   {
-    config = new Configuration(endpointName);    
+    config = new Configuration(endpointName);
   }
 
   @Override
@@ -132,7 +132,7 @@ public class CMSManager implements CMSManagerPort
       throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
 
     WSEndpoint endpoint = getWSEndpoint();
-    DBWorkspace dbWorkspace = entityManager.find(DBWorkspace.class, 
+    DBWorkspace dbWorkspace = entityManager.find(DBWorkspace.class,
       endpoint.toLocalId(Workspace.class, workspaceId));
     if (dbWorkspace == null)
       throw new WebServiceException("cms:WORKSPACE_NOT_FOUND");
@@ -255,7 +255,7 @@ public class CMSManager implements CMSManagerPort
     String localWorkspaceId = endpoint.toLocalId(Workspace.class, workspaceId);
     try
     {
-      dbWorkspace = entityManager.getReference(DBWorkspace.class, 
+      dbWorkspace = entityManager.getReference(DBWorkspace.class,
         localWorkspaceId);
     }
     catch (EntityNotFoundException ex)
@@ -284,7 +284,7 @@ public class CMSManager implements CMSManagerPort
   }
 
   @Override
-  public List<Workspace> findWorkspaces(WorkspaceFilter filter) 
+  public List<Workspace> findWorkspaces(WorkspaceFilter filter)
   {
     LOGGER.log(Level.INFO, "findWorkspaces");
     WSEndpoint endpoint = getWSEndpoint();
@@ -316,10 +316,10 @@ public class CMSManager implements CMSManagerPort
     WSEndpoint endpoint = getWSEndpoint();
     String localWorkspaceId = endpoint.toLocalId(Workspace.class, workspaceId);
     String localNodeId = endpoint.toLocalId(Node.class, nodeId);
-    localNodeId = String.valueOf(new Integer(localNodeId));    
+    localNodeId = String.valueOf(Integer.valueOf(localNodeId));
     DBNodePK dbNodePK = new DBNodePK(localWorkspaceId, localNodeId);
     DBNode dbNode = entityManager.find(DBNode.class, dbNodePK);
-    
+
     if (dbNode == null || dbNode.getIndex() == -1)
     {
       throw new WebServiceException("cms:NODE_NOT_FOUND");
@@ -395,7 +395,7 @@ public class CMSManager implements CMSManagerPort
           shiftNodesRight(localWorkspaceId, localParentNodeId, node.getIndex(),
             localUserId);
         }
-        dbNode.copyFrom(node, endpoint);        
+        dbNode.copyFrom(node, endpoint);
         Auditor.auditChange(dbNode, localUserId);
         entityManager.merge(dbNode);
         absUpdateNodeProperties(node, endpoint);
@@ -527,7 +527,7 @@ public class CMSManager implements CMSManagerPort
         String localNodeId = dbNode.getNodeId();
         if (!localNodeIdList.contains(localNodeId))
         {
-          localNodeIdList.add(localNodeId);  
+          localNodeIdList.add(localNodeId);
         }
         if (!workspaceMap.containsKey(localWorkspaceId))
         {
@@ -546,7 +546,7 @@ public class CMSManager implements CMSManagerPort
       }
       if (localNodeIdList.size() > 0)
       {
-        List<String> localWorkspaceIdList = 
+        List<String> localWorkspaceIdList =
           endpoint.toLocalIds(Workspace.class, filter.getWorkspaceId());
         JPQLFindNodesPropertiesQueryBuilder queryBuilder =
           new JPQLFindNodesPropertiesQueryBuilder();
@@ -623,7 +623,7 @@ public class CMSManager implements CMSManagerPort
   public List<NodeChange> findNodeChanges(String fromWorkspaceId,
     String toWorkspaceId, String baseNodeId)
   {
-    LOGGER.log(Level.INFO, 
+    LOGGER.log(Level.INFO,
       "findNodeChanges fromWorkspace: {0}, toWorkspace: {1}, baseNodeId: {2}",
       new Object[]{fromWorkspaceId, toWorkspaceId, baseNodeId});
     if (fromWorkspaceId == null)
@@ -784,7 +784,7 @@ public class CMSManager implements CMSManagerPort
     }
     return localParentPath;
   }
-  
+
   private void removeNodeAndDescendants(String workspaceId, String nodeId,
     String userId) throws Exception
   {
@@ -850,7 +850,7 @@ public class CMSManager implements CMSManagerPort
     List<String> localWorkspaceIdList = endpoint.toLocalIds(Workspace.class,
       filter.getWorkspaceId());
     query.setParameter("workspaceId", listToString(localWorkspaceIdList));
-    query.setParameter("description", 
+    query.setParameter("description",
       conditionalUpperCase(filter.getDescription(), false));
     query.setParameter("name", conditionalUpperCase(filter.getName(), false));
   }
@@ -1054,8 +1054,8 @@ public class CMSManager implements CMSManagerPort
   {
     shiftNodes(workspaceId, parentNodeId, index, userId, false);
   }
-  
-  private void shiftNodes(String workspaceId, String parentNodeId, int index, 
+
+  private void shiftNodes(String workspaceId, String parentNodeId, int index,
     String userId, boolean left)
   {
     Date date = new Date();
@@ -1406,7 +1406,7 @@ public class CMSManager implements CMSManagerPort
 
   private static long getDBRemoveTime(WSProperties props)
   {
-    String value = props.getString("dbRemoveTime");    
+    String value = props.getString("dbRemoveTime");
     try
     {
       if (value != null)

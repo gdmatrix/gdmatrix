@@ -1282,7 +1282,7 @@ public class DocumentManager implements DocumentManagerPort
     else // for external contents
     {
       //content.setSize(getExternalContentLength(content.getUrl()));
-      content.setSize(new Long(0));
+      content.setSize(Long.valueOf(0));
     }
     if (content.getContentType() == null)
       content.setContentType("application/octet-stream");
@@ -1837,7 +1837,7 @@ public class DocumentManager implements DocumentManagerPort
       else
         content.setContentType(mimeType.trim());
     }
-    else if (StringUtils.isBlank(content.getContentType()) 
+    else if (StringUtils.isBlank(content.getContentType())
       && format.getNumExtensions() > 0)
     {
       //Try get mimeType from identified extension.

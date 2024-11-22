@@ -54,7 +54,7 @@ public class WorkflowGridDialog extends javax.swing.JDialog
 
   public void setGridSize(int gridSize)
   {
-    gridSizeSpinner.setValue(new Integer(gridSize));
+    gridSizeSpinner.setValue(gridSize);
   }
 
   public int getNodeWidth()
@@ -64,7 +64,7 @@ public class WorkflowGridDialog extends javax.swing.JDialog
 
   public void setNodeWidth(int nodeWidth)
   {
-    nodeWidthSpinner.setValue(new Integer(nodeWidth));
+    nodeWidthSpinner.setValue(nodeWidth);
   }
 
   public int getNodeHeight()
@@ -74,7 +74,7 @@ public class WorkflowGridDialog extends javax.swing.JDialog
 
   public void setNodeHeight(int nodeHeight)
   {
-    nodeHeightSpinner.setValue(new Integer(nodeHeight));
+    nodeHeightSpinner.setValue(nodeHeight);
   }
 
   public boolean isGridVisible()

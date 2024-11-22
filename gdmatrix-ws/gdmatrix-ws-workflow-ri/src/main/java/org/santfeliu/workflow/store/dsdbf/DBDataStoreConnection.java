@@ -634,7 +634,7 @@ public class DBDataStoreConnection implements DataStoreConnection
     {
       try
       {
-        value = new Double(svalue);
+        value = Double.valueOf(svalue);
       }
       catch (NumberFormatException ex)
       {

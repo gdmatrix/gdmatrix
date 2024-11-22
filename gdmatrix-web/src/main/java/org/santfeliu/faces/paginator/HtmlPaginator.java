@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.paginator;
@@ -86,7 +86,7 @@ public class HtmlPaginator extends UIInput
       else return 0;
     }
   }
-  
+
   public void setVisiblePages(int visiblePages)
   {
     this._visiblePages = visiblePages;
@@ -131,7 +131,7 @@ public class HtmlPaginator extends UIInput
     ValueExpression ve = getValueExpression("styleClass");
     return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
   }
-  
+
   public int getCurrentPage() // 1 based
   {
     int currentPage = -1;
@@ -142,7 +142,7 @@ public class HtmlPaginator extends UIInput
     }
     return currentPage;
   }
-  
+
   public void decode(FacesContext context)
   {
     if (!isRendered()) return;
@@ -155,7 +155,7 @@ public class HtmlPaginator extends UIInput
       this.setSubmittedValue(page);
     }
   }
-  
+
   public void encodeBegin(FacesContext context) throws IOException
   {
     String clientId = getClientId(context);
@@ -166,7 +166,7 @@ public class HtmlPaginator extends UIInput
     writer.writeAttribute("name", clientId, null);
     writer.writeAttribute("value", "*", null);
     writer.endElement("input");
-    
+
     writer.startElement("span", this);
     String style = getStyle();
     if (style != null)
@@ -217,7 +217,7 @@ public class HtmlPaginator extends UIInput
   {
   }
 
-  private void encodePageLink(ResponseWriter writer, 
+  private void encodePageLink(ResponseWriter writer,
     String clientId, String formId, int page, boolean isCurrent)
     throws IOException
   {
@@ -227,9 +227,9 @@ public class HtmlPaginator extends UIInput
     {
       writer.writeAttribute("class", "current", null);
     }
-    writer.writeAttribute("onclick", 
-      "document.forms['" + formId + "']['" + clientId + "'].value='" + 
-      (page + 1) + "'; document.forms['" + formId + "'].submit(); return false;", null);    
+    writer.writeAttribute("onclick",
+      "document.forms['" + formId + "']['" + clientId + "'].value='" +
+      (page + 1) + "'; document.forms['" + formId + "'].submit(); return false;", null);
     writer.writeText(String.valueOf(page + 1), null);
     writer.endElement("a");
   }
@@ -238,13 +238,13 @@ public class HtmlPaginator extends UIInput
   {
     Object values[] = new Object[5];
     values[0] = super.saveState(context);
-    values[1] = new Integer(_pageCount);
-    values[2] = new Integer(_visiblePages);
+    values[1] = _pageCount;
+    values[2] = _visiblePages;
     values[3] = _style;
     values[4] = _styleClass;
     return values;
   }
-  
+
   public void restoreState(FacesContext context, Object state)
   {
     Object[] values = (Object[])state;

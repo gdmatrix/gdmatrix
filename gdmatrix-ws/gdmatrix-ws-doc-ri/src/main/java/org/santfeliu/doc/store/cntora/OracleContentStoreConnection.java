@@ -82,13 +82,13 @@ public class OracleContentStoreConnection implements ContentStoreConnection
       throw new RuntimeException(ex);
     }
   }
-  
+
   public void createTables() throws Exception
   {
     createContentTable();
     createInternalTable();
     createExternalTable();
-  }  
+  }
 
   // ** Content operations : access via JDBC
   @Override
@@ -150,7 +150,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
             content.setLanguage(rs.getString(5));
             content.setCaptureUserId(rs.getString(6));
             content.setCaptureDateTime(rs.getString(7));
-            content.setSize(new Long(rs.getLong(8)));
+            content.setSize(rs.getLong(8));
             if (INTERNAL.equals(fileType))
             {
               if (ContentInfo.ALL.equals(contentInfo))
@@ -232,7 +232,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
             content.setLanguage(rs.getString(4));
             content.setCaptureUserId(rs.getString(5));
             content.setCaptureDateTime(rs.getString(6));
-            content.setSize(new Long(rs.getLong(7)));
+            content.setSize(rs.getLong(7));
             contents.add(content);
           }
         }
@@ -333,7 +333,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     conn.close();
   }
 
-  /***** private methods *****/  
+  /***** private methods *****/
   private void createContentTable() throws Exception
   {
     String sql = config.getProperty("createContentTable");
@@ -345,9 +345,9 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     finally
     {
       prepStmt.close();
-    }    
+    }
   }
-  
+
   private void createInternalTable() throws Exception
   {
     String sql = config.getProperty("createInternalTable");
@@ -359,9 +359,9 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     finally
     {
       prepStmt.close();
-    }    
-  }  
-  
+    }
+  }
+
   private void createExternalTable() throws Exception
   {
     String sql = config.getProperty("createExternalTable");
@@ -373,9 +373,9 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     finally
     {
       prepStmt.close();
-    }    
-  }    
-  
+    }
+  }
+
   private void insertContentMetaData(Connection conn, Content content)
     throws Exception
   {

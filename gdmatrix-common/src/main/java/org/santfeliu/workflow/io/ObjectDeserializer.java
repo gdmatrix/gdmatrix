@@ -64,32 +64,32 @@ public class ObjectDeserializer
     else if (valueClass == Double.class ||
              valueClass == double.class)
     {
-      value = new Double(str);
+      value = Double.valueOf(str);
     }
     else if (valueClass == Float.class ||
              valueClass == float.class)
     {
-      value = new Float(str);
+      value = Float.valueOf(str);
     }
     else if (valueClass == Integer.class ||
              valueClass == int.class)
     {
-      value = new Integer(str);
+      value = Integer.valueOf(str);
     }
     else if (valueClass == Long.class ||
              valueClass == long.class)
     {
-      value = new Long(str);
+      value = Long.valueOf(str);
     }
     else if (valueClass == Short.class ||
              valueClass == short.class)
     {
-      value = new Short(str);
+      value = Short.valueOf(str);
     }
     else if (valueClass == Boolean.class ||
              valueClass == boolean.class)
     {
-      value = new Boolean(str);
+      value = Boolean.valueOf(str);
     }
     else if (valueClass == org.santfeliu.util.Properties.class)
     {

@@ -125,7 +125,7 @@ public class InputFormParametersEditor extends JPanel implements NodeEditor
       {
         try
         {
-          value = new Double(svalue);
+          value = Double.valueOf(svalue);
         }
         catch (NumberFormatException ex)
         {

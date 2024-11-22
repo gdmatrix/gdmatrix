@@ -1833,7 +1833,7 @@ public class NodeEditBean extends FacesBean implements Serializable
       //Search by nodeId
       try
       {
-        Integer i = new Integer(inputSearch.trim());
+        Integer i = Integer.valueOf(inputSearch.trim());
         nodeFilter.getProperty().clear();
         nodeFilter.getNodeId().add(inputSearch.trim());
         List<Node> auxNodeList =  CMSConfigBean.getPort().findNodes(nodeFilter);
@@ -2660,8 +2660,8 @@ public class NodeEditBean extends FacesBean implements Serializable
     NodeChange pivot = nodeChangeList.remove(0);
     for (NodeChange auxNodeChange : nodeChangeList)
     {
-      Integer auxNodeId = new Integer(auxNodeChange.getNode().getNodeId());
-      Integer pivotNodeId = new Integer(pivot.getNode().getNodeId());
+      Integer auxNodeId = Integer.valueOf(auxNodeChange.getNode().getNodeId());
+      Integer pivotNodeId = Integer.valueOf(pivot.getNode().getNodeId());
       if (auxNodeId <= pivotNodeId)
       {
         lessList.add(auxNodeChange);

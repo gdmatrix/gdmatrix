@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.util;
@@ -50,14 +50,14 @@ public class Table extends ArrayList implements Serializable
 {
   private String columnNames[];
   private Map columnsMap;
-  
+
   public Table(String ... columnNames)
   {
     this.columnNames = columnNames;
     this.columnsMap = new HashMap(columnNames.length * 2);
     for (int columnIndex = 0; columnIndex < columnNames.length; columnIndex++)
     {
-      columnsMap.put(columnNames[columnIndex], new Integer(columnIndex));
+      columnsMap.put(columnNames[columnIndex], columnIndex);
     }
   }
 
@@ -74,14 +74,14 @@ public class Table extends ArrayList implements Serializable
 
   public void addRow(Object ... values)
   {
-    super.add(new Row(values));    
+    super.add(new Row(values));
   }
 
   public void addRow()
   {
     super.add(new Row());
   }
-  
+
   public Row getRow(int rowIndex)
   {
     return (Row)super.get(rowIndex);
@@ -91,39 +91,39 @@ public class Table extends ArrayList implements Serializable
   {
     remove(rowIndex);
   }
-  
+
   public void setElementAt(int rowIndex, int columnIndex, Object value)
   {
     Row row = (Row)get(rowIndex);
     row.data[columnIndex] = value;
   }
-  
+
   public Object getElementAt(int rowIndex, int columnIndex)
   {
     Row row = (Row)get(rowIndex);
     return row.data[columnIndex];
   }
-  
+
   public void setElementAt(int rowIndex, String columnName, Object value)
     throws Exception
   {
     Row row = (Row)get(rowIndex);
     int columnIndex = getColumnIndex(columnName);
-    if (columnIndex == -1) 
+    if (columnIndex == -1)
       throw new Exception("invalid column name:" + columnName);
     row.data[columnIndex] = value;
   }
-  
+
   public Object getElementAt(int rowIndex, String columnName)
     throws Exception
   {
     Row row = (Row)get(rowIndex);
     int columnIndex = getColumnIndex(columnName);
-    if (columnIndex == -1) 
+    if (columnIndex == -1)
       throw new Exception("invalid column name:" + columnName);
     return row.data[columnIndex];
   }
-  
+
   public void setColumnName(int columnIndex, String columnName)
   {
     String oldColumnName = columnNames[columnIndex];
@@ -131,7 +131,7 @@ public class Table extends ArrayList implements Serializable
     Integer index = (Integer)columnsMap.remove(oldColumnName);
     columnsMap.put(columnName, index);
   }
-  
+
   public String getColumnName(int columnIndex)
   {
     return columnNames[columnIndex];
@@ -147,7 +147,7 @@ public class Table extends ArrayList implements Serializable
   {
     return columnNames.length;
   }
-  
+
   public int getRowCount()
   {
     return size();
@@ -168,7 +168,7 @@ public class Table extends ArrayList implements Serializable
       }
     }
     buffer.append(")=\n");
-    
+
     buffer.append("{\n");
     Iterator iter = iterator();
     while (iter.hasNext())
@@ -188,20 +188,20 @@ public class Table extends ArrayList implements Serializable
       buffer.append("}\n");
     }
     buffer.append("}\n");
-    return buffer.toString();   
+    return buffer.toString();
   }
-  
-  
+
+
   /***** inner class Table.Row *****/
   public class Row implements java.util.Map, Serializable
   {
     private Object[] data;
-  
+
     Row()
     {
       data = new Object[columnNames.length];
     }
-    
+
     Row(Object[] values)
     {
       if (values.length == columnNames.length)
@@ -211,22 +211,22 @@ public class Table extends ArrayList implements Serializable
       else
       {
         data = new Object[columnNames.length];
-        System.arraycopy(values, 0, data, 0, 
+        System.arraycopy(values, 0, data, 0,
           Math.min(data.length, values.length));
       }
     }
-    
+
     // Map methods
     public int size()
     {
       return data.length;
     }
-    
+
     public boolean isEmpty()
     {
       return data.length == 0;
     }
-    
+
     public boolean containsKey(Object key)
     {
       return columnsMap.containsKey(key);
@@ -248,9 +248,9 @@ public class Table extends ArrayList implements Serializable
         }
         columnIndex++;
       }
-      return found;      
+      return found;
     }
-    
+
     public Object get(Object key)
     {
       if (!(key instanceof String)) return null;
@@ -259,11 +259,11 @@ public class Table extends ArrayList implements Serializable
       if (columnIndex == -1) return null;
       return data[columnIndex];
     }
-    
+
     public Object put(Object key, Object value)
       throws UnsupportedOperationException
     {
-      if (!(key instanceof String)) 
+      if (!(key instanceof String))
         throw new UnsupportedOperationException();
       String columnName = (String)key;
       int columnIndex = getColumnIndex(columnName);
@@ -301,16 +301,16 @@ public class Table extends ArrayList implements Serializable
     {
       if (o instanceof Object[])
         return Arrays.equals(data, (Object[])o);
-        
+
       return false;
     }
-    
+
     @Override
     public int hashCode()
     {
       return data.hashCode();
     }
-    
+
     public Set keySet()
     {
       return Collections.unmodifiableSet(columnsMap.keySet());
@@ -320,7 +320,7 @@ public class Table extends ArrayList implements Serializable
     {
       return new Table.Row.Collection();
     }
-    
+
     public Set entrySet()
     {
       HashSet set = new HashSet();
@@ -337,12 +337,12 @@ public class Table extends ArrayList implements Serializable
     public class Entry implements Map.Entry
     {
       private int columnIndex;
-          
+
       public Entry(int columnIndex)
       {
         this.columnIndex = columnIndex;
       }
-      
+
       public Object getKey()
       {
         return columnNames[columnIndex];
@@ -361,7 +361,7 @@ public class Table extends ArrayList implements Serializable
         return (this.getKey() == null ?
                  e.getKey() == null : this.getKey().equals(e.getKey())) &&
                (this.getValue() == null ?
-                 e.getValue() == null : this.getValue().equals(e.getValue()));        
+                 e.getValue() == null : this.getValue().equals(e.getValue()));
       }
 
       @Override
@@ -385,17 +385,17 @@ public class Table extends ArrayList implements Serializable
       {
         return data.length;
       }
-    
+
       public boolean isEmpty()
       {
         return data.length == 0;
       }
-    
+
       public boolean contains(Object value)
       {
         return Row.this.containsValue(value);
       }
-    
+
       public Object[] toArray()
       {
         Object[] array = new Object[data.length];
@@ -419,7 +419,7 @@ public class Table extends ArrayList implements Serializable
         }
         return array;
       }
-    
+
       public boolean add(Object o)
         throws UnsupportedOperationException
       {
@@ -437,19 +437,19 @@ public class Table extends ArrayList implements Serializable
       {
         throw new UnsupportedOperationException();
       }
-    
+
       public boolean addAll(java.util.Collection col)
         throws UnsupportedOperationException
       {
         throw new UnsupportedOperationException();
       }
-    
+
       public boolean removeAll(java.util.Collection c)
         throws UnsupportedOperationException
       {
         throw new UnsupportedOperationException();
       }
-    
+
       public boolean retainAll(java.util.Collection c)
         throws UnsupportedOperationException
       {
@@ -467,32 +467,32 @@ public class Table extends ArrayList implements Serializable
         }
         return containsAll;
       }
-    
+
       public Iterator iterator()
       {
         return new Iterator()
         {
           private int columnIndex = -1;
-        
+
           public boolean hasNext()
           {
             return columnIndex + 1 < data.length;
           }
-        
+
           public Object next()
           {
             return data[++columnIndex];
           }
-        
+
           public void remove() throws UnsupportedOperationException
           {
             throw new UnsupportedOperationException();
           }
         };
-      }    
+      }
     }
   }
-  
+
   public static void main(String[] args)
   {
     try

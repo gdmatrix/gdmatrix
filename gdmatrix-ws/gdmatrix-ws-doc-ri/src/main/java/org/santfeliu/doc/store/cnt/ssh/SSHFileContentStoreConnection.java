@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.store.cnt.ssh;
@@ -51,13 +51,13 @@ import org.santfeliu.doc.store.cnt.ssh.utils.InfoModeSSH;
 import org.santfeliu.util.TemporaryDataSource;
 
 /**
- * 
+ *
  * @author xeviserrats
  * @author blanquepa
  */
 public class SSHFileContentStoreConnection extends OracleContentStoreConnection
 {
-  private static final Logger log = 
+  private static final Logger log =
     Logger.getLogger(SSHFileContentStoreConnection.class.getName());
 
   public SSHFileContentStoreConnection(Connection conn, Properties config)
@@ -82,7 +82,7 @@ public class SSHFileContentStoreConnection extends OracleContentStoreConnection
     return content;
   }
 
-  protected void insertInternalContentFile(Connection conn, Content content, 
+  protected void insertInternalContentFile(Connection conn, Content content,
     File pFile) throws Exception
   {
     try (ConnSSH wConnSSH = new ConnSSH())
@@ -90,9 +90,9 @@ public class SSHFileContentStoreConnection extends OracleContentStoreConnection
       InfoModeSSH wSSH = ConnSSH.getInfoModeSSH(conn);
       wConnSSH.init(wSSH.servidor, wSSH.usuari, wSSH.contrasenya, wSSH.dirBase);
 
-      String wRemoteDir = 
+      String wRemoteDir =
         wConnSSH.getDirectoriByIdNReg(conn, content.getContentId());
-      String wRemoteFile = 
+      String wRemoteFile =
         wRemoteDir + "/" + wConnSSH.getFileName(content.getContentId());
 
       if (FileSSHUtils.existeixFitxer(wConnSSH.getCanal(), wRemoteFile))
@@ -100,7 +100,7 @@ public class SSHFileContentStoreConnection extends OracleContentStoreConnection
         String wAra = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         String wNewName = wRemoteFile + "_" + wAra + ".deleted";
 
-        log.log(Level.INFO, "El fichero ''{0}'' existe. Se modificará: ''{1}''", 
+        log.log(Level.INFO, "El fichero ''{0}'' existe. Se modificará: ''{1}''",
           new Object[]{wRemoteFile, wNewName});
 
         try
@@ -127,7 +127,7 @@ public class SSHFileContentStoreConnection extends OracleContentStoreConnection
   }
 
   @Override
-  public Content loadContent(String contentId, ContentInfo contentInfo) 
+  public Content loadContent(String contentId, ContentInfo contentInfo)
     throws Exception
   {
     Content content = null;
@@ -157,21 +157,21 @@ public class SSHFileContentStoreConnection extends OracleContentStoreConnection
             content.setLanguage(rs.getString(5));
             content.setCaptureUserId(rs.getString(6));
             content.setCaptureDateTime(rs.getString(7));
-            content.setSize(new Long(rs.getLong(8)));
+            content.setSize(rs.getLong(8));
             if (INTERNAL.equals(fileType))
             {
               if (ContentInfo.ALL.equals(contentInfo))
               {
                 String cid = content.getContentId();
-                String wRemoteDir = 
+                String wRemoteDir =
                   wConnSSH.getDirectoriByIdNReg(conn, cid);
-                String wRemoteFile = 
+                String wRemoteFile =
                   wRemoteDir + "/" + wConnSSH.getFileName(cid);
 
                 wConnSSH.get(wRemoteFile, wFileGetDocument);
 
                 DataHandler dh = new DataHandler(
-                  new TemporaryDataSource(wFileGetDocument, 
+                  new TemporaryDataSource(wFileGetDocument,
                     content.getContentType()));
                 content.setData(dh);
               }

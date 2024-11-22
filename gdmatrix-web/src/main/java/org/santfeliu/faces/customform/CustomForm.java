@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.customform;
@@ -103,13 +103,13 @@ public class CustomForm extends UIComponentBase
   public static final String TEXT = "text";
   public static final String NUMBER = "number";
   public static final String DATE = "date";
-  
+
   public static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
 
   private String _url;
   private Map _values;
   private Map _newValues;
-  private boolean _valid; 
+  private boolean _valid;
   private Map _submittedValues = new HashMap(); // contains submitted fields
   private Map _convertedValues = new HashMap(); // contains converted fields
   private Map _fieldFormats = new HashMap(); // contains all fields in form
@@ -122,12 +122,12 @@ public class CustomForm extends UIComponentBase
   public CustomForm()
   {
   }
-  
+
   public String getFamily()
   {
     return "CustomForm";
   }
-  
+
   public void setUrl(String url)
   {
     this._url = url;
@@ -168,7 +168,7 @@ public class CustomForm extends UIComponentBase
   {
     this._translator = translator;
   }
-  
+
   public Translator getTranslator()
   {
     if (_translator != null) return _translator;
@@ -180,7 +180,7 @@ public class CustomForm extends UIComponentBase
   {
     this._translationGroup = translationGroup;
   }
-  
+
   public String getTranslationGroup()
   {
     if (_translationGroup != null) return _translationGroup;
@@ -192,14 +192,14 @@ public class CustomForm extends UIComponentBase
   {
     return _valid;
   }
-  
+
   @Override
   public void decode(FacesContext context)
   {
     _valid = true;
     _submittedValues.clear();
     _convertedValues.clear();
-    
+
     String clientId = getClientId(context);
     String prefix = clientId + VAR_SEPARATOR;
     Map parameterMap = context.getExternalContext().getRequestParameterMap();
@@ -240,7 +240,7 @@ public class CustomForm extends UIComponentBase
       context.renderResponse();
     }
   }
-  
+
   public void validate(FacesContext context)
   {
     Iterator iter = _submittedValues.entrySet().iterator();
@@ -248,7 +248,7 @@ public class CustomForm extends UIComponentBase
     {
       Map.Entry entry = (Map.Entry)iter.next();
       String name = (String)entry.getKey();
-      String value = (String)entry.getValue();      
+      String value = (String)entry.getValue();
       validateField(name, value);
     }
   }
@@ -304,7 +304,7 @@ public class CustomForm extends UIComponentBase
       httpClient.setRequestProperty("Accept-Charset", "utf-8");
       httpClient.setRequestProperty("Accept-Language", getLanguage());
       httpClient.connect();
-      
+
       String content = httpClient.getContentAsString();
       if (content == null) return;
 
@@ -339,7 +339,7 @@ public class CustomForm extends UIComponentBase
       buildFieldLabelsMap(document);
       // write to output
       encodeDocument(document, writer, values);
-      
+
       System.out.println("----CustomForm------------------------------------");
       System.out.println("fieldFormats:" + _fieldFormats);
       System.out.println();
@@ -357,20 +357,20 @@ public class CustomForm extends UIComponentBase
       ex.printStackTrace();
     }
   }
-  
+
   @Override
   public void encodeEnd(FacesContext context) throws IOException
   {
   }
-  
-  private void encodeDocument(Document document, ResponseWriter writer, 
+
+  private void encodeDocument(Document document, ResponseWriter writer,
     Map values) throws IOException
   {
     // look for html element
     Node node = document.getFirstChild();
     node = findNode(node, "html");
     if (node == null) throw new IOException("Invalid html document.");
-    
+
     System.out.println("HTML element found");
 
     // look for body element
@@ -379,7 +379,7 @@ public class CustomForm extends UIComponentBase
     if (node == null) throw new IOException("Invalid html document.");
 
     System.out.println("BODY element found");
-   
+
     // write body contents
     writeNode(document, node, writer, values);
   }
@@ -400,7 +400,7 @@ public class CustomForm extends UIComponentBase
     return foundNode;
   }
 
-  private void writeNode(Document document, 
+  private void writeNode(Document document,
     Node node, ResponseWriter writer, Map values)
     throws IOException
   {
@@ -425,7 +425,7 @@ public class CustomForm extends UIComponentBase
         writeChildren(document, node, writer, values);
         return;
       }
-      else if (tag.equals("form")) 
+      else if (tag.equals("form"))
       {
         // encode child elements, but remove form tag
         writeChildren(document, node, writer, values);
@@ -489,7 +489,7 @@ public class CustomForm extends UIComponentBase
         if (maxLength != null && maxLength.trim().length() > 0 &&
            !"0".equals(maxLength))
         {
-          element.setAttribute("onkeypress", 
+          element.setAttribute("onkeypress",
             "checkMaxLength(this, " + maxLength + ");");
         }
         element.removeAttribute("maxlength");
@@ -501,7 +501,7 @@ public class CustomForm extends UIComponentBase
     }
   }
 
-  private void writeChildren(Document document, 
+  private void writeChildren(Document document,
     Node node, ResponseWriter writer, Map values)
     throws IOException
   {
@@ -513,7 +513,7 @@ public class CustomForm extends UIComponentBase
       child = child.getNextSibling();
     }
   }
-  
+
   private void writeAttributes(Element element, ResponseWriter writer)
     throws IOException
   {
@@ -569,7 +569,7 @@ public class CustomForm extends UIComponentBase
     else // format specified
     {
       element.removeAttribute("format");
-      if (!format.startsWith(TEXT) && 
+      if (!format.startsWith(TEXT) &&
           !format.startsWith(NUMBER) &&
           !format.startsWith(BOOLEAN) &&
           !format.startsWith(DATE))
@@ -701,7 +701,7 @@ public class CustomForm extends UIComponentBase
       String password = element.getAttribute("password");
       boolean translate = Boolean.parseBoolean(
         element.getAttribute("translate"));
-      
+
       if (sql != null && sql.trim().length() > 0 &&
          connection != null && connection.trim().length() > 0)
       {
@@ -728,9 +728,9 @@ public class CustomForm extends UIComponentBase
           queryParameters.getParameters().add(param);
         }
         // get port to SQL service
-        String adminUserId = 
+        String adminUserId =
           MatrixConfig.getProperty("adminCredentials.userId");
-        String adminPassword = 
+        String adminPassword =
           MatrixConfig.getProperty("adminCredentials.password");
 
         WSDirectory dir = WSDirectory.getInstance();
@@ -831,7 +831,7 @@ public class CustomForm extends UIComponentBase
   }
 
   // converts value from Object to String
-  private String convertValueToString(Object value, String format, 
+  private String convertValueToString(Object value, String format,
     boolean multivalued) throws Exception
   {
     String type;
@@ -880,7 +880,7 @@ public class CustomForm extends UIComponentBase
     }
     else if (NUMBER.equals(type))
     {
-      Double number = new Double(value.toString());
+      Double number = Double.valueOf(value.toString());
       if (number.intValue() == number.doubleValue())
       {
         // remove decimal point
@@ -889,7 +889,7 @@ public class CustomForm extends UIComponentBase
     }
     else if (BOOLEAN.equals(type))
     {
-      value = new Boolean(value.toString());
+      value = Boolean.valueOf(value.toString());
     }
     return value == null ? null : value.toString();
   }
@@ -946,12 +946,12 @@ public class CustomForm extends UIComponentBase
           if (number < min || number > max)
             throw new Exception("Value out of range");
         }
-        convertedValue = new Double(number);
+        convertedValue = number;
       }
     }
     else if (BOOLEAN.equals(type)) // BOOLEAN format
     {
-      convertedValue = new Boolean(value);
+      convertedValue = Boolean.valueOf(value);
     }
     else if (DATE.equals(type)) // DATE format
     {
@@ -995,13 +995,13 @@ public class CustomForm extends UIComponentBase
     values[0] = super.saveState(context);
     values[1] = _url;
     values[2] = _values;
-    values[3] = _newValues;    
+    values[3] = _newValues;
     values[4] = _submittedValues;
     values[5] = _fieldFormats;
     values[6] = _requiredFields;
     values[7] = _multivaluedFields;
     values[8] = _translationGroup;
-    values[9] = _fieldLabels;    
+    values[9] = _fieldLabels;
     return values;
   }
 
@@ -1018,9 +1018,9 @@ public class CustomForm extends UIComponentBase
     _requiredFields = (HashSet)values[6];
     _multivaluedFields = (HashSet)values[7];
     _translationGroup = (String)values[8];
-    _fieldLabels = (Map)values[9];    
-  }  
-  
+    _fieldLabels = (Map)values[9];
+  }
+
   private void buildFieldLabelsMap(Document document)
   {
     NodeList auxNodeList = document.getElementsByTagName("body");
@@ -1032,7 +1032,7 @@ public class CustomForm extends UIComponentBase
       buildFieldLabelsMap(bodyNode, idMap);
     }
   }
-  
+
   private void buildIdMap(Node node, Map idMap)
   {
     if (node instanceof Element)// normal tag
@@ -1087,7 +1087,7 @@ public class CustomForm extends UIComponentBase
       auxNode = auxNode.getNextSibling();
     }
   }
-  
+
   private String cleanLabel(String label)
   {
     String result = label;
@@ -1100,7 +1100,7 @@ public class CustomForm extends UIComponentBase
     }
     return result;
   }
-  
+
   private String translate(String text) throws IOException
   {
     Translator translator = getTranslator();
@@ -1114,5 +1114,5 @@ public class CustomForm extends UIComponentBase
     }
     return text;
   }
-  
+
 }

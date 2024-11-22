@@ -150,11 +150,11 @@ public class ScriptableBase extends ScriptableObject
   public Object toJavaPrimitive(Object object)
   {
     if (object instanceof ConsString)
-    { 
+    {
       object = object.toString();
-    }    
+    }
     else if (object instanceof Scriptable)
-    {  
+    {
       String className = ((Scriptable)object).getClassName();
       if (className.equals("Boolean"))
       {
@@ -167,7 +167,7 @@ public class ScriptableBase extends ScriptableObject
       else if (className.equals("String"))
       {
         object = object.toString();
-      }     
+      }
       else if (object instanceof NativeJavaObject)
       {
         Object javaObject = ((NativeJavaObject)object).unwrap();
@@ -338,7 +338,7 @@ public class ScriptableBase extends ScriptableObject
 //      persistentVariables.put("a", new Double(8));
       persistentVariables.put("nom", "Ricard");
       persistentVariables.put("cognom", "Real");
-      persistentVariables.put("preu", new Double(80));
+      persistentVariables.put("preu", Double.valueOf(80));
       //String code = "t = blankNull(a + 1) + trim('  gg   ')";
       //String code = "t = 2 + 6 + 8 - 2";
       //String code = "a = decimalFormat(a, '###0.00')";

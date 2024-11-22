@@ -95,7 +95,7 @@ public class InputNumberWorkflowBean extends WorkflowBean
     {
       try
       {
-        number = new Double(value.toString());
+        number = Double.valueOf(value.toString());
       }
       catch (NumberFormatException ex)
       {

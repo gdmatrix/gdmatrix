@@ -360,7 +360,7 @@ public class DocumentManagerClient implements DocumentManagerPort
       content.setContentType(properties.getProperty("contentType"));
       content.setFormatId(properties.getProperty("formatId"));
       content.setLanguage(properties.getProperty("language"));
-      content.setSize(new Long(properties.getProperty("size")));
+      content.setSize(Long.valueOf(properties.getProperty("size")));
       content.setCreationDate(properties.getProperty("creationDate"));
       content.setCaptureDateTime(properties.getProperty("captureDate"));
       content.setCaptureUserId(properties.getProperty("captureUser"));
@@ -392,7 +392,7 @@ public class DocumentManagerClient implements DocumentManagerPort
     {
       File tempFile = File.createTempFile(contentId, ".data");
       if (data instanceof StreamingDataHandler)
-        ((StreamingDataHandler) data).moveTo(tempFile);      
+        ((StreamingDataHandler) data).moveTo(tempFile);
       else
       {
         try (FileOutputStream os = new FileOutputStream(tempFile))

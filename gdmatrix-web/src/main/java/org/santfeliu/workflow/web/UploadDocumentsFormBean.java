@@ -349,7 +349,7 @@ public class UploadDocumentsFormBean extends FormBean implements Serializable
       variables.put(reference + "uuid_" + i, uuid);
       variables.put(reference + "desc_" + i, desc);
     }
-    variables.put(reference + "count", new Integer(doccount));
+    variables.put(reference + "count", doccount);
 
     // remove old document variables
     InstanceBean instanceBean = (InstanceBean) getBean("instanceBean");

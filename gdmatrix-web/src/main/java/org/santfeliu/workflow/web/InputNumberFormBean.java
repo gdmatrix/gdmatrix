@@ -85,7 +85,7 @@ public class InputNumberFormBean extends FormBean implements Serializable
     {
       try
       {
-        number = new Double(value.toString());
+        number = Double.valueOf(value.toString());
       }
       catch (NumberFormatException ex)
       {

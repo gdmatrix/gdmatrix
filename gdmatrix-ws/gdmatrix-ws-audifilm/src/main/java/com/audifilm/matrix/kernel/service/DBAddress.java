@@ -37,9 +37,9 @@ public class DBAddress extends DBEntityBase
   private String stdaplmod;
   private String baixasw;
   private String valdata;
-  
+
   private DBStreet street;
-  
+
   public DBAddress()
   {
   }
@@ -324,7 +324,7 @@ public class DBAddress extends DBEntityBase
   {
     return street;
   }
-  
+
   public void copyFrom(WSEndpoint endpoint, Address address)
   {
     this.addressId = address.getAddressId();
@@ -341,15 +341,15 @@ public class DBAddress extends DBEntityBase
     Double kilometer = address.getKm(); // split in km and hm
     if (kilometer != null)
     {
-      this.km = new Integer(kilometer.intValue());
-      this.hm = new Integer((int)(kilometer * 10) % 10);
+      this.km = kilometer.intValue();
+      this.hm = (int)(kilometer * 10) % 10;
     }
     else
     {
       this.km = null;
       this.hm = null;
     }
-    
+
     this.number1 = TextUtils.leftPadding(address.getNumber1(), "0000");
     this.bis1 = address.getBis1();
     this.number2 = TextUtils.leftPadding(address.getNumber2(), "0000");
@@ -370,8 +370,8 @@ public class DBAddress extends DBEntityBase
   public void copyTo(WSEndpoint endpoint, Address address)
   {
     address.setAddressId(addressId);
-    address.setStreetId(countryId + KernelManager.PK_SEPARATOR + 
-      provinceId + KernelManager.PK_SEPARATOR + 
+    address.setStreetId(countryId + KernelManager.PK_SEPARATOR +
+      provinceId + KernelManager.PK_SEPARATOR +
       cityId + KernelManager.PK_SEPARATOR + streetId);
     address.setAddressTypeId(DicTypeAdmin.getInstance(AddressType.class)
               .toGlobalId(endpoint, addressTypeId));
@@ -388,7 +388,7 @@ public class DBAddress extends DBEntityBase
     address.setBis2(bis2);
     if (km != null)
     {
-      Double kilometer = new Double(km);
+      Double kilometer = Double.valueOf(km);
       if (hm != null) kilometer += 0.1 * hm;
       address.setKm(kilometer);
     }

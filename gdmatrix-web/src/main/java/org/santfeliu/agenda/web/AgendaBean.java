@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.agenda.web;
@@ -75,7 +75,7 @@ import org.santfeliu.web.UserSessionBean;
  *
  * @author unknown
  */
-@Deprecated 
+@Deprecated
 //use EventSearchBean instead
 public class AgendaBean
   extends FacesBean
@@ -493,7 +493,7 @@ public class AgendaBean
       OrderByProperty endDate = new OrderByProperty();
       endDate.setName("endDateTime");
       filter.getOrderBy().add(startDate);
-      filter.getOrderBy().add(endDate);      
+      filter.getOrderBy().add(endDate);
       result = getPort().findEventsFromCache(filter);
     }
     catch (Exception ex)
@@ -538,7 +538,7 @@ public class AgendaBean
 
     //Order by
     filter.getOrderBy().clear();
-    List<String> orderby = mic.getMultiValuedProperty(AgendaConstants.ORDERBY);    
+    List<String> orderby = mic.getMultiValuedProperty(AgendaConstants.ORDERBY);
     Iterator it = orderby.iterator();
     Vector fields = new Vector();
     while (it.hasNext())
@@ -765,10 +765,10 @@ public class AgendaBean
 
   private AgendaManagerClient getPort() throws Exception
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     String userId = userSessionBean.getUsername();
     String password = userSessionBean.getPassword();
-    return AgendaConfigBean.getPort(userId, password);    
+    return AgendaConfigBean.getPort(userId, password);
   }
 
   private boolean renderFilter(String filterName)
@@ -779,8 +779,7 @@ public class AgendaBean
     Object value = mic.getProperties().get(filterName);
     if (value != null)
     {
-      Boolean b = new Boolean((String)value);
-      result = b.booleanValue();
+      return Boolean.parseBoolean((String)value);
     }
     return result;
   }
@@ -948,7 +947,7 @@ public class AgendaBean
 
   private Event loadEvent(String eventId) throws Exception
   {
-    return getPort().loadEventFromCache(eventId);    
+    return getPort().loadEventFromCache(eventId);
   }
 
 }

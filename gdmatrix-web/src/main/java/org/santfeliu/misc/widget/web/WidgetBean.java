@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.misc.widget.web;
@@ -102,7 +102,7 @@ public class WidgetBean extends WebBean
   public static final String MAIN_COLUMN_TITLES_PROPERTY = "mainColumnTitles";
   @CMSProperty
   public static final String MAIN_COLUMN_RENDER_AS_LIST_PROPERTY =
-    "mainColumnRenderAsList";  
+    "mainColumnRenderAsList";
   @CMSProperty
   public static final String LEFT_COLUMNS_PROPERTY = "leftColumns";
   @CMSProperty
@@ -122,13 +122,13 @@ public class WidgetBean extends WebBean
     "customColumnTitles";
   @CMSProperty
   public static final String CUSTOM_COLUMN_RENDER_AS_LIST_PROPERTY =
-    "customColumnRenderAsList";  
+    "customColumnRenderAsList";
   @CMSProperty
   public static final String CUSTOM_DRAGGABLE_WIDGETS =
-    "customDraggableWidgets";  
+    "customDraggableWidgets";
   @CMSProperty
   public static final String CUSTOM_COLUMN_WIDGET_TYPE_PROPERTY =
-    "customColumnWidgetType";  
+    "customColumnWidgetType";
   @CMSProperty
   public static final String INTERIOR_COLUMNS_PROPERTY = "interiorWidgetColumns";
   @CMSProperty
@@ -179,14 +179,14 @@ public class WidgetBean extends WebBean
   public static final String INTERIOR_COLUMN_TITLES_PROPERTY = "interiorWidgetColumnTitles";
   @CMSProperty
   public static final String INTERIOR_COLUMN_RENDER_AS_LIST_PROPERTY =
-    "interiorWidgetColumnRenderAsList";    
+    "interiorWidgetColumnRenderAsList";
   @CMSProperty
   public static final String INTERIOR_TITLE_PROPERTY = "interiorWidgetTitle";
   @CMSProperty
   public static final String INTERIOR_HEADER_DOC_ID_PROPERTY = "interiorWidgetHeaderDocId";
   @CMSProperty
   public static final String INTERIOR_FOOTER_DOC_ID_PROPERTY = "interiorWidgetFooterDocId";
-  
+
   @CMSProperty
   public static final String INTERIOR_TOP_COLUMN_CLASSES_PROPERTY = "interiorTopWidgetColumnClasses";
   @CMSProperty
@@ -200,7 +200,7 @@ public class WidgetBean extends WebBean
   public static final String INTERIOR_TOP_HEADER_DOC_ID_PROPERTY = "interiorTopWidgetHeaderDocId";
   @CMSProperty
   public static final String INTERIOR_TOP_FOOTER_DOC_ID_PROPERTY = "interiorTopWidgetFooterDocId";
-  
+
   @CMSProperty
   public static final String INTERIOR_BOTTOM_COLUMN_CLASSES_PROPERTY = "interiorBottomWidgetColumnClasses";
   @CMSProperty
@@ -214,28 +214,28 @@ public class WidgetBean extends WebBean
   public static final String INTERIOR_BOTTOM_HEADER_DOC_ID_PROPERTY = "interiorBottomWidgetHeaderDocId";
   @CMSProperty
   public static final String INTERIOR_BOTTOM_FOOTER_DOC_ID_PROPERTY = "interiorBottomWidgetFooterDocId";
-  
+
   private static final String DOC_SERVLET_URL = "/documents/";
   private static final String DATE_FORMAT = "dd/MM/yyyy-HH:mm:ss";
   private static final int EXPIRE_DAYS = 500;
   private static final String DEFAULT_WIDGET_SELECTOR_WINDOW = "7";
-  
+
   private HtmlWidgetContainer headerContainer;
   private HtmlWidgetContainer mainContainer;
   private HtmlWidgetContainer leftContainer;
   private HtmlWidgetContainer customContainer;
   private HtmlWidgetContainer footerContainer;
-  private HtmlWidgetContainer interiorContainer; //internal pages 
+  private HtmlWidgetContainer interiorContainer; //internal pages
   private HtmlWidgetContainer interiorTopContainer; //internal pages - top
-  private HtmlWidgetContainer interiorBottomContainer; //internal pages - bottom  
+  private HtmlWidgetContainer interiorBottomContainer; //internal pages - bottom
 
   // custom widget definitions
-  private Map<String, WidgetDefinition> widgetDefinitionMap;  
+  private Map<String, WidgetDefinition> widgetDefinitionMap;
   private List<WidgetDefinition> widgetCatalogue;
   private transient Map cookieMap;
-  
+
   private Integer scroll;
-  
+
   public WidgetBean()
   {
   }
@@ -250,7 +250,7 @@ public class WidgetBean extends WebBean
   {
     this.headerContainer = headerContainer;
   }
-  
+
   public HtmlWidgetContainer getFooterContainer()
   {
     return footerContainer;
@@ -273,14 +273,14 @@ public class WidgetBean extends WebBean
 
   public HtmlWidgetContainer getLeftContainer()
   {
-    return leftContainer;    
+    return leftContainer;
   }
 
   public void setLeftContainer(HtmlWidgetContainer leftContainer)
   {
     this.leftContainer = leftContainer;
   }
- 
+
   public HtmlWidgetContainer getInteriorContainer()
   {
     interiorContainer = new HtmlWidgetContainer();
@@ -328,7 +328,7 @@ public class WidgetBean extends WebBean
   {
     this.interiorTopContainer = interiorTopContainer;
   }
-  
+
   public HtmlWidgetContainer getInteriorBottomContainer()
   {
     interiorBottomContainer = new HtmlWidgetContainer();
@@ -352,7 +352,7 @@ public class WidgetBean extends WebBean
   {
     this.interiorBottomContainer = interiorBottomContainer;
   }
-  
+
   public HtmlWidgetContainer getCustomContainer()
   {
     return customContainer;
@@ -372,27 +372,27 @@ public class WidgetBean extends WebBean
   {
     this.scroll = scroll;
   }
-  
+
   // columns
-  
+
   public List getHeaderColumns()
-  {    
+  {
     List list = getCursor().getMultiValuedProperty(HEADER_COLUMNS_PROPERTY);
     return (list.isEmpty() ? Arrays.asList(1) : list);
   }
 
   public List getHeaderColumnClasses()
-  {   
+  {
     return getCursor().getMultiValuedProperty(HEADER_COLUMN_CLASSES_PROPERTY);
   }
 
   public List getHeaderColumnTitles()
-  {   
+  {
     return getCursor().getMultiValuedProperty(HEADER_COLUMN_TITLES_PROPERTY);
   }
 
   public List getHeaderColumnRenderAsList()
-  {   
+  {
     return getCursor().getMultiValuedProperty(HEADER_COLUMN_RENDER_AS_LIST_PROPERTY);
   }
 
@@ -411,7 +411,7 @@ public class WidgetBean extends WebBean
   {
     return getCursor().getMultiValuedProperty(FOOTER_COLUMN_TITLES_PROPERTY);
   }
-  
+
   public List getFooterColumnRenderAsList()
   {
     return getCursor().getMultiValuedProperty(FOOTER_COLUMN_RENDER_AS_LIST_PROPERTY);
@@ -424,22 +424,22 @@ public class WidgetBean extends WebBean
   }
 
   public List getMainColumnClasses()
-  {   
+  {
     return getCursor().getMultiValuedProperty(MAIN_COLUMN_CLASSES_PROPERTY);
   }
 
   public List getMainColumnTitles()
-  {   
+  {
     return getCursor().getMultiValuedProperty(MAIN_COLUMN_TITLES_PROPERTY);
   }
 
   public List getMainColumnRenderAsList()
-  {   
+  {
     return getCursor().getMultiValuedProperty(MAIN_COLUMN_RENDER_AS_LIST_PROPERTY);
   }
 
   public List getLeftColumns()
-  {   
+  {
     List list = getCursor().getMultiValuedProperty(LEFT_COLUMNS_PROPERTY);
     return (list.isEmpty() ? Arrays.asList(1) : list);
   }
@@ -453,7 +453,7 @@ public class WidgetBean extends WebBean
   {
     return getCursor().getMultiValuedProperty(LEFT_COLUMN_TITLES_PROPERTY);
   }
-  
+
   public List getLeftColumnRenderAsList()
   {
     return getCursor().getMultiValuedProperty(LEFT_COLUMN_RENDER_AS_LIST_PROPERTY);
@@ -480,7 +480,7 @@ public class WidgetBean extends WebBean
     String value = cursor.getProperty(CUSTOM_COLUMN_TITLES_PROPERTY);
     return Arrays.asList(value);
   }
-  
+
   public List getCustomColumnRenderAsList()
   {
     MenuItemCursor cursor = getCursor();
@@ -499,7 +499,7 @@ public class WidgetBean extends WebBean
   {
     //Only if not draggable
     if (Boolean.parseBoolean(getCustomDraggableWidgets())) return null;
-    
+
     MenuItemCursor cursor = getCursor();
     return cursor.getProperty(CUSTOM_COLUMN_WIDGET_TYPE_PROPERTY);
   }
@@ -507,25 +507,25 @@ public class WidgetBean extends WebBean
   // layouts
   public List getHeaderLayout()
   {
-    return getCursor().getMultiValuedProperty(HEADER_LAYOUT_PROPERTY);    
+    return getCursor().getMultiValuedProperty(HEADER_LAYOUT_PROPERTY);
   }
 
   public List getFooterLayout()
   {
-    return getCursor().getMultiValuedProperty(FOOTER_LAYOUT_PROPERTY);    
+    return getCursor().getMultiValuedProperty(FOOTER_LAYOUT_PROPERTY);
   }
 
   public List getMainLayout()
   {
-    return getCursor().getMultiValuedProperty(MAIN_LAYOUT_PROPERTY);    
+    return getCursor().getMultiValuedProperty(MAIN_LAYOUT_PROPERTY);
   }
 
   public List getLeftLayout()
   {
-    return getCursor().getMultiValuedProperty(LEFT_LAYOUT_PROPERTY);    
+    return getCursor().getMultiValuedProperty(LEFT_LAYOUT_PROPERTY);
   }
-  
-  public List getCustomLayout() 
+
+  public List getCustomLayout()
   {
     String layout = getCustomLayoutCookieValue(); // take layout from cookie
     if (layout == null)
@@ -541,7 +541,7 @@ public class WidgetBean extends WebBean
     String defaultLayout = cursor.getProperty(CUSTOM_LAYOUT_PROPERTY);
     return (defaultLayout == null) ? "" : defaultLayout;
   }
-  
+
   public String getInfoPanelUrl()
   {
     MenuItemCursor cursor = getCursor();
@@ -574,7 +574,7 @@ public class WidgetBean extends WebBean
     }
     return widgetDefinitionMap;
   }
-  
+
   public List<WidgetDefinition> getWidgetCatalogue()
   {
     if (widgetCatalogue == null)
@@ -583,8 +583,8 @@ public class WidgetBean extends WebBean
       String widgetMid = getCursor().getProperty(WIDGET_MID_PROPERTY);
       if (widgetMid != null)
       {
-        WidgetLayout layout = 
-          new WidgetLayout((Integer)getCustomColumns().get(0), 
+        WidgetLayout layout =
+          new WidgetLayout((Integer)getCustomColumns().get(0),
             (String)getCustomLayout().get(0));
 
         MenuModel menuModel =
@@ -602,7 +602,7 @@ public class WidgetBean extends WebBean
             widgetCatalogue.add(widgetDef);
           }
           cursor.moveNext();
-        }        
+        }
       }
     }
     return widgetCatalogue;
@@ -624,13 +624,13 @@ public class WidgetBean extends WebBean
   {
     return getCustomLayoutCookieName() + "_last_visit";
   }
-  
+
   public String getScripts()
   {
     return
-    "<script type=\"text/javascript\" src=\"/plugins/widget/widgetfold.js?v=" + 
+    "<script type=\"text/javascript\" src=\"/plugins/widget/widgetfold.js?v=" +
       ApplicationBean.getCurrentInstance().getResourcesVersion() + "\">" +
-    "</script>" +      
+    "</script>" +
     "<script type=\"text/javascript\">" +
     "function onUpdate(portal) {" +
     "var serialization = portal.serialize();" +
@@ -642,8 +642,8 @@ public class WidgetBean extends WebBean
     "function removeWidget(widgetId) {" +
     "var widget = $(widgetId).widget;" +
     "if (widget) {" +
-    "var widgetElems = null;" +  
-    "if (typeof(getWidgetElems) === 'function') {" +   
+    "var widgetElems = null;" +
+    "if (typeof(getWidgetElems) === 'function') {" +
     "widgetElems = getWidgetElems(widgetId); " +
     "}\n" +
     "portal_custom_container.remove(widget); " +
@@ -651,7 +651,7 @@ public class WidgetBean extends WebBean
     "if (widgetElems.li != null) $(widgetElems.li).remove();" +
     "if (widgetElems.ul != null) $(widgetElems.ul).remove();" +
     "}\n" +
-    "if (typeof(unselectWidget) === 'function') {" +   
+    "if (typeof(unselectWidget) === 'function') {" +
     "unselectWidget(widgetId); " +
     "}}}\n" +
     "function foldWidget(widgetId) {" +
@@ -662,31 +662,31 @@ public class WidgetBean extends WebBean
     "}\n" +
     "function foldStandaloneWidget(widgetId) {" +
     "doFoldWidget(widgetId, '" + getWidgetStateCookieName() + "');" +
-    "}\n" +    
-    "makeFoldWidgetIconsVisible(" + TextUtils.listToJSArray(getLayoutWidgetIds(false)) + ");" +  
-    "</script>";    
+    "}\n" +
+    "makeFoldWidgetIconsVisible(" + TextUtils.listToJSArray(getLayoutWidgetIds(false)) + ");" +
+    "</script>";
   }
-  
+
   //INTERIOR
 
   public boolean isInteriorWidgetRender()
   {
-    String interiorWidgetRender = 
+    String interiorWidgetRender =
       getCursor().getBrowserSensitiveProperty(INTERIOR_WIDGET_RENDER_PROPERTY);
     return ("true".equals(interiorWidgetRender));
   }
-  
+
   public List getInteriorColumns()
   {
     List list = getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_COLUMNS_PROPERTY);
     return (list.isEmpty() ? Arrays.asList(3) : list);
   }
-  
+
   public List getInteriorColumnClasses()
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_COLUMN_CLASSES_PROPERTY);
   }
-  
+
   public List getInteriorColumnTitles()
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_COLUMN_TITLES_PROPERTY);
@@ -704,39 +704,39 @@ public class WidgetBean extends WebBean
 
   public List getInteriorTitle()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TITLE_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TITLE_PROPERTY, false);
   }
-  
+
   public List getInteriorHeaderDocId()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_HEADER_DOC_ID_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_HEADER_DOC_ID_PROPERTY, false);
   }
-  
+
   public List getInteriorFooterDocId()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_FOOTER_DOC_ID_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_FOOTER_DOC_ID_PROPERTY, false);
   }
-  
+
   //INTERIOR_TOP
-  
+
   public boolean isInteriorTopWidgetRender()
   {
-    String interiorTopWidgetRender = 
+    String interiorTopWidgetRender =
       getCursor().getBrowserSensitiveProperty(INTERIOR_TOP_WIDGET_RENDER_PROPERTY);
     return ("true".equals(interiorTopWidgetRender));
   }
-  
+
   public List getInteriorTopColumns()
   {
     List list = getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_COLUMNS_PROPERTY);
-    return (list.isEmpty() ? Arrays.asList(2) : list);    
+    return (list.isEmpty() ? Arrays.asList(2) : list);
   }
-  
+
   public List getInteriorTopColumnClasses()
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_COLUMN_CLASSES_PROPERTY);
   }
-  
+
   public List getInteriorTopColumnTitles()
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_COLUMN_TITLES_PROPERTY);
@@ -754,34 +754,34 @@ public class WidgetBean extends WebBean
 
   public List getInteriorTopTitle()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_TITLE_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_TITLE_PROPERTY, false);
   }
-  
+
   public List getInteriorTopHeaderDocId()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_HEADER_DOC_ID_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_HEADER_DOC_ID_PROPERTY, false);
   }
-  
+
   public List getInteriorTopFooterDocId()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_FOOTER_DOC_ID_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_TOP_FOOTER_DOC_ID_PROPERTY, false);
   }
 
   //INTERIOR_BOTTOM
-  
+
   public boolean isInteriorBottomWidgetRender()
   {
-    String interiorBottomWidgetRender = 
+    String interiorBottomWidgetRender =
       getCursor().getBrowserSensitiveProperty(INTERIOR_BOTTOM_WIDGET_RENDER_PROPERTY);
     return ("true".equals(interiorBottomWidgetRender));
   }
-  
+
   public List getInteriorBottomColumns()
   {
     List list = getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_COLUMNS_PROPERTY);
-    return (list.isEmpty() ? Arrays.asList(2) : list);    
+    return (list.isEmpty() ? Arrays.asList(2) : list);
   }
-  
+
   public List getInteriorBottomColumnClasses()
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_COLUMN_CLASSES_PROPERTY);
@@ -791,12 +791,12 @@ public class WidgetBean extends WebBean
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_COLUMN_TITLES_PROPERTY);
   }
-  
+
   public List getInteriorBottomColumnRenderAsList()
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_COLUMN_RENDER_AS_LIST_PROPERTY);
   }
-  
+
   public List getInteriorBottomLayout()
   {
     return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_LAYOUT_PROPERTY);
@@ -804,19 +804,19 @@ public class WidgetBean extends WebBean
 
   public List getInteriorBottomTitle()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_TITLE_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_TITLE_PROPERTY, false);
   }
-  
+
   public List getInteriorBottomHeaderDocId()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_HEADER_DOC_ID_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_HEADER_DOC_ID_PROPERTY, false);
   }
-  
+
   public List getInteriorBottomFooterDocId()
   {
-    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_FOOTER_DOC_ID_PROPERTY, false);    
+    return getCursor().getBrowserSensitiveMultiValuedProperty(INTERIOR_BOTTOM_FOOTER_DOC_ID_PROPERTY, false);
   }
-  
+
   // ****************** actions ********************
 
   @CMSAction
@@ -827,10 +827,10 @@ public class WidgetBean extends WebBean
     Date now = new Date();
     addNewWidgets(lastVisit, now);
     setLastVisitCookieValue(now);
-    
+
     // Map<widgetId, container>
     Map<String, HtmlWidgetContainer> containers = prepareContainers();
-    
+
     String widgetMid = getCursor().getProperty(WIDGET_MID_PROPERTY);
     if (widgetMid != null)
     {
@@ -857,7 +857,7 @@ public class WidgetBean extends WebBean
   {
     return "widget_setup";
   }
-  
+
   public String sort()
   {
     if (getCustomColumnWidgetType() == null)
@@ -873,7 +873,7 @@ public class WidgetBean extends WebBean
         layout.getWidgetIds(column).add(widgetId);
         column = (column + 1) % columnCount;
       }
-      setCustomLayoutCookieValue(layout.toString());    
+      setCustomLayoutCookieValue(layout.toString());
     }
     return null;
   }
@@ -884,14 +884,14 @@ public class WidgetBean extends WebBean
     widgetCatalogue = null;
     return show();
   }
-  
+
   public String apply()
   {
     String[] customColumnWidgetTypes = new String[0];
     if (getCustomColumnWidgetType() != null)
     {
       customColumnWidgetTypes = getCustomColumnWidgetType().split(",");
-    }    
+    }
     // update layout
     int customColumns = (Integer)getCustomColumns().get(0);
     WidgetLayout layout = new WidgetLayout(customColumns, (String)getCustomLayout().get(0));
@@ -902,7 +902,7 @@ public class WidgetBean extends WebBean
 
       if (widget.isVisible())
       {
-        Integer newColumn;        
+        Integer newColumn;
         if (getCustomColumnWidgetType() == null)
         {
           newColumn = widget.getLayoutColumn();
@@ -911,7 +911,7 @@ public class WidgetBean extends WebBean
         {
           if (oldColumn < 0) //new widget
           {
-            newColumn = getEmptiestLayoutColumn(layout, widget, customColumnWidgetTypes);            
+            newColumn = getEmptiestLayoutColumn(layout, widget, customColumnWidgetTypes);
           }
           else //existing widget
           {
@@ -937,19 +937,19 @@ public class WidgetBean extends WebBean
       }
     }
 
-    setCustomLayoutCookieValue(layout.toString());    
+    setCustomLayoutCookieValue(layout.toString());
 
     // create components inside HtmlWidgetContainer
     return show();
   }
-  
+
   public String getWidgetSelectorWindow()
   {
     MenuItemCursor cursor = getCursor();
     String value = cursor.getProperty(WIDGET_SELECTOR_WINDOW_PROPERTY);
     return (value == null) ? DEFAULT_WIDGET_SELECTOR_WINDOW : value;
   }
-    
+
   public String getWidgetSelectorItemsHtml()
   {
     StringBuilder sb = new StringBuilder();
@@ -961,7 +961,7 @@ public class WidgetBean extends WebBean
     return sb.toString();
   }
 
-  private String getWidgetSelectorItemHtml(WidgetDefinition widgetDef, 
+  private String getWidgetSelectorItemHtml(WidgetDefinition widgetDef,
     int index)
   {
     StringBuilder sb = new StringBuilder();
@@ -977,15 +977,15 @@ public class WidgetBean extends WebBean
     }
 
     String trWidgetLabel = translatePlainText(widgetDef.getLabel());
-    String trAriaLabel = translatePlainText("Activar/Desactivar widget: ") + 
+    String trAriaLabel = translatePlainText("Activar/Desactivar widget: ") +
       trWidgetLabel;
 
     sb.append("id=\"widgetSelectorItem" + index + "\">");
-    sb.append("<a ");    
+    sb.append("<a ");
     sb.append("id=\"" + "widget_selector_" + widgetDef.getWidgetId() + "\" ");
     sb.append("class=\"widgetLink\" ");
     sb.append("title=\"" + trAriaLabel + "\" ");
-    sb.append("onclick=\"return(switchWidget('" + widgetDef.getWidgetId() + 
+    sb.append("onclick=\"return(switchWidget('" + widgetDef.getWidgetId() +
       "', '" + getCustomLayoutCookieName() + "'));\" ");
     sb.append("href=\"#\">");
 
@@ -994,23 +994,23 @@ public class WidgetBean extends WebBean
     sb.append("class=\"widgetIcon\" ");
     sb.append("src=\"" + widgetDef.getIconUrl() + "\" />");
 
-    sb.append("<div ");    
+    sb.append("<div ");
     sb.append("class=\"widgetLabel\">");
     sb.append(trWidgetLabel);
     sb.append("</div>");
 
-    sb.append("</a>");    
+    sb.append("</a>");
 
     sb.append("</div>");
-    
+
     return sb.toString();
   }
 
   public String getWidgetSelectorScripts()
   {
     return "<script type=\"text/javascript\" " +
-      "src=\"/plugins/widget/widgetselector.js?v=" + 
-      ApplicationBean.getCurrentInstance().getResourcesVersion() + 
+      "src=\"/plugins/widget/widgetselector.js?v=" +
+      ApplicationBean.getCurrentInstance().getResourcesVersion() +
       "\"></script>" +
       "<script type=\"text/javascript\">" +
       "var widgetSelectorWindow = " + getWidgetSelectorWindow() + ";" +
@@ -1018,12 +1018,12 @@ public class WidgetBean extends WebBean
       "var widgetSelectorIndexCookieName = '" +
       getWidgetSelectorIndexCookieName() + "';" +
       "widgetSelectorMove(" + getWidgetSelectorIndexCookieValue() + ");" +
-      "widgetSelectorMakeElementsVisible();" +  
+      "widgetSelectorMakeElementsVisible();" +
       "</script>";
   }
-  
+
   private boolean isWidgetFolded(String widgetId)
-  {    
+  {
     String cookieValue = getWidgetStateCookieValue();
     if (cookieValue != null)
     {
@@ -1042,12 +1042,12 @@ public class WidgetBean extends WebBean
     }
     return false;
   }
-  
+
   private HtmlWidget buildWidget(WidgetDefinition widgetDef)
   {
     return buildWidget(widgetDef, false);
-  }  
-  
+  }
+
   private HtmlWidget buildWidget(WidgetDefinition widgetDef, boolean standalone)
   {
     // build widget
@@ -1067,7 +1067,7 @@ public class WidgetBean extends WebBean
       {
         String mid = widgetDef.getMid();
         userSessionBean.getMenuModel().getMenuItemByMid(mid); //check if visible
-        htmlWidget.getAttributes().put("nodeId", mid);            
+        htmlWidget.getAttributes().put("nodeId", mid);
       }
       catch (Exception ex) //non visible widget
       {
@@ -1075,7 +1075,7 @@ public class WidgetBean extends WebBean
       }
     }
     boolean folded = isWidgetFolded(widgetDef.getWidgetId());
-    htmlWidget.getAttributes().put("folded", folded);    
+    htmlWidget.getAttributes().put("folded", folded);
 
     // build widget header
     String headerBuilderName = widgetDef.getHeaderBuilder();
@@ -1100,13 +1100,13 @@ public class WidgetBean extends WebBean
     if (contentBuilderName != null)
     {
       WidgetBuilder widgetBuilder =
-        WidgetBuilder.getInstance(contentBuilderName);        
+        WidgetBuilder.getInstance(contentBuilderName);
       if (widgetBuilder != null)
       {
         widgetBuilder.setFolded(folded);
-        widgetBuilder.setStandalone(standalone);        
+        widgetBuilder.setStandalone(standalone);
         UIComponent component = widgetBuilder.getComponent(
-          widgetDef, getFacesContext());        
+          widgetDef, getFacesContext());
         if (component.getId() == null)
           component.setId(widgetDef.getWidgetId() + "_content");
         String scrollerStyle = widgetDef.getScrollerStyle();
@@ -1131,7 +1131,7 @@ public class WidgetBean extends WebBean
       if (widgetBuilder != null)
       {
         widgetBuilder.setFolded(folded);
-        widgetBuilder.setStandalone(standalone);        
+        widgetBuilder.setStandalone(standalone);
         UIComponent component = widgetBuilder.getComponent(
           widgetDef, getFacesContext());
         if (component.getId() == null)
@@ -1165,14 +1165,14 @@ public class WidgetBean extends WebBean
     addWidgetIds(containers, getFooterLayout(), footerContainer);
     addWidgetIds(containers, getHeaderLayout(), headerContainer);
     addWidgetIds(containers, getMainLayout(), mainContainer);
-    addWidgetIds(containers, getLeftLayout(), leftContainer);    
+    addWidgetIds(containers, getLeftLayout(), leftContainer);
 
-    return containers;  
+    return containers;
   }
- 
+
   private void addWidgetIds(Map containers,
     List<String> layoutList, HtmlWidgetContainer container)
-  {    
+  {
     if (layoutList != null)
     {
       for (String layout : layoutList)
@@ -1185,7 +1185,7 @@ public class WidgetBean extends WebBean
       }
     }
   }
-  
+
   private String getCustomLayoutCookieValue()
   {
     String layoutValue = null;
@@ -1265,12 +1265,12 @@ public class WidgetBean extends WebBean
     }
     return date;
   }
-  
+
   private String getWidgetStateCookieName()
   {
     return getCustomLayoutCookieName() + "_widget_state";
   }
-  
+
   private String getWidgetStateCookieValue()
   {
     String cookieName = getWidgetStateCookieName();
@@ -1289,7 +1289,7 @@ public class WidgetBean extends WebBean
   {
     return getCustomLayoutCookieName() + "_widget_selector_index";
   }
-  
+
   private String getWidgetSelectorIndexCookieValue()
   {
     String cookieName = getWidgetSelectorIndexCookieName();
@@ -1299,11 +1299,11 @@ public class WidgetBean extends WebBean
       cookie = new Cookie(cookieName, "1");
       cookie.setPath("/");
       cookie.setMaxAge(1800); //30 minutes
-      setCookie(cookie);      
+      setCookie(cookie);
     }
     return cookie.getValue();
   }
-    
+
   private Cookie getCookie(String name)
   {
     initCookieMap();
@@ -1347,7 +1347,7 @@ public class WidgetBean extends WebBean
     {
       try
       {
-        intValue = new Integer(value);
+        intValue = Integer.valueOf(value);
       }
       catch (NumberFormatException ex)
       {
@@ -1363,7 +1363,7 @@ public class WidgetBean extends WebBean
     if (widgetMid != null)
     {
       WidgetLayout layout =
-        new WidgetLayout((Integer)getCustomColumns().get(0), 
+        new WidgetLayout((Integer)getCustomColumns().get(0),
           (String)getCustomLayout().get(0));
 
       String[] customColumnWidgetTypes = new String[0];
@@ -1387,9 +1387,9 @@ public class WidgetBean extends WebBean
             String widgetId = widgetDef.getWidgetId();
             if (layout.getColumn(widgetId) == -1)
             {
-              int columnIndex = getEmptiestLayoutColumn(layout, widgetDef, 
+              int columnIndex = getEmptiestLayoutColumn(layout, widgetDef,
                 customColumnWidgetTypes);
-              layout.getWidgetIds(columnIndex).add(0, widgetId);              
+              layout.getWidgetIds(columnIndex).add(0, widgetId);
             }
           }
         }
@@ -1401,9 +1401,9 @@ public class WidgetBean extends WebBean
 
   private void formatCustomLayout(WidgetLayout layout, String[] customColumnWidgetTypes)
   {
-    if (customColumnWidgetTypes == null || customColumnWidgetTypes.length == 0)  
+    if (customColumnWidgetTypes == null || customColumnWidgetTypes.length == 0)
       return;
-  
+
     for (int iCol = 0; iCol < layout.getColumns(); iCol++)
     {
       List<String> finalColWidgetIds = new ArrayList();
@@ -1418,7 +1418,7 @@ public class WidgetBean extends WebBean
           }
           else
           {
-            //Search for a valid column, if any            
+            //Search for a valid column, if any
             Integer newCol = getEmptiestLayoutColumn(layout, widgetDef, customColumnWidgetTypes);
             if (newCol != null)
             {
@@ -1430,14 +1430,14 @@ public class WidgetBean extends WebBean
       layout.getWidgetIds(iCol).clear();
       layout.getWidgetIds(iCol).addAll(finalColWidgetIds);
     }
-  }  
-  
+  }
+
   private WidgetDefinition getWidgetDefinition(String widgetId)
-  {    
+  {
     return getWidgetDefinitionMap().get(widgetId);
   }
-  
-  private Integer getEmptiestLayoutColumn(WidgetLayout layout, 
+
+  private Integer getEmptiestLayoutColumn(WidgetLayout layout,
     WidgetDefinition widgetDef, String[] columnWidgetTypes)
   {
     int minCount = Integer.MAX_VALUE;
@@ -1453,22 +1453,22 @@ public class WidgetBean extends WebBean
     }
     return minColumn;
   }
-  
-  private boolean isWidgetAllowedInColumn(WidgetDefinition widgetDef, 
+
+  private boolean isWidgetAllowedInColumn(WidgetDefinition widgetDef,
     int colIdx, String[] columnWidgetTypes)
   {
     return (
       (colIdx >= columnWidgetTypes.length) ||
-      ("all".equals(columnWidgetTypes[colIdx])) || 
+      ("all".equals(columnWidgetTypes[colIdx])) ||
       (widgetDef.isBannerWidget() && "banner".equals(columnWidgetTypes[colIdx])) ||
       (!widgetDef.isBannerWidget() && "nonbanner".equals(columnWidgetTypes[colIdx]))
-    );    
+    );
   }
-  
+
   private String translatePlainText(String text)
   {
     if (text == null || text.trim().isEmpty()) return "";
-    
+
     Translator translator =
       ApplicationBean.getCurrentInstance().getTranslator();
 
@@ -1478,7 +1478,7 @@ public class WidgetBean extends WebBean
       {
         String userLanguage = FacesUtils.getViewLanguage();
         StringWriter sw = new StringWriter();
-        translator.translate(new StringReader(text), sw, "text/plain", 
+        translator.translate(new StringReader(text), sw, "text/plain",
           userLanguage, "widgetLabel");
         return sw.toString();
       }
@@ -1488,7 +1488,7 @@ public class WidgetBean extends WebBean
     }
     return text;
   }
-    
+
   private List<String> getLayoutWidgetIds(boolean includeDynamic)
   {
     List<String> result = new ArrayList();
@@ -1498,11 +1498,11 @@ public class WidgetBean extends WebBean
     result.addAll(getWidgetIdListFromLayout(getFooterLayout()));
     result.addAll(getWidgetIdListFromLayout(getInteriorLayout()));
     result.addAll(getWidgetIdListFromLayout(getInteriorTopLayout()));
-    result.addAll(getWidgetIdListFromLayout(getInteriorBottomLayout()));    
-    if (includeDynamic) 
+    result.addAll(getWidgetIdListFromLayout(getInteriorBottomLayout()));
+    if (includeDynamic)
     {
       result.addAll(getWidgetIdListFromLayout(getCustomLayout()));
-    }      
+    }
     return result;
   }
 
@@ -1525,28 +1525,28 @@ public class WidgetBean extends WebBean
             for (String widgetId : widgetColumn.split(","))
             {
               result.add(widgetId);
-            }          
+            }
           }
         }
-      }      
+      }
     }
     return result;
   }
-  
-  private void loadInteriorContainer(HtmlWidgetContainer container, 
+
+  private void loadInteriorContainer(HtmlWidgetContainer container,
     List<String> layout, String widgetMid)
   {
     List<String> widgetIdList = getWidgetIdListFromLayout(layout);
-    MenuModel menuModel = 
+    MenuModel menuModel =
       UserSessionBean.getCurrentInstance().getMenuModel();
     MenuItemCursor rootWidgetCursor = menuModel.getMenuItem(widgetMid);
     searchAndBuildWidgets(container, widgetIdList, rootWidgetCursor);
   }
-  
-  private void searchAndBuildWidgets(HtmlWidgetContainer widgetContainer, 
+
+  private void searchAndBuildWidgets(HtmlWidgetContainer widgetContainer,
     List widgetIdList, MenuItemCursor rootCursor)
-  {    
-    MenuItemCursor auxCursor = rootCursor.getFirstChild();   
+  {
+    MenuItemCursor auxCursor = rootCursor.getFirstChild();
     while (!auxCursor.isNull())
     {
       WidgetDefinition widgetDef = new WidgetDefinition(auxCursor.getMid());
@@ -1557,33 +1557,33 @@ public class WidgetBean extends WebBean
         widgetIdList.remove(widgetDef.getWidgetId());
         if (widgetIdList.isEmpty()) return;
       }
-      auxCursor = auxCursor.getNext();      
+      auxCursor = auxCursor.getNext();
     }
     //Not all widgets have been built yet
-    auxCursor = rootCursor.getFirstChild();    
+    auxCursor = rootCursor.getFirstChild();
     while (!auxCursor.isNull())
     {
       searchAndBuildWidgets(widgetContainer, widgetIdList, auxCursor);
       if (widgetIdList.isEmpty()) return;
       auxCursor = auxCursor.getNext();
-    }      
+    }
   }
-  
+
   private void logToFile(String s)
   {
-    try 
+    try
     {
       FileWriter fw = new FileWriter("c://widgets_log.txt", true);
       BufferedWriter bw = new BufferedWriter(fw);
-      PrintWriter out = new PrintWriter(bw);      
+      PrintWriter out = new PrintWriter(bw);
       out.println(s);
       out.close();
     }
-    catch (IOException ex) 
+    catch (IOException ex)
     {
       // Report
-    } 
-    finally 
+    }
+    finally
     {
     }
   }

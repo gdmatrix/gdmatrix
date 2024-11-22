@@ -116,7 +116,7 @@ public class HtmlFormImporter
   private ComponentView importComponent(Node node)
   {
     ComponentView componentView = null;
-    
+
     if (node instanceof Element)
     {
       Element element = (Element)node;
@@ -214,9 +214,9 @@ public class HtmlFormImporter
           view.setRequired("true".equals(element.getAttribute("required")));
           view.setDisabled(element.getAttribute("disabled"));
           view.setInfoIcon(element.getAttribute("infoicon"));
-          view.setInfoText(element.getAttribute("infotext")); 
-          view.setHelpText(element.getAttribute("helptext"));           
-          
+          view.setInfoText(element.getAttribute("infotext"));
+          view.setHelpText(element.getAttribute("helptext"));
+
           componentView = view;
         }
         else if ("radio".equalsIgnoreCase(type))
@@ -280,7 +280,7 @@ public class HtmlFormImporter
         {
           try
           {
-            view.setSize(new Integer(value));
+            view.setSize(Integer.valueOf(value));
           }
           catch (NumberFormatException ex)
           {
@@ -318,7 +318,7 @@ public class HtmlFormImporter
         view.setInfoIcon(element.getAttribute("infoicon"));
         view.setInfoText(element.getAttribute("infotext"));
         view.setHelpText(element.getAttribute("helptext"));
-        
+
         componentView = view;
         Node child = element.getFirstChild();
         while (child != null)
@@ -360,7 +360,7 @@ public class HtmlFormImporter
         view.setRequired("true".equals(element.getAttribute("required")));
         view.setDisabled(element.getAttribute("disabled"));
         view.setTabindex(getInteger(element.getAttribute("tabindex")));
-        view.setHelpText(element.getAttribute("helptext"));        
+        view.setHelpText(element.getAttribute("helptext"));
         componentView = view;
       }
       else if (name.equalsIgnoreCase("img"))
@@ -634,11 +634,11 @@ public class HtmlFormImporter
     if (value == null) return null;
     try
     {
-      return new Integer(value);
+      return Integer.valueOf(value);
     }
     catch (NumberFormatException ex)
     {
-      return new Integer(0);
+      return 0;
     }
   }
 

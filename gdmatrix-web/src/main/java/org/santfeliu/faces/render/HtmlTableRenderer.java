@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.render;
@@ -49,7 +49,7 @@ import org.apache.myfaces.renderkit.html.util.RowInfo;
 import org.apache.myfaces.renderkit.html.util.TableContext;
 
 /**
- * Renderer of MyFaces HtmlDatatable to change order of footer encoding and do 
+ * Renderer of MyFaces HtmlDatatable to change order of footer encoding and do
  * it after body encoding for accessibility purposes.
  *
  * @author blanquepa
@@ -66,7 +66,7 @@ public class HtmlTableRenderer extends org.apache.myfaces.renderkit.html.ext.Htm
     }
     ResponseWriter writer = facesContext.getResponseWriter();
     renderFacet(facesContext, writer, uiData, true);
-  } 
+  }
 
   @Override
   protected void afterBody(FacesContext facesContext, UIData uiData) throws IOException
@@ -75,7 +75,7 @@ public class HtmlTableRenderer extends org.apache.myfaces.renderkit.html.ext.Htm
     ((HtmlDataTable)uiData).setRowIndex(-1); //reset rowIndex to avoid render footer facet as a row (clientId with dataTable index)
     renderFacet(facesContext, writer, uiData, false);
   }
-  
+
   private boolean isGroupedTable(UIData uiData) {
       if (uiData instanceof HtmlDataTable) {
           List children = getChildren(uiData);
@@ -123,7 +123,7 @@ public class HtmlTableRenderer extends org.apache.myfaces.renderkit.html.ext.Htm
           if (child instanceof HtmlSimpleColumn) {
               currentColumn = (HtmlSimpleColumn) child;
               if (currentColumn.isGroupBy()) {
-                  groupHashTable.put(new Integer(j), null);
+                  groupHashTable.put(j, null);
               }
           }
       }
@@ -170,7 +170,7 @@ public class HtmlTableRenderer extends org.apache.myfaces.renderkit.html.ext.Htm
 
           for (int j = 0, size = nChildren; j < size; j++) {
               columnInfo = new ColumnInfo();
-              if (groupHashTable.containsKey(new Integer(j)))  // Column is groupBy
+              if (groupHashTable.containsKey(j))  // Column is groupBy
               {
                   if (currentRowSpan > 0) {
                       if (groupEndReached) {
@@ -220,7 +220,7 @@ public class HtmlTableRenderer extends org.apache.myfaces.renderkit.html.ext.Htm
       // do further processing if we've found at least one row
       if (currentRowInfoIndex > -1) {
           for (int j = 0, size = nChildren; j < size; j++) {
-              if (groupHashTable.containsKey(new Integer(j)))  // Column is groupBy
+              if (groupHashTable.containsKey(j))  // Column is groupBy
               {
                   ((ColumnInfo)
                       ((RowInfo)
@@ -245,5 +245,5 @@ public class HtmlTableRenderer extends org.apache.myfaces.renderkit.html.ext.Htm
       }
 
       htmlDataTable.setRowIndex(-1);
-  }    
+  }
 }

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.report.engine.jasper;
@@ -95,7 +95,7 @@ public class JasperReportEngine implements ReportEngine
     return "JasperReportEngine 1.0";
   }
 
-  public List<ParameterDefinition> readReportParameters(String contentId, 
+  public List<ParameterDefinition> readReportParameters(String contentId,
     DataSource dataSource)
   {
     try
@@ -121,7 +121,7 @@ public class JasperReportEngine implements ReportEngine
     {
       // load report from cache
       JasperReport report = loadReport(contentId, dataSource);
-   
+
       if (exportOptions.getFormat().equalsIgnoreCase("JASPER"))
       {
         // return source compiled
@@ -135,7 +135,7 @@ public class JasperReportEngine implements ReportEngine
       {
         // fill parameters
         Map paramsMap = fillParameters(report, parameters, credentials);
-    
+
         // fill report
         JasperPrint print = fillReport(report, paramsMap, connectionName);
         return new DataHandler(exportReport(print, exportOptions));
@@ -169,7 +169,7 @@ public class JasperReportEngine implements ReportEngine
       throw new RuntimeException(ex);
     }
   }
-  
+
   private JasperReport loadReport(String contentId, DataSource dataSource)
     throws Exception
   {
@@ -184,12 +184,12 @@ public class JasperReportEngine implements ReportEngine
     }
     return report;
   }
-  
+
   private List fillParameterDefinitions(JasperReport report)
   {
-    ArrayList<ParameterDefinition> paramDefs = 
+    ArrayList<ParameterDefinition> paramDefs =
       new ArrayList<ParameterDefinition>();
-  
+
     JRParameter params[] = report.getParameters();
     for (JRParameter param : params)
     {
@@ -199,7 +199,7 @@ public class JasperReportEngine implements ReportEngine
         paramDef.setName(param.getName());
         paramDef.setDescription(param.getDescription());
         paramDef.setForPrompting(param.isForPrompting());
-        Class valueClass = param.getValueClass();       
+        Class valueClass = param.getValueClass();
         JRExpression expr = param.getDefaultValueExpression();
         if (expr != null)
         {
@@ -209,7 +209,7 @@ public class JasperReportEngine implements ReportEngine
         {
           paramDef.setType(ParameterType.STRING);
         }
-        else if (valueClass == Short.class || 
+        else if (valueClass == Short.class ||
           valueClass == Integer.class || valueClass == Long.class)
         {
           paramDef.setType(ParameterType.INTEGER);
@@ -239,7 +239,7 @@ public class JasperReportEngine implements ReportEngine
     }
     return paramDefs;
   }
-  
+
   private String evalExpression(JRExpression expr) // TODO: Use BeanShell
   {
     String result = null;
@@ -255,11 +255,11 @@ public class JasperReportEngine implements ReportEngine
     {
       try
       {
-        double num = Double.parseDouble(exprValue);        
-        DecimalFormatSymbols otherSymbols = 
+        double num = Double.parseDouble(exprValue);
+        DecimalFormatSymbols otherSymbols =
           new DecimalFormatSymbols(Locale.getDefault());
         otherSymbols.setDecimalSeparator('.');
-        otherSymbols.setGroupingSeparator(',');                 
+        otherSymbols.setGroupingSeparator(',');
         DecimalFormat df = new DecimalFormat("###########.#########", otherSymbols);
         result = df.format(num);
       }
@@ -273,8 +273,8 @@ public class JasperReportEngine implements ReportEngine
     }
     return result;
   }
-  
-  private Map fillParameters(JasperReport report, 
+
+  private Map fillParameters(JasperReport report,
     List<Parameter> parameters, Credentials credentials)
   {
     Map paramsMap = new HashMap();
@@ -316,23 +316,23 @@ public class JasperReportEngine implements ReportEngine
         }
         else if (jasperParameter.getValueClass() == Integer.class)
         {
-          paramsMap.put(paramName, new Integer(value));
+          paramsMap.put(paramName, Integer.valueOf(value));
         }
         else if (jasperParameter.getValueClass() == Double.class)
         {
-          paramsMap.put(paramName, new Double(value));
+          paramsMap.put(paramName, Double.valueOf(value));
         }
         else if (jasperParameter.getValueClass() == Float.class)
         {
-          paramsMap.put(paramName, new Float(value));
+          paramsMap.put(paramName, Float.valueOf(value));
         }
         else if (jasperParameter.getValueClass() == Short.class)
         {
-          paramsMap.put(paramName, new Short(value));
+          paramsMap.put(paramName, Short.valueOf(value));
         }
         else if (jasperParameter.getValueClass() == Long.class)
         {
-          paramsMap.put(paramName, new Long(value));
+          paramsMap.put(paramName, Long.valueOf(value));
         }
         else if (jasperParameter.getValueClass() == BigInteger.class)
         {
@@ -350,8 +350,8 @@ public class JasperReportEngine implements ReportEngine
     }
     return paramsMap;
   }
-  
-  private JasperPrint fillReport(JasperReport report, 
+
+  private JasperPrint fillReport(JasperReport report,
     Map paramsMap, String connectionName) throws Exception
   {
     JasperPrint print = null;
@@ -366,8 +366,8 @@ public class JasperReportEngine implements ReportEngine
     }
     return print;
   }
-  
-  private DataSource exportReport(JasperPrint print, 
+
+  private DataSource exportReport(JasperPrint print,
     ExportOptions exportOptions) throws Exception
   {
     DataSource ds = null;
@@ -436,19 +436,19 @@ public class JasperReportEngine implements ReportEngine
         exporter.setParameter(JRHtmlExporterParameter.JASPER_PRINT, print);
         exporter.setParameter(JRHtmlExporterParameter.OUTPUT_STREAM, os);
         exporter.setParameter(JRHtmlExporterParameter.IS_USING_IMAGES_TO_ALIGN, false);
-        exporter.setParameter(JRHtmlExporterParameter.HTML_HEADER, 
-        "<html>\n" + 
-        "<head>\n" + 
-        "  <title></title>\n" + 
-        "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n" + 
-        "  <style type=\"text/css\">\n" + 
-        "    a {text-decoration: none}\n" + 
-        "  </style>\n" + 
-        "</head>\n" + 
-        "<body text=\"#000000\" link=\"#000000\" alink=\"#000000\" vlink=\"#000000\">\n" + 
-        "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n" + 
+        exporter.setParameter(JRHtmlExporterParameter.HTML_HEADER,
+        "<html>\n" +
+        "<head>\n" +
+        "  <title></title>\n" +
+        "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n" +
+        "  <style type=\"text/css\">\n" +
+        "    a {text-decoration: none}\n" +
+        "  </style>\n" +
+        "</head>\n" +
+        "<body text=\"#000000\" link=\"#000000\" alink=\"#000000\" vlink=\"#000000\">\n" +
+        "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n" +
         "<tr><td width=\"50%\">&nbsp;</td><td align=\"left\">");
-        exporter.setParameter(JRHtmlExporterParameter.HTML_FOOTER, 
+        exporter.setParameter(JRHtmlExporterParameter.HTML_FOOTER,
         "</td><td width=\"50%\">&nbsp;</td></tr>\n" +
         "</table></body></html>");
         exporter.setParameter(JRHtmlExporterParameter.JASPER_PRINT, print);
@@ -468,7 +468,7 @@ public class JasperReportEngine implements ReportEngine
       }
       finally
       {
-        os.close();     
+        os.close();
       }
     }
     return ds;
@@ -499,7 +499,7 @@ public class JasperReportEngine implements ReportEngine
       throw new RuntimeException("report:REPORT_CONNECTION_FAILED");
     }
   }
-  
+
   public static void main(String[] args)
   {
     try
@@ -512,8 +512,8 @@ public class JasperReportEngine implements ReportEngine
           ExportOptions options = new ExportOptions();
           options.setFormat("PDF");
           List<Parameter> parameters = new ArrayList<Parameter>();
-          DataHandler dh = 
-            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn", 
+          DataHandler dh =
+            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn",
             parameters, options, new Credentials());
           dh.writeTo(new FileOutputStream("c:/test.pdf"));
         }
@@ -522,8 +522,8 @@ public class JasperReportEngine implements ReportEngine
           ExportOptions options = new ExportOptions();
           options.setFormat("HTML");
           List<Parameter> parameters = new ArrayList<Parameter>();
-          DataHandler dh = 
-            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn", 
+          DataHandler dh =
+            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn",
             parameters, options, new Credentials());
           dh.writeTo(new FileOutputStream("c:/test.html"));
         }
@@ -532,8 +532,8 @@ public class JasperReportEngine implements ReportEngine
           ExportOptions options = new ExportOptions();
           options.setFormat("JASPER");
           List<Parameter> parameters = new ArrayList<Parameter>();
-          DataHandler dh = 
-            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn", 
+          DataHandler dh =
+            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn",
             parameters, options, new Credentials());
           dh.writeTo(new FileOutputStream("c:/test.jasper"));
         }
@@ -542,8 +542,8 @@ public class JasperReportEngine implements ReportEngine
           ExportOptions options = new ExportOptions();
           options.setFormat("XML");
           List<Parameter> parameters = new ArrayList<Parameter>();
-          DataHandler dh = 
-            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn", 
+          DataHandler dh =
+            engine.executeReport("9", new FileDataSource("c:/test.jrxml"), "cn",
             parameters, options, new Credentials());
           dh.writeTo(new FileOutputStream("c:/test.xml"));
         }

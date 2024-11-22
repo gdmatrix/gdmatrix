@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.render.myfaces.calendar;
@@ -82,7 +82,7 @@ import org.santfeliu.util.TextUtils;
  *
  * @author blanquepa
  */
-@FacesRenderer(componentFamily="javax.faces.Input", 
+@FacesRenderer(componentFamily="javax.faces.Input",
   rendererType="org.apache.myfaces.Calendar")
 public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.HtmlCalendarRenderer
 {
@@ -104,17 +104,17 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         log.debug("current locale:" + currentLocale.toString());
 
         String textValue;
-        
+
         Converter converter = inputCalendar.getConverter();
         Object submittedValue = inputCalendar.getSubmittedValue();
-        
+
         Date value;
 
         if (submittedValue != null)
         {
             //Don't need to convert anything, the textValue is the same as the submittedValue
             textValue = (String) submittedValue;
-            
+
             if(textValue ==null || textValue.trim().length()==0 || textValue.equals(getHelperString(inputCalendar)))
             {
                 value = null;
@@ -127,7 +127,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
                     Calendar timeKeeper = Calendar.getInstance(currentLocale);
                     int firstDayOfWeek = timeKeeper.getFirstDayOfWeek() - 1;
                     org.apache.myfaces.dateformat.DateFormatSymbols symbols = new org.apache.myfaces.dateformat.DateFormatSymbols(currentLocale);
-    
+
                     SimpleDateFormatter dateFormat = new SimpleDateFormatter(formatStr, symbols, firstDayOfWeek);
                     value = dateFormat.parse(textValue);
                 }
@@ -142,7 +142,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
             if (converter == null)
             {
                 CalendarDateTimeConverter defaultConverter = new CalendarDateTimeConverter();
-                
+
                 value = (Date) getDateBusinessConverter(inputCalendar).getDateValue(facesContext, component, inputCalendar.getValue());
 
                 textValue = defaultConverter.getAsString(facesContext, inputCalendar, value);
@@ -173,7 +173,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
     }
 
     private void renderPopup(
-            FacesContext facesContext, 
+            FacesContext facesContext,
             HtmlInputCalendar inputCalendar,
             String value,
             Calendar timeKeeper,
@@ -279,12 +279,12 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
     }
 
     private void renderInline(
-            FacesContext facesContext, 
+            FacesContext facesContext,
             HtmlInputCalendar inputCalendar,
             Calendar timeKeeper,
             DateFormatSymbols symbols) throws IOException
     {
-      
+
         String[] weekdays = mapShortWeekdays(symbols);
         String[] months = mapMonths(symbols, facesContext.getViewRoot().getLocale());
 
@@ -423,15 +423,15 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
 
         facesContext.getExternalContext().getRequestMap().put(JAVASCRIPT_ENCODED, Boolean.TRUE);
     }
-    
-    
+
+
     /**
      * Creates and returns a String which contains the initialisation data for
      * the popup calendar control as a sequence of javascript commands that
      * assign values to properties of a javascript object whose name is in
      * parameter popupCalendarVariable.
      * <p>
-     * 
+     *
      * @param firstDayOfWeek
      *            is in java.util.Calendar form, ie Sun=1, Mon=2, Sat=7
      */
@@ -522,7 +522,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
                 mapWeekdaysStartingWithSunday(symbols));
         defineStringArray(script, popupCalendarVariable + ".dateFormatSymbols.shortWeekdays",
                 mapShortWeekdaysStartingWithSunday(symbols));
-        
+
         defineStringArray(script, popupCalendarVariable + ".dateFormatSymbols.shortMonths",
                 mapShortMonths(symbols, facesContext.getViewRoot().getLocale()));
         defineStringArray(script, popupCalendarVariable + ".dateFormatSymbols.months",
@@ -655,7 +655,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
             {
                 writer.writeAttribute(HTML.CLASS_ATTR, popupButtonStyleClass, null);
             }
-            
+
             writer.endElement(HTML.INPUT_ELEM);
         } else {
             // render the image
@@ -705,7 +705,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         writeCell(facesContext, writer, inputComponent, "<", "backwardMonth", cal.getTime(), null);
 
         writer.startElement(HTML.TD_ELEM, inputComponent);
-        writer.writeAttribute(HTML.COLSPAN_ATTR, new Integer(weekdays.length - 2), null);
+        writer.writeAttribute(HTML.COLSPAN_ATTR, weekdays.length - 2, null);
         writer.writeText(months[timeKeeper.get(Calendar.MONTH)] + " " + timeKeeper.get(Calendar.YEAR), null);
         writer.endElement(HTML.TD_ELEM);
 
@@ -787,11 +787,11 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
             {
                 cellStyle = inputComponent.getCurrentDayCellClass();
                 linkTitle = "selectedDay";
-            }       
-         
+            }
+
 
             writeCell(facesContext, writer,
-                      inputComponent, String.valueOf(i + 1), linkTitle, 
+                      inputComponent, String.valueOf(i + 1), linkTitle,
                       cal.getTime(), cellStyle);
 
             columnIndexCounter++;
@@ -839,7 +839,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
 
         writer.endElement(HTML.TD_ELEM);
     }
-    
+
     /**
      * Generate components and output for a single "day" cell within the calendar display.
      */
@@ -861,7 +861,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         }
 
         writer.endElement(HTML.TH_ELEM);
-    }    
+    }
 
     /**
      * Create child components to represent a link to a specific date value, and render them.
@@ -907,11 +907,11 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         {
           Locale locale = facesContext.getViewRoot().getLocale();
           ResourceBundle bundle = ResourceBundle.getBundle(
-            "org.santfeliu.faces.render.myfaces.calendar.resources.CalendarBundle", locale); 
+            "org.santfeliu.faces.render.myfaces.calendar.resources.CalendarBundle", locale);
           link.setTitle(bundle.getString(linkTitle));
           link.setAriaLabel(bundle.getString(linkTitle));
         }
-          
+
 
         UIParameter parameter
                 = (UIParameter)application.createComponent(UIParameter.COMPONENT_TYPE);
@@ -937,10 +937,10 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         }
         return converter;
     }
-    
+
     private DateBusinessConverter getDateBusinessConverter(AbstractHtmlInputCalendar component)
     {
-        DateBusinessConverter dateBusinessConverter = component.getDateBusinessConverter(); 
+        DateBusinessConverter dateBusinessConverter = component.getDateBusinessConverter();
         if (dateBusinessConverter == null)
         {
             dateBusinessConverter = new DefaultDateBusinessConverter();
@@ -1003,8 +1003,8 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         return weekdays;
     }
 
-    
-    private static String[] mapShortWeekdaysStartingWithSaturday(DateFormatSymbols symbols) 
+
+    private static String[] mapShortWeekdaysStartingWithSaturday(DateFormatSymbols symbols)
     {
         String[] weekdays = new String[7];
 
@@ -1019,8 +1019,8 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         weekdays[6] = localeWeekdays[Calendar.FRIDAY];
 
         return weekdays;
-    }    
-    
+    }
+
     private static String[] mapWeekdaysStartingWithSunday(DateFormatSymbols symbols)
     {
         String[] weekdays = new String[7];
@@ -1041,7 +1041,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
     public static String[] mapMonths(DateFormatSymbols symbols, Locale locale)
     {
         String[] months = new String[12];
- 
+
 /*      String[] localeMonths = symbols.getMonths();
 
         months[0] = localeMonths[Calendar.JANUARY];
@@ -1055,14 +1055,14 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         months[8] = localeMonths[Calendar.SEPTEMBER];
         months[9] = localeMonths[Calendar.OCTOBER];
         months[10] = localeMonths[Calendar.NOVEMBER];
-        months[11] = localeMonths[Calendar.DECEMBER]; */ 
-       
+        months[11] = localeMonths[Calendar.DECEMBER]; */
+
         Calendar cal = Calendar.getInstance();
-        for (int i = 0; i < 12; i++) 
+        for (int i = 0; i < 12; i++)
         {
           cal.set(Calendar.MONTH, i);
           months[i] = TextUtils.formatDate(cal.getTime(), "LLLL", locale);
-        }        
+        }
 
         return months;
     }
@@ -1088,15 +1088,15 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
 */
 
         Calendar cal = Calendar.getInstance();
-        for (int i = 0; i < 12; i++) 
+        for (int i = 0; i < 12; i++)
         {
           cal.set(Calendar.MONTH, i);
           months[i] = TextUtils.formatDate(cal.getTime(), "LLL", locale);
-        }  
-        
+        }
+
         return months;
     }
-    
+
     public void decode(FacesContext facesContext, UIComponent component)
     {
         if(HtmlRendererUtils.isDisabledOrReadOnly(component))
@@ -1145,7 +1145,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         }
 
     }
-    
+
     protected static boolean isDisabled(FacesContext facesContext, UIComponent uiComponent)
     {
         if (!UserRoleUtils.isEnabledOnUserRole(uiComponent))
@@ -1177,17 +1177,17 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         {
             throw new IllegalArgumentException("Submitted value of type String expected");
         }
-        
-        //Do not convert if submittedValue is helper string  
+
+        //Do not convert if submittedValue is helper string
         if(submittedValue != null && submittedValue.equals(getHelperString(uiComponent)))
             return null;
-        
+
         if(converter==null)
         {
             converter = new CalendarDateTimeConverter();
-            
+
             Date date = (Date) converter.getAsObject(facesContext, uiComponent, (String) submittedValue);
-            
+
             return getDateBusinessConverter(uiInput).getBusinessValue(facesContext, uiComponent, date);
         }
         else
@@ -1225,8 +1225,8 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
                 int firstDayOfWeek = timeKeeper.getFirstDayOfWeek() - 1;
                 org.apache.myfaces.dateformat.DateFormatSymbols symbols = new org.apache.myfaces.dateformat.DateFormatSymbols(locale);
                 SimpleDateFormatter dateFormat = new SimpleDateFormatter(formatStr, symbols, firstDayOfWeek);
-                
-                Date date = dateFormat.parse(s); 
+
+                Date date = dateFormat.parse(s);
                 if (date != null) {
                     return date;
                 }
@@ -1240,7 +1240,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
                 dateFormat.setLenient(false);
                 try
                 {
-                    Date date = dateFormat.parse(s); 
+                    Date date = dateFormat.parse(s);
                     return date;
                 }
                 catch (ParseException e)

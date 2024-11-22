@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.survey.service;
@@ -68,13 +68,13 @@ import org.santfeliu.ws.annotations.MultiInstance;
 @WebService(endpointInterface = "org.matrix.survey.SurveyManagerPort")
 @HandlerChain(file="handlers.xml")
 @MultiInstance
-public class SurveyManager implements SurveyManagerPort 
+public class SurveyManager implements SurveyManagerPort
 {
-  private static final Logger LOGGER = Logger.getLogger("Survey");  
-  
+  private static final Logger LOGGER = Logger.getLogger("Survey");
+
   private static final int ANSWER_TEXT_MAX_SIZE = 100;
   private static final int SURVEY_TEXT_MAX_SIZE = 100;
-  
+
   @Resource
   WebServiceContext wsContext;
 
@@ -84,7 +84,7 @@ public class SurveyManager implements SurveyManagerPort
   @Initializer
   public void initialize(String endpointName)
   {
-  }  
+  }
 
   @Override
   public SurveyMetaData getSurveyMetaData()
@@ -99,21 +99,21 @@ public class SurveyManager implements SurveyManagerPort
   public String storeSurvey(String text, List<String> answers)
   {
     String surveyId = null;
-    try 
+    try
     {
       LOGGER.log(Level.INFO, "storeSurvey {0}", text);
       validateSurvey(text, answers);
-  
+
       DBSurvey dbSurvey = new DBSurvey();
       dbSurvey.setText(text);
       dbSurvey.setStrOpen("Y");
-      SimpleDateFormat dayFormat = new SimpleDateFormat("yyyyMMdd");      
+      SimpleDateFormat dayFormat = new SimpleDateFormat("yyyyMMdd");
       dbSurvey.setStartDay(dayFormat.format(new Date()));
-      dbSurvey.setEndDay(null);    
+      dbSurvey.setEndDay(null);
       entityManager.persist(dbSurvey);
       entityManager.flush();
       surveyId = dbSurvey.getSurveyId();
-      for (int i = 0; i < answers.size(); i++) 
+      for (int i = 0; i < answers.size(); i++)
       {
         String answer = answers.get(i);
         DBAnswer dbAnswer = new DBAnswer();
@@ -128,14 +128,14 @@ public class SurveyManager implements SurveyManagerPort
     {
       LOGGER.log(Level.SEVERE, "storeSurvey failed", ex);
       throw WSExceptionFactory.create(ex);
-    }    
+    }
     return surveyId;
   }
 
   @Override
   public void openSurvey(String surveyId)
   {
-    LOGGER.log(Level.INFO, "openSurvey {0}", surveyId);        
+    LOGGER.log(Level.INFO, "openSurvey {0}", surveyId);
     Query query = entityManager.createNamedQuery("switchSurvey");
     query.setParameter("surveyId", surveyId);
     query.setParameter("open", "Y");
@@ -145,7 +145,7 @@ public class SurveyManager implements SurveyManagerPort
   @Override
   public void closeSurvey(String surveyId)
   {
-    LOGGER.log(Level.INFO, "closeSurvey {0}", surveyId);        
+    LOGGER.log(Level.INFO, "closeSurvey {0}", surveyId);
     Query query = entityManager.createNamedQuery("switchSurvey");
     query.setParameter("surveyId", surveyId);
     query.setParameter("open", "N");
@@ -155,8 +155,8 @@ public class SurveyManager implements SurveyManagerPort
   @Override
   public void voteSurvey(String surveyId, String answerId)
   {
-    LOGGER.log(Level.INFO, "voteSurvey surveyId {0} answerId {1}", 
-      new String[]{surveyId, answerId});        
+    LOGGER.log(Level.INFO, "voteSurvey surveyId {0} answerId {1}",
+      new String[]{surveyId, answerId});
     Query query = entityManager.createNamedQuery("voteSurvey");
     query.setParameter("surveyId", surveyId);
     query.setParameter("answerId", answerId);
@@ -166,7 +166,7 @@ public class SurveyManager implements SurveyManagerPort
   @Override
   public Survey loadSurvey(String surveyId)
   {
-    LOGGER.log(Level.INFO, "loadSurvey {0}", surveyId);    
+    LOGGER.log(Level.INFO, "loadSurvey {0}", surveyId);
     Query surveyQuery = entityManager.createNamedQuery("findSurvey");
     surveyQuery.setParameter("surveyId", surveyId);
     Object[] obj = null;
@@ -182,9 +182,9 @@ public class SurveyManager implements SurveyManagerPort
     survey.setSurveyId((String)obj[0]);
     survey.setOpen(((String)obj[2]).equalsIgnoreCase("Y"));
     survey.setText((String)obj[1]);
-    survey.setVoteCount(new Integer(String.valueOf(obj[4])));
+    survey.setVoteCount(Integer.valueOf(String.valueOf(obj[4])));
     survey.setAnswerList(new AnswerList());
-    
+
     Query query = entityManager.createNamedQuery("findAnswers");
     query.setParameter("surveyId", surveyId);
     AnswerList answerList = survey.getAnswerList();
@@ -193,9 +193,9 @@ public class SurveyManager implements SurveyManagerPort
     {
       answerList.getAnswerList().add(answer);
     }
-    survey.setAnswerList(answerList);        
+    survey.setAnswerList(answerList);
     return survey;
-  }    
+  }
 
   @Override
   public SurveyTable findSurveys()
@@ -203,7 +203,7 @@ public class SurveyManager implements SurveyManagerPort
     SurveyTable surveyTable = new SurveyTable();
     try
     {
-      LOGGER.log(Level.INFO, "findSurveys");    
+      LOGGER.log(Level.INFO, "findSurveys");
       List<SurveyView> surveyRowList = surveyTable.getSurveyViewList();
       Query query = entityManager.createNamedQuery("findSurveys");
       List<Object[]> queryResult = query.getResultList();
@@ -214,7 +214,7 @@ public class SurveyManager implements SurveyManagerPort
         surveyView.setOpen(((String)resultItem[2]).equalsIgnoreCase("Y"));
         surveyView.setText((String)resultItem[1]);
         surveyView.setStartDay((String)resultItem[3]);
-        surveyView.setVoteCount(new Integer(String.valueOf(resultItem[4])));
+        surveyView.setVoteCount(Integer.valueOf(String.valueOf(resultItem[4])));
         surveyRowList.add(surveyView);
       }
     }
@@ -225,7 +225,7 @@ public class SurveyManager implements SurveyManagerPort
     }
     return surveyTable;
   }
-  
+
   /**** private methods ****/
 
   private void validateSurvey(String text, List<String> answers)
@@ -256,5 +256,5 @@ public class SurveyManager implements SurveyManagerPort
       }
     }
   }
-  
+
 }

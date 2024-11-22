@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web.filter;
@@ -74,20 +74,20 @@ import org.santfeliu.jmx.JMXUtils;
  *   <li>Requests wait a maximum of 5 seconds, which can be overridden
  *       per URI pattern in the filter's configuration.</li>
  * </ul>
- * 
+ *
  * @author Kevin Chipalowsky and Ivelin Ivanov
  */
 public class RequestControlFilter implements Filter
 {
   /** Logger **/
-  private static final Logger logger = 
+  private static final Logger logger =
     Logger.getLogger("RequestControlFilter");
-  
+
   /** A list of Pattern objects that match paths to exclude */
   private LinkedList excludePatterns;
 
   /** A map from Pattern to max wait duration (Long objects) */
-  private HashMap maxWaitDurations; 
+  private HashMap maxWaitDurations;
 
   /** The session attribute key for the request currently being processed */
   private final static String REQUEST_IN_PROCESS
@@ -102,18 +102,18 @@ public class RequestControlFilter implements Filter
 
   /** The default maximum number of milliseconds to wait for a request */
   private final static long DEFAULT_DURATION = 5000;
-  
+
   /** The number of requests currently in process */
   private int requestsInProcess;
-  
+
   /** The max number of requests currently in process */
   private int MAX_REQUESTS_IN_PROCESS = 20;
 
   private long lastDump;
-  
+
   /**
    * Initialize this filter by reading its configuration parameters
-   * 
+   *
    * @param config  Configuration from web.xml file
    */
   public void init(FilterConfig config) throws ServletException
@@ -142,7 +142,7 @@ public class RequestControlFilter implements Filter
         {
           durationString = durationString.substring(0, endDuration);
         }
-        Long duration = new Long(durationString);
+        Long duration = Long.valueOf(durationString);
 
         // compile the corresponding pattern, and store it with this delay in the map
         Pattern waitPattern = Pattern.compile(paramValue);
@@ -175,14 +175,14 @@ public class RequestControlFilter implements Filter
     throws IOException, ServletException
   {
     HttpServletRequest httpRequest = (HttpServletRequest)request;
-    
+
     // if this request is excluded from the filter, then just process it
     if (!isFilteredRequest(httpRequest))
     {
       chain.doFilter(request, response);
       return;
     }
-    
+
     // this request is included
     HttpSession session = httpRequest.getSession(false);
     int req;
@@ -202,9 +202,9 @@ public class RequestControlFilter implements Filter
     else // server busy
     {
       String ip = httpRequest.getRemoteAddr();
-      String userAgent = httpRequest.getHeader("User-Agent");      
-      logger.log(Level.WARNING, "Maximum number of requests exceeded: {0}. " + 
-        "Request rejected for ip: {1}, user-agent: {2}", 
+      String userAgent = httpRequest.getHeader("User-Agent");
+      logger.log(Level.WARNING, "Maximum number of requests exceeded: {0}. " +
+        "Request rejected for ip: {1}, user-agent: {2}",
         new Object[]{requestsInProcess, ip, userAgent});
 
       sendServerBusy(response);
@@ -225,7 +225,7 @@ public class RequestControlFilter implements Filter
   {
     HttpServletRequest httpRequest = (HttpServletRequest)request;
     HttpSession session = httpRequest.getSession();
-    
+
     synchronized (getSynchronizationObject(session))
     {
       // if another request is being processed, then wait
@@ -256,9 +256,9 @@ public class RequestControlFilter implements Filter
       releaseQueuedRequest(httpRequest);
     }
   }
-  
+
   private void sendServerBusy(ServletResponse response) throws IOException
-  {    
+  {
     HttpServletResponse httpResponse = (HttpServletResponse)response;
     httpResponse.setContentType("text/plain");
     PrintWriter writer = httpResponse.getWriter();
@@ -271,10 +271,10 @@ public class RequestControlFilter implements Filter
       writer.close();
     }
   }
-  
+
   /**
    * Get a synchronization object for this session
-   * 
+   *
    * @param session
    */
   private static synchronized Object getSynchronizationObject(HttpSession session)
@@ -293,7 +293,7 @@ public class RequestControlFilter implements Filter
   /**
    * Record that a request is in process so that the filter blocks additional
    * requests until this one finishes.
-   * 
+   *
    * @param request
    */
   private void setRequestInProgress(HttpServletRequest request)
@@ -305,7 +305,7 @@ public class RequestControlFilter implements Filter
   /**
    * Release the next waiting request, because the current request
    * has just finished.
-   * 
+   *
    * @param request   The request that just finished
    */
   private void releaseQueuedRequest(HttpServletRequest request)
@@ -329,7 +329,7 @@ public class RequestControlFilter implements Filter
 
   /**
    * Is this server currently processing another request for this session?
-   * 
+   *
    * @param session   The request's session
    * @return          true if the server is handling another request for this session
    */
@@ -370,7 +370,7 @@ public class RequestControlFilter implements Filter
   /**
    * Put a new request in the queue.  This new request will replace
    * any other requests that were waiting.
-   * 
+   *
    * @param request   The request to queue
    */
   private void enqueueRequest(HttpServletRequest request)
@@ -387,7 +387,7 @@ public class RequestControlFilter implements Filter
 
   /**
    * What is the maximum wait time (in milliseconds) for this request
-   * 
+   *
    * @param request
    * @return Maximum number of milliseconds to hold this request in the queue
    */
@@ -407,7 +407,7 @@ public class RequestControlFilter implements Filter
          return maxDuration.longValue();
       }
     }
-    
+
     // If no pattern matches the path, return the default value
     return DEFAULT_DURATION;
   }
@@ -435,7 +435,7 @@ public class RequestControlFilter implements Filter
         return false;
       }
     }
-    
+
     // this path is not excluded
     return true;
   }
