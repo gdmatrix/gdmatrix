@@ -32,13 +32,11 @@ package org.santfeliu.webapp.modules.ide;
 
 import com.google.gson.Gson;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import jdk.nashorn.internal.objects.NativeJSON;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeJavaObject;
