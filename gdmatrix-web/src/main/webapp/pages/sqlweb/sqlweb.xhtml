@@ -95,7 +95,7 @@
       <p:dataTable id="result_table"
                    rendered="#{sqlwebBean.rows != null}"
                    value="#{sqlwebBean.rows}"
-                   touchable="false"
+                   touchable="false" showGridlines="true"
                    paginatorPosition="bottom" size="small" pageLinks="10" stripedRows="true"
                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                    paginator="true" rows="10" rowsPerPageTemplate="10, 50, 100"
