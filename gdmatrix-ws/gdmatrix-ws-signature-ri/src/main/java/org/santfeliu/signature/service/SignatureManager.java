@@ -682,7 +682,7 @@ public class SignatureManager implements SignatureManagerPort
     }
     if (typeClassName == null) throw new Exception("UNSUPPORTED_DOCUMENT_TYPE");
     Class typeClass = Class.forName(typeClassName);
-    SignedDocument document = (SignedDocument)typeClass.newInstance();
+    SignedDocument document = (SignedDocument)typeClass.getConstructor().newInstance();
     document.getProperties().put(SIGNED_DOCUMENT_TYPE, docType);
     return document;
   }
@@ -691,7 +691,7 @@ public class SignatureManager implements SignatureManagerPort
     Properties properties) throws Exception
   {
     Class storeClass = Class.forName(storeClassName);
-    SignedDocumentStore newStore = (SignedDocumentStore)storeClass.newInstance();
+    SignedDocumentStore newStore = (SignedDocumentStore)storeClass.getConstructor().newInstance();
     newStore.init(properties);
     return newStore;
   }

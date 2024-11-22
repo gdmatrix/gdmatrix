@@ -55,7 +55,7 @@ import org.matrix.policy.PolicyManagerService;
 import org.matrix.policy.PolicyState;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.ant.ws.WSTask;
-import org.santfeliu.doc.util.DocumentUtils;
+import org.santfeliu.dic.util.DictionaryUtils;
 
 /**
  *
@@ -268,10 +268,10 @@ public class FindCasePoliciesTask extends WSTask
       port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
 
-    if (document.getClassId() != null && document.getClassId().size() > 0)
+    if (document.getClassId() != null && !document.getClassId().isEmpty())
     {
       String classId = document.getClassId().get(0);
-      DocumentUtils.setProperty(document, "classTitle",
+      DictionaryUtils.setProperty(document, "classTitle",
         getClassTitle(classId));
     }
     cdv.setDocument(document);

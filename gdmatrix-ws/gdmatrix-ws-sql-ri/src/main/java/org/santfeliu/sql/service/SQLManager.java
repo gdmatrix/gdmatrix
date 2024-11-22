@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.sql.service;
@@ -72,13 +72,13 @@ public class SQLManager implements SQLManagerPort
 
   @Resource
   WebServiceContext wsContext;
-  
+
   // connection store
   ConnectionStore connStore;
-  
+
   // dbrepository to execute sql statements
   DBRepository repository;
-  
+
   @Initializer
   public void initialize(String endpointName)
   {
@@ -86,28 +86,28 @@ public class SQLManager implements SQLManagerPort
     {
       LOGGER.log(Level.INFO, "Initializing SQLManager");
       //Set up ConnectionStore
-      String connectionStoreClassName = 
+      String connectionStoreClassName =
         MatrixConfig.getClassProperty(SQLManager.class, CONNECTION_STORE);
       if (connectionStoreClassName == null)
         throw new RuntimeException("UNDEFINED_STORE_CLASS_NAME");
 
       Class connStoreClass = Class.forName(connectionStoreClassName);
-      connStore = (ConnectionStore)connStoreClass.newInstance();
+      connStore = (ConnectionStore)connStoreClass.getConstructor().newInstance();
       Properties properties = MatrixConfig.getClassProperties(connStoreClass);
-      
+
       String ddlGeneration = MatrixConfig.getProperty("enableDDLGeneration");
       if (ddlGeneration != null)
         properties.setProperty("enableDDLGeneration", ddlGeneration);
-      
+
       connStore.init(properties);
-      
+
       repository = new DBRepository();
     }
     catch (Exception ex)
     {
       LOGGER.log(Level.SEVERE, "SQLManager init failed", ex);
       throw WSExceptionFactory.create(ex);
-    }    
+    }
   }
 
   @Disposer
@@ -115,23 +115,23 @@ public class SQLManager implements SQLManagerPort
   {
     LOGGER.log(Level.INFO, "SQLManager disposed.");
   }
-  
+
   @Override
-  public QueryTable executeDriverQuery(String sql, QueryParameters parameters, 
+  public QueryTable executeDriverQuery(String sql, QueryParameters parameters,
     String driver, String url, String username, String password)
   {
     checkPermissions();
-    
+
     try
-    {      
+    {
       QueryTable result = null;
-      DBConnection conn = 
+      DBConnection conn =
         repository.getConnection(driver, url, username, password);
 
       if (conn != null)
         result = QueryTableConverter.fromTable(
           doExecuteQuery(conn, sql, QueryParametersConverter.toMap(parameters)));
-    
+
       return result;
     }
     catch (Exception ex)
@@ -142,50 +142,50 @@ public class SQLManager implements SQLManagerPort
   }
 
   @Override
-  public QueryTable executeAliasQuery(String sql, QueryParameters parameters, 
+  public QueryTable executeAliasQuery(String sql, QueryParameters parameters,
     String alias, String username, String password)
   {
     checkPermissions();
-    
+
     try
     {
       QueryTable result = null;
-    
-      DBConnection conn = 
+
+      DBConnection conn =
         connStore.getConnection(alias, username, password);
 
       if (conn != null)
         result = QueryTableConverter.fromTable(
           doExecuteQuery(conn, sql, QueryParametersConverter.toMap(parameters)));
-    
+
       return result;
     }
     catch (Exception ex)
     {
       LOGGER.log(Level.SEVERE, "executeAliasQuery", ex);
       throw WSExceptionFactory.create(ex);
-    }    
+    }
   }
-  
+
   @Override
-  public int executeDriverUpdate(String sql, QueryParameters parameters, 
+  public int executeDriverUpdate(String sql, QueryParameters parameters,
     String driver, String url, String username, String password)
   {
     checkPermissions();
-    
+
     try
     {
-      int result = 0;    
+      int result = 0;
 
-      DBConnection conn = 
+      DBConnection conn =
         repository.getConnection(driver, url, username, password);
 
       if (conn != null)
       {
-        result = 
+        result =
           doExecuteUpdate(conn, sql, QueryParametersConverter.toMap(parameters));
       }
-      
+
       return result;
     }
     catch (Exception ex)
@@ -194,9 +194,9 @@ public class SQLManager implements SQLManagerPort
       throw WSExceptionFactory.create(ex);
     }
   }
-  
+
   @Override
-  public int executeAliasUpdate(String sql, QueryParameters parameters, 
+  public int executeAliasUpdate(String sql, QueryParameters parameters,
     String alias, String username, String password)
   {
     checkPermissions();
@@ -204,14 +204,14 @@ public class SQLManager implements SQLManagerPort
     try
     {
       int result = 0;
-    
-      DBConnection conn = 
+
+      DBConnection conn =
         connStore.getConnection(alias, username, password);
-    
+
       if (conn != null)
-        result = 
+        result =
           doExecuteUpdate(conn, sql, QueryParametersConverter.toMap(parameters));
-      
+
       return result;
     }
     catch (Exception ex)
@@ -220,7 +220,7 @@ public class SQLManager implements SQLManagerPort
       throw WSExceptionFactory.create(ex);
     }
   }
-  
+
   @Override
   public void createConnection(String alias, String driver, String url)
   {
@@ -236,7 +236,7 @@ public class SQLManager implements SQLManagerPort
       throw WSExceptionFactory.create(ex);
     }
   }
-  
+
   @Override
   public void removeConnection(String alias)
   {
@@ -252,14 +252,14 @@ public class SQLManager implements SQLManagerPort
       throw WSExceptionFactory.create(ex);
     }
   }
-  
+
   //Private methods
   private void checkPermissions()
   {
     if (!UserCache.getUser(wsContext).isInRole(SQL_ADMIN_ROLE))
       throw new WebServiceException("ACCESS_DENIED");
   }
-    
+
   private Table doExecuteQuery(DBConnection conn, String sql, Map parameters)
     throws Exception
   {
@@ -277,8 +277,8 @@ public class SQLManager implements SQLManagerPort
     {
       conn.close();
     }
-  }  
-  
+  }
+
   private int doExecuteUpdate(DBConnection conn, String sql, Map parameters)
     throws Exception
   {
@@ -296,5 +296,5 @@ public class SQLManager implements SQLManagerPort
     {
       conn.close();
     }
-  }   
+  }
 }

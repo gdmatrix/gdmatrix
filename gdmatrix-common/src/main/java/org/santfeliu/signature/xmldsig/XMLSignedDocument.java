@@ -344,7 +344,7 @@ public class XMLSignedDocument implements SignedDocument
 
     // adding keyInfo:X509Data
     X509Data X509Data = new X509Data(doc);
-    X509Data.addIssuerSerial(cert.getIssuerDN().getName(),
+    X509Data.addIssuerSerial(cert.getIssuerX500Principal().getName(),
       cert.getSerialNumber());
     X509Data.addSubjectName(cert);
     X509Data.addCertificate(cert);
@@ -638,7 +638,7 @@ public class XMLSignedDocument implements SignedDocument
         signingCertificate = keyInfo.getX509Certificate();
         if (signingCertificate != null)
         {
-          String signerDN = signingCertificate.getSubjectDN().getName();
+          String signerDN = signingCertificate.getSubjectX500Principal().getName();
           LOGGER.log(Level.INFO, "Certificate found: {0}", signerDN);
           signatureValidation.setSigner(signerDN);
           if (!signature.checkSignatureValue(signingCertificate))
@@ -1181,7 +1181,7 @@ public class XMLSignedDocument implements SignedDocument
       doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_X509ISSUERNAME);
     issuerSerialElement.appendChild(issuerNameElement);
     issuerNameElement.appendChild(
-      doc.createTextNode(cert.getIssuerDN().getName()));
+      doc.createTextNode(cert.getIssuerX500Principal().getName()));
 
     Element issuerSNElement =
       doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_X509SERIALNUMBER);

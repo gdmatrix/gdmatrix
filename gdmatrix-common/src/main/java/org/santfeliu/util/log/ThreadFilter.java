@@ -54,6 +54,6 @@ public class ThreadFilter implements Filter
   @Override
   public boolean isLoggable(LogRecord record)
   {
-    return record.getThreadID() == threadId;
+    return record.getLongThreadID() == threadId;
   }
 }

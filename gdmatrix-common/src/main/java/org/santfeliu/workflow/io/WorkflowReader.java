@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.io;
@@ -49,27 +49,27 @@ import org.santfeliu.workflow.util.PointsFormat;
  *
  * @author unknown
  */
-public class WorkflowReader 
+public class WorkflowReader
 {
   private static final String DEFAULT_NODE_PACKAGE = "org.santfeliu.workflow.node";
   private String nodesPackage;
-    
+
   public WorkflowReader()
   {
     this(DEFAULT_NODE_PACKAGE);
   }
-  
+
   public WorkflowReader(String nodesPackage)
   {
     this.nodesPackage = nodesPackage;
   }
-  
+
   public Workflow read(InputStream is) throws Exception
   {
     Workflow workflow = new Workflow();
 
     LinkedList transitions = new LinkedList();
-    
+
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document document = builder.parse(is);
@@ -139,7 +139,7 @@ public class WorkflowReader
     return workflow;
   }
 
-  private WorkflowNode readNode(Node node, 
+  private WorkflowNode readNode(Node node,
     Workflow workflow, LinkedList transitions) throws Exception
   {
     // get node class
@@ -148,22 +148,22 @@ public class WorkflowReader
     if (className.lastIndexOf(".") > 0)
       className = nodesPackage + className.substring(className.lastIndexOf("."));
     else
-      className = nodesPackage + "." + className;   
-    
+      className = nodesPackage + "." + className;
+
     Class cls = Class.forName(className);
-    org.santfeliu.workflow.WorkflowNode wfNode = 
-      (org.santfeliu.workflow.WorkflowNode)cls.newInstance();
-    
+    org.santfeliu.workflow.WorkflowNode wfNode =
+      (org.santfeliu.workflow.WorkflowNode)cls.getConstructor().newInstance();
+
     // set id
     String nodeId = getStringAttribute(node, "id");
     wfNode.setId(nodeId);
-    
+
     // set immediate
     wfNode.setImmediate(getBooleanAttribute(node, "immediate", false));
 
     // set hidden
     wfNode.setHidden(getBooleanAttribute(node, "hidden", false));
-    
+
     // set points
     String pstr = getStringAttribute(node, "points");
     if (pstr != null)
@@ -189,7 +189,7 @@ public class WorkflowReader
             if (propNode instanceof Element)
             {
               String str = propNode.getTextContent();
-              String propertyClassName = 
+              String propertyClassName =
                 getStringAttribute(propNode, "class", "java.lang.String");
               Class propertyClass;
               if (propertyClassName.equals("boolean"))
@@ -226,7 +226,7 @@ public class WorkflowReader
               String methodName = "set" + firstLetter + propName.substring(1);
               try
               {
-                Method method = cls.getMethod(methodName, 
+                Method method = cls.getMethod(methodName,
                   new Class[]{propertyClass});
                 Object value = deserializer.deserialize(str, propertyClass);
                 if (value != null)
@@ -257,7 +257,7 @@ public class WorkflowReader
                 getStringAttribute(nextNode, "onerror", "false"));
               if (isErrorOutcome) outcome = WorkflowNode.ERROR_OUTCOME;
 
-              String sOutcomePosition = 
+              String sOutcomePosition =
                 getStringAttribute(nextNode, "outcome-position");
 
               Point2D[] points = null;
@@ -313,7 +313,7 @@ public class WorkflowReader
     }
   }
 
-  private void convertLegacyMethod(WorkflowNode wfNode, 
+  private void convertLegacyMethod(WorkflowNode wfNode,
     String methodName, String svalue)
   {
     ObjectDeserializer deserializer = new ObjectDeserializer();
@@ -324,7 +324,7 @@ public class WorkflowReader
       try
       {
         Class propertyClass = org.santfeliu.util.Properties.class;
-        Method method = cls.getMethod(methodName, 
+        Method method = cls.getMethod(methodName,
           new Class[]{propertyClass});
         Properties parameters;
         if ("custom".equals(formNode.getFormType()))
@@ -358,7 +358,7 @@ public class WorkflowReader
       }
       catch (Exception ex2)
       {
-        // discard property 
+        // discard property
       }
     }
     else if (wfNode instanceof SignatureNode || wfNode instanceof DocumentNode)
@@ -366,7 +366,7 @@ public class WorkflowReader
       try
       {
         Class propertyClass = org.santfeliu.util.Properties.class;
-        Method method = cls.getMethod(methodName, 
+        Method method = cls.getMethod(methodName,
           new Class[]{propertyClass});
         Properties parameters = (Properties)
           deserializer.deserialize(svalue, propertyClass);
@@ -377,7 +377,7 @@ public class WorkflowReader
       }
       catch (Exception ex)
       {
-        // discard property 
+        // discard property
       }
     }
   }
@@ -386,7 +386,7 @@ public class WorkflowReader
   {
     return getStringAttribute(node, name, null);
   }
-  
+
   private String getStringAttribute(Node node, String name, String defaultValue)
   {
     String value = defaultValue;
@@ -448,13 +448,13 @@ public class WorkflowReader
     }
     return value;
   }
-  
+
   private Point2D[] parsePoints(String pstr)
   {
     PointsFormat format = new PointsFormat();
     return format.parsePoints(pstr);
   }
-  
+
   private void linkTransitions(Workflow workflow, LinkedList transitions)
   {
     Iterator iter = transitions.iterator();
@@ -466,7 +466,7 @@ public class WorkflowReader
       Point2D points[] = (Point2D[])link[2];
       String outcome = (String)link[3];
       Point2D outcomePosition = (Point2D)link[4];
-      
+
       WorkflowNode node = workflow.getNode(nodeId);
       WorkflowNode nextNode = workflow.getNode(nextNodeId);
       node.addTransition(outcome, nextNode, outcomePosition, points);

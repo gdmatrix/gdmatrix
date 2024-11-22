@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.util;
@@ -237,20 +237,20 @@ public class PojoUtils
   }
 
   public static boolean setDynamicProperty(List properties,
-    String propertyName, Object value, Class propertyClass) 
+    String propertyName, Object value, Class propertyClass)
     throws Exception
   {
-    return setDynamicProperty(properties, propertyName, value, propertyClass, 
+    return setDynamicProperty(properties, propertyName, value, propertyClass,
       "name", "value");
   }
-  
+
   public static <U,V extends Object> boolean setDynamicProperty(
-    String propertyFieldName, String propertyName, V pojo, 
-    Class<U> propertyClass, String namePropertyName, String valuePropertyName) 
+    String propertyFieldName, String propertyName, V pojo,
+    Class<U> propertyClass, String namePropertyName, String valuePropertyName)
     throws Exception
   {
     Class<V> valueClass = (Class<V>) pojo.getClass();
-    Method propertyMethod = 
+    Method propertyMethod =
       valueClass.getMethod(getMethodName("get", propertyFieldName));
     if (propertyMethod != null)
     {
@@ -304,7 +304,7 @@ public class PojoUtils
 
       if (!propertyFound)
       {
-        Object property = propertyClass.newInstance();
+        Object property = propertyClass.getConstructor().newInstance();
         Method nameSetter =
           propertyClass.getMethod(getMethodName("set", namePropertyName), String.class);
         nameSetter.invoke(property, new Object[]{propertyName});
@@ -333,19 +333,19 @@ public class PojoUtils
 
     return propertyFound;
   }
-  
+
   public static <U,V extends Object> Object getDynamicProperty(V pojo, String name, String namePropertyName)
     throws Exception
   {
     Object result = null;
     Class<V> valueClass = (Class<V>) pojo.getClass();
-    Method propertyMethod = 
+    Method propertyMethod =
       valueClass.getMethod(getMethodName("get", namePropertyName));
     if (propertyMethod != null)
-    { 
+    {
       List<U> properties = (List<U>) propertyMethod.invoke(pojo);
       result = getDynamicProperty(properties, name);
-    } 
+    }
     return result;
   }
 
@@ -379,7 +379,7 @@ public class PojoUtils
 
     return result;
   }
-  
+
   public static void copy(Object src, Object dest)
   {
     Class srcClass = src.getClass();
@@ -389,15 +389,15 @@ public class PojoUtils
     {
       String name = srcMethod.getName();
       //System.out.println(name);
-      if (name.startsWith("get") && 
-          srcMethod.getParameterTypes().length == 0 && 
+      if (name.startsWith("get") &&
+          srcMethod.getParameterTypes().length == 0 &&
           isBasicType(srcMethod.getReturnType()))
       {
         try
         {
           Method destMethod = destClass.getMethod(
-            "set" + name.substring(3), 
-            new Class[]{srcMethod.getReturnType()});          
+            "set" + name.substring(3),
+            new Class[]{srcMethod.getReturnType()});
           Object value = srcMethod.invoke(src, new Object[0]);
           destMethod.invoke(dest, new Object[]{value});
         }
@@ -419,7 +419,7 @@ public class PojoUtils
       Object destItem;
       try
       {
-        destItem = destItemClass.newInstance();
+        destItem = destItemClass.getConstructor().newInstance();
         PojoUtils.copy(srcItem, destItem);
         destList.add(destItem);
       }
@@ -428,7 +428,7 @@ public class PojoUtils
         ex.printStackTrace();
       }
     }
-  }  
+  }
 
   private static String getMethodName(String prefix, String propName)
   {
@@ -439,7 +439,7 @@ public class PojoUtils
 
     return methodName;
   }
-  
+
   private static boolean isBasicType(Class cls)
   {
     if (cls == byte.class) return true;
@@ -454,5 +454,5 @@ public class PojoUtils
     if (cls == byte[].class) return true;
     if (Enum.class.isAssignableFrom(cls)) return true;
     return false;
-  }  
+  }
 }

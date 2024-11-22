@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web.obj.util;
@@ -61,7 +61,7 @@ public class ResultsManager extends WebBean implements Serializable
   public static final String DEFAULT_COLUMN_NAME = "*";
   public static final String ORDERBY = "orderBy";
   public static final String ORDERBY_DESCENDING_SUFFIX = "desc";
-  
+
   public static final String COLUMN_TYPES_PROPERTY = "columnType";
   public static final String COLUMN_NAMES_PROPERTY = "columnName";
   public static final String COLUMN_STYLES_PROPERTY = "columnStyle";
@@ -72,7 +72,7 @@ public class ResultsManager extends WebBean implements Serializable
   public static final String COLUMN_RENDERERS_PROPERTY = "columnRenderer";
   public static final String COLUMN_VALUE_PREFIX_PROPERTY = "columnValuePrefix";
   public static final String COLUMN_VALUE_SUFFIX_PROPERTY = "columnValueSuffix";
-  public static final String COLUMN_VALUE_TEMPLATE_PROPERTY = 
+  public static final String COLUMN_VALUE_TEMPLATE_PROPERTY =
     "columnValueTemplate";
   public static final String ROW_STYLECLASS_PROPERTY = "rowStyleClass";
 
@@ -88,8 +88,8 @@ public class ResultsManager extends WebBean implements Serializable
   private boolean ascending = false;
   private String typeIdPropName;
   private RowStyleClassGenerator rowStyleClassGenerator;
-  
-  private static Logger LOGGER = 
+
+  private static Logger LOGGER =
     Logger.getLogger(ResultsManager.class.getName());
 
   public ResultsManager(String bundleClassName, String bundlePrefix)
@@ -107,7 +107,7 @@ public class ResultsManager extends WebBean implements Serializable
     this.bundlePrefix = bundlePrefix;
     this.typeIdPropName = typeIdProperty;
   }
-  
+
   public final void setColumns(String mid)
   {
     if (columns == null)
@@ -117,12 +117,12 @@ public class ResultsManager extends WebBean implements Serializable
       columnNames = new ArrayList();
     else
       columnNames.clear();
-    
+
     MenuItemCursor cursor =
       UserSessionBean.getCurrentInstance().getMenuModel().getMenuItem(mid);
     setColumnAttributes(COLUMN_NAMES_PROPERTY, cursor); //Name & alias
     setColumnAttributes(COLUMN_STYLES_PROPERTY, cursor);
-    setColumnAttributes(COLUMN_STYLECLASSES_PROPERTY, cursor);    
+    setColumnAttributes(COLUMN_STYLECLASSES_PROPERTY, cursor);
     setColumnAttributes(COLUMN_SOURCES_PROPERTY, cursor);
     setColumnAttributes(COLUMN_TYPES_PROPERTY, cursor);
     setColumnAttributes(COLUMN_CONVERTERS_PROPERTY, cursor);
@@ -246,7 +246,7 @@ public class ResultsManager extends WebBean implements Serializable
 
     if (colDef != null)
     {
-      if (colDef.getRenderer() == null || 
+      if (colDef.getRenderer() == null ||
           colDef.getRenderer() instanceof DefaultColumnRenderer)
       {
         if (colDef.isTypeSource())
@@ -264,7 +264,7 @@ public class ResultsManager extends WebBean implements Serializable
 
       //complete URL values
       if ((colDef.isImageType() || colDef.isLinkType())
-        && result != null 
+        && result != null
         && !result.toString().toLowerCase().startsWith("http://"))
       {
         String regex = "[\\W&&[^\\.\\/\\:]]";
@@ -299,7 +299,7 @@ public class ResultsManager extends WebBean implements Serializable
       if (colDef != null)
         return colDef.getStyle();
     }
-    
+
     return "";
   }
 
@@ -360,7 +360,7 @@ public class ResultsManager extends WebBean implements Serializable
             {
               if (!column.equals((String)variable))
               {
-                Object value = 
+                Object value =
                   getColumnValue(getValue("#{row}"), (String)variable);
                 properties.put(variable, value);
               }
@@ -426,7 +426,7 @@ public class ResultsManager extends WebBean implements Serializable
   private void setRowAttributes(String propertyName, MenuItemCursor cursor)
   {
     rowStyleClassGenerator = null;
-    
+
     String attribute = cursor.getProperty(propertyName);
     if (attribute != null)
     {
@@ -505,14 +505,14 @@ public class ResultsManager extends WebBean implements Serializable
             case COLUMN_CONVERTERS_PROPERTY:
               try
               {
-                Converter converter = 
+                Converter converter =
                   (Converter)newInstance(tokens, attValue, 2);
                 colDef.setConverter(converter);
               }
               catch (Exception ex)
               {
                 warn(COLUMN_CONVERTERS_PROPERTY, attValue, tokens, ex);
-              } 
+              }
               break;
             case COLUMN_COMPARATORS_PROPERTY:
               try
@@ -524,7 +524,7 @@ public class ResultsManager extends WebBean implements Serializable
               catch (Exception ex)
               {
                 warn(COLUMN_COMPARATORS_PROPERTY, attValue, tokens, ex);
-              } 
+              }
               break;
             case COLUMN_RENDERERS_PROPERTY:
               try
@@ -536,7 +536,7 @@ public class ResultsManager extends WebBean implements Serializable
               catch (Exception ex)
               {
                 warn(COLUMN_RENDERERS_PROPERTY, attValue, tokens, ex);
-              } 
+              }
               break;
             default:
               break;
@@ -545,12 +545,12 @@ public class ResultsManager extends WebBean implements Serializable
       }
     }
   }
-  
+
   private void warn(String attName, String attValue, List<String> tokens,
     Exception ex)
   {
     Object[] params = new Object[]{attName, attValue, tokens, ex.getMessage()};
-    LOGGER.log(Level.WARNING, "Invalid config. {0}::{1}::{2}::{3}", params);    
+    LOGGER.log(Level.WARNING, "Invalid config. {0}::{1}::{2}::{3}", params);
   }
 
   private List<String> parseAttribute(String attribute)
@@ -564,7 +564,7 @@ public class ResultsManager extends WebBean implements Serializable
       {
         // Add double-quoted string without the quotes
         matchList.add(regexMatcher.group(1));
-      } 
+      }
       else if (regexMatcher.group(2) != null)
       {
         // Add single-quoted string without the quotes
@@ -578,19 +578,19 @@ public class ResultsManager extends WebBean implements Serializable
     return matchList;
   }
 
-  private Object newInstance(List<String> tokens, String className, 
+  private Object newInstance(List<String> tokens, String className,
     int minTokenSize) throws Exception
   {
     Class instanceClass = Class.forName(className);
     Object instance = null;
     if (tokens.size() == minTokenSize)
     {
-      instance = instanceClass.newInstance();
+      instance = instanceClass.getConstructor().newInstance();
     }
     else if (tokens.size() > minTokenSize)
     {
       Constructor[] constructors = instanceClass.getConstructors();
-      Object[] parameters = 
+      Object[] parameters =
         Arrays.copyOfRange(tokens.toArray(), minTokenSize, tokens.size());
       instance = newInstance(constructors, parameters);
     }

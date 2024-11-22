@@ -145,7 +145,7 @@ public class HtmlView implements View, Cloneable
   {
     try
     {
-      HtmlView newView = getClass().newInstance();
+      HtmlView newView = getClass().getConstructor().newInstance();
       newView.id = id;
       newView.reference = reference;
       newView.properties.putAll(properties);

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.store.docjpa;
@@ -77,7 +77,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
   public static final int SUMMARY_MAX_RESULTS = 10;
 
   public static final String PK_SEPARATOR = ";";
-  
+
   private EntityManager em;
   private WSEndpoint endpoint;
 
@@ -107,9 +107,9 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     DBDocument dbDocument = new DBDocument();
     dbDocument.copyFrom(document, endpoint);
 
-    DBDocument currentDocument = 
+    DBDocument currentDocument =
       em.find(DBDocument.class, new DBDocumentPK(docId, version));
-    
+
     if (currentDocument != null) //update
     {
       em.merge(dbDocument);
@@ -122,27 +122,27 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       if (docId != null)
         updateLastVersionColumn(em, dbDocument.getDocId(), dbDocument.getVersion());
     }
-    
+
     dbDocument.copyTo(document, endpoint);
 
     storeSystemProperties(em, docId, version, document);
-   
-    return document;     
+
+    return document;
   }
 
   private void storeSystemProperties(EntityManager em, String docId, int version,
     Document document)
     throws Exception
   {
-    if (document.getAuthorId() !=  null && document.getAuthorId().size() > 0)
+    if (document.getAuthorId() !=  null && !document.getAuthorId().isEmpty())
       persistAuthors(em, docId, version,
-        DocumentUtils.getProperty(document, "authorId"));
-    if (document.getClassId() !=  null && document.getClassId().size() > 0)
+        DictionaryUtils.getProperty(document, "authorId"));
+    if (document.getClassId() !=  null && !document.getClassId().isEmpty())
       persistClassIds(em, docId, version,
-        DocumentUtils.getProperty(document, "classId"));
-    if (document.getCaseId() !=  null && document.getCaseId().size() > 0)
+        DictionaryUtils.getProperty(document, "classId"));
+    if (document.getCaseId() !=  null && !document.getCaseId().isEmpty())
       persistCaseIds(em, docId, version,
-        DocumentUtils.getProperty(document, "caseId"));
+        DictionaryUtils.getProperty(document, "caseId"));
   }
 
   //User properties
@@ -154,14 +154,14 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     for (Property property : properties)
     {
       String name = property.getName();
-      if (!"docId".equals(name) && !"docId".equals(name) 
+      if (!"docId".equals(name) && !"docId".equals(name)
         && !"version".equals(name) && !"title".equals(name)
         && !"language".equals(name) && !"docTypeId".equals(name)
         && !"state".equals(name) && !"authorId".equals(name)
         && !"classId".equals(name) && !"caseId".equals(name)
         && !"creationDate".equals(name))
         persistUserProperty(em, docId, version, property);
-    }    
+    }
   }
 
   public void removeProperties(String docId, int version,
@@ -176,7 +176,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     throws Exception
   {
     removeRelatedDocuments(em, docId);
-    
+
     for (RelatedDocument relDoc : relDocs)
     {
       if (isReverseRelation(relDoc.getRelationType()))
@@ -225,7 +225,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     Document document = null;
     if (docId != null)
     {
-      try 
+      try
       {
         Integer.valueOf(docId);
       }
@@ -233,7 +233,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       {
         return null;
       }
-      
+
       if (version == 0)
         version = getDocumentLastVersion(em, docId);
 
@@ -241,16 +241,16 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       DBDocument dbDocument = em.find(DBDocument.class, pk);
       if (dbDocument == null)
         return null;
-      
+
       document = new Document();
       dbDocument.copyTo(document, endpoint);
-      
+
       //Properties
-      List<Property> properties = 
+      List<Property> properties =
         getDocumentProperties(em, docId, version);
       document.getProperty().addAll(properties);
-      setSysPropertiesFromPropertiesList(document);      
-    
+      setSysPropertiesFromPropertiesList(document);
+
       //RelatedDocuments
       document.getRelatedDocument().addAll(
         getRelatedDocuments(em, docId, version));
@@ -261,17 +261,17 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       document.getAccessControl().addAll(accessControlList);
     }
     return document;
-  } 
-  
+  }
+
   @Override
   public boolean removeDocument(String docId, int version, boolean persistent) throws Exception
   {
-    boolean result;    
+    boolean result;
     removeProperties(em, docId, version);
-    
+
     //Number maxVersion = getDocumentMaxVersion(em, docId);
     Number versionsCount = getNotDeletedVersionsCount(em, docId, version);
-    if (versionsCount == null || versionsCount.intValue() == 0 
+    if (versionsCount == null || versionsCount.intValue() == 0
       || version == DocumentConstants.DELETE_ALL_VERSIONS
       || version == DocumentConstants.PERSISTENT_DELETE)
     {
@@ -294,20 +294,20 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
     return result;
   }
-  
+
   @Override
   public void removeProperties(String docId, int version) throws Exception
   {
     removeProperties(em, docId, version);
   }
-  
+
   @Override
   public List<Document> findDocuments(DocumentFilter filter,
     List<String> userRoles, boolean isAdminUser)
     throws Exception
   {
     List<Document> documents = new ArrayList();
-   
+
     filter.setRolesDisabled(false);
     String docTypeId = filter.getDocTypeId();
     if (!StringUtils.isBlank(docTypeId))
@@ -424,7 +424,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       e.printStackTrace();
       count = 0;
     }
-    
+
     return count;
   }
 
@@ -543,7 +543,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     List results = query.getResultList();
     return results.size() > 0;
   }
-  
+
   @Override
   public void commit()
   {
@@ -596,7 +596,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
   }
 
   //DB Methods
-  private void persistUserProperty(EntityManager em, 
+  private void persistUserProperty(EntityManager em,
     String docId, int version, Property property)
   {
      List<DBProperty> dbProperties = toDBProperties(property);
@@ -607,8 +607,8 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
        em.persist(dbProperty);
      }
    }
-   
-  private void persistAuthors(EntityManager em, 
+
+  private void persistAuthors(EntityManager em,
     String docId, int version, Property property)
   {
      //TODO: Tabla propia
@@ -616,7 +616,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
      persistUserProperty(em, docId, version, property);
    }
 
-  private void persistClassIds(EntityManager em, 
+  private void persistClassIds(EntityManager em,
     String docId, int version, Property property)
   {
      //TODO: Tabla propia
@@ -624,7 +624,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
      persistUserProperty(em, docId, version, property);
    }
 
-  private void persistCaseIds(EntityManager em, 
+  private void persistCaseIds(EntityManager em,
     String docId, int version, Property property)
   {
      //TODO: Tabla propia
@@ -635,20 +635,20 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
   private List<Property> getDocumentProperties(EntityManager em,
     String docId, int version)
   {
-     List<Property> properties = 
+     List<Property> properties =
       toProperties(loadDBProperties(em, docId, version));
-      
+
      return properties;
   }
 
-  private List<RelatedDocument> getRelatedDocuments(EntityManager em, 
+  private List<RelatedDocument> getRelatedDocuments(EntityManager em,
     String docId, int version)  throws Exception
   {
     List<RelatedDocument> relDocs = new ArrayList();
-    List<Object[]> dbRelDocs = 
+    List<Object[]> dbRelDocs =
       findRelatedDocuments(em, docId);
-       
-    for (Object[] item : dbRelDocs)      
+
+    for (Object[] item : dbRelDocs)
     {
       if (item != null)
       {
@@ -660,17 +660,17 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
         relDocs.add(relDoc);
       }
     }
-    
-    List<Object[]> dbReverseRelDocs = 
+
+    List<Object[]> dbReverseRelDocs =
       findReverseRelatedDocuments(em, docId);
-    for (Object[] item : dbReverseRelDocs)      
+    for (Object[] item : dbReverseRelDocs)
     {
       DBRelatedDocument dbRevRelDoc = (DBRelatedDocument)item[0];
       Integer ver = (Integer)item[1];
       RelatedDocument relDoc = new RelatedDocument();
       String relType = dbRevRelDoc.getRelationType();
-      relType = "REV_" + relType; 
-      
+      relType = "REV_" + relType;
+
       relDoc.setRelationType(RelationType.fromValue(relType));
       relDoc.setDocId(dbRevRelDoc.getDocId());
       relDoc.setVersion(ver);
@@ -679,30 +679,30 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       relDoc.setCaptureUserId(dbRevRelDoc.getCaptureUserId());
       relDoc.setChangeDateTime(dbRevRelDoc.getChangeDateTime());
       relDoc.setChangeUserId(dbRevRelDoc.getChangeUserId());
-      
+
       if (!containsOpposite(relDocs, relDoc))
         relDocs.add(relDoc);
     }
-    
+
     return relDocs;
   }
-  
+
   private boolean containsOpposite(List<RelatedDocument> list, RelatedDocument relDoc)
   {
     if (relDoc == null)
       return false;
-    
+
     for (RelatedDocument item : list)
     {
-      if (item.getName().equals(relDoc.getName()) 
+      if (item.getName().equals(relDoc.getName())
         && DocumentUtils.revertRelation(
           item.getRelationType()).equals(relDoc.getRelationType()))
         return true;
     }
-    
+
     return false;
   }
-  
+
   private int getDocumentLastVersion(EntityManager em, String docId)
      throws Exception
   {
@@ -717,12 +717,12 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
         lastversion = 0;
       }
       return lastversion;
-    }   
+    }
 
   //Private DB Queries
   private void removeProperties(EntityManager em, String docId, int version)
   {
-    Query query = 
+    Query query =
       em.createNamedQuery("removeDocumentProperties");
     query.setParameter("docId", docId);
     query.setParameter("version", version);
@@ -740,37 +740,37 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     query.executeUpdate();
   }
 
-  private void removeRelatedDocuments(EntityManager em, 
+  private void removeRelatedDocuments(EntityManager em,
     String docId)
   {
-    Query query = 
+    Query query =
       em.createNamedQuery("removeRelatedDocuments");
     query.setParameter("docId", docId);
     query.executeUpdate();
     em.flush();
   }
-  
-  private int removeDocument(EntityManager em, 
+
+  private int removeDocument(EntityManager em,
     String docId, int version)
   {
-    Query query = 
+    Query query =
       em.createNamedQuery("removeDocument");
     query.setParameter("docId", docId);
     query.setParameter("version", version);
     return query.executeUpdate();
-  }  
+  }
 
-  private List<DBProperty> loadDBProperties(EntityManager em, 
+  private List<DBProperty> loadDBProperties(EntityManager em,
     String docId, int version)
   {
-    Query query = 
+    Query query =
     em.createNamedQuery("loadDocumentProperties");
     query.setParameter("docId", docId);
     query.setParameter("version", version);
-    
+
     return query.getResultList();
   }
-  
+
   private List<Object[]> findRelatedDocuments(EntityManager em,
    String docId)
   {
@@ -779,18 +779,18 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     query.setParameter("docId", docId);
     return query.getResultList();
   }
-  
+
   private List<Object[]> findReverseRelatedDocuments(EntityManager em,
    String docId)
   {
     List<DBRelatedDocument> dbRelDocs = new ArrayList();
-    
+
     Query query =
     em.createNamedQuery("findReverseRelatedDocuments");
     query.setParameter("docId", docId);
     return query.getResultList();
   }
-  
+
   private Document getLastVersionDocument(EntityManager em, String docId)
     throws Exception
   {
@@ -800,27 +800,27 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     Document document = new Document();
     dbDocument.copyTo(document, endpoint);
     document.setIncremental(true);
-    
+
     return document;
   }
-  
+
   private Number getDocumentMaxVersion(EntityManager em, String docId)
   {
     Query query;
     query = em.createNamedQuery("selectDocumentMaxVersion");
     query.setParameter("docId", docId);
-    return (Number)query.getSingleResult();    
+    return (Number)query.getSingleResult();
   }
-  
+
   private Number getNotDeletedVersionsCount(EntityManager em, String docId, int version)
   {
     Query query;
     query = em.createNamedQuery("countNotDeletedVersions");
     query.setParameter("docId", docId);
     query.setParameter("version", version);
-    return (Number)query.getSingleResult();    
+    return (Number)query.getSingleResult();
   }
-  
+
   private void updateLastVersionColumn(EntityManager em, String docId, int version)
     throws Exception
   {
@@ -848,7 +848,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       query.executeUpdate();
     }
   }
- 
+
   //Conversion and transformation methods
   private void setSysPropertiesFromPropertiesList(Document document)
   {
@@ -877,7 +877,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
     document.getProperty().removeAll(removeProperties);
   }
-  
+
   private Document copyTo(Document document,
     Object[] docVector, WSEndpoint endpoint)
   {
@@ -902,8 +902,8 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     document.setContent(content);
 
     return document;
-  }  
-  
+  }
+
   private void setOutputProperties(
     Map<DBDocumentPK, Document> documentsMap, List<Object[]> docProps,
     List<String> outputProperties)
@@ -914,14 +914,14 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       int version = ((Number)docProp[1]).intValue();
       String propname = (String)docProp[2];
       String value = (String)docProp[3];
-      
+
       if (propname != null)
       {
         if (outputProperties.contains(propname))
         {
           DBDocumentPK key = new DBDocumentPK(docId, version);
           Document document = documentsMap.get(key);
-          
+
           if ("authorId".equals(propname))
             document.getAuthorId().add(value);
           else if ("classId".equals(propname))
@@ -936,14 +936,14 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
               property = new Property();
               property.setName(propname);
               document.getProperty().add(property);
-            } 
+            }
             property.getValue().add(value);
           }
         }
       }
-    }    
-  }  
-  
+    }
+  }
+
   private List<Property> toProperties(List<DBProperty> dbProperties)
   {
     List<Property> properties = new ArrayList();
@@ -957,7 +957,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       }
       else if (!property.getName().equals(dbProperty.getName()))
       {
-        properties.add(property);              
+        properties.add(property);
         property = new Property();
         property.setName(dbProperty.getName());
       }
@@ -965,10 +965,10 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
     if (property != null)
       properties.add(property);
-    
+
     return properties;
-  }  
-  
+  }
+
   private List<DBProperty> toDBProperties(Property property)
   {
     int index = 0;
@@ -982,8 +982,8 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
       result.add(dbProperty);
     }
     return result;
-  } 
-  
+  }
+
   private List<Vector> findSummaries(EntityManager em,
     List<DBDocumentPK> docKeys, String searchExpression, int maxResults)
   {

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.jpa;
@@ -68,12 +68,12 @@ public class JPAUtils
 
   static final Logger LOGGER  = Logger.getLogger("JPAUtils");
 
-  static HashMap<String, EntityManagerFactory> factories = 
+  static HashMap<String, EntityManagerFactory> factories =
     new HashMap<String, EntityManagerFactory>();
 
   static Set providers;
 
-  public static EntityManager createEntityManager(String unitName, 
+  public static EntityManager createEntityManager(String unitName,
     String instanceName) throws PersistenceException
   {
     EntityManagerFactory emf = getEntityManagerFactory(unitName, instanceName);
@@ -91,17 +91,17 @@ public class JPAUtils
     {
       LOGGER.log(Level.INFO, ">>>>>>>>>> Creating EMF {0}", unitKey);
       Map properties = getPersistenceUnitPropertiesMap(instanceName);
-      
-      //If it's first execution and persistence unit has extended properties 
-      //defined then does a previous fake call to create factory method without 
+
+      //If it's first execution and persistence unit has extended properties
+      //defined then does a previous fake call to create factory method without
       //map, allowing to initialize all persitence units with properties defined
-      //on persistence.xml files as default properties. 
+      //on persistence.xml files as default properties.
 //      if (factories.isEmpty() && !properties.isEmpty())
 //        Persistence.createEntityManagerFactory(unitName);
-      
+
       factory = Persistence.createEntityManagerFactory(unitName, properties);
 
-      LOGGER.log(Level.INFO, ">>>>>>>>>> Created EMF {0} with parameters {1}", 
+      LOGGER.log(Level.INFO, ">>>>>>>>>> Created EMF {0} with parameters {1}",
         new Object[]{unitKey, properties.toString()});
       factories.put(unitKey, factory);
     }
@@ -119,12 +119,12 @@ public class JPAUtils
       }
       catch (Exception ex)
       {
-        LOGGER.log(Level.SEVERE, ex.getMessage());    
+        LOGGER.log(Level.SEVERE, ex.getMessage());
       }
     }
     factories.clear();
   }
-    
+
   public static synchronized void closeEntityManagerFactory(String unitName)
   {
     // closes all emf instances of the given unitName
@@ -133,19 +133,19 @@ public class JPAUtils
     {
       if (key.startsWith(unitName + "/"))
       {
-        EntityManagerFactory factory = factories.remove(key);    
+        EntityManagerFactory factory = factories.remove(key);
         try
         {
           factory.close();
         }
         catch (Exception ex)
         {
-          LOGGER.log(Level.SEVERE, ex.getMessage());        
+          LOGGER.log(Level.SEVERE, ex.getMessage());
         }
       }
     }
-  }    
-    
+  }
+
   public static synchronized void closeEntityManagerFactory(
     String unitName, String instanceName)
   {
@@ -160,11 +160,11 @@ public class JPAUtils
       }
       catch (Exception ex)
       {
-        LOGGER.log(Level.SEVERE, ex.getMessage());        
+        LOGGER.log(Level.SEVERE, ex.getMessage());
       }
     }
   }
-  
+
   public static void copy(Object src, Object dest)
   {
     Class srcClass = src.getClass();
@@ -174,15 +174,15 @@ public class JPAUtils
     {
       String name = srcMethod.getName();
       //System.out.println(name);
-      if (name.startsWith("get") && 
-          srcMethod.getParameterTypes().length == 0 && 
+      if (name.startsWith("get") &&
+          srcMethod.getParameterTypes().length == 0 &&
           isBasicType(srcMethod.getReturnType()))
       {
         try
         {
           Method destMethod = destClass.getMethod(
-            "set" + name.substring(3), 
-            new Class[]{srcMethod.getReturnType()});          
+            "set" + name.substring(3),
+            new Class[]{srcMethod.getReturnType()});
           Object value = srcMethod.invoke(src, new Object[0]);
           destMethod.invoke(dest, new Object[]{value});
         }
@@ -204,7 +204,7 @@ public class JPAUtils
       Object destItem;
       try
       {
-        destItem = destItemClass.newInstance();
+        destItem = destItemClass.getConstructor().newInstance();
         JPAUtils.copy(srcItem, destItem);
         destList.add(destItem);
       }
@@ -234,10 +234,10 @@ public class JPAUtils
 
     return queryText;
   }
-  
+
   public static void enableDDLGeneration(EntityManager em)
   {
-    String enableDDLGeneration = 
+    String enableDDLGeneration =
       MatrixConfig.getProperty("enableDDLGeneration");
     if ("true".equalsIgnoreCase(enableDDLGeneration))
     {
@@ -254,7 +254,7 @@ public class JPAUtils
       }
     }
   }
-    
+
   private static Set getPresistenceProviders()
         throws IOException
   {
@@ -320,19 +320,19 @@ public class JPAUtils
     if (Enum.class.isAssignableFrom(cls)) return true;
     return false;
   }
-  
+
   private static Map getPersistenceUnitPropertiesMap(String instanceName)
   {
     HashMap map = new HashMap();
-    String nonJtaDataSource = 
+    String nonJtaDataSource =
       MatrixConfig.getProperty(instanceName + ".nonJtaDataSource");
-    String jtaDataSource = 
-      MatrixConfig.getProperty(instanceName + ".jtaDataSource");      
+    String jtaDataSource =
+      MatrixConfig.getProperty(instanceName + ".jtaDataSource");
     if (nonJtaDataSource != null)
       map.put("javax.persistence.nonJtaDataSource", nonJtaDataSource);
     else if (jtaDataSource != null)
       map.put("javax.persistence.jtaDataSource", jtaDataSource);
-    
+
     return map;
   }
 }

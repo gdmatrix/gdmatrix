@@ -219,7 +219,7 @@ public class SecurityUtils
     throws Exception
   {
     Map attributes = new HashMap();
-    String subjectDN = certificate.getSubjectDN().getName();
+    String subjectDN = certificate.getSubjectX500Principal().getName();
     parseAttributes(subjectDN, attributes);
     // parse subject alternative names
     Collection<List<?>> names = certificate.getSubjectAlternativeNames();

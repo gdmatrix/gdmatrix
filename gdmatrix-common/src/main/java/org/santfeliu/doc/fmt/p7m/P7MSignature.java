@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.fmt.p7m;
@@ -40,7 +40,7 @@ import java.util.*;
  * @author unknown
  */
 public class P7MSignature implements Comparable
-{  
+{
   private X509Certificate certificate;
   private Map subjectProperties = new HashMap();
   private Map issuerProperties = new HashMap();
@@ -60,12 +60,12 @@ public class P7MSignature implements Comparable
 
   public String getSubjectName()
   {
-    return certificate.getSubjectDN().getName();
+    return certificate.getSubjectX500Principal().getName();
   }
 
   public String getIssuerName()
   {
-    return certificate.getIssuerDN().getName();
+    return certificate.getIssuerX500Principal().getName();
   }
 
   public String getCertificateSerialNumber()
@@ -97,7 +97,7 @@ public class P7MSignature implements Comparable
   {
     return (String)subjectProperties.get("OU");
   }
-  
+
   public String getSignerInfo()
   {
     StringBuilder builder = new StringBuilder();
@@ -111,7 +111,7 @@ public class P7MSignature implements Comparable
     }
     return builder.toString();
   }
-  
+
   public String getSignature()
   {
     return signature;
@@ -120,8 +120,8 @@ public class P7MSignature implements Comparable
   public String getSigningTime()
   {
     if (signingDate == null) return null;
-    
-    SimpleDateFormat df2 = 
+
+    SimpleDateFormat df2 =
       new SimpleDateFormat("EEEE, dd/MM/yyyy HH:mm:ss 'GMT+'00:00",
                            new Locale("ca"));
     return df2.format(signingDate);
@@ -131,7 +131,7 @@ public class P7MSignature implements Comparable
   {
     return getSigningTime(format, Locale.getDefault());
   }
-  
+
   public String getSigningTime(String format, Locale locale)
   {
     if (signingDate == null) return null;
@@ -142,7 +142,7 @@ public class P7MSignature implements Comparable
   public String getTimeStamp()
   {
     if (timeStampDate == null) return null;
-    
+
     SimpleDateFormat df2 =
       new SimpleDateFormat("EEEE, dd/MM/yyyy HH:mm:ss 'GMT+'00:00",
                            new Locale("ca"));
@@ -152,12 +152,13 @@ public class P7MSignature implements Comparable
   public String getTimeStamp(String format, Locale locale)
   {
     if (timeStampDate == null) return null;
-    
+
     SimpleDateFormat df2 = new SimpleDateFormat(format, locale);
     return df2.format(timeStampDate);
   }
 
   // comparable
+  @Override
   public int compareTo(Object o)
   {
     if (!(o instanceof P7MSignature))
@@ -168,15 +169,15 @@ public class P7MSignature implements Comparable
 
   public void loadProperties()
   {
-    String subjectName = certificate.getSubjectDN().getName();
+    String subjectName = certificate.getSubjectX500Principal().getName();
     loadProperties(subjectProperties, subjectName);
-    String issuerName = certificate.getIssuerDN().getName();
+    String issuerName = certificate.getIssuerX500Principal().getName();
     loadProperties(issuerProperties, issuerName);
   }
 
   protected void loadProperties(Map properties, String subjectDN)
   {
-    for (StringTokenizer tokenizer = new StringTokenizer(subjectDN, ","); 
+    for (StringTokenizer tokenizer = new StringTokenizer(subjectDN, ",");
          tokenizer.hasMoreTokens(); )
     {
       String token = tokenizer.nextToken();

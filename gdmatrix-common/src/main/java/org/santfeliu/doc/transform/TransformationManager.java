@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.transform;
@@ -61,12 +61,12 @@ import org.w3c.dom.Node;
 public class TransformationManager
 {
   private static ArrayList<Transformer> transformers;
-  static final Logger logger = 
+  static final Logger logger =
     Logger.getLogger("TransformationManager");
 
   public static void init()
   {
-    File configDir = MatrixConfig.getDirectory(); 
+    File configDir = MatrixConfig.getDirectory();
     init(new File(configDir, "transformation.xml"));
   }
 
@@ -86,7 +86,7 @@ public class TransformationManager
       logger.log(Level.SEVERE, "Parse error: {0}", ex.toString());
     }
   }
-  
+
   public static List<Transformer> getTransformers()
   {
     if (transformers == null) init();
@@ -108,7 +108,7 @@ public class TransformationManager
   }
 
   public static Transformation findTransformations(
-    Transformation requestedTransformation, 
+    Transformation requestedTransformation,
     List<Transformation> transformations)
   {
     Iterator<Transformer> iter = getTransformers().iterator();
@@ -216,7 +216,7 @@ public class TransformationManager
       new Transformation(document, request);
     Transformation selectedTransformation =
       findTransformations(requiredTransformation, null);
-    
+
     if (selectedTransformation == null)
       throw new TransformationException("Unsupported transformation");
 
@@ -276,7 +276,7 @@ public class TransformationManager
     if (transformerId != null || name != null) return false;
 
     // different contentType ? no trivial
-    if (targetContentType != null && 
+    if (targetContentType != null &&
       !targetContentType.equals(content.getContentType())) return false;
 
     // different formatId ? no trivial
@@ -291,12 +291,12 @@ public class TransformationManager
   {
     String className = element.getAttribute("class");
     Class cls = Class.forName(className);
-    Transformer transformer = (Transformer)cls.newInstance();
+    Transformer transformer = (Transformer)cls.getConstructor().newInstance();
     String transformerId = element.getAttribute("id");
     if (transformerId == null || transformerId.length() == 0)
       throw new Exception("transformedId is missing");
     transformer.setId(transformerId);
-    
+
     Node node = element.getFirstChild();
     while (node != null)
     {

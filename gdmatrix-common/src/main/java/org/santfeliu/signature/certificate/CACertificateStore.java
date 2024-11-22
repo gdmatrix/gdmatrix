@@ -266,7 +266,7 @@ public class CACertificateStore
       {
         caCertsList.add((X509Certificate)caCert);
         LOGGER.log(Level.INFO, "CA Certificate loaded: {0}",
-          ((X509Certificate)caCert).getSubjectDN());
+          ((X509Certificate)caCert).getSubjectX500Principal().getName());
       }
     }
     caCerts = caCertsList;

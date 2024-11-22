@@ -32,6 +32,7 @@ package org.santfeliu.swing.text;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -45,7 +46,7 @@ public class LineTracker implements Highlighter.HighlightPainter,
 {
   private JTextComponent textComponent;
   private Color color;
-  private Rectangle lastView;
+  private Rectangle2D lastView;
   private boolean enabled;
   private Object tag;
 
@@ -112,9 +113,9 @@ public class LineTracker implements Highlighter.HighlightPainter,
   {
     try
     {
-      Rectangle r = c.modelToView(c.getCaretPosition());
+      Rectangle2D r = c.modelToView2D(c.getCaretPosition());
       g.setColor(color);
-      g.fillRect(0, r.y, c.getWidth(), r.height);
+      g.fillRect(0, (int)r.getY(), c.getWidth(), (int)r.getHeight());
 
       if (lastView == null)
       {
@@ -129,26 +130,22 @@ public class LineTracker implements Highlighter.HighlightPainter,
 
   private void resetHighlight()
   {
-    SwingUtilities.invokeLater(new Runnable()
+    SwingUtilities.invokeLater(() ->
     {
-      @Override
-      public void run()
+      try
       {
-        try
-        {
-          int offset = textComponent.getCaretPosition();
-          Rectangle currentView = textComponent.modelToView(offset);
+        int offset = textComponent.getCaretPosition();
+        Rectangle2D currentView = textComponent.modelToView2D(offset);
 
-          if (lastView != null && lastView.y != currentView.y)
-          {
-            textComponent.repaint(0, lastView.y, textComponent.getWidth(),
-              lastView.height);
-            lastView = currentView;
-          }
-        }
-        catch (BadLocationException ble)
+        if (lastView != null && lastView.getY() != currentView.getY())
         {
+          textComponent.repaint(0, (int)lastView.getY(), textComponent.getWidth(),
+            (int)lastView.getHeight());
+          lastView = currentView;
         }
+      }
+      catch (BadLocationException ble)
+      {
       }
     });
   }

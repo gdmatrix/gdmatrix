@@ -190,7 +190,7 @@ public class P7MUtils
 //      Collection certCollection = certStore.getCertificates(sigId);
       X509Certificate certificate =
         (X509Certificate)certCollection.iterator().next();
-      System.out.println(certificate.getSubjectDN().getName());
+      System.out.println(certificate.getSubjectX500Principal().getName());
 
       // get signature
       byte[] signature = si.getSignature();

@@ -132,7 +132,7 @@ public class NodeEditorFactory
       {
         String nodeName = node.getClass().getName();
         Class editorClass = Class.forName(nodeName + "Editor");
-        editor = (NodeEditor)editorClass.newInstance();
+        editor = (NodeEditor)editorClass.getConstructor().newInstance();
       }
       catch (Exception ex)
       {

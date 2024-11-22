@@ -776,7 +776,7 @@ public class ComponentView implements ImageObserver, Cloneable
   {
     try
     {
-      ComponentView clone = getClass().newInstance();
+      ComponentView clone = getClass().getConstructor().newInstance();
       clone.copyFrom(this);
       return clone;
     }

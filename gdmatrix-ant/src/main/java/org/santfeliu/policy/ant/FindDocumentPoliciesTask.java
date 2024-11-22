@@ -50,6 +50,7 @@ import org.matrix.policy.PolicyManagerService;
 import org.matrix.policy.PolicyState;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.ant.ws.WSTask;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.util.DocumentUtils;
 
 /**
@@ -159,10 +160,10 @@ public class FindDocumentPoliciesTask extends WSTask
               ContentInfo.METADATA);
 
           //Set classTitle property to document
-          if (document.getClassId() != null && document.getClassId().size() > 0)
+          if (document.getClassId() != null && !document.getClassId().isEmpty())
           {
             String classId = document.getClassId().get(0);
-            DocumentUtils.setProperty(document, "classTitle",
+            DictionaryUtils.setProperty(document, "classTitle",
               getClassTitle(classId));
           }
           pv.setDocument(document);

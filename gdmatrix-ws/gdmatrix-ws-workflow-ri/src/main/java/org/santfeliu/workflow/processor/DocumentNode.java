@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.processor;
@@ -58,7 +58,7 @@ import org.santfeliu.workflow.WorkflowInstance;
  *
  * @author realor
  */
-public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode 
+public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
   implements NodeProcessor
 {
   @Override
@@ -84,7 +84,7 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
   {
     DataHandler dataHandler = null;
     File tmpFile = null;
-    
+
     if (filePath != null && filePath.length() > 0) // upload a file
     {
       String path = Template.create(filePath).merge(instance);
@@ -146,7 +146,7 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
 
   private void downloadFile(WorkflowInstance instance)
     throws Exception
-  {    
+  {
     if (filePath != null && filePath.length() > 0)
     {
       String path = Template.create(filePath).merge(instance);
@@ -219,7 +219,7 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
     {
       Object o = instance.get(documentVar);
       if (o == null) throw new Exception("documentVar is null");
-      
+
       String docid = String.valueOf(o);
       filter.getDocId().add(docid);
     }
@@ -278,19 +278,19 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
       {
         if (State.DRAFT.equals(document.getState()))
         {
-          client.removeDocument(docid, 0); 
-        }      
+          client.removeDocument(docid, 0);
+        }
       }
       else if (DELETE.equals(operation))
       {
-        client.removeDocument(docid, 0); 
+        client.removeDocument(docid, 0);
       }
       else if (COMMIT_AND_LOCK.equals(operation))
       {
         document.setState(State.COMPLETE);
         document.setVersion(0);
         document.setIncremental(true);
-        //document.setDocTypeId("DNTest");        
+        //document.setDocTypeId("DNTest");
         client.storeDocument(document);
         client.lockDocument(docid, 0);
       }
@@ -310,9 +310,9 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
     if (serviceURL != null && serviceURL.trim().length() > 0)
     {
       wsdlLocation = Template.create(serviceURL).merge(instance) + "?wsdl";
-      return new DocumentManagerClient(wsdlLocation, userId, password);
+      return new DocumentManagerClient(new URL(wsdlLocation), userId, password);
     }
-    else // default 
+    else // default
       return new DocumentManagerClient(userId, password);
   }
 }

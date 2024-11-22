@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.ant.ws;
@@ -112,19 +112,19 @@ public class WSImportTask extends WSTask
   protected Connection getConnection()
   {
     return (Connection)getVariable(dbConnVar);
-  }  
-  
+  }
+
   protected Object getPort() throws ClassNotFoundException
   {
     Class serviceClass = Class.forName(getServiceClassName());
-    
-    String portClassName = 
+
+    String portClassName =
       (getServiceClassName() + ";").replace("Service;", "Port");
     Class portClass = Class.forName(portClassName);
-    
+
     WSEndpoint endpoint = getEndpoint(serviceClass);
-    return endpoint.getPort(portClass, getUsername(), getPassword());    
-  }  
+    return endpoint.getPort(portClass, getUsername(), getPassword());
+  }
 
   @Override
   public void execute()
@@ -135,19 +135,19 @@ public class WSImportTask extends WSTask
       log("Processing " + serviceClassName + "." + methodName + "(" + parameterVars + ")");
       logLn();
       long startMs = System.currentTimeMillis();
-      
+
       WSImporter instance = null;
       if (importerClassName != null)
       {
         Class importerClass = Class.forName(importerClassName);
-        instance = (WSImporter)importerClass.newInstance();
+        instance = (WSImporter)importerClass.getConstructor().newInstance();
         Object object = instance.execute(getConnection(), getPort());
         if (resultVar != null)
           setVariable(resultVar, object);
       }
       else
       {
-        ArrayList parameters = new ArrayList();        
+        ArrayList parameters = new ArrayList();
         if (parameterVars != null)
         {
           String[] paramArray = parameterVars.split(",");
@@ -155,15 +155,15 @@ public class WSImportTask extends WSTask
           {
             parameters.add(getVariable(param));
           }
-          instance = new DefaultWSImporter(methodName, parameters.toArray());          
+          instance = new DefaultWSImporter(methodName, parameters.toArray());
         }
         else
-          instance = new DefaultWSImporter(methodName);          
+          instance = new DefaultWSImporter(methodName);
 
-        
+
         Object object = instance.execute(getConnection(), getPort());
         if (resultVar != null)
-          setVariable(resultVar, object);        
+          setVariable(resultVar, object);
       }
 
       long endMs = System.currentTimeMillis();
@@ -179,8 +179,8 @@ public class WSImportTask extends WSTask
   private void logLn()
   {
     log("");
-  }  
-  
+  }
+
   private void validateInput()
   {
     if (connVar == null)
@@ -188,18 +188,18 @@ public class WSImportTask extends WSTask
     if (dbConnVar == null)
       throw new BuildException("Attribute 'dbConnVar' is required");
     if (serviceClassName == null)
-      throw new BuildException("Attribute 'serviceClassName' is required");    
+      throw new BuildException("Attribute 'serviceClassName' is required");
     if (importerClassName == null && methodName == null)
       throw new BuildException("Attribute 'importerClassName' or 'methodName' is required");
     if (methodName != null && parameterVars == null)
       throw new BuildException("Attribute 'parameterVars' is required in combination with 'methodName'");
-  }  
+  }
 
   private WSEndpoint getEndpoint(String endpointName)
   {
     WSDirectory wsDir = (WSDirectory)getVariable(connVar);
     if (wsDir == null) throw new BuildException("connVar undefined");
     return wsDir.getEndpoint(endpointName);
-  }  
-  
+  }
+
 }

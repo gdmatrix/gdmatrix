@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.jpa;
@@ -60,7 +60,7 @@ public abstract class QueryBuilder
       if (queryBuilderClassName != null)
       {
         Class queryBuilderClass = Class.forName(queryBuilderClassName);
-        queryBuilder = (QueryBuilder)queryBuilderClass.newInstance();
+        queryBuilder = (QueryBuilder)queryBuilderClass.getConstructor().newInstance();
       }
     }
     catch (Exception ex)
@@ -130,8 +130,8 @@ public abstract class QueryBuilder
       buffer.append(")");
     }
   }
-  
-  protected void appendOperator(StringBuilder buffer, 
+
+  protected void appendOperator(StringBuilder buffer,
     String field, String paramPrefix, String paramName, List values)
   {
     int size = values.size();
@@ -149,11 +149,11 @@ public abstract class QueryBuilder
       to = to + maxInValues;
     }
     buffer.append(")");
-  } 
-  
+  }
+
   private void appendValues(StringBuilder buffer,
     String field, String paramPrefix, String paramName, List values,
-    int from, int to)  
+    int from, int to)
   {
     if (buffer != null)
     {
@@ -162,12 +162,12 @@ public abstract class QueryBuilder
       {
         boolean caseSensitive = true;
         if (i != from) buffer.append(" or ");
-        
+
         String op = " like ";
         String value = values.get(i).toString();
         if (value != null)
         {
-          if (value.startsWith("$"))          
+          if (value.startsWith("$"))
           {
             value = value.substring(1);
             int index = value.indexOf("$");
@@ -191,12 +191,12 @@ public abstract class QueryBuilder
         buffer.append(caseSensitive ? "" : "lower(").append(field).
           append(caseSensitive ? "" : ")").append(op);
         String paramIndex = String.valueOf(i);
-        String paramValue = 
+        String paramValue =
           (caseSensitive || value == null) ? value : value.toLowerCase();
         appendParameter(buffer, paramPrefix, paramName, paramIndex, paramValue);
       }
       buffer.append(")");
-    }    
+    }
   }
 
   protected void appendLikeOperator(StringBuilder buffer,
@@ -216,20 +216,20 @@ public abstract class QueryBuilder
       buffer.append(")");
     }
   }
-  
+
   protected String addPercent(String text)
   {
     if (text == null) return null;
     if ("".equals(text)) return "";
     return FilterUtils.addWildcards(text.toLowerCase());
   }
-  
-  protected void appendParameter(StringBuilder buffer, String paramPrefix, 
+
+  protected void appendParameter(StringBuilder buffer, String paramPrefix,
     String paramName, String paramIndex, String value)
   {
     if (paramName != null)
       paramName = TextUtils.normalizeName(paramName);
     buffer.append(paramPrefix).append(paramName).append(paramIndex);
-    parameters.put(paramName + paramIndex, value);    
+    parameters.put(paramName + paramIndex, value);
   }
 }

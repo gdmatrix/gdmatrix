@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -97,13 +97,13 @@ public class FormPanel extends DocumentPanel
   private JButton repairOutputOrderButton = new JButton();
   private JButton repairTabIndexesButton = new JButton();
   private JButton repairLabelsButton = new JButton();
-  private JButton repairInfoTextsButton = new JButton();    
+  private JButton repairInfoTextsButton = new JButton();
   private JButton adaptStyleClassesButton = new JButton();
   private JButton convertOutputTextsButton = new JButton();
   private JCheckBox showIdsCheckBox = new JCheckBox();
   private JCheckBox showTabIndexesCheckBox = new JCheckBox();
   private JCheckBox showCoordinatesCheckBox = new JCheckBox();
-  private JCheckBox showOutputOrderCheckBox = new JCheckBox();   
+  private JCheckBox showOutputOrderCheckBox = new JCheckBox();
   private UndoManager undoManager = new UndoManager()
   {
     @Override
@@ -114,7 +114,7 @@ public class FormPanel extends DocumentPanel
       return result;
     }
   };
-  
+
   public FormPanel()
   {
     try
@@ -131,7 +131,7 @@ public class FormPanel extends DocumentPanel
   {
     return designer;
   }
-  
+
   @Override
   public void activate()
   {
@@ -148,10 +148,10 @@ public class FormPanel extends DocumentPanel
     getMainPanel().getPalette().setSelectedCategory("visualform");
     getMainPanel().setRightPanelVisible(true);
   }
-  
+
   @Override
   public void open(InputStream is) throws Exception
-  {    
+  {
     HtmlFormImporter importer = new HtmlFormImporter();
     importer.importPanel(is, designer);
     undoManager.discardAllEdits();
@@ -192,7 +192,7 @@ public class FormPanel extends DocumentPanel
       if (viewClassName != null)
       {
         Class viewClass = Class.forName(viewClassName);
-        ComponentView view = (ComponentView)viewClass.newInstance();
+        ComponentView view = (ComponentView)viewClass.getConstructor().newInstance();
         designer.clearSelection();
         designer.selectView(view);
         view.setBounds(point.x, point.y, view.getWidth(), view.getHeight());
@@ -214,7 +214,7 @@ public class FormPanel extends DocumentPanel
   {
     return undoManager;
   }
-  
+
   /* internal methods */
 
   private void initComponents() throws Exception
@@ -257,7 +257,7 @@ public class FormPanel extends DocumentPanel
           {
             sortByPositionButton_actionPerformed(e);
           }
-        });    
+        });
     bordersButton.setText("Borders");
     bordersButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/borders.gif")));
@@ -316,7 +316,7 @@ public class FormPanel extends DocumentPanel
         accessibilityButton_actionPerformed(e);
       }
     });
-    
+
     repairOutputOrderButton.setText("Repair output order");
     repairOutputOrderButton.setVisible(false);
     repairOutputOrderButton.addActionListener(new ActionListener()
@@ -339,7 +339,7 @@ public class FormPanel extends DocumentPanel
             repairTabIndexesButton_actionPerformed(e);
           }
         });
-    
+
     repairLabelsButton.setText("Repair labels");
     repairLabelsButton.setVisible(false);
     repairLabelsButton.addActionListener(new ActionListener()
@@ -383,7 +383,7 @@ public class FormPanel extends DocumentPanel
             convertOutputTextsButton_actionPerformed(e);
           }
         });
-    
+
     showIdsCheckBox.setText("Show ids");
     showIdsCheckBox.setVisible(false);
     showIdsCheckBox.setSelected(true);
@@ -407,7 +407,7 @@ public class FormPanel extends DocumentPanel
             showTabIndexesCheckBox_actionPerformed(e);
           }
         });
-    
+
     showCoordinatesCheckBox.setText("Show coords");
     showCoordinatesCheckBox.setVisible(false);
     showCoordinatesCheckBox.addActionListener(new ActionListener()
@@ -429,7 +429,7 @@ public class FormPanel extends DocumentPanel
             showOutputOrderCheckBox_actionPerformed(e);
           }
         });
-    
+
     scrollPane.getViewport().add(designer, null);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
     this.add(scrollPane, BorderLayout.CENTER);
@@ -437,10 +437,10 @@ public class FormPanel extends DocumentPanel
     toolBar.add(bottomButton, null);
     toolBar.add(sortByPositionButton, null);
     toolBar.add(bordersButton, null);
-    toolBar.add(backgroundButton, null);    
+    toolBar.add(backgroundButton, null);
     toolBar.add(scriptButton, null);
     toolBar.add(gridButton, null);
-    toolBar.add(accessibilityButton, null);    
+    toolBar.add(accessibilityButton, null);
     toolBar.add(showIdsCheckBox, null);
     toolBar.add(showTabIndexesCheckBox, null);
     toolBar.add(showCoordinatesCheckBox, null);
@@ -451,7 +451,7 @@ public class FormPanel extends DocumentPanel
     toolBar.add(convertOutputTextsButton, null);
     toolBar.add(repairTabIndexesButton, null);
     toolBar.add(repairOutputOrderButton, null);
-    
+
     Color borderColor = UIManager.getColor("Panel.background").darker();
     toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, borderColor));
     this.add(toolBar, BorderLayout.NORTH);
@@ -530,9 +530,9 @@ public class FormPanel extends DocumentPanel
         }
       }
     });
-    
+
     designer.addUndoableEditListener(undoManager);
-    
+
     DropTarget dropTarget = new DropTarget(designer, new DropTargetAdapter()
     {
       @Override
@@ -655,7 +655,7 @@ public class FormPanel extends DocumentPanel
   {
     designer.setSnapToGrid(gridButton.isSelected());
   }
-      
+
   private void accessibilityButton_actionPerformed(ActionEvent e)
   {
     designer.setShowAccessibility(accessibilityButton.isSelected());
@@ -666,7 +666,7 @@ public class FormPanel extends DocumentPanel
       repairLabelsButton.setVisible(true);
       repairInfoTextsButton.setVisible(true);
       adaptStyleClassesButton.setVisible(true);
-      convertOutputTextsButton.setVisible(true);      
+      convertOutputTextsButton.setVisible(true);
       showIdsCheckBox.setVisible(true);
       showTabIndexesCheckBox.setVisible(true);
       showCoordinatesCheckBox.setVisible(true);
@@ -677,7 +677,7 @@ public class FormPanel extends DocumentPanel
       repairOutputOrderButton.setVisible(false);
       repairTabIndexesButton.setVisible(false);
       repairLabelsButton.setVisible(false);
-      repairInfoTextsButton.setVisible(false); 
+      repairInfoTextsButton.setVisible(false);
       adaptStyleClassesButton.setVisible(false);
       convertOutputTextsButton.setVisible(false);
       showIdsCheckBox.setVisible(false);
@@ -695,9 +695,9 @@ public class FormPanel extends DocumentPanel
       setModified(true);
     }
   }
-  
+
   private void repairTabIndexesButton_actionPerformed(ActionEvent e)
-  {        
+  {
     if (AccessibilityUtils.repairTabIndexes(designer.getComponentViews()))
     {
       designer.formChanged();
@@ -740,18 +740,18 @@ public class FormPanel extends DocumentPanel
       setModified(true);
     }
   }
-  
+
   private void showIdsCheckBox_actionPerformed(ActionEvent e)
   {
     designer.setShowIds(showIdsCheckBox.isSelected());
     designer.repaint();
-  }              
+  }
 
   private void showTabIndexesCheckBox_actionPerformed(ActionEvent e)
   {
     designer.setShowTabIndexes(showTabIndexesCheckBox.isSelected());
     designer.repaint();
-  }              
+  }
 
   private void showCoordinatesCheckBox_actionPerformed(ActionEvent e)
   {
@@ -764,7 +764,7 @@ public class FormPanel extends DocumentPanel
     designer.setShowOutputOrder(showOutputOrderCheckBox.isSelected());
     designer.repaint();
   }
-  
+
   private void scriptButton_actionPerformed(ActionEvent e)
   {
     String type = "serverscript";

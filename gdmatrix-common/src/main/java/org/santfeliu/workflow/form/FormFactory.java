@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.form;
@@ -53,10 +53,10 @@ public class FormFactory
     {
       if (type.length() > 0)
       {
-        String formClassName = "org.santfeliu.workflow.form." + 
-          Character.toUpperCase(type.charAt(0)) + 
+        String formClassName = "org.santfeliu.workflow.form." +
+          Character.toUpperCase(type.charAt(0)) +
           type.substring(1) + "Form";
-        form = (Form)Class.forName(formClassName).newInstance();
+        form = (Form)Class.forName(formClassName).getConstructor().newInstance();
       }
     }
     catch (Exception ex)
@@ -65,7 +65,7 @@ public class FormFactory
     }
     return form == null ? new Form() : form;
   }
-  
+
   public static Form parse(String value)
   {
     Form form;
@@ -98,9 +98,9 @@ public class FormFactory
     if (tokenizer.countTokens() >= 4) // buttons definition
     {
       String buttons = tokenizer.nextToken(); // [FB] or [F] or [B] or []
-      forwardEnabled = 
+      forwardEnabled =
         (buttons.contains(WorkflowConstants.FORWARD_BUTTON_ENABLED));
-      backwardEnabled = 
+      backwardEnabled =
         (buttons.contains(WorkflowConstants.BACKWARD_BUTTON_ENABLED));
     }
     if (tokenizer.countTokens() >= 5) // error message
@@ -118,19 +118,19 @@ public class FormFactory
     form.setParameters(parameters);
     return form;
   }
-  
+
   public static String format(Form form)
   {
-    String formValue = 
-      form.getState() + " " + 
-      form.getType() + " " + 
-      form.getGroup() + " \"" + 
+    String formValue =
+      form.getState() + " " +
+      form.getType() + " " +
+      form.getGroup() + " \"" +
       form.getDescription() + "\" ";
 
     formValue += "[";
     if (form.isForwardEnabled())
       formValue += WorkflowConstants.FORWARD_BUTTON_ENABLED;
-    if (form.isBackwardEnabled()) 
+    if (form.isBackwardEnabled())
       formValue += WorkflowConstants.BACKWARD_BUTTON_ENABLED;
     formValue += "]";
 
@@ -141,8 +141,8 @@ public class FormFactory
 
     if (form.getParameters().size() > 0)
     {
-      formValue += 
-        WorkflowConstants.FORM_PARAMETERS_SEPARATOR + 
+      formValue +=
+        WorkflowConstants.FORM_PARAMETERS_SEPARATOR +
         form.getParameters().saveToString();
     }
     return formValue;

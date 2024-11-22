@@ -187,7 +187,7 @@ public class SecurityManager implements SecurityManagerPort
         String digestEncodeClass = props.getString(DIGEST_ENCODER,
           "org.santfeliu.security.encoder.MatrixDigestEncoder");
         digestEncoder =
-          (DigestEncoder)Class.forName(digestEncodeClass).newInstance();
+          (DigestEncoder)Class.forName(digestEncodeClass).getConstructor().newInstance();
         digestParameters = props.getString(DIGEST_PARAMETERS);
         masterPassword = props.getString(MASTER_PASSWORD, "changeme");
         validateCertificate = props.getBoolean(VALIDATE_CERTIFICATE, false);

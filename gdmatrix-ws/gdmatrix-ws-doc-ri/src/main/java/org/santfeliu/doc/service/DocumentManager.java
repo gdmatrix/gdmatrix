@@ -978,7 +978,7 @@ public class DocumentManager implements DocumentManagerPort
     else //default documentStore
       documentStoreClass = JPADocumentStore.class;
 
-    documentStore = (DocumentStore)documentStoreClass.newInstance();
+    documentStore = (DocumentStore)documentStoreClass.getConstructor().newInstance();
 
     documentStore.init(MatrixConfig.getClassProperties(documentStoreClass));
     LOGGER.log(Level.INFO, "{0} initialized", documentStore.getClass());
@@ -992,7 +992,7 @@ public class DocumentManager implements DocumentManagerPort
     if (contentStoreClassName != null)
     {
       contentStore =
-        (ContentStore)Class.forName(contentStoreClassName).newInstance();
+        (ContentStore)Class.forName(contentStoreClassName).getConstructor().newInstance();
     }
     else if (documentStore instanceof ContentStore)
     {

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.misc.mapviewer.sld;
@@ -71,33 +71,33 @@ public class SLDNode implements Serializable
     this.prefix = prefix;
     this.name = name;
   }
-  
+
   public String getPrefix()
   {
     return prefix;
   }
-  
+
   public String getName()
   {
     return name;
   }
-  
+
   public SLDNode getParent()
   {
     return parent;
   }
-  
+
   public Map<String, String> getAttributes()
   {
     if (attributes == null) attributes = new HashMap<String, String>();
     return attributes;
   }
-  
+
   public int getChildCount()
   {
     return children == null ? 0 : children.size();
   }
-  
+
   public SLDNode getChild(int index)
   {
     if (children == null) return null;
@@ -126,7 +126,7 @@ public class SLDNode implements Serializable
       node.parent = null;
     }
   }
-  
+
   public void removeChild(SLDNode node)
   {
     if (children != null)
@@ -153,7 +153,7 @@ public class SLDNode implements Serializable
   {
     this.textValue = textValue;
   }
-  
+
   @Override
   public String toString()
   {
@@ -324,7 +324,7 @@ public class SLDNode implements Serializable
     {
       try
       {
-        node = cls.newInstance();
+        node = cls.getConstructor().newInstance();
         node.setPrefix(prefix);
         node.setName(name);
         addChild(node);
@@ -352,14 +352,14 @@ public class SLDNode implements Serializable
     {
       SLDNode child = children.get(index);
       if (child.name.equals(name))
-      {        
+      {
         found = (prefix == null) || prefix.equals(child.getPrefix());
       }
       if (!found) index++;
     }
     return found ? index : -1;
   }
-  
+
   protected List<SLDNode> findNodes(String name)
   {
     List<SLDNode> nodes = new ArrayList<SLDNode>();
@@ -367,7 +367,7 @@ public class SLDNode implements Serializable
     for (SLDNode child : children)
     {
       if (child.name.equals(name)) nodes.add(child);
-    } 
+    }
     return nodes;
   }
 
@@ -378,7 +378,7 @@ public class SLDNode implements Serializable
     for (SLDNode child : children)
     {
       if (cls.isAssignableFrom(child.getClass())) nodes.add((T)child);
-    } 
+    }
     return nodes;
   }
 

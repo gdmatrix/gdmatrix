@@ -83,7 +83,7 @@ public class JavaScriptRunner extends Thread
     Context cx = ContextFactory.getGlobal().enterContext();
     OutputHandler handler = new OutputHandler();
     handler.setFilter(record ->
-      JavaScriptRunner.this.getId() == record.getThreadID());
+      JavaScriptRunner.this.getId() == record.getLongThreadID());
     handler.setLevel(Level.ALL);
     LOGGER.addHandler(handler);
     LOGGER.setLevel(Level.ALL);

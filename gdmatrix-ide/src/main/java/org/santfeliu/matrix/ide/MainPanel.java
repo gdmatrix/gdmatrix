@@ -310,7 +310,7 @@ public class MainPanel extends JPanel
             getLocalizedString(actionId + ".tooltip", actionName);
 
           Class actionClass = Class.forName(className);
-          BaseAction action = (BaseAction)actionClass.newInstance();
+          BaseAction action = (BaseAction)actionClass.getConstructor().newInstance();
           action.setIDE(ide);
           action.putValue(Action.NAME, actionName);
           action.putValue(Action.SHORT_DESCRIPTION, actionTooltip);
@@ -509,7 +509,7 @@ public class MainPanel extends JPanel
   {
     String className = documentType.getDocumentPanelClassName();
     Class cls = Class.forName(className);
-    DocumentPanel panel = (DocumentPanel)cls.newInstance();
+    DocumentPanel panel = (DocumentPanel)cls.getConstructor().newInstance();
     panel.setDocumentType(documentType);
     panel.setMainPanel(this);
     return panel;

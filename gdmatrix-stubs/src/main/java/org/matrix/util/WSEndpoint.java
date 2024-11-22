@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.matrix.util;
@@ -53,7 +53,7 @@ public class WSEndpoint
   private static final int TO_GLOBAL = 1;
 
   private static final String ID_SUFFIX = "Id";
-  
+
   private static final int CONNECT_TIMEOUT = 2 * 60000; // 2 minutes
   private static final int READ_TIMEOUT = 3 * 60000; // 3 minutes
 
@@ -95,7 +95,7 @@ public class WSEndpoint
   {
     return directory;
   }
-  
+
   public String getName()
   {
     return name;
@@ -172,7 +172,7 @@ public class WSEndpoint
   {
     return externalEntities.values();
   }
-  
+
   public Entity getEntity(String name)
   {
     Entity entity = internalEntities.get(name);
@@ -261,7 +261,7 @@ public class WSEndpoint
     // endpoint url
     if (url != null)
     {
-      requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, 
+      requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
         url.toString());
     }
     // authentication
@@ -395,9 +395,9 @@ public class WSEndpoint
       else if (source instanceof List) // source is a List
       {
         List sourceList = (List)source;
-        if (sourceList.size() > 0) // is not empty?
+        if (!sourceList.isEmpty()) // is not empty?
         {
-          dest = entityClass.newInstance();
+          dest = entityClass.getConstructor().newInstance();
           for (Object elem : sourceList)
           {
             if (elem == null)
@@ -415,7 +415,7 @@ public class WSEndpoint
       else // POJO
       {
         // conversion needed
-        dest = entityClass.newInstance();
+        dest = entityClass.getConstructor().newInstance();
         Method[] methods = entityClass.getMethods();
         for (Method method : methods)
         {
@@ -439,7 +439,7 @@ public class WSEndpoint
   {
     String methodName = method.getName();
     Class[] methodParams = method.getParameterTypes();
-    if (methodParams.length == 0 && 
+    if (methodParams.length == 0 &&
       (methodName.startsWith("get") || methodName.startsWith("is")))
     {
       Method getter = method;
@@ -493,7 +493,7 @@ public class WSEndpoint
         }
         else if (value instanceof List) // list property
         {
-          List convList = 
+          List convList =
             (List)convert((Class)value.getClass(), value, mode);
           List destList = (List)getter.invoke(dest);
           destList.addAll(convList);
@@ -546,7 +546,7 @@ public class WSEndpoint
       entity = isExternalEntityId(propertyName) ?
         getExternalEntity(n) : getEntity(n);
     }
-    while (entity == null && str.length() > 0);    
+    while (entity == null && str.length() > 0);
     return entity;
   }
 

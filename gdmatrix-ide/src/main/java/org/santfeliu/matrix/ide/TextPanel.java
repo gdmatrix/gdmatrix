@@ -242,10 +242,10 @@ public abstract class TextPanel extends DocumentPanel
         try
         {
           JEditorPane textPane = textEditor.getTextPane();
-          Rectangle rect = textPane.modelToView(findIndexStart);
-          rect.union(textPane.modelToView(findIndexEnd));
-          rect.grow(100, 100);
-          textPane.scrollRectToVisible(rect);
+          Rectangle2D rect = textPane.modelToView2D(findIndexStart);
+          rect.add(textPane.modelToView2D(findIndexEnd));
+          rect.add(100, 100);
+          textPane.scrollRectToVisible(rect.getBounds());
         }
         catch (BadLocationException ex)
         {

@@ -545,7 +545,7 @@ public class WorkflowPanel extends DocumentPanel
       {
         Class nodeClass = Class.forName(nodeClassName);
         WorkflowModel model = (WorkflowModel)graph.getModel();
-        WorkflowNode node = (WorkflowNode)nodeClass.newInstance();
+        WorkflowNode node = (WorkflowNode)nodeClass.getConstructor().newInstance();
         Map attributes = new HashMap();
         WorkflowVertex vertex = new WorkflowVertex(node);
         vertex.add(new DefaultPort());

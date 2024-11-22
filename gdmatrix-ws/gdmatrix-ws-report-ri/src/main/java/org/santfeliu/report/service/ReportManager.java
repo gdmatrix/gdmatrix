@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.report.service;
@@ -55,7 +55,6 @@ import org.matrix.report.ReportFilter;
 import org.matrix.report.ReportManagerPort;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.doc.client.DocumentManagerClient;
-import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.report.engine.ReportEngine;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
@@ -64,7 +63,6 @@ import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.util.log.CSVLogger;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.handler.MessageContext;
-import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.DocumentConstants;
 import org.matrix.security.AccessControl;
 import org.santfeliu.dic.Type;
@@ -87,7 +85,7 @@ import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
 public class ReportManager implements ReportManagerPort
 {
   private static final Logger LOGGER = Logger.getLogger("Report");
-  
+
   @Resource
   WebServiceContext wsContext;
 
@@ -105,7 +103,7 @@ public class ReportManager implements ReportManagerPort
     try
     {
       LOGGER.log(Level.INFO, "ReportManager init");
-      
+
       String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
       if (logConfig != null)
       {
@@ -130,7 +128,7 @@ public class ReportManager implements ReportManagerPort
       throw new RuntimeException(ex);
     }
   }
-  
+
   @Disposer
   public void dispose(String endpointName)
   {
@@ -150,14 +148,14 @@ public class ReportManager implements ReportManagerPort
       Report report = internalLoadReport(reportId, credentials);
       if (report == null)
         throw new WebServiceException("report:REPORT_NOT_FOUND");
-      
+
       String technology = report.getTechnology();
       ReportEngine engine = getReportEngine(technology);
-      
+
       Content content = report.getContent();
       String contentId = content.getContentId();
       DataSource dataSource = content.getData().getDataSource();
-      List<ParameterDefinition> parameterDefinition = 
+      List<ParameterDefinition> parameterDefinition =
         engine.readReportParameters(contentId, dataSource);
 
       report.getParameterDefinition().addAll(parameterDefinition);
@@ -183,33 +181,33 @@ public class ReportManager implements ReportManagerPort
     try
     {
       DataHandler result = null;
-      
+
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
       String userId = credentials.getUserId();
 
       String parametersText = toText(parameters);
       logOperation("executeReport", "IN", reportId +
         "(" + parametersText + ")", userId);
-      
+
       String adminUserId = MatrixConfig.getProperty("adminCredentials.userId");
       String adminPwd = MatrixConfig.getProperty("adminCredentials.password");
       Credentials adminCredentials = new Credentials(adminUserId, adminPwd);
       Report report = internalLoadReport(reportId, adminCredentials);
       if (report == null)
         throw new WebServiceException("report:REPORT_NOT_FOUND");
-      
+
       String technology = report.getTechnology();
       ReportEngine engine = getReportEngine(technology);
       if (connectionName == null)
         connectionName = report.getDefaultConnectionName();
-      
+
       Content content = report.getContent();
       String contentId = content.getContentId();
       DataSource dataSource = content.getData().getDataSource();
-      
+
       if (!canUserExecuteReport(credentials, report))
         throw new WebServiceException("report:NOT_AUTHORIZED");
-        
+
       ReportExecutor executor = new ReportExecutor(engine, reportId, contentId,
         dataSource, connectionName, parameters, exportOptions, credentials);
 
@@ -226,7 +224,7 @@ public class ReportManager implements ReportManagerPort
         while (executor.isAlive() &&
           executor.getElapsedTime() < executionTimeout);
       }
-      
+
       switch (executor.getStatus())
       {
         case ReportExecutor.RUNNING:
@@ -270,7 +268,7 @@ public class ReportManager implements ReportManagerPort
   {
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
-  
+
   /**** private methods ****/
 
   private Report internalLoadReport(String reportId, Credentials credentials)
@@ -278,7 +276,7 @@ public class ReportManager implements ReportManagerPort
   {
     String userId = credentials.getUserId();
     String password = credentials.getPassword();
-    DocumentManagerClient client = 
+    DocumentManagerClient client =
       new DocumentManagerClient(userId, password);
 
     DocumentFilter filter = new DocumentFilter();
@@ -312,7 +310,7 @@ public class ReportManager implements ReportManagerPort
         try
         {
           Class engineClass = Class.forName(engineClassName);
-          engine = (ReportEngine)engineClass.newInstance();
+          engine = (ReportEngine)engineClass.getConstructor().newInstance();
           engines.put(technology, engine);
         }
         catch (Exception ex)
@@ -411,17 +409,17 @@ public class ReportManager implements ReportManagerPort
     report.setChangeDateTime(document.getChangeDateTime());
     report.setChangeUserId(document.getChangeUserId());
     report.setCreationDate(document.getCreationDate());
-    report.getAccessControl().addAll(document.getAccessControl());    
+    report.getAccessControl().addAll(document.getAccessControl());
 
     // reportId
-    Property reportIdProp = DocumentUtils.getProperty(document, "reportId");
+    Property reportIdProp = DictionaryUtils.getProperty(document, "reportId");
     if (reportIdProp != null)
     {
       report.setReportId(reportIdProp.getValue().get(0));
     }
     else
     {
-      reportIdProp = DocumentUtils.getProperty(document, "report");
+      reportIdProp = DictionaryUtils.getProperty(document, "report");
       if (reportIdProp != null)
       {
         report.setReportId(reportIdProp.getValue().get(0));
@@ -429,7 +427,7 @@ public class ReportManager implements ReportManagerPort
     }
     // defaultConnectionName
     Property defaultConnectionNameProp =
-      DocumentUtils.getProperty(document, "defaultConnectionName");
+      DictionaryUtils.getProperty(document, "defaultConnectionName");
     if (defaultConnectionNameProp != null)
     {
       report.setDefaultConnectionName(
@@ -437,23 +435,23 @@ public class ReportManager implements ReportManagerPort
     }
     // technology
     Property technologyProp =
-      DocumentUtils.getProperty(document, "technology");
+      DictionaryUtils.getProperty(document, "technology");
     if (technologyProp != null)
     {
       report.setTechnology(technologyProp.getValue().get(0));
     }
     else report.setTechnology(DEFAULT_TECHNOLOGY);
   }
-  
+
   private boolean canUserExecuteReport(Credentials credentials, Report report)
-  {   
+  {
     User user = UserCache.getUser(credentials);
     Set<String> roles = user.getRoles();
     List<AccessControl> acl = report.getAccessControl();
     Type type = TypeCache.getInstance().getType(report.getDocTypeId());
-    
+
     return roles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type) 
+      || DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type)
       || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, type);
   }
 }
