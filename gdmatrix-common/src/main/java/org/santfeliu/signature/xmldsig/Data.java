@@ -30,8 +30,6 @@
  */
 package org.santfeliu.signature.xmldsig;
 
-import com.sun.org.apache.xml.internal.security.utils.UnsyncBufferedOutputStream;
-import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.util.Base64;
@@ -193,10 +191,11 @@ public class Data // ElementProxy
 
   public byte[] getXML()
   {
+    // unused
     Element contentElement = getContentElement();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     // TODO: XMLUtils was changed. Really works ????
-    XMLUtils.outputDOM(contentElement.getFirstChild(), os);
+    //XMLUtils.outputDOM(contentElement.getFirstChild(), os);
     return os.toByteArray();
   }
 

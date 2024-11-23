@@ -30,7 +30,6 @@
  */
 package org.santfeliu.signature.xmldsig;
 
-import com.sun.org.apache.xml.internal.security.utils.UnsyncBufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
