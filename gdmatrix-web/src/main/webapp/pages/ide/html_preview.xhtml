@@ -7,7 +7,34 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
+
+  <div class="flex flex-column h-full overflow-x-hidden p-2">
+
+    <h:panelGroup id="html_form" style="height:auto;max-height:60%;"
+                  styleClass="ui-fluid formgrid grid flex-grow-0 flex-shrink-0 overflow-auto" 
+                  layout="block">
+      <f:event type="postAddToView"
+               listener="#{htmlFormBean.loadDynamicComponents}" />
+    </h:panelGroup>
+
+    <p:outputPanel id="html_toolbar" class="flex-grow-0 pt-2 pb-2 text-left">
+      <p:commandButton value="Update" 
+                       icon="pi pi-refresh"
+                       process="@form"
+                       update="html_form html_data" 
+                       action="#{htmlFormBean.update}" />    
+      <p:commandButton value="Submit" 
+                       icon="pi pi-play"
+                       process="@form"
+                       update="html_form html_data" class="ml-1" />
+    </p:outputPanel>
+    
+    <p:outputPanel id="html_data" class="flex-grow-1 overflow-auto code" 
+         style="border:1px solid var(--surface-200);border-radius:var(--border-radius);background-color: var(--surface-ground)">
+      <pre>#{htmlFormBean.dataAsJSON}</pre>
+    </p:outputPanel>
+  </div>  
   
-  <div>Preview</div>
+  <gdm:saveBean value="htmlFormBean" />
   
 </ui:composition>
