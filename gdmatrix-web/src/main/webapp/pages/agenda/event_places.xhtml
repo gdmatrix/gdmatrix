@@ -42,6 +42,9 @@
         <p:outputPanel rendered="#{row.addressView != null}">
           #{row.addressView.description}
         </p:outputPanel>
+        <p:outputPanel rendered="#{row.comments != null}">
+          #{row.comments}
+        </p:outputPanel>
       </p:column>
 
       <p:column styleClass="text-right white-space-nowrap" exportable="false">
