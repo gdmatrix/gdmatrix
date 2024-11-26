@@ -102,6 +102,7 @@
                 <p:link href="#{item.properties.url}"
                         rendered="#{item.action == 'url'}"
                         styleClass="entry"
+                        onclick="hideDialogPanel('main_menu_panel')"
                         target="#{item.properties.target == null ? '_self' : item.properties.target}">
                   <ui:fragment rendered="#{item.directProperties.icon != null}">
                     <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
