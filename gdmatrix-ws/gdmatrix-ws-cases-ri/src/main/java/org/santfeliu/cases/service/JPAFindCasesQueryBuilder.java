@@ -95,7 +95,12 @@ public class JPAFindCasesQueryBuilder extends FindCasesQueryBuilder
     else
     {
       if (dynamicOrderBy != null)
-        buffer.append("SELECT c FROM Case c LEFT JOIN c.caseType t, CaseProperty cp");
+      {
+        buffer.append("SELECT c FROM Case c " + 
+          "LEFT OUTER JOIN CaseProperty cp ON (cp.id = c.caseId AND " + 
+          "cp.name = :name AND cp.index = 0) LEFT JOIN c.caseType t");        
+        parameters.put("name", dynamicOrderBy);
+      }
       else
         buffer.append("SELECT c FROM Case c LEFT JOIN c.caseType t");
     }
@@ -311,8 +316,6 @@ public class JPAFindCasesQueryBuilder extends FindCasesQueryBuilder
   protected void appendSearchExpression(StringBuilder buffer)
   {
     String expression = filter.getSearchExpression();
-//    containsOrderBy =
-//      (expression == null || expression.toUpperCase().contains("ORDER BY"));
     if (expression != null && expression.length() > 0)
     {
       expression = expression.replaceAll("caseId", "c.caseId");
@@ -330,13 +333,17 @@ public class JPAFindCasesQueryBuilder extends FindCasesQueryBuilder
       expression = expression.replaceAll("changeDateTime", "c.changeDateTime");
       expression = expression.replaceAll("changeUserId", "c.changeUserId");
 
-
       if (isCounterQuery() && containsOrderBy)
       { //clear orderBy
         expression = expression.substring(0,
           expression.toUpperCase().indexOf("ORDER BY", 0));
         containsOrderBy = false;
       }
+        
+      if (containsOrderBy && dynamicOrderBy != null)
+      {
+        expression = expression.replaceAll(dynamicOrderBy, "upper(cp.value)");
+      }        
 
       if (!StringUtils.isBlank(expression) && 
           !expression.toUpperCase().trim().startsWith("ORDER BY"))
@@ -344,15 +351,8 @@ public class JPAFindCasesQueryBuilder extends FindCasesQueryBuilder
         appendOperator(buffer, "AND");
       }
 
-      if (containsOrderBy && dynamicOrderBy != null)
-      {
-        appendOperator(buffer, "AND");
-        buffer.append(" ").append("c.caseId = cp.id AND cp.name = :name");
-        parameters.put("name", dynamicOrderBy);
-        expression = expression.replaceAll(dynamicOrderBy, "upper(cp.value)");
-      }
-      buffer.append(" ").append(expression);
-    }
+      buffer.append(" ").append(expression);        
+    }    
     
     if (!isCounterQuery() && (expression == null || !containsOrderBy))
       buffer.append(" ORDER BY c.caseId ");
@@ -365,11 +365,23 @@ public class JPAFindCasesQueryBuilder extends FindCasesQueryBuilder
 
     if (containsOrderBy)
     {
-      String[] props = expression.split(",");
+      int idx = expression.toUpperCase().indexOf("ORDER BY");      
+      String[] props = expression.substring(idx).split(",");
       for (String prop : props)
       {
         prop = prop.replaceAll("ORDER BY", "");
-        prop = prop.replaceAll(" desc ", "");
+        prop = prop.replaceAll("order by", "");
+        if (prop.endsWith(" asc") || prop.endsWith(" ASC")) 
+          prop = prop.substring(0, prop.length() - 4);
+        else if (prop.endsWith(" desc") || prop.endsWith(" DESC")) 
+          prop = prop.substring(0, prop.length() - 5);
+        else
+        {
+          prop = prop.replaceAll(" asc ", "");
+          prop = prop.replaceAll(" ASC ", "");
+          prop = prop.replaceAll(" desc ", "");          
+          prop = prop.replaceAll(" DESC ", "");          
+        }
         prop = prop.trim();
         if (!prop.equalsIgnoreCase("caseId") && !prop.equalsIgnoreCase("caseTypeId")
          && !prop.equalsIgnoreCase("description") && !prop.equalsIgnoreCase("title")
