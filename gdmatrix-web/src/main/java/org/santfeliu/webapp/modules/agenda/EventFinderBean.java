@@ -635,7 +635,7 @@ public class EventFinderBean extends FinderBean
       if (!filter.getThemeId().isEmpty())
         searchEventThemeId = filter.getThemeId().get(0);
     }
-  }
+  }  
   
   @Override
   public Serializable saveState()
@@ -891,9 +891,11 @@ public class EventFinderBean extends FinderBean
     String endDateTime)
   {
     Event event = AgendaModuleBean.getClient(true).loadEvent(eventId);
+    executeAction("preMove", event);
     if (startDateTime != null) event.setStartDateTime(startDateTime);
     if (endDateTime != null) event.setEndDateTime(endDateTime);
-    AgendaModuleBean.getClient(true).storeEvent(event);
+    event = AgendaModuleBean.getClient(true).storeEvent(event);
+    executeAction("postMove", event);
     if (eventId.equals(eventObjectBean.getEvent().getEventId()))
     {
       //Refresh edition tab
@@ -904,7 +906,7 @@ public class EventFinderBean extends FinderBean
       catch (Exception ex) { }
     }
   }
-
+  
   private boolean mustIncludeEvent(Event event,
     String filterStartDateTime, String filterEndDateTime)
   {

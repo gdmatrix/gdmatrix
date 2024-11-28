@@ -246,6 +246,25 @@ public abstract class FinderBean extends BaseBean
     }
   }
 
+  protected ActionObject executeAction(String actionName, Object object)
+  {
+    ObjectBean objectBean = getObjectBean();
+    ActionObject actionObject = new ActionObject(object);
+    ScriptClient scriptClient = objectBean.getScriptClient();
+    if (scriptClient != null)
+    {
+      Object callable = scriptClient.get(actionName);
+      if (callable instanceof Callable)
+      {
+        scriptClient.put("actionObject", actionObject);
+        scriptClient.execute((Callable)callable);
+        actionObject = (ActionObject)scriptClient.get("actionObject");
+        objectBean.addFacesMessages(actionObject.getMessages());
+      }
+    }
+    return actionObject;
+  }
+
   private String getSmartSearchTipDocId()
   {
     try
