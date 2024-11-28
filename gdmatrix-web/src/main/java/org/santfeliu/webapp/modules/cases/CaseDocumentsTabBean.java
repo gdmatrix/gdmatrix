@@ -43,12 +43,17 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.cases.Case;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
 import org.matrix.cases.CaseManagerPort;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.PropertyDefinition;
+import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
+import org.matrix.security.AccessControl;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
@@ -81,6 +86,8 @@ public class CaseDocumentsTabBean extends TabBean
   public static final String UNLINK = "unlink";
   public static final String REMOVE = "remove";
   public static final String REMOVE_ALL = "removeAll";
+  
+  public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";  
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
@@ -468,6 +475,7 @@ public class CaseDocumentsTabBean extends TabBean
       }
       editing = (CaseDocument) executeTabAction("preTabStore", editing);
       editing = CasesModuleBean.getPort(false).storeCaseDocument(editing);
+      spreadDocumentRoles(editing.getDocId());
       executeTabAction("postTabStore", editing);
       refreshHiddenTabInstances();
       load();
@@ -737,6 +745,94 @@ public class CaseDocumentsTabBean extends TabBean
     }
     return convertedRows;
   }
+  
+  private void spreadDocumentRoles(String docId) throws Exception
+  {
+    Case caseObject = caseObjectBean.getCase();
+    String caseTypeId = caseObject.getCaseTypeId();
+    String spreadRoles = getSpreadRolesValue(caseTypeId);
+
+    if (spreadRoles != null) //Spread roles is set
+    {
+      Document document = 
+        DocModuleBean.getPort(true).loadDocument(docId, 0, ContentInfo.ID);
+      if (document != null)
+      {
+        boolean update = false;
+        if ("true".equalsIgnoreCase(spreadRoles)) //Spread Case roles
+        {
+          Type caseType = TypeCache.getInstance().getType(caseTypeId);
+          List<AccessControl> accessControlList = new ArrayList();
+          if (caseType != null)
+            accessControlList.addAll(caseType.getAccessControl());
+          accessControlList.addAll(caseObject.getAccessControl());            
+          for (AccessControl ac : accessControlList)
+          {
+            if (!containsAC(document.getAccessControl(), ac))
+            {
+              update = true;
+              document.getAccessControl().add(ac);
+            }
+          }
+        }
+        else //Spread role defined in SPREAD_ROLES_PROPERTY value
+        {
+          String[] actions = {DictionaryConstants.READ_ACTION, 
+            DictionaryConstants.WRITE_ACTION, 
+            DictionaryConstants.DELETE_ACTION};
+          for (String action : actions)
+          {
+            AccessControl ac = new AccessControl();
+            ac.setAction(action);
+            ac.setRoleId(spreadRoles);
+            if (!containsAC(document.getAccessControl(), ac))
+            {
+              document.getAccessControl().add(ac);
+              update = true;
+            }
+          }
+        }
+        
+        if (update)
+        {
+          DocModuleBean.getPort(true).storeDocument(document);
+          info("DOCUMENT_SECURITY_UPDATED");
+        }        
+      }
+    }
+  }  
+  
+  private String getSpreadRolesValue(String caseTypeId)
+  {
+    String spreadRoles = null;
+    if (caseTypeId != null)
+    {
+      Type caseType = TypeCache.getInstance().getType(caseTypeId);
+      if (caseType != null)
+      {
+        PropertyDefinition pd =
+          caseType.getPropertyDefinition(SPREAD_ROLES_PROPERTY);
+        if (pd != null && pd.getValue() != null && !pd.getValue().isEmpty())
+        {
+          String value = pd.getValue().get(0);
+          if (!"false".equals(value))
+            spreadRoles = value;
+        }
+      }
+    }
+    return spreadRoles;
+  }
+  
+  private boolean containsAC(List<AccessControl> acl, AccessControl ac)
+  {
+    for (AccessControl item : acl)
+    {
+      if (ac.getAction().equals(item.getAction()) &&
+          ac.getRoleId().equals(item.getRoleId()))
+        return true;
+    }
+   return false;
+  }  
 
   public class CaseDocumentsDataTableRow extends DataTableRow
   {
