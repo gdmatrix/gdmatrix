@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.policy.*;
@@ -49,7 +49,7 @@ import static org.santfeliu.webapp.modules.policy.PolicyModuleBean.getPort;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class PolicyClassesTabBean extends TabBean
 {
   private List<ClassPolicyView> rows;
@@ -112,13 +112,13 @@ public class PolicyClassesTabBean extends TabBean
   {
     this.firstRow = firstRow;
   }
-  
+
   public String getClassTitle(ClassPolicyView view)
   {
     String classId = view.getClassPolicy().getClassId();
     try
     {
-      org.santfeliu.classif.Class clazz = 
+      org.santfeliu.classif.Class clazz =
         ClassCache.getInstance().getClass(classId);
       return clazz.getTitle();
     }
@@ -126,7 +126,7 @@ public class PolicyClassesTabBean extends TabBean
     {
       return "???";
     }
-  }  
+  }
 
   @Override
   public void load()
@@ -144,10 +144,10 @@ public class PolicyClassesTabBean extends TabBean
         error(ex);
       }
     }
-    else 
+    else
     {
       rows = Collections.EMPTY_LIST;
-      firstRow = 0;      
+      firstRow = 0;
     }
   }
 
@@ -159,7 +159,7 @@ public class PolicyClassesTabBean extends TabBean
       editing.setPolicyId(getObjectId());
       try
       {
-        getPort(false).storeClassPolicy(editing);  
+        getPort(false).storeClassPolicy(editing);
       }
       catch (Exception ex)
       {
@@ -184,8 +184,8 @@ public class PolicyClassesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   public void create()
   {
     editing = new ClassPolicy();
@@ -217,7 +217,7 @@ public class PolicyClassesTabBean extends TabBean
     {
       try
       {
-        String classPolicyId = 
+        String classPolicyId =
           classPolicyView.getClassPolicy().getClassPolicyId();
         getPort(false).removeClassPolicy(classPolicyId);
         load();

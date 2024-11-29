@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +79,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CasePersonsTabBean extends TabBean
 {
   private Map<String, TabInstance> tabInstances = new HashMap<>();
@@ -101,7 +101,7 @@ public class CasePersonsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CasePersonsDataTableRow> rows;
     int firstRow = 0;
-    TypeSelectHelper typeSelectHelper = 
+    TypeSelectHelper typeSelectHelper =
       new TypeSelectHelper<CasePersonsDataTableRow>()
     {
       @Override
@@ -120,7 +120,7 @@ public class CasePersonsTabBean extends TabBean
       @Override
       public String getBaseTypeId()
       {
-        return CasePersonsTabBean.this.getTabBaseTypeId();        
+        return CasePersonsTabBean.this.getTabBaseTypeId();
       }
 
       @Override
@@ -128,14 +128,14 @@ public class CasePersonsTabBean extends TabBean
       {
         firstRow = 0;
       }
-      
+
       @Override
       public String getRowTypeId(CasePersonsDataTableRow row)
       {
         return row.getTypeId();
-      }      
+      }
     };
-    
+
     public TypeSelectHelper getTypeSelectHelper()
     {
       return typeSelectHelper;
@@ -154,7 +154,6 @@ public class CasePersonsTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -174,7 +173,7 @@ public class CasePersonsTabBean extends TabBean
       {
         if (getOrderBy() != null)
         {
-          Collections.sort(getCurrentTabInstance().rows, 
+          Collections.sort(getCurrentTabInstance().rows,
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
       }
@@ -184,12 +183,12 @@ public class CasePersonsTabBean extends TabBean
       {
         return "casePersonTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
         return null; //No fixed columns
-      }      
+      }
     };
   }
 
@@ -225,12 +224,12 @@ public class CasePersonsTabBean extends TabBean
     else
       return EMPTY_TAB_INSTANCE;
   }
-  
+
   public Map<String, TabInstance> getTabInstances()
   {
     return tabInstances;
-  }  
-  
+  }
+
   public List<CasePersonsDataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
@@ -239,8 +238,8 @@ public class CasePersonsTabBean extends TabBean
   public void setRows(List<CasePersonsDataTableRow> rows)
   {
     getCurrentTabInstance().rows = rows;
-  }    
-  
+  }
+
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -250,7 +249,7 @@ public class CasePersonsTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-  
+
   @Override
   public String getObjectId()
   {
@@ -531,34 +530,34 @@ public class CasePersonsTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
-  
+
   public void create()
   {
-    executeTabAction("preTabEdit", null);    
+    executeTabAction("preTabEdit", null);
     editing = new CasePerson();
     editing.setCasePersonTypeId(getCreationTypeId());
     tabIndex = 0;
-    executeTabAction("postTabEdit", editing);    
+    executeTabAction("postTabEdit", editing);
   }
-  
+
   @Override
   public void load()
   {
-    executeTabAction("preTabLoad", null);    
+    executeTabAction("preTabLoad", null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
-      {    
+      {
         CasePersonFilter filter = new CasePersonFilter();
         filter.setCaseId(getObjectId());
 
         String typeId = getTabBaseTypeId();
-        EditTab tab = caseObjectBean.getActiveEditTab();   
+        EditTab tab = caseObjectBean.getActiveEditTab();
         if (tab.isShowAllTypes())
           typeId = DictionaryConstants.CASE_PERSON_TYPE;
         if (typeId != null)
@@ -569,13 +568,13 @@ public class CasePersonsTabBean extends TabBean
 
         List<CasePersonsDataTableRow> auxList = toDataTableRows(casePersons);
         if (getOrderBy() != null)
-        {        
-          Collections.sort(auxList, 
+        {
+          Collections.sort(auxList,
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
         getCurrentTabInstance().typeSelectHelper.load();
-        executeTabAction("postTabLoad", null);         
+        executeTabAction("postTabLoad", null);
       }
       catch (Exception ex)
       {
@@ -589,7 +588,7 @@ public class CasePersonsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       getCurrentTabInstance().typeSelectHelper.load();
       tabInstance.firstRow = 0;
-    } 
+    }
   }
 
   public void edit(DataTableRow row)
@@ -598,14 +597,14 @@ public class CasePersonsTabBean extends TabBean
     {
       try
       {
-        executeTabAction("preTabEdit", row);        
+        executeTabAction("preTabEdit", row);
         editing = CasesModuleBean.getPort(false).loadCasePerson(row.getRowId());
         personContacts =
           getPersonContacts(editing.getPersonId());
         representantContacts =
           getPersonContacts(editing.getRepresentantPersonId());
         tabIndex = 0;
-        executeTabAction("postTabEdit", editing);        
+        executeTabAction("postTabEdit", editing);
       }
       catch (Exception ex)
       {
@@ -646,7 +645,7 @@ public class CasePersonsTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   public void cancel()
   {
     editing = null;
@@ -656,20 +655,20 @@ public class CasePersonsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   public void remove(DataTableRow row)
   {
     try
     {
       if (row != null)
       {
-        row = (DataTableRow)executeTabAction("preTabRemove", row);        
+        row = (DataTableRow)executeTabAction("preTabRemove", row);
         CasesModuleBean.getPort(false).removeCasePerson(row.getRowId());
-        executeTabAction("postTabRemove", row);        
+        executeTabAction("postTabRemove", row);
         refreshHiddenTabInstances();
         load();
-        growl("REMOVE_OBJECT");        
+        growl("REMOVE_OBJECT");
       }
     }
     catch (Exception ex)
@@ -790,13 +789,13 @@ public class CasePersonsTabBean extends TabBean
     for (CasePersonView row : casePersons)
     {
       CasePersonsDataTableRow dataTableRow = new CasePersonsDataTableRow(row);
-      dataTableRow.setValues(this, row, getTableProperties());      
+      dataTableRow.setValues(this, row, getTableProperties());
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
   }
-  
+
   private boolean isNew(CasePerson casePerson)
   {
     return (casePerson != null && casePerson.getCasePersonId() == null);
@@ -933,14 +932,14 @@ public class CasePersonsTabBean extends TabBean
   {
     return new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
   }
-  
+
   private String getRowStyleClass(Object row)
   {
-    RowStyleClassGenerator styleClassGenerator = 
+    RowStyleClassGenerator styleClassGenerator =
       getRowStyleClassGenerator();
-    return styleClassGenerator.getStyleClass(row);    
-  }  
-  
+    return styleClassGenerator.getStyleClass(row);
+  }
+
   public class CasePersonsDataTableRow extends DataTableRow
   {
     private String personId;
@@ -957,7 +956,7 @@ public class CasePersonsTabBean extends TabBean
         personTypeId = row.getPersonView().getPersonTypeId();
         personName = row.getPersonView().getFullName();
         personIdent = row.getPersonView().getNif() != null ?
-          row.getPersonView().getNif() : 
+          row.getPersonView().getNif() :
           row.getPersonView().getPassport();
       }
     }

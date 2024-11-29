@@ -31,8 +31,8 @@
 package org.santfeliu.webapp.modules.dic;
 
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -45,12 +45,12 @@ import org.santfeliu.webapp.modules.security.ACLTabBean;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class TypeACLTabBean extends ACLTabBean
 {
   @Inject
   TypeObjectBean typeObjectBean;
-  
+
   @Override
   public List<AccessControl> getAccessControlList()
   {
@@ -75,9 +75,9 @@ public class TypeACLTabBean extends ACLTabBean
     items.add(new SelectItem(
       DictionaryConstants.MODIFY_DEFINITION_ACTION,
       dicModuleBean.getLocalizedAction(
-        DictionaryConstants.MODIFY_DEFINITION_ACTION)));  
-    
+        DictionaryConstants.MODIFY_DEFINITION_ACTION)));
+
     return items;
   }
-  
+
 }

@@ -5,6 +5,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <f:subview id="#{tab.subviewId}">
@@ -96,6 +97,8 @@
         </p:commandButton>
       </p:column>
     </p:dataTable>
+    
+    <gdm:saveBean value="newDocumentsTabBean" />
     
   </f:subview>
 

@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.PersonAddress;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.TabBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class PersonAddressesTabBean extends TabBean
 {
   @Inject
@@ -100,7 +100,7 @@ public class PersonAddressesTabBean extends TabBean
   {
     this.firstRow = firstRow;
   }
-  
+
   public String getPageObjectDescription()
   {
     if (editing != null && !isNew(editing))
@@ -121,8 +121,8 @@ public class PersonAddressesTabBean extends TabBean
   public String getAddressId()
   {
     return editing.getAddressId();
-  }    
-  
+  }
+
   public void onAddressClear()
   {
     editing.setAddressId(null);
@@ -132,7 +132,7 @@ public class PersonAddressesTabBean extends TabBean
   public void load()
   {
     if (!NEW_OBJECT_ID.equals(getObjectId()))
-    {     
+    {
       try
       {
         PersonAddressFilter filter = new PersonAddressFilter();
@@ -142,11 +142,11 @@ public class PersonAddressesTabBean extends TabBean
       catch (Exception ex)
       {
         error(ex);
-      }    
+      }
     }
     else
     {
-      rows = Collections.emptyList();        
+      rows = Collections.emptyList();
       firstRow = 0;
     }
   }
@@ -155,7 +155,7 @@ public class PersonAddressesTabBean extends TabBean
   {
     editing = new PersonAddress();
   }
-  
+
   @Override
   public void store()
   {
@@ -179,8 +179,8 @@ public class PersonAddressesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {

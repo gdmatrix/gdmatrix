@@ -5,6 +5,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <div class="w-full m-1 gap-1 flex">
@@ -18,17 +19,17 @@
                        icon="pi pi-angle-right" title="#{newsBundle.new_sections_collapseAll}"
                        process="@this" update="sections_tree"
                        styleClass="mini" />
-      
+
       <p:commandButton action="#{newSectionsTabBean.expandChecked}" value="#{newsBundle.new_sections_expandSelected}"
                        icon="pi pi-chevron-circle-down" title="#{newsBundle.new_sections_expandSelected}"
                        process="@this" update="sections_tree"
-                       styleClass="mini" />      
+                       styleClass="mini" />
 
   </div>
 
   <p:tree id="sections_tree" value="#{newSectionsTabBean.root}" var="section"
           selectionMode="single" animate="true">
-    
+
     <p:ajax event="select" listener="#{newSectionsTabBean.onNodeSelect}" process="@this" update="sections_tree"/>
     <p:ajax event="contextMenu" listener="#{newSectionsTabBean.onContextMenu}" update="@form:search_tabs:tabs:context_menu"/>
 
@@ -36,23 +37,25 @@
     <p:ajax event="collapse" process="@this"/>
 
     <p:treeNode type="unselectable">
-      <h:outputText value="#{section}" /> 
+      <h:outputText value="#{section}" />
     </p:treeNode>
-    
+
     <p:treeNode type="selectable" icon="#{section.checked ? 'pi pi-check-square' : 'pi pi-stop'}">
       <h:outputText value="#{section}" styleClass="" />
-      <i class="mx-1 #{section.sticky ? 'fa fa-thumbtack' : ''}" /> 
+      <i class="mx-1 #{section.sticky ? 'fa fa-thumbtack' : ''}" />
     </p:treeNode>
-    
-  </p:tree>   
+
+  </p:tree>
 
   <p:contextMenu id="context_menu" for="sections_tree" selectionMode="single" nodeType="selectable">
-    <p:menuitem value="#{newsBundle.new_sections_go}" icon="pi pi-external-link" ajax="true" url="go.faces?xmid=#{newSectionsTabBean.ctxNode.data.sectionId}" target="_blank" 
+    <p:menuitem value="#{newsBundle.new_sections_go}" icon="pi pi-external-link" ajax="true" url="go.faces?xmid=#{newSectionsTabBean.ctxNode.data.sectionId}" target="_blank"
                 rendered="#{newSectionsTabBean.ctxNode.selectable}"/>
-    <p:menuitem value="#{newSectionsTabBean.ctxNode.data.sticky ? newsBundle.new_sections_sticky_off : newsBundle.new_sections_sticky_on}" 
-                icon="fa fa-thumbtack #{newSectionsTabBean.ctxNode.data.sticky ? 'text-400' : ''}" 
+    <p:menuitem value="#{newSectionsTabBean.ctxNode.data.sticky ? newsBundle.new_sections_sticky_off : newsBundle.new_sections_sticky_on}"
+                icon="fa fa-thumbtack #{newSectionsTabBean.ctxNode.data.sticky ? 'text-400' : ''}"
                 ajax="true" process="@this" update="sections_tree" action="#{newSectionsTabBean.switchSticky()}"
                 rendered="#{newSectionsTabBean.ctxNode.data.checked}"/>
-  </p:contextMenu>   
+  </p:contextMenu>
+  
+  <gdm:saveBean value="newSectionsTabBean" />
 
 </ui:composition>

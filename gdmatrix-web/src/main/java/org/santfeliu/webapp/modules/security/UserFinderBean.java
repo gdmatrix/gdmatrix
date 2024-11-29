@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -51,7 +51,7 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class UserFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -73,12 +73,6 @@ public class UserFinderBean extends FinderBean
   public UserObjectBean getObjectBean()
   {
     return userObjectBean;
-  }
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
   }
 
   public String getSmartFilter()
@@ -180,8 +174,10 @@ public class UserFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new UserFilter();
     smartFilter = null;
     rows = null;

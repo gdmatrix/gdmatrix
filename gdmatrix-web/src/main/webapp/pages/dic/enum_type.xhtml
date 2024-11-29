@@ -5,32 +5,33 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:param name="objectBean" value="#{enumTypeObjectBean}" />
     <ui:param name="searchLabel" value="#{dicBundle.enumTypeSearch_searchLabel}" />
 
   <ui:define name="filter">
-        
-    <p:outputPanel id="filter_panel">      
+
+    <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{enumTypeFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
           </f:facet>
 
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="ui-fluid formgrid grid"> 
+          <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
               <emcomp:tipInputText id="smartFilter"
                                    value="#{enumTypeFinderBean.smartFilter}"
-                                   tipContent="#{enumTypeFinderBean.smartSearchTip}" />                            
+                                   tipContent="#{enumTypeFinderBean.smartSearchTip}" />
             </div>
           </div>
 
@@ -40,7 +41,7 @@
                              styleClass="m-1"
                              process="@form:cnt:find_selector"
                              update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"                             
+                             resetValues="true"
                              icon="fa fa-broom" />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
@@ -51,12 +52,12 @@
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
                              icon="pi pi-search" />
-          </div>          
-        </p:tab>        
+          </div>
+        </p:tab>
         <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
@@ -65,13 +66,13 @@
             <p:outputPanel styleClass="field col-12">
               <p:outputLabel for="@next" value="#{dicBundle.enumType_type}" />
               <p:chips value="#{enumTypeFinderBean.enumTypeIdList}" />
-            </p:outputPanel>   
-           
+            </p:outputPanel>
+
             <p:outputPanel styleClass="field col-12">
               <p:outputLabel for="@next" value="#{dicBundle.enumType_name}" />
               <p:inputText value="#{enumTypeFinderBean.filter.name}" />
-            </p:outputPanel>             
-          </div>   
+            </p:outputPanel>
+          </div>
 
           <div class="text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -92,10 +93,10 @@
                              icon="pi pi-search" />
           </div>
 
-        </p:tab>          
+        </p:tab>
 
-      </p:tabView>      
-    </p:outputPanel>    
+      </p:tabView>
+    </p:outputPanel>
   </ui:define>
 
   <ui:define name="object">
@@ -108,10 +109,10 @@
           updateResults();
         }
       }
-    </script>  
+    </script>
     <p:remoteCommand name="updateResults"
                      action="#{enumTypeFinderBean.update}"
-                     process="@this" 
+                     process="@this"
                      update="@form:cnt:search_tabs:result_list" />
 
     <p:tabView id="search_tabs"
@@ -127,7 +128,7 @@
         </f:facet>
         <h:panelGroup id="result_list">
           <ui:include src="enum_type_list.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
 
       <p:tab>
@@ -137,11 +138,15 @@
         </f:facet>
         <h:panelGroup id="obj_tabs">
           <ui:include src="/pages/obj/object_standard.xhtml" />
-        </h:panelGroup>        
-      </p:tab>      
+        </h:panelGroup>
+      </p:tab>
 
-    </p:tabView>    
+    </p:tabView>
+
+    <gdm:saveBean value="enumTypeObjectBean" />
+    <gdm:saveBean value="enumTypeFinderBean" />
+
   </ui:define>
 
-</ui:composition>  
+</ui:composition>
 

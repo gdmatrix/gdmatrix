@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.AttendantFilter;
@@ -59,11 +59,11 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class PersonEventsTabBean extends TabBean
 {
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
-  private GroupableRowsHelper groupableRowsHelper;    
+  private GroupableRowsHelper groupableRowsHelper;
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
 
@@ -89,21 +89,21 @@ public class PersonEventsTabBean extends TabBean
       @Override
       public String getBaseTypeId()
       {
-        return getTabBaseTypeId();        
+        return getTabBaseTypeId();
       }
 
       @Override
       public void resetFirstRow()
       {
         firstRow = 0;
-      }      
+      }
 
       @Override
       public String getRowTypeId(AttendantView row)
       {
-        return row.getAttendantTypeId();        
+        return row.getAttendantTypeId();
       }
-    }; 
+    };
 
     public TypeSelectHelper getTypeSelectHelper()
     {
@@ -113,11 +113,10 @@ public class PersonEventsTabBean extends TabBean
 
   @Inject
   PersonObjectBean personObjectBean;
-  
+
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);  
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -145,7 +144,7 @@ public class PersonEventsTabBean extends TabBean
 
       @Override
       public String getFixedColumnValue(Object row, String columnName)
-      {        
+      {
         return null;
       }
     };
@@ -188,8 +187,8 @@ public class PersonEventsTabBean extends TabBean
   {
     return groupableRowsHelper;
   }
-  
-  
+
+
 
   @Override
   public boolean isNew()
@@ -222,7 +221,7 @@ public class PersonEventsTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-   
+
   @Override
   public void load() throws Exception
   {
@@ -235,8 +234,8 @@ public class PersonEventsTabBean extends TabBean
         filter.setMaxResults(100);
         List<AttendantView> auxList = AgendaModuleBean.getClient(false).
           findAttendantViewsFromCache(filter);
-        String typeId = getTabBaseTypeId();      
-        EditTab tab = personObjectBean.getActiveEditTab();          
+        String typeId = getTabBaseTypeId();
+        EditTab tab = personObjectBean.getActiveEditTab();
         if (typeId == null || tab.isShowAllTypes())
         {
           getCurrentTabInstance().rows = auxList;
@@ -255,7 +254,7 @@ public class PersonEventsTabBean extends TabBean
           }
           getCurrentTabInstance().rows = result;
         }
-        getCurrentTabInstance().typeSelectHelper.load();   
+        getCurrentTabInstance().typeSelectHelper.load();
       }
       catch (Exception ex)
       {
@@ -268,10 +267,10 @@ public class PersonEventsTabBean extends TabBean
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
-      getCurrentTabInstance().typeSelectHelper.load();         
+      getCurrentTabInstance().typeSelectHelper.load();
     }
   }
-  
+
   @Override
   public void clear()
   {
@@ -296,5 +295,5 @@ public class PersonEventsTabBean extends TabBean
       error(ex);
     }
   }
-    
+
 }

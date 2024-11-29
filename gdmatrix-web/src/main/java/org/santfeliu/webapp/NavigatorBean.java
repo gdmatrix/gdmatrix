@@ -42,13 +42,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
@@ -92,7 +92,7 @@ public class NavigatorBean extends WebBean implements Serializable
   private String lastBaseTypeId;
   private String currentContextPanel;
   private int updateCount;
-  private Leap inProgressLeap;
+  //private Leap inProgressLeap;
   private MenuTypesFinder menuTypesFinder = new GlobalMenuTypesFinder();
   private boolean finderPanelVisible = true;
   private boolean contextPanelVisible = true;
@@ -496,8 +496,15 @@ public class NavigatorBean extends WebBean implements Serializable
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     userSessionBean.getMenuModel().setSelectedMid(baseTypeInfo.getMid());
 
-    inProgressLeap = leap;
+    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+    if (objectBean != null)
+    {
+      leap.construct(objectBean);
 
+      baseTypeInfo.visit(objectBean.getObjectId());
+      lastBaseTypeId = baseTypeInfo.getBaseTypeId();
+      history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
+    }
     String template = userSessionBean.getTemplate();
     return "/templates/" + template + "/template.xhtml";
   }
@@ -507,23 +514,23 @@ public class NavigatorBean extends WebBean implements Serializable
    */
   public void constructBeans()
   {
-    System.out.println("PhaseListener before render response");
-
-    if (inProgressLeap == null) return;
-
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo(inProgressLeap.baseTypeId);
-    if (baseTypeInfo == null) return;
-
-    ObjectBean objectBean = baseTypeInfo.getObjectBean();
-    if (objectBean == null) return;
-
-    Leap leap = inProgressLeap;
-    inProgressLeap = null;
-    leap.construct(objectBean);
-
-    baseTypeInfo.visit(objectBean.getObjectId());
-    lastBaseTypeId = baseTypeInfo.getBaseTypeId();
-    history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
+//    System.out.println("PhaseListener before render response");
+//
+//    if (inProgressLeap == null) return;
+//
+//    BaseTypeInfo baseTypeInfo = getBaseTypeInfo(inProgressLeap.baseTypeId);
+//    if (baseTypeInfo == null) return;
+//
+//    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+//    if (objectBean == null) return;
+//
+//    Leap leap = inProgressLeap;
+//    inProgressLeap = null;
+//    leap.construct(objectBean);
+//
+//    baseTypeInfo.visit(objectBean.getObjectId());
+//    lastBaseTypeId = baseTypeInfo.getBaseTypeId();
+//    history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
   }
 
   public History getHistory()
@@ -860,7 +867,7 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       String baseTypeId = getBaseTypeId();
       BeanManager beanManager = CDI.current().getBeanManager();
-      Context context = beanManager.getContext(ViewScoped.class);
+      Context context = beanManager.getContext(RequestScoped.class);
 
       for (EditTab tab : tabs)
       {
@@ -1044,6 +1051,7 @@ public class NavigatorBean extends WebBean implements Serializable
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
       BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
       FinderBean finderBean = objectBean.getFinderBean();
+      finderBean.clear();
       baseTypeInfo.restoreBeanState(finderBean);
 
       if (!finderBean.isFinding() && !showObject)
@@ -1063,7 +1071,7 @@ public class NavigatorBean extends WebBean implements Serializable
       finderBean.setObjectPosition(-1);
       objectBean.load();
       objectBean.setSearchTabSelector(showObject ?
-        objectBean.getEditModeSelector() : searchTabSelector);      
+        objectBean.getEditModeSelector() : searchTabSelector);
     }
 
     @Override
@@ -1110,15 +1118,9 @@ public class NavigatorBean extends WebBean implements Serializable
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
       BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
       baseTypeInfo.restoreBeanState(objectBean);
-      try
-      {
-        objectBean.loadObjectSetup();
-      }
-      catch (Exception ex)
-      {
-      }
       baseTypeInfo.restoreTabBeansState(objectBean.getEditTabs());
       FinderBean finderBean = objectBean.getFinderBean();
+      finderBean.clear();
       baseTypeInfo.restoreBeanState(finderBean);
       finderBean.setObjectPosition(-1);
       baseTypeInfo.clearBeansState();

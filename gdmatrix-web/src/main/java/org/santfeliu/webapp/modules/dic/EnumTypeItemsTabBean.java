@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.dic;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.EnumTypeItem;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.TabBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EnumTypeItemsTabBean extends TabBean
 {
   @Inject
@@ -119,12 +119,12 @@ public class EnumTypeItemsTabBean extends TabBean
   {
     this.rowIndex = rowIndex;
   }
-  
+
   @Override
   public void load()
   {
     if (!NEW_OBJECT_ID.equals(getObjectId()))
-    {     
+    {
       try
       {
         rows = EnumTypeCache.getInstance().getItems(getObjectId());
@@ -132,11 +132,11 @@ public class EnumTypeItemsTabBean extends TabBean
       catch (Exception ex)
       {
         error(ex);
-      }    
+      }
     }
     else
     {
-      rows = Collections.emptyList();        
+      rows = Collections.emptyList();
       firstRow = 0;
     }
   }
@@ -146,7 +146,7 @@ public class EnumTypeItemsTabBean extends TabBean
     editing = new EnumTypeItem();
     editing.setEnumTypeId(getObjectId());
   }
-  
+
   public void edit(EnumTypeItem row)
   {
     String itemId = null;
@@ -169,14 +169,14 @@ public class EnumTypeItemsTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   public void insertItem(int rowIndex)
   {
     editing = new EnumTypeItem();
     editing.setEnumTypeId(getObjectId());
     int itemIndex = rowIndex + 1;
     editing.setIndex(itemIndex);
-  }    
+  }
 
   public void moveUpItem(int rowIndex)
   {
@@ -195,33 +195,33 @@ public class EnumTypeItemsTabBean extends TabBean
   }
 
   public void moveDownItem(int rowIndex)
-  {   
+  {
     try
     {
       swapRow(rowIndex + 1);
-      load();      
+      load();
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  } 
-  
+  }
+
   public boolean isRenderUpButton(int rowIndex)
   {
     return isSortedEnumType() && rowIndex > 0 && rows.size() >= 2;
   }
-  
+
   public boolean isRenderDownButton(int rowIndex)
   {
     return isSortedEnumType() && rowIndex < rows.size() - 1;
   }
-    
+
   public boolean isSortedEnumType()
   {
     return enumTypeObjectBean.getEnumType().isSorted();
-  }    
-  
+  }
+
   @Override
   public void store()
   {
@@ -232,7 +232,7 @@ public class EnumTypeItemsTabBean extends TabBean
         DicModuleBean.getPort(false).storeEnumTypeItem(editing);
         growl("STORE_OBJECT");
         EnumTypeCache.getInstance().clear(getObjectId());
-        load();        
+        load();
         editing = null;
       }
     }
@@ -255,7 +255,7 @@ public class EnumTypeItemsTabBean extends TabBean
       DicModuleBean.getPort(false).removeEnumTypeItem(rowEnumTypeItemId);
       growl("REMOVE_OBJECT");
       EnumTypeCache.getInstance().clear(getObjectId());
-      load();      
+      load();
     }
     catch (Exception ex)
     {
@@ -272,16 +272,16 @@ public class EnumTypeItemsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
-  public void onRowReorder(ReorderEvent event) 
+  }
+
+  public void onRowReorder(ReorderEvent event)
   {
     try
     {
       EnumTypeItem row = rows.get(event.getToIndex());
       String itemId = row.getEnumTypeItemId();
-      EnumTypeItem item = 
-        EnumTypeCache.getInstance().getItem(itemId);      
+      EnumTypeItem item =
+        EnumTypeCache.getInstance().getItem(itemId);
       if (event.getToIndex() < event.getFromIndex())
       {
         item.setIndex(event.getToIndex() + 1);
@@ -303,7 +303,7 @@ public class EnumTypeItemsTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   @Override
   public Serializable saveState()
   {
@@ -324,15 +324,15 @@ public class EnumTypeItemsTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
-  private void swapRow(int bottomRowIndex) throws Exception 
+  }
+
+  private void swapRow(int bottomRowIndex) throws Exception
   {
     if (rows != null && rows.size() >= 2)
     {
       EnumTypeItem bottomRow = rows.get(bottomRowIndex);
       String bottomItemId = bottomRow.getEnumTypeItemId();
-      EnumTypeItem bottomItem = 
+      EnumTypeItem bottomItem =
         EnumTypeCache.getInstance().getItem(bottomItemId);
       bottomItem.setIndex(bottomRowIndex); //itemIndex = rowIndex + 1
       //store automatically shifts lower items
@@ -340,5 +340,5 @@ public class EnumTypeItemsTabBean extends TabBean
       EnumTypeCache.getInstance().clear(getObjectId());
     }
   }
-  
+
 }

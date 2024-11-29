@@ -34,8 +34,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Street;
@@ -52,7 +52,7 @@ import org.santfeliu.webapp.modules.kernel.StreetFinderBean.StreetView;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class StreetFinderBean
   extends TerritoryFinderBean<StreetFilter, StreetView>
 {
@@ -64,13 +64,13 @@ public class StreetFinderBean
 
   @Inject
   StreetTypeBean streetTypeBean;
-  
+
   @Inject
-  ProvinceTypeBean provinceTypeBean;  
+  ProvinceTypeBean provinceTypeBean;
 
   @Inject
   CityTypeBean cityTypeBean;
-  
+
   private List<SelectItem> provinceSelectItems;
   private List<SelectItem> citySelectItems;
 
@@ -152,7 +152,7 @@ public class StreetFinderBean
             try
             {
               String name = filter.getStreetName();
-              filter.setStreetName(setWildcards(name));              
+              filter.setStreetName(setWildcards(name));
               int count = KernelModuleBean.getPort(false).countStreets(filter);
               filter.setStreetName(name);
               return count;
@@ -174,7 +174,7 @@ public class StreetFinderBean
               filter.setMaxResults(maxResults);
 
               String name = filter.getStreetName();
-              filter.setStreetName(setWildcards(name));                
+              filter.setStreetName(setWildcards(name));
               List<Street> streets =
                 KernelModuleBean.getPort(false).findStreets(filter);
               for (Street street : streets)
@@ -215,7 +215,7 @@ public class StreetFinderBean
       error(ex);
     }
   }
-    
+
   @Override
   public Serializable saveState()
   {
@@ -244,13 +244,13 @@ public class StreetFinderBean
       error(ex);
     }
   }
-  
+
   public void onCountryChange()
   {
-    provinceSelectItems = 
+    provinceSelectItems =
       provinceTypeBean.getProvinceSelectItems(filter.getCountryId());
   }
-  
+
   public List<SelectItem> getProvinceSelectItems()
   {
     return provinceSelectItems;
@@ -258,10 +258,10 @@ public class StreetFinderBean
 
   public void onProvinceChange()
   {
-    citySelectItems = 
+    citySelectItems =
       cityTypeBean.getCitySelectItems(filter.getProvinceId());
   }
-  
+
   public List<SelectItem> getCitySelectItems()
   {
     return citySelectItems;
@@ -310,7 +310,7 @@ public class StreetFinderBean
       this.city = city;
     }
   }
-  
+
   private String setWildcards(String text)
   {
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
@@ -318,14 +318,14 @@ public class StreetFinderBean
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(StreetFilter filter)
   {
     String title = filter.getStreetName();
     if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
       title = title.replaceAll("^%+|%+$", "");
     filter.setStreetName(title);
-  }   
+  }
 
 }

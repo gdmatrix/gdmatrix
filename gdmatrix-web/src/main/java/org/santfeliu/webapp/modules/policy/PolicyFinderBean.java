@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.policy.Policy;
@@ -49,7 +49,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class PolicyFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -72,12 +72,6 @@ public class PolicyFinderBean extends FinderBean
   public PolicyObjectBean getObjectBean()
   {
     return policyObjectBean;
-  }
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
   }
 
   public String getSmartFilter()
@@ -104,7 +98,7 @@ public class PolicyFinderBean extends FinderBean
   {
     return formSelector;
   }
-  
+
   public void setFormSelector(String formSelector)
   {
     this.formSelector = formSelector;
@@ -191,8 +185,10 @@ public class PolicyFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new PolicyFilter();
     smartFilter = null;
     rows = null;

@@ -35,9 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -63,7 +62,7 @@ import org.santfeliu.webapp.util.DataTableRow;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class DocumentFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -89,13 +88,6 @@ public class DocumentFinderBean extends FinderBean
     return documentObjectBean;
   }
 
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);    
-  }
-
-
   public String getSmartFilter()
   {
     return smartFilter;
@@ -112,8 +104,8 @@ public class DocumentFinderBean extends FinderBean
     if (filter != null && StringUtils.isBlank(filter.getDocTypeId()))
     {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      filter.setDocTypeId(baseTypeId);        
-    }    
+      filter.setDocTypeId(baseTypeId);
+    }
     return filter;
   }
 
@@ -136,13 +128,10 @@ public class DocumentFinderBean extends FinderBean
   {
     try
     {
-      if (objectSetup == null)
-        loadObjectSetup();
-      
-      List<TableProperty> tableProperties = 
-        objectSetup.getSearchTabs().get(0).getTableProperties();
-      
-      return tableProperties != null ? tableProperties : 
+      List<TableProperty> tableProperties =
+        getObjectSetup().getSearchTabs().get(0).getTableProperties();
+
+      return tableProperties != null ? tableProperties :
         Collections.emptyList();
     }
     catch (Exception ex)
@@ -154,7 +143,7 @@ public class DocumentFinderBean extends FinderBean
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
-  }  
+  }
 
   @Override
   public String getObjectId(int position)
@@ -280,7 +269,7 @@ public class DocumentFinderBean extends FinderBean
     {
       for (String selectedState : getSelectedStates())
       {
-        filter.getStates().add(State.fromValue(selectedState));        
+        filter.getStates().add(State.fromValue(selectedState));
       }
     }
     smartFilter = documentTypeBean.filterToQuery(filter);
@@ -301,8 +290,10 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new DocumentFilter();
     smartFilter = null;
     rows = null;
@@ -315,7 +306,7 @@ public class DocumentFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(),
-      filter, firstRow, getObjectPosition(), formSelector, rows, outdated, 
+      filter, firstRow, getObjectPosition(), formSelector, rows, outdated,
       selectedStates };
   }
 
@@ -404,9 +395,9 @@ public class DocumentFinderBean extends FinderBean
                 filter.getOutputProperty().add(tableProperty.getName());
               }
               filter.setIncludeContentMetadata(true);
-              
+
               setOrderBy(filter);
-              
+
               List<Document> documents =
                 DocModuleBean.getPort(false).findDocuments(filter);
               DocumentFinderBean.this.setClassId(classId);
@@ -481,18 +472,15 @@ public class DocumentFinderBean extends FinderBean
     }
     return convertedRows;
   }
-  
+
   private void setOrderBy(DocumentFilter filter) throws Exception
   {
-    if (objectSetup == null)
-      loadObjectSetup();
-
     int tabSelector = documentObjectBean.getSearchTabSelector();
-    tabSelector = 
-      tabSelector < objectSetup.getSearchTabs().size() ? tabSelector : 0;      
-    List<String> orderBy = 
-      objectSetup.getSearchTabs().get(tabSelector).getOrderBy();
-    
+    tabSelector =
+      tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
+    List<String> orderBy =
+      getObjectSetup().getSearchTabs().get(tabSelector).getOrderBy();
+
     if (orderBy != null && !orderBy.isEmpty())
     {
       for (String item : orderBy)
@@ -507,8 +495,8 @@ public class DocumentFinderBean extends FinderBean
         filter.getOrderByProperty().add(orderByProperty);
       }
     }
-  }  
-  
+  }
+
   public static class DocumentDataTableRow extends DataTableRow
   {
     private String contentId;
@@ -520,7 +508,7 @@ public class DocumentFinderBean extends FinderBean
     }
 
     @Override
-    public void setValues(BaseBean baseBean, Object row, 
+    public void setValues(BaseBean baseBean, Object row,
       List<TableProperty> columns) throws Exception
     {
       super.setValues(baseBean, row, columns);

@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.policy.CasePolicy;
@@ -52,17 +52,17 @@ import org.santfeliu.webapp.NavigatorBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CasePolicyFinderBean extends BaseBean
 {
   private CasePolicyFilter filter = new CasePolicyFilter();
   private List<CasePolicyView> rows;
   private int firstRow;
   private boolean outdated;
-  
-  private Map<String, StateMapValue> statesMap;  
-    
-  private static final String OUTCOME = "/pages/policy/case_policy.xhtml";  
+
+  private Map<String, StateMapValue> statesMap;
+
+  private static final String OUTCOME = "/pages/policy/case_policy.xhtml";
 
   @Inject
   NavigatorBean navigatorBean;
@@ -76,19 +76,19 @@ public class CasePolicyFinderBean extends BaseBean
   @PostConstruct
   public void init()
   {
-    statesMap = new HashMap();    
+    statesMap = new HashMap();
   }
-  
+
   public String show()
   {
     String template = UserSessionBean.getCurrentInstance().getTemplate();
-    return "/templates/" + template + "/template.xhtml";    
+    return "/templates/" + template + "/template.xhtml";
   }
-  
+
   public String getContent()
   {
     return OUTCOME;
-  }   
+  }
 
   public CasePolicyFilter getFilter()
   {
@@ -129,16 +129,16 @@ public class CasePolicyFinderBean extends BaseBean
   {
     this.statesMap = statesMap;
   }
-    
+
   public void setRowState(PolicyState newValue)
   {
     CasePolicyView casePolicyView =
-      (CasePolicyView) getValue("#{row}"); 
+      (CasePolicyView) getValue("#{row}");
     CasePolicy casePolicy = casePolicyView.getCasePolicy();
-    
+
 
     String casePolicyId = casePolicy.getCasePolicyId();
-    StateMapValue stateValue = statesMap.get(casePolicyId);    
+    StateMapValue stateValue = statesMap.get(casePolicyId);
     if (stateValue == null)
       statesMap.put(casePolicyId, new StateMapValue(casePolicy, newValue));
     else if (stateValue.casePolicy.getState() != newValue)
@@ -146,27 +146,27 @@ public class CasePolicyFinderBean extends BaseBean
     else
       statesMap.remove(casePolicyId);
   }
-  
+
   public PolicyState getRowState()
   {
     CasePolicyView casePolicyView =
-      (CasePolicyView) getValue("#{row}"); 
+      (CasePolicyView) getValue("#{row}");
 
-    StateMapValue stateValue = 
+    StateMapValue stateValue =
       statesMap.get(casePolicyView.getCasePolicy().getCasePolicyId());
-    return stateValue != null ? stateValue.newState : 
+    return stateValue != null ? stateValue.newState :
       casePolicyView.getCasePolicy().getState();
   }
-    
+
   public boolean isRowStateChanged(CasePolicyView row)
-  {  
+  {
     String casePolicyId = row.getCasePolicy().getCasePolicyId();
     StateMapValue stateValue = statesMap.get(casePolicyId);
-    
-    return stateValue != null 
+
+    return stateValue != null
       && stateValue.newState != row.getCasePolicy().getState();
-  } 
-  
+  }
+
   public void changeState() throws Exception
   {
     if (statesMap != null)
@@ -175,22 +175,22 @@ public class CasePolicyFinderBean extends BaseBean
       {
         StateMapValue stateValue = entry.getValue();
         if (stateValue != null)
-        {          
+        {
           stateValue.casePolicy.setState(stateValue.newState);
           PolicyModuleBean.getPort(false)
             .storeCasePolicy(stateValue.casePolicy);
         }
       }
       find();
-      statesMap.clear();      
+      statesMap.clear();
     }
-  }  
-  
+  }
+
   public void cancelChanges()
   {
     statesMap.clear();
-  }  
-     
+  }
+
   public void find()
   {
     doFind(true);
@@ -210,16 +210,18 @@ public class CasePolicyFinderBean extends BaseBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new CasePolicyFilter();
     rows = null;
   }
-    
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ filter, firstRow, rows, outdated };    
+    return new Object[]{ filter, firstRow, rows, outdated };
   }
 
   @Override
@@ -230,7 +232,7 @@ public class CasePolicyFinderBean extends BaseBean
     firstRow = (Integer)stateArray[1];
     rows = (List<CasePolicyView>)stateArray[2];
     outdated = (Boolean)stateArray[3];
-  }  
+  }
 
   private void doFind(boolean autoLoad)
   {
@@ -289,7 +291,7 @@ public class CasePolicyFinderBean extends BaseBean
       error(ex);
     }
   }
-  
+
   public class StateMapValue implements Serializable
   {
     public CasePolicy casePolicy;
@@ -300,6 +302,6 @@ public class CasePolicyFinderBean extends BaseBean
       this.casePolicy = casePolicy;
       this.newState = newState;
     }
-  }  
-   
+  }
+
 }

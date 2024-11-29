@@ -38,7 +38,6 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.cms.CMSListener;
 import org.santfeliu.faces.FacesUtils;
@@ -47,7 +46,6 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
-import static javax.faces.render.ResponseStateManager.VIEW_STATE_PARAM;
 import org.apache.commons.lang.StringUtils;
 
 /**

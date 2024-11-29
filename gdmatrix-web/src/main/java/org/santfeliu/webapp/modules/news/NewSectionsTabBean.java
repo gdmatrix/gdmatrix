@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.news.NewSection;
@@ -56,13 +56,13 @@ import org.santfeliu.webapp.modules.news.NewSectionsTabBean.SectionTreeData;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class NewSectionsTabBean extends TabBean
 {
   private static final String SELECTABLE = "selectable";
   private static final String UNSELECTABLE = "unselectable";
-    
-  private static final String SECTIONID_PROPERTY = "sectionId";  
+
+  private static final String SECTIONID_PROPERTY = "sectionId";
 
   private SectionTreeNode root;
   private Map<String, SectionTreeNode> nodeMap;
@@ -71,12 +71,6 @@ public class NewSectionsTabBean extends TabBean
   @Inject
   NewObjectBean newObjectBean;
 
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   public TreeNode getCtxNode()
   {
@@ -123,7 +117,7 @@ public class NewSectionsTabBean extends TabBean
           SectionTreeNode node = nodeMap.get(newSection.getSectionId());
           if (node != null)
           {
-            node.setType(SELECTABLE);      
+            node.setType(SELECTABLE);
             SectionTreeData std = (SectionTreeData) node.getData();
             std.setNewSectionId(newSection.getNewSectionId());
             std.setSticky(newSection.isSticky());
@@ -138,7 +132,7 @@ public class NewSectionsTabBean extends TabBean
       }
     }
   }
-  
+
   public void onNodeSelect(NodeSelectEvent event)
   {
     try
@@ -184,7 +178,7 @@ public class NewSectionsTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   public void switchSticky()
   {
     if (ctxNode != null)
@@ -218,16 +212,16 @@ public class NewSectionsTabBean extends TabBean
   {
     nodeMap.values().stream().forEach(node -> node.setExpanded(false));
   }
-  
+
   public void expandChecked()
   {
     collapseAll();
-    
+
     for (SectionTreeNode node : nodeMap.values())
     {
       SectionTreeData data = (SectionTreeData) node.getData();
-      if (data.isChecked()) 
-        expandParents(node);      
+      if (data.isChecked())
+        expandParents(node);
     }
   }
 
@@ -265,13 +259,13 @@ public class NewSectionsTabBean extends TabBean
       String sectionId = nodeMic.getDirectProperty(SECTIONID_PROPERTY);
       if (sectionId == null)
       {
-        List<String> editRoles = 
+        List<String> editRoles =
           nodeMic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
-        
+
         if (UserSessionBean.getCurrentInstance().isUserInRole(editRoles))
         {
           TreeNode node = createTreeNode(nodeMic);
-          node.setType(SELECTABLE);        
+          node.setType(SELECTABLE);
         }
       }
     }
@@ -303,14 +297,14 @@ public class NewSectionsTabBean extends TabBean
 
         node = new SectionTreeNode(mid, section, false, parentNode);
         node.setType(UNSELECTABLE);
-      
+
         nodeMap.put(mid, node);
       }
     }
 
     return node;
   }
-  
+
   private void expandParents(TreeNode node)
   {
     TreeNode parent = node.getParent();
@@ -318,13 +312,13 @@ public class NewSectionsTabBean extends TabBean
     {
       parent.setExpanded(true);
       parent = parent.getParent();
-    }    
-  }  
+    }
+  }
 
   public class SectionTreeNode extends DefaultTreeNode<SectionTreeData>
   {
 
-    public SectionTreeNode(String sectionId, String label, boolean checked, 
+    public SectionTreeNode(String sectionId, String label, boolean checked,
       TreeNode parent)
     {
       super(null, parent);
@@ -349,7 +343,7 @@ public class NewSectionsTabBean extends TabBean
     {
       return ((NewSection) getData()).isSticky();
     }
-    
+
   }
 
   public class SectionTreeData extends NewSection

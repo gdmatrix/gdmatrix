@@ -37,9 +37,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -80,14 +80,14 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseDocumentsTabBean extends TabBean
 {
   public static final String UNLINK = "unlink";
   public static final String REMOVE = "remove";
   public static final String REMOVE_ALL = "removeAll";
-  
-  public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";  
+
+  public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
@@ -96,7 +96,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private final List<SelectItem> volumeSelectItems = new ArrayList<>();
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper;
   private DefaultMatrixClientModel clientModel;
 
   public class TabInstance
@@ -105,7 +105,7 @@ public class CaseDocumentsTabBean extends TabBean
     List<CaseDocumentsDataTableRow> rows;
     int firstRow = 0;
     String currentVolume;
-    TypeSelectHelper typeSelectHelper = 
+    TypeSelectHelper typeSelectHelper =
       new TypeSelectHelper<CaseDocumentsDataTableRow>()
     {
       @Override
@@ -124,14 +124,14 @@ public class CaseDocumentsTabBean extends TabBean
       @Override
       public String getBaseTypeId()
       {
-        return CaseDocumentsTabBean.this.getTabBaseTypeId();        
+        return CaseDocumentsTabBean.this.getTabBaseTypeId();
       }
 
       @Override
       public void resetFirstRow()
       {
         firstRow = 0;
-      }      
+      }
 
       @Override
       public String getRowTypeId(CaseDocumentsDataTableRow row)
@@ -139,7 +139,7 @@ public class CaseDocumentsTabBean extends TabBean
         return row.getTypeId();
       }
     };
-    
+
     public TypeSelectHelper getTypeSelectHelper()
     {
       return typeSelectHelper;
@@ -158,7 +158,6 @@ public class CaseDocumentsTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -233,8 +232,8 @@ public class CaseDocumentsTabBean extends TabBean
   public Map<String, TabInstance> getTabInstances()
   {
     return tabInstances;
-  }  
-  
+  }
+
   @Override
   public String getObjectId()
   {
@@ -246,7 +245,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     getCurrentTabInstance().objectId = objectId;
   }
-  
+
   @Override
   public boolean isNew()
   {
@@ -359,12 +358,12 @@ public class CaseDocumentsTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
-  }  
-    
+  }
+
   @Override
   public void load()
   {
@@ -440,13 +439,13 @@ public class CaseDocumentsTabBean extends TabBean
         }
         List<CaseDocumentsDataTableRow> auxList2 = toDataTableRows(result);
         if (getOrderBy() != null)
-        {                
+        {
           Collections.sort(auxList2,
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList2);
         getCurrentTabInstance().typeSelectHelper.load();
-        executeTabAction("postTabLoad", null);        
+        executeTabAction("postTabLoad", null);
       }
       catch (Exception ex)
       {
@@ -458,7 +457,7 @@ public class CaseDocumentsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();      
+      getCurrentTabInstance().typeSelectHelper.load();
       tabInstance.firstRow = 0;
     }
   }
@@ -501,10 +500,10 @@ public class CaseDocumentsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);    
+    executeTabAction("preTabEdit", null);
     editing = new CaseDocument();
     editing.setCaseDocTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", editing);    
+    executeTabAction("postTabEdit", editing);
   }
 
   public String getCurrentVolume()
@@ -638,7 +637,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     this.caseDocumentToRemove = null;
   }
-  
+
   @Override
   public void clear()
   {
@@ -745,7 +744,7 @@ public class CaseDocumentsTabBean extends TabBean
     }
     return convertedRows;
   }
-  
+
   private void spreadDocumentRoles(String docId) throws Exception
   {
     Case caseObject = caseObjectBean.getCase();
@@ -754,7 +753,7 @@ public class CaseDocumentsTabBean extends TabBean
 
     if (spreadRoles != null) //Spread roles is set
     {
-      Document document = 
+      Document document =
         DocModuleBean.getPort(true).loadDocument(docId, 0, ContentInfo.ID);
       if (document != null)
       {
@@ -765,7 +764,7 @@ public class CaseDocumentsTabBean extends TabBean
           List<AccessControl> accessControlList = new ArrayList();
           if (caseType != null)
             accessControlList.addAll(caseType.getAccessControl());
-          accessControlList.addAll(caseObject.getAccessControl());            
+          accessControlList.addAll(caseObject.getAccessControl());
           for (AccessControl ac : accessControlList)
           {
             if (!containsAC(document.getAccessControl(), ac))
@@ -777,8 +776,8 @@ public class CaseDocumentsTabBean extends TabBean
         }
         else //Spread role defined in SPREAD_ROLES_PROPERTY value
         {
-          String[] actions = {DictionaryConstants.READ_ACTION, 
-            DictionaryConstants.WRITE_ACTION, 
+          String[] actions = {DictionaryConstants.READ_ACTION,
+            DictionaryConstants.WRITE_ACTION,
             DictionaryConstants.DELETE_ACTION};
           for (String action : actions)
           {
@@ -792,16 +791,16 @@ public class CaseDocumentsTabBean extends TabBean
             }
           }
         }
-        
+
         if (update)
         {
           DocModuleBean.getPort(true).storeDocument(document);
           info("DOCUMENT_SECURITY_UPDATED");
-        }        
+        }
       }
     }
-  }  
-  
+  }
+
   private String getSpreadRolesValue(String caseTypeId)
   {
     String spreadRoles = null;
@@ -822,7 +821,7 @@ public class CaseDocumentsTabBean extends TabBean
     }
     return spreadRoles;
   }
-  
+
   private boolean containsAC(List<AccessControl> acl, AccessControl ac)
   {
     for (AccessControl item : acl)
@@ -832,7 +831,7 @@ public class CaseDocumentsTabBean extends TabBean
         return true;
     }
    return false;
-  }  
+  }
 
   public class CaseDocumentsDataTableRow extends DataTableRow
   {

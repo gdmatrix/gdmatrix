@@ -60,6 +60,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
     this.smartFilter = smartFilter;
   }
 
+  @Override
   public F getFilter()
   {
     return filter;
@@ -105,8 +106,10 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
 
   protected abstract F createFilter();
 
+  @Override
   public void clear()
   {
+    super.clear();
     createFilter();
     smartFilter = null;
     rows = null;

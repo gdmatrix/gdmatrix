@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.dic;
@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -58,22 +58,22 @@ import org.santfeliu.webapp.ObjectBean;
  *
  * @author blanquepa
  */
-@ViewScoped
 @Named
+@RequestScoped
 public class TypeFinderBean extends FinderBean
 {
   private TypeFilter filter = new TypeFilter();
   private List<org.matrix.dic.Type> rows;
-  
+
   private String smartFilter;
   private int firstRow;
-  private boolean outdated;  
-  
+  private boolean outdated;
+
   private String rootTypeId;
   private boolean searchByTypePath;
-  private final TypeTreeNode rootNode = new TypeTreeNode() ;  
+  private final TypeTreeNode rootNode = new TypeTreeNode() ;
   private String treeTypeId;
-  
+
   @Inject
   NavigatorBean navigatorBean;
 
@@ -81,8 +81,8 @@ public class TypeFinderBean extends FinderBean
   TypeTypeBean typeTypeBean;
 
   @Inject
-  TypeObjectBean typeObjectBean; 
-      
+  TypeObjectBean typeObjectBean;
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -123,7 +123,7 @@ public class TypeFinderBean extends FinderBean
   {
     this.smartFilter = smartFilter;
   }
-  
+
   public List<org.matrix.dic.Type> getRows()
   {
     return rows;
@@ -138,19 +138,19 @@ public class TypeFinderBean extends FinderBean
   {
     this.firstRow = firstRow;
   }
-  
+
   @Override
   public String getObjectId(int position)
   {
     return rows == null ? NEW_OBJECT_ID : rows.get(position).getTypeId();
-  } 
-  
+  }
+
   @Override
   public int getObjectCount()
   {
     return rows == null ? 0 : rows.size();
-  }  
-  
+  }
+
   public void onRootTypeChange(SelectEvent event)
   {
     String typeId = (String) event.getObject();
@@ -162,8 +162,8 @@ public class TypeFinderBean extends FinderBean
     }
     else
       filter.setTypePath(null);
-  } 
-  
+  }
+
   @Override
   public void smartFind()
   {
@@ -175,10 +175,10 @@ public class TypeFinderBean extends FinderBean
       baseTypeId = null;
     filter = typeTypeBean.queryToFilter(smartFilter, baseTypeId);
     rootTypeId = null;
-    
+
     doFind(true);
     firstRow = 0;
-    rootNode.getChildren().clear();    
+    rootNode.getChildren().clear();
   }
 
   @Override
@@ -186,22 +186,22 @@ public class TypeFinderBean extends FinderBean
   {
     setFinding(true);
     setFilterTabSelector(1);
-    
+
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     if (typeTypeBean.getRootTypeId().equals(baseTypeId))
-      baseTypeId = rootTypeId;  
+      baseTypeId = rootTypeId;
     searchByTypePath = !StringUtils.isBlank(filter.getTypePath());
     String typePath = searchByTypePath ? filter.getTypePath() : baseTypeId;
-    
-    if (!StringUtils.isBlank(typePath) && 
+
+    if (!StringUtils.isBlank(typePath) &&
       !typeTypeBean.getRootTypeId().equals(typePath))
     {
       if (!typePath.contains("%"))
       {
         boolean isRoot = DictionaryConstants.rootTypeIds.contains(typePath);
-        typePath = (!isRoot ? "%" : "") + 
+        typePath = (!isRoot ? "%" : "") +
           DictionaryConstants.TYPE_PATH_SEPARATOR + typePath +
-          DictionaryConstants.TYPE_PATH_SEPARATOR + "%";        
+          DictionaryConstants.TYPE_PATH_SEPARATOR + "%";
       }
       filter.setTypePath(typePath);
     }
@@ -216,7 +216,7 @@ public class TypeFinderBean extends FinderBean
     else if (baseTypeId == null)
       rootNode.getChildren().clear();
   }
-  
+
   public void outdate()
   {
     this.outdated = true;
@@ -229,7 +229,7 @@ public class TypeFinderBean extends FinderBean
       doFind(false);
     }
   }
-  
+
   public void updateTree()
   {
     if (outdated)
@@ -239,16 +239,18 @@ public class TypeFinderBean extends FinderBean
       expandNode(treeTypeId);
     else
     {
-      String typeId = typeObjectBean.getObjectId();   
+      String typeId = typeObjectBean.getObjectId();
       if (!StringUtils.isBlank(typeId))
       {
         expandNode(typeId);
-      }      
+      }
     }
-  }  
+  }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new TypeFilter();
     smartFilter = null;
     rows = null;
@@ -284,8 +286,8 @@ public class TypeFinderBean extends FinderBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void doFind(boolean autoLoad)
   {
     try
@@ -351,20 +353,20 @@ public class TypeFinderBean extends FinderBean
     {
       error(ex);
     }
-  } 
-  
+  }
+
   public void viewNodeInTree(String typeId)
   {
     navigatorBean.view(typeId);
     expandNode(typeId);
-  }   
-     
+  }
+
   private void expandNode(String typeId)
   {
     treeTypeId = null;
     Type type = TypeCache.getInstance().getType(typeId);
     TypeTreeNode node = new TypeTreeNode(type.getRootType());
-    changeTreeRootType(node);  
+    changeTreeRootType(node);
 
     List<String> typePathList = type.getTypePathList();
     for (int level = 1; level < typePathList.size(); level++)
@@ -384,46 +386,46 @@ public class TypeFinderBean extends FinderBean
       }
     }
   }
-  
+
   private void changeTreeRootType(String typeId)
   {
-    Type type = TypeCache.getInstance().getType(typeId);    
+    Type type = TypeCache.getInstance().getType(typeId);
     TypeTreeNode node = new TypeTreeNode(type.getRootType());
-    changeTreeRootType(node);   
+    changeTreeRootType(node);
   }
-  
+
   private void changeTreeRootType(TypeTreeNode node)
   {
-    rootNode.getChildren().clear();  
-    rootNode.getChildren().add(node);  
-    node.expand();     
-  }    
-     
+    rootNode.getChildren().clear();
+    rootNode.getChildren().add(node);
+    node.expand();
+  }
+
   public static class TypeTreeNode extends DefaultTreeNode<Type>
   {
-    private boolean lazyLoaded;  
-    
+    private boolean lazyLoaded;
+
     /**
      * It's a root node without type.
      */
     public TypeTreeNode()
     {
-      super();   
+      super();
       lazyLoaded = true;
       setExpanded(true);
     }
-    
-    public TypeTreeNode(Type data) 
+
+    public TypeTreeNode(Type data)
     {
       super(data);
-    } 
-    
+    }
+
     public void expand()
     {
       this.lazyLoad();
       this.setExpanded(true);
     }
-    
+
     @Override
     public List<TreeNode<Type>> getChildren()
     {
@@ -443,36 +445,36 @@ public class TypeFinderBean extends FinderBean
       else
         return getData().getDerivedTypeCount();
     }
-    
+
     @Override
-    public boolean isLeaf() 
+    public boolean isLeaf()
     {
       if (getData() == null) //Is foo root node
         return false;
-      
+
       return getData().isLeaf();
     }
-    
+
     private void lazyLoad()
-    {      
+    {
       if (!lazyLoaded)
       {
         lazyLoaded = true;
 
-        List<TypeTreeNode> childNodes = 
+        List<TypeTreeNode> childNodes =
           getData().getDerivedTypes().stream()
             .map(f -> new TypeTreeNode(f))
             .collect(Collectors.toList());
-        
+
         super.getChildren().addAll(childNodes);
       }
     }
-    
+
     @Override
     protected List<TreeNode<Type>> initChildren() {
         return new TypeTreeNodeChildren(this);
-    }  
-    
+    }
+
     public static class TypeTreeNodeChildren extends TreeNodeChildren<Type>
     {
 
@@ -511,13 +513,13 @@ public class TypeFinderBean extends FinderBean
       @Override
       public boolean add(TreeNode<Type> node)
       {
-        return super.add(node); 
+        return super.add(node);
       }
-    
+
     }
-  
+
   }
-    
+
 
 
 }

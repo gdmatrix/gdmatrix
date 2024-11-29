@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +56,7 @@ import org.santfeliu.webapp.setup.ActionObject;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class TranslationObjectBean extends ObjectBean
 {
   private Translation translation = new Translation();
@@ -67,12 +67,6 @@ public class TranslationObjectBean extends ObjectBean
 
   @Inject
   TranslationFinderBean translationFinderBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public String getRootTypeId()
@@ -123,7 +117,7 @@ public class TranslationObjectBean extends ObjectBean
   {
     this.translation = cas;
   }
-  
+
   public boolean isTranslationClosed()
   {
     return TranslationState.COMPLETED.equals(translation.getState());
@@ -133,13 +127,13 @@ public class TranslationObjectBean extends ObjectBean
   {
     translation.setState(closed ?
       TranslationState.COMPLETED : TranslationState.DRAFT);
-  }  
+  }
 
   public String getPropertyLabel(String propName, String altName)
   {
     return translationTypeBean.getPropertyLabel(translation, propName, altName);
   }
-  
+
   public List<SelectItem> getLanguageSelectItems()
   {
     List<SelectItem> selectItems = new ArrayList();
@@ -150,7 +144,7 @@ public class TranslationObjectBean extends ObjectBean
     {
       Locale locale = (Locale)iter.next();
       String language = locale.getLanguage();
-      String displayLanguage = 
+      String displayLanguage =
         StringUtils.capitalize(locale.getDisplayLanguage(userLocale));
       SelectItem selectItem = new SelectItem();
       selectItem.setValue(language);
@@ -159,17 +153,17 @@ public class TranslationObjectBean extends ObjectBean
     }
     return selectItems;
   }
-  
+
   public SelectItem[] getStateSelectItems()
   {
     ResourceBundle bundle = ResourceBundle.getBundle(
       "org.santfeliu.translation.web.resources.TranslationBundle", getLocale());
     return FacesUtils.getEnumSelectItems(TranslationState.class, bundle);
-  }  
+  }
 
   public String getDisplayLanguage()
   {
-    String language = translation.getLanguage() != null ? 
+    String language = translation.getLanguage() != null ?
       translation.getLanguage() : FacesUtils.getViewLocale().getLanguage();
     return getDisplayLanguage(language);
   }
@@ -179,7 +173,7 @@ public class TranslationObjectBean extends ObjectBean
     Locale locale = new Locale(language);
     return StringUtils
       .capitalize(locale.getDisplayLanguage(FacesUtils.getViewLocale()));
-  }  
+  }
 
   @Override
   public void loadObject() throws Exception
@@ -203,7 +197,7 @@ public class TranslationObjectBean extends ObjectBean
     if (isTranslationClosed() && translationFinderBean.hasNext())
       translationFinderBean.viewNext();
   }
-         
+
   @Override
   public void removeObject() throws Exception
   {
@@ -211,16 +205,16 @@ public class TranslationObjectBean extends ObjectBean
       .removeTranslation(translation.getTransId());
     translationFinderBean.outdate();
   }
-  
+
   @Override
   protected void setActionResult(ActionObject result)
   {
     if (result != null)
     {
       if (result.getObject() != null)
-        translation = (Translation) result.getObject();      
+        translation = (Translation) result.getObject();
     }
-  }  
+  }
 
   @Override
   public Serializable saveState()
@@ -235,10 +229,10 @@ public class TranslationObjectBean extends ObjectBean
     this.translation = (Translation) array[0];
     this.formSelector = (String)array[1];
   }
-  
+
   @Override
   public boolean isEditable()
-  {    
+  {
     return true;
   }
 

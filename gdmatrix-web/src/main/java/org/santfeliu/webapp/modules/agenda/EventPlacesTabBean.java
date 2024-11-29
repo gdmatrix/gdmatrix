@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -53,7 +53,7 @@ import org.santfeliu.webapp.modules.kernel.RoomObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventPlacesTabBean extends TabBean
 {
   private List<EventPlaceView> rows;
@@ -69,12 +69,6 @@ public class EventPlacesTabBean extends TabBean
 
   @Inject
   RoomObjectBean roomObjectBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public ObjectBean getObjectBean()

@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.PropertyDefinition;
@@ -54,12 +54,12 @@ import org.santfeliu.webapp.TabBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class TypePropertiesTabBean extends TabBean
 {
   @Inject
-  TypeObjectBean typeObjectBean;  
-  
+  TypeObjectBean typeObjectBean;
+
   private int firstRow;
   private PropertyDefinitionEdit editing;
   private PropertyDefinition backupEditing;
@@ -67,7 +67,7 @@ public class TypePropertiesTabBean extends TabBean
   private Map<String, List<PropertyDefinitionEdit>> rowsMap = new HashMap<>();
   private List<PropertyDefinitionEdit> filteredRows;
   private String rowsVisibility = "all";
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -102,7 +102,7 @@ public class TypePropertiesTabBean extends TabBean
   public void setFilteredRows(List<PropertyDefinitionEdit> filteredRows)
   {
     this.filteredRows = filteredRows;
-  }  
+  }
 
   public String getRowsVisibility()
   {
@@ -119,7 +119,7 @@ public class TypePropertiesTabBean extends TabBean
     if (editing != null)
       editing.setEnumTypeId(enumTypeId);
   }
-  
+
   public String getEnumTypeId()
   {
     return editing == null ? NEW_OBJECT_ID : editing.getEnumTypeId();
@@ -127,13 +127,13 @@ public class TypePropertiesTabBean extends TabBean
 
   public List<PropertyDefinitionEdit> getRows()
   {
-    Type type = typeObjectBean.getObject(); 
+    Type type = typeObjectBean.getObject();
     if (type != null)
       return rowsMap.get(type.getTypeId());
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public List<PropertyDefinitionEdit> getDisplayedRows()
   {
     List<PropertyDefinitionEdit> result = new ArrayList<>();
@@ -142,8 +142,8 @@ public class TypePropertiesTabBean extends TabBean
     {
       for (PropertyDefinitionEdit pd : allRows)
       {
-        if ("all".equals(getRowsVisibility()) || 
-          ("only_visible".equals(getRowsVisibility()) && !pd.isHidden()) || 
+        if ("all".equals(getRowsVisibility()) ||
+          ("only_visible".equals(getRowsVisibility()) && !pd.isHidden()) ||
           ("only_hidden".equals(getRowsVisibility()) && pd.isHidden()))
         {
           result.add(pd);
@@ -152,7 +152,7 @@ public class TypePropertiesTabBean extends TabBean
     }
     return result;
   }
-  
+
   public void changeVisibility()
   {
     PrimeFaces.current().executeScript(
@@ -163,7 +163,7 @@ public class TypePropertiesTabBean extends TabBean
   {
     return supertypes;
   }
-  
+
   public List<PropertyDefinitionEdit> getTypePropertyDefinitions(
     org.santfeliu.dic.Type type)
   {
@@ -172,13 +172,13 @@ public class TypePropertiesTabBean extends TabBean
       result = rowsMap.get(type.getTypeId());
 
     return result;
-  }  
-  
+  }
+
   public PropertyType[] getPropertyTypes()
   {
     return PropertyType.values();
-  }  
-  
+  }
+
   @Override
   public void load()
   {
@@ -186,34 +186,34 @@ public class TypePropertiesTabBean extends TabBean
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       Type type = typeObjectBean.getType();
-      rowsMap.put(type.getTypeId(), getPropertyDefinitionList(type));      
-      
+      rowsMap.put(type.getTypeId(), getPropertyDefinitionList(type));
+
       supertypes = TypeCache.getInstance().getType(type.getTypeId())
-        .getSuperTypes();      
-      
+        .getSuperTypes();
+
       for (org.santfeliu.dic.Type superType : supertypes)
       {
         rowsMap.put(superType.getTypeId(), getPropertyDefinitionList(superType));
       }
-      
+
       PrimeFaces.current().executeScript(
-        "PrimeFaces.widgets['typePropertiesTable'].filter()");      
+        "PrimeFaces.widgets['typePropertiesTable'].filter()");
     }
   }
 
   public void create()
   {
     if (editing != null) return;
-    
+
     editing = new PropertyDefinitionEdit();
     editing.setModified(true);
     getRows().add(editing);
   }
-  
+
   public void create(PropertyDefinitionEdit row)
-  {    
+  {
     editing = null;
-    
+
     for (PropertyDefinitionEdit pde : getRows())
     {
       if (pde.getName().equals(row.getName()))
@@ -221,49 +221,49 @@ public class TypePropertiesTabBean extends TabBean
         editing = row; //Edit the existent
       }
     }
-    
+
     if (editing == null) //Not found in current rows then create as new
     {
       editing = new PropertyDefinitionEdit(row);
-      editing.setModified(true);  
+      editing.setModified(true);
       getRows().add(editing);
     }
   }
-  
+
   public void edit(PropertyDefinitionEdit row)
   {
     if (row == null)
       return;
-       
+
     if (row.rowId < 0)
       create(row);
     else
       editing = row;
-    
+
     backupEditing = new PropertyDefinitionEdit(editing.rowId, editing);
   }
-  
+
   public void remove(PropertyDefinitionEdit row)
   {
     row.setRemoved(true);
     syncRows();
   }
-  
+
   public void accept()
   {
     if (editing == null) return;
 
     if (!editing.isModified())
-      editing.setModified(!editing.equals(backupEditing));    
+      editing.setModified(!editing.equals(backupEditing));
     syncRows();
-    
+
     editing = null;
     backupEditing = null;
-    
+
     PrimeFaces.current().executeScript(
-      "PrimeFaces.widgets['typePropertiesTable'].filter()");          
+      "PrimeFaces.widgets['typePropertiesTable'].filter()");
   }
-  
+
   public void cancel()
   {
     if (editing != null && editing.isNew())
@@ -271,32 +271,32 @@ public class TypePropertiesTabBean extends TabBean
     editing = null;
     backupEditing = null;
   }
-  
+
   @Override
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   @Override
   public void store()
   {
     load();
   }
-  
+
   @Override
   public boolean isModified()
   {
     return true;
   }
-  
+
   private void syncRows()
-  { 
+  {
     //Get type
-    List<PropertyDefinition> propDefList = 
+    List<PropertyDefinition> propDefList =
       typeObjectBean.getType().getPropertyDefinition();
     propDefList.clear();
-        
+
     String typeId = typeObjectBean.getType().getTypeId();
     for (PropertyDefinitionEdit row : rowsMap.get(typeId))
     {
@@ -304,16 +304,16 @@ public class TypePropertiesTabBean extends TabBean
       {
         if (editing != null && editing.rowId == row.rowId)
         {
-          int rowId = editing.rowId >= 0 ? editing.rowId : propDefList.size(); 
+          int rowId = editing.rowId >= 0 ? editing.rowId : propDefList.size();
           propDefList.add(new PropertyDefinitionEdit(rowId, editing));
-          row.rowId = rowId; //sync rowId 
+          row.rowId = rowId; //sync rowId
         }
         else
           propDefList.add(row);
       }
     }
-  }  
-    
+  }
+
   private List<PropertyDefinitionEdit> getPropertyDefinitionList(Type type)
   {
     List<PropertyDefinitionEdit> results = new ArrayList();
@@ -321,13 +321,13 @@ public class TypePropertiesTabBean extends TabBean
     for (int i = 0; i < propDefs.size(); i++)
     {
       PropertyDefinition propDef = propDefs.get(i);
-      PropertyDefinitionEdit edit = 
+      PropertyDefinitionEdit edit =
         new PropertyDefinitionEdit(i, propDef);
       results.add(edit);
-    } 
+    }
     return results;
   }
-  
+
   @Override
   public Serializable saveState()
   {
@@ -349,25 +349,25 @@ public class TypePropertiesTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   public class PropertyDefinitionEdit extends PropertyDefinition
   {
     private int rowId = -1;
     private boolean modified;
     private boolean removed;
-    
+
     public PropertyDefinitionEdit()
     {
       this(-1, null);
     }
-    
+
     public PropertyDefinitionEdit(PropertyDefinition propDef)
-    {    
+    {
       this(-1, propDef);
     }
-    
-    public PropertyDefinitionEdit(int rowId, 
+
+    public PropertyDefinitionEdit(int rowId,
       PropertyDefinition propDef)
     {
       this.rowId = rowId;
@@ -388,7 +388,7 @@ public class TypePropertiesTabBean extends TabBean
         modified = false;
       }
     }
-    
+
     public boolean isNew()
     {
       return rowId == -1;
@@ -418,18 +418,18 @@ public class TypePropertiesTabBean extends TabBean
     {
       if (value == null || value.isEmpty())
         return "";
-      
+
       if (value.size() == 1)
         return value.get(0);
       else
         return value.toString();
     }
-    
+
     public void setStringValue(String strValue)
     {
       if (value == null)
         value = new ArrayList();
-      
+
       if (value.isEmpty())
         value.add(strValue);
       else
@@ -466,7 +466,7 @@ public class TypePropertiesTabBean extends TabBean
         return false;
       return Objects.equals(this.value, other.getValue());
     }
-    
+
   }
-  
+
 }

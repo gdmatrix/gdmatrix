@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.AgendaConstants;
@@ -63,7 +63,7 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventObjectBean extends ObjectBean
 {
   private static final String AUTO_ATTENDANT_TYPE = "_autoAttendantTypeId";
@@ -92,12 +92,6 @@ public class EventObjectBean extends ObjectBean
 
   @Inject
   TypeTypeBean typeTypeBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public String getRootTypeId()
@@ -169,7 +163,6 @@ public class EventObjectBean extends ObjectBean
   {
     try
     {
-      if (getObjectSetup() == null) loadObjectSetup();
       return getSearchTabs().size();
     }
     catch (Exception ex)

@@ -11,7 +11,7 @@
 
   <ui:param name="objectBean" value="#{caseObjectBean}" />
   <ui:param name="searchLabel" value="#{caseBundle.case_searchLabel}" />
-  
+
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -31,7 +31,7 @@
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
               <emcomp:tipInputText id="smartFilter"
                                    value="#{caseFinderBean.smartFilter}"
-                                   tipContent="#{caseFinderBean.smartSearchTip}" />              
+                                   tipContent="#{caseFinderBean.smartSearchTip}" />
             </div>
           </div>
 
@@ -86,7 +86,7 @@
                                       queryDelay="1000"
                                       minQueryLength="3"
                                       renderShowButton="false"
-                                      onselect="showPanel('leftPanel')"                                      
+                                      onselect="showPanel('leftPanel')"
                                       process="@form:cnt:find_selector" />
             </p:outputPanel>
 
@@ -101,7 +101,7 @@
                                     minQueryLength="3"
                                     renderShowButton="false"
                                     formSelector="#{caseFinderBean.formSelector}"
-                                    onselect="showPanel('leftPanel')" 
+                                    onselect="showPanel('leftPanel')"
                                     process="@form:cnt:find_selector"
                                     update="@form:cnt:find_selector:case_dynamic_properties">
               </emcomp:typeReference>
@@ -162,13 +162,13 @@
 
           </div>
 
-          <emcomp:dynamicProperties id="case_dynamic_properties" 
+          <emcomp:dynamicProperties id="case_dynamic_properties"
                                     typeId="#{caseFinderBean.filter.caseTypeId}"
                                     formSelector="#{caseFinderBean.formSelector}"
                                     formBuilderPrefix="searchtype@flex"
                                     options="#{dynamicPropertiesBean.filterOptions}"
                                     properties="#{caseFinderBean.filter.property}" />
-          
+
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{caseFinderBean.clear}"
@@ -236,7 +236,10 @@
       </p:tab>
 
     </p:tabView>
-        
+
+    <gdm:saveBean value="caseObjectBean" />
+    <gdm:saveBean value="caseFinderBean" />
+
   </ui:define>
 
 </ui:composition>

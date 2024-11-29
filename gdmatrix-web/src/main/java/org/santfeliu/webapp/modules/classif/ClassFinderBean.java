@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +61,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class ClassFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -86,13 +86,6 @@ public class ClassFinderBean extends FinderBean
   {
     return classObjectBean;
   }
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
-
 
   public String getSmartFilter()
   {
@@ -208,8 +201,10 @@ public class ClassFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new ClassFilter();
     smartFilter = null;
     rows = null;

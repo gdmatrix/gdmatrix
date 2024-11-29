@@ -5,15 +5,16 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:jsf="http://xmlns.jcp.org/jsf">
 
-  <h:outputStylesheet library="css" name="cases.css" />  
+  <h:outputStylesheet library="css" name="cases.css" />
 
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="case_cases_table" 
+    <p:dataTable id="case_cases_table"
                  value="#{caseCasesTabBean.tabInstances[tab.subviewId].typeSelectHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
@@ -36,13 +37,13 @@
             <p:selectOneMenu value="#{caseCasesTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeId}" touchable="true">
               <f:selectItem itemLabel="" itemValue="" />
               <f:selectItems value="#{caseCasesTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeSelectItems}" />
-              <p:ajax event="valueChange" 
+              <p:ajax event="valueChange"
                       listener="#{caseCasesTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeChanged}"
                       process="@this"
                       update="case_cases_table" />
             </p:selectOneMenu>
           </p:outputPanel>
-          
+
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseCasesTabBean.groupableRowsHelper.switchView}"
                            process="case_cases_table"
@@ -77,11 +78,11 @@
 
       <p:columns value="#{caseCasesTabBean.columns}" var="column" columnIndexVar="i"
                  filterable="false" sortable="true" resizable="false"
-                 headerText="#{applicationBean.translate(column.label)}" 
+                 headerText="#{applicationBean.translate(column.label)}"
                  field="#{column.name}" styleClass="#{column.styleClass}"
                  style="#{caseCasesTabBean.groupableRowsHelper.isColumnRendered(column) ? '' : 'display:none'}"
                  sortBy="#{row.values[i].sorted}" >
-        <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />        
+        <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />
         <h:outputText value="#{row.values[i].label}" />
       </p:columns>
 
@@ -120,7 +121,7 @@
 
       <p:rowExpansion rendered="#{not row.customProperties.isEmpty()}">
         <p:dataTable value="#{row.customProperties}" var="customProperty"
-                     styleClass="customProperties" rowStyleClass="row" 
+                     styleClass="customProperties" rowStyleClass="row"
                      showGridlines="false" stripedRows="false">
           <p:column styleClass="cell propName #{row.styleClass}">
             <h:outputText value="#{customProperty.label}" />
@@ -129,9 +130,11 @@
             <h:outputText value="#{customProperty.value.label}" escape="false" />
           </p:column>
         </p:dataTable>
-      </p:rowExpansion>     
-      
+      </p:rowExpansion>
+
     </p:dataTable>
+
+    <gdm:saveBean value="caseCasesTabBean" />
 
   </f:subview>
 

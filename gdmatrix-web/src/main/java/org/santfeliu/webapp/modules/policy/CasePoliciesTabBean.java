@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.policy;
@@ -39,8 +39,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.policy.CasePolicy;
@@ -62,19 +62,19 @@ import static org.santfeliu.webapp.modules.policy.PolicyModuleBean.getPort;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CasePoliciesTabBean extends TabBean
 {
   private List<CasePolicyView> rows;
   private int firstRow;
-  private CasePolicy editing; 
-  
+  private CasePolicy editing;
+
   @CMSProperty
   public static final String ANALYZER_SCRIPT_PROPERTY = "analyzer";
-  public static final Logger LOGGER = Logger.getLogger("case_analyzer");  
+  public static final Logger LOGGER = Logger.getLogger("case_analyzer");
   private List<LogRecord> messageList = new ArrayList<>();
-  private ListHandler logHandler;  
-  
+  private ListHandler logHandler;
+
   @Inject
   private CaseObjectBean caseObjectBean;
 
@@ -113,7 +113,7 @@ public class CasePoliciesTabBean extends TabBean
   {
     this.editing = editing;
   }
-  
+
   public List<LogRecord> getMessageList()
   {
     return messageList;
@@ -122,8 +122,8 @@ public class CasePoliciesTabBean extends TabBean
   public void setMessageList(List<LogRecord> messageList)
   {
     this.messageList = messageList;
-  }  
-  
+  }
+
   public String getFormattedMessage(LogRecord record)
   {
     try
@@ -144,8 +144,8 @@ public class CasePoliciesTabBean extends TabBean
     {
       return ex.toString();
     }
-  }  
-  
+  }
+
   public void refreshAnalyzeStatus()
   {
     if (logHandler != null)
@@ -153,12 +153,12 @@ public class CasePoliciesTabBean extends TabBean
       List<LogRecord> logRecords = logHandler.getLogRecords();
       if (!logRecords.isEmpty())
       {
-        getMessageList().clear();    
-        getMessageList().addAll(logRecords);        
+        getMessageList().clear();
+        getMessageList().addAll(logRecords);
       }
     }
   }
-  
+
   public SelectItem[] getPolicyStateSelectItems()
   {
     ResourceBundle bundle = ResourceBundle.getBundle(
@@ -177,8 +177,8 @@ public class CasePoliciesTabBean extends TabBean
       return bundle.getString(key);
     }
     return "";
-  }  
-  
+  }
+
   @Override
   public void load()
   {
@@ -197,10 +197,10 @@ public class CasePoliciesTabBean extends TabBean
     else
     {
       rows = Collections.EMPTY_LIST;
-      firstRow = 0;      
+      firstRow = 0;
     }
   }
-  
+
   @Override
   public void store()
   {
@@ -234,8 +234,8 @@ public class CasePoliciesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   public void create()
   {
     editing = new CasePolicy();
@@ -277,7 +277,7 @@ public class CasePoliciesTabBean extends TabBean
       }
     }
   }
-  
+
   public void analyzeCase()
   {
     try
@@ -321,7 +321,7 @@ public class CasePoliciesTabBean extends TabBean
     {
       error(ex);
     }
-  }    
+  }
 
   @Override
   public Serializable saveState()
@@ -343,12 +343,12 @@ public class CasePoliciesTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void loadTableRows() throws Exception
   {
     CasePolicyFilter filter = new CasePolicyFilter();
     filter.setCaseId(getObjectId());
-    rows = getPort(false).findCasePolicyViews(filter);    
-  }  
+    rows = getPort(false).findCasePolicyViews(filter);
+  }
 }

@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +54,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class ClassObjectBean extends ObjectBean
 {
   private Class classObject = new Class();
@@ -66,12 +66,6 @@ public class ClassObjectBean extends ObjectBean
 
   @Inject
   ClassFinderBean classFinderBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public String getRootTypeId()

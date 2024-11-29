@@ -114,6 +114,7 @@ public abstract class TabBean extends BaseBean
     return id;
   }
 
+  @Override
   public void clear()
   {
     setObjectId(NEW_OBJECT_ID);
@@ -132,7 +133,7 @@ public abstract class TabBean extends BaseBean
     EditTab editTab = getObjectBean().getActiveEditTab();
     return (editTab != null ? editTab.getBaseTypeId() : null);
   }
-  
+
   public boolean isLeafBaseType()
   {
     String baseTypeId = getTabBaseTypeId();
@@ -140,7 +141,7 @@ public abstract class TabBean extends BaseBean
     TypeCache typeCache = TypeCache.getInstance();
     Type baseType = typeCache.getType(baseTypeId);
     return (baseType != null ? baseType.isLeaf() : false);
-  }  
+  }
 
   protected String getCreationTypeId()
   {
@@ -155,12 +156,12 @@ public abstract class TabBean extends BaseBean
     }
     return null;
   }
-  
+
   protected Object executeTabAction(String actionName, Object object)
   {
-    ActionObject actionObject = 
-      getObjectBean().executeTabAction(actionName, object);  
+    ActionObject actionObject =
+      getObjectBean().executeTabAction(actionName, object);
     return actionObject.getObject();
   }
-  
+
 }

@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
@@ -69,7 +69,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseCasesTabBean extends TabBean
 {
   private static final String TYPEID1_PROPERTY = "typeId1";
@@ -80,8 +80,8 @@ public class CaseCasesTabBean extends TabBean
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
-  private GroupableRowsHelper groupableRowsHelper;  
-  
+  private GroupableRowsHelper groupableRowsHelper;
+
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
@@ -106,27 +106,27 @@ public class CaseCasesTabBean extends TabBean
       @Override
       public String getBaseTypeId()
       {
-        return CaseCasesTabBean.this.getTabBaseTypeId();        
+        return CaseCasesTabBean.this.getTabBaseTypeId();
       }
 
       @Override
       public void resetFirstRow()
       {
         firstRow = 0;
-      }      
+      }
 
       @Override
       public String getRowTypeId(CaseCasesDataTableRow row)
       {
-        return row.getTypeId();        
+        return row.getTypeId();
       }
     };
-    
+
     public TypeSelectHelper getTypeSelectHelper()
     {
       return typeSelectHelper;
     }
-  }    
+  }
 
   private CaseCase editing;
   private String formSelector;
@@ -140,7 +140,6 @@ public class CaseCasesTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -159,9 +158,9 @@ public class CaseCasesTabBean extends TabBean
       public void sortRows()
       {
         if (getOrderBy() != null)
-        {        
-          Collections.sort(getCurrentTabInstance().rows, 
-            new DataTableRowComparator(getColumns(), getOrderBy()));            
+        {
+          Collections.sort(getCurrentTabInstance().rows,
+            new DataTableRowComparator(getColumns(), getOrderBy()));
         }
       }
 
@@ -175,9 +174,9 @@ public class CaseCasesTabBean extends TabBean
       public String getFixedColumnValue(Object row, String columnName)
       {
         return null; //No fixed columns
-      }      
+      }
     };
-  }  
+  }
 
   public GroupableRowsHelper getGroupableRowsHelper()
   {
@@ -187,7 +186,7 @@ public class CaseCasesTabBean extends TabBean
   public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
   {
     this.groupableRowsHelper = groupableRowsHelper;
-  }  
+  }
 
   public TabInstance getCurrentTabInstance()
   {
@@ -209,8 +208,8 @@ public class CaseCasesTabBean extends TabBean
   public Map<String, TabInstance> getTabInstances()
   {
     return tabInstances;
-  }  
-  
+  }
+
   @Override
   public String getObjectId()
   {
@@ -251,8 +250,8 @@ public class CaseCasesTabBean extends TabBean
       return activeEditTab.getOrderBy();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
+  }
+
   public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -261,12 +260,12 @@ public class CaseCasesTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
-  
+
   public CaseCase getEditing()
   {
     return editing;
@@ -339,7 +338,7 @@ public class CaseCasesTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);    
+    executeTabAction("preTabEdit", null);
     editing = new CaseCase();
     editing.setCaseCaseTypeId(getCreationTypeId());
     if (isDirectRelation())
@@ -351,7 +350,7 @@ public class CaseCasesTabBean extends TabBean
       editing.setRelCaseId(getObjectId());
     }
     formSelector = null;
-    executeTabAction("postTabEdit", editing);    
+    executeTabAction("postTabEdit", editing);
   }
 
   public String getCaseDescription()
@@ -381,7 +380,7 @@ public class CaseCasesTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);    
+    executeTabAction("preTabLoad", null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -401,14 +400,14 @@ public class CaseCasesTabBean extends TabBean
             tabInstance.relatedByPerson = true;
           }
           else
-          {             
+          {
             String typeId = editTab.getBaseTypeId();
-            typeId = editTab.isShowAllTypes() ? 
+            typeId = editTab.isShowAllTypes() ?
               DictionaryConstants.CASE_CASE_TYPE : typeId;
             getCurrentTabInstance().rows = getResultsByDefault(typeId);
           }
           getCurrentTabInstance().typeSelectHelper.load();
-          executeTabAction("postTabLoad", null); 
+          executeTabAction("postTabLoad", null);
         }
       }
       catch (Exception ex)
@@ -421,9 +420,9 @@ public class CaseCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();      
+      getCurrentTabInstance().typeSelectHelper.load();
       tabInstance.firstRow = 0;
-    }    
+    }
   }
 
   public void edit(DataTableRow row)
@@ -464,7 +463,7 @@ public class CaseCasesTabBean extends TabBean
           throw new Exception("CASE_MUST_BE_SELECTED");
         editing = (CaseCase) executeTabAction("preTabStore", editing);
         editing = CasesModuleBean.getPort(false).storeCaseCase(editing);
-        executeTabAction("postTabStore", editing);        
+        executeTabAction("postTabStore", editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -486,18 +485,18 @@ public class CaseCasesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   public void remove(DataTableRow row)
   {
     try
     {
       if (row != null)
       {
-        row = (DataTableRow) executeTabAction("preTabRemove", row);        
-        String caseCaseId = row.getRowId();      
+        row = (DataTableRow) executeTabAction("preTabRemove", row);
+        String caseCaseId = row.getRowId();
         CasesModuleBean.getPort(false).removeCaseCase(caseCaseId);
-        executeTabAction("postTabRemove", row);        
+        executeTabAction("postTabRemove", row);
         refreshHiddenTabInstances();
         load();
       }
@@ -507,7 +506,7 @@ public class CaseCasesTabBean extends TabBean
       error(ex);
     }
   }
-    
+
   @Override
   public void clear()
   {
@@ -568,11 +567,11 @@ public class CaseCasesTabBean extends TabBean
         results.add(revResults.get(i));
       }
     }
-    
+
     List<CaseCasesDataTableRow> auxList = toDataTableRows(results);
     if (getOrderBy() != null)
-    {            
-      Collections.sort(auxList, 
+    {
+      Collections.sort(auxList,
         new DataTableRowComparator(getColumns(), getOrderBy()));
     }
     return auxList;
@@ -581,12 +580,12 @@ public class CaseCasesTabBean extends TabBean
   private List<CaseCasesDataTableRow> getResultsByPersons(String cpTypeId1,
     String cpTypeId2) throws Exception
   {
-    CaseCaseMatcher matcher = new CaseCaseMatcher(caseObjectBean.getCase());    
-    List<CaseCasesDataTableRow> auxList = 
+    CaseCaseMatcher matcher = new CaseCaseMatcher(caseObjectBean.getCase());
+    List<CaseCasesDataTableRow> auxList =
       toDataTableRows(matcher.matchByPersons(cpTypeId1, cpTypeId2));
     if (getOrderBy() != null)
-    {            
-      Collections.sort(auxList, 
+    {
+      Collections.sort(auxList,
         new DataTableRowComparator(getColumns(), getOrderBy()));
     }
     return auxList;
@@ -639,26 +638,26 @@ public class CaseCasesTabBean extends TabBean
         {
           String objectId = getObjectId();
           return objectId.equals(editing.getCaseId())
-            && !objectId.equals(editing.getRelCaseId());             
+            && !objectId.equals(editing.getRelCaseId());
         }
       }
     }
-  
+
     return true;
   }
-  
+
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
     return new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
   }
-  
+
   private String getRowStyleClass(Object row)
   {
-    RowStyleClassGenerator styleClassGenerator = 
+    RowStyleClassGenerator styleClassGenerator =
       getRowStyleClassGenerator();
-    return styleClassGenerator.getStyleClass(row);    
-  }  
-  
+    return styleClassGenerator.getStyleClass(row);
+  }
+
   public class CaseCasesDataTableRow extends DataTableRow
   {
     private boolean reverseRelation;
@@ -686,12 +685,12 @@ public class CaseCasesTabBean extends TabBean
       caseTitle = cas.getTitle();
       if (cas.getStartDate() != null)
       {
-        caseIniDateTime = cas.getStartDate() + 
+        caseIniDateTime = cas.getStartDate() +
           (cas.getStartTime() != null ? cas.getStartTime() : "000000");
       }
       if (cas.getEndDate() != null)
       {
-        caseEndDateTime = cas.getEndDate() + 
+        caseEndDateTime = cas.getEndDate() +
           (cas.getEndTime() != null ? cas.getEndTime() : "000000");
       }
       personId =
@@ -752,15 +751,15 @@ public class CaseCasesTabBean extends TabBean
     {
       this.caseEndDateTime = caseEndDateTime;
     }
-    
+
     public String getCaseIniDate()
     {
-      return (caseIniDateTime == null ? null : caseIniDateTime.substring(0, 8));      
+      return (caseIniDateTime == null ? null : caseIniDateTime.substring(0, 8));
     }
-    
+
     public String getCaseEndDate()
     {
-      return (caseEndDateTime == null ? null : caseEndDateTime.substring(0, 8));      
+      return (caseEndDateTime == null ? null : caseEndDateTime.substring(0, 8));
     }
 
     public String getPersonId()

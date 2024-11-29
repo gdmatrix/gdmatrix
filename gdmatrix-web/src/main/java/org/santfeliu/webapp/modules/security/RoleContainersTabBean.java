@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.security.RoleInRole;
@@ -50,7 +50,7 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class RoleContainersTabBean extends TabBean
 {
   private List<RoleInRoleView> rows;
@@ -59,12 +59,6 @@ public class RoleContainersTabBean extends TabBean
 
   @Inject
   RoleObjectBean roleObjectBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -131,10 +125,10 @@ public class RoleContainersTabBean extends TabBean
         error(ex);
       }
     }
-    else 
+    else
     {
       rows = Collections.EMPTY_LIST;
-      firstRow = 0;      
+      firstRow = 0;
     }
   }
 
@@ -171,7 +165,7 @@ public class RoleContainersTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
+  }
 
   public void create()
   {

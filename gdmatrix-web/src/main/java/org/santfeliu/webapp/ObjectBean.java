@@ -69,7 +69,7 @@ public abstract class ObjectBean extends BaseBean
   public static final String POST_STORE_ACTION = "postStore";
   public static final String PRE_REMOVE_ACTION = "preRemove";
   public static final String POST_REMOVE_ACTION = "postRemove";
-    
+
   protected String objectId = NEW_OBJECT_ID;
   private int searchTabSelector;
   private int editTabSelector;
@@ -136,8 +136,15 @@ public abstract class ObjectBean extends BaseBean
 
   public List<SearchTab> getSearchTabs()
   {
-    return objectSetup == null ?
-      Collections.EMPTY_LIST : objectSetup.getSearchTabs();
+    try
+    {
+      return getObjectSetup() == null ?
+        Collections.EMPTY_LIST : getObjectSetup().getSearchTabs();
+    }
+    catch (Exception ex)
+    {
+      return Collections.EMPTY_LIST;
+    }
   }
 
   public SearchTab getActiveSearchTab()
@@ -150,8 +157,15 @@ public abstract class ObjectBean extends BaseBean
 
   public List<EditTab> getEditTabs()
   {
-    return objectSetup == null ?
-      Collections.EMPTY_LIST : objectSetup.getEditTabs();
+    try
+    {
+      return getObjectSetup() == null ?
+        Collections.EMPTY_LIST : getObjectSetup().getEditTabs();
+    }
+    catch (Exception ex)
+    {
+      return Collections.EMPTY_LIST;
+    }
   }
 
   public EditTab getActiveEditTab()
@@ -176,8 +190,12 @@ public abstract class ObjectBean extends BaseBean
     return dialogViewIds;
   }
 
-  public ObjectSetup getObjectSetup()
+  public ObjectSetup getObjectSetup() throws Exception
   {
+    if (objectSetup == null)
+    {
+      loadObjectSetup();
+    }
     return objectSetup;
   }
 
@@ -190,7 +208,7 @@ public abstract class ObjectBean extends BaseBean
   {
     return actions;
   }
-  
+
   public TabBean getTabBean(EditTab editTab)
   {
     return (TabBean)WebUtils.getBean(editTab.getBeanName());
@@ -217,10 +235,10 @@ public abstract class ObjectBean extends BaseBean
   {
     try
     {
-      clear(); 
-      loadObject();           
+      clear();
+      loadObject();
       loadObjectSetup();
-      executeAction(POST_LOAD_ACTION);      
+      executeAction(POST_LOAD_ACTION);
       loadActiveEditTab();
 
       Object object = getObject();
@@ -276,27 +294,27 @@ public abstract class ObjectBean extends BaseBean
     {
       objectSetup = ObjectSetupCache.getConfig(setupName);
     }
-    
+
     // Init scriptClient if defined
     String actionsScriptName = objectSetup.getScriptName();
     if (actionsScriptName == null) //fallback
       actionsScriptName = objectSetup.getScriptActions().getScriptName();
-    
+
     if (actionsScriptName != null)
     {
       scriptClient = new ScriptClient();
-      scriptClient.put("userSessionBean", 
+      scriptClient.put("userSessionBean",
         UserSessionBean.getCurrentInstance());
-      scriptClient.put("applicationBean", 
-        ApplicationBean.getCurrentInstance());             
+      scriptClient.put("applicationBean",
+        ApplicationBean.getCurrentInstance());
       scriptClient.executeScript(actionsScriptName);
-      
+
       loadActions();
     }
     else
       scriptClient = null;
   }
-  
+
 
   public void loadActiveEditTab() throws Exception
   {
@@ -318,41 +336,42 @@ public abstract class ObjectBean extends BaseBean
       }
     }
   }
-  
+
   private void loadActions()
   {
-    actions = new ArrayList();
-    actions.addAll(getObjectSetup().getActions());
-    actions.addAll(getObjectSetup().getScriptActions().getActions()); //fallback     
     try
     {
+      actions = new ArrayList();
+      actions.addAll(getObjectSetup().getActions());
+      actions.addAll(getObjectSetup().getScriptActions().getActions()); //fallback
+
       if (scriptClient != null)
       {
         Object callable = scriptClient.get("getActions");
         if (callable instanceof Callable)
         {
-          scriptClient.put("actionObject", new ActionObject(getObject()));          
-          List<Action> actionList = 
+          scriptClient.put("actionObject", new ActionObject(getObject()));
+          List<Action> actionList =
             (List<Action>) scriptClient.execute((Callable)callable);
 
           if (actionList != null)
             actions.addAll(actionList);
-        }        
+        }
       }
-    }                
+    }
     catch (Exception ex)
     {
       error(ex);
     }
   }
-  
+
   public void callAction(String actionName)
   {
     Action action = getAction(actionName);
     if (action != null)
       executeAction(action.getName(), action.getParameters());
   }
-  
+
   protected Action getAction(String name)
   {
     Action action = null;
@@ -364,8 +383,8 @@ public abstract class ObjectBean extends BaseBean
         .orElse(null);
     }
     return action;
-  }   
-  
+  }
+
   protected ActionObject executeAction(String actionName)
   {
     return executeAction(actionName, null);
@@ -375,8 +394,8 @@ public abstract class ObjectBean extends BaseBean
   {
     return executeAction(actionName, parameters, getObject());
   }
-  
-  protected ActionObject executeAction(String actionName, Object[] parameters, 
+
+  protected ActionObject executeAction(String actionName, Object[] parameters,
     Object object)
   {
     ActionObject actionObject = new ActionObject(object);
@@ -399,10 +418,10 @@ public abstract class ObjectBean extends BaseBean
     }
     return actionObject;
   }
-  
+
   public ActionObject executeTabAction(String actionName, Object object)
   {
-    ActionObject actionObject = 
+    ActionObject actionObject =
       new ActionObject(object, getActiveEditTab().getSubviewId());
     if (scriptClient != null)
     {
@@ -413,7 +432,7 @@ public abstract class ObjectBean extends BaseBean
         scriptClient.execute((Callable)callable);
         actionObject = (ActionObject) scriptClient.get("actionObject");
         if (actionObject.isRefresh())
-          load();  
+          load();
         if (actionObject.isFullRefresh())
         {
           getBaseTypeInfo().visit(objectId);
@@ -561,15 +580,23 @@ public abstract class ObjectBean extends BaseBean
 
   public boolean isRenderProperty(String propName)
   {
-    propName = "render" + StringUtils.capitalize(propName);
-    Object value = objectSetup.getProperties().get(propName);
-    if (value == null)
-      return true;
-    else
-      return Boolean.parseBoolean(value.toString());
+    try
+    {
+      propName = "render" + StringUtils.capitalize(propName);
+      Object value = getObjectSetup().getProperties().get(propName);
+      if (value == null)
+        return true;
+      else
+        return Boolean.parseBoolean(value.toString());
+    }
+    catch (Exception ex)
+    {
+      return false;
+    }
   }
 
-  private void clear()
+  @Override
+  public void clear()
   {
     HashSet<TabBean> tabBeans = new HashSet<>();
     for (EditTab tab : getEditTabs())

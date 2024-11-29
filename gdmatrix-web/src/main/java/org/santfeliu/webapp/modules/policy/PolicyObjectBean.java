@@ -32,7 +32,7 @@ package org.santfeliu.webapp.modules.policy;
 
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -51,7 +51,7 @@ import static org.santfeliu.webapp.modules.policy.PolicyModuleBean.getPort;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class PolicyObjectBean extends ObjectBean
 {
   private Policy policy = new Policy();
@@ -62,12 +62,6 @@ public class PolicyObjectBean extends ObjectBean
 
   @Inject
   PolicyFinderBean policyFinderBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public String getRootTypeId()
@@ -164,20 +158,20 @@ public class PolicyObjectBean extends ObjectBean
     this.policy = (Policy) array[0];
     this.formSelector = (String)array[1];
   }
-  
+
   @Override
   public boolean isEditable()
   {
     if (UserSessionBean.getCurrentInstance().isUserInRole(
       PolicyConstants.POLICY_ADMIN_ROLE))
       return true;
-    
+
     if (!super.isEditable()) return false; //tab protection
 
-    if (policy == null || policy.getPolicyId() == null || 
+    if (policy == null || policy.getPolicyId() == null ||
       policy.getPolicyTypeId() == null)
       return true;
-        
+
     Type currentType =
       TypeCache.getInstance().getType(policy.getPolicyTypeId());
     return currentType == null;

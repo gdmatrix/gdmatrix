@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -50,13 +50,13 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class UserObjectBean extends ObjectBean
 {
   private User user = new User();
   private Boolean renderUserLockPanel;
   private SecurityMetaData metaData;
-  
+
   @Inject
   UserTypeBean userTypeBean;
 
@@ -199,7 +199,7 @@ public class UserObjectBean extends ObjectBean
   {
     try
     {
-      int maxFailedLoginAttempts = 
+      int maxFailedLoginAttempts =
         getSecurityMetaData().getMaxFailedLoginAttempts();
       int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
         user.getFailedLoginAttempts());
@@ -227,7 +227,7 @@ public class UserObjectBean extends ObjectBean
   {
     try
     {
-      int minIntrusionAttempts = 
+      int minIntrusionAttempts =
         getSecurityMetaData().getMinIntrusionAttempts();
       int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
         user.getFailedLoginAttempts());
@@ -260,7 +260,7 @@ public class UserObjectBean extends ObjectBean
     {
       int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
         user.getFailedLoginAttempts());
-      int maxFailedLoginAttempts = 
+      int maxFailedLoginAttempts =
         getSecurityMetaData().getMaxFailedLoginAttempts();
       if (failedLoginAttempts < maxFailedLoginAttempts)
       {
@@ -297,7 +297,7 @@ public class UserObjectBean extends ObjectBean
   {
     try
     {
-      int autoUnlockMarginTime = 
+      int autoUnlockMarginTime =
         getSecurityMetaData().getAutoUnlockMarginTime();
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(TextUtils.parseInternalDate(
@@ -310,7 +310,7 @@ public class UserObjectBean extends ObjectBean
       return null;
     }
   }
-  
+
   private SecurityMetaData getSecurityMetaData() throws Exception
   {
     if (metaData == null)
@@ -318,6 +318,6 @@ public class UserObjectBean extends ObjectBean
       metaData = getPort(false).getSecurityMetaData();
     }
     return metaData;
-  }  
+  }
 
 }

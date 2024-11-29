@@ -3,6 +3,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
                 template="/pages/obj/object_3col.xhtml">
 
@@ -143,6 +144,9 @@
       </p:tab>
 
     </p:tabView>
+    
+    <gdm:saveBean value="sourceObjectBean" />
+    <gdm:saveBean value="sourceFinderBean" />
 
   </ui:define>
 

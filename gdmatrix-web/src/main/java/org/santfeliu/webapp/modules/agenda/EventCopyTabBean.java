@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Attendant;
@@ -74,7 +74,7 @@ import org.santfeliu.webapp.modules.cases.CasesModuleBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventCopyTabBean extends WebBean implements Serializable
 {
   private int firstRowIndex = 0;
@@ -850,7 +850,7 @@ public class EventCopyTabBean extends WebBean implements Serializable
           if (addMasterEventId)
           {
             //Add masterEventId property
-            if (DictionaryUtils.getProperty(storeEvent, "masterEventId") == 
+            if (DictionaryUtils.getProperty(storeEvent, "masterEventId") ==
               null)
             {
               Property p = new Property();

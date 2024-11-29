@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Attendant;
@@ -63,7 +63,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventPersonsTabBean extends TabBean
 {
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
@@ -71,7 +71,7 @@ public class EventPersonsTabBean extends TabBean
   private Attendant editing;
   private Set<String> unavailableAttendants;
   Map<String, TabInstance> tabInstances = new HashMap<>();
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper;
 
   public class TabInstance
   {
@@ -92,7 +92,6 @@ public class EventPersonsTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -104,7 +103,7 @@ public class EventPersonsTabBean extends TabBean
       @Override
       public List<TableProperty> getColumns()
       {
-        return Collections.EMPTY_LIST;        
+        return Collections.EMPTY_LIST;
       }
 
       @Override
@@ -117,7 +116,7 @@ public class EventPersonsTabBean extends TabBean
       {
         return "attendantTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
@@ -131,13 +130,13 @@ public class EventPersonsTabBean extends TabBean
           return attendantView.getPersonView().getFullName();
         }
         else if ("attendantTypeId".equals(columnName))
-        {          
+        {
           return typeTypeBean.getDescription(
             attendantView.getAttendantTypeId());
         }
         else if ("attended".equals(columnName))
         {
-          return attendantView.getAttended();          
+          return attendantView.getAttended();
         }
         else if ("comments".equals(columnName))
         {
@@ -148,8 +147,8 @@ public class EventPersonsTabBean extends TabBean
           return null;
         }
       }
-      
-    };    
+
+    };
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -222,9 +221,9 @@ public class EventPersonsTabBean extends TabBean
         List<Attendant> unavailableList = AgendaModuleBean.getClient().
           findAttendantsOccupancyFromCache(eventObjectBean.getObjectId());
         for (Attendant unavailable : unavailableList)
-        {        
+        {
           unavailableAttendants.add(unavailable.getPersonId());
-        }      
+        }
       }
       catch (Exception ex) { }
     }
@@ -232,7 +231,7 @@ public class EventPersonsTabBean extends TabBean
   }
 
   public void setUnavailableAttendants(Set<String> unavailableAttendants)
-  {    
+  {
     this.unavailableAttendants = unavailableAttendants;
   }
 
@@ -266,7 +265,7 @@ public class EventPersonsTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-  
+
   public String getPersonDescription()
   {
     if (editing != null && !isNew(editing))
@@ -333,7 +332,7 @@ public class EventPersonsTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);      
+    executeTabAction("preTabLoad", null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -343,7 +342,7 @@ public class EventPersonsTabBean extends TabBean
         List<AttendantView> auxList = AgendaModuleBean.getClient(false).
           findAttendantViewsFromCache(filter);
         String typeId = getTabBaseTypeId();
-        EditTab tab = eventObjectBean.getActiveEditTab();  
+        EditTab tab = eventObjectBean.getActiveEditTab();
         if (typeId == null || tab.isShowAllTypes())
         {
           getCurrentTabInstance().rows = auxList;
@@ -376,15 +375,15 @@ public class EventPersonsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
-    executeTabAction("postTabLoad", null);      
+    executeTabAction("postTabLoad", null);
   }
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);    
+    executeTabAction("preTabEdit", null);
     editing = new Attendant();
     editing.setAttendantTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", editing);    
+    executeTabAction("postTabEdit", editing);
   }
 
   @Override
@@ -396,7 +395,7 @@ public class EventPersonsTabBean extends TabBean
       {
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
-        editing = (Attendant) executeTabAction("preTabStore", editing);        
+        editing = (Attendant) executeTabAction("preTabStore", editing);
         AgendaModuleBean.getClient(false).storeAttendant(editing);
         executeTabAction("postTabStore", editing);
         refreshHiddenTabInstances();
@@ -419,7 +418,7 @@ public class EventPersonsTabBean extends TabBean
       {
         row = (AttendantView)executeTabAction("preTabRemove", row);
         AgendaModuleBean.getClient(false).removeAttendant(row.getAttendantId());
-        executeTabAction("postTabRemove", row);        
+        executeTabAction("postTabRemove", row);
         refreshHiddenTabInstances();
         load();
         growl("REMOVE_OBJECT");
@@ -441,7 +440,7 @@ public class EventPersonsTabBean extends TabBean
   {
     return (editing != null);
   }
-  
+
   @Override
   public void clear()
   {
@@ -452,7 +451,7 @@ public class EventPersonsTabBean extends TabBean
   {
     return !getUnavailableAttendants().contains(row.getPersonId());
   }
-  
+
   @Override
   public Serializable saveState()
   {
@@ -477,12 +476,12 @@ public class EventPersonsTabBean extends TabBean
   @Override
   protected String getCreationTypeId()
   {
-    if (getTabBaseTypeId() == null)    
-      return "Attendant";    
-    else 
+    if (getTabBaseTypeId() == null)
+      return "Attendant";
+    else
       return super.getCreationTypeId();
   }
-  
+
   private boolean isNew(Attendant attendant)
   {
     return (attendant != null && attendant.getAttendantId() == null);

@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Intervention;
@@ -64,14 +64,14 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseInterventionsTabBean extends TabBean
 {
   @Inject
   CaseTypeBean caseTypeBean;
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
-  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private GroupableRowsHelper groupableRowsHelper;
 
   public class TabInstance
@@ -79,7 +79,7 @@ public class CaseInterventionsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseInterventionsDataTableRow> rows;
     int firstRow = 0;
-    TypeSelectHelper typeSelectHelper = 
+    TypeSelectHelper typeSelectHelper =
       new TypeSelectHelper<CaseInterventionsDataTableRow>()
     {
       @Override
@@ -98,14 +98,14 @@ public class CaseInterventionsTabBean extends TabBean
       @Override
       public String getBaseTypeId()
       {
-        return CaseInterventionsTabBean.this.getTabBaseTypeId();        
+        return CaseInterventionsTabBean.this.getTabBaseTypeId();
       }
 
       @Override
       public void resetFirstRow()
       {
         firstRow = 0;
-      }      
+      }
 
       @Override
       public String getRowTypeId(CaseInterventionsDataTableRow row)
@@ -113,11 +113,11 @@ public class CaseInterventionsTabBean extends TabBean
         return row.getTypeId();
       }
     };
-    
+
     public TypeSelectHelper getTypeSelectHelper()
     {
       return typeSelectHelper;
-    }    
+    }
   }
 
   private Intervention editing;
@@ -129,7 +129,6 @@ public class CaseInterventionsTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -149,8 +148,8 @@ public class CaseInterventionsTabBean extends TabBean
       {
         if (getOrderBy() != null)
         {
-          Collections.sort(getCurrentTabInstance().rows, 
-            new DataTableRowComparator(getColumns(), getOrderBy()));        
+          Collections.sort(getCurrentTabInstance().rows,
+            new DataTableRowComparator(getColumns(), getOrderBy()));
         }
       }
 
@@ -158,7 +157,7 @@ public class CaseInterventionsTabBean extends TabBean
       public String getRowTypeColumnName()
       {
         return "intTypeId";
-      }      
+      }
 
       @Override
       public String getFixedColumnValue(Object row, String columnName)
@@ -166,7 +165,7 @@ public class CaseInterventionsTabBean extends TabBean
         return null; //No fixed columns
       }
     };
-  }  
+  }
 
   public GroupableRowsHelper getGroupableRowsHelper()
   {
@@ -188,7 +187,7 @@ public class CaseInterventionsTabBean extends TabBean
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
     if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
-    {    
+    {
       TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
       if (tabInstance == null)
       {
@@ -204,8 +203,8 @@ public class CaseInterventionsTabBean extends TabBean
   public Map<String, TabInstance> getTabInstances()
   {
     return tabInstances;
-  }  
-  
+  }
+
   @Override
   public String getObjectId()
   {
@@ -274,8 +273,8 @@ public class CaseInterventionsTabBean extends TabBean
       return activeEditTab.getOrderBy();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
+  }
+
   public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -284,12 +283,12 @@ public class CaseInterventionsTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
-  }  
-  
+  }
+
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -390,7 +389,7 @@ public class CaseInterventionsTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);    
+    executeTabAction("preTabLoad", null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -399,25 +398,25 @@ public class CaseInterventionsTabBean extends TabBean
         filter.setCaseId(getObjectId());
 
         String typeId = getTabBaseTypeId();
-        EditTab tab = caseObjectBean.getActiveEditTab();         
+        EditTab tab = caseObjectBean.getActiveEditTab();
         if (tab.isShowAllTypes())
           typeId = DictionaryConstants.INTERVENTION_TYPE;
-        if (typeId != null)        
+        if (typeId != null)
           filter.setIntTypeId(typeId);
-        
+
         List<InterventionView> interventions =
           CasesModuleBean.getPort(false).findInterventionViews(filter);
 
-        List<CaseInterventionsDataTableRow> auxList = 
+        List<CaseInterventionsDataTableRow> auxList =
           toDataTableRows(interventions);
         if (getOrderBy() != null)
-        {        
-          Collections.sort(auxList, 
+        {
+          Collections.sort(auxList,
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
-        getCurrentTabInstance().typeSelectHelper.load(); 
-        executeTabAction("postTabLoad", null);          
+        getCurrentTabInstance().typeSelectHelper.load();
+        executeTabAction("postTabLoad", null);
       }
       catch (Exception ex)
       {
@@ -429,9 +428,9 @@ public class CaseInterventionsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();      
+      getCurrentTabInstance().typeSelectHelper.load();
       tabInstance.firstRow = 0;
-    }   
+    }
   }
 
   public void edit(DataTableRow row)
@@ -439,7 +438,7 @@ public class CaseInterventionsTabBean extends TabBean
     String intId = null;
     if (row != null)
       intId = row.getRowId();
-       
+
     try
     {
       if (intId != null)
@@ -452,7 +451,7 @@ public class CaseInterventionsTabBean extends TabBean
       {
         create();
       }
-      formSelector = null;      
+      formSelector = null;
     }
     catch (Exception ex)
     {
@@ -478,13 +477,13 @@ public class CaseInterventionsTabBean extends TabBean
   {
     editing = null;
   }
-  
+
   @Override
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   public void remove(DataTableRow row)
   {
     try
@@ -494,7 +493,7 @@ public class CaseInterventionsTabBean extends TabBean
         row = (DataTableRow) executeTabAction("preTabRemove", row);
         String intId = row.getRowId();
         CasesModuleBean.getPort(false).removeIntervention(intId);
-        executeTabAction("postTabRemove", row);        
+        executeTabAction("postTabRemove", row);
         refreshHiddenTabInstances();
         load();
       }
@@ -504,12 +503,12 @@ public class CaseInterventionsTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   @Override
   public void clear()
   {
     tabInstances.clear();
-  }  
+  }
 
   @Override
   public Serializable saveState()
@@ -559,20 +558,20 @@ public class CaseInterventionsTabBean extends TabBean
       }
     }
   }
-  
+
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
-    return new DateTimeRowStyleClassGenerator("startDate,startTime", 
+    return new DateTimeRowStyleClassGenerator("startDate,startTime",
       "endDate,endTime", null);
   }
-  
+
   private String getRowStyleClass(Object row)
   {
-    RowStyleClassGenerator styleClassGenerator = 
+    RowStyleClassGenerator styleClassGenerator =
       getRowStyleClassGenerator();
-    return styleClassGenerator.getStyleClass(row);    
-  }  
-  
+    return styleClassGenerator.getStyleClass(row);
+  }
+
   public class CaseInterventionsDataTableRow extends DataTableRow
   {
     private String startDateTime;
@@ -587,20 +586,20 @@ public class CaseInterventionsTabBean extends TabBean
       if (row.getStartDate() != null)
       {
         startDateTime = row.getStartDate();
-        if (row.getStartTime() != null) startDateTime += row.getStartTime();        
+        if (row.getStartTime() != null) startDateTime += row.getStartTime();
       }
       if (row.getEndDate() != null)
       {
         endDateTime = row.getEndDate();
         if (row.getEndTime() != null) endDateTime += row.getEndTime();
-      }      
+      }
       if (row.getPersonView() != null)
       {
         personId = row.getPersonView().getPersonId();
         personName = row.getPersonView().getFullName();
         personIdent = row.getPersonView().getNif() != null ?
-          row.getPersonView().getNif() : 
-          row.getPersonView().getPassport();        
+          row.getPersonView().getNif() :
+          row.getPersonView().getPassport();
       }
     }
 
@@ -677,6 +676,6 @@ public class CaseInterventionsTabBean extends TabBean
       }
       return super.getDefaultValue(columnName);
     }
-  }  
+  }
 
 }

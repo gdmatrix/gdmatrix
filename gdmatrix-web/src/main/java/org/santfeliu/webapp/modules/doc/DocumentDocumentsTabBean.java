@@ -33,8 +33,7 @@ package org.santfeliu.webapp.modules.doc;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.RelatedDocument;
@@ -50,7 +49,7 @@ import static org.santfeliu.webapp.modules.doc.DocumentDocumentsTabBean.RelatedD
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class DocumentDocumentsTabBean extends TabBean
 {
   private int firstRow;
@@ -59,12 +58,6 @@ public class DocumentDocumentsTabBean extends TabBean
 
   @Inject
   DocumentObjectBean documentObjectBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -176,7 +169,7 @@ public class DocumentDocumentsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
+  }
 
   public void create()
   {

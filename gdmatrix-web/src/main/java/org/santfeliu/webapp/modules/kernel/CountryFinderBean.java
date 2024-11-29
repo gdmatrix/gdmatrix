@@ -32,7 +32,7 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Country;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.TypeBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CountryFinderBean
   extends TerritoryFinderBean<CountryFilter, Country>
 {

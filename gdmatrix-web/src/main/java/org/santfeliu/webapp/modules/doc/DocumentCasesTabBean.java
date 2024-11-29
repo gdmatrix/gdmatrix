@@ -35,8 +35,8 @@ import org.santfeliu.webapp.modules.cases.*;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.event.FacesEvent;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CaseDocument;
@@ -54,24 +54,23 @@ import org.santfeliu.webapp.setup.TableProperty;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class DocumentCasesTabBean extends TabBean
 {
   private List<CaseDocumentView> rows;
   private int firstRow;
   private CaseDocument editing;
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper;
 
   @Inject
   DocumentObjectBean documentObjectBean;
 
   @Inject
-  TypeTypeBean typeTypeBean;  
-  
+  TypeTypeBean typeTypeBean;
+
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -83,7 +82,7 @@ public class DocumentCasesTabBean extends TabBean
       @Override
       public List<TableProperty> getColumns()
       {
-        return Collections.EMPTY_LIST;        
+        return Collections.EMPTY_LIST;
       }
 
       @Override
@@ -96,7 +95,7 @@ public class DocumentCasesTabBean extends TabBean
       {
         return "caseDocTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
@@ -118,7 +117,7 @@ public class DocumentCasesTabBean extends TabBean
         {
           return null;
         }
-      }      
+      }
     };
   }
 
@@ -130,8 +129,8 @@ public class DocumentCasesTabBean extends TabBean
   public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
   {
     this.groupableRowsHelper = groupableRowsHelper;
-  }  
-  
+  }
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -199,7 +198,7 @@ public class DocumentCasesTabBean extends TabBean
         error(ex);
       }
     }
-    else 
+    else
     {
       rows = Collections.EMPTY_LIST;
       firstRow = 0;
@@ -236,7 +235,7 @@ public class DocumentCasesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
+  }
 
   public void create()
   {

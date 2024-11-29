@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.news.NewView;
@@ -55,7 +55,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class NewFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -72,7 +72,7 @@ public class NewFinderBean extends FinderBean
 
   @Inject
   NewTypeBean newTypeBean;
-  
+
   @PostConstruct
   public void init()
   {
@@ -80,7 +80,7 @@ public class NewFinderBean extends FinderBean
   }
 
   public List<NewView> getRows()
-  {    
+  {
     return rows;
   }
 
@@ -183,8 +183,10 @@ public class NewFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     initFilter();
     smartFilter = null;
     rows = null;
@@ -194,7 +196,7 @@ public class NewFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow, 
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       getObjectPosition(), rows, outdated };
   }
 
@@ -231,7 +233,7 @@ public class NewFinderBean extends FinderBean
         rows = new BigList()
         {
           private final List<String> sections = getEditSections();
-          
+
           @Override
           public int getElementCount()
           {
@@ -263,16 +265,16 @@ public class NewFinderBean extends FinderBean
               filter.getSectionId().addAll(sections);
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              List<NewView> results = 
+              List<NewView> results =
                 NewsModuleBean.getPort(false).findNewViews(filter);
               if (!results.isEmpty())
               {
                 results.stream()
                   .forEach(n -> n.setHeadline(Unicode.decode(n.getHeadline())));
-              }              
+              }
               resetWildcards(filter);
               return results;
-              
+
             }
             catch (Exception ex)
             {
@@ -304,7 +306,7 @@ public class NewFinderBean extends FinderBean
       error(ex);
     }
   }
-  
+
   private String setWildcards(String text)
   {
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
@@ -312,19 +314,19 @@ public class NewFinderBean extends FinderBean
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(NewsFilter filter)
   {
     String content = filter.getContent();
-    if (content != null && !content.startsWith("\"") 
+    if (content != null && !content.startsWith("\"")
       && !content.endsWith("\""))
     {
       content = content.replaceAll("^%+|%+$", "");
       filter.setContent(content);
     }
-  } 
-  
+  }
+
   private void initFilter()
   {
     filter = new NewsFilter();
@@ -333,20 +335,20 @@ public class NewFinderBean extends FinderBean
     filter.setEndDateTime(TextUtils.formatDate(now, "yyyyMMddHHmmss"));
     filter.setExcludeNotPublished(false);
   }
-  
+
   private List<String> getEditSections() throws Exception
   {
     List<String> sections = new ArrayList();
     List<MenuItemCursor> menuItemList = newObjectBean.getSectionNodes();
-        
+
     for (MenuItemCursor menuItem : menuItemList)
-    {    
+    {
       for (String editRole : menuItem.getEditRoles())
       {
         if (UserSessionBean.getCurrentInstance().isUserInRole(editRole))
           sections.add(menuItem.getMid());
       }
-    }    
+    }
     return sections;
   }
 

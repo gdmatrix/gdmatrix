@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Contact;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.TabBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class PersonContactsTabBean extends TabBean
 {
 
@@ -99,12 +99,12 @@ public class PersonContactsTabBean extends TabBean
   {
     this.editing = contact;
   }
-  
+
   public String getContactTypeId()
   {
     return editing.getContactTypeId();
   }
-  
+
   public void setContactTypeId(String contactTypeId)
   {
     if (editing != null)
@@ -117,9 +117,9 @@ public class PersonContactsTabBean extends TabBean
   public void load()
   {
     if (!NEW_OBJECT_ID.equals(getObjectId()))
-    {    
+    {
       try
-      {    
+      {
         ContactFilter filter = new ContactFilter();
         filter.setPersonId(getObjectId());
         rows = KernelModuleBean.getPort(false).findContactViews(filter);
@@ -131,9 +131,9 @@ public class PersonContactsTabBean extends TabBean
     }
     else
     {
-      rows = Collections.emptyList();        
+      rows = Collections.emptyList();
       firstRow = 0;
-    }      
+    }
   }
 
   public void create()
@@ -177,7 +177,7 @@ public class PersonContactsTabBean extends TabBean
         editing.setPersonId(getObjectId());
         KernelModuleBean.getPort(false).storeContact(editing);
         editing = null;
-        growl("STORE_OBJECT");        
+        growl("STORE_OBJECT");
       }
       load();
     }
@@ -196,8 +196,8 @@ public class PersonContactsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   public void remove(ContactView contact)
   {
     try

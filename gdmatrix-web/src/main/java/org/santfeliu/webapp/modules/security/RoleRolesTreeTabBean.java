@@ -31,7 +31,7 @@
 package org.santfeliu.webapp.modules.security;
 
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.model.DefaultTreeNode;
@@ -43,17 +43,11 @@ import org.santfeliu.webapp.ObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class RoleRolesTreeTabBean extends RolesTreeTabBean
 {
   @Inject
   RoleObjectBean roleObjectBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -64,9 +58,9 @@ public class RoleRolesTreeTabBean extends RolesTreeTabBean
   @Override
   protected TreeNode createMainTreeNode()
   {
-    String roleId = getObjectId();        
-    TreeNode mainNode = new DefaultTreeNode("Role", new RoleInfo(roleId, false), 
-      getRoot());    
+    String roleId = getObjectId();
+    TreeNode mainNode = new DefaultTreeNode("Role", new RoleInfo(roleId, false),
+      getRoot());
     return mainNode;
   }
 

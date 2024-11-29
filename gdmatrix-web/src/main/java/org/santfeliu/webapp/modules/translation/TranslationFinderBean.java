@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.translation;
@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.translation;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -49,17 +49,17 @@ import org.santfeliu.webapp.ObjectBean;
  *
  * @author blanquepa
  */
-@ViewScoped
 @Named
+@RequestScoped
 public class TranslationFinderBean extends FinderBean
 {
   private TranslationFilter filter = new TranslationFilter();
   private List<Translation> rows;
-  
+
   private String smartFilter;
   private int firstRow;
-  private boolean outdated;  
-    
+  private boolean outdated;
+
   @Inject
   NavigatorBean navigatorBean;
 
@@ -67,8 +67,8 @@ public class TranslationFinderBean extends FinderBean
   TranslationTypeBean translationTypeBean;
 
   @Inject
-  TranslationObjectBean translationObjectBean; 
-      
+  TranslationObjectBean translationObjectBean;
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -94,7 +94,7 @@ public class TranslationFinderBean extends FinderBean
   {
     this.smartFilter = smartFilter;
   }
-  
+
   public List<Translation> getRows()
   {
     return rows;
@@ -109,28 +109,28 @@ public class TranslationFinderBean extends FinderBean
   {
     this.firstRow = firstRow;
   }
-  
+
   @Override
   public String getObjectId(int position)
   {
     return rows == null ? NEW_OBJECT_ID : rows.get(position).getTransId();
-  } 
-  
+  }
+
   @Override
   public int getObjectCount()
   {
     return rows == null ? 0 : rows.size();
-  }  
-  
+  }
+
   @Override
   public void smartFind()
   {
     setFinding(true);
     setFilterTabSelector(0);
 
-    filter = translationTypeBean.queryToFilter(smartFilter, 
+    filter = translationTypeBean.queryToFilter(smartFilter,
       DictionaryConstants.TRANSLATION_TYPE);
-    
+
     doFind(true);
     resetWildcards(filter);
     firstRow = 0;
@@ -140,13 +140,13 @@ public class TranslationFinderBean extends FinderBean
   public void find()
   {
     setFinding(true);
-    setFilterTabSelector(1);  
+    setFilterTabSelector(1);
     smartFilter = translationTypeBean.filterToQuery(filter);
     doFind(true);
-    resetWildcards(filter);    
+    resetWildcards(filter);
     firstRow = 0;
   }
-  
+
   public void outdate()
   {
     this.outdated = true;
@@ -160,8 +160,10 @@ public class TranslationFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new TranslationFilter();
     smartFilter = null;
     rows = null;
@@ -195,8 +197,8 @@ public class TranslationFinderBean extends FinderBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void doFind(boolean autoLoad)
   {
     try
@@ -210,7 +212,7 @@ public class TranslationFinderBean extends FinderBean
         String text = filter.getText();
         filter.setText(setWildcards(text));
         String translation = filter.getTranslation();
-        filter.setTranslation(setWildcards(translation));        
+        filter.setTranslation(setWildcards(translation));
         rows = new BigList(20, 10)
         {
           @Override
@@ -268,8 +270,8 @@ public class TranslationFinderBean extends FinderBean
     {
       error(ex);
     }
-  } 
-  
+  }
+
   private String setWildcards(String text)
   {
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
@@ -277,20 +279,20 @@ public class TranslationFinderBean extends FinderBean
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(TranslationFilter filter)
   {
     String title = filter.getText();
     if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
       title = title.replaceAll("^%+|%+$", "");
     filter.setText(title);
-    
+
     String translation = filter.getTranslation();
-    if (translation != null && !translation.startsWith("\"") 
+    if (translation != null && !translation.startsWith("\"")
       && !translation.endsWith("\""))
         translation = translation.replaceAll("^%+|%+$", "");
-    filter.setTranslation(translation);    
-  }  
-  
+    filter.setTranslation(translation);
+  }
+
 }

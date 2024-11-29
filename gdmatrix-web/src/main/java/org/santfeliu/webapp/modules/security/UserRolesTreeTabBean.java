@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.security.SecurityConstants;
@@ -48,17 +48,11 @@ import org.santfeliu.webapp.ObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class UserRolesTreeTabBean extends RolesTreeTabBean
 {
   @Inject
   UserObjectBean userObjectBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -69,39 +63,39 @@ public class UserRolesTreeTabBean extends RolesTreeTabBean
   @Override
   protected TreeNode createMainTreeNode()
   {
-    String userId = getObjectId(); 
-    TreeNode mainNode = new DefaultTreeNode("User", new UserInfo(userId), 
+    String userId = getObjectId();
+    TreeNode mainNode = new DefaultTreeNode("User", new UserInfo(userId),
       getRoot());
     return mainNode;
   }
 
   public class UserInfo extends NodeInfo
   {
-    public UserInfo(String userId) 
+    public UserInfo(String userId)
     {
       super(userId);
     }
-    
-    public String getUserId() 
+
+    public String getUserId()
     {
       return getNodeId();
     }
 
     @Override
-    protected List<String> getChildrenRoles() 
+    protected List<String> getChildrenRoles()
     {
       List<String> auxList = new ArrayList<>();
       Set<String> userRoles = UserCache.getUserInRoles(getUserId(), false);
       for (String role : userRoles)
       {
-        if (!role.startsWith(SecurityConstants.SELF_ROLE_PREFIX) && 
+        if (!role.startsWith(SecurityConstants.SELF_ROLE_PREFIX) &&
           !role.equals(SecurityConstants.EVERYONE_ROLE))
         {
           auxList.add(role);
-        }        
+        }
       }
       return auxList;
     }
-  }    
+  }
 
 }

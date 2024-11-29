@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Event;
@@ -51,7 +51,7 @@ import org.santfeliu.webapp.TabBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventRecurrencesTabBean extends TabBean
 {
   public static final String MASTER_EVENTID_PROPERTY = "masterEventId";
@@ -64,7 +64,7 @@ public class EventRecurrencesTabBean extends TabBean
 
   private String deleteDateTime;
   private String deleteMode = "0";
-  
+
   private boolean dialogVisible = false;
 
   @Inject
@@ -79,7 +79,6 @@ public class EventRecurrencesTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     load();
   }
 
@@ -150,13 +149,13 @@ public class EventRecurrencesTabBean extends TabBean
     eventCopyTabBean.reset();
     dialogVisible = true;
   }
-  
+
   public void closeCopyDialog()
   {
     eventCopyTabBean.reset();
     dialogVisible = false;
-  }  
-  
+  }
+
   public Date getStartDateTime()
   {
     Event row = (Event) getValue("#{row}");
@@ -320,7 +319,7 @@ public class EventRecurrencesTabBean extends TabBean
     {
       error(ex);
     }
-  } 
+  }
 
   private int deleteFutureRecurrences(String deleteDateTime)
     throws Exception
@@ -352,7 +351,7 @@ public class EventRecurrencesTabBean extends TabBean
     }
     return deleteCount;
   }
-  
+
   private int deleteSelectedRecurrences() throws Exception
   {
     int deleteCount = 0;
@@ -361,7 +360,7 @@ public class EventRecurrencesTabBean extends TabBean
       deleteCount = deleteRecurrences(selectedRows);
     }
     return deleteCount;
-  }    
+  }
 
   private int deleteRecurrences(List<Event> events)
     throws Exception

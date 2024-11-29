@@ -55,12 +55,6 @@ public abstract class ACLTabBean extends TabBean
   @Inject
   protected DicModuleBean dicModuleBean;
 
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
-
   public List<AccessControlEdit> getRows()
   {
     return rows;
@@ -122,7 +116,7 @@ public abstract class ACLTabBean extends TabBean
   {
     createAccessControlEdits(getAccessControlList(), rows);
     if (NEW_OBJECT_ID.equals(getObjectId()))
-      firstRow = 0;    
+      firstRow = 0;
   }
 
   @Override
@@ -166,8 +160,8 @@ public abstract class ACLTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   public void create()
   {
     editing = new AccessControlEdit();

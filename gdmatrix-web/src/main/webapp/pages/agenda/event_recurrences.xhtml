@@ -2,6 +2,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:p="http://primefaces.org/ui">
 
   <h:outputStylesheet library="css" name="agenda.css" />
@@ -147,4 +148,6 @@
 
   </p:outputPanel>
 
+  <gdm:saveBean value="eventRecurrencesTabBean" />
+  
 </ui:composition>

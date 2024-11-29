@@ -36,6 +36,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.faces.application.Application;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIParameter;
@@ -48,6 +49,9 @@ import javax.faces.context.FacesContext;
 @FacesComponent(value = "org.gdmatrix.faces.SaveBean")
 public class SaveBean extends UIParameter
 {
+  private static final String SAVE_PREFIX = "saveBean.save.";
+  private static final String RESTORE_PREFIX = "saveBean.restore.";
+
   public SaveBean()
   {
     setRendererType(null);
@@ -58,7 +62,7 @@ public class SaveBean extends UIParameter
   {
     Object[] values = new Object[2];
     values[0] = super.saveState(context);
-    values[1] = saveBeanState(getBean());
+    values[1] = saveBeanState(context, getBean());
 
     return values;
   }
@@ -68,7 +72,7 @@ public class SaveBean extends UIParameter
   {
     Object values[] = (Object[])state;
     super.restoreState(context, values[0]);
-    restoreBeanState(getBean(), (Object[])values[1]);
+    restoreBeanState(context, getBean(), (Object[])values[1]);
   }
 
   private Object getBean()
@@ -80,41 +84,53 @@ public class SaveBean extends UIParameter
       .evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
   }
 
-  private Object[] saveBeanState(Object bean)
+  private Object[] saveBeanState(FacesContext context, Object bean)
   {
-    List<Field> savableFields = getSavableFields(bean.getClass());
-    Object[] state = new Object[savableFields.size()];
-    for (int i = 0; i < savableFields.size(); i++)
+    Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+    String key = SAVE_PREFIX + bean.getClass().getSimpleName();
+    Object[] state = (Object[])requestMap.get(key);
+
+    if (state == null)
     {
-      Field field = savableFields.get(i);
-      try
+      List<Field> savableFields = getSavableFields(bean.getClass());
+      state = new Object[savableFields.size()];
+      for (int i = 0; i < savableFields.size(); i++)
       {
-        state[i] = field.get(bean);
-        //System.out.println(">>> Saving " + field.getName() + " = " + state[i]);
+        Field field = savableFields.get(i);
+        try
+        {
+          state[i] = field.get(bean);
+        }
+        catch (Exception ex)
+        {
+          state[i] = null;
+        }
       }
-      catch (Exception ex)
-      {
-        state[i] = null;
-      }
+      requestMap.put(key, state);
     }
     return state;
   }
 
-  private void restoreBeanState(Object bean, Object[] state)
+  private void restoreBeanState(FacesContext context, Object bean, Object[] state)
   {
-    List<Field> savableFields = getSavableFields(bean.getClass());
-    for (int i = 0; i < savableFields.size(); i++)
+    Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+    String key = RESTORE_PREFIX + bean.getClass().getSimpleName();
+    if (requestMap.get(key) == null)
     {
-      Field field = savableFields.get(i);
-      try
+      List<Field> savableFields = getSavableFields(bean.getClass());
+      for (int i = 0; i < savableFields.size(); i++)
       {
-        field.set(bean, state[i]);
-        //System.out.println(">>> Restore " + field.getName() + " = " + state[i]);
+        Field field = savableFields.get(i);
+        try
+        {
+          field.set(bean, state[i]);
+        }
+        catch (Exception ex)
+        {
+          // ignore
+        }
       }
-      catch (Exception ex)
-      {
-        // ignore
-      }
+      requestMap.put(key, true);
     }
   }
 
@@ -138,7 +154,7 @@ public class SaveBean extends UIParameter
     }
     return savableFields;
   }
-  
+
   private List<Field> getAllFields(Class<?> type)
   {
     List<Field> fields = new ArrayList<>();

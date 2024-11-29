@@ -1,27 +1,28 @@
-<ui:composition 
+<ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:gdm="http://gdmatrix.org/faces"
   xmlns:p="http://primefaces.org/ui">
-    
+
   <p:dataTable id="full_results_table" value="#{cityFinderBean.rows}" var="row"
-               stripedRows="true" paginator="true" pageLinks="5" 
+               stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                rows="10" first="#{cityFinderBean.firstRow}"
                rowStyleClass="#{row.cityId == cityObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowIndexVar="rowIndex"
                rendered="true" emptyMessage="#{objectBundle.no_data}">
     <p:column headerText="cityId" styleClass="col-1">
       <h:outputText value="#{row.cityId}" />
-    </p:column>          
+    </p:column>
     <p:column headerText="Població" styleClass="col-7">
       <h:outputText value="#{row.name}" />
-    </p:column> 
+    </p:column>
     <p:column headerText="Província" styleClass="col-4">
       <h:outputText value="#{row.province}" />
-    </p:column>      
+    </p:column>
     <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
@@ -29,17 +30,17 @@
                        rendered="#{navigatorBean.selectionPending}"
                        process="@this" update="@form:cnt"
                        title="#{objectBundle.select}" alt="#{objectBundle.select}"
-                       />      
-      <p:commandButton icon="pi pi-arrow-circle-right" styleClass="rounded-button ui-button-flat" 
+                       />
+      <p:commandButton icon="pi pi-arrow-circle-right" styleClass="rounded-button ui-button-flat"
                        action="#{cityFinderBean.view(rowIndex)}"
                        process="@this"
                        resetValues="true"
                        oncomplete="PF('searchTabs').select(1);"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}"
-                       />     
+                       />
     </p:column>
-  </p:dataTable>  
+  </p:dataTable>
 
-</ui:composition> 
+</ui:composition>
 

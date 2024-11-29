@@ -1,26 +1,27 @@
-<ui:composition 
+<ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:gdm="http://gdmatrix.org/faces"
   xmlns:p="http://primefaces.org/ui">
-  
-  <p:dataTable value="#{enumTypeFinderBean.rows}" 
-               var="row" stripedRows="true" 
+
+  <p:dataTable value="#{enumTypeFinderBean.rows}"
+               var="row" stripedRows="true"
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{enumTypeFinderBean.firstRow}"
                rowStyleClass="#{row.enumTypeId == enumTypeObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="10"
                rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_data}">
 
     <p:column headerText="#{dicBundle.enumType_type}" styleClass="col-4">
       <h:outputText value="#{row.enumTypeId}" />
-    </p:column>         
+    </p:column>
     <p:column headerText="#{dicBundle.enumType_name}" styleClass="col-8">
       <h:outputText value="#{row.name}" />
-    </p:column>  
+    </p:column>
     <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
@@ -28,17 +29,17 @@
                        rendered="#{navigatorBean.selectionPending}"
                        process="@this" update="@form:cnt"
                        alt="#{objectBundle.select}" title="#{objectBundle.select}"
-                       />      
-      <p:commandButton icon="pi pi-arrow-circle-right" 
+                       />
+      <p:commandButton icon="pi pi-arrow-circle-right"
                        alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                       styleClass="rounded-button ui-button-flat" 
+                       styleClass="rounded-button ui-button-flat"
                        action="#{enumTypeFinderBean.view(rowIndex)}"
                        resetValues="true"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                       />     
+                       />
     </p:column>
-  </p:dataTable>  
+  </p:dataTable>
   
 </ui:composition>

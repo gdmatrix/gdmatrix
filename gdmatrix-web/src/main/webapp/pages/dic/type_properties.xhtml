@@ -4,6 +4,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
@@ -117,12 +118,12 @@
       <f:facet name="header">       
         <div class="flex flex-wrap justify-content-between w-12">
           <p:selectOneMenu value="#{typePropertiesTabBean.rowsVisibility}">
-              <f:selectItem itemLabel="#{dicBundle.typeProperties_showAll}" itemValue="all"/>
-              <f:selectItem itemLabel="#{dicBundle.typeProperties_onlyVisible}" itemValue="only_visible"/>
-              <f:selectItem itemLabel="#{dicBundle.typeProperties_onlyHidden}" itemValue="only_hidden"/>
-              <p:ajax event="valueChange" 
-                      process="@this" 
-                      listener="#{typePropertiesTabBean.changeVisibility}" />              
+            <f:selectItem itemLabel="#{dicBundle.typeProperties_showAll}" itemValue="all"/>
+            <f:selectItem itemLabel="#{dicBundle.typeProperties_onlyVisible}" itemValue="only_visible"/>
+            <f:selectItem itemLabel="#{dicBundle.typeProperties_onlyHidden}" itemValue="only_hidden"/>
+            <p:ajax event="valueChange" 
+                    process="@this" 
+                    listener="#{typePropertiesTabBean.changeVisibility}" />              
           </p:selectOneMenu>
           <p:inputText id="globalFilter" onkeyup="PrimeFaces.widgets['typePropertiesTable'].filter()" 
                        style="width:10rem" styleClass="ml-auto"
@@ -202,129 +203,131 @@
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
-        <f:facet name="header">
-          <p:outputPanel>
-            <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
-            <h:outputText value="#{typeObjectBean.description}" />
-            <i class="pi pi-angle-right mx-2"></i>
-            <h:outputText value="#{applicationBean.translate(typeObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
-            <i class="pi pi-angle-right mx-2"></i>
-            <h:outputText value="#{typePropertiesTabBean.editing.name}" />
-          </p:outputPanel>
-        </f:facet>
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{typeObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(typeObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{typePropertiesTabBean.editing.name}" />
+      </p:outputPanel>
+    </f:facet>
 
-        <p:messages showSummary="true" styleClass="messages" 
-                    showIcon="true" closable="false" forIgnores="growl">
-          <p:autoUpdate />
-        </p:messages>  
-    
-        <h:panelGroup styleClass="mt-2" id="type_properties_panel" layout="block"
-                      rendered="#{typePropertiesTabBean.editing != null}">
-          
-          <div class="ui-fluid formgrid grid" >
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>  
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_name}"
-                             indicateRequired="true"/>
-              <p:inputText value="#{typePropertiesTabBean.editing.name}"
-                           required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
-                           pt:spellcheck="false"
-                           requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
-            </div>
+    <h:panelGroup styleClass="mt-2" id="type_properties_panel" layout="block"
+                  rendered="#{typePropertiesTabBean.editing != null}">
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_description}"
-                             indicateRequired="true"/>
-              <p:inputText value="#{typePropertiesTabBean.editing.description}"
-                           required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
-                           requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}"/>
-            </div>
+      <div class="ui-fluid formgrid grid" >
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_type}" />
-              <p:selectOneMenu value="#{typePropertiesTabBean.editing.type}" touchable="true" var="itemValue">
-                <f:selectItems value="#{typePropertiesTabBean.propertyTypes}"  />
-                <p:column>
-                  <h:outputText value="#{itemValue}"/>
-                </p:column>
-              </p:selectOneMenu>
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_name}"
+                         indicateRequired="true"/>
+          <p:inputText value="#{typePropertiesTabBean.editing.name}"
+                       required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
+                       pt:spellcheck="false"
+                       requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
+        </div>
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_enumType}" />
-              <emcomp:objectReference value="#{typePropertiesTabBean.enumTypeId}"
-                                    process="@form:cnt:search_tabs:tabs:type_properties_dialog"
-                                    type="EnumType"
-                                    oncomplete="PF('typePropertiesDialog').hide();"
-                                    onselect="PF('typePropertiesDialog').show();"
-                                    showNavigatorItems="true"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3">
-              </emcomp:objectReference>
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_description}"
+                         indicateRequired="true"/>
+          <p:inputText value="#{typePropertiesTabBean.editing.description}"
+                       required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
+                       requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}"/>
+        </div>
 
-            <div class="field col-12 md:col-4">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_size}" />
-              <p:spinner value="#{typePropertiesTabBean.editing.size}" min="0" />
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_type}" />
+          <p:selectOneMenu value="#{typePropertiesTabBean.editing.type}" touchable="true" var="itemValue">
+            <f:selectItems value="#{typePropertiesTabBean.propertyTypes}"  />
+            <p:column>
+              <h:outputText value="#{itemValue}"/>
+            </p:column>
+          </p:selectOneMenu>
+        </div>
 
-            <div class="field col-12 md:col-4">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_minOccurs}"/>
-              <p:spinner value="#{typePropertiesTabBean.editing.minOccurs}" min="0"/>
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_enumType}" />
+          <emcomp:objectReference value="#{typePropertiesTabBean.enumTypeId}"
+                                  process="@form:cnt:search_tabs:tabs:type_properties_dialog"
+                                  type="EnumType"
+                                  oncomplete="PF('typePropertiesDialog').hide();"
+                                  onselect="PF('typePropertiesDialog').show();"
+                                  showNavigatorItems="true"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>
 
-            <div class="field col-12 md:col-4">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_maxOccurs}"/>
-              <p:spinner value="#{typePropertiesTabBean.editing.maxOccurs}" min="0" />
-            </div>
+        <div class="field col-12 md:col-4">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_size}" />
+          <p:spinner value="#{typePropertiesTabBean.editing.size}" min="0" />
+        </div>
 
-            <div class="field col-12">
-              <p:outputLabel for="@next"
-                             value="#{dicBundle.typeProperties_value}" />
-              <p:inputTextarea value="#{typePropertiesTabBean.editing.stringValue}" />
-            </div>
+        <div class="field col-12 md:col-4">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_minOccurs}"/>
+          <p:spinner value="#{typePropertiesTabBean.editing.minOccurs}" min="0"/>
+        </div>
 
-            <div class="field col-12">
-              <p:selectBooleanCheckbox value="#{typePropertiesTabBean.editing.hidden}" styleClass="mr-2" />
-              <p:outputLabel for="@previous" value="#{dicBundle.typeProperties_hidden}" />
-            </div>
+        <div class="field col-12 md:col-4">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_maxOccurs}"/>
+          <p:spinner value="#{typePropertiesTabBean.editing.maxOccurs}" min="0" />
+        </div>
 
-            <div class="field col-12">
-              <p:selectBooleanCheckbox value="#{typePropertiesTabBean.editing.readOnly}" styleClass="mr-2" />
-              <p:outputLabel for="@previous" value="#{dicBundle.typeProperties_readOnly}" />
-            </div>
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{dicBundle.typeProperties_value}" />
+          <p:inputTextarea value="#{typePropertiesTabBean.editing.stringValue}" />
+        </div>
 
-          </div>
+        <div class="field col-12">
+          <p:selectBooleanCheckbox value="#{typePropertiesTabBean.editing.hidden}" styleClass="mr-2" />
+          <p:outputLabel for="@previous" value="#{dicBundle.typeProperties_hidden}" />
+        </div>
 
-        </h:panelGroup>
+        <div class="field col-12">
+          <p:selectBooleanCheckbox value="#{typePropertiesTabBean.editing.readOnly}" styleClass="mr-2" />
+          <p:outputLabel for="@previous" value="#{dicBundle.typeProperties_readOnly}" />
+        </div>
 
-        <f:facet name="footer">
+      </div>
 
-          <div class="text-right">
-            <p:commandButton id="type_properties_store"
-                             action="#{typePropertiesTabBean.accept}"
-                             styleClass="m-1" value="#{objectBundle.accept}"
-                             process="type_properties_dialog"
-                             update="type_properties_panel"
-                             oncomplete="closePFDialog('typePropertiesDialog')" 
-                             icon="pi pi-check"/>
-            <p:commandButton action="#{typePropertiesTabBean.cancel}"
-                             styleClass="m-1" value="#{objectBundle.cancel}"
-                             process="@this"
-                             update="type_properties_dialog" global="false"
-                             onclick="PF('typePropertiesDialog').hide()"
-                             icon="pi pi-times" />
-          </div>
-        </f:facet>
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="text-right">
+        <p:commandButton id="type_properties_store"
+                         action="#{typePropertiesTabBean.accept}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
+                         process="type_properties_dialog"
+                         update="type_properties_panel"
+                         oncomplete="closePFDialog('typePropertiesDialog')" 
+                         icon="pi pi-check"/>
+        <p:commandButton action="#{typePropertiesTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="type_properties_dialog" global="false"
+                         onclick="PF('typePropertiesDialog').hide()"
+                         icon="pi pi-times" />
+      </div>
+    </f:facet>
 
   </p:dialog>
+
+  <gdm:saveBean value="typePropertiesTabBean" />
 
 </ui:composition>

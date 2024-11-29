@@ -34,8 +34,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -52,7 +52,7 @@ import org.santfeliu.webapp.modules.kernel.CityFinderBean.CityView;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
 {
   @Inject
@@ -66,7 +66,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
 
   @Inject
   ProvinceTypeBean provinceTypeBean;
-  
+
   private List<SelectItem> provinceSelectItems;
 
   public CityFinderBean()
@@ -106,7 +106,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     filter =
       cityTypeBean.queryToFilter(smartFilter, DictionaryConstants.CITY_TYPE);
     doFind(true);
-    resetWildcards(filter);    
+    resetWildcards(filter);
     firstRow = 0;
   }
 
@@ -138,7 +138,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       else
       {
         String name = filter.getCityName();
-        filter.setCityName(setWildcards(name));         
+        filter.setCityName(setWildcards(name));
         rows = new ArrayList();
         List<City> cities =
           KernelModuleBean.getPort(false).findCities(filter);
@@ -148,7 +148,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
           rows.add(view);
         }
         filter.setCityName(name);
-        
+
         outdated = false;
 
         if (autoLoad)
@@ -171,7 +171,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       error(ex);
     }
   }
-  
+
   @Override
   public Serializable saveState()
   {
@@ -198,19 +198,19 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     {
       error(ex);
     }
-  } 
-  
+  }
+
   public void onCountryChange()
   {
-    provinceSelectItems = 
+    provinceSelectItems =
       provinceTypeBean.getProvinceSelectItems(filter.getCountryId());
   }
-  
+
   public List<SelectItem> getProvinceSelectItems()
   {
     return provinceSelectItems;
   }
-    
+
 
   public class CityView implements Serializable
   {
@@ -268,7 +268,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     }
 
   }
-  
+
   private String setWildcards(String text)
   {
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
@@ -276,14 +276,14 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(CityFilter filter)
   {
     String title = filter.getCityName();
     if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
       title = title.replaceAll("^%+|%+$", "");
     filter.setCityName(title);
-  }     
+  }
 
 }

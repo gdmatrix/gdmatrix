@@ -1,17 +1,17 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"  
-                xmlns:ui="http://java.sun.com/jsf/facelets" 
-                xmlns:f="http://java.sun.com/jsf/core"  
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp" 
-                xmlns:gdm="http://gdmatrix.org/faces"                 
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:param name="objectBean" value="#{personObjectBean}" />
-  <ui:param name="searchLabel" value="#{kernelBundle.person_searchLabel}" />    
+  <ui:param name="searchLabel" value="#{kernelBundle.person_searchLabel}" />
 
-  <ui:define name="filter"> 
+  <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
 
@@ -20,17 +20,17 @@
 
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
-          </f:facet>  
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="ui-fluid formgrid grid"> 
+          <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
               <emcomp:tipInputText id="smartFilter"
                                    value="#{personFinderBean.smartFilter}"
-                                   tipContent="#{personFinderBean.smartSearchTip}" />              
+                                   tipContent="#{personFinderBean.smartSearchTip}" />
             </div>
           </div>
 
@@ -45,7 +45,7 @@
                              icon="fa fa-broom"/>
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
-                             action="#{personFinderBean.smartFind}"                         
+                             action="#{personFinderBean.smartFind}"
                              resetValues="true"
                              process="@form:cnt:find_selector"
                              update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
@@ -53,18 +53,18 @@
                              oncomplete="endPanel('leftPanel');"
                              disableOnAjax="true"
                              icon="pi pi-search" />
-          </div>          
-        </p:tab>  
+          </div>
+        </p:tab>
 
         <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
 
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-          <div class="ui-fluid formgrid grid"> 
+          <div class="ui-fluid formgrid grid">
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_id}" />
@@ -74,40 +74,40 @@
             </div>
 
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.person_full_name}" />        
-              <p:inputText value="#{personFinderBean.filter.fullName}" 
-                           />
-            </div>      
-
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.person_name}" />        
-              <p:inputText value="#{personFinderBean.filter.name}" 
+              <p:outputLabel for="@next" value="#{kernelBundle.person_full_name}" />
+              <p:inputText value="#{personFinderBean.filter.fullName}"
                            />
             </div>
 
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />        
-              <p:inputText value="#{personFinderBean.filter.firstSurname}" 
+              <p:outputLabel for="@next" value="#{kernelBundle.person_name}" />
+              <p:inputText value="#{personFinderBean.filter.name}"
+                           />
+            </div>
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />
+              <p:inputText value="#{personFinderBean.filter.firstSurname}"
                            />
             </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_surname2}" />
-              <p:inputText value="#{personFinderBean.filter.secondSurname}" 
+              <p:inputText value="#{personFinderBean.filter.secondSurname}"
                            />
-            </div> 
-
-            <div class="field col-12">    
-              <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
-              <p:inputText value="#{personFinderBean.filter.nif}"
-                           /> 
             </div>
 
-            <div class="field col-12">    
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
+              <p:inputText value="#{personFinderBean.filter.nif}"
+                           />
+            </div>
+
+            <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
               <p:inputText value="#{personFinderBean.filter.passport}"
-                           /> 
-            </div>            
+                           />
+            </div>
           </div>
           <div class="text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -126,11 +126,11 @@
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"
                              icon="pi pi-search" />
-          </div>       
-        </p:tab> 
+          </div>
+        </p:tab>
 
       </p:tabView>
-    </p:outputPanel>    
+    </p:outputPanel>
   </ui:define>
 
   <ui:define name="object">
@@ -147,8 +147,8 @@
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{personFinderBean.update}"
-                     process="@this" 
-                     update="@form:cnt:search_tabs:result_list" />  
+                     process="@this"
+                     update="@form:cnt:search_tabs:result_list" />
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
@@ -176,7 +176,10 @@
         </h:panelGroup>
       </p:tab>
 
-    </p:tabView>       
+    </p:tabView>
+
+    <gdm:saveBean value="personObjectBean" />
+    <gdm:saveBean value="personFinderBean" />
 
   </ui:define>
 

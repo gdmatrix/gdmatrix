@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CaseEvent;
@@ -63,7 +63,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventCasesTabBean extends TabBean
 {
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
@@ -92,7 +92,6 @@ public class EventCasesTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -112,7 +111,7 @@ public class EventCasesTabBean extends TabBean
       {
         if (getOrderBy() != null)
         {
-          Collections.sort(getCurrentTabInstance().rows, 
+          Collections.sort(getCurrentTabInstance().rows,
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
       }
@@ -122,13 +121,13 @@ public class EventCasesTabBean extends TabBean
       {
         return "caseEventTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
         return null; //No fixed columns
-      }      
-    };    
+      }
+    };
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -140,7 +139,7 @@ public class EventCasesTabBean extends TabBean
   {
     this.groupableRowsHelper = groupableRowsHelper;
   }
-  
+
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = eventObjectBean.getActiveEditTab();
@@ -188,8 +187,8 @@ public class EventCasesTabBean extends TabBean
       return activeEditTab.getOrderBy();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
+  }
+
   public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = eventObjectBean.getActiveEditTab();
@@ -198,12 +197,12 @@ public class EventCasesTabBean extends TabBean
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
-  
+
   public CaseEvent getEditing()
   {
     return editing;
@@ -254,7 +253,7 @@ public class EventCasesTabBean extends TabBean
   {
     this.formSelector = formSelector;
   }
-  
+
   public String getCaseDescription()
   {
     if (editing != null && !isNew(editing))
@@ -290,7 +289,7 @@ public class EventCasesTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);    
+    executeTabAction("preTabLoad", null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -298,21 +297,21 @@ public class EventCasesTabBean extends TabBean
         String typeId = getTabBaseTypeId();
         CaseEventFilter filter = new CaseEventFilter();
         filter.setEventId(eventObjectBean.getObjectId());
-        EditTab tab = eventObjectBean.getActiveEditTab(); 
+        EditTab tab = eventObjectBean.getActiveEditTab();
         if (tab.isShowAllTypes())
           typeId = DictionaryConstants.CASE_EVENT_TYPE;
         filter.setCaseEventTypeId(typeId);
-        filter.setExcludeMetadata(false);        
-        List<CaseEventView> events = 
+        filter.setExcludeMetadata(false);
+        List<CaseEventView> events =
           CasesModuleBean.getPort(false).findCaseEventViews(filter);
         List<CaseEventsDataTableRow> auxList = toDataTableRows(events);
         if (getOrderBy() != null)
-        {        
-          Collections.sort(auxList, 
+        {
+          Collections.sort(auxList,
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
-        executeTabAction("postTabLoad", null);         
+        executeTabAction("postTabLoad", null);
       }
       catch (Exception ex)
       {
@@ -325,16 +324,16 @@ public class EventCasesTabBean extends TabBean
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
-    }    
+    }
   }
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);    
+    executeTabAction("preTabEdit", null);
     editing = new CaseEvent();
     editing.setCaseEventTypeId(getCreationTypeId());
     formSelector = null;
-    executeTabAction("postTabEdit", editing);    
+    executeTabAction("postTabEdit", editing);
   }
 
   @Override
@@ -346,9 +345,9 @@ public class EventCasesTabBean extends TabBean
       {
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
-        editing = (CaseEvent)executeTabAction("preTabStore", editing);        
+        editing = (CaseEvent)executeTabAction("preTabStore", editing);
         editing = CasesModuleBean.getPort(false).storeCaseEvent(editing);
-        executeTabAction("postTabStore", editing);        
+        executeTabAction("postTabStore", editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -390,8 +389,8 @@ public class EventCasesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   @Override
   public void clear()
   {
@@ -436,8 +435,8 @@ public class EventCasesTabBean extends TabBean
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
-  }  
-  
+  }
+
   private void refreshHiddenTabInstances()
   {
     for (TabInstance tabInstance : tabInstances.values())
@@ -448,7 +447,7 @@ public class EventCasesTabBean extends TabBean
       }
     }
   }
-  
+
   public class CaseEventsDataTableRow extends DataTableRow
   {
     private String caseId;
@@ -508,13 +507,13 @@ public class EventCasesTabBean extends TabBean
           case "caseTypeId":
             return new TypeValue(getCaseTypeId());
           case "caseTitle":
-            return new DefaultValue(getCaseTitle());          
+            return new DefaultValue(getCaseTitle());
           default:
             break;
         }
       }
       return super.getDefaultValue(columnName);
     }
-  }  
+  }
 
 }

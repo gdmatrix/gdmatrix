@@ -3,6 +3,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:jsf="http://xmlns.jcp.org/jsf">
 
   <h:outputStylesheet library="css" name="cases.css" />  
@@ -121,6 +122,8 @@
       
     </p:dataTable>
 
-    </f:subview>
+    <gdm:saveBean value="casePersonsTabBean" />
+    
+  </f:subview>
 
 </ui:composition>

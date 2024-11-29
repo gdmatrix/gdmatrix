@@ -3,12 +3,13 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:param name="objectBean" value="#{roomObjectBean}" />
-  <ui:param name="searchLabel" value="#{kernelBundle.room_search}" />    
-  
+  <ui:param name="searchLabel" value="#{kernelBundle.room_search}" />
+
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -95,7 +96,7 @@
                                       queryDelay="1000"
                                       minQueryLength="3"
                                       renderShowButton="false"
-                                      onselect="showPanel('leftPanel')"                                      
+                                      onselect="showPanel('leftPanel')"
                                       process="@form:cnt:find_selector"
                                       update="@form:cnt:find_selector">
               </emcomp:objectReference>
@@ -188,6 +189,9 @@
       </p:tab>
 
     </p:tabView>
+
+    <gdm:saveBean value="roomObjectBean" />
+    <gdm:saveBean value="roomFinderBean" />
 
   </ui:define>
 

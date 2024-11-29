@@ -32,7 +32,7 @@ package org.santfeliu.webapp.modules.doc;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.modules.security.ACLTabBean;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class DocumentACLTabBean extends ACLTabBean
 {
   @Inject

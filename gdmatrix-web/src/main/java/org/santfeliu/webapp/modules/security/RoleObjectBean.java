@@ -32,7 +32,7 @@ package org.santfeliu.webapp.modules.security;
 
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -46,7 +46,7 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class RoleObjectBean extends ObjectBean
 {
   private Role role = new Role();

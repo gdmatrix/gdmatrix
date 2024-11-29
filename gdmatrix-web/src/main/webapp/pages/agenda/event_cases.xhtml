@@ -3,6 +3,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:jsf="http://xmlns.jcp.org/jsf">
 
   <f:subview id="#{tab.subviewId}">
@@ -103,6 +104,8 @@
       
     </p:dataTable>
 
+    <gdm:saveBean value="eventCasesTabBean" />
+    
   </f:subview>
 
 </ui:composition>

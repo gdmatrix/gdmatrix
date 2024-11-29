@@ -42,9 +42,9 @@ import java.util.Set;
 import javax.activation.DataHandler;
 import javax.activation.URLDataSource;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -83,7 +83,7 @@ import org.santfeliu.web.UserSessionBean;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();
@@ -103,12 +103,6 @@ public class DocumentObjectBean extends ObjectBean
   DocumentFinderBean documentFinderBean;
 
   private DefaultMatrixClientModel clientModel;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public String getRootTypeId()

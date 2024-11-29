@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.RoomFilter;
@@ -52,7 +52,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class RoomFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -179,8 +179,10 @@ public class RoomFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new RoomFilter();
     smartFilter = null;
     rows = null;

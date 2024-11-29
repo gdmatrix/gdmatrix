@@ -34,8 +34,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CasePersonFilter;
@@ -55,7 +55,7 @@ import static org.santfeliu.webapp.modules.cases.CasesModuleBean.getPort;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseProblemsTabBean extends TabBean
 {
   private List<ProblemView> rows;
@@ -165,7 +165,7 @@ public class CaseProblemsTabBean extends TabBean
         error(ex);
       }
     }
-    else 
+    else
     {
       rows = Collections.EMPTY_LIST;
       firstRow = 0;

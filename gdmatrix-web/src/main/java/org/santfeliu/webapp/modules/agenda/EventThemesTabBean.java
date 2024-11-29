@@ -34,8 +34,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.EventTheme;
@@ -50,7 +50,7 @@ import org.santfeliu.webapp.TabBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventThemesTabBean extends TabBean
 {
   private List<EventThemeView> rows;
@@ -63,12 +63,6 @@ public class EventThemesTabBean extends TabBean
 
   @Inject
   ThemeObjectBean themeObjectBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -144,7 +138,7 @@ public class EventThemesTabBean extends TabBean
         error(ex);
       }
     }
-    else 
+    else
     {
       rows = Collections.EMPTY_LIST;
       firstRow = 0;
@@ -215,8 +209,8 @@ public class EventThemesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {

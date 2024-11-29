@@ -64,7 +64,7 @@ public abstract class FinderBean extends BaseBean
   private int filterTabSelector;
   private int objectPosition = -1;
   private boolean finding;
-  protected transient ObjectSetup objectSetup;
+  private transient ObjectSetup objectSetup;
 
   public int getFilterTabSelector()
   {
@@ -79,12 +79,12 @@ public abstract class FinderBean extends BaseBean
   public abstract void find();
 
   public abstract void smartFind();
-  
+
   public abstract Object getFilter();
-  
+
   protected void setActionResult(ActionObject scriptObject)
   {
-  }  
+  }
 
   public int getObjectCount()
   {
@@ -116,36 +116,50 @@ public abstract class FinderBean extends BaseBean
     this.finding = finding;
   }
 
+  public ObjectSetup getObjectSetup() throws Exception
+  {
+    if (objectSetup == null)
+    {
+      loadObjectSetup();
+    }
+    return objectSetup;
+  }
+
+  @Override
+  public void clear()
+  {
+    objectSetup = null;
+  }
+
   public void putDefaultFilter()
   {
     try
     {
-      if (objectSetup == null) loadObjectSetup();      
-      String actionsScriptName = objectSetup.getScriptName();
+      String actionsScriptName = getObjectSetup().getScriptName();
       if (actionsScriptName == null) //fallback
-        actionsScriptName = objectSetup.getScriptActions().getScriptName();
+        actionsScriptName = getObjectSetup().getScriptActions().getScriptName();
       if (actionsScriptName != null)
       {
-        ScriptClient actionsClient = new ScriptClient();        
+        ScriptClient actionsClient = new ScriptClient();
         actionsClient.executeScript(actionsScriptName);
         Object callable = actionsClient.get("putDefaultFilter");
         if (callable instanceof Callable)
         {
           ActionObject actionObject  =  new ActionObject(getFilter());
-          actionsClient.put("actionObject", actionObject); 
+          actionsClient.put("actionObject", actionObject);
           actionsClient.execute((Callable)callable);
           actionObject = (ActionObject) actionsClient.get("actionObject");
           if (actionObject != null)
             setActionResult(actionObject);
-        }        
+        }
       }
-    }                
+    }
     catch (Exception ex)
     {
       error(ex);
     }
   }
-  
+
   public String getSmartSearchTip()
   {
     if (System.currentTimeMillis() - lastSmartSearchTipRefresh >
@@ -220,7 +234,26 @@ public abstract class FinderBean extends BaseBean
     }
   }
 
-  public void loadObjectSetup() throws Exception
+  protected ActionObject executeAction(String actionName, Object object)
+  {
+    ObjectBean objectBean = getObjectBean();
+    ActionObject actionObject = new ActionObject(object);
+    ScriptClient scriptClient = objectBean.getScriptClient();
+    if (scriptClient != null)
+    {
+      Object callable = scriptClient.get(actionName);
+      if (callable instanceof Callable)
+      {
+        scriptClient.put("actionObject", actionObject);
+        scriptClient.execute((Callable)callable);
+        actionObject = (ActionObject)scriptClient.get("actionObject");
+        objectBean.addFacesMessages(actionObject.getMessages());
+      }
+    }
+    return actionObject;
+  }
+
+  private void loadObjectSetup() throws Exception
   {
     String setupName = getProperty("objectSetup");
     if (setupName == null)
@@ -246,31 +279,11 @@ public abstract class FinderBean extends BaseBean
     }
   }
 
-  protected ActionObject executeAction(String actionName, Object object)
-  {
-    ObjectBean objectBean = getObjectBean();
-    ActionObject actionObject = new ActionObject(object);
-    ScriptClient scriptClient = objectBean.getScriptClient();
-    if (scriptClient != null)
-    {
-      Object callable = scriptClient.get(actionName);
-      if (callable instanceof Callable)
-      {
-        scriptClient.put("actionObject", actionObject);
-        scriptClient.execute((Callable)callable);
-        actionObject = (ActionObject)scriptClient.get("actionObject");
-        objectBean.addFacesMessages(actionObject.getMessages());
-      }
-    }
-    return actionObject;
-  }
-
   private String getSmartSearchTipDocId()
   {
     try
     {
-      if (objectSetup == null) loadObjectSetup();
-      String docId = objectSetup.getSmartSearchTipDocId();
+      String docId = getObjectSetup().getSmartSearchTipDocId();
       if (docId == null)
       {
         docId = getProperty(SMART_SEARCH_TIP_DOCID_PROPERTY);

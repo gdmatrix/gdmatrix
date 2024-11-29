@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.security.Role;
@@ -50,7 +50,7 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class RoleFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -72,12 +72,6 @@ public class RoleFinderBean extends FinderBean
   public RoleObjectBean getObjectBean()
   {
     return roleObjectBean;
-  }
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
   }
 
   public String getSmartFilter()
@@ -180,8 +174,10 @@ public class RoleFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new RoleFilter();
     smartFilter = null;
     rows = null;

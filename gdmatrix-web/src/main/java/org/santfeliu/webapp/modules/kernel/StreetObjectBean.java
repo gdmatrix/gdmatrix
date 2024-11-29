@@ -31,7 +31,7 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -45,7 +45,7 @@ import org.santfeliu.webapp.NavigatorBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class StreetObjectBean extends TerritoryObjectBean
 {
   public static final String DEFAULT_CITY_NAME = "defaultCityName";
@@ -57,10 +57,10 @@ public class StreetObjectBean extends TerritoryObjectBean
 
   @Inject
   StreetTypeBean streetTypeBean;
-  
+
   @Inject
   NavigatorBean navigatorBean;
-  
+
   public String getStreetId()
   {
     return streetId;
@@ -140,13 +140,13 @@ public class StreetObjectBean extends TerritoryObjectBean
     street.setStreetTypeId(streetTypeId);
     streetFinderBean.outdate();
   }
-  
+
   @Override
   public void removeObject() throws Exception
   {
     KernelModuleBean.getPort(false).removeStreet(objectId);
-    streetFinderBean.outdate();  
-  }    
+    streetFinderBean.outdate();
+  }
 
   @Override
   public Serializable saveState()

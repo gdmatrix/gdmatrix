@@ -1,5 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:gdm="http://gdmatrix.org/faces"
       xmlns:p="http://primefaces.org/ui">
 
   <p:accordionPanel widgetVar="eventCopyPanel">
@@ -33,5 +34,7 @@
                      onclick="PF('eventCopyDialog').hide()"
                      icon="pi pi-times" />
   </p:outputPanel>  
+  
+  <gdm:saveBean value="eventCopyTabBean" />
   
 </html>

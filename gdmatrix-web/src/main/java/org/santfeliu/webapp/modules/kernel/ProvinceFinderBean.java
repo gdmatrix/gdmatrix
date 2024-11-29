@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Province;
@@ -51,7 +51,7 @@ import org.santfeliu.webapp.modules.kernel.ProvinceFinderBean.ProvinceView;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class ProvinceFinderBean
   extends TerritoryFinderBean<ProvinceFilter, ProvinceView>
 {
@@ -166,7 +166,7 @@ public class ProvinceFinderBean
 
               String name = filter.getProvinceName();
               filter.setProvinceName(setWildcards(name));
-              
+
               List<Province> provinces =
                 KernelModuleBean.getPort(false).findProvinces(filter);
 
@@ -175,7 +175,7 @@ public class ProvinceFinderBean
                 ProvinceView view = new ProvinceView(province);
                 results.add(view);
               }
-              filter.setProvinceName(name);              
+              filter.setProvinceName(name);
             }
             catch (Exception ex)
             {
@@ -265,7 +265,7 @@ public class ProvinceFinderBean
     }
 
   }
-  
+
   private String setWildcards(String text)
   {
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
@@ -273,13 +273,13 @@ public class ProvinceFinderBean
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(ProvinceFilter filter)
   {
     String title = filter.getProvinceName();
     if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
       title = title.replaceAll("^%+|%+$", "");
     filter.setProvinceName(title);
-  }  
+  }
 }

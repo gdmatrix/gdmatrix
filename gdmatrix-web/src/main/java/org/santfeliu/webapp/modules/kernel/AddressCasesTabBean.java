@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CaseAddressFilter;
@@ -54,7 +54,7 @@ import org.santfeliu.webapp.setup.TableProperty;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class AddressCasesTabBean extends TabBean
 {
   @Inject
@@ -65,17 +65,16 @@ public class AddressCasesTabBean extends TabBean
 
   @Inject
   TypeTypeBean typeTypeBean;
-  
+
   private List<CaseAddressView> rows;
   private int firstRow;
   GroupableRowsHelper groupableRowsHelper;
   private TypeSelectHelper typeSelectHelper;
-  
+
 
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -87,7 +86,7 @@ public class AddressCasesTabBean extends TabBean
       @Override
       public List<TableProperty> getColumns()
       {
-        return Collections.EMPTY_LIST;        
+        return Collections.EMPTY_LIST;
       }
 
       @Override
@@ -100,7 +99,7 @@ public class AddressCasesTabBean extends TabBean
       {
         return "caseAddressTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
@@ -126,7 +125,7 @@ public class AddressCasesTabBean extends TabBean
         {
           return null;
         }
-      }      
+      }
     };
     typeSelectHelper = new TypeSelectHelper<CaseAddressView>()
     {
@@ -209,7 +208,7 @@ public class AddressCasesTabBean extends TabBean
   {
     System.out.println("load addressCases:" + getObjectId());
     if (!NEW_OBJECT_ID.equals(getObjectId()))
-    {    
+    {
       try
       {
         CaseAddressFilter filter = new CaseAddressFilter();
@@ -222,11 +221,11 @@ public class AddressCasesTabBean extends TabBean
         error(ex);
       }
     }
-    else 
+    else
     {
       rows = Collections.EMPTY_LIST;
       firstRow = 0;
-      getTypeSelectHelper().load();      
+      getTypeSelectHelper().load();
     }
   }
 

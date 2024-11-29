@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.Content;
@@ -56,17 +56,17 @@ import org.santfeliu.webapp.NavigatorBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class DocumentPolicyFinderBean extends BaseBean
 {
   private DocumentPolicyFilter filter = new DocumentPolicyFilter();
   private List<DocumentPolicyView> rows;
   private int firstRow;
   private boolean outdated;
-  
-  private Map<String, StateMapValue> statesMap;  
-  
-  private static final String OUTCOME = "/pages/policy/document_policy.xhtml";  
+
+  private Map<String, StateMapValue> statesMap;
+
+  private static final String OUTCOME = "/pages/policy/document_policy.xhtml";
 
   @Inject
   NavigatorBean navigatorBean;
@@ -80,19 +80,19 @@ public class DocumentPolicyFinderBean extends BaseBean
   @PostConstruct
   public void init()
   {
-    statesMap = new HashMap();    
+    statesMap = new HashMap();
   }
-  
+
   public String show()
   {
     String template = UserSessionBean.getCurrentInstance().getTemplate();
-    return "/templates/" + template + "/template.xhtml";    
+    return "/templates/" + template + "/template.xhtml";
   }
-  
+
   public String getContent()
   {
     return OUTCOME;
-  }   
+  }
 
   public DocumentPolicyFilter getFilter()
   {
@@ -133,7 +133,7 @@ public class DocumentPolicyFinderBean extends BaseBean
   {
     this.statesMap = statesMap;
   }
-  
+
   public String getDocumentUrl(Document document)
   {
     String url = null;
@@ -148,12 +148,12 @@ public class DocumentPolicyFinderBean extends BaseBean
       String contentId = content.getContentId();
       String extension = MimeTypeMap.getMimeTypeMap().getExtension(mimeType);
       String name = document.getDocId();
-      
+
       return "/documents/" + contentId + "/" + name + "." + extension;
     }
-    return url;    
+    return url;
   }
-  
+
   public String getDocumentSize(Document document)
   {
     if (document != null && document.getContent() != null)
@@ -161,16 +161,16 @@ public class DocumentPolicyFinderBean extends BaseBean
     else
       return "0";
   }
-  
+
   public void setRowState(PolicyState newValue)
   {
     DocumentPolicyView docPolicyView =
-      (DocumentPolicyView) getValue("#{row}"); 
+      (DocumentPolicyView) getValue("#{row}");
     DocumentPolicy docPolicy = docPolicyView.getDocPolicy();
-    
+
 
     String docPolicyId = docPolicy.getDocPolicyId();
-    StateMapValue stateValue = statesMap.get(docPolicyId);    
+    StateMapValue stateValue = statesMap.get(docPolicyId);
     if (stateValue == null)
       statesMap.put(docPolicyId, new StateMapValue(docPolicy, newValue));
     else if (stateValue.docPolicy.getState() != newValue)
@@ -178,27 +178,27 @@ public class DocumentPolicyFinderBean extends BaseBean
     else
       statesMap.remove(docPolicyId);
   }
-  
+
   public PolicyState getRowState()
   {
     DocumentPolicyView docPolicyView =
-      (DocumentPolicyView) getValue("#{row}"); 
+      (DocumentPolicyView) getValue("#{row}");
 
-    StateMapValue stateValue = 
+    StateMapValue stateValue =
       statesMap.get(docPolicyView.getDocPolicy().getDocPolicyId());
-    return stateValue != null ? stateValue.newState : 
+    return stateValue != null ? stateValue.newState :
       docPolicyView.getDocPolicy().getState();
   }
-    
+
   public boolean isRowStateChanged(DocumentPolicyView row)
-  {  
+  {
     String docPolicyId = row.getDocPolicy().getDocPolicyId();
     StateMapValue stateValue = statesMap.get(docPolicyId);
-    
-    return stateValue != null 
+
+    return stateValue != null
       && stateValue.newState != row.getDocPolicy().getState();
-  } 
-  
+  }
+
   public void changeState() throws Exception
   {
     if (statesMap != null)
@@ -207,22 +207,22 @@ public class DocumentPolicyFinderBean extends BaseBean
       {
         StateMapValue stateValue = entry.getValue();
         if (stateValue != null)
-        {          
+        {
           stateValue.docPolicy.setState(stateValue.newState);
           PolicyModuleBean.getPort(false)
             .storeDocumentPolicy(stateValue.docPolicy);
         }
       }
       find();
-      statesMap.clear();      
+      statesMap.clear();
     }
-  }  
-  
+  }
+
   public void cancelChanges()
   {
     statesMap.clear();
-  }  
-    
+  }
+
 
   public void find()
   {
@@ -243,16 +243,18 @@ public class DocumentPolicyFinderBean extends BaseBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new DocumentPolicyFilter();
     rows = null;
   }
-  
+
   @Override
   public Serializable saveState()
-  {    
-    return new Object[]{ filter, firstRow, rows, outdated };    
+  {
+    return new Object[]{ filter, firstRow, rows, outdated };
   }
 
   @Override
@@ -263,7 +265,7 @@ public class DocumentPolicyFinderBean extends BaseBean
     firstRow = (Integer)stateArray[1];
     rows = (List<DocumentPolicyView>)stateArray[2];
     outdated = (Boolean)stateArray[3];
-  }  
+  }
 
   private void doFind(boolean autoLoad)
   {
@@ -321,7 +323,7 @@ public class DocumentPolicyFinderBean extends BaseBean
       error(ex);
     }
   }
-  
+
   public class StateMapValue implements Serializable
   {
     public DocumentPolicy docPolicy;
@@ -332,6 +334,6 @@ public class DocumentPolicyFinderBean extends BaseBean
       this.docPolicy = docPolicy;
       this.newState = newState;
     }
-  }  
-   
+  }
+
 }

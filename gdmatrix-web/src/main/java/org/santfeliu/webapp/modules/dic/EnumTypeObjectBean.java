@@ -30,7 +30,7 @@
  */
 package org.santfeliu.webapp.modules.dic;
 
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -46,8 +46,8 @@ import org.santfeliu.webapp.TypeBean;
  *
  * @author blanquepa
  */
-@ViewScoped
 @Named
+@RequestScoped
 public class EnumTypeObjectBean extends ObjectBean
 {
   private EnumType enumType = new EnumType();
@@ -114,20 +114,20 @@ public class EnumTypeObjectBean extends ObjectBean
       enumType.setSuperEnumTypeId(null);
     enumType = DicModuleBean.getPort(false).storeEnumType(enumType);
     setObjectId(enumType.getEnumTypeId());
-    enumTypeFinderBean.outdate();      
+    enumTypeFinderBean.outdate();
   }
-  
+
   @Override
   public void removeObject() throws Exception
   {
     DicModuleBean.getPort(false).removeEnumType(enumType.getEnumTypeId());
 
     enumTypeFinderBean.outdate();
-  }    
-  
+  }
+
   public PropertyType[] getPropertyTypes()
   {
     return PropertyType.values();
-  }    
+  }
 
 }

@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -53,13 +52,14 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.EditTab;
 import java.io.Serializable;
+import javax.enterprise.context.RequestScoped;
 
 /**
  *
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
@@ -70,12 +70,6 @@ public class CaseObjectBean extends ObjectBean
 
   @Inject
   CaseFinderBean caseFinderBean;
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
 
   @Override
   public String getRootTypeId()
@@ -138,7 +132,7 @@ public class CaseObjectBean extends ObjectBean
       }
     }
   }
-  
+
   public Date getStartDate()
   {
     if (cas != null && cas.getStartDate() != null)
@@ -148,9 +142,9 @@ public class CaseObjectBean extends ObjectBean
     else
     {
       return null;
-    }    
+    }
   }
-   
+
   public Date getEndDate()
   {
     if (cas != null && cas.getStartDate() != null)
@@ -160,7 +154,7 @@ public class CaseObjectBean extends ObjectBean
     else
     {
       return null;
-    }    
+    }
   }
 
   public void setStartDate(Date date)
@@ -174,7 +168,7 @@ public class CaseObjectBean extends ObjectBean
       cas.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
       cas.setStartTime(TextUtils.formatDate(date, "HHmmss"));
     }
-  }  
+  }
 
   public void setEndDate(Date date)
   {
@@ -187,7 +181,7 @@ public class CaseObjectBean extends ObjectBean
       cas.setEndDate(null);
       cas.setEndTime(null);
     }
-  }   
+  }
 
   public String getPropertyLabel(String propName, String altName)
   {
@@ -207,7 +201,7 @@ public class CaseObjectBean extends ObjectBean
     return !(pd != null && pd.getValue() != null && pd.getMinOccurs() > 0
       && pd.isReadOnly());
   }
-  
+
   /**
    * Rendered when base type is not instanciable or is the root type.
    */
@@ -217,27 +211,27 @@ public class CaseObjectBean extends ObjectBean
     Type baseType = TypeCache.getInstance().getType(typeId);
     return (baseType.isRootType() || !baseType.isInstantiable());
   }
-  
+
   @Override
   public boolean isRenderedEditTab(EditTab tab)
   {
     boolean isRendered = super.isRenderedEditTab(tab);
-    
+
     if (!isRendered && tab.getViewId().equals("/pages/cases/case_acl.xhtml"))
     {
       String typeId = cas.getCaseTypeId();
       Type type = TypeCache.getInstance().getType(typeId);
       if (type != null)
       {
-        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
-        Set<String> roles = userSessionBean.getRoles();        
-        isRendered = 
+        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+        Set<String> roles = userSessionBean.getRoles();
+        isRendered =
           type.canPerformAction(DictionaryConstants.WRITE_ACTION, roles);
       }
     }
-    
+
     return isRendered;
-  }  
+  }
 
   private Date getDate(String date, String time)
   {
@@ -255,13 +249,13 @@ public class CaseObjectBean extends ObjectBean
     else
     {
       cas = new Case();
-      Type baseType = 
+      Type baseType =
         TypeCache.getInstance().getType(getBaseTypeInfo().getBaseTypeId());
       if (baseType.isInstantiable())
         cas.setCaseTypeId(baseType.getTypeId());
     }
   }
-  
+
   @Override
   public void storeObject() throws Exception
   {
@@ -271,7 +265,7 @@ public class CaseObjectBean extends ObjectBean
     executeAction(POST_STORE_ACTION);
     caseFinderBean.outdate();
   }
-         
+
   @Override
   public void removeObject() throws Exception
   {
@@ -281,16 +275,16 @@ public class CaseObjectBean extends ObjectBean
 
     caseFinderBean.outdate();
   }
-  
+
   @Override
   protected void setActionResult(ActionObject result)
   {
     if (result != null)
     {
       if (result.getObject() != null)
-        cas = (Case) result.getObject();      
+        cas = (Case) result.getObject();
     }
-  }  
+  }
 
   @Override
   public Serializable saveState()
@@ -305,19 +299,19 @@ public class CaseObjectBean extends ObjectBean
     this.cas = (Case) array[0];
     this.formSelector = (String)array[1];
   }
-  
+
   @Override
   public boolean isEditable()
   {
     if (UserSessionBean.getCurrentInstance().isUserInRole(
       CaseConstants.CASE_ADMIN_ROLE))
       return true;
-    
+
     if (!super.isEditable()) return false; //tab protection
 
     if (cas == null || cas.getCaseId() == null || cas.getCaseTypeId() == null)
       return true;
-    
+
     Type currentType =
       TypeCache.getInstance().getType(cas.getCaseTypeId());
     if (currentType == null) return true;
@@ -337,40 +331,40 @@ public class CaseObjectBean extends ObjectBean
     }
     return false;
   }
-  
+
   public boolean isRowEditable(String rowTypeId)
   {
     return isRowActionEnabled(rowTypeId, DictionaryConstants.WRITE_ACTION);
   }
-  
+
   public boolean isRowRemovable(String rowTypeId)
   {
     return isRowActionEnabled(rowTypeId, DictionaryConstants.DELETE_ACTION);
   }
-  
+
   //Private methods
 
   private boolean isRowActionEnabled(String rowTypeId, String actionName)
   {
     if (UserSessionBean.getCurrentInstance().isUserInRole(
       CaseConstants.CASE_ADMIN_ROLE))
-      return true;    
-    
+      return true;
+
     if (rowTypeId == null) return true;
-    
+
     TypeCache typeCache =  TypeCache.getInstance();
-    
-    String auxTypeId = rowTypeId;     
+
+    String auxTypeId = rowTypeId;
     org.matrix.dic.Type auxType = typeCache.getType(auxTypeId);
     if (auxType == null)
       return true;
 
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     boolean searchAscendants = true;
     while (auxType != null && searchAscendants)
     {
       Set<AccessControl> acls = new HashSet();
-      acls.addAll(auxType.getAccessControl());    
+      acls.addAll(auxType.getAccessControl());
       for (AccessControl acl : acls)
       {
         String action = acl.getAction();
@@ -378,13 +372,13 @@ public class CaseObjectBean extends ObjectBean
         {
           String roleId = acl.getRoleId();
           if (userSessionBean.isUserInRole(roleId)) return true;
-          searchAscendants = false; 
+          searchAscendants = false;
         }
       }
       String superTypeId = auxType.getSuperTypeId();
       auxType = (superTypeId == null ? null : typeCache.getType(superTypeId));
     }
     return false;
-  }  
+  }
 
 }

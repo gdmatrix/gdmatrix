@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.news.NewDocument;
@@ -58,14 +58,14 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class NewDocumentsTabBean extends TabBean
 {
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
   private NewDocument editing;
   Map<String, TabInstance> tabInstances = new HashMap<>();
-  private GroupableRowsHelper groupableRowsHelper;  
+  private GroupableRowsHelper groupableRowsHelper;
 
   public class TabInstance
   {
@@ -86,7 +86,6 @@ public class NewDocumentsTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -98,7 +97,7 @@ public class NewDocumentsTabBean extends TabBean
       @Override
       public List<TableProperty> getColumns()
       {
-        return Collections.EMPTY_LIST;        
+        return Collections.EMPTY_LIST;
       }
 
       @Override
@@ -111,7 +110,7 @@ public class NewDocumentsTabBean extends TabBean
       {
         return "newDocTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
@@ -132,8 +131,8 @@ public class NewDocumentsTabBean extends TabBean
         {
           return null;
         }
-      }      
-    };    
+      }
+    };
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -144,7 +143,7 @@ public class NewDocumentsTabBean extends TabBean
   public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
   {
     this.groupableRowsHelper = groupableRowsHelper;
-  }  
+  }
 
   public TabInstance getCurrentTabInstance()
   {
@@ -353,7 +352,7 @@ public class NewDocumentsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
+  }
 
   @Override
   public void clear()

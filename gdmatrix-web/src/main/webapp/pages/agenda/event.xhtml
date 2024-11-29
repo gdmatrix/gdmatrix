@@ -4,12 +4,13 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:param name="objectBean" value="#{eventObjectBean}" />
   <ui:param name="searchLabel" value="#{agendaBundle.headerSearchEvent}" />
-  
+
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -40,7 +41,7 @@
                              process="@form:cnt:find_selector"
                              update="@form:cnt:filter_panel @(.searchTabContent)"
                              resetValues="true"
-                             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventFinderBean.defaultSearchTabSelector});" 
+                             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventFinderBean.defaultSearchTabSelector});"
                              icon="fa fa-broom" />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
@@ -223,7 +224,7 @@
           updateResults();
         }
       }
-      
+
       function updateScheduleEventStyles()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
@@ -236,7 +237,7 @@
             $('.fc-event.event_' + eventId).addClass("current");
           }
         }
-      }      
+      }
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{eventFinderBean.update}"
@@ -273,6 +274,9 @@
       </p:tab>
 
     </p:tabView>
+
+    <gdm:saveBean value="eventObjectBean" />
+    <gdm:saveBean value="eventFinderBean" />
 
   </ui:define>
 

@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -75,7 +75,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseAddressesTabBean extends TabBean
 {
   private CaseAddress editing;
@@ -89,7 +89,7 @@ public class CaseAddressesTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseAddressesDataTableRow> rows;
     int firstRow = 0;
-    TypeSelectHelper typeSelectHelper = 
+    TypeSelectHelper typeSelectHelper =
       new TypeSelectHelper<CaseAddressesDataTableRow>()
     {
       @Override
@@ -108,7 +108,7 @@ public class CaseAddressesTabBean extends TabBean
       @Override
       public String getBaseTypeId()
       {
-        return CaseAddressesTabBean.this.getTabBaseTypeId();        
+        return CaseAddressesTabBean.this.getTabBaseTypeId();
       }
 
       @Override
@@ -128,7 +128,7 @@ public class CaseAddressesTabBean extends TabBean
     {
       return typeSelectHelper;
     }
-  }    
+  }
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -142,7 +142,6 @@ public class CaseAddressesTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -161,9 +160,9 @@ public class CaseAddressesTabBean extends TabBean
       public void sortRows()
       {
         if (getOrderBy() != null)
-        {                
-          Collections.sort(getCurrentTabInstance().rows, 
-            new DataTableRowComparator(getColumns(), getOrderBy()));      
+        {
+          Collections.sort(getCurrentTabInstance().rows,
+            new DataTableRowComparator(getColumns(), getOrderBy()));
         }
       }
 
@@ -172,7 +171,7 @@ public class CaseAddressesTabBean extends TabBean
       {
         return "caseAddressTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
@@ -190,7 +189,7 @@ public class CaseAddressesTabBean extends TabBean
   {
     this.groupableRowsHelper = groupableRowsHelper;
   }
-  
+
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
@@ -207,11 +206,11 @@ public class CaseAddressesTabBean extends TabBean
     else
       return EMPTY_TAB_INSTANCE;
   }
-  
+
   public Map<String, TabInstance> getTabInstances()
   {
     return tabInstances;
-  }  
+  }
 
   @Override
   public String getObjectId()
@@ -287,7 +286,7 @@ public class CaseAddressesTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
-  
+
   public String getAddressDescription()
   {
     if (editing != null && !isNew(editing))
@@ -304,8 +303,8 @@ public class CaseAddressesTabBean extends TabBean
       return activeEditTab.getOrderBy();
     else
       return Collections.EMPTY_LIST;
-  }  
-  
+  }
+
   public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -318,8 +317,8 @@ public class CaseAddressesTabBean extends TabBean
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
-  }  
-  
+  }
+
   public void edit(DataTableRow row)
   {
     if (row != null)
@@ -327,7 +326,7 @@ public class CaseAddressesTabBean extends TabBean
       try
       {
         executeTabAction("preTabEdit", row);
-        editing = 
+        editing =
           CasesModuleBean.getPort(false).loadCaseAddress(row.getRowId());
         executeTabAction("postTabEdit", editing);
       }
@@ -353,17 +352,17 @@ public class CaseAddressesTabBean extends TabBean
         CaseAddressFilter filter = new CaseAddressFilter();
         filter.setCaseId(caseObjectBean.getObjectId());
 
-        List<CaseAddressView> auxList = 
+        List<CaseAddressView> auxList =
           CasesModuleBean.getPort(false).findCaseAddressViews(filter);
-        
-        List<CaseAddressView> result;      
-        EditTab tab = caseObjectBean.getActiveEditTab();          
+
+        List<CaseAddressView> result;
+        EditTab tab = caseObjectBean.getActiveEditTab();
         String typeId = getTabBaseTypeId();
         if (typeId == null || (tab != null && tab.isShowAllTypes()))
         {
-          result = auxList;          
+          result = auxList;
         }
-        else  
+        else
         {
           result = new ArrayList();
           for (CaseAddressView item : auxList)
@@ -379,16 +378,16 @@ public class CaseAddressesTabBean extends TabBean
               result.add(item);
             }
           }
-        }        
+        }
         List<CaseAddressesDataTableRow> auxList2 = toDataTableRows(result);
         if (getOrderBy() != null)
-        {                
-          Collections.sort(auxList2, 
+        {
+          Collections.sort(auxList2,
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList2);
-        getCurrentTabInstance().typeSelectHelper.load(); 
-        executeTabAction("postTabLoad", null);         
+        getCurrentTabInstance().typeSelectHelper.load();
+        executeTabAction("postTabLoad", null);
       }
       catch (Exception ex)
       {
@@ -400,17 +399,17 @@ public class CaseAddressesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();      
+      getCurrentTabInstance().typeSelectHelper.load();
       tabInstance.firstRow = 0;
-    }   
+    }
   }
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);    
+    executeTabAction("preTabEdit", null);
     editing = new CaseAddress();
     editing.setCaseAddressTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", editing);    
+    executeTabAction("postTabEdit", editing);
   }
 
   @Override
@@ -430,7 +429,7 @@ public class CaseAddressesTabBean extends TabBean
           refreshCasePersonsTabInstances();
           importPersons = false;
         }
-        executeTabAction("postTabStore", editing);        
+        executeTabAction("postTabStore", editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -442,7 +441,7 @@ public class CaseAddressesTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   public void remove(DataTableRow row)
   {
     if (row != null)
@@ -472,8 +471,8 @@ public class CaseAddressesTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
- 
+  }
+
   @Override
   public void clear()
   {
@@ -530,14 +529,14 @@ public class CaseAddressesTabBean extends TabBean
   }
 
   private void importPersonsFromEditingAddress() throws Exception
-  {    
+  {
     if (editing != null)
     {
       String addressId = editing.getAddressId();
       if (addressId != null)
       {
         String typeId = caseObjectBean.getActiveEditTab().getProperties()
-            .getString("importPersonsTypeId"); 
+            .getString("importPersonsTypeId");
         if (typeId == null)
           typeId = DictionaryConstants.CASE_PERSON_TYPE;
         List<String> personIds = getCurrentPersons(editing.getCaseId(), typeId);
@@ -557,7 +556,7 @@ public class CaseAddressesTabBean extends TabBean
       }
     }
   }
-  
+
   private List<String> getCurrentPersons(String caseId, String importTypeId)
     throws Exception
   {
@@ -584,16 +583,16 @@ public class CaseAddressesTabBean extends TabBean
     filter.setAddressId(addressId);
     return KernelModuleBean.getPort(true).findPersonAddressViews(filter);
   }
-  
+
   private List<CaseAddressesDataTableRow> toDataTableRows(
     List<CaseAddressView> caseAddresses) throws Exception
   {
     List<CaseAddressesDataTableRow> convertedRows = new ArrayList<>();
     for (CaseAddressView row : caseAddresses)
     {
-      CaseAddressesDataTableRow dataTableRow = 
+      CaseAddressesDataTableRow dataTableRow =
         new CaseAddressesDataTableRow(row);
-      dataTableRow.setValues(this, row, getTableProperties());      
+      dataTableRow.setValues(this, row, getTableProperties());
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
@@ -604,16 +603,16 @@ public class CaseAddressesTabBean extends TabBean
   {
     return new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
   }
-  
+
   private String getRowStyleClass(Object row)
   {
-    RowStyleClassGenerator styleClassGenerator = 
+    RowStyleClassGenerator styleClassGenerator =
       getRowStyleClassGenerator();
-    return styleClassGenerator.getStyleClass(row);    
-  }  
-  
+    return styleClassGenerator.getStyleClass(row);
+  }
+
   public class CaseAddressesDataTableRow extends DataTableRow
-  {      
+  {
     private String addressId;
     private String addressTypeId;
     private String addressDescription;
@@ -633,7 +632,7 @@ public class CaseAddressesTabBean extends TabBean
         addressCity = row.getAddressView().getCity();
         addressProvince = row.getAddressView().getProvince();
         addressCountry = row.getAddressView().getCountry();
-        addressFullDescription = addressDescription + 
+        addressFullDescription = addressDescription +
           (!StringUtils.isBlank(addressCity) ? " (" + addressCity + ")" : "");
       }
     }
@@ -707,7 +706,7 @@ public class CaseAddressesTabBean extends TabBean
     {
       this.addressCountry = addressCountry;
     }
-    
+
     @Override
     protected DataTableRow.Value getDefaultValue(String columnName)
     {
@@ -736,6 +735,6 @@ public class CaseAddressesTabBean extends TabBean
       return super.getDefaultValue(columnName);
     }
   }
-  
-  
+
+
 }

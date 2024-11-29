@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cms.Node;
@@ -62,13 +62,13 @@ import org.santfeliu.webapp.modules.cms.CMSModuleBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class NewObjectBean extends ObjectBean
 {
   public static final String NEWSECTION_PROPERTY = "newSection";
   private static final String LEGACY_SECTION_PROPERTY = "action";
-  private static final String LEGACY_SECTION_VALUE = "%newSearchBySection%";  
-  
+  private static final String LEGACY_SECTION_VALUE = "%newSearchBySection%";
+
   private New newObject = new New();
   private List<Source> sources;
 
@@ -83,7 +83,7 @@ public class NewObjectBean extends ObjectBean
   public void init()
   {
     try
-    {      
+    {
       sources = NewsModuleBean.getPort(true).findSources(new SourceFilter());
     }
     catch (Exception ex)
@@ -103,8 +103,8 @@ public class NewObjectBean extends ObjectBean
   }
 
   public boolean isCustomUrlTargetBlank()
-  {    
-    return newObject.getCustomUrlTarget() != null 
+  {
+    return newObject.getCustomUrlTarget() != null
       && newObject.getCustomUrlTarget().equals("_blank");
   }
 
@@ -125,7 +125,7 @@ public class NewObjectBean extends ObjectBean
   {
     this.sources = sources;
   }
-  
+
   public Date getStartDate()
   {
     if (newObject != null && newObject.getStartDate() != null)
@@ -174,9 +174,9 @@ public class NewObjectBean extends ObjectBean
       newObject.setEndDate(null);
       newObject.setEndTime(null);
     }
-      
+
   }
-  
+
   public List<String> getKeywords()
   {
     String keywords = newObject.getKeywords();
@@ -185,7 +185,7 @@ public class NewObjectBean extends ObjectBean
     else
       return Collections.EMPTY_LIST;
   }
-  
+
   public void setKeywords(List<String> keywords)
   {
     if (keywords != null && !keywords.isEmpty())
@@ -195,7 +195,7 @@ public class NewObjectBean extends ObjectBean
       newObject.setKeywords(sb.toString().trim());
     }
   }
-  
+
   @Override
   public NewTypeBean getTypeBean()
   {
@@ -230,7 +230,7 @@ public class NewObjectBean extends ObjectBean
   {
     return DictionaryConstants.NEW_TYPE;
   }
-  
+
   List<MenuItemCursor> getSectionNodes() throws Exception
   {
     List<String> nodeIds = new ArrayList<>();
@@ -239,7 +239,7 @@ public class NewObjectBean extends ObjectBean
     NodeFilter nodeFilter = new NodeFilter();
 
     nodeFilter.getWorkspaceId().add(workspaceId);
-    
+
     //Search for legacy sections
     nodeFilter = new NodeFilter();
     nodeFilter.getWorkspaceId().add(workspaceId);
@@ -247,22 +247,22 @@ public class NewObjectBean extends ObjectBean
     Property property = new Property();
     property.setName(LEGACY_SECTION_PROPERTY);
     property.getValue().add(LEGACY_SECTION_VALUE);
-    nodeFilter.getProperty().add(property);       
+    nodeFilter.getProperty().add(property);
     List<Node> nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
 
     nodeFilter.getProperty().clear();
     property = new Property();
     property.setName(NEWSECTION_PROPERTY);
     property.getValue().add("%");
-    nodeFilter.getProperty().add(property);       
+    nodeFilter.getProperty().add(property);
     nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
-    
+
     nodeList.stream().forEach(node -> nodeIds.add(node.getNodeId()));
-    
+
     return UserSessionBean.getCurrentInstance()
-      .getMenuModel().getMenuItemsByMid(nodeIds); 
+      .getMenuModel().getMenuItemsByMid(nodeIds);
   }
-    
+
   @Override
   public void loadObject() throws Exception
   {
@@ -280,26 +280,26 @@ public class NewObjectBean extends ObjectBean
   {
     NewStoreOptions newStoreOptions = new NewStoreOptions();
     newStoreOptions.setCleanSummary(true);
-    newStoreOptions.setCleanText(true);  
-    
-    newObject.setUserId(UserSessionBean.getCurrentInstance().getUsername()); 
+    newStoreOptions.setCleanText(true);
+
+    newObject.setUserId(UserSessionBean.getCurrentInstance().getUsername());
     newObject.setCustomUrl(newObject.getCustomUrl().trim());
-    
+
     encodeNewContent(newObject);
-    newObject = 
+    newObject =
       NewsModuleBean.getPort(false).storeNew(newObject, newStoreOptions);
-    setObjectId(newObject.getNewId());   
+    setObjectId(newObject.getNewId());
     decodeNewContent(newObject);
-    
+
     newFinderBean.outdate();
   }
-  
+
   @Override
   public void removeObject() throws Exception
   {
     if (!isNew())
       NewsModuleBean.getPort(false).removeNew(newObject.getNewId());
-  }  
+  }
 
   @Override
   public Serializable saveState()
@@ -312,31 +312,31 @@ public class NewObjectBean extends ObjectBean
   {
     this.newObject = (New)state;
   }
-  
+
   private Date getDate(String date, String time)
   {
     String dateTime = TextUtils.concatDateAndTime(date, time);
     return TextUtils.parseInternalDate(dateTime);
   }
-  
+
   private void encodeNewContent(New newObject)
   {
     String headline = Unicode.encode(newObject.getHeadline(), true);
     newObject.setHeadline(headline.length() > 1000 ?
       headline.substring(0, 1000) : headline);
-    
+
     String summary = Unicode.encode(newObject.getSummary(), true);
     newObject.setSummary(summary.length() > 4000 ?
-      summary.substring(0, 4000) : summary);  
-    
+      summary.substring(0, 4000) : summary);
+
     newObject.setText(Unicode.encode(newObject.getText(), true));
   }
-  
+
   private void decodeNewContent(New newObject)
   {
-    newObject.setHeadline(Unicode.decode(newObject.getHeadline()));      
+    newObject.setHeadline(Unicode.decode(newObject.getHeadline()));
     newObject.setSummary(Unicode.decode(newObject.getSummary()));
-    newObject.setText(Unicode.decode(newObject.getText()));   
+    newObject.setText(Unicode.decode(newObject.getText()));
   }
 
 }

@@ -34,7 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -57,7 +57,7 @@ import org.santfeliu.webapp.util.RowStyleClassGenerator;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -65,8 +65,8 @@ public class CaseFinderBean extends FinderBean
   private List<DataTableRow> rows;
   private int firstRow;
   private boolean outdated;
-  private String formSelector; 
- 
+  private String formSelector;
+
   @Inject
   NavigatorBean navigatorBean;
 
@@ -75,7 +75,7 @@ public class CaseFinderBean extends FinderBean
 
   @Inject
   CaseObjectBean caseObjectBean;
-     
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -98,7 +98,7 @@ public class CaseFinderBean extends FinderBean
     if (filter != null && StringUtils.isBlank(filter.getCaseTypeId()))
     {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      filter.setCaseTypeId(baseTypeId);        
+      filter.setCaseTypeId(baseTypeId);
     }
     return filter;
   }
@@ -133,7 +133,7 @@ public class CaseFinderBean extends FinderBean
       filter.getCaseId().addAll(caseIdList);
     }
   }
-  
+
   public String getClassId()
   {
     if (filter.getClassId().isEmpty()) return null;
@@ -148,8 +148,8 @@ public class CaseFinderBean extends FinderBean
     {
       filter.getClassId().add(classId);
     }
-  } 
-  
+  }
+
   public List getRows()
   {
     return rows;
@@ -169,18 +169,15 @@ public class CaseFinderBean extends FinderBean
   {
     this.formSelector = formSelector;
   }
-  
+
   public List<TableProperty> getTableProperties()
   {
     try
     {
-      if (objectSetup == null)
-        loadObjectSetup();
-      
-      List<TableProperty> tableProperties = 
-        objectSetup.getSearchTabs().get(0).getTableProperties();
-      
-      return tableProperties != null ? 
+      List<TableProperty> tableProperties =
+        getObjectSetup().getSearchTabs().get(0).getTableProperties();
+
+      return tableProperties != null ?
         tableProperties : Collections.emptyList();
     }
     catch (Exception ex)
@@ -188,7 +185,7 @@ public class CaseFinderBean extends FinderBean
       return Collections.emptyList();
     }
   }
-  
+
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
@@ -242,21 +239,23 @@ public class CaseFinderBean extends FinderBean
     {
       doFind(false);
     }
-  }  
-  
+  }
+
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new CaseFilter();
     smartFilter = null;
     rows = null;
     setFinding(false);
     formSelector = null;
   }
-  
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow, 
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       getObjectPosition(), formSelector, rows, outdated };
   }
 
@@ -271,7 +270,7 @@ public class CaseFinderBean extends FinderBean
       filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
       firstRow = (Integer)stateArray[3];
-      setObjectPosition((Integer)stateArray[4]);      
+      setObjectPosition((Integer)stateArray[4]);
       formSelector = (String)stateArray[5];
       rows = (List<DataTableRow>)stateArray[6];
       outdated = (Boolean)stateArray[7];
@@ -285,13 +284,13 @@ public class CaseFinderBean extends FinderBean
   private void doFind(boolean autoLoad)
   {
     try
-    {        
+    {
       if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }
       else
-      {            
+      {
         rows = new BigList(20, 10)
         {
           @Override
@@ -307,12 +306,12 @@ public class CaseFinderBean extends FinderBean
                 List<String> classIds =
                   ClassCache.getInstance().getTerminalClassIds(classId);
                 filter.getClassId().clear();
-                filter.getClassId().addAll(classIds);                
+                filter.getClassId().addAll(classIds);
               }
               int count = CasesModuleBean.getPort(false).countCases(filter);
               filter.setTitle(title);
               CaseFinderBean.this.setClassId(classId);
-              return count;              
+              return count;
             }
             catch (Exception ex)
             {
@@ -325,7 +324,7 @@ public class CaseFinderBean extends FinderBean
           public List getElements(int firstResult, int maxResults)
           {
             try
-            {               
+            {
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               String title = filter.getTitle();
@@ -336,25 +335,25 @@ public class CaseFinderBean extends FinderBean
                 List<String> classIds =
                   ClassCache.getInstance().getTerminalClassIds(classId);
                 filter.getClassId().clear();
-                filter.getClassId().addAll(classIds);                
-              }   
+                filter.getClassId().addAll(classIds);
+              }
 
               String searchExpression = filter.getSearchExpression();
               if (StringUtils.isBlank(searchExpression))
                 setOrderBy(filter);
-              
+
               List<TableProperty> tableProperties = getTableProperties();
               for (TableProperty tableProperty : tableProperties)
               {
                 filter.getOutputProperty().add(tableProperty.getName());
               }
-              List<Case> cases = 
+              List<Case> cases =
                 CasesModuleBean.getPort(false).findCases(filter);
               filter.setTitle(title);
               filter.setSearchExpression(searchExpression);
-              
+
               CaseFinderBean.this.setClassId(classId);
-              return toDataTableRows(cases);     
+              return toDataTableRows(cases);
             }
             catch (Exception ex)
             {
@@ -378,7 +377,7 @@ public class CaseFinderBean extends FinderBean
           {
             caseObjectBean.setSearchTabSelector(0);
           }
-        }        
+        }
       }
     }
     catch (Exception ex)
@@ -386,23 +385,23 @@ public class CaseFinderBean extends FinderBean
       error(ex);
     }
   }
-    
-  private List<DataTableRow> toDataTableRows(List<Case> cases) 
+
+  private List<DataTableRow> toDataTableRows(List<Case> cases)
     throws Exception
   {
     List<DataTableRow> convertedRows = new ArrayList();
     for (Case row : cases)
     {
-      DataTableRow dataTableRow = 
+      DataTableRow dataTableRow =
         new DataTableRow(row.getCaseId(), row.getCaseTypeId());
       dataTableRow.setValues(this, row, getTableProperties());
       dataTableRow.setStyleClass(getRowStyleClass(row));
       convertedRows.add(dataTableRow);
     }
-    
-    return convertedRows;       
+
+    return convertedRows;
   }
-    
+
   private String setWildcards(String text)
   {
     if (text != null)
@@ -412,8 +411,8 @@ public class CaseFinderBean extends FinderBean
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(CaseFilter filter)
   {
     String title = filter.getTitle();
@@ -421,18 +420,15 @@ public class CaseFinderBean extends FinderBean
       title = title.replaceAll("^%+|%+$", "");
     filter.setTitle(title);
   }
-  
+
   private void setOrderBy(CaseFilter filter) throws Exception
   {
-    if (objectSetup == null)
-      loadObjectSetup();
-                  
     int tabSelector = caseObjectBean.getSearchTabSelector();
-    tabSelector = 
-      tabSelector < objectSetup.getSearchTabs().size() ? tabSelector : 0;    
-    List<String> orderBy = 
-      objectSetup.getSearchTabs().get(tabSelector).getOrderBy(); 
-    
+    tabSelector =
+      tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
+    List<String> orderBy =
+      getObjectSetup().getSearchTabs().get(tabSelector).getOrderBy();
+
     if (orderBy != null && !orderBy.isEmpty())
     {
       StringBuilder buffer = new StringBuilder(" ORDER BY ");
@@ -450,21 +446,21 @@ public class CaseFinderBean extends FinderBean
           buffer.append(" desc ");
       }
 
-      filter.setSearchExpression(buffer.toString()); 
-    } 
-  }   
+      filter.setSearchExpression(buffer.toString());
+    }
+  }
 
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
-    return new DateTimeRowStyleClassGenerator("startDate,startTime", 
+    return new DateTimeRowStyleClassGenerator("startDate,startTime",
       "endDate,endTime", null);
   }
-  
+
   private String getRowStyleClass(Object row)
   {
-    RowStyleClassGenerator styleClassGenerator = 
+    RowStyleClassGenerator styleClassGenerator =
       getRowStyleClassGenerator();
-    return styleClassGenerator.getStyleClass(row);    
-  }  
-  
+    return styleClassGenerator.getStyleClass(row);
+  }
+
 }

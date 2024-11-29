@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.agenda;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Theme;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class ThemeFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -159,8 +159,10 @@ public class ThemeFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new ThemeFilter();
     smartFilter = null;
     rows = null;

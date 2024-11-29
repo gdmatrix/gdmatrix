@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.EventDocument;
@@ -60,7 +60,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventDocumentsTabBean extends TabBean
 {
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
@@ -88,7 +88,6 @@ public class EventDocumentsTabBean extends TabBean
   @PostConstruct
   public void init()
   {
-    System.out.println("Creating " + this);
     groupableRowsHelper = new GroupableRowsHelper()
     {
       @Override
@@ -100,7 +99,7 @@ public class EventDocumentsTabBean extends TabBean
       @Override
       public List<TableProperty> getColumns()
       {
-        return Collections.EMPTY_LIST;        
+        return Collections.EMPTY_LIST;
       }
 
       @Override
@@ -113,7 +112,7 @@ public class EventDocumentsTabBean extends TabBean
       {
         return "eventDocTypeId";
       }
-      
+
       @Override
       public String getFixedColumnValue(Object row, String columnName)
       {
@@ -135,8 +134,8 @@ public class EventDocumentsTabBean extends TabBean
         {
           return null;
         }
-      }      
-    };    
+      }
+    };
   }
 
   public GroupableRowsHelper getGroupableRowsHelper()
@@ -147,8 +146,8 @@ public class EventDocumentsTabBean extends TabBean
   public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
   {
     this.groupableRowsHelper = groupableRowsHelper;
-  }  
-  
+  }
+
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = eventObjectBean.getActiveEditTab();
@@ -263,7 +262,7 @@ public class EventDocumentsTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);     
+    executeTabAction("preTabLoad", null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -273,7 +272,7 @@ public class EventDocumentsTabBean extends TabBean
         List<EventDocumentView> auxList = AgendaModuleBean.getClient(false).
           findEventDocumentViewsFromCache(filter);
         String typeId = getTabBaseTypeId();
-        EditTab tab = eventObjectBean.getActiveEditTab();          
+        EditTab tab = eventObjectBean.getActiveEditTab();
         if (typeId == null || tab.isShowAllTypes())
         {
           getCurrentTabInstance().rows = auxList;
@@ -292,7 +291,7 @@ public class EventDocumentsTabBean extends TabBean
           }
           getCurrentTabInstance().rows = result;
         }
-        executeTabAction("postTabLoad", null);          
+        executeTabAction("postTabLoad", null);
       }
       catch (Exception ex)
       {
@@ -310,10 +309,10 @@ public class EventDocumentsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);    
+    executeTabAction("preTabEdit", null);
     editing = new EventDocument();
     editing.setEventDocTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", editing);    
+    executeTabAction("postTabEdit", editing);
   }
 
   @Override
@@ -325,9 +324,9 @@ public class EventDocumentsTabBean extends TabBean
       {
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
-        editing = (EventDocument)executeTabAction("preTabStore", editing);          
+        editing = (EventDocument)executeTabAction("preTabStore", editing);
         AgendaModuleBean.getClient(false).storeEventDocument(editing);
-        executeTabAction("postTabStore", editing);        
+        executeTabAction("postTabStore", editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -370,7 +369,7 @@ public class EventDocumentsTabBean extends TabBean
   public boolean isDialogVisible()
   {
     return (editing != null);
-  }  
+  }
 
   @Override
   public void clear()

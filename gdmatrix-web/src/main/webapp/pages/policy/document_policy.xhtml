@@ -5,6 +5,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/policy/object_policy_3col.xhtml">
 
@@ -55,7 +56,7 @@
           <p:selectOneMenu value="#{documentPolicyFinderBean.filter.state}">
             <f:selectItem itemLabel=" " itemValue="" />
             <f:selectItems value="#{documentPoliciesTabBean.policyStateSelectItems}" />
-          </p:selectOneMenu>          
+          </p:selectOneMenu>
         </div>
 
         <div class="field col-12 xl:col-6">
@@ -68,7 +69,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>   
+        </div>
         <div class="field col-12 xl:col-6">
           <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
           <p:datePicker value="#{documentPolicyFinderBean.filter.endCreationDate}"
@@ -79,7 +80,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>   
+        </div>
 
         <div class="field col-12 xl:col-6">
           <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_approvalDates}" />
@@ -91,7 +92,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>   
+        </div>
         <div class="field col-12 xl:col-6">
           <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
           <p:datePicker value="#{documentPolicyFinderBean.filter.endApprovalDate}"
@@ -102,7 +103,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>   
+        </div>
 
         <div class="field col-12 xl:col-6">
           <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_activationDates}" />
@@ -114,7 +115,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>   
+        </div>
         <div class="field col-12 xl:col-6">
           <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
           <p:datePicker value="#{documentPolicyFinderBean.filter.endActivationDate}"
@@ -125,7 +126,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>          
+        </div>
 
         <div class="field col-12 xl:col-6">
           <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_executionDates}" />
@@ -137,7 +138,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>   
+        </div>
         <div class="field col-12 xl:col-6">
           <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
           <p:datePicker value="#{documentPolicyFinderBean.filter.endExecutionDate}"
@@ -148,7 +149,7 @@
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
                         showIcon="true" showTime="false"
                         monthNavigator="true" yearNavigator="true" />
-        </div>   
+        </div>
 
       </div>
 
@@ -193,14 +194,17 @@
     <h:panelGroup id="search_tabs">
       <h:panelGroup id="result_list">
         <ui:include src="document_policy_list.xhtml" />
-      </h:panelGroup>      
+      </h:panelGroup>
       <h:panelGroup id="obj_tabs"></h:panelGroup>
-    </h:panelGroup>    
+    </h:panelGroup>
 
     <script>
       window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
       document.title = "#{userSessionBean.selectedMenuItem.label}";
-    </script>  
+    </script>
+
+    <gdm:saveBean value="documentPolicyObjectBean" />
+    <gdm:saveBean value="documentPolicyFinderBean" />
 
   </ui:define>
 

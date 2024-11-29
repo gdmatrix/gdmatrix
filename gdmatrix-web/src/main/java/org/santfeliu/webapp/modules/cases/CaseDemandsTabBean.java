@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.cases;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Demand;
@@ -50,7 +50,7 @@ import static org.santfeliu.webapp.modules.cases.CasesModuleBean.getPort;
  * @author realor
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class CaseDemandsTabBean extends TabBean
 {
   private List<Demand> rows;
@@ -125,7 +125,7 @@ public class CaseDemandsTabBean extends TabBean
         error(ex);
       }
     }
-    else 
+    else
     {
       rows = Collections.EMPTY_LIST;
       firstRow = 0;

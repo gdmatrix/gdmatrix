@@ -43,7 +43,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -80,7 +80,7 @@ import org.santfeliu.webapp.util.DataTableRow;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class EventFinderBean extends FinderBean
 {
   private static final String RENDER_PUBLIC_ICON = "renderPublicIcon";
@@ -136,9 +136,9 @@ public class EventFinderBean extends FinderBean
   @Override
   public EventFilter getFilter()
   {
-    if (filter != null && 
+    if (filter != null &&
       (filter.getEventTypeId() == null || filter.getEventTypeId().isEmpty()))
-    {    
+    {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
       filter.getEventTypeId().clear();
       filter.getEventTypeId().add(baseTypeId);
@@ -175,13 +175,10 @@ public class EventFinderBean extends FinderBean
   {
     try
     {
-      if (objectSetup == null)
-        loadObjectSetup();
+      List<TableProperty> tableProperties =
+        getObjectSetup().getSearchTabs().get(0).getTableProperties();
 
-      List<TableProperty> tableProperties = 
-        objectSetup.getSearchTabs().get(0).getTableProperties();
-      
-      return tableProperties != null ? 
+      return tableProperties != null ?
         tableProperties : Collections.emptyList();
     }
     catch (Exception ex)
@@ -189,7 +186,7 @@ public class EventFinderBean extends FinderBean
       return Collections.emptyList();
     }
   }
-  
+
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
@@ -459,7 +456,7 @@ public class EventFinderBean extends FinderBean
   {
     this.outdated = true;
   }
-  
+
   public void update()
   {
     dateDblClick = false;
@@ -481,8 +478,10 @@ public class EventFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new EventFilter();
     smartFilter = null;
     setFromDate(getDefaultFromDate());
@@ -508,13 +507,13 @@ public class EventFinderBean extends FinderBean
   public String getEventStyleClass(String eventId)
   {
     return "event_" + eventId;
-  }  
+  }
 
   public String getEventTypeStyleClass(String eventTypeId)
   {
     return "et_" + eventTypeId.replace(':', '_').replace('.', '_');
-  }   
-  
+  }
+
   public boolean isDateChange(int rowIndex)
   {
     if (rowIndex == 0) return true;
@@ -600,8 +599,8 @@ public class EventFinderBean extends FinderBean
       }
     }
     return -1;
-  }  
-  
+  }
+
   public int getDefaultSearchTabSelector()
   {
     int searchTabSelector =
@@ -614,13 +613,12 @@ public class EventFinderBean extends FinderBean
   {
     try
     {
-      if (objectSetup == null) loadObjectSetup();
-      String publicTypeSymbol = 
-        objectSetup.getProperties().getString("publicTypeSymbol");
+      String publicTypeSymbol =
+        getObjectSetup().getProperties().getString("publicTypeSymbol");
       if (publicTypeSymbol != null) return publicTypeSymbol;
     }
     catch (Exception ex) { }
-    
+
     return String.valueOf((char)0x24CC);
   }
 
@@ -635,8 +633,8 @@ public class EventFinderBean extends FinderBean
       if (!filter.getThemeId().isEmpty())
         searchEventThemeId = filter.getThemeId().get(0);
     }
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -782,20 +780,17 @@ public class EventFinderBean extends FinderBean
     }
     return convertedRows;
   }
-  
+
   private void setOrderBy(EventFilter filter) throws Exception
   {
     filter.getOrderBy().clear();
-    
-    if (objectSetup == null)        
-      loadObjectSetup();
-       
+
     int tabSelector = eventObjectBean.getSearchTabSelector();
-    tabSelector = 
-      tabSelector < objectSetup.getSearchTabs().size() ? tabSelector : 0;
+    tabSelector =
+      tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
     List<String> orderBy =
-      objectSetup.getSearchTabs().get(tabSelector).getOrderBy(); 
-    
+      getObjectSetup().getSearchTabs().get(tabSelector).getOrderBy();
+
     if (orderBy != null && !orderBy.isEmpty())
     {
       for (String column : orderBy)
@@ -810,7 +805,7 @@ public class EventFinderBean extends FinderBean
         filter.getOrderBy().add(orderByProperty);
       }
     }
-  }  
+  }
 
   private ScheduleModel loadEventModel()
   {
@@ -842,8 +837,8 @@ public class EventFinderBean extends FinderBean
                 .endDate(toLocalDateTime(row.getEndDateTime()))
                 .description(row.getSummary())
                 .overlapAllowed(true)
-                .styleClass(getEventStyleClass(row.getEventId()) + " " + 
-                  getEventTypeStyleClass(row.getEventTypeId()) + 
+                .styleClass(getEventStyleClass(row.getEventId()) + " " +
+                  getEventTypeStyleClass(row.getEventTypeId()) +
                   (currentEvent ? " current" : ""))
                 .build();
               addEvent(event);
@@ -906,7 +901,7 @@ public class EventFinderBean extends FinderBean
       catch (Exception ex) { }
     }
   }
-  
+
   private boolean mustIncludeEvent(Event event,
     String filterStartDateTime, String filterEndDateTime)
   {
@@ -986,7 +981,7 @@ public class EventFinderBean extends FinderBean
     }
     return clientIdList;
   }
-  
+
   public class EventDataTableRow extends DataTableRow
   {
     private String startDateTime;

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.dic;
@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.dic;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -46,20 +46,20 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 
 /**
- * 
+ *
  * @author blanquepa
  */
-@ViewScoped
 @Named
+@RequestScoped
 public class EnumTypeFinderBean extends FinderBean
 {
   private EnumTypeFilter filter = new EnumTypeFilter();
   private List<EnumType> rows;
-  
+
   private String smartFilter;
   private int firstRow;
-  private boolean outdated;  
-  
+  private boolean outdated;
+
   @Inject
   NavigatorBean navigatorBean;
 
@@ -68,7 +68,7 @@ public class EnumTypeFinderBean extends FinderBean
 
   @Inject
   EnumTypeTypeBean enumTypeTypeBean;
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -84,7 +84,7 @@ public class EnumTypeFinderBean extends FinderBean
   {
     this.filter = filter;
   }
-  
+
   public List<String> getEnumTypeIdList()
   {
     return filter.getEnumTypeId();
@@ -98,7 +98,7 @@ public class EnumTypeFinderBean extends FinderBean
       filter.getEnumTypeId().addAll(enumTypeIdList);
     }
   }
-  
+
   public String getSmartFilter()
   {
     return smartFilter;
@@ -108,7 +108,7 @@ public class EnumTypeFinderBean extends FinderBean
   {
     this.smartFilter = smartFilter;
   }
-  
+
   public List<EnumType> getRows()
   {
     return rows;
@@ -123,25 +123,25 @@ public class EnumTypeFinderBean extends FinderBean
   {
     this.firstRow = firstRow;
   }
-  
+
   @Override
   public String getObjectId(int position)
   {
     return rows == null ? NEW_OBJECT_ID : rows.get(position).getEnumTypeId();
-  } 
-  
+  }
+
   @Override
   public int getObjectCount()
   {
     return rows == null ? 0 : rows.size();
-  }  
-  
+  }
+
   @Override
   public void smartFind()
   {
     setFinding(true);
     setFilterTabSelector(0);
-    filter = enumTypeTypeBean.queryToFilter(smartFilter, 
+    filter = enumTypeTypeBean.queryToFilter(smartFilter,
       DictionaryConstants.ENUM_TYPE_TYPE);
     doFind(true);
     resetWildcards(filter);
@@ -155,10 +155,10 @@ public class EnumTypeFinderBean extends FinderBean
     setFilterTabSelector(1);
     smartFilter = enumTypeTypeBean.filterToQuery(filter);
     doFind(true);
-    resetWildcards(filter);    
+    resetWildcards(filter);
     firstRow = 0;
   }
-  
+
   public void outdate()
   {
     this.outdated = true;
@@ -172,8 +172,10 @@ public class EnumTypeFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new EnumTypeFilter();
     smartFilter = null;
     rows = null;
@@ -207,8 +209,8 @@ public class EnumTypeFinderBean extends FinderBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void doFind(boolean autoLoad)
   {
     try
@@ -245,8 +247,8 @@ public class EnumTypeFinderBean extends FinderBean
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               String name = filter.getName();
-              filter.setName(setWildcards(name));     
-              List<EnumType> result = 
+              filter.setName(setWildcards(name));
+              List<EnumType> result =
                 DicModuleBean.getPort(false).findEnumTypes(filter);
               filter.setName(name);
               return result;
@@ -280,8 +282,8 @@ public class EnumTypeFinderBean extends FinderBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private String setWildcards(String text)
   {
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
@@ -289,13 +291,13 @@ public class EnumTypeFinderBean extends FinderBean
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(EnumTypeFilter filter)
   {
     String name = filter.getName();
     if (name != null && !name.startsWith("\"") && !name.endsWith("\""))
       name = name.replaceAll("^%+|%+$", "");
     filter.setName(name);
-  }  
+  }
 }

@@ -1,33 +1,34 @@
-<ui:composition 
+<ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html"  
-  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:gdm="http://gdmatrix.org/faces"
   xmlns:p="http://primefaces.org/ui">
 
-  <p:dataTable value="#{personFinderBean.rows}" 
-               var="row" stripedRows="true" 
+  <p:dataTable value="#{personFinderBean.rows}"
+               var="row" stripedRows="true"
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{personFinderBean.firstRow}"
                rowStyleClass="#{row.personId == personObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="10"
                rowIndexVar="rowIndex"
                emptyMessage="#{objectBundle.no_data}">
 
     <p:column headerText="#{kernelBundle.person_id}" styleClass="col-1">
       <h:outputText value="#{row.personId}" />
-    </p:column>         
+    </p:column>
     <p:column headerText="#{kernelBundle.person_type}" styleClass="col-2">
       <h:outputText value="#{typeTypeBean.getDescription(row.personTypeId)}" />
-    </p:column>     
+    </p:column>
     <p:column headerText="#{kernelBundle.person_name}" styleClass="col-8">
       <h:outputText value="#{row.fullName}" />
-    </p:column> 
+    </p:column>
     <p:column headerText="#{kernelBundle.person_nif}" styleClass="col-1">
       <h:outputText value="#{row.nif}" />
-    </p:column>     
+    </p:column>
     <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"
                        styleClass="rounded-button ui-button-flat"
@@ -43,10 +44,9 @@
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                       />     
-    </p:column>      
+                       />
+    </p:column>
 
+  </p:dataTable>
 
-  </p:dataTable> 
-
-</ui:composition> 
+</ui:composition>

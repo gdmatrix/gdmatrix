@@ -5,6 +5,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
 
@@ -167,6 +168,9 @@
 
     </p:tabView>
 
-  </ui:define>
+    <gdm:saveBean value="translationObjectBean" />
+    <gdm:saveBean value="translationFinderBean" />
 
+  </ui:define>
+  
 </ui:composition>

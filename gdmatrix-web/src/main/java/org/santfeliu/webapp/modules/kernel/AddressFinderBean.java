@@ -33,7 +33,7 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.AddressFilter;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author blanquepa
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class AddressFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -170,8 +170,10 @@ public class AddressFinderBean extends FinderBean
     }
   }
 
+  @Override
   public void clear()
   {
+    super.clear();
     filter = new AddressFilter();
     smartFilter = null;
     rows = null;
@@ -181,7 +183,7 @@ public class AddressFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow, 
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       getObjectPosition(), rows, outdated };
   }
 
@@ -241,14 +243,14 @@ public class AddressFinderBean extends FinderBean
             try
             {
               String streetName = filter.getStreetName();
-              filter.setStreetName(setWildcards(streetName));        
+              filter.setStreetName(setWildcards(streetName));
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              List results = 
+              List results =
                 KernelModuleBean.getPort(false).findAddressViews(filter);
               resetWildcards(filter);
               return results;
-              
+
             }
             catch (Exception ex)
             {
@@ -280,27 +282,27 @@ public class AddressFinderBean extends FinderBean
       error(ex);
     }
   }
-  
+
   private String setWildcards(String text)
   {
     if (text != null)
-      text = text.trim();    
+      text = text.trim();
     if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
       text = "%" + text.replaceAll("^%|%$", "") + "%" ;
     else if (text != null && text.startsWith("\"") && text.endsWith("\""))
       text = text.replaceAll("^\"|\"$", "");
     return text;
-  } 
-  
+  }
+
   private void resetWildcards(AddressFilter filter)
   {
     String streetName = filter.getStreetName();
-    if (streetName != null && !streetName.startsWith("\"") 
+    if (streetName != null && !streetName.startsWith("\"")
       && !streetName.endsWith("\""))
     {
       streetName = streetName.replaceAll("^%+|%+$", "");
       filter.setStreetName(streetName);
     }
-  }  
+  }
 
 }

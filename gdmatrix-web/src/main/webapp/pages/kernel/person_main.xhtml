@@ -6,125 +6,125 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-    <div class="ui-fluid formgrid grid">
+  <div class="ui-fluid formgrid grid">
 
-      <div class="field col-12 md:col-3">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_id}" />
-        <p:inputText value="#{personObjectBean.objectId}" readonly="true" />
-      </div>
-
-      <div class="field col-12 md:col-9">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_type}" />
-        <p:selectOneMenu value="#{personObjectBean.person.personTypeId}"
-                         filter="true" autoWidth="false" touchable="true">
-          <f:selectItems value="#{typeTypeBean.getSelectItems('Person')}"
-                         var="item" />
-          <p:column>
-            <h:outputText value="#{item.label}" />
-          </p:column>
-        </p:selectOneMenu>
-      </div>
-
-      <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_name}" 
-                       indicateRequired="true"/>
-        <p:inputText value="#{personObjectBean.person.name}" 
-                     required="#{not empty param['mainform:search_tabs:store']}"
-                     requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
-      </div>
-
-      <div class="field col-12 md:col-3 xl:col-2">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-        <p:selectOneMenu value="#{personObjectBean.person.firstParticle}"
-                         touchable="true">
-          <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
-        </p:selectOneMenu>
-      </div>
-
-      <div class="field col-12 md:col-9 xl:col-4">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />
-        <p:inputText value="#{personObjectBean.person.firstSurname}" />
-      </div>
-
-      <div class="field col-12 md:col-3 xl:col-2">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-        <p:selectOneMenu value="#{personObjectBean.person.secondParticle}"
-                         touchable="true">
-          <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
-        </p:selectOneMenu>
-      </div>
-
-      <div class="field col-12 md:col-9 xl:col-4">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_surname2}" />
-        <p:inputText value="#{personObjectBean.person.secondSurname}" />
-      </div>
-
-      <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
-        <p:inputText value="#{personObjectBean.person.nif}" />
-      </div>
-
-      <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
-        <p:inputText value="#{personObjectBean.person.passport}" />
-      </div>
-
-      <div class="field col-12 md:col-6 xl:col-2">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_sex}" />
-        <p:selectOneMenu value="#{personObjectBean.person.sex}" touchable="true">
-          <f:selectItems value="#{personObjectBean.sexSelectItems}" />
-        </p:selectOneMenu>
-      </div>
-
-      <div class="field col-12 md:col-4 xl:col-3">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_birthDate}" />
-        <p:datePicker value="#{personObjectBean.person.birthDate}"
-                      autocomplete="off" placeholder="dd/MM/yyyy"
-                      locale="#{personObjectBean.language}"
-                      showOnFocus="false"
-                      converter="datePickerConverter" pattern="dd/MM/yyyy"
-                      showIcon="true" showTime="false"
-                      monthNavigator="true" yearNavigator="true" />
-      </div>
-
-      <div class="field col-12 md:col-2 xl:col-1">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_age}" />
-        <p:inputText value="#{personObjectBean.age}" readonly="true" />
-      </div>
-
-      <div class="field col-12 md:col-6">
-        <h:outputLabel for="@next" value="#{kernelBundle.person_birthCity}" />
-        <emcomp:objectReference value="#{personObjectBean.person.birthCityId}"
-                                type="City"
-                                styleClass="w-full"
-                                scrollHeight="200"
-                                queryDelay="1000"
-                                minQueryLength="3"
-                                process="@form:cnt:search_tabs:tabs"/>
-      </div>
-
-      <div class="field col-12 md:col-6">
-        <h:outputLabel for="@next" value="#{kernelBundle.person_nationality}" />
-        <p:selectOneMenu value="#{personObjectBean.person.nationalityId}"
-                         filter="true"
-                         dynamic="true"
-                         touchable="true">
-          <f:selectItem itemLabel="" itemValue="" />
-          <f:selectItems value="#{countryTypeBean.selectItems}" />
-        </p:selectOneMenu>
-      </div>
-
-      <div class="field col-12 md:col-6">
-        <h:outputLabel for="person_father" value="#{kernelBundle.person_father}" />
-        <p:inputText value="#{personObjectBean.person.fatherName}"
-                     />
-      </div>
-
-      <div class="field col-12 md:col-6">
-        <h:outputLabel for="person_mother" value="#{kernelBundle.person_mother}" />
-        <p:inputText  value="#{personObjectBean.person.motherName}"  />
-      </div>
-
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_id}" />
+      <p:inputText value="#{personObjectBean.objectId}" readonly="true" />
     </div>
+
+    <div class="field col-12 md:col-9">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_type}" />
+      <p:selectOneMenu value="#{personObjectBean.person.personTypeId}"
+                       filter="true" autoWidth="false" touchable="true">
+        <f:selectItems value="#{typeTypeBean.getSelectItems('Person')}"
+                       var="item" />
+        <p:column>
+          <h:outputText value="#{item.label}" />
+        </p:column>
+      </p:selectOneMenu>
+    </div>
+
+    <div class="field col-12 md:col-12">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_name}" 
+                     indicateRequired="true"/>
+      <p:inputText value="#{personObjectBean.person.name}" 
+                   required="#{not empty param['mainform:search_tabs:store']}"
+                   requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
+    </div>
+
+    <div class="field col-12 md:col-3 xl:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
+      <p:selectOneMenu value="#{personObjectBean.person.firstParticle}"
+                       touchable="true">
+        <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
+      </p:selectOneMenu>
+    </div>
+
+    <div class="field col-12 md:col-9 xl:col-4">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />
+      <p:inputText value="#{personObjectBean.person.firstSurname}" />
+    </div>
+
+    <div class="field col-12 md:col-3 xl:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
+      <p:selectOneMenu value="#{personObjectBean.person.secondParticle}"
+                       touchable="true">
+        <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
+      </p:selectOneMenu>
+    </div>
+
+    <div class="field col-12 md:col-9 xl:col-4">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_surname2}" />
+      <p:inputText value="#{personObjectBean.person.secondSurname}" />
+    </div>
+
+    <div class="field col-12 md:col-6 xl:col-3">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
+      <p:inputText value="#{personObjectBean.person.nif}" />
+    </div>
+
+    <div class="field col-12 md:col-6 xl:col-3">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
+      <p:inputText value="#{personObjectBean.person.passport}" />
+    </div>
+
+    <div class="field col-12 md:col-6 xl:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_sex}" />
+      <p:selectOneMenu value="#{personObjectBean.person.sex}" touchable="true">
+        <f:selectItems value="#{personObjectBean.sexSelectItems}" />
+      </p:selectOneMenu>
+    </div>
+
+    <div class="field col-12 md:col-4 xl:col-3">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_birthDate}" />
+      <p:datePicker value="#{personObjectBean.person.birthDate}"
+                    autocomplete="off" placeholder="dd/MM/yyyy"
+                    locale="#{personObjectBean.language}"
+                    showOnFocus="false"
+                    converter="datePickerConverter" pattern="dd/MM/yyyy"
+                    showIcon="true" showTime="false"
+                    monthNavigator="true" yearNavigator="true" />
+    </div>
+
+    <div class="field col-12 md:col-2 xl:col-1">
+      <p:outputLabel for="@next" value="#{kernelBundle.person_age}" />
+      <p:inputText value="#{personObjectBean.age}" readonly="true" />
+    </div>
+
+    <div class="field col-12 md:col-6">
+      <h:outputLabel for="@next" value="#{kernelBundle.person_birthCity}" />
+      <emcomp:objectReference value="#{personObjectBean.person.birthCityId}"
+                              type="City"
+                              styleClass="w-full"
+                              scrollHeight="200"
+                              queryDelay="1000"
+                              minQueryLength="3"
+                              process="@form:cnt:search_tabs:tabs"/>
+    </div>
+
+    <div class="field col-12 md:col-6">
+      <h:outputLabel for="@next" value="#{kernelBundle.person_nationality}" />
+      <p:selectOneMenu value="#{personObjectBean.person.nationalityId}"
+                       filter="true"
+                       dynamic="true"
+                       touchable="true">
+        <f:selectItem itemLabel="" itemValue="" />
+        <f:selectItems value="#{countryTypeBean.selectItems}" />
+      </p:selectOneMenu>
+    </div>
+
+    <div class="field col-12 md:col-6">
+      <h:outputLabel for="person_father" value="#{kernelBundle.person_father}" />
+      <p:inputText value="#{personObjectBean.person.fatherName}"
+                   />
+    </div>
+
+    <div class="field col-12 md:col-6">
+      <h:outputLabel for="person_mother" value="#{kernelBundle.person_mother}" />
+      <p:inputText  value="#{personObjectBean.person.motherName}"  />
+    </div>
+
+  </div>
 
 </ui:composition>

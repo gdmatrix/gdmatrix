@@ -5,6 +5,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
 
@@ -224,6 +225,9 @@
         </p:column>
       </p:dataTable>
     </p:dialog>
+    
+    <gdm:saveBean value="classObjectBean" />
+    <gdm:saveBean value="classFinderBean" />
 
   </ui:define>
 

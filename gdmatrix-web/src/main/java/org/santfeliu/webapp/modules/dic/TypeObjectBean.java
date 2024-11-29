@@ -33,8 +33,8 @@ package org.santfeliu.webapp.modules.dic;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -51,8 +51,8 @@ import org.santfeliu.webapp.TypeBean;
  *
  * @author blanquepa
  */
-@ViewScoped
 @Named
+@RequestScoped
 public class TypeObjectBean extends ObjectBean
 {
   private Type type = new Type();
@@ -102,7 +102,7 @@ public class TypeObjectBean extends ObjectBean
   {
     return isNew() ? "" : getTypeBean().getDescription(type.getTypeId());
   }
-  
+
   @Override
   public int getEditModeSelector()
   {
@@ -125,18 +125,18 @@ public class TypeObjectBean extends ObjectBean
       type.setSuperTypeId(null);
     type = DicModuleBean.getPort(false).storeType(type);
     setObjectId(type.getTypeId());
-    typeFinderBean.outdate();  
-    TypeCache.getInstance().sync();    
+    typeFinderBean.outdate();
+    TypeCache.getInstance().sync();
   }
-  
+
   @Override
   public void removeObject() throws Exception
   {
     DicModuleBean.getPort(false).removeType(type.getTypeId());
 
     typeFinderBean.outdate();
-  }    
-  
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -148,7 +148,7 @@ public class TypeObjectBean extends ObjectBean
   {
     Object[] array = (Object[])state;
     this.type = (Type) array[0];
-  }  
+  }
 
   //Person selection
   public SelectItem getSuperTypeSelectItem()

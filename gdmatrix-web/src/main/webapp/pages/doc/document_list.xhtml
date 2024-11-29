@@ -3,8 +3,9 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui"
+  xmlns:gdm="http://gdmatrix.org/faces"
   xmlns:jsf="http://xmlns.jcp.org/jsf">
-    
+
   <p:dataTable value="#{documentFinderBean.rows}" 
                var="row" stripedRows="true" 
                paginator="true" pageLinks="5"
@@ -53,7 +54,7 @@
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        />     
     </p:column>
-    
+
     <p:rowExpansion rendered="#{not row.customProperties.isEmpty()}">
       <p:dataTable value="#{row.customProperties}" var="customProperty"
                    styleClass="customProperties" rowStyleClass="row" 
@@ -66,7 +67,7 @@
         </p:column>
       </p:dataTable>        
     </p:rowExpansion>     
-    
+
   </p:dataTable>  
 
 </ui:composition> 

@@ -31,7 +31,7 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Theme;
@@ -44,7 +44,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ViewScoped
+@RequestScoped
 public class ThemeObjectBean extends ObjectBean
 {
   private Theme theme = new Theme();
