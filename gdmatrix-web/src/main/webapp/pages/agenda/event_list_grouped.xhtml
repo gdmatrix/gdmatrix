@@ -33,9 +33,9 @@
           </h:outputText>
         </div>
         <div class="eventDescription #{eventFinderBean.getEventTypeStyleClass(row.typeId)}">
-          <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" />
-          <h:outputText value=": " />
-          <h:outputText value="#{row.summary}" />
+          <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" styleClass="eventType" />
+          <h:outputText value=": " styleClass="eventSeparator" />
+          <h:outputText value="#{row.summary}" styleClass="eventTitle" />
         </div>
         <div class="eventActions text-right white-space-nowrap">
           <h:outputText value="#{eventFinderBean.publicTypeSymbol}" 

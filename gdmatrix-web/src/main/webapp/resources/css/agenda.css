@@ -47,11 +47,8 @@
 .eventList .eventRow > div
 {
   flex-grow: 0;
-}
-
-.eventList .eventRow .eventHours
-{
-  align-items: start;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .eventList .eventRow .eventHours > *,
@@ -72,7 +69,7 @@
 {
   flex-grow: 1;
   border-radius: var(--border-radius);
-  padding:2px;
+  padding: 4px;
   border: 1px solid var(--surface-200);
 }
 

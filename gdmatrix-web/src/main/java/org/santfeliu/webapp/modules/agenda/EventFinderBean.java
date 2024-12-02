@@ -499,7 +499,7 @@ public class EventFinderBean extends FinderBean
   {
     if (row != null && row.getTypeId() != null)
     {
-      return typeTypeBean.getDescription(row.getTypeId());
+      return typeTypeBean.getTypeDescription(row.getTypeId());
     }
     return "";
   }

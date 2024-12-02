@@ -268,6 +268,19 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 
     return items;
   }
+  
+  public String getTypeDescription(String typeId)
+  {
+    if (typeId != null)
+    {
+      Type type = TypeCache.getInstance().getType(typeId);
+      if (type != null)
+      {
+        return type.getDescription();
+      }
+    }
+    return null;
+  }
 
   @Override
   protected void addNavigatorItems(List<SelectItem> items, String typeId)
