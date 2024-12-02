@@ -108,7 +108,8 @@ public class SelectItem implements Comparable
   @Override
   public int compareTo(Object o)
   {
-    int compareFav = new Boolean(favorite).compareTo(((SelectItem)o).isFavorite());
+    int compareFav = 
+      Boolean.valueOf(favorite).compareTo(((SelectItem)o).isFavorite());
     if (compareFav != 0)
       return -1 * compareFav;
     else 
