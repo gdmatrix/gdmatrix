@@ -70,6 +70,8 @@ public abstract class ObjectBean extends BaseBean
   public static final String PRE_REMOVE_ACTION = "preRemove";
   public static final String POST_REMOVE_ACTION = "postRemove";
 
+  public static final String OBJECT_SETUP_PROPERTY = "objectSetup";
+
   protected String objectId = NEW_OBJECT_ID;
   private int searchTabSelector;
   private int editTabSelector;
@@ -268,7 +270,7 @@ public abstract class ObjectBean extends BaseBean
 
   public void loadObjectSetup() throws Exception
   {
-    String setupName = getProperty("objectSetup");
+    String setupName = getProperty(OBJECT_SETUP_PROPERTY);
     if (setupName == null)
     {
       // look in dictionary
@@ -576,6 +578,13 @@ public abstract class ObjectBean extends BaseBean
   public void selectTabWithErrors()
   {
     ComponentUtils.selectTabWithErrors("mainform:search_tabs:tabs");
+  }
+
+  public boolean isMultipleObjectSetup()
+  {
+    String setupName =
+      getSelectedMenuItem().getDirectProperty(OBJECT_SETUP_PROPERTY);
+    return setupName == null;
   }
 
   public boolean isRenderProperty(String propName)

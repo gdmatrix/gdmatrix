@@ -13,7 +13,9 @@
       <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
       <p:inputText value="#{caseObjectBean.objectId}" readonly="true" />
     </div>
-    <p:outputPanel class="field col-12 md:col-9" rendered="#{caseObjectBean.isRenderProperty('caseTypeId')}">
+    <p:outputPanel class="field col-12 md:col-9" 
+                   rendered="#{caseObjectBean.isRenderProperty('caseTypeId') 
+                               or caseObjectBean.isMultipleObjectSetup()}">
       <p:outputLabel for="@next"
                      value="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)}"
                      indicateRequired="true" />
