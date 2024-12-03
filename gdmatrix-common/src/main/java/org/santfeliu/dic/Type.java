@@ -354,13 +354,18 @@ public class Type extends org.matrix.dic.Type
             ArrayList<Double> numberList = new ArrayList<>();
             for (String value : stringList)
             {
-              numberList.add(Double.valueOf(value));
+              if (value != null)
+              {
+                numberList.add(Double.valueOf(value));
+              }
             }
             return numberList;
           }
           else
           {
-            return Double.valueOf(stringList.get(0));
+            String value = stringList.get(0);
+            if (value == null) return null;
+            return Double.valueOf(value);
           }
 
         case BOOLEAN:

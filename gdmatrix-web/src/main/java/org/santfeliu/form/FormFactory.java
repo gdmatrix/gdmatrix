@@ -100,6 +100,12 @@ public class FormFactory
     // look for evaluated form for this context in cache
     Form form = restoreForm(selector, contextHash, updated);
 
+    if (form == null)
+    {
+      // restore non evaluated
+      form = restoreForm(selector, "", updated);
+    }
+
     if (form == null) // form not in cache or is outdated
     {
       // call builders to create form
@@ -107,7 +113,7 @@ public class FormFactory
       while (iter.hasNext() && form == null)
       {
         FormBuilder builder = iter.next();
-        form = builder.getForm(selector);
+        form = builder.getForm(selector); // non evaluated form
       }
       if (form != null)
       {
@@ -119,7 +125,7 @@ public class FormFactory
     {
       form = form.evaluate(context);
       System.out.println("Evaluate form " + selector + " for " + context + " = " + form);
-      saveForm(selector, contextHash, form);
+      saveForm(selector, contextHash, form); // save evaluated form
     }
     return form;
   }
@@ -161,7 +167,20 @@ public class FormFactory
 
     try
     {
-      String text = context.toString(); // TODO: do not assume toString prints key/value
+      StringBuilder buffer = new StringBuilder();
+      Iterator<String> iter = context.keySet().iterator();
+      while (iter.hasNext())
+      {
+        String property = iter.next();
+        if (!property.startsWith("_"))
+        {
+          Object value = context.get(property);
+          buffer.append(property);
+          buffer.append("=");
+          buffer.append(value);
+        }
+      }
+      String text = buffer.toString();
       MessageDigest digester = MessageDigest.getInstance("SHA-256");
       byte[] bytes = digester.digest(text.getBytes("UTF-8"));
       StringBuilder hexString = new StringBuilder(2 * bytes.length);
