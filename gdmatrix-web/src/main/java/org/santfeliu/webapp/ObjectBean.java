@@ -302,7 +302,7 @@ public abstract class ObjectBean extends BaseBean
     if (actionsScriptName == null) //fallback
       actionsScriptName = objectSetup.getScriptActions().getScriptName();
 
-    if (actionsScriptName != null)
+    if (actionsScriptName != null && scriptClient == null)
     {
       scriptClient = new ScriptClient();
       scriptClient.put("userSessionBean",
@@ -310,13 +310,8 @@ public abstract class ObjectBean extends BaseBean
       scriptClient.put("applicationBean",
         ApplicationBean.getCurrentInstance());
       scriptClient.executeScript(actionsScriptName);
-
-      loadActions();
     }
-    else
-      scriptClient = null;
   }
-
 
   public void loadActiveEditTab() throws Exception
   {
@@ -339,10 +334,13 @@ public abstract class ObjectBean extends BaseBean
     }
   }
 
-  private void loadActions()
+  public void loadActions()
   {
     try
     {
+      if (actions != null) return;
+
+      System.out.println(">>> loadActions");
       actions = new ArrayList();
       actions.addAll(getObjectSetup().getActions());
       actions.addAll(getObjectSetup().getScriptActions().getActions()); //fallback
@@ -621,5 +619,7 @@ public abstract class ObjectBean extends BaseBean
     {
       tabBean.clear();
     }
+    scriptClient = null;
+    actions = null;
   }
 }

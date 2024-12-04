@@ -494,3 +494,14 @@ body .ui-messages-error ul
 .customProperties .cell.propValue
 {
 }
+
+body .ui-overlaypanel.context
+{
+  width: 240px;
+  max-width: 100%;
+}
+
+body .ui-overlaypanel.context .ui-overlaypanel-content
+{
+  padding: 0;
+}

@@ -81,6 +81,47 @@
                      message="#{objectBundle.confirm_remove_message}"
                      icon="pi pi-info-circle" />
       </p:commandButton>
+      <p:commandButton id="object_actions" 
+                       action="#{objectBean.loadActions}"
+        icon="ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
+        rendered="#{not objectBean.isNew()}" />
+      <p:overlayPanel for="object_actions" appendTo="@(body)" 
+                      dynamic="true" cache="true" styleClass="context" 
+                      widgetVar="objectActions">
+        <p:menu style="width:100%">
+          <c:forEach items="#{objectBean.actions}" var="action">
+            <p:menuitem icon="#{action.icon}"
+                        value="#{action.label}" action="#{objectBean.callAction(action.name)}"
+                        rendered="#{not empty action.label and not action.isUrlAction()}" 
+                        process="@this"
+                        onclick="PF('objectActions').hide()"
+                        update="@form:cnt:search_tabs:tabs object_header"/>
+            <p:menuitem icon="#{action.icon}"
+                        value="#{action.label}" 
+                        onclick="PF('objectActions').hide()"
+                        url="#{action.url}" target="#{action.urlTarget}"
+                        rendered="#{not empty action.label and action.isUrlAction()}" />            
+          </c:forEach>
+          <p:menuitem action="#{objectBean.store}"
+                      value="#{objectBundle.store}"
+                      icon="pi pi-save"
+                      process="@form:cnt:search_tabs:obj_tabs"
+                      update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                      onclick="PF('objectActions').hide()"
+                      disabled="#{!objectBean.editable}"
+                      oncomplete="if (isFacesError()) objectScrollUp()" />
+          <p:menuitem action="#{objectBean.cancel}"
+                      value="#{objectBundle.reload}"
+                      icon="pi pi-undo"
+                      process="@this"
+                      onclick="PF('objectActions').hide()"
+                      update="@form:cnt:search_tabs:obj_tabs"
+                      resetValues="true"
+                      global="false" />
+        </p:menu>
+      </p:overlayPanel>      
+      
+<!--
       <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
                     title="#{objectBundle.actions}"
                     rendered="#{not objectBean.isNew() and not empty objectBean.actions}">
@@ -96,6 +137,7 @@
                       rendered="#{not empty action.label and action.isUrlAction()}" />            
         </c:forEach>
       </p:menuButton>
+-->
     </div>
   </p:outputPanel>
 
@@ -150,8 +192,7 @@
                      styleClass="m-1"
                      update="@form:cnt:search_tabs:obj_tabs"
                      resetValues="true"
-                     global="false"
-                     disabled="#{!objectBean.editable}" />
+                     global="false" />
   </div>
 
   <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
