@@ -293,6 +293,7 @@ public class IdeBean extends WebBean implements Serializable
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       error(ex);
     }
   }
@@ -358,11 +359,12 @@ public class IdeBean extends WebBean implements Serializable
   {
     Gson gson = new Gson();
     Map<String, Object> map = gson.fromJson(json, Map.class);
-        DictionaryUtils.getPropertiesFromMap(map);
-
-    List<Property> props = DictionaryUtils.getPropertiesFromMap(map);
-    doc.getProperty().clear();
-    doc.getProperty().addAll(props);
+    if (map != null)
+    {
+      List<Property> props = DictionaryUtils.getPropertiesFromMap(map);
+      doc.getProperty().clear();
+      doc.getProperty().addAll(props);
+    }
   }
 
   private String metadataToJson(Document doc, IdeDocumentType type)
