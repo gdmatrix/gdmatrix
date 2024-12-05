@@ -30,8 +30,10 @@
  */
 package org.santfeliu.util.script;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.JavaScriptException;
@@ -120,12 +122,15 @@ public class ScriptClient
       Context.exit();
     }
   }
-
+  
   public Object execute(Callable callable, Object... args)
   {
     Context context = Context.enter();
     try
     {
+      LOGGER.log(Level.INFO, "Executing function {0}", 
+        getFunctionName(callable));  
+      
       if (scope == null) scope = createScope(context);
 
       Object result = callable.call(context, scope, scope, args);
@@ -136,7 +141,7 @@ public class ScriptClient
       Context.exit();
     }
   }
-
+  
   public Object executeScript(String scriptName) throws Exception
   {
     return executeScript(scriptName, null);
@@ -207,5 +212,16 @@ public class ScriptClient
 
     return result;
   }
+  
+  private String getFunctionName(Callable callable)
+  {
+    if (callable instanceof BaseFunction)
+    {
+      BaseFunction function = (BaseFunction)callable;
+      String functionName = function.getFunctionName();
+      return functionName.isEmpty() ? "anonymous" : functionName;
+    }     
+    return "";
+  }  
 
 }
