@@ -102,7 +102,7 @@ public class FormFactory
 
     if (form == null)
     {
-      // restore non evaluated
+      // restore without context
       form = restoreForm(selector, "", updated);
     }
 
@@ -117,7 +117,7 @@ public class FormFactory
       }
       if (form != null)
       {
-        saveForm(selector, "", form); // save new form (non evaluated)
+        saveForm(selector, "", form); // save form (non evaluated)
       }
     }
 
@@ -125,7 +125,14 @@ public class FormFactory
     {
       form = form.evaluate(context);
       System.out.println("Evaluate form " + selector + " for " + context + " = " + form);
-      saveForm(selector, contextHash, form); // save evaluated form
+      if (form.isContextDependant())
+      {
+        saveForm(selector, contextHash, form);
+      }
+      else
+      {
+        saveForm(selector, "", form);
+      }
     }
     return form;
   }

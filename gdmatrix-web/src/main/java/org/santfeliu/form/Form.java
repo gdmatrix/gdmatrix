@@ -66,7 +66,7 @@ public interface Form
   // Evaluation
   Form evaluate(Map context) throws Exception;
   boolean isEvaluated();
-  boolean isCacheable();
+  boolean isContextDependant();
 
   // Change control
   boolean isOutdated();

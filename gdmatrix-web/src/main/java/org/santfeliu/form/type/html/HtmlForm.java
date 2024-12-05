@@ -69,7 +69,7 @@ public class HtmlForm implements Form, Serializable
   HtmlView rootView;
   Map<String, HtmlView> viewsByRef = new HashMap();
   boolean evaluated;
-  boolean cacheable;
+  boolean contextDependant;
   long expires = 0;
   String lastModified;
   public static final String TEXT_FORMAT = "text";
@@ -356,11 +356,11 @@ public class HtmlForm implements Form, Serializable
     evaluatedForm.encoding = encoding;
     evaluatedForm.properties = new HashMap(properties);
     evaluatedForm.evaluated = true;
+    evaluatedForm.contextDependant = contextDependant;
 
     if (template == null) // no template, easy way
     {
       // clone View tree
-      evaluatedForm.cacheable = true;
       evaluatedForm.viewsByRef = new HashMap();
       evaluatedForm.rootView =
         cloneViewTree(rootView, evaluatedForm.viewsByRef);
@@ -405,9 +405,9 @@ public class HtmlForm implements Form, Serializable
   }
 
   @Override
-  public boolean isCacheable()
+  public boolean isContextDependant()
   {
-    return cacheable;
+    return contextDependant;
   }
 
   @Override
@@ -439,9 +439,27 @@ public class HtmlForm implements Form, Serializable
     if (template.getExpressionFragmentCount() == 0)
     {
       template = null;
+      contextDependant = false;
+
+      for (HtmlView view : viewsByRef.values())
+      {
+        if (view instanceof HtmlSelectView)
+        {
+          HtmlSelectView selectView = (HtmlSelectView)view;
+
+          // put parameters into evaluation context of evaluatedForm
+          List<String> parameters = selectView.getParameters(this);
+          if (!parameters.isEmpty())
+          {
+            contextDependant = true;
+            break;
+          }
+        }
+      }
     }
     else
     {
+      contextDependant = true;
       // Add fields from template variables
       Set<String> variables = template.getReferencedVariables();
       for (String variable : variables)
@@ -480,9 +498,9 @@ public class HtmlForm implements Form, Serializable
     {
       buffer.append("/evaluated");
     }
-    if (cacheable)
+    if (contextDependant)
     {
-      buffer.append("/cacheable");
+      buffer.append("/ctx_dep");
     }
     return buffer.toString();
   }
@@ -519,7 +537,7 @@ public class HtmlForm implements Form, Serializable
           selectView.getParameters(evaluatedForm);
         if (!parameters.isEmpty())
         {
-          evaluatedForm.cacheable = false;
+          evaluatedForm.contextDependant = false;
         }
       }
     }

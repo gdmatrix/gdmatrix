@@ -162,7 +162,7 @@ public class XhtmlForm implements Form
   }
 
   @Override
-  public boolean isCacheable()
+  public boolean isContextDependant()
   {
     return false;
   }
