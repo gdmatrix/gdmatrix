@@ -82,10 +82,11 @@
                      icon="pi pi-info-circle" />
       </p:commandButton>
       <p:commandButton id="object_actions" 
-                       action="#{objectBean.loadActions}"
-        icon="ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
-        rendered="#{not objectBean.isNew()}" />
-      <p:overlayPanel for="object_actions" appendTo="@(body)" 
+                       action="#{objectBean.loadActions}" 
+                       process="@this" update="@none"
+                       icon="ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
+                       rendered="#{not objectBean.isNew()}" />
+      <p:overlayPanel for="object_actions" appendTo="@(body)"
                       dynamic="true" cache="true" styleClass="context" 
                       widgetVar="objectActions">
         <p:menu style="width:100%">
@@ -94,11 +95,11 @@
                         value="#{action.label}" action="#{objectBean.callAction(action.name)}"
                         rendered="#{not empty action.label and not action.isUrlAction()}" 
                         process="@this"
-                        onclick="PF('objectActions').hide()"
+                        onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                         update="@form:cnt:search_tabs:tabs object_header"/>
             <p:menuitem icon="#{action.icon}"
                         value="#{action.label}" 
-                        onclick="PF('objectActions').hide()"
+                        onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                         url="#{action.url}" target="#{action.urlTarget}"
                         rendered="#{not empty action.label and action.isUrlAction()}" />            
           </c:forEach>
@@ -107,37 +108,19 @@
                       icon="pi pi-save"
                       process="@form:cnt:search_tabs:obj_tabs"
                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                      onclick="PF('objectActions').hide()"
+                      onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                       disabled="#{!objectBean.editable}"
                       oncomplete="if (isFacesError()) objectScrollUp()" />
           <p:menuitem action="#{objectBean.cancel}"
                       value="#{objectBundle.reload}"
                       icon="pi pi-undo"
                       process="@this"
-                      onclick="PF('objectActions').hide()"
+                      onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                       update="@form:cnt:search_tabs:obj_tabs"
                       resetValues="true"
                       global="false" />
         </p:menu>
-      </p:overlayPanel>      
-      
-<!--
-      <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
-                    title="#{objectBundle.actions}"
-                    rendered="#{not objectBean.isNew() and not empty objectBean.actions}">
-        <c:forEach items="#{objectBean.actions}" var="action" >
-          <p:menuitem icon="#{action.icon}"
-                      value="#{action.label}" action="#{objectBean.callAction(action.name)}"
-                      rendered="#{not empty action.label and not action.isUrlAction()}" 
-                      process="@this"
-                      update="@form:cnt:search_tabs:tabs object_header"/>
-          <p:menuitem icon="#{action.icon}"
-                      value="#{action.label}" 
-                      url="#{action.url}" target="#{action.urlTarget}"
-                      rendered="#{not empty action.label and action.isUrlAction()}" />            
-        </c:forEach>
-      </p:menuButton>
--->
+      </p:overlayPanel>
     </div>
   </p:outputPanel>
 
