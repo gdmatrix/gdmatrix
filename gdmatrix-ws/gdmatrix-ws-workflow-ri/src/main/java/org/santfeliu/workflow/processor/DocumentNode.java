@@ -310,7 +310,7 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
     if (serviceURL != null && serviceURL.trim().length() > 0)
     {
       wsdlLocation = Template.create(serviceURL).merge(instance) + "?wsdl";
-      return new DocumentManagerClient(new URL(wsdlLocation), userId, password);
+      return new DocumentManagerClient(wsdlLocation, userId, password);
     }
     else // default
       return new DocumentManagerClient(userId, password);

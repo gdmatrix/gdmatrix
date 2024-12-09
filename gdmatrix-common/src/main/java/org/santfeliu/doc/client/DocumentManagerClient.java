@@ -102,20 +102,11 @@ public class DocumentManagerClient implements DocumentManagerPort
     this.port = port;
   }
 
-  /*
-   * @deprecated replaced by @link DocumentManagerClient(URL wsDirectoryURL)
-   */
-  @Deprecated
   public DocumentManagerClient(String wsdlLocation)
   {
     this(wsdlLocation, null, null);
   }
 
-  /*
-   * @deprecated replaced by @link DocumentManagerClient(URL wsDirectoryURL,
-      String userId, String password)
-   */
-  @Deprecated
   public DocumentManagerClient(String wsdlLocation,
     String userId, String password)
   {
