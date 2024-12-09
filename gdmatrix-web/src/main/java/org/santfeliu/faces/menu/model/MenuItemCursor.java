@@ -232,8 +232,24 @@ public class MenuItemCursor
 
   public List<String> getAccessRoles()
   {
-    List<String> accessRoles = getMultiValuedProperty(MenuModel.ACCESS_ROLES);
-    if (accessRoles.isEmpty()) accessRoles = getViewRoles();
+    List<String> accessRoles;
+    String host = System.getProperty("host");
+    if (host == null)
+    {
+      accessRoles = Collections.EMPTY_LIST;
+    }
+    else
+    {
+      accessRoles = getMultiValuedProperty(MenuModel.ACCESS_ROLES + ":" + host);
+    }
+    if (accessRoles.isEmpty())
+    {
+      accessRoles = getMultiValuedProperty(MenuModel.ACCESS_ROLES);
+      if (accessRoles.isEmpty())
+      {
+        accessRoles = getMultiValuedProperty(MenuModel.VIEW_ROLES);
+      }
+    }
     return accessRoles;
   }
 
