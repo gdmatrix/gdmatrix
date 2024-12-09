@@ -256,6 +256,16 @@ public class EventObjectBean extends ObjectBean
     event.setOnlyAttendants(value);
   }
 
+  /**
+   * Rendered when base type is not instanciable or is the root type.
+   */
+  public boolean isRenderTypeId()
+  {
+    String typeId = getBaseTypeInfo().getBaseTypeId();
+    Type baseType = TypeCache.getInstance().getType(typeId);
+    return (baseType.isRootType() || !baseType.isInstantiable());
+  }
+  
   //TODO Move to superclass
   public String getAdminRole()
   {

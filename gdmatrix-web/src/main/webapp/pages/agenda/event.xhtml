@@ -79,10 +79,11 @@
             </div>
 
             <!-- TypeId -->
-            <p:outputPanel styleClass="field col-12" rendered="#{eventObjectBean.baseTypeInfo.baseTypeId == 'Event'}">
+            <p:outputPanel styleClass="field col-12" rendered="#{eventObjectBean.renderTypeId}">
               <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
               <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
-                                    type="Event"
+                                    type="#{eventObjectBean.baseTypeInfo.baseTypeId}"
+                                    showNavigatorItems="#{eventObjectBean.baseTypeInfo.baseTypeId != 'Event' ? 'false' : 'true'}"                                    
                                     scrollHeight="200"
                                     queryDelay="1000"
                                     minQueryLength="3"

@@ -95,6 +95,7 @@
               <p:outputLabel for="@next" value="#{caseBundle.case_caseTypeId}" />
               <emcomp:typeReference value="#{caseFinderBean.filter.caseTypeId}"
                                     type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
+                                    showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"                                    
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
