@@ -1,0 +1,91 @@
+.result_table a
+{
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.result_table .ui-datatable thead,
+.result_table .ui-datatable-scrollable-header-box thead
+{
+  display: none;
+}
+
+.result_table .current
+{
+  font-weight: bold;
+}
+
+.result_table.ui-datatable .BEFORE,
+.result_table.ui-datatable .AFTER
+{
+  color: var(--surface-500);
+}
+
+.result_table.ui-datatable .period
+{
+  color: var(--red-600);
+}
+
+.result_table.ui-datatable .ui-paginator,
+.result_table.ui-datatable .ui-datatable-scrollable-footer
+{
+  padding: 0;
+  background-color: var(--surface-ground);  
+}
+
+.result_table .ui-paginator-bottom
+{
+  position: sticky;
+  bottom: 0;
+}
+
+.procedure_view
+{
+
+}
+
+body .procedure_view h2
+{
+  font-size: medium;
+}
+
+body .procedure_view .ui-panel-titlebar
+{
+  position: sticky;
+  top: 0;
+}
+
+body .procedure_view .ui-panel-footer
+{
+  position: sticky;
+  bottom: 0;
+  background-color: var(--surface-ground);
+}
+
+body .procedure_view .ui-panel-content
+{
+  flex-grow: 1;
+}
+
+@media only screen and (max-width: 768px) 
+{
+  .ui-panel.procedure_view
+  {
+    position:absolute;
+    top:0;
+    bottom: 0;
+    z-index: 10 !important;
+    background: var(--surface-0);
+    overflow:auto;
+    width: 400px !important;
+    max-width: 100%;
+    margin: 0 !important;
+    right:0;
+    padding: 0;
+    box-shadow: -5px 0px 3px -3px rgb(50 50 50 / 30%);
+  } 
+  
+}
+
+
+
