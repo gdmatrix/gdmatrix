@@ -1,0 +1,177 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="person_persons_table" value="#{personPersonsTabBean.rows}" 
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom" 
+                 rowIndexVar="firstRow"
+                 first="#{personPersonsTabBean.firstRow}"
+                 rows="10"                  
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50" 
+                 emptyMessage="#{objectBundle.no_data}"
+                 sortMode="multiple" allowUnsorting="true">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">    
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
+                           action="#{personPersonsTabBean.create}"   
+                           process="@this"
+                           update="@form:cnt:search_tabs:tabs:person_persons_dialog"
+                           resetValues="true"
+                           oncomplete="PF('personPersonsDialog').show()"                                  
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
+        </div>
+      </f:facet>      
+      <p:column headerText="Id." styleClass="col-1" sortBy="#{row.relPersonView.personId}">
+        <h:outputText value="#{row.relPersonView.personId}" />
+      </p:column> 
+      <p:column headerText="#{kernelBundle.person_full_name}" styleClass="col-8" sortBy="#{row.relPersonView.fullName}">
+        <h:outputText value="#{row.relPersonView.fullName}"/>
+      </p:column>
+      <p:column headerText="#{kernelBundle.personPersons_type}" styleClass="col-3" sortBy="#{row.personPersonTypeId}">
+        <h:outputText value="#{typeTypeBean.getTypeDescription(row.personPersonTypeId)}"/>
+      </p:column>      
+      <p:column styleClass="text-right white-space-nowrap">
+        <h:panelGroup>
+          <p:commandButton icon="pi pi-arrow-circle-right"  
+                           action="#{navigatorBean.show('Person', row.relPersonView.personId)}" 
+                           process="@this" update="@form:cnt"
+                           styleClass="rounded-button ui-button-flat"
+                           alt="#{objectBundle.show}" title="#{objectBundle.show}" /> 
+          <p:commandButton action="#{personPersonsTabBean.edit(row)}"
+                           icon="pi pi-pencil"
+                           rendered="#{row.personPersonId != null}"
+                           styleClass="rounded-button ui-button-flat"                               
+                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                           ajax="true" update="@form:cnt:search_tabs:tabs:person_persons_dialog"
+                           process="@this"
+                           resetValues="true"
+                           oncomplete="PF('personPersonsDialog').show()" />          
+          <p:commandButton action="#{personPersonsTabBean.remove(row)}"
+                           process="@this"
+                           update="person_persons_table"
+                           icon="pi pi-trash"
+                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                           rendered="#{row.personPersonId != null}"
+                           styleClass="rounded-button ui-button-flat">            
+            <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                       message="#{objectBundle.confirm_remove_message}" 
+                       icon="pi pi-info-circle" />
+          </p:commandButton>
+        </h:panelGroup>          
+      </p:column> 
+    </p:dataTable>
+  </h:panelGroup>
+
+
+  <!-- Only works appendTo="@(form)" with one single form -->    
+  <p:dialog id="person_persons_dialog" widgetVar="personPersonsDialog" 
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>     
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{personObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(personObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />   
+      </p:outputPanel>
+    </f:facet>
+
+
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>  
+    
+    <h:panelGroup id="person_persons_panel" 
+                  layout="block"
+                  rendered="#{personPersonsTabBean.editing != null}"
+                  styleClass="mt-2">
+    
+      <div class="ui-fluid formgrid grid" >
+        
+        <div class="field col-12">
+          <p:outputLabel for="@next" 
+                         value="#{kernelBundle.personPersons_type}" 
+                         indicateRequired="true"/>          
+          <emcomp:typeReference value="#{personPersonsTabBean.editing.personPersonTypeId}"
+                                type="PersonPerson"
+                                oncomplete="PF('personPersonsDialog').hide();"
+                                onselect="PF('personPersonsDialog').show();"                                
+                                showNavigatorItems="false"
+                                showNonInstantiableItems="false"                                
+                                process="@form:cnt:search_tabs:tabs:person_persons_dialog"
+                                update="@form:cnt:search_tabs:tabs:person_persons_panel"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="#{not empty param['mainform:search_tabs:tabs:person_persons_store']}"
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"/>
+        </div>            
+      
+        <div class="field col-12">  
+          <p:outputLabel for="@next"  
+                         value="#{kernelBundle.person_full_name}"
+                         indicateRequired="true"/>
+          <emcomp:objectReference value="#{personPersonsTabBean.editing.relPersonId}"
+                                  type="Person"
+                                  oncomplete="PF('personPersonsDialog').hide();"
+                                  onselect="PF('personPersonsDialog').show();"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  required="#{not empty param['mainform:search_tabs:tabs:person_persons_store']}"
+                                  requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
+                                  process="@form:cnt:search_tabs:tabs:person_persons_dialog">
+          </emcomp:objectReference>                        
+        </div> 
+        
+        <div class="field col-12">
+          <p:outputLabel for="@next" 
+                         value="#{kernelBundle.personPersons_comments}"/>
+          <p:inputTextarea value="#{personPersonsTabBean.editing.comments}"
+                           styleClass="savable"/>
+        </div>         
+    
+      </div>
+      
+    </h:panelGroup>  
+
+    <f:facet name="footer">
+      <div class="text-right">
+        <p:commandButton id="person_persons_store" action="#{personPersonsTabBean.store}" 
+                         styleClass="m-1" value="#{objectBundle.store}"
+                         disabled="#{!personBean.editable}"
+                         update="person_persons_table person_persons_panel" 
+                         oncomplete="closePFDialog('personPersonsDialog')"
+                         icon="pi pi-save"/>
+        <p:commandButton action="#{personPersonsTabBean.cancel}" 
+                         styleClass="m-1" value="#{objectBundle.cancel}" 
+                         process="@this" update="person_persons_panel" global="false" 
+                         onclick="PF('personPersonsDialog').hide()"
+                         icon="pi pi-times" />
+      </div>          
+    </f:facet>
+
+  </p:dialog>      
+  
+  <gdm:saveBean value="personPersonsTabBean" />
+
+</ui:composition>

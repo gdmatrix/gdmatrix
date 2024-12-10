@@ -124,6 +124,9 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_events", "pi pi-calendar", 
       "/pages/kernel/person_events.xhtml",
       "personEventsTabBean", "events", null)); 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons", "fa fa-people-arrows", 
+      "/pages/kernel/person_persons.xhtml",
+      "personPersonsTabBean", "persons", null));     
            
     objectSetup.setEditTabs(editTabs);
 
