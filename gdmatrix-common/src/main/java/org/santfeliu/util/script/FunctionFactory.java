@@ -61,6 +61,7 @@ public class FunctionFactory
   private static final LinkDocumentsFunction linkDocumentsFunction = new LinkDocumentsFunction();
   private static final SequenceNextValFunction sequenceNextValFunction = new SequenceNextValFunction();
   private static final IncludeScriptFunction includeScriptFunction = new IncludeScriptFunction();
+  private static final HttpFetchFunction httpFetchFunction = new HttpFetchFunction();
 
   public static void initFunctions(Scriptable scriptable)
   {
@@ -87,5 +88,6 @@ public class FunctionFactory
     scriptable.put("linkDocuments", scriptable, linkDocumentsFunction);
     scriptable.put("sequenceNextVal", scriptable, sequenceNextValFunction);
     scriptable.put("includeScript", scriptable, includeScriptFunction);
+    scriptable.put("httpFetch", scriptable, httpFetchFunction);
   }
 }
