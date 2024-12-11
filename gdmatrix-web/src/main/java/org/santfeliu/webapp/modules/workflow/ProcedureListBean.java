@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.workflow;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -117,53 +116,6 @@ public class ProcedureListBean extends WebBean implements Serializable
 
   public ProcedureListBean()
   {    
-    filters = new ArrayList<>();  
-    filterMap = new HashMap<>();    
-    
-    String nodeId = UserSessionBean.getCurrentInstance().getSelectedMid();
-    JSONArray filtersConfig = 
-      (JSONArray) JSONUtils.getJSON(nodeId).get("filters");    
-    Iterator it = filtersConfig.iterator();
-    while(it.hasNext())
-    {
-      JSONObject item = (JSONObject) it.next();
-      ProcedureFilter pf = new ProcedureFilter(
-        (String) item.get("name"), 
-        (String) item.get("label"), 
-        (String) item.get("enumTypeId"));
-      filters.add(pf);
-      List list = EnumTypeCache.getInstance().getItems(pf.enumTypeId);
-      filterMap.put(pf.propName, list);
-    }
-
-    String infoDocId = getProperty(INFO_DOCUMENT_PROPERTY);
-    String internalInfoDocId = getProperty(INTERNAL_INFO_DOCUMENT_PROPERTY);
-    DocumentManagerPort port;
-    try
-    {
-      port = DocModuleBean.getPort(true);
-      if (infoDocId != null)
-      {
-        Document document = port.loadDocument(infoDocId, 0, ContentInfo.ALL);
-        Content content = document.getContent();
-        DataSource ds = content.getData().getDataSource();
-        templateString = IOUtils.toString(ds.getInputStream(), "UTF-8");
-      }
-      
-      if (internalInfoDocId != null)
-      {
-        Document document = 
-          port.loadDocument(internalInfoDocId, 0, ContentInfo.ALL);
-        Content content = document.getContent();
-        DataSource ds = content.getData().getDataSource();      
-        internalTemplateString = IOUtils.toString(ds.getInputStream(), "UTF-8");
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-
   }
 
   public String getContent()
@@ -268,12 +220,52 @@ public class ProcedureListBean extends WebBean implements Serializable
 
   public String getInfo()
   {
-    return getInfo(templateString);
+    if (templateString == null)
+    {    
+      try 
+      {
+        String infoDocId = getProperty(INFO_DOCUMENT_PROPERTY);
+        templateString = getTemplateCode(infoDocId);
+      }
+      catch (Exception ex) 
+      {
+        error(ex);
+      }        
+    }
+      
+    return getInfo(templateString);    
   }
   
   public String getInternalInfo()
   {
-    return getInfo(internalTemplateString);
+    if (internalTemplateString == null)
+    {    
+      try 
+      {
+        String infoDocId = getProperty(INTERNAL_INFO_DOCUMENT_PROPERTY);
+        internalTemplateString = getTemplateCode(infoDocId);        
+      }
+      catch (Exception ex) 
+      {
+        error(ex);
+      }        
+    }
+      
+    return getInfo(internalTemplateString);      
+  }
+  
+  private String getTemplateCode(String docId) throws Exception
+  {
+    String templateCode = null;
+    DocumentManagerPort port = DocModuleBean.getPort(true);
+    if (docId != null)
+    {
+      Document document = port.loadDocument(docId, 0, ContentInfo.ALL);
+      Content content = document.getContent();
+      DataSource ds = content.getData().getDataSource();
+      templateCode = IOUtils.toString(ds.getInputStream(), "UTF-8");
+    }    
+    return templateCode;
   }
   
   private String getInfo(String code) 
@@ -300,6 +292,27 @@ public class ProcedureListBean extends WebBean implements Serializable
     
   public String show()
   {
+    filters = new ArrayList<>();  
+    filterMap = new HashMap<>();    
+    
+    //Get filters configuration
+    String nodeId = UserSessionBean.getCurrentInstance().getSelectedMid();
+    JSONArray filtersConfig = 
+      (JSONArray) JSONUtils.getJSON(nodeId).get("filters");    
+    Iterator it = filtersConfig.iterator();
+    while(it.hasNext())
+    {
+      JSONObject item = (JSONObject) it.next();
+      ProcedureFilter pf = new ProcedureFilter(
+        (String) item.get("name"), 
+        (String) item.get("label"), 
+        (String) item.get("enumTypeId"));
+      filters.add(pf);
+      List list = EnumTypeCache.getInstance().getItems(pf.enumTypeId);
+      filterMap.put(pf.propName, list);
+    }    
+    
+    
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     search();
     HttpServletRequest request = (HttpServletRequest)FacesContext.
@@ -368,7 +381,6 @@ public class ProcedureListBean extends WebBean implements Serializable
   {
     try
     {
-      procedure = null;
       rows = new ArrayList();
       CaseFilter filter = new CaseFilter();
       if (procedureId != null)

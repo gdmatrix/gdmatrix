@@ -72,7 +72,7 @@
             <div class="col-12 border-1 border-top-none border-solid surface-border border-round border-noround-top #{empty procedureListBean.selectedFiltersValues ? 'hidden' : ''}">
               <c:forEach var="selectedFilter" items="#{procedureListBean.selectedFiltersValues}">
                 <p:chip label="#{selectedFilter}" removable="true" styleClass="ml-1">
-                  <p:ajax event="close" listener="#{procedureListBean.onCloseSelectedFilter}" update="@form:cnt" />
+                  <p:ajax event="close" listener="#{procedureListBean.onCloseSelectedFilter}" update="procedure_filters result_table" />
                 </p:chip>
               </c:forEach>   
             </div>                
@@ -89,7 +89,7 @@
                      rowStyleClass="#{row.period} #{row.id == procedureListBean.procedure.id ? 'current' : ''}"
                      styleClass="result_table w-full"
                      stripedRows="true" 
-                     paginator="true" 
+                     paginator="true" rows=""
                      paginatorPosition="bottom"                     
                      paginatorTemplate="{CurrentPageReport}"
                      currentPageReportTemplate="{totalRecords} #{workflowBundle.proceduresFound}"
@@ -111,7 +111,7 @@
           <p:column class="col-1 text-right white-space-nowrap" rendered="false">
 
             <p:commandButton action="#{procedureListBean.view(row.id)}"
-                             process="@this" update="@form:cnt:procedure_view result_table"
+                             update="@form:cnt:procedure_view"
                              icon="pi pi-arrow-right"
                              styleClass="rounded-button ui-button-flat"
                              /> 
