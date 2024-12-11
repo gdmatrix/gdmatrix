@@ -66,6 +66,7 @@ import org.santfeliu.faces.maplibre.model.Layer;
 import org.santfeliu.faces.maplibre.model.Light;
 import org.santfeliu.faces.maplibre.model.Sky;
 import org.santfeliu.faces.maplibre.model.Terrain;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.webapp.modules.geo.io.MapAccessLogger;
 import org.santfeliu.webapp.modules.geo.io.MapAccessLogger.Access;
 import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
@@ -177,7 +178,7 @@ public class GeoMapBean extends WebBean implements Serializable
       String baseMapName = mapDocument.getBaseMapName();
       if (!isBlank(baseMapName))
       {
-        MapDocument baseMapDocument = getMapStore().loadMap(baseMapName);
+        MapDocument baseMapDocument = getMapStore(true).loadMap(baseMapName);
         Style baseStyle = baseMapDocument.getStyle();
         StyleMetadata baseStyleMetadata = new StyleMetadata(baseStyle);
         styleMetadata.importStyle(baseStyleMetadata);
@@ -875,9 +876,23 @@ public class GeoMapBean extends WebBean implements Serializable
 
   MapStore getMapStore()
   {
+    return getMapStore(false);
+  }
+
+  MapStore getMapStore(boolean forAdmin)
+  {
     MapStore mapStore = CDI.current().select(MapStore.class).get();
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    mapStore.setCredentials(userSessionBean.getUserId(), userSessionBean.getPassword());
+    if (forAdmin)
+    {
+      String userId = MatrixConfig.getProperty("adminCredentials.userId");
+      String password = MatrixConfig.getProperty("adminCredentials.password");
+      mapStore.setCredentials(userId, password);
+    }
+    else
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      mapStore.setCredentials(userSessionBean.getUserId(), userSessionBean.getPassword());
+    }
     return mapStore;
   }
 
