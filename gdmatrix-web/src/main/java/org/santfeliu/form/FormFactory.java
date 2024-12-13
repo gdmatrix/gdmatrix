@@ -30,6 +30,7 @@
  */
 package org.santfeliu.form;
 
+import java.lang.reflect.Field;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -179,9 +180,29 @@ public class FormFactory
       while (iter.hasNext())
       {
         String property = iter.next();
-        if (!property.equals("_object"))
+        Object value = context.get(property);
+        if (property.equals("_object"))
         {
-          Object value = context.get(property);
+          Object object = value;
+          Field[] fields = object.getClass().getDeclaredFields();
+          for (Field field : fields)
+          {
+            field.setAccessible(true);
+            Object fieldValue = field.get(object);
+            if (fieldValue instanceof String ||
+                fieldValue instanceof Number ||
+                fieldValue instanceof Boolean)
+            {
+              buffer.append("$");
+              buffer.append(field.getName());
+              buffer.append("=");
+              buffer.append(field.get(object));
+              buffer.append(";");
+            }
+          }
+        }
+        else
+        {
           buffer.append(property);
           buffer.append("=");
           buffer.append(value);
