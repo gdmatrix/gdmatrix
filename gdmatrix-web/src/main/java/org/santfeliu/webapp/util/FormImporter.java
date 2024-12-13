@@ -594,6 +594,11 @@ public class FormImporter
               Quill quill =
                 (Quill)application.createComponent(Quill.COMPONENT_TYPE);
               quill.setReadonly(field.isReadOnly());
+              Object maxLength = view.getProperty("maxlength");
+              if (maxLength == null)
+                quill.setMaxLength(0);
+              else
+                quill.setMaxLength(Integer.valueOf((String) maxLength));
               if (field.getMinOccurs() > 0) setRequired(quill);
               quill.setConverter(new SpecialCharsConverter());
               component = quill;

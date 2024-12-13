@@ -1,6 +1,6 @@
 /* quill-stub.js */
 
-function quillInit(clientId, readonly)
+function quillInit(clientId, readonly, maxLength)
 {
   const editorId = clientId + "_editor";
   const inputId = clientId + "_input";
@@ -26,10 +26,20 @@ function quillInit(clientId, readonly)
     ['clean'] // remove formatting button
   ];
 
-  const updateText = () =>
-  {
-    var html = document.getElementById(editorId).firstElementChild.innerHTML;
-    document.getElementById(inputId).value = html;
+  const updateText = (delta, oldDelta, source) =>
+  {     
+    var html = quill.getSemanticHTML(0,quill.getLength());
+    if (source === 'user') //maxLength control: Only when is a user input
+    {
+      var isDelete = delta.ops[delta.ops.length - 1].delete === 1;
+      var length = html.trim().length;    
+      if (!isDelete && maxLength && maxLength < length && html !== '<p><br></p>') 
+      {
+        quill.setContents(oldDelta);  
+        html = quill.getSemanticHTML(0,quill.getLength()); //Set old value          
+      }
+    } 
+    document.getElementById(inputId).value = html;    
   };
 
   const handleImage = (quill) =>
@@ -131,7 +141,8 @@ function quillInit(clientId, readonly)
     toolbarElem.classList.add("ui-editor-toolbar");
   }
 
-  quill.on('text-change', (delta, oldDelta, source) => updateText());
+  quill.on('text-change', updateText);
   updateText();
+  
   if (readonly) quill.disable();
 }

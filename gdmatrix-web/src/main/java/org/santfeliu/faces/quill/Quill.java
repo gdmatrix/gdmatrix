@@ -57,6 +57,7 @@ public class Quill extends UIInput
   private Boolean _readonly;
   private String _style;
   private String _styleClass;
+  private Integer _maxLength;
 
   @Override
   public String getFamily()
@@ -101,6 +102,19 @@ public class Quill extends UIInput
     ValueExpression ve = getValueExpression("styleClass");
     return ve != null ?
       (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public Integer getMaxLength()
+  {
+    if (_maxLength != null) return _maxLength;
+    ValueExpression ve = getValueExpression("maxLength");
+    return ve != null ?
+      (Integer)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setMaxLength(Integer _maxLength)
+  {
+    this._maxLength = _maxLength;
   }
 
   @Override
@@ -166,7 +180,7 @@ public class Quill extends UIInput
 
     // encode script
     writer.startElement("script", this);
-    writer.writeText("quillInit('" + clientId + "', " + readonly + ");", null);
+    writer.writeText("quillInit('" + clientId + "', " + readonly + ", " + getMaxLength() + ");", null);
     writer.endElement("script");
   }
 
