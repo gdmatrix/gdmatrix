@@ -27,7 +27,7 @@ class TimeSliderControl
     this.options = options || {}; 
     this.minDate = this.roundDate(options.minDate || new Date());
     this.baseDate = this.roundDate(options.baseDate || this.minDate);
-    this.startDate = new Date(this.baseDate);
+    this.startDate = this.roundDate(options.startDate || this.minDate);
     this.endDate = this.startDate;
     this.period = "d";
 
@@ -133,9 +133,9 @@ class TimeSliderControl
     this.rangeElement = div.querySelector("#ts_range");
 
     const scales = Object.keys(this.options.scales);
-    scales.push("2");
+    scales.push("2"); // period between 2 dates
     this.period = scales[0];
-    
+        
     for (let scale of scales)
     {
       let optionElement = document.createElement("option");
@@ -155,10 +155,12 @@ class TimeSliderControl
     this.endDateElement.addEventListener("keydown", (e) => 
     {
       if (e.code === "Enter") e.preventDefault();
-    });    
+    });
     this.rangeElement.addEventListener("input", () => this.onRangeChanged());
 
     this.updatePeriod();
+    
+    this.updateRangePosition();
 
     div.addEventListener("contextmenu", (e) => e.preventDefault());
     return div;
@@ -167,9 +169,9 @@ class TimeSliderControl
   onPeriodChange()
   {
     this.period = this.periodElement.value;
-    this.startDate = new Date(this.baseDate);
+//    this.startDate = new Date(this.baseDate);
     this.updatePeriod();
-    this.rangeElement.value = 0;
+    this.updateRangePosition();
   }  
     
   onStartDateChanged()
@@ -248,7 +250,7 @@ class TimeSliderControl
   }
   
   updatePeriod()
-  {
+  {    
     const period = this.period;
     if (this.startDate < this.minDate)
     {
@@ -322,13 +324,42 @@ class TimeSliderControl
     this.endDoWElement.textContent = this.getDayOfWeek(endDate);    
   }
 
+  updateRangePosition()
+  {
+    // set initial range position from startDate
+    if (this.period === "d")
+    {
+      let deltaMillis = this.startDate.getTime() - this.baseDate.getTime();
+      let deltaDays = Math.round(deltaMillis / (24 * 60 * 60 * 1000));
+      this.rangeElement.value = deltaDays;
+    }
+    else if (this.period === "w")
+    {
+      let deltaMillis = this.startDate.getTime() - this.baseDate.getTime();
+      let deltaWeeks = Math.ceil(deltaMillis / (7 * 24 * 60 * 60 * 1000));
+      this.rangeElement.value = deltaWeeks;      
+    }
+    else if (this.period === "M")
+    {
+      let deltaMillis = this.startDate.getTime() - this.baseDate.getTime();
+      let deltaMonths = Math.ceil(deltaMillis / (30.5 * 24 * 60 * 60 * 1000));
+      this.rangeElement.value = deltaMonths;
+    }
+    else if (this.period === "y")
+    {
+      let deltaMillis = this.startDate.getTime() - this.baseDate.getTime();
+      let deltaYears = Math.ceil(deltaMillis / (365.25 * 24 * 60 * 60 * 1000));
+      this.rangeElement.value = deltaYears;
+    }    
+  }
+
   updateSourcesAndLayers()
   {
     const map = this.map;
     let startDateString = this.options.convertDate(this.startDate, false);
     let endDateString = this.options.convertDate(this.endDate, true);
     let days = Math.ceil((this.endDate - this.startDate) / (1000 * 60 * 60 * 24));
-    
+
     console.info("start: " + startDateString, "end: " + endDateString, "days: " + days);
 
     let sources = map.getStyle().sources;
