@@ -179,7 +179,7 @@ public class FormFactory
       while (iter.hasNext())
       {
         String property = iter.next();
-        if (!property.startsWith("_"))
+        if (!property.equals("_object"))
         {
           Object value = context.get(property);
           buffer.append(property);

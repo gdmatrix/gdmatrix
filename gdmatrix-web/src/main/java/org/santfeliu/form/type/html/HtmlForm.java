@@ -531,14 +531,6 @@ public class HtmlForm implements Form, Serializable
       {
         HtmlSelectView selectView = (HtmlSelectView)view;
         selectView.evaluate(evaluatedForm, context);
-
-        // put parameters into evaluation context of evaluatedForm
-        List<String> parameters =
-          selectView.getParameters(evaluatedForm);
-        if (!parameters.isEmpty())
-        {
-          evaluatedForm.contextDependant = false;
-        }
       }
     }
   }
