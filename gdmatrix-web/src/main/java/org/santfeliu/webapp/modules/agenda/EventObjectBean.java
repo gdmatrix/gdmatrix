@@ -38,7 +38,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,8 +53,10 @@ import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.modules.agenda.EventCopyTabBean.EventRow;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 
 /**
@@ -91,8 +92,14 @@ public class EventObjectBean extends ObjectBean
   EventPersonsTabBean eventPersonsTabBean;
 
   @Inject
+  EventCopyTabBean eventCopyTabBean;  
+  
+  @Inject
   TypeTypeBean typeTypeBean;
 
+  @Inject
+  NavigatorBean navigatorBean;  
+  
   @Override
   public String getRootTypeId()
   {
@@ -342,6 +349,82 @@ public class EventObjectBean extends ObjectBean
     eventFinderBean.outdate();
   }
 
+  public void duplicate()
+  {
+    if (!isNew())
+    {
+      try
+      {
+        eventCopyTabBean.setEvent(event);
+        eventCopyTabBean.setCopyAttendants(true);        
+        EventRow copy = eventCopyTabBean.duplicate(0, 0);
+        eventCopyTabBean.copyRecurrences(false);
+        if (!getFacesContext().getMessages().hasNext())
+          info("DUPLICATE_END");
+        eventFinderBean.outdate();
+        navigatorBean.view(copy.getEvent().getEventId());
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+    
+  public void reserveRoomBeforeEvent()
+  {
+    if (!isNew())
+    {
+      try
+      {
+        eventCopyTabBean.setEvent(event);
+        eventCopyTabBean.getEvent().setEventTypeId("sf:ReservaDeSalaEvent");
+        eventCopyTabBean.setCopyAttendants(false);
+        EventRow copy = eventCopyTabBean.duplicate(-60, 60);
+        if (!copy.isRoomAvailable())
+          error("ROOM_UNAVAILABLE");
+        else
+        {
+          eventCopyTabBean.copyRecurrences(false);
+          info("COPY_END");
+          eventFinderBean.outdate();          
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+
+  public void reserveRoomAfterEvent()
+  {
+    if (!isNew())
+    {
+      try
+      {
+        eventCopyTabBean.setEvent(event);
+        eventCopyTabBean.getEvent().setEventTypeId("sf:ReservaDeSalaEvent");
+        eventCopyTabBean.setCopyAttendants(false);
+        long time = EventCopyTabBean.getTimeBetweenDates(
+          event.getStartDateTime(), event.getEndDateTime());
+        EventRow copy = eventCopyTabBean.duplicate(time, 60);
+        if (!copy.isRoomAvailable())
+          error("ROOM_UNAVAILABLE");
+        else
+        {
+          eventCopyTabBean.copyRecurrences(false);
+          info("COPY_END");
+          eventFinderBean.outdate();
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+  
   @Override
   public Serializable saveState()
   {
