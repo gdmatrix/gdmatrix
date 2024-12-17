@@ -163,6 +163,8 @@ class TimeSliderControl
     this.updateRangePosition();
 
     div.addEventListener("contextmenu", (e) => e.preventDefault());
+    div.style.display = "none";
+    
     return div;
   }
   
