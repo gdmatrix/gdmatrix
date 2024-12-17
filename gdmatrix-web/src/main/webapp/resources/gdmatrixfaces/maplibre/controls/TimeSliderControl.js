@@ -487,10 +487,17 @@ class TimeSliderControl
       for (let layerId of enableForLayers)
       {
         let layer = map.getLayer(layerId);
-        if (layer.metadata.visible)
+        if (layer)
         {
-          enabled = true;
-          break;
+          if (layer.metadata.visible)
+          {
+            enabled = true;
+            break;
+          }
+        }
+        else
+        {
+          console.warn("Layer not found: " + layerId);
         }
       }
       this.div.style.display = enabled ? "" : "none";
