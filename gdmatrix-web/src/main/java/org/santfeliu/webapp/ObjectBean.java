@@ -267,7 +267,7 @@ public abstract class ObjectBean extends BaseBean
   public void loadObject() throws Exception
   {
   }
-
+  
   public void loadObjectSetup() throws Exception
   {
     String setupName = getProperty(OBJECT_SETUP_PROPERTY);
@@ -410,6 +410,10 @@ public abstract class ObjectBean extends BaseBean
         if (actionObject != null)
         {
           setActionResult(actionObject);
+          if (actionObject.isUpdateForm())
+          {
+            getRequestMap().put("updateForm", "true");
+          }
           if (actionObject.isRefresh() && !actionName.equals(POST_LOAD_ACTION))
             load();
           addFacesMessages(actionObject.getMessages());
@@ -431,6 +435,10 @@ public abstract class ObjectBean extends BaseBean
         scriptClient.put("actionObject", actionObject);
         scriptClient.execute((Callable)callable);
         actionObject = (ActionObject) scriptClient.get("actionObject");
+        if (actionObject.isUpdateForm())
+        {
+          getRequestMap().put("updateForm", "true");
+        }
         if (actionObject.isRefresh())
           load();
         if (actionObject.isFullRefresh())

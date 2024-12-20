@@ -43,6 +43,7 @@ public class ActionObject
   private Object object;
   private boolean refresh = false;
   private boolean fullRefresh = false;
+  private boolean updateForm = false;
   private final List<Message> messages = new ArrayList();
   private String subviewId;
   
@@ -87,6 +88,16 @@ public class ActionObject
     this.fullRefresh = fullRefresh;
     if (fullRefresh)
       this.refresh = fullRefresh;
+  }
+
+  public boolean isUpdateForm() 
+  {
+    return updateForm;
+  }
+
+  public void setUpdateForm(boolean updateForm) 
+  {
+    this.updateForm = updateForm;
   }
   
   public String getSubviewId()

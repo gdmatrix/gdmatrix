@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -255,7 +254,7 @@ public class CaseObjectBean extends ObjectBean
         cas.setCaseTypeId(baseType.getTypeId());
     }
   }
-
+  
   @Override
   public void storeObject() throws Exception
   {
