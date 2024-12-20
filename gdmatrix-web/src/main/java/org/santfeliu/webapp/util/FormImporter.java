@@ -477,7 +477,7 @@ public class FormImporter
     else
     {
       if (view instanceof HtmlSelectView)
-      {
+      {        
         String multipleValue = String.valueOf(view.getProperty("multiple"));
         isMultiple = "true".equals(multipleValue);
 
@@ -497,6 +497,13 @@ public class FormImporter
           select.setDisabled(field.isReadOnly());
           select.setAutoWidth("false");
           select.setTouchable(true);
+          String renderer = (String)view.getProperty("renderer");                  
+          if ("autocomplete".equals(renderer))
+          {
+            select.setFilter(true);
+            select.setFilterMatchMode("contains");
+            select.setFilterNormalize(true);
+          }
           String onChange = (String)view.getProperty("onchange");
           if (onChange != null)
           {
@@ -509,7 +516,7 @@ public class FormImporter
               select.addClientBehavior("itemSelect", ajax);
             }
           }
-          component = select;
+          component = select;          
         }
 
         String searchForm = (String) options.get(SEARCH_FORM_OPTION);
