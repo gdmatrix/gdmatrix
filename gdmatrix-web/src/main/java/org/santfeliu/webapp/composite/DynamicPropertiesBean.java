@@ -439,9 +439,12 @@ public class DynamicPropertiesBean implements Serializable
       }
       else
       {
+        boolean updateForm = "true".equals(FacesContext.getCurrentInstance()
+          .getExternalContext().getRequestMap().get("updateForm"));
+
         FormFactory formFactory = FormFactory.getInstance();
         Form form = formFactory.getForm(formSelector,
-          propertyHelper.getValue(), false);
+          propertyHelper.getValue(), updateForm);
 
         if (form == null)
         {

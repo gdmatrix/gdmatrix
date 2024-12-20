@@ -94,20 +94,27 @@ public class FormFactory
   public Form getForm(String selector, Map context, boolean updated)
     throws Exception
   {
+    Form form;
+
     String contextHash = hash(context);
 
-    // when updated == true, returned form is updated when
-    // method form.isOutdated() returns true
-    // look for evaluated form for this context in cache
-    Form form = restoreForm(selector, contextHash, updated);
+    if (updated)
+    {
+      removeForm(selector, contextHash);
+      form = null;
+    }
+    else
+    {
+      form = restoreForm(selector, contextHash);
+    }
 
     if (form == null)
     {
       // restore without context
-      form = restoreForm(selector, "", updated);
+      form = restoreForm(selector, "");
     }
 
-    if (form == null) // form not in cache or is outdated
+    if (form == null) // form not found in cache
     {
       // call builders to create form
       Iterator<FormBuilder> iter = builders.iterator();
@@ -238,16 +245,10 @@ public class FormFactory
     formCache.put(key, form);
   }
 
-  private synchronized Form restoreForm(String selector,
-    String contextHash, boolean updated)
+  private synchronized Form restoreForm(String selector, String contextHash)
   {
     String key = selector + "/" + contextHash;
     Form form = (Form)formCache.get(key);
-    if (form != null && updated && form.isOutdated())
-    {
-      formCache.remove(key);
-      form = null;
-    }
     return form;
   }
 
@@ -262,5 +263,11 @@ public class FormFactory
         iter.remove();
       }
     }
+  }
+
+  private synchronized void removeForm(String selector, String contextHash)
+  {
+    String key = selector + "/" + contextHash;
+    formCache.remove(key);
   }
 }

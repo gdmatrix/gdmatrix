@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.misc.mapviewer.web;
@@ -137,10 +137,10 @@ public class MapEditorBean extends WebBean implements Savable
     Bounds bounds = mapBean.getMap().getThumbnailBounds();
     return bounds == null ? "" : bounds.toString();
   }
-  
+
   public boolean isMetadataFormRendered()
   {
-    String formSelector = 
+    String formSelector =
       getProperty(MapViewerBean.METADATA_FORM_SELECTOR_PROPERTY);
     return formSelector != null;
   }
@@ -149,16 +149,13 @@ public class MapEditorBean extends WebBean implements Savable
   {
     try
     {
-      String formSelector = 
+      String formSelector =
         getProperty(MapViewerBean.METADATA_FORM_SELECTOR_PROPERTY);
       if (formSelector != null)
       {
         MapBean mapBean = MapBean.getInstance();
         FormFactory formFactory = FormFactory.getInstance();
-        // update form only in render phase
-        boolean updated = getFacesContext().getRenderResponse();
-        return formFactory.getForm(formSelector, 
-          mapBean.getMap().getMetadata(), updated);
+        return formFactory.getForm(formSelector, mapBean.getMap().getMetadata());
       }
     }
     catch (Exception ex)
@@ -167,7 +164,7 @@ public class MapEditorBean extends WebBean implements Savable
     }
     return null;
   }
-  
+
   public List<SelectItem> getCategorySelectItems()
   {
     List<SelectItem> selectItems = new ArrayList<SelectItem>();
@@ -186,11 +183,11 @@ public class MapEditorBean extends WebBean implements Savable
       }
     }
     catch (Exception ex)
-    {      
+    {
     }
     return selectItems;
   }
-  
+
   public String getCaptureUserDisplayName()
   {
     MapBean mapBean = MapBean.getInstance();
@@ -204,7 +201,7 @@ public class MapEditorBean extends WebBean implements Savable
     String captureDateTime = mapBean.getMap().getCaptureDateTime();
     return (int)(getEllapsedTime(captureDateTime) / (365.25*24*3600*1000));
   }
-  
+
   public String getChangeUserDisplayName()
   {
     MapBean mapBean = MapBean.getInstance();
@@ -217,22 +214,22 @@ public class MapEditorBean extends WebBean implements Savable
     MapBean mapBean = MapBean.getInstance();
     String changeDateTime = mapBean.getMap().getChangeDateTime();
     return (int)(getEllapsedTime(changeDateTime) / (24*3600*1000));
-  }  
+  }
 
   private long getEllapsedTime(String dateTime)
   {
     Date date = TextUtils.parseInternalDate(dateTime);
     Date now = new Date();
-    return now.getTime() - date.getTime();    
+    return now.getTime() - date.getTime();
   }
-  
+
   private String getUserDisplayName(String userId)
   {
     try
     {
       String password = MatrixConfig.getProperty(
         "org.santfeliu.security.service.SecurityManager.masterPassword");
-      User user = UserCache.getUser(userId, password);    
+      User user = UserCache.getUser(userId, password);
       return user.getDisplayName();
     }
     catch (Exception ex)
@@ -240,7 +237,7 @@ public class MapEditorBean extends WebBean implements Savable
       return null;
     }
   }
-  
+
   public Layer getEditingLayer()
   {
     return editingLayer;
@@ -1215,7 +1212,7 @@ public class MapEditorBean extends WebBean implements Savable
     MapDocument map = MapBean.getInstance().getMap();
     return map.getProperties().size();
   }
-  
+
   // Map actions
   public String editMap()
   {

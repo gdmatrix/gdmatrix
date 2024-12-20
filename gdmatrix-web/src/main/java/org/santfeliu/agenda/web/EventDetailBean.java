@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.agenda.web;
@@ -118,11 +118,11 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
   private String selector;
   private List<SelectItem> formSelectItems;
   private boolean resetSelector = true;
-  
+
   public EventDetailBean()
   {
   }
-  
+
   @Override
   public String show(String eventId)
   {
@@ -133,17 +133,17 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
   public String show()
   {
     try
-    {      
+    {
       ((EventBean)ControllerBean.getCurrentInstance().getObjectBean()).
-        setRenderMainHeading(false);      
-      
+        setRenderMainHeading(false);
+
       AgendaManagerClient port = AgendaConfigBean.getPort();
       event = port.loadEventFromCache(eventId);
       resetSelector();
 
       EventPlaceFilter eventPlaceFilter = new EventPlaceFilter();
       eventPlaceFilter.setEventId(eventId);
-      List<EventPlaceView> eventPlaceViews = 
+      List<EventPlaceView> eventPlaceViews =
         port.findEventPlaceViewsFromCache(eventPlaceFilter);
       if (eventPlaceViews != null)
       {
@@ -177,7 +177,7 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
 
       EventDocumentFilter eventDocumentFilter = new EventDocumentFilter();
       eventDocumentFilter.setEventId(eventId);
-      eventDocuments = 
+      eventDocuments =
         port.findEventDocumentViewsFromCache(eventDocumentFilter);
 
       setFormDataFromProperties(event.getProperty());
@@ -242,9 +242,7 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
       if (selector != null)
       {
         FormFactory formFactory = FormFactory.getInstance();
-        // update form only in render phase
-        boolean updated = getFacesContext().getRenderResponse();
-        return formFactory.getForm(selector, getData(), updated);
+        return formFactory.getForm(selector, getData());
       }
     }
     catch (Exception ex)
@@ -314,7 +312,7 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
 
   public boolean isTypeUndefined()
   {
-    return event == null || event.getEventTypeId() == null 
+    return event == null || event.getEventTypeId() == null
       || event.getEventTypeId().length() == 0;
   }
 
@@ -554,16 +552,16 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
               {
                 String description = addressView.getDescription();
                 String number1 = address.getNumber1();
-                streetName = 
+                streetName =
                   getStreetName(description, number1);
-                streetNumber = 
+                streetNumber =
                   number1 != null ? number1 : "";
                 gisReference = "";
               }
               properties.setProperty("reference", gisReference);
               properties.setProperty("streetName", streetName);
               properties.setProperty("streetNumber", streetNumber);
-              
+
             }
             mapURL = WebTemplate.create(mapURL).merge(properties);
           }
@@ -591,7 +589,7 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
       properties.setProperty("description", place.getDescription());
       mapURL = WebTemplate.create(mapURL).merge(properties);
     }
-    
+
     return mapURL;
   }
 
@@ -628,42 +626,42 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
 
   public String getBaseURL()
   {
-    return "go.faces?xmid=" + 
+    return "go.faces?xmid=" +
       UserSessionBean.getCurrentInstance().getSelectedMenuItem().getMid();
   }
 
   public String getEventFilterParameters(String main)
   {
-    EventSearchBean eventSearchBean = 
+    EventSearchBean eventSearchBean =
       (EventSearchBean)getBean("eventSearchBean");
     EventFilter eventFilter = eventSearchBean.getEventFilter();
     StringBuilder sb = new StringBuilder();
     EventSearchView eventViewBean = eventSearchBean.getEventViewBean();
-    if (!"datetime".equals(main) 
+    if (!"datetime".equals(main)
       && eventViewBean instanceof ScheduleEventSearchView)
     {
-      ScheduleEventSearchView searchView = 
+      ScheduleEventSearchView searchView =
         (ScheduleEventSearchView)eventViewBean;
       Date selectedDate = searchView.getSelectedDate();
-      String startDateTime = 
+      String startDateTime =
         TextUtils.formatDate(selectedDate, "yyyyMMdd000000");
       sb.append("&startdatetime=").append(startDateTime);
     }
     else
     {
-      if (!StringUtils.isBlank(eventFilter.getStartDateTime()) 
+      if (!StringUtils.isBlank(eventFilter.getStartDateTime())
         && !"datetime".equals(main))
       {
         sb.append("&startdatetime=").append(eventFilter.getStartDateTime());
       }
-      if (!StringUtils.isBlank(eventFilter.getEndDateTime()) 
+      if (!StringUtils.isBlank(eventFilter.getEndDateTime())
         && !"datetime".equals(main))
       {
         sb.append("&enddatetime=").append(eventFilter.getEndDateTime());
       }
     }
     PropertiesFilter propFilter = eventSearchBean.getPropertiesFilter();
-    if (!StringUtils.isBlank(propFilter.getCurrentTypeId()) 
+    if (!StringUtils.isBlank(propFilter.getCurrentTypeId())
       && !"eventtypeid".equals(main))
       sb.append("&eventtypeid=").append(propFilter.getCurrentTypeId());
     if (!StringUtils.isBlank(eventFilter.getRoomId()) && !"roomid".equals(main))
@@ -687,7 +685,7 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
     if (event != null)
     {
       MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
-        getMenuModel().getSelectedMenuItem();    
+        getMenuModel().getSelectedMenuItem();
       Map<String, String> propertyMap = new HashMap();
       propertyMap.put("xmid", menuItem.getMid());
       propertyMap.put("eventid", event.getEventId());
@@ -696,7 +694,7 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
       propertyMap.put("language", language);
       String summary = translatePlainText(event.getSummary(),
         event.getEventId(), language);
-      propertyMap.put("info", summary);    
+      propertyMap.put("info", summary);
       propertyMap.put("idparam", "eventid");
       propertyMap.put("idvalue", event.getEventId());
       result = getShareURLList(propertyMap);
@@ -706,29 +704,29 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
 
   @Override
   protected String getEmailDefaultSubject()
-  {    
+  {
     return event.getSummary() != null ? event.getSummary() : "";
   }
-  
+
   @Override
   protected String getEmailDefaultBody()
   {
-    return getEventURL();    
-  }  
- 
+    return getEventURL();
+  }
+
   private String getEventURL()
   {
     ExternalContext extContext = getFacesContext().getExternalContext();
     HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
-    String serverName = HttpUtils.getServerName(request);    
-    String serverURL = "http://" + serverName;    
+    String serverName = HttpUtils.getServerName(request);
+    String serverURL = "http://" + serverName;
     MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
       getMenuModel().getSelectedMenuItem();
     String language = getFacesContext().getViewRoot().getLocale().getLanguage();
     return serverURL + "/go.faces?xmid=" + menuItem.getMid() +
-      "&eventid=" + event.getEventId() + "&language=" + language;    
-  }  
-  
+      "&eventid=" + event.getEventId() + "&language=" + language;
+  }
+
   private void findForms()
   {
     try
@@ -807,14 +805,14 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
       dateFormat = "EEE dd MMMM yyyy, HH.mm 'h'";
     return dateFormat;
   }
-  
+
   private String getStreetName(String description, String number)
   {
     if (description == null)
       return "";
     if (number == null)
       return description;
-    
+
     return description.substring(description.indexOf(number));
   }
 }

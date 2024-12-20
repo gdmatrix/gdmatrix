@@ -199,9 +199,7 @@ public class FormTestBean extends FacesBean implements Serializable
       if (selector != null && selector.trim().length() > 0)
       {
         FormFactory factory = FormFactory.getInstance();
-        // update form only in render phase
-        boolean updated = getFacesContext().getRenderResponse();
-        return factory.getForm(selector, getData(), updated);
+        return factory.getForm(selector, getData());
       }
     }
     catch (Exception ex)

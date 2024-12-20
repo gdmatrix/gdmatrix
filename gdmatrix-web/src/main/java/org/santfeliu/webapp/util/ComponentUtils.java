@@ -108,8 +108,7 @@ public class ComponentUtils
     throws Exception
   {
     FormFactory formFactory = FormFactory.getInstance();
-    if (updateForm) formFactory.clearForm(formSelector);
-    Form form = formFactory.getForm(formSelector, context, false);
+    Form form = formFactory.getForm(formSelector, context, updateForm);
     if (form != null)
     {
       includeFormComponents(parent, form,

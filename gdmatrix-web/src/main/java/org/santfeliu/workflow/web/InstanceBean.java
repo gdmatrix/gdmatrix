@@ -374,11 +374,8 @@ public class InstanceBean extends FacesBean implements Serializable
       {
         org.santfeliu.form.FormFactory formFactory =
           org.santfeliu.form.FormFactory.getInstance();
-        if (getFacesContext().getRenderResponse())
-        {
-          formFactory.clearForm(selector);
-        }
-        return formFactory.getForm(selector, variables, true);
+        boolean updateForm = getFacesContext().getRenderResponse();
+        return formFactory.getForm(selector, variables, updateForm);
       }
       catch (Exception ex)
       {

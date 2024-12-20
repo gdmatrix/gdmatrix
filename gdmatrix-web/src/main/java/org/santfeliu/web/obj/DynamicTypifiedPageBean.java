@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web.obj;
@@ -64,7 +64,7 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
 {
   static final String PROPERTY_EDITOR_SELECTOR = "PROPERTY_EDITOR";
   private static final String OBJECT_ID_PROPERTY = "_objectId";
-  protected String currentTypeId;  
+  protected String currentTypeId;
   protected List<SelectItem> formSelectItems;
   protected String selector;
   protected boolean resetSelector;
@@ -81,7 +81,7 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
     this(rootTypeId, adminRole, true);
   }
 
-  public DynamicTypifiedPageBean(String rootTypeId, String adminRole, 
+  public DynamicTypifiedPageBean(String rootTypeId, String adminRole,
     boolean forceLoad)
   {
     super(rootTypeId, adminRole);
@@ -106,7 +106,7 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
     }
     return viewPropertiesMap;
   }
-  
+
   public void setCurrentTypeId(String currentTypeId)
   {
     if (isTypeUndefined() || !this.currentTypeId.equals(currentTypeId))
@@ -155,17 +155,17 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
   {
     return currentTypeId == null || currentTypeId.length() == 0;
   }
-  
+
   public boolean isRenderForm()
   {
     return !isTypeUndefined() && getSelector() != null;
   }
-  
+
   public boolean isRenderFormSelector()
   {
     return isRenderForm() && getFormSelectItems().size() > 1;
-  }  
-  
+  }
+
   public boolean isPropertyEditorVisible()
   {
     if (getFacesContext().getRenderResponse())
@@ -174,7 +174,7 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
     }
     return propertyEditorVisible;
   }
-  
+
   public void validatePropertyEditorString(FacesContext context,
     UIComponent component, Object value)
   {
@@ -250,9 +250,7 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
       if (selector != null && !PROPERTY_EDITOR_SELECTOR.equals(selector))
       {
         FormFactory formFactory = FormFactory.getInstance();
-        // update form only in render phase
-        boolean updated = getFacesContext().getRenderResponse();
-        return formFactory.getForm(selector, getData(), updated);
+        return formFactory.getForm(selector, getData());
       }
     }
     catch (Exception ex)
@@ -261,13 +259,13 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
     }
     return null;
   }
-  
+
   public List<SelectItem> getSelectedTypeItems()
   {
     TypeBean typeBean = (TypeBean)getBean("typeBean");
     return typeBean.getSelectItems(rootTypeId, currentTypeId, false);
   }
-  
+
   public org.santfeliu.dic.Type getCurrentType()
   {
     return getSelectedType();
@@ -298,17 +296,17 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
 
     return items;
   }
-  
+
   public boolean isRenderSelectedTypeItems()
   {
     return getSelectedTypeItems().size() > 1;
   }
-  
+
   public boolean isPropertyHidden(String propName)
   {
     return isPropertyHidden(getCurrentTypeId(), propName);
-  }  
-  
+  }
+
   // Internal methods
   private boolean isPropertyHidden(String typeId, String propName)
   {
@@ -327,8 +325,8 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
       if (superTypeId != null)
         return isPropertyHidden(superTypeId, propName);
     }
-    return true;    
-  }    
+    return true;
+  }
 
   @Override
   protected org.santfeliu.dic.Type getSelectedType()
@@ -340,7 +338,7 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
   }
 
   // data<->property conversion methods
-  
+
   protected List<Property> getFormDataAsProperties()
   {
     if (data != null)
@@ -419,93 +417,93 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
       error(ex);
     }
   }
-  
+
   @Override
   public GroupExtractor getGroupExtractor()
   {
-    String propertyPrefix = "script:";            
+    String propertyPrefix = "script:";
     if (groupBy != null && groupBy.startsWith(propertyPrefix))
       return new ScriptPropertyGroupExtractor(
         groupBy.substring(propertyPrefix.length()));
     else
       return super.getGroupExtractor();
   }
-  
+
   @Override
   public Comparator getPropertyComparator()
   {
     return new ScriptPropertyComparator();
   }
-  
+
   public List<ObjectDumper.Property> getViewProperties(String rowId)
   {
     return getViewPropertiesMap().get(rowId);
   }
 
   public List<ObjectDumper.Property> getViewProperties()
-  {    
+  {
     Object row = (Object)getValue("#{row}");
     String rowId = getRowId(row);
     return getViewProperties(rowId);
   }
-  
+
   protected String getRowId(Object row)
   {
     return null;
   }
-/*  
+/*
   protected String getRowTypeId(Object row)
   {
     return null;
   }
-*/  
+*/
   protected String getShowPropertiesPropertyName(Object row)
   {
     return null;
   }
-  
+
   protected void loadViewPropertiesMap(List rows)
   {
     getViewPropertiesMap().clear();
     for (Object objRow : rows)
-    {      
+    {
       String rowId = getRowId(objRow);
       String typeId = getRowTypeId(objRow);
-      getViewPropertiesMap().put(rowId, new ArrayList());      
+      getViewPropertiesMap().put(rowId, new ArrayList());
       Type type = TypeCache.getInstance().getType(typeId);
       if (type != null)
       {
-        PropertyDefinition pd = 
+        PropertyDefinition pd =
           type.getPropertyDefinition(getShowPropertiesPropertyName(objRow));
         ObjectDumper rowViewDumper = null;
         if (pd != null && pd.getValue() != null && pd.getValue().size() > 0)
         {
           rowViewDumper = new ObjectDumper(pd.getValue().get(0));
         }
-        ObjectDumper viewDumper = 
+        ObjectDumper viewDumper =
           (rowViewDumper != null ? rowViewDumper : defaultViewDumper);
         if (viewDumper != null)
-        {        
-          getViewPropertiesMap().put(rowId, viewDumper.dump(objRow, type));        
+        {
+          getViewPropertiesMap().put(rowId, viewDumper.dump(objRow, type));
         }
       }
-    }    
+    }
   }
-  
+
   public void clearViewProperties()
   {
     getViewPropertiesMap().clear();
   }
 
-  public void addViewProperty(String rowId, String name, String description, 
+  public void addViewProperty(String rowId, String name, String description,
     String value)
   {
     addViewProperty(rowId, name, description, value, true);
-  } 
-  
-  public void addViewProperty(String rowId, String name, String description, 
+  }
+
+  public void addViewProperty(String rowId, String name, String description,
     String value, boolean visible)
-  {    
+  {
     if (!getViewPropertiesMap().containsKey(rowId))
     {
       getViewPropertiesMap().put(rowId, new ArrayList<ObjectDumper.Property>());
@@ -519,10 +517,10 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
   }
 
   public boolean removeViewProperty(String rowId, String name)
-  {    
+  {
     if (getViewPropertiesMap().containsKey(rowId))
     {
-      List<ObjectDumper.Property> propertyList = 
+      List<ObjectDumper.Property> propertyList =
         getViewPropertiesMap().get(rowId);
       if (propertyList != null)
       {
@@ -533,24 +531,24 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
             propertyList.remove(property);
             return true;
           }
-        }              
+        }
       }
     }
     return false;
-  }  
-  
+  }
+
   public boolean isPropertyVisible()
   {
-    ObjectDumper.Property property = 
+    ObjectDumper.Property property =
       (ObjectDumper.Property)getRequestMap().get("property");
     return !nonVisibleProperties.contains(property);
   }
-  
+
   public String getViewPropertyValue(String rowId, String name)
   {
     if (getViewPropertiesMap().containsKey(rowId))
     {
-      List<ObjectDumper.Property> propertyList = 
+      List<ObjectDumper.Property> propertyList =
         getViewPropertiesMap().get(rowId);
       if (propertyList != null)
       {
@@ -560,12 +558,12 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
           {
             return property.getValue();
           }
-        }              
+        }
       }
     }
     return null;
   }
-  
+
   /**
  *
  * @author unknown
@@ -585,8 +583,8 @@ public class ScriptPropertyComparator extends PropertyComparator
         return super.getPropertyValue(obj, propertyName);
       }
     }
-  }  
-  
+  }
+
 public class ScriptPropertyGroupExtractor extends DefaultGroupExtractor
 {
   public ScriptPropertyGroupExtractor(String scriptPropertyName)
@@ -596,8 +594,8 @@ public class ScriptPropertyGroupExtractor extends DefaultGroupExtractor
 
   @Override
   protected String getName(Object view)
-  {   
-    String rowId = getRowId(view);      
+  {
+    String rowId = getRowId(view);
     if (rowId != null)
     {
       return getViewPropertyValue(rowId, super.propertyName);
@@ -605,5 +603,5 @@ public class ScriptPropertyGroupExtractor extends DefaultGroupExtractor
     return null;
   }
 }
-  
+
 }
