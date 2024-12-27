@@ -317,7 +317,7 @@
     </context-param>
     <context-param>
         <param-name>org.santfeliu.security.tspURL</param-name>
-        <param-value>http://psis.aoc.cat/psis/catcert/tsp</param-value>
+        <param-value>https://psis.aoc.cat/psis/catcert/tsp</param-value>
     </context-param>
     <context-param>
         <param-name>org.santfeliu.security.urlCredentialsCipher.secret</param-name>
