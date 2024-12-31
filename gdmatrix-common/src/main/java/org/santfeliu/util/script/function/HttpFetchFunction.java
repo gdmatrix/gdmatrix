@@ -32,10 +32,12 @@ package org.santfeliu.util.script.function;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.Charset;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeObject;
@@ -49,9 +51,11 @@ import org.santfeliu.util.script.ScriptClient;
 
 /*
  * Usage: response = httpFetch(String url, {
- *   method: method (string),
+ *   method: method (string: "GET", "POST", ...),
  *   headers: { ... }
  *   body: body (string)
+ *   charset : (string: "UTF-8", "windows-1252", ...)
+ *   version: (string: "1.1", "2")
  * })
  */
 
@@ -67,21 +71,47 @@ public class HttpFetchFunction extends BaseFunction
       NativeObject headers = null;
       String method = "GET";
       String body = null;
+      String charsetName = null;
+      String versionName = null;
 
       if (args.length >= 2)
       {
-          body = args[1].getClass().toString();
+        body = args[1].getClass().toString();
 
         if (args[1] instanceof NativeObject)
         {
           NativeObject options = (NativeObject)args[1];
           method = Context.toString(options.get("method", scope));
-          headers = (NativeObject)options.get("headers", scope);
-          body = Context.toString(options.get("body", scope));
+          if (options.has("headers", scope))
+          {
+            headers = (NativeObject)options.get("headers", scope);
+          }
+          if (options.has("body", scope))
+          {
+            body = Context.toString(options.get("body", scope));
+          }
+          if (options.has("charset", scope))
+          {
+            charsetName = Context.toString(options.get("charset", scope));
+          }
+          if (options.has("version", scope))
+          {
+            versionName = Context.toString(options.get("version", scope));
+          }
         }
       }
       HttpRequest.Builder builder = HttpRequest.newBuilder()
         .uri(URI.create(url));
+
+      Charset charset;
+      if (charsetName == null)
+      {
+        charset = Charset.defaultCharset();
+      }
+      else
+      {
+        charset = Charset.forName(charsetName);
+      }
 
       if ("GET".equals(method))
       {
@@ -89,11 +119,11 @@ public class HttpFetchFunction extends BaseFunction
       }
       else if ("POST".equals(method))
       {
-        builder.POST(BodyPublishers.ofString(body));
+        builder.POST(BodyPublishers.ofString(body, charset));
       }
       else if ("PUT".equals(method))
       {
-        builder.PUT(BodyPublishers.ofString(body));
+        builder.PUT(BodyPublishers.ofString(body, charset));
       }
       else if ("DELETE".equals(method))
       {
@@ -108,8 +138,19 @@ public class HttpFetchFunction extends BaseFunction
           builder.header(id.toString(), Context.toString(value));
         }
       }
+      Version version;
+      if ("2".equals(versionName))
+      {
+        version = HttpClient.Version.HTTP_2;
+      }
+      else
+      {
+        version = HttpClient.Version.HTTP_1_1;
+      }
+
       HttpRequest request = builder.build();
       HttpResponse<String> response = HttpClient.newBuilder()
+        .version(version)
         .build()
         .send(request, BodyHandlers.ofString());
       return response;
