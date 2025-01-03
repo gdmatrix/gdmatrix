@@ -46,6 +46,7 @@ public class TableProperty implements Serializable, Comparable<TableProperty>
   private String icon;
   private String mode = "column";
   private String typeId;
+  private boolean escape = true;
   
   public TableProperty()
   {
@@ -138,6 +139,16 @@ public class TableProperty implements Serializable, Comparable<TableProperty>
   public void setTypeId(String typeId)
   {
     this.typeId = typeId;
+  }
+
+  public boolean isEscape() 
+  {
+    return escape;
+  }
+
+  public void setEscape(boolean escape) 
+  {
+    this.escape = escape;
   }
 
   @Override

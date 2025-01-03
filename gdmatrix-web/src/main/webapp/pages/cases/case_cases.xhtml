@@ -83,7 +83,7 @@
                  style="#{caseCasesTabBean.groupableRowsHelper.isColumnRendered(column) ? '' : 'display:none'}"
                  sortBy="#{row.values[i].sorted}" >
         <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />
-        <h:outputText value="#{row.values[i].label}" />
+        <h:outputText value="#{row.values[i].label}" escape="#{column.escape}" />
       </p:columns>
 
       <p:column styleClass="text-right white-space-nowrap">
@@ -127,7 +127,7 @@
             <h:outputText value="#{customProperty.label}" />
           </p:column>
           <p:column styleClass="cell propValue #{row.styleClass}">
-            <h:outputText value="#{customProperty.value.label}" escape="false" />
+            <h:outputText value="#{customProperty.value.label}" escape="#{customProperty.escape}" />
           </p:column>
         </p:dataTable>
       </p:rowExpansion>
