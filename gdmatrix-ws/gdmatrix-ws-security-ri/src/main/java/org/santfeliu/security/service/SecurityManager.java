@@ -497,7 +497,7 @@ public class SecurityManager implements SecurityManagerPort
       {
         dbUser.copyFrom(user);
         dbUser.setPersonId(personId);
-        if (password != null)
+        if (!StringUtils.isBlank(password))
         {
           dbUser.setPassword(calcHash(password));
         }
@@ -1761,7 +1761,7 @@ public class SecurityManager implements SecurityManagerPort
 
   private String calcHash(String password) throws Exception
   {
-    if (password == null) return null;
+    if (StringUtils.isBlank(password)) return null;
     String strDigest = config.digestEncoder.encode(password,
       config.digestParameters);
     return strDigest;
