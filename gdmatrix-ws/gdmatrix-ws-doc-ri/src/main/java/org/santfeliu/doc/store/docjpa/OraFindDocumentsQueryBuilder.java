@@ -306,7 +306,8 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
     if (states == null || states.isEmpty()) //exclude Deleted
     {
       appendOperator(buffer, "AND");
-      buffer.append("d.state <> 'DELETED'");
+      buffer.append("d.state <> ?state");
+      parameters.put("state", "DELETED");
     }
     else 
     {
@@ -323,7 +324,8 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
       appendOperator(buffer, "AND");
       if (version == 0)
       {
-        buffer.append("d.lastversion = 'T'");
+        buffer.append("d.lastversion = ?lastversion");
+        parameters.put("lastversion", "T");
       }
       else
       {
