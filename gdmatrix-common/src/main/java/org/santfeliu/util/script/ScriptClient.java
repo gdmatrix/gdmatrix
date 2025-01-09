@@ -30,7 +30,6 @@
  */
 package org.santfeliu.util.script;
 
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.mozilla.javascript.BaseFunction;
@@ -99,7 +98,7 @@ public class ScriptClient
   {
     getScope().put(key, getScope(), object);
   }
-
+  
   public Object get(String key)
   {
     if (scope == null) return null;
@@ -109,36 +108,46 @@ public class ScriptClient
 
   public Object execute(String code)
   {
+    LOGGER.log(Level.INFO, "<________________ Executing code {0}", code);
+    
+    long now = System.currentTimeMillis();    
     Context context = Context.enter();
     try
     {
-      if (scope == null) scope = createScope(context);
-
-      Object result = context.evaluateString(scope, code, "", 1, null);
+      if (scope == null) 
+        scope = createScope(context);
+      Object result = context.evaluateString(scope, code, "", 1, null);   
       return unwrap(result);
     }
     finally
     {
       Context.exit();
+      
+      LOGGER.log(Level.INFO, "________________> Script code executed: {0}", 
+        new Object[]{System.currentTimeMillis() - now});      
     }
   }
   
   public Object execute(Callable callable, Object... args)
   {
+    LOGGER.log(Level.INFO, "<________________ Executing function {0}", 
+      getFunctionName(callable));
+    
+    long now = System.currentTimeMillis();
     Context context = Context.enter();
     try
     {
-      LOGGER.log(Level.INFO, "Executing function {0}", 
-        getFunctionName(callable));  
-      
       if (scope == null) scope = createScope(context);
 
-      Object result = callable.call(context, scope, scope, args);
+      Object result = callable.call(context, scope, scope, args);   
       return ScriptClient.unwrap(result);
     }
     finally
     {
       Context.exit();
+      
+      LOGGER.log(Level.INFO, "________________> Function {0} executed: {1}", 
+        new Object[]{getFunctionName(callable), System.currentTimeMillis() - now});           
     }
   }
   
@@ -149,16 +158,9 @@ public class ScriptClient
 
   public Object executeScript(String scriptName, String code) throws Exception
   {
-    if (code == null)
-    {
-      LOGGER.log(Level.INFO, "Executing script {0}", scriptName);
-    }
-    else
-    {
-      LOGGER.log(Level.INFO, "Executing script {0}: {1}",
-        new Object[]{scriptName, code});
-    }
-
+    LOGGER.log(Level.INFO, "<__________ Executing script {0}: {1}",
+        new Object[]{scriptName, code != null ? code : ""});
+      
     long now = System.currentTimeMillis();
     if (ScriptCache.getLastRefresh() + refreshTime < now)
       ScriptCache.refresh();
@@ -177,7 +179,7 @@ public class ScriptClient
       if (code != null)
         result = context.evaluateString(scope, code, scriptName, 1, null);
 
-      result = unwrap(result);
+      result = unwrap(result);      
     }
     catch (JavaScriptException ex)
     {
@@ -187,6 +189,10 @@ public class ScriptClient
     {
       Context.exit();
     }
+    
+    LOGGER.log(Level.INFO, "__________> Script {0} executed: {1}", 
+      new Object[]{scriptName, System.currentTimeMillis() - now});     
+    
     return result;
   }
 

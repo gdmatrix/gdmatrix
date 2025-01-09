@@ -40,10 +40,15 @@ import org.matrix.doc.Document;
 import org.mozilla.javascript.Callable;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.util.script.ScriptClient;
+import org.santfeliu.web.ApplicationBean;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
+import org.santfeliu.webapp.setup.Action;
+import static org.santfeliu.webapp.setup.Action.PUT_DEFAULT_FILTER;
 import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
@@ -65,6 +70,7 @@ public abstract class FinderBean extends BaseBean
   private int objectPosition = -1;
   private boolean finding;
   private transient ObjectSetup objectSetup;
+  private transient ScriptClient scriptClient;
 
   public int getFilterTabSelector()
   {
@@ -115,7 +121,7 @@ public abstract class FinderBean extends BaseBean
   {
     this.finding = finding;
   }
-
+  
   public ObjectSetup getObjectSetup() throws Exception
   {
     if (objectSetup == null)
@@ -124,7 +130,26 @@ public abstract class FinderBean extends BaseBean
     }
     return objectSetup;
   }
-
+  
+  public ScriptClient getScriptClient(String scriptName) throws Exception
+  {
+    if (scriptClient == null)
+      scriptClient = new ScriptClient();      
+    
+    if (scriptClient.get("userSessionBean") == null)
+    {
+      scriptClient.put("userSessionBean", UserSessionBean.getCurrentInstance());
+      scriptClient.put("applicationBean", ApplicationBean.getCurrentInstance());
+      scriptClient.put("WebUtils",
+        WebUtils.class.getConstructor().newInstance());
+      scriptClient.put("DictionaryUtils",
+        DictionaryUtils.class.getConstructor().newInstance());         
+      scriptClient.executeScript(scriptName);
+    } 
+    
+    return scriptClient;
+  }
+  
   @Override
   public void clear()
   {
@@ -133,31 +158,7 @@ public abstract class FinderBean extends BaseBean
 
   public void putDefaultFilter()
   {
-    try
-    {
-      String actionsScriptName = getObjectSetup().getScriptName();
-      if (actionsScriptName == null) //fallback
-        actionsScriptName = getObjectSetup().getScriptActions().getScriptName();
-      if (actionsScriptName != null)
-      {
-        ScriptClient actionsClient = new ScriptClient();
-        actionsClient.executeScript(actionsScriptName);
-        Object callable = actionsClient.get("putDefaultFilter");
-        if (callable instanceof Callable)
-        {
-          ActionObject actionObject  =  new ActionObject(getFilter());
-          actionsClient.put("actionObject", actionObject);
-          actionsClient.execute((Callable)callable);
-          actionObject = (ActionObject) actionsClient.get("actionObject");
-          if (actionObject != null)
-            setActionResult(actionObject);
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    executeAction(PUT_DEFAULT_FILTER, getFilter());
   }
 
   public String getSmartSearchTip()
@@ -236,20 +237,36 @@ public abstract class FinderBean extends BaseBean
 
   protected ActionObject executeAction(String actionName, Object object)
   {
-    ObjectBean objectBean = getObjectBean();
     ActionObject actionObject = new ActionObject(object);
-    ScriptClient scriptClient = objectBean.getScriptClient();
-    if (scriptClient != null)
+    try
     {
-      Object callable = scriptClient.get(actionName);
+      ObjectSetup setup = getObjectSetup();
+      
+      if (setup.getScriptName() == null)
+        return actionObject;
+      
+      if (setup.containsPredefindedActions() &&
+        Action.predefinedActionNames.contains(actionName) &&
+        !setup.containsAction(actionName))
+      {
+        return actionObject;
+      }
+      
+      ScriptClient client = getScriptClient(setup.getScriptName());
+      Object callable = client.get(actionName);
       if (callable instanceof Callable)
       {
-        scriptClient.put("actionObject", actionObject);
-        scriptClient.execute((Callable)callable);
-        actionObject = (ActionObject)scriptClient.get("actionObject");
-        objectBean.addFacesMessages(actionObject.getMessages());
-      }
+        client.put("actionObject", actionObject);
+        client.execute((Callable)callable);
+        actionObject = (ActionObject)client.get("actionObject");
+        getObjectBean().addFacesMessages(actionObject.getMessages());
+      }      
     }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+
     return actionObject;
   }
 

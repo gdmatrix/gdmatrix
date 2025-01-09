@@ -58,6 +58,10 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.agenda.EventCopyTabBean.EventRow;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import static org.santfeliu.webapp.setup.Action.POST_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_STORE_ACTION;
 
 /**
  *

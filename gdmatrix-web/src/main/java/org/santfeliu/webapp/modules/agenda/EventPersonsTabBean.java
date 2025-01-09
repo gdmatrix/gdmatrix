@@ -54,6 +54,14 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
@@ -313,10 +321,10 @@ public class EventPersonsTabBean extends TabBean
     {
       try
       {
-        executeTabAction("preTabEdit", row);
+        executeTabAction(PRE_TAB_EDIT_ACTION, row);
         editing = AgendaModuleBean.getClient(false).
           loadAttendant(row.getAttendantId());
-        executeTabAction("postTabEdit", editing);
+        executeTabAction(POST_TAB_EDIT_ACTION, editing);
       }
       catch (Exception ex)
       {
@@ -332,7 +340,7 @@ public class EventPersonsTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);
+    executeTabAction(PRE_TAB_LOAD_ACTION, null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -375,15 +383,15 @@ public class EventPersonsTabBean extends TabBean
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
     }
-    executeTabAction("postTabLoad", null);
+    executeTabAction(POST_TAB_LOAD_ACTION, null);
   }
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);
+    executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new Attendant();
     editing.setAttendantTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", editing);
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
   @Override
@@ -395,9 +403,9 @@ public class EventPersonsTabBean extends TabBean
       {
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
-        editing = (Attendant) executeTabAction("preTabStore", editing);
+        editing = (Attendant) executeTabAction(PRE_TAB_STORE_ACTION, editing);
         AgendaModuleBean.getClient(false).storeAttendant(editing);
-        executeTabAction("postTabStore", editing);
+        executeTabAction(POST_TAB_STORE_ACTION, editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -416,9 +424,9 @@ public class EventPersonsTabBean extends TabBean
     {
       try
       {
-        row = (AttendantView)executeTabAction("preTabRemove", row);
+        row = (AttendantView)executeTabAction(PRE_TAB_REMOVE_ACTION, row);
         AgendaModuleBean.getClient(false).removeAttendant(row.getAttendantId());
-        executeTabAction("postTabRemove", row);
+        executeTabAction(POST_TAB_REMOVE_ACTION, row);
         refreshHiddenTabInstances();
         load();
         growl("REMOVE_OBJECT");

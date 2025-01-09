@@ -169,7 +169,10 @@ public class ObjectSetup implements Serializable
 
   public String getScriptName()
   {
-    return scriptName;
+    if (scriptName != null)
+      return scriptName;
+    else //fallback
+      return scriptActions.getScriptName();
   }
 
   public void setScriptName(String scriptName)
@@ -179,9 +182,32 @@ public class ObjectSetup implements Serializable
 
   public List<Action> getActions()
   {
-    return actions;
+    List<Action> aux = new ArrayList();
+    aux.addAll(actions);
+    aux.addAll(scriptActions.getActions()); //fallback
+    return aux;
   }
-
+  
+  public boolean containsAction(String actionName)
+  {
+    for (Action action : getActions())
+    {
+      if (action.isAction(actionName))
+        return true;
+    }
+    return false;
+  }
+  
+  public boolean containsPredefindedActions()
+  {
+    for (Action action : getActions())
+    {
+      if (Action.predefinedActionNames.contains(action.getName()))
+        return true;
+    }
+    return false;
+  }
+  
   public void setActions(List<Action> actions)
   {
     this.actions = actions;

@@ -52,6 +52,14 @@ import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.cases.CaseTypeBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.DataTableRow;
@@ -269,10 +277,10 @@ public class EventCasesTabBean extends TabBean
     {
       try
       {
-        executeTabAction("preTabEdit", row);
+        executeTabAction(PRE_TAB_EDIT_ACTION, row);
         editing = CasesModuleBean.getPort(false).
           loadCaseEvent(row.getRowId());
-        executeTabAction("postTabEdit", editing);
+        executeTabAction(POST_TAB_EDIT_ACTION, editing);
       }
       catch (Exception ex)
       {
@@ -289,7 +297,7 @@ public class EventCasesTabBean extends TabBean
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);
+    executeTabAction(PRE_TAB_LOAD_ACTION, null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -311,7 +319,7 @@ public class EventCasesTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
-        executeTabAction("postTabLoad", null);
+        executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
       {
@@ -329,11 +337,11 @@ public class EventCasesTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);
+    executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new CaseEvent();
     editing.setCaseEventTypeId(getCreationTypeId());
     formSelector = null;
-    executeTabAction("postTabEdit", editing);
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
   @Override
@@ -345,9 +353,9 @@ public class EventCasesTabBean extends TabBean
       {
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
-        editing = (CaseEvent)executeTabAction("preTabStore", editing);
+        editing = (CaseEvent)executeTabAction(PRE_TAB_STORE_ACTION, editing);
         editing = CasesModuleBean.getPort(false).storeCaseEvent(editing);
-        executeTabAction("postTabStore", editing);
+        executeTabAction(POST_TAB_STORE_ACTION, editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -366,9 +374,9 @@ public class EventCasesTabBean extends TabBean
     {
       try
       {
-        row = (DataTableRow)executeTabAction("preTabRemove", row);
+        row = (DataTableRow)executeTabAction(PRE_TAB_REMOVE_ACTION, row);
         CasesModuleBean.getPort(false).removeCaseEvent(row.getRowId());
-        executeTabAction("postTabRemove", row);
+        executeTabAction(POST_TAB_REMOVE_ACTION, row);
         refreshHiddenTabInstances();
         load();
         growl("REMOVE_OBJECT");

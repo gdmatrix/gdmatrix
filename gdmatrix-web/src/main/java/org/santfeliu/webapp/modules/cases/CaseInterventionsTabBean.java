@@ -51,6 +51,14 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.helpers.TypeSelectHelper;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRow.Value;
@@ -379,17 +387,17 @@ public class CaseInterventionsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);
+    executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new Intervention();
     editing.setIntTypeId(getCreationTypeId());
     formSelector = null;
-    executeTabAction("postTabEdit", editing);
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
   @Override
   public void load() throws Exception
   {
-    executeTabAction("preTabLoad", null);
+    executeTabAction(PRE_TAB_LOAD_ACTION, null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -416,7 +424,7 @@ public class CaseInterventionsTabBean extends TabBean
         }
         setRows(auxList);
         getCurrentTabInstance().typeSelectHelper.load();
-        executeTabAction("postTabLoad", null);
+        executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
       {
@@ -443,9 +451,9 @@ public class CaseInterventionsTabBean extends TabBean
     {
       if (intId != null)
       {
-        executeTabAction("preTabEdit", row);
+        executeTabAction(PRE_TAB_EDIT_ACTION, row);
         editing = CasesModuleBean.getPort(false).loadIntervention(intId);
-        executeTabAction("postTabEdit", editing);
+        executeTabAction(POST_TAB_EDIT_ACTION, editing);
       }
       else
       {
@@ -464,9 +472,9 @@ public class CaseInterventionsTabBean extends TabBean
   {
     String caseId = getObjectId();
     editing.setCaseId(caseId);
-    editing = (Intervention) executeTabAction("preTabStore", editing);
+    editing = (Intervention) executeTabAction(PRE_TAB_STORE_ACTION, editing);
     editing = CasesModuleBean.getPort(false).storeIntervention(editing);
-    executeTabAction("postTabStore", editing);
+    executeTabAction(POST_TAB_STORE_ACTION, editing);
     refreshHiddenTabInstances();
     load();
     editing = null;
@@ -490,10 +498,10 @@ public class CaseInterventionsTabBean extends TabBean
     {
       if (row != null)
       {
-        row = (DataTableRow) executeTabAction("preTabRemove", row);
+        row = (DataTableRow) executeTabAction(PRE_TAB_REMOVE_ACTION, row);
         String intId = row.getRowId();
         CasesModuleBean.getPort(false).removeIntervention(intId);
-        executeTabAction("postTabRemove", row);
+        executeTabAction(POST_TAB_REMOVE_ACTION, row);
         refreshHiddenTabInstances();
         load();
       }

@@ -34,8 +34,10 @@ import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import javax.faces.application.FacesMessage;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.PropertyDefinition;
@@ -43,6 +45,7 @@ import org.mozilla.javascript.Callable;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.ApplicationBean;
@@ -64,19 +67,14 @@ import org.santfeliu.webapp.util.ComponentUtils;
  */
 public abstract class ObjectBean extends BaseBean
 {
-  public static final String POST_LOAD_ACTION = "postLoad";
-  public static final String PRE_STORE_ACTION = "preStore";
-  public static final String POST_STORE_ACTION = "postStore";
-  public static final String PRE_REMOVE_ACTION = "preRemove";
-  public static final String POST_REMOVE_ACTION = "postRemove";
-
   public static final String OBJECT_SETUP_PROPERTY = "objectSetup";
 
   protected String objectId = NEW_OBJECT_ID;
   private int searchTabSelector;
   private int editTabSelector;
   private transient ObjectSetup objectSetup;
-  private ScriptClient scriptClient;
+  private transient ScriptClient scriptClient;
+  private Map<String, Object> state = new HashMap<>();
   private List<Action> actions;
 
   @Override
@@ -201,11 +199,25 @@ public abstract class ObjectBean extends BaseBean
     return objectSetup;
   }
 
-  public ScriptClient getScriptClient()
+  public ScriptClient getScriptClient(String scriptName) throws Exception
   {
+    if (scriptClient == null)
+      scriptClient = new ScriptClient();      
+    
+    if (scriptClient.get("userSessionBean") == null)
+    {
+      scriptClient.put("userSessionBean", UserSessionBean.getCurrentInstance());
+      scriptClient.put("applicationBean", ApplicationBean.getCurrentInstance());
+      scriptClient.put("WebUtils",
+        WebUtils.class.getConstructor().newInstance());
+      scriptClient.put("DictionaryUtils",
+        DictionaryUtils.class.getConstructor().newInstance());         
+      scriptClient.executeScript(scriptName);
+    } 
+    
     return scriptClient;
   }
-
+  
   public List<Action> getActions()
   {
     return actions;
@@ -240,7 +252,8 @@ public abstract class ObjectBean extends BaseBean
       clear();
       loadObject();
       loadObjectSetup();
-      executeAction(POST_LOAD_ACTION);
+      if (!NEW_OBJECT_ID.equals(objectId))
+        executeAction(Action.POST_LOAD_ACTION);
       loadActiveEditTab();
 
       Object object = getObject();
@@ -267,7 +280,7 @@ public abstract class ObjectBean extends BaseBean
   public void loadObject() throws Exception
   {
   }
-  
+
   public void loadObjectSetup() throws Exception
   {
     String setupName = getProperty(OBJECT_SETUP_PROPERTY);
@@ -296,23 +309,8 @@ public abstract class ObjectBean extends BaseBean
     {
       objectSetup = ObjectSetupCache.getConfig(setupName);
     }
-
-    // Init scriptClient if defined
-    String actionsScriptName = objectSetup.getScriptName();
-    if (actionsScriptName == null) //fallback
-      actionsScriptName = objectSetup.getScriptActions().getScriptName();
-
-    if (actionsScriptName != null && scriptClient == null)
-    {
-      scriptClient = new ScriptClient();
-      scriptClient.put("userSessionBean",
-        UserSessionBean.getCurrentInstance());
-      scriptClient.put("applicationBean",
-        ApplicationBean.getCurrentInstance());
-      scriptClient.executeScript(actionsScriptName);
-    }
   }
-
+  
   public void loadActiveEditTab() throws Exception
   {
     EditTab tab = getActiveEditTab();
@@ -339,25 +337,34 @@ public abstract class ObjectBean extends BaseBean
     try
     {
       if (actions != null) return;
-
+      
       System.out.println(">>> loadActions");
       actions = new ArrayList();
-      actions.addAll(getObjectSetup().getActions());
-      actions.addAll(getObjectSetup().getScriptActions().getActions()); //fallback
-
-      if (scriptClient != null)
+      for (Action action : getObjectSetup().getActions())
       {
-        Object callable = scriptClient.get("getActions");
-        if (callable instanceof Callable)
-        {
-          scriptClient.put("actionObject", new ActionObject(getObject()));
-          List<Action> actionList =
-            (List<Action>) scriptClient.execute((Callable)callable);
-
-          if (actionList != null)
-            actions.addAll(actionList);
-        }
+        if (!Action.predefinedActionNames.contains(action.getName()))
+          actions.add(action);
       }
+      
+      ObjectSetup setup = getObjectSetup();
+      
+      //If not script defined then return
+      if (setup.getScriptName() == null) return;
+      //If predefined actions are set but not GET_ACTIONS_ACTION then return
+      if (setup.containsPredefindedActions() &&
+        !setup.containsAction(Action.GET_ACTIONS_ACTION)) return;
+   
+      ScriptClient client = getScriptClient(setup.getScriptName());
+      Object callable = client.get(Action.GET_ACTIONS_ACTION);
+      if (callable instanceof Callable)
+      {
+        client.put("actionObject", new ActionObject(getObject()));
+        List<Action> actionList =
+          (List<Action>) client.execute((Callable)callable);
+
+        if (actionList != null)
+          actions.addAll(actionList);
+      }  
     }
     catch (Exception ex)
     {
@@ -398,47 +405,83 @@ public abstract class ObjectBean extends BaseBean
   protected ActionObject executeAction(String actionName, Object[] parameters,
     Object object)
   {
-    ActionObject actionObject = new ActionObject(object);
-    if (scriptClient != null)
+    ActionObject actionObject = new ActionObject(object); 
+    actionObject.setMainObject(getObject());
+    try
     {
-      Object callable = scriptClient.get(actionName);
+      ObjectSetup setup = getObjectSetup();
+      
+      if (setup.getScriptName() == null)
+        return actionObject;
+      
+      if (setup.containsPredefindedActions() &&
+        Action.predefinedActionNames.contains(actionName) &&
+        !setup.containsAction(actionName))
+      {
+        return actionObject;
+      }
+            
+      ScriptClient client = getScriptClient(setup.getScriptName());
+      Object callable = client.get(actionName);
       if (callable instanceof Callable)
       {
-        scriptClient.put("actionObject", actionObject);
-        scriptClient.execute((Callable)callable, parameters);
-        actionObject = (ActionObject) scriptClient.get("actionObject");
+        client.put("actionObject", actionObject);
+        client.put("state", state);
+        client.execute((Callable)callable, parameters);
+        state = (Map<String, Object>) client.get("state");
+        actionObject = (ActionObject) client.get("actionObject");
         if (actionObject != null)
         {
           setActionResult(actionObject);
           if (actionObject.isUpdateForm())
           {
             getRequestMap().put("updateForm", "true");
-          }
-          if (actionObject.isRefresh() && !actionName.equals(POST_LOAD_ACTION))
+          }          
+          if (actionObject.isRefresh() && !actionName.equals(Action.POST_LOAD_ACTION))
             load();
           addFacesMessages(actionObject.getMessages());
         }
       }
     }
-    return actionObject;
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    return actionObject;  
   }
 
   public ActionObject executeTabAction(String actionName, Object object)
   {
-    ActionObject actionObject =
-      new ActionObject(object, getActiveEditTab().getSubviewId());
-    if (scriptClient != null)
+    ActionObject actionObject = 
+      new ActionObject(object, getActiveEditTab().getSubviewId()); 
+    actionObject.setMainObject(getObject());
+    try
     {
-      Object callable = scriptClient.get(actionName);
+      ObjectSetup setup = getObjectSetup();  
+      
+      if (setup.getScriptName() == null)
+        return actionObject;
+      
+      if (setup.containsPredefindedActions() &&
+        Action.predefinedActionNames.contains(actionName) &&
+        !setup.containsAction(actionName))
+      {
+        return actionObject;
+      }
+      
+      ScriptClient client = getScriptClient(setup.getScriptName());
+      Object callable = client.get(actionName);
       if (callable instanceof Callable)
       {
-        scriptClient.put("actionObject", actionObject);
-        scriptClient.execute((Callable)callable);
-        actionObject = (ActionObject) scriptClient.get("actionObject");
+        client.put("actionObject", actionObject);
+        client.put("state", state);        
+        client.execute((Callable)callable);
+        actionObject = (ActionObject) client.get("actionObject");
         if (actionObject.isUpdateForm())
         {
           getRequestMap().put("updateForm", "true");
-        }
+        }        
         if (actionObject.isRefresh())
           load();
         if (actionObject.isFullRefresh())
@@ -452,8 +495,13 @@ public abstract class ObjectBean extends BaseBean
           PrimeFaces.current().ajax().update("mainform:cnt");
         }
         addFacesMessages(actionObject.getMessages());
-      }
+      }      
     }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+      
     return actionObject;
   }
 
@@ -627,7 +675,7 @@ public abstract class ObjectBean extends BaseBean
     {
       tabBean.clear();
     }
-    scriptClient = null;
+    state.clear();
     actions = null;
   }
 }

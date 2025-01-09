@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.agenda;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,6 +46,14 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.kernel.AddressObjectBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.RoomObjectBean;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 
 /**
  *
@@ -162,19 +169,19 @@ public class EventPlacesTabBean extends TabBean
 
   public String edit(EventPlaceView row)
   {
-    executeTabAction("preTabEdit", row);
+    executeTabAction(PRE_TAB_EDIT_ACTION, row);
     String eventPlaceId = null;
     if (row != null)
       eventPlaceId = row.getEventPlaceId();
     String result = editPlace(eventPlaceId);
-    executeTabAction("postTabEdit", editing);
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
     return result;
   }
 
   @Override
   public void load()
   {
-    executeTabAction("preTabLoad", null);
+    executeTabAction(PRE_TAB_LOAD_ACTION, null);
     if (!isNew())
     {
       try
@@ -182,7 +189,7 @@ public class EventPlacesTabBean extends TabBean
         EventPlaceFilter filter = new EventPlaceFilter();
         filter.setEventId(eventObjectBean.getObjectId());
         rows = AgendaModuleBean.getClient(false).findEventPlaceViews(filter);
-        executeTabAction("postTabLoad", null);
+        executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
       {
@@ -198,9 +205,9 @@ public class EventPlacesTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);
+    executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new EventPlace();
-    executeTabAction("postTabEdit", editing);
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
   @Override
@@ -219,9 +226,9 @@ public class EventPlacesTabBean extends TabBean
 
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
-        editing = (EventPlace) executeTabAction("preTabStore", editing);
+        editing = (EventPlace) executeTabAction(PRE_TAB_STORE_ACTION, editing);
         AgendaModuleBean.getClient(false).storeEventPlace(editing);
-        executeTabAction("postTabStore", editing);
+        executeTabAction(POST_TAB_STORE_ACTION, editing);
         editing = null;
         load();
         growl("STORE_OBJECT");
@@ -248,9 +255,9 @@ public class EventPlacesTabBean extends TabBean
         editing = null;
       }
 
-      row = (EventPlaceView)executeTabAction("preTabRemove", row);
+      row = (EventPlaceView)executeTabAction(PRE_TAB_REMOVE_ACTION, row);
       AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
-      executeTabAction("postTabRemove", row);
+      executeTabAction(POST_TAB_REMOVE_ACTION, row);
 
       load();
       growl("REMOVE_OBJECT");

@@ -521,6 +521,20 @@ public class DocumentFinderBean extends FinderBean
       }
     }
 
+    @Override
+    protected Value getTablePropertyValue(BaseBean baseBean, 
+      TableProperty tableProperty, Object row) throws Exception
+    {
+      if (tableProperty.getName().equals("title"))
+      {
+        Document document = (Document)row;
+        return new DefaultValue(DocumentTypeBean.formatTitle(document), 
+          DocumentTypeBean.getContentIcon(document));
+      }
+      else
+        return super.getTablePropertyValue(baseBean, tableProperty, row);
+    }
+    
     public String getContentId()
     {
       return contentId;

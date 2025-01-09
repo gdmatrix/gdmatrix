@@ -109,8 +109,6 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
       BUNDLE_PREFIX + "documentSearch_docTypeId", "col-3"));
     TableProperty titleColumn = new TableProperty("title",
       BUNDLE_PREFIX + "documentSearch_title", "col-8");
-    titleColumn.setExpression("org.santfeliu.webapp.modules.doc.DocumentTypeBean.formatTitle(row)");
-    titleColumn.setIcon("'text-xl mr-2 ' + org.santfeliu.webapp.modules.doc.DocumentTypeBean.getContentIcon(row)");
     searchTab.getTableProperties().add(titleColumn);
     
     searchTab.getOrderBy().add("changeDateTime:desc");
@@ -246,9 +244,9 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
         return "fa-regular fa-file-lines";
 
       default:
-        if (contentType != null && contentType.indexOf("image/") == 0)
+        if (contentType.indexOf("image/") == 0)
           return "fa-regular fa-file-image";
-        if (contentType != null && contentType.indexOf("video/") == 0)
+        if (contentType.indexOf("video/") == 0)
           return "fa-regular fa-file-video";
         else
           return "fa-regular fa-file";

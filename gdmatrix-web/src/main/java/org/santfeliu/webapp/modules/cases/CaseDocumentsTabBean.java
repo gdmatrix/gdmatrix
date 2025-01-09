@@ -70,6 +70,13 @@ import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DataTableRowComparator;
@@ -367,7 +374,7 @@ public class CaseDocumentsTabBean extends TabBean
   @Override
   public void load()
   {
-    executeTabAction("preTabLoad", null);
+    executeTabAction(PRE_TAB_LOAD_ACTION, null);
     String objectId = getObjectId();
     if (!NEW_OBJECT_ID.equals(objectId))
     {
@@ -445,7 +452,7 @@ public class CaseDocumentsTabBean extends TabBean
         }
         setRows(auxList2);
         getCurrentTabInstance().typeSelectHelper.load();
-        executeTabAction("postTabLoad", null);
+        executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
       {
@@ -472,10 +479,10 @@ public class CaseDocumentsTabBean extends TabBean
       {
         editing.setCaseDocTypeId("CaseDocument");
       }
-      editing = (CaseDocument) executeTabAction("preTabStore", editing);
+      editing = (CaseDocument) executeTabAction(PRE_TAB_STORE_ACTION, editing);
       editing = CasesModuleBean.getPort(false).storeCaseDocument(editing);
       spreadDocumentRoles(editing.getDocId());
-      executeTabAction("postTabStore", editing);
+      executeTabAction(POST_TAB_STORE_ACTION, editing);
       refreshHiddenTabInstances();
       load();
       editing = null;
@@ -500,10 +507,10 @@ public class CaseDocumentsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);
+    executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new CaseDocument();
     editing.setCaseDocTypeId(getCreationTypeId());
-    executeTabAction("postTabEdit", editing);
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
   public String getCurrentVolume()
@@ -532,10 +539,10 @@ public class CaseDocumentsTabBean extends TabBean
     {
       try
       {
-        executeTabAction("preTabEdit", row);
+        executeTabAction(PRE_TAB_EDIT_ACTION, row);
         editing =
           CasesModuleBean.getPort(false).loadCaseDocument(row.getRowId());
-        executeTabAction("postTabEdit", editing);
+        executeTabAction(POST_TAB_EDIT_ACTION, editing);
       }
       catch (Exception ex)
       {
@@ -623,7 +630,7 @@ public class CaseDocumentsTabBean extends TabBean
         default:
           break;
       }
-      executeTabAction("postTabRemove", caseDocumentToRemove);
+      executeTabAction(POST_TAB_REMOVE_ACTION, caseDocumentToRemove);
       refreshHiddenTabInstances();
       load();
     }

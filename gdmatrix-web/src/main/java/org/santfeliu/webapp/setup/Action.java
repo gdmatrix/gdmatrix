@@ -31,7 +31,9 @@
 package org.santfeliu.webapp.setup;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -39,15 +41,63 @@ import java.util.Objects;
  */
 public class Action implements Serializable
 {
+  public static final String POST_LOAD_ACTION = "postLoad";
+  public static final String PRE_STORE_ACTION = "preStore";
+  public static final String POST_STORE_ACTION = "postStore";
+  public static final String PRE_REMOVE_ACTION = "preRemove";
+  public static final String POST_REMOVE_ACTION = "postRemove";
+    
+  public static final String PRE_TAB_EDIT_ACTION = "preTabEdit";   
+  public static final String POST_TAB_EDIT_ACTION = "postTabEdit";  
+  public static final String PRE_TAB_LOAD_ACTION = "preTabLoad";
+  public static final String POST_TAB_LOAD_ACTION = "postTabLoad";  
+  public static final String PRE_TAB_STORE_ACTION = "preTabStore";   
+  public static final String POST_TAB_STORE_ACTION = "postTabStore";   
+  public static final String PRE_TAB_REMOVE_ACTION = "preTabRemove";   
+  public static final String POST_TAB_REMOVE_ACTION = "postTabRemove";    
+  
+  public static final String GET_ACTIONS_ACTION = "getActions"; 
+  public static final String PUT_DEFAULT_FILTER = "putDefaultFilter";
+
+  public final static Set<String> predefinedActionNames;
+
   private static final String URL_PREFIX = "url:";
 
   private String label;
   private String name;
   private Object[] parameters;
   private String icon;
-
+  
+  static
+  {
+    predefinedActionNames = new HashSet<>();
+    predefinedActionNames.add(GET_ACTIONS_ACTION);
+    
+    //Object actions
+    predefinedActionNames.add(POST_LOAD_ACTION);
+    predefinedActionNames.add(PRE_STORE_ACTION);
+    predefinedActionNames.add(POST_STORE_ACTION);
+    predefinedActionNames.add(PRE_REMOVE_ACTION);
+    predefinedActionNames.add(POST_REMOVE_ACTION);
+    
+    //Tab actions
+    predefinedActionNames.add(PRE_TAB_EDIT_ACTION);    
+    predefinedActionNames.add(POST_TAB_EDIT_ACTION);      
+    predefinedActionNames.add(PRE_TAB_LOAD_ACTION); 
+    predefinedActionNames.add(POST_TAB_LOAD_ACTION);        
+    predefinedActionNames.add(PRE_TAB_STORE_ACTION);  
+    predefinedActionNames.add(POST_TAB_STORE_ACTION);    
+    predefinedActionNames.add(PRE_TAB_REMOVE_ACTION);   
+    predefinedActionNames.add(POST_TAB_REMOVE_ACTION);
+    
+    //Finder
+    predefinedActionNames.add(PUT_DEFAULT_FILTER);      
+  }
+  
   public Action(String label, String name)
   {
+
+    
     this.label = label;
     this.name = name;
   }
@@ -121,6 +171,13 @@ public class Action implements Serializable
   {
     String url = getUrl();
     return url != null && url.matches("https?://.*") ? "_blank" : "_self";
+  }
+  
+  public boolean isAction(String name)
+  {
+    if (name == null)
+      return false;
+    return name.equals(this.name);
   }
 
   @Override

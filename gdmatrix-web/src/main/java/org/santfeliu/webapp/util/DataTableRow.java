@@ -52,6 +52,8 @@ import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.BaseBean;
+import org.santfeliu.webapp.FinderBean;
+import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.setup.TableProperty;
 
@@ -64,7 +66,6 @@ public class DataTableRow implements Serializable
   protected String rowId;
   protected String typeId;
   protected Value[] values;
-  protected String[] icons;
   protected String styleClass;
   //name -> CustomProperty
   protected Map<String, CustomProperty> customPropertyMap = new HashMap<>();
@@ -93,16 +94,6 @@ public class DataTableRow implements Serializable
   public void setTypeId(String typeId)
   {
     this.typeId = typeId;
-  }
-
-  public String[] getIcons()
-  {
-    return icons;
-  }
-
-  public void setIcons(String[] icons)
-  {
-    this.icons = icons;
   }
 
   public Value[] getValues()
@@ -143,37 +134,25 @@ public class DataTableRow implements Serializable
     List<TableProperty> tableProperties)
     throws Exception
   {
-    ScriptClient scriptClient = baseBean.getObjectBean().getScriptClient();
-    if (scriptClient == null)
-      scriptClient = newScriptClient();
-
-    scriptClient.put("row", row);
-    scriptClient.put("baseBean", baseBean);
-
     TypeCache typeCache = TypeCache.getInstance();
     Type rowType = typeCache.getType(typeId);
-
+    
     //Column properties
-    List<TableProperty> columnTableProperties =
+    List<TableProperty> columnTableProperties = 
       TablePropertyHelper.getColumnTableProperties(tableProperties);
     values = new Value[columnTableProperties.size()];
-    icons = new String[columnTableProperties.size()];
     for (int i = 0; i < columnTableProperties.size(); i++)
     {
       TableProperty columnProperty = columnTableProperties.get(i);
       if (columnProperty.getTypeId() == null ||
         rowType.isDerivedFrom(columnProperty.getTypeId()))
       {
-        values[i] = getTablePropertyValue(scriptClient, columnProperty, row);
-        if (columnProperty.getIcon() != null)
-        {
-          icons[i] = (String) scriptClient.execute(columnProperty.getIcon());
-        }
+        values[i] = getTablePropertyValue(baseBean, columnProperty, row);
       }
     }
 
     //Row properties
-    List<TableProperty> rowTableProperties =
+    List<TableProperty> rowTableProperties = 
       TablePropertyHelper.getRowTableProperties(tableProperties);
     int index = 1;
     for (int i = 0; i < rowTableProperties.size(); i++)
@@ -182,7 +161,7 @@ public class DataTableRow implements Serializable
       if (rowProperty.getTypeId() == null ||
         rowType.isDerivedFrom(rowProperty.getTypeId()))
       {
-        Value value = getTablePropertyValue(scriptClient, rowProperty, row);
+        Value value = getTablePropertyValue(baseBean, rowProperty, row);
         if (value != null && !StringUtils.isBlank(value.getLabel()))
         {
           String propertyName = rowProperty.getName();
@@ -197,7 +176,7 @@ public class DataTableRow implements Serializable
       }
     }
   }
-
+    
   public void addCustomProperty(String name, String label, String value, 
     boolean escape)
   {
@@ -258,7 +237,7 @@ public class DataTableRow implements Serializable
   }
 
   protected Value formatValue(String rowTypeId, Object key,
-    List<String> values) throws Exception
+    List<String> values, String icon) throws Exception
   {
     Value rowValue = null;
 
@@ -277,7 +256,7 @@ public class DataTableRow implements Serializable
         {
           if (pd.getMaxOccurs() > 1)
           {
-            rowValue = new DefaultValue(values.toString());
+            rowValue = new DefaultValue(values.toString(), icon);
           }
           else
           {
@@ -286,39 +265,43 @@ public class DataTableRow implements Serializable
             {
               PropertyType propType = pd.getType();
               if (propType.equals(PropertyType.DATE))
-                rowValue = new DateValue(value);
+                rowValue = new DateValue(value, icon);
               else if (pd.getEnumTypeId() != null)
               {
                 rowValue =
-                  new EnumTypeValue(pd.getEnumTypeId(), value, propType);
+                  new EnumTypeValue(pd.getEnumTypeId(), value, propType, icon);
               }
               else if (skey.endsWith("TypeId"))
-                rowValue = new TypeValue(value);
+                rowValue = new TypeValue(value, icon);
               else if (propType.equals(PropertyType.NUMERIC))
-                rowValue = new NumericValue(value);
+                rowValue = new NumericValue(value, icon);
               else
-                rowValue = new DefaultValue(value);
+                rowValue = new DefaultValue(value, icon);
             }
             return rowValue;
           }
         }
         else
-          rowValue = new DefaultValue(values.get(0));
+          rowValue = new DefaultValue(values.get(0), icon);
       }
       else
-        rowValue = new DefaultValue(values.get(0));
+        rowValue = new DefaultValue(values.get(0), icon);
     }
 
     return rowValue != null ? rowValue : new DefaultValue("");
   }
 
-  private Value getTablePropertyValue(ScriptClient scriptClient,
+  protected Value getTablePropertyValue(BaseBean baseBean,
     TableProperty tableProperty, Object row) throws Exception
   {
     if (tableProperty.getExpression() != null)
     {
+      ScriptClient scriptClient = getScriptClient(baseBean);
+      scriptClient.put("row", row);
+      scriptClient.put("baseBean", baseBean);     
       return new DefaultValue(
-        scriptClient.execute(tableProperty.getExpression()));
+        scriptClient.execute(tableProperty.getExpression()), 
+          tableProperty.getIcon());
     }
     else
     {
@@ -327,11 +310,49 @@ public class DataTableRow implements Serializable
       if (property != null)
       {
         List<String> value = property.getValue();
-        return formatValue(typeId, tableProperty.getName(), value);
+        String name = tableProperty.getName();
+        String icon = tableProperty.getIcon();
+        return formatValue(typeId, name, value, icon);
       }
       else
         return getDefaultValue(tableProperty.getName());
     }
+  }
+    
+  private ScriptClient getScriptClient(BaseBean baseBean)
+    throws Exception
+  {    
+    ScriptClient scriptClient;
+    String scriptName;
+    
+    if (baseBean == null)
+    {
+      scriptClient = new ScriptClient();
+    }
+    else if (baseBean instanceof FinderBean)
+    {
+      FinderBean finderBean = ((FinderBean)baseBean);
+      scriptName = finderBean.getObjectSetup().getScriptName();
+      if (scriptName != null)
+        scriptClient = finderBean.getScriptClient(scriptName);
+      else
+        scriptClient = new ScriptClient();
+    }    
+    else 
+    {
+      ObjectBean objectBean;
+      if (baseBean instanceof ObjectBean)
+        objectBean = ((ObjectBean)baseBean);
+      else
+        objectBean = baseBean.getObjectBean();
+      scriptName = objectBean.getObjectSetup().getScriptName();
+      if (scriptName != null)
+        scriptClient = objectBean.getScriptClient(scriptName);
+      else
+        scriptClient = new ScriptClient();
+    }    
+    
+    return scriptClient;
   }
   
   private int getMaxCustomPropertyIndex()
@@ -351,6 +372,7 @@ public class DataTableRow implements Serializable
   {
     protected Object sorted;
     protected String label;
+    protected String icon;
 
     public String getLabel()
     {
@@ -361,6 +383,11 @@ public class DataTableRow implements Serializable
     {
       return sorted;
     }
+
+    public String getIcon()
+    {
+      return icon;
+    }
   }
 
   public class DefaultValue extends Value
@@ -370,6 +397,12 @@ public class DataTableRow implements Serializable
       if (value != null)
         this.label = value.toString();
       this.sorted = label;
+    }
+
+    public DefaultValue(Object value, String icon)
+    {
+      this(value);
+      this.icon = icon;
     }
   }
 
@@ -382,6 +415,12 @@ public class DataTableRow implements Serializable
       label = TextUtils.formatInternalDate(value, pattern);
       sorted = value;
     }
+    
+    public DateValue(String value, String icon)
+    {
+      this(value);
+      this.icon = icon;
+    }    
   }
 
   public class EnumTypeValue extends Value
@@ -410,6 +449,13 @@ public class DataTableRow implements Serializable
         }
       }
     }
+    
+    public EnumTypeValue(String enumTypeId, Object value, PropertyType propType,
+      String icon) throws Exception
+    {
+      this(enumTypeId, value, propType);
+      this.icon = icon;
+    }     
   }
 
   public class TypeValue extends Value
@@ -423,6 +469,12 @@ public class DataTableRow implements Serializable
 
       sorted = label;
     }
+    
+    public TypeValue(String value, String icon)
+    {
+      this(value);
+      this.icon = icon;
+    }       
   }
 
   public class NumericValue extends Value
@@ -441,6 +493,12 @@ public class DataTableRow implements Serializable
         catch (NumberFormatException ex) { }
       }
     }
+    
+    public NumericValue(String value, String icon)
+    {
+      this(value);
+      this.icon = icon;
+    }       
   }
 
   public class CustomProperty

@@ -73,6 +73,15 @@ import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
 import org.santfeliu.webapp.util.RowStyleClassGenerator;
 import org.santfeliu.webapp.util.WebUtils;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
+
 
 /**
  *
@@ -538,17 +547,17 @@ public class CasePersonsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction("preTabEdit", null);
+    executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new CasePerson();
     editing.setCasePersonTypeId(getCreationTypeId());
     tabIndex = 0;
-    executeTabAction("postTabEdit", editing);
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
   @Override
   public void load()
   {
-    executeTabAction("preTabLoad", null);
+    executeTabAction(PRE_TAB_LOAD_ACTION, null);
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
@@ -574,7 +583,7 @@ public class CasePersonsTabBean extends TabBean
         }
         setRows(auxList);
         getCurrentTabInstance().typeSelectHelper.load();
-        executeTabAction("postTabLoad", null);
+        executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
       {
@@ -597,14 +606,14 @@ public class CasePersonsTabBean extends TabBean
     {
       try
       {
-        executeTabAction("preTabEdit", row);
+        executeTabAction(PRE_TAB_EDIT_ACTION, row);
         editing = CasesModuleBean.getPort(false).loadCasePerson(row.getRowId());
         personContacts =
           getPersonContacts(editing.getPersonId());
         representantContacts =
           getPersonContacts(editing.getRepresentantPersonId());
         tabIndex = 0;
-        executeTabAction("postTabEdit", editing);
+        executeTabAction(POST_TAB_EDIT_ACTION, editing);
       }
       catch (Exception ex)
       {
@@ -626,7 +635,7 @@ public class CasePersonsTabBean extends TabBean
 
       if (editing.getCasePersonTypeId() == null)
         editing.setCasePersonTypeId(DictionaryConstants.CASE_PERSON_TYPE);
-      editing = (CasePerson) executeTabAction("preTabStore", editing);
+      editing = (CasePerson) executeTabAction(PRE_TAB_STORE_ACTION, editing);
       editing = CasesModuleBean.getPort(false).storeCasePerson(editing);
       if (importAddresses)
       {
@@ -634,7 +643,7 @@ public class CasePersonsTabBean extends TabBean
         refreshCaseAddressesTabInstances();
         importAddresses = false;
       }
-      executeTabAction("postTabStore", editing);
+      executeTabAction(POST_TAB_STORE_ACTION, editing);
       refreshHiddenTabInstances();
       load();
       editing = null;
@@ -663,9 +672,9 @@ public class CasePersonsTabBean extends TabBean
     {
       if (row != null)
       {
-        row = (DataTableRow)executeTabAction("preTabRemove", row);
+        row = (DataTableRow)executeTabAction(PRE_TAB_REMOVE_ACTION, row);
         CasesModuleBean.getPort(false).removeCasePerson(row.getRowId());
-        executeTabAction("postTabRemove", row);
+        executeTabAction(POST_TAB_REMOVE_ACTION, row);
         refreshHiddenTabInstances();
         load();
         growl("REMOVE_OBJECT");

@@ -52,6 +52,10 @@ import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.EditTab;
 import java.io.Serializable;
 import javax.enterprise.context.RequestScoped;
+import static org.santfeliu.webapp.setup.Action.POST_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_STORE_ACTION;
 
 /**
  *

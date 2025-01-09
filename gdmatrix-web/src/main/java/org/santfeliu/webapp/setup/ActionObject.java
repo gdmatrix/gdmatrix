@@ -46,6 +46,7 @@ public class ActionObject
   private boolean updateForm = false;
   private final List<Message> messages = new ArrayList();
   private String subviewId;
+  private Object mainObject;
   
   public ActionObject(Object object)
   {
@@ -108,6 +109,16 @@ public class ActionObject
   public void setSubviewId(String subviewId)
   {
     this.subviewId = subviewId;
+  }
+
+  public Object getMainObject()
+  {
+    return mainObject;
+  }
+
+  public void setMainObject(Object mainObject)
+  {
+    this.mainObject = mainObject;
   }
 
   public void addInfo(String message, String... params)

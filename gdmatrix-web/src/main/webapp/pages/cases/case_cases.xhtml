@@ -82,7 +82,7 @@
                  field="#{column.name}" styleClass="#{column.styleClass}"
                  style="#{caseCasesTabBean.groupableRowsHelper.isColumnRendered(column) ? '' : 'display:none'}"
                  sortBy="#{row.values[i].sorted}" >
-        <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />
+        <i class="#{row.values[i].icon}" jsf:rendered="#{column.icon != null}" />
         <h:outputText value="#{row.values[i].label}" escape="#{column.escape}" />
       </p:columns>
 
