@@ -250,25 +250,14 @@
 
   </p:outputPanel> 
 
-  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
-
   <script>
     if (window.popStateListener)
     {
       window.removeEventListener("popstate", window.popStateListener);
     }
 
-    window.popStateListener = () => {
-      var pfButton = PF("backButton");
-      if (pfButton)
-      {
-        var id = pfButton.id;
-        var button = document.getElementById(id);
-        button.click();
-      };
-    };
+    controlNavigationHistory(#{navigatorBean.jsonPageState});
 
-    window.addEventListener("popstate", window.popStateListener);
   </script>
   
 </ui:composition>

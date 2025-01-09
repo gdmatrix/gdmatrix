@@ -95,7 +95,7 @@
   <gdm:saveBean value="documentViewerBean" /> 
 
   <script>
-    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    window.history.pushState({}, '', '/pages/doc/document_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}');
   </script>    
 
 </ui:composition>

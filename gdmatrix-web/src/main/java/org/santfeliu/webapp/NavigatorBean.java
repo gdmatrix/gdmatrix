@@ -52,6 +52,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
 import org.matrix.dic.PropertyDefinition;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
@@ -167,6 +168,52 @@ public class NavigatorBean extends WebBean implements Serializable
     return baseTypeInfo == null? NEW_OBJECT_ID : baseTypeInfo.getObjectId();
   }
 
+  public String getJsonPageState()
+  {
+    String baseTypeId = "";
+    String objectId = "";
+    String pageUrl = "";
+    String pageTitle = getProperty("pageTitle");
+
+    if (pageTitle == null)
+    {
+      pageTitle = getSelectedMenuItem().getLabel();
+    }
+
+    String prefix = getProperty("pageTitlePrefix");
+    if (prefix != null)
+    {
+      pageTitle = prefix + " " + pageTitle;
+    }
+
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    if (baseTypeInfo != null)
+    {
+      baseTypeId = baseTypeInfo.getBaseTypeId();
+      ObjectBean objectBean = baseTypeInfo.getObjectBean();
+      if (objectBean != null)
+      {
+        objectId = objectBean.getObjectId();
+        String viewId = objectBean.getTypeBean().getViewId();
+        pageUrl = viewId + "?xmid=" + baseTypeInfo.getMid();
+
+        if (!objectBean.isNew())
+        {
+          pageUrl += "&" + OBJECTID_PARAMETER + "=" + objectBean.getObjectId();
+          pageTitle += " > " + objectBean.getDescription();
+        }
+      }
+    }
+    JSONObject json = new JSONObject();
+
+    json.put("baseTypeId", baseTypeId);
+    json.put("objectId", objectId);
+    json.put("title", pageTitle);
+    json.put("url", pageUrl);
+
+    return json.toJSONString();
+  }
+
   public String getUrlChangeScript()
   {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
@@ -190,8 +237,7 @@ public class NavigatorBean extends WebBean implements Serializable
         else
           title = title + pageTitle;
 
-        return "<script>window.history.pushState({},'','" + url +
-          "');document.title='" + title + "';</script>";
+        return "<script>window.history.replaceState({},'','" + url + "'); document.title='" + title + "';</script>";
       }
     }
     return "";

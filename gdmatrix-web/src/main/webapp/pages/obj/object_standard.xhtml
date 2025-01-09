@@ -81,27 +81,27 @@
                      message="#{objectBundle.confirm_remove_message}"
                      icon="pi pi-info-circle" />
       </p:commandButton>
-      <p:commandButton id="object_actions" 
-                       action="#{objectBean.loadActions}" 
+      <p:commandButton id="object_actions"
+                       action="#{objectBean.loadActions}"
                        process="@this" update="@none"
                        icon="ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
                        rendered="#{not objectBean.isNew()}" />
       <p:overlayPanel for="object_actions" appendTo="@(body)"
-                      dynamic="true" cache="true" styleClass="context" 
+                      dynamic="true" cache="true" styleClass="context"
                       widgetVar="objectActions">
         <p:menu style="width:100%">
           <c:forEach items="#{objectBean.actions}" var="action">
             <p:menuitem icon="#{action.icon}"
                         value="#{action.label}" action="#{objectBean.callAction(action.name)}"
-                        rendered="#{not empty action.label and not action.isUrlAction()}" 
+                        rendered="#{not empty action.label and not action.isUrlAction()}"
                         process="@this"
                         onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                         update="@form:cnt:search_tabs:tabs object_header"/>
             <p:menuitem icon="#{action.icon}"
-                        value="#{action.label}" 
+                        value="#{action.label}"
                         onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                         url="#{action.url}" target="#{action.urlTarget}"
-                        rendered="#{not empty action.label and action.isUrlAction()}" />            
+                        rendered="#{not empty action.label and action.isUrlAction()}" />
           </c:forEach>
           <p:menuitem action="#{objectBean.store}"
                       value="#{objectBundle.store}"
@@ -178,32 +178,16 @@
                      global="false" />
   </div>
 
-  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
-
-  <script>
+  <script>    
     function objectScrollUp()
     {
       var elems = document.getElementsByClassName("object_data");
       if (elems.length > 0) elems[0].scrollTop = 0;
     }
 
-    if (window.popStateListener)
-    {
-      window.removeEventListener("popstate", window.popStateListener);
-    }
+    controlNavigationHistory(#{navigatorBean.jsonPageState});
 
-    window.popStateListener = () => {
-      var pfButton = PF("backButton");
-      if (pfButton)
-      {
-        var id = pfButton.id;
-        var button = document.getElementById(id);
-        button.click();
-      };
-    };
-
-    window.addEventListener("popstate", window.popStateListener);
   </script>
-
+  
 </ui:composition>
 

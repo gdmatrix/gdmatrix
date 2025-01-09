@@ -168,9 +168,6 @@
               overlay.style.visibility = "visible";
             }
             var search = window.location.search;
-            if (search) search += "&amp;";
-            else search = "?";
-            search += "_lc=" + Math.random(); 
             window.location = "/go.faces" + search + window.location.hash;
           }
         }

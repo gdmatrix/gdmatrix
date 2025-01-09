@@ -12,15 +12,13 @@
   <div class="reportPanel">
     <ui:include src="/pages/report/templates/#{reportViewerBean.reportTemplate}/template.xhtml" /> 
   </div>
-  
-  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
- 
+   
   <gdm:saveBean value="reportViewerBean" />
   <gdm:saveBean value="reportObjectBean"  />
   <gdm:saveBean value="reportFinderBean"  />  
   
   <script>
-    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    window.history.pushState({},'','/pages/report_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}');
   </script>  
   
 </ui:composition>

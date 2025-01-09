@@ -200,8 +200,6 @@
     </p:splitButton>    
   </div>
 
-  <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" />
-
   <script>
     function objectScrollUp()
     {
@@ -210,23 +208,8 @@
         elems[0].scrollTop = 0;
     }
 
-    if (window.popStateListener)
-    {
-      window.removeEventListener("popstate", window.popStateListener);
-    }
+    controlNavigationHistory(#{navigatorBean.jsonPageState});
 
-    window.popStateListener = () => {
-      var pfButton = PF("backButton");
-      if (pfButton)
-      {
-        var id = pfButton.id;
-        var button = document.getElementById(id);
-        button.click();
-      }
-      ;
-    };
-
-    window.addEventListener("popstate", window.popStateListener);
   </script>
 
 </ui:composition>
