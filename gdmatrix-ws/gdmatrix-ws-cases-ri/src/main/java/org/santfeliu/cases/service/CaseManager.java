@@ -2998,11 +2998,14 @@ public class CaseManager implements CaseManagerPort
     List result = new ArrayList();
     for(String v : property.getValue())
     {
-      T dbProperty = (T)dbClass.getConstructor().newInstance();
-      dbProperty.setName(property.getName());
-      dbProperty.setIndex(index++);
-      dbProperty.setValue(v);
-      result.add(dbProperty);
+      if (v != null)
+      {
+        T dbProperty = (T)dbClass.getConstructor().newInstance();
+        dbProperty.setName(property.getName());
+        dbProperty.setIndex(index++);
+        dbProperty.setValue(v);
+        result.add(dbProperty);
+      }
     }
     return result;
   }
