@@ -502,7 +502,15 @@ class TimeSliderControl
           console.warn("Layer not found: " + layerId);
         }
       }
-      this.div.style.display = enabled ? "" : "none";
+      let display = enabled ? "" : "none";
+      if (display !== this.div.style.display)
+      {
+        this.div.style.display = display;
+        if (display === "")
+        {
+          this.updateSourcesAndLayers();
+        }
+      }
     }
   }
 
