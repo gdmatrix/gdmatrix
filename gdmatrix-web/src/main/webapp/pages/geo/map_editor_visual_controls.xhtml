@@ -16,6 +16,14 @@
     </p:selectOneMenu>
   </div>
 
+  <div class="mb-2">
+    <p:selectBooleanCheckbox id="globe_control_enable"
+                             value="#{geoMapBean.globeControlEnabled}"
+                             itemLabel="Enable globe control" styleClass="mb-3">
+      <p:ajax update="@none" listener="#{geoMapBean.onEnableGlobeControl()}" />
+    </p:selectBooleanCheckbox>
+  </div>
+  
   <p:dataTable id="map_controls_table" value="#{geoMapControlsBean.scripts}"
                var="script" stripedRows="true" size="small"
                draggableRows="true" rowDragSelector=".drag"

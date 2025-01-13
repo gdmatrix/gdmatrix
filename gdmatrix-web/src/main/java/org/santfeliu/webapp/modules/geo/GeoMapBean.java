@@ -280,6 +280,50 @@ public class GeoMapBean extends WebBean implements Serializable
     this.mapNameChanged = true;
   }
 
+  public String getProjectionType()
+  {
+    Style style = getStyle();
+    String projectionType = (String)style.getMetadata().get("projectionType");
+    return projectionType == null ? "mercator" : projectionType;
+  }
+
+  public void setProjectionType(String projectionType)
+  {
+    Style style = getStyle();
+    style.getMetadata().put("projectionType", projectionType);
+  }
+
+  public String getBackgroundStyle()
+  {
+    Style style = getStyle();
+    return (String)style.getMetadata().get("backgroundStyle");
+  }
+
+  public void setBackgroundStyle(String backgroundStyle)
+  {
+    Style style = getStyle();
+    style.getMetadata().put("backgroundStyle", backgroundStyle);
+  }
+
+  // globe control
+  public void setGlobeControlEnabled(boolean enabled)
+  {
+    Style style = getStyle();
+    style.getMetadata().put("globeControlEnabled", enabled);
+  }
+
+  public boolean isGlobeControlEnabled()
+  {
+    Style style = getStyle();
+    Object value = style.getMetadata().get("globeControlEnabled");
+    return Boolean.TRUE.equals(value);
+  }
+
+  public void onEnableGlobeControl()
+  {
+    setGlobeControlEnabled(isGlobeControlEnabled());
+  }
+
   // terrain
 
   public void setTerrainEnabled(boolean enabled)
@@ -340,7 +384,6 @@ public class GeoMapBean extends WebBean implements Serializable
   {
     Light light = getStyle().getLight();
     return light == null ? null : light.getColor();
-
   }
 
   public void setLightColor(String color)

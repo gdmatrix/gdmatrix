@@ -30,8 +30,11 @@ function maplibreInit(clientId, style, language)
     maxPitch: style.metadata.maxPitch,
     hash: style.metadata.hash || false,
     style: style,
-    preserveDrawingBuffer: true,
-    antialias: true,
+    canvasContextAttributes: { 
+      antialias: true,
+      powerPreference: 'high-performance', 
+      preserveDrawingBuffer: true
+    },
     attributionControl: false
   });
 
@@ -50,12 +53,28 @@ function maplibreInit(clientId, style, language)
     
     loadActualImage(map, imageId);
   });
+  
+  let firstRender = true;
+  
+  map.on("styledata", (e) => {
+    if (firstRender)
+    {
+      firstRender = false;
+      const projectionType = style.metadata.projectionType || "mercator";
+      map.setProjection({ type : projectionType });
+      const background = style.metadata.backgroundStyle;
+      if (background)
+      {
+        map.getContainer().style.background = background;
+      }
+    }
+  });
     
   map.setPixelRatio(window.devicePixelRatio);
   map.getContainer().style.touchAction = "none";
 
   importControls(map, style, language);
-
+  
   window.map = map;
 }
 

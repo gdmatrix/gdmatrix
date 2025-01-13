@@ -7,6 +7,25 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
+  <!-- Projection type -->
+
+  <div class="mb-2">
+    <p:outputLabel value="Projection type:" for="@next" class="mr-2" />
+    <p:selectOneMenu id="projection_type" value="#{geoMapBean.projectionType}">
+      <f:selectItem itemLabel="Mercator" itemValue="mercator" />      
+      <f:selectItem itemLabel="Globe" itemValue="globe" />
+    </p:selectOneMenu>
+  </div>
+
+  <!-- Background style -->
+  
+  <div class="ui-fluid formgrid grid">
+    <div class="field col-12">
+      <p:outputLabel value="Background style:" for="@next" class="mr-2" />
+      <p:inputText id="background_style" value="#{geoMapBean.backgroundStyle}" />
+    </div>
+  </div>
+
   <!-- Terrain -->
 
   <p:selectBooleanCheckbox id="terrain_enable"

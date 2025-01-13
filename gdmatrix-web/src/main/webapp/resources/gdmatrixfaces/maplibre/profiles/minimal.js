@@ -7,6 +7,11 @@ import { LoadingIndicatorControl } from "../controls/LoadingIndicatorControl.js"
 function init(map)
 {
   const style = map.getStyle();
+
+  if (style.metadata?.globeControlEnabled)
+  {
+    map.addControl(new maplibregl.GlobeControl());
+  }
   
   map.addControl(new maplibregl.NavigationControl({
       visualizePitch: true,
