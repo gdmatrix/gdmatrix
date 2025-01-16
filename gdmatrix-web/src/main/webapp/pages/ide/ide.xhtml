@@ -119,12 +119,20 @@
 
   <gdm:saveBean value="ideBean" /> 
   
+  <p:remoteCommand action="#{ideBean.refreshSession()}" name="refreshSession" 
+                   process="@none" update="@none" /> 
+  
   <p:growl for="growl" life="1500" >
     <p:autoUpdate />
   </p:growl>            
-  
+
   <script>
     window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-  </script>    
+    if (!window._refreshSessionTimerId)
+    {
+      const minutes = 10; // refresh session interval
+      window._refreshSessionTimerId = setInterval(() => refreshSession(), minutes * 60 * 1000);
+    }
+  </script>
 
 </ui:composition>

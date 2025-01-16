@@ -332,6 +332,11 @@ public class IdeBean extends WebBean implements Serializable
     return "/pages/ide/ide.xhtml";
   }
 
+  public void refreshSession()
+  {
+    // called periodically from remoteCommand to keep session alive
+  }
+
   private DocumentManagerPort getPort()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
