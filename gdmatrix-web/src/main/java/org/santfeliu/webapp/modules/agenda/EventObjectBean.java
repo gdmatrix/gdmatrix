@@ -432,7 +432,8 @@ public class EventObjectBean extends ObjectBean
   @Override
   public Serializable saveState()
   {
-    return new Object[] { event, formSelector };
+    return new Object[] { event, formSelector, startDate, startTime, endDate, 
+      endTime };
   }
 
   @Override
@@ -441,6 +442,10 @@ public class EventObjectBean extends ObjectBean
     Object[] array = (Object[])state;
     this.event = (Event)array[0];
     this.formSelector = (String)array[1];
+    this.startDate = (LocalDate)array[2];
+    this.startTime = (String)array[3];
+    this.endDate = (LocalDate)array[4];
+    this.endTime = (String)array[5];
   }
 
   @Override
