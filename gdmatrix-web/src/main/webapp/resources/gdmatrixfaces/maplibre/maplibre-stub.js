@@ -193,14 +193,22 @@ function initSources(style)
     let url = getSourceUrl(sourceId, style);
     if (source.type === "vector")
     {
-      if (url)
+      if (source.url)
+      {
+        delete source.tiles;
+      }
+      else if (url)
       {
         source.tiles = [url];
       }
     }
     else if (source.type === "raster" || source.type === "raster-dem")
     {
-      if (url)
+      if (source.url)
+      {
+        delete source.tiles;
+      }
+      else if (url)
       {
         source.tiles = [url];
       }
