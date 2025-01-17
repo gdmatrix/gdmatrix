@@ -91,7 +91,7 @@ function getMenuMode()
 {
   const style = getComputedStyle(document.body);
   let mode = style.getPropertyValue("--menu-mode");
-  return mode;
+  return mode.trim();
 }
 
 function getMenuOptions()
