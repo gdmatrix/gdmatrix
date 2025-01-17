@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+import com.google.gson.Gson;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -211,7 +212,14 @@ public class TemplateBean extends FacesBean implements Serializable
     Map<String, String> map = getExternalContext().getRequestParameterMap();
     String typeId = map.get("typeId");
     String objectId = map.get("objectId");
-    return navigatorBean.show(typeId, objectId);
+    String jsonParams = map.get("parameters");
+    Map<String, Object> parameters = null;
+    if (jsonParams != null)
+    {
+      Gson gson = new Gson();
+      parameters = gson.fromJson(jsonParams, Map.class);
+    }
+    return navigatorBean.show(typeId, objectId, parameters);
   }
 
   public void login()

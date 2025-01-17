@@ -214,35 +214,6 @@ public class NavigatorBean extends WebBean implements Serializable
     return json.toJSONString();
   }
 
-  public String getUrlChangeScript()
-  {
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
-    if (baseTypeInfo != null)
-    {
-      ObjectBean objectBean = baseTypeInfo.getObjectBean();
-      if (objectBean != null)
-      {
-        String page = objectBean.getTypeBean().getViewId();
-        String url = page + "?xmid=" + baseTypeInfo.getMid();
-        if (!objectBean.isNew())
-        {
-          url += "&" + OBJECTID_PARAMETER + "=" + objectBean.getObjectId();
-        }
-
-        String prefix = getProperty("pageTitlePrefix");
-        String title = prefix != null ? prefix + " " : "";
-        String pageTitle = getProperty("pageTitle");
-        if (pageTitle == null)
-          title = title + getSelectedMenuItem().getLabel();
-        else
-          title = title + pageTitle;
-
-        return "<script>window.history.replaceState({},'','" + url + "'); document.title='" + title + "';</script>";
-      }
-    }
-    return "";
-  }
-
   public String getContent()
   {
     try
@@ -288,6 +259,23 @@ public class NavigatorBean extends WebBean implements Serializable
   public String show(String objectTypeId, String objectId, int editTabSelector)
   {
     return show(objectTypeId, objectId, editTabSelector, null, null);
+  }
+
+  public String show(String objectTypeId, String objectId,
+    Map<String, Object> parameters)
+  {
+    BaseTypeInfo baseTypeInfo = objectTypeId == null ?
+      getBaseTypeInfo() : getBaseTypeInfo(objectTypeId);
+
+    if (baseTypeInfo == null) return null;
+
+    DirectLeap leap = new DirectLeap(baseTypeInfo.getBaseTypeId(),
+      objectId, parameters);
+
+    leap.setSearchTabSelector(objectId == null ?
+      baseTypeInfo.getDefaultSearchTabSelector() : -1);
+
+    return execute(leap, true);
   }
 
   public String show(String objectTypeId, String objectId,
@@ -553,30 +541,6 @@ public class NavigatorBean extends WebBean implements Serializable
     }
     String template = userSessionBean.getTemplate();
     return "/templates/" + template + "/template.xhtml";
-  }
-
-  /**
-   * Called before render response
-   */
-  public void constructBeans()
-  {
-//    System.out.println("PhaseListener before render response");
-//
-//    if (inProgressLeap == null) return;
-//
-//    BaseTypeInfo baseTypeInfo = getBaseTypeInfo(inProgressLeap.baseTypeId);
-//    if (baseTypeInfo == null) return;
-//
-//    ObjectBean objectBean = baseTypeInfo.getObjectBean();
-//    if (objectBean == null) return;
-//
-//    Leap leap = inProgressLeap;
-//    inProgressLeap = null;
-//    leap.construct(objectBean);
-//
-//    baseTypeInfo.visit(objectBean.getObjectId());
-//    lastBaseTypeId = baseTypeInfo.getBaseTypeId();
-//    history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
   }
 
   public History getHistory()
@@ -1044,10 +1008,25 @@ public class NavigatorBean extends WebBean implements Serializable
     String objectId = NEW_OBJECT_ID;
     int searchTabSelector = 0;
     int editTabSelector = 0;
+    Map<String, Object> parameters;
 
     public DirectLeap(String baseTypeId)
     {
       super(baseTypeId);
+    }
+
+    public DirectLeap(String baseTypeId, String objectId)
+    {
+      super(baseTypeId);
+      this.objectId = objectId;
+    }
+
+    public DirectLeap(String baseTypeId, String objectId,
+      Map<String, Object> parameters)
+    {
+      super(baseTypeId);
+      this.objectId = objectId;
+      this.parameters = parameters;
     }
 
     public void setup(ObjectBean objectBean)
@@ -1087,6 +1066,16 @@ public class NavigatorBean extends WebBean implements Serializable
       this.editTabSelector = selector;
     }
 
+    public Map<String, Object> getParameters()
+    {
+      return parameters;
+    }
+
+    public void setParameters(Map<String, Object> parameters)
+    {
+      this.parameters = parameters;
+    }
+
     @Override
     public void construct(ObjectBean objectBean)
     {
@@ -1115,7 +1104,8 @@ public class NavigatorBean extends WebBean implements Serializable
       }
 
       finderBean.setObjectPosition(-1);
-      objectBean.load();
+      objectBean.load(parameters);
+
       objectBean.setSearchTabSelector(showObject ?
         objectBean.getEditModeSelector() : searchTabSelector);
     }

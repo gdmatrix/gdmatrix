@@ -202,8 +202,8 @@ public abstract class ObjectBean extends BaseBean
   public ScriptClient getScriptClient(String scriptName) throws Exception
   {
     if (scriptClient == null)
-      scriptClient = new ScriptClient();      
-    
+      scriptClient = new ScriptClient();
+
     if (scriptClient.get("userSessionBean") == null)
     {
       scriptClient.put("userSessionBean", UserSessionBean.getCurrentInstance());
@@ -211,13 +211,13 @@ public abstract class ObjectBean extends BaseBean
       scriptClient.put("WebUtils",
         WebUtils.class.getConstructor().newInstance());
       scriptClient.put("DictionaryUtils",
-        DictionaryUtils.class.getConstructor().newInstance());         
+        DictionaryUtils.class.getConstructor().newInstance());
       scriptClient.executeScript(scriptName);
-    } 
-    
+    }
+
     return scriptClient;
   }
-  
+
   public List<Action> getActions()
   {
     return actions;
@@ -247,10 +247,15 @@ public abstract class ObjectBean extends BaseBean
 
   public void load()
   {
+    load(null);
+  }
+
+  public void load(Map<String, Object> parameters)
+  {
     try
     {
       clear();
-      loadObject();
+      loadObject(parameters);
       loadObjectSetup();
       if (!NEW_OBJECT_ID.equals(objectId))
         executeAction(Action.POST_LOAD_ACTION);
@@ -275,6 +280,11 @@ public abstract class ObjectBean extends BaseBean
         load();
       }
     }
+  }
+
+  public void loadObject(Map<String, Object> parameters) throws Exception
+  {
+    loadObject();
   }
 
   public void loadObject() throws Exception
@@ -310,7 +320,7 @@ public abstract class ObjectBean extends BaseBean
       objectSetup = ObjectSetupCache.getConfig(setupName);
     }
   }
-  
+
   public void loadActiveEditTab() throws Exception
   {
     EditTab tab = getActiveEditTab();
@@ -337,7 +347,7 @@ public abstract class ObjectBean extends BaseBean
     try
     {
       if (actions != null) return;
-      
+
       System.out.println(">>> loadActions");
       actions = new ArrayList();
       for (Action action : getObjectSetup().getActions())
@@ -345,15 +355,15 @@ public abstract class ObjectBean extends BaseBean
         if (!Action.predefinedActionNames.contains(action.getName()))
           actions.add(action);
       }
-      
+
       ObjectSetup setup = getObjectSetup();
-      
+
       //If not script defined then return
       if (setup.getScriptName() == null) return;
       //If predefined actions are set but not GET_ACTIONS_ACTION then return
       if (setup.containsPredefindedActions() &&
         !setup.containsAction(Action.GET_ACTIONS_ACTION)) return;
-   
+
       ScriptClient client = getScriptClient(setup.getScriptName());
       Object callable = client.get(Action.GET_ACTIONS_ACTION);
       if (callable instanceof Callable)
@@ -364,7 +374,7 @@ public abstract class ObjectBean extends BaseBean
 
         if (actionList != null)
           actions.addAll(actionList);
-      }  
+      }
     }
     catch (Exception ex)
     {
@@ -405,22 +415,22 @@ public abstract class ObjectBean extends BaseBean
   protected ActionObject executeAction(String actionName, Object[] parameters,
     Object object)
   {
-    ActionObject actionObject = new ActionObject(object); 
+    ActionObject actionObject = new ActionObject(object);
     actionObject.setMainObject(getObject());
     try
     {
       ObjectSetup setup = getObjectSetup();
-      
+
       if (setup.getScriptName() == null)
         return actionObject;
-      
+
       if (setup.containsPredefindedActions() &&
         Action.predefinedActionNames.contains(actionName) &&
         !setup.containsAction(actionName))
       {
         return actionObject;
       }
-            
+
       ScriptClient client = getScriptClient(setup.getScriptName());
       Object callable = client.get(actionName);
       if (callable instanceof Callable)
@@ -436,7 +446,7 @@ public abstract class ObjectBean extends BaseBean
           if (actionObject.isUpdateForm())
           {
             getRequestMap().put("updateForm", "true");
-          }          
+          }
           if (actionObject.isRefresh() && !actionName.equals(Action.POST_LOAD_ACTION))
             load();
           addFacesMessages(actionObject.getMessages());
@@ -447,41 +457,41 @@ public abstract class ObjectBean extends BaseBean
     {
       error(ex);
     }
-    
-    return actionObject;  
+
+    return actionObject;
   }
 
   public ActionObject executeTabAction(String actionName, Object object)
   {
-    ActionObject actionObject = 
-      new ActionObject(object, getActiveEditTab().getSubviewId()); 
+    ActionObject actionObject =
+      new ActionObject(object, getActiveEditTab().getSubviewId());
     actionObject.setMainObject(getObject());
     try
     {
-      ObjectSetup setup = getObjectSetup();  
-      
+      ObjectSetup setup = getObjectSetup();
+
       if (setup.getScriptName() == null)
         return actionObject;
-      
+
       if (setup.containsPredefindedActions() &&
         Action.predefinedActionNames.contains(actionName) &&
         !setup.containsAction(actionName))
       {
         return actionObject;
       }
-      
+
       ScriptClient client = getScriptClient(setup.getScriptName());
       Object callable = client.get(actionName);
       if (callable instanceof Callable)
       {
         client.put("actionObject", actionObject);
-        client.put("state", state);        
+        client.put("state", state);
         client.execute((Callable)callable);
         actionObject = (ActionObject) client.get("actionObject");
         if (actionObject.isUpdateForm())
         {
           getRequestMap().put("updateForm", "true");
-        }        
+        }
         if (actionObject.isRefresh())
           load();
         if (actionObject.isFullRefresh())
@@ -495,13 +505,13 @@ public abstract class ObjectBean extends BaseBean
           PrimeFaces.current().ajax().update("mainform:cnt");
         }
         addFacesMessages(actionObject.getMessages());
-      }      
+      }
     }
     catch (Exception ex)
     {
       error(ex);
     }
-      
+
     return actionObject;
   }
 

@@ -62,11 +62,17 @@ function enableUserPassButton()
   }
 }
 
-function showObject(typeId, objectId)
+function showObject(typeId, objectId, parameters)
 {
-  _showObject([
+  const leap = [
     { "name" : "typeId", "value" : typeId },
-    { "name" : "objectId", "value": objectId }]);
+    { "name" : "objectId", "value" : objectId }  
+  ];
+  if (parameters)
+  {
+    leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) }); 
+  }
+  _showObject(leap);
 }
 
 function updateFontSize(size)
