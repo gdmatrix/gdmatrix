@@ -23,6 +23,7 @@
         <p:selectOneMenu value="#{roleObjectBean.role.roleTypeId}"
                          styleClass="inputfield w-full"
                          filter="true">
+          <f:selectItem itemValue="Role" itemLabel="#{typeTypeBean.getTypeDescription('Role')}" />                  
           <f:selectItems value="#{typeTypeBean.getSelectItems('Role')}" 
                          var="item" />
           <p:column>

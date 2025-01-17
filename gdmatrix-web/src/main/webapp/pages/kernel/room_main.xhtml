@@ -23,6 +23,7 @@
                        disabled="#{!roomObjectBean.editable}" 
                        touchable="true">
         <f:selectItem itemValue="" itemLabel="" />
+        <f:selectItem itemValue="Room" itemLabel="#{typeTypeBean.getTypeDescription('Room')}" />        
         <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" />
       </p:selectOneMenu>
     </div>
