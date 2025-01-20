@@ -109,6 +109,7 @@ public class EnumTypeFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }
 
+  @Override
   public List<EnumType> getRows()
   {
     return rows;
@@ -186,7 +187,7 @@ public class EnumTypeFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition() };
+      getObjectPosition(), pageSize };
   }
 
   @Override
@@ -204,6 +205,7 @@ public class EnumTypeFinderBean extends FinderBean
 
       firstRow = (Integer)stateArray[3];
       setObjectPosition((Integer)stateArray[4]);
+      pageSize = (Integer)stateArray[5];      
     }
     catch (Exception ex)
     {
@@ -221,7 +223,7 @@ public class EnumTypeFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

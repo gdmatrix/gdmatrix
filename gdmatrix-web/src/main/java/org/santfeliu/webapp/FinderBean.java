@@ -32,6 +32,7 @@ package org.santfeliu.webapp;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.activation.DataHandler;
 import org.matrix.dic.PropertyDefinition;
@@ -42,6 +43,7 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.util.DocumentUtils;
+import org.santfeliu.util.BigList;
 import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
@@ -71,6 +73,8 @@ public abstract class FinderBean extends BaseBean
   private boolean finding;
   private transient ObjectSetup objectSetup;
   private transient ScriptClient scriptClient;
+  
+  protected int pageSize = 10;
 
   public int getFilterTabSelector()
   {
@@ -87,6 +91,8 @@ public abstract class FinderBean extends BaseBean
   public abstract void smartFind();
 
   public abstract Object getFilter();
+  
+  public abstract List getRows();
 
   protected void setActionResult(ActionObject scriptObject)
   {
@@ -120,6 +126,25 @@ public abstract class FinderBean extends BaseBean
   public void setFinding(boolean finding)
   {
     this.finding = finding;
+  }
+
+  public int getPageSize() 
+  {
+    return pageSize;
+  }
+
+  public void setPageSize(int pageSize) 
+  {
+    if (this.pageSize != pageSize)
+    {
+      List rows = getRows();
+      if (rows instanceof BigList)
+      {
+        ((BigList)rows).setCacheSize(2 * pageSize + 1);
+        ((BigList)rows).setBlockSize(pageSize);
+      }
+    }
+    this.pageSize = pageSize;    
   }
   
   public ObjectSetup getObjectSetup() throws Exception

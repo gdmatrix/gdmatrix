@@ -187,6 +187,7 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
+  @Override
   public List<DocumentDataTableRow> getRows()
   {
     return rows;
@@ -307,7 +308,7 @@ public class DocumentFinderBean extends FinderBean
   {
     return new Object[]{ isFinding(), getFilterTabSelector(),
       filter, firstRow, getObjectPosition(), formSelector, rows, outdated,
-      selectedStates };
+      selectedStates, pageSize };
   }
 
   @Override
@@ -323,6 +324,7 @@ public class DocumentFinderBean extends FinderBean
     rows = (List<DocumentDataTableRow>)stateArray[6];
     outdated = (Boolean)stateArray[7];
     selectedStates = (List<String>)stateArray[8];
+    pageSize = (Integer)stateArray[9];
     setObjectPosition((Integer)stateArray[4]);
   }
 
@@ -341,7 +343,7 @@ public class DocumentFinderBean extends FinderBean
           filter.setContentSearchExpression(null);
         }
 
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

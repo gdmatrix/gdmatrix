@@ -151,6 +151,7 @@ public class EventFinderBean extends FinderBean
     this.filter = filter;
   }
 
+  @Override
   public List getRows()
   {
     return rows;
@@ -641,7 +642,7 @@ public class EventFinderBean extends FinderBean
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView, formSelector, rows,
-      searchEventTypeId, outdated, scheduleEdit };
+      searchEventTypeId, outdated, scheduleEdit, pageSize };
   }
 
   @Override
@@ -669,6 +670,7 @@ public class EventFinderBean extends FinderBean
         doFind(false);
         scheduleEdit = false;
       }
+      pageSize = (Integer)stateArray[13];
     }
     catch (Exception ex)
     {
@@ -686,7 +688,7 @@ public class EventFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(100, 50)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

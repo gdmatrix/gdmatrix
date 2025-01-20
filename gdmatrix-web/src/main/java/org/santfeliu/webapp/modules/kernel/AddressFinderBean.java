@@ -66,6 +66,7 @@ public class AddressFinderBean extends FinderBean
   @Inject
   AddressTypeBean addressTypeBean;
 
+  @Override
   public List<AddressView> getRows()
   {
     return rows;
@@ -184,7 +185,7 @@ public class AddressFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition(), rows, outdated };
+      getObjectPosition(), rows, outdated, pageSize };
   }
 
   @Override
@@ -200,6 +201,7 @@ public class AddressFinderBean extends FinderBean
       setObjectPosition((Integer) stateArray[4]);
       rows = (List<AddressView>) stateArray[5];
       outdated = (Boolean) stateArray[6];
+      pageSize = (Integer)stateArray[7];      
     }
     catch (Exception ex)
     {
@@ -217,7 +219,7 @@ public class AddressFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList()
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

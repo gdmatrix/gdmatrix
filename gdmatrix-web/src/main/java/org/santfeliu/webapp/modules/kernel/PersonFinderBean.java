@@ -77,6 +77,7 @@ public class PersonFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
+  @Override
   public List<PersonView> getRows()
   {
     return rows;
@@ -188,7 +189,8 @@ public class PersonFinderBean extends FinderBean
   {
     return new Object[]
     {
-      isFinding(), getFilterTabSelector(), filter, firstRow, getObjectPosition()
+      isFinding(), getFilterTabSelector(), filter, firstRow, 
+        getObjectPosition(), pageSize
     };
   }
 
@@ -206,6 +208,7 @@ public class PersonFinderBean extends FinderBean
 
       firstRow = (Integer) stateArray[3];
       setObjectPosition((Integer) stateArray[4]);
+      pageSize = (Integer)stateArray[5];      
     }
     catch (Exception ex)
     {
@@ -223,7 +226,7 @@ public class PersonFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList()
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

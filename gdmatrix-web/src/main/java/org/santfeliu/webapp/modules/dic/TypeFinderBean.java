@@ -124,6 +124,7 @@ public class TypeFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }
 
+  @Override
   public List<org.matrix.dic.Type> getRows()
   {
     return rows;
@@ -262,7 +263,7 @@ public class TypeFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition(), rootTypeId };
+      getObjectPosition(), rootTypeId, pageSize };
   }
 
   @Override
@@ -281,6 +282,7 @@ public class TypeFinderBean extends FinderBean
       firstRow = (Integer)stateArray[3];
       setObjectPosition((Integer)stateArray[4]);
       rootTypeId = ((String)stateArray[5]);
+      pageSize = (Integer)stateArray[6];
     }
     catch (Exception ex)
     {
@@ -298,7 +300,7 @@ public class TypeFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

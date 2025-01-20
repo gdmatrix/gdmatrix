@@ -10,7 +10,7 @@
   <p:dataView value="#{eventFinderBean.rows}" var="row"
                paginator="true" pageLinks="5"
                paginatorPosition="bottom"
-               rows="10" first="#{eventFinderBean.firstRow}"
+               rows="#{eventFinderBean.pageSize}" first="#{eventFinderBean.firstRow}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowsPerPageTemplate="5,10,25,50"

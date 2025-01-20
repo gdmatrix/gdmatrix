@@ -129,6 +129,7 @@ public class ClassFinderBean extends FinderBean
     return rows == null ? 0 : rows.size();
   }
 
+  @Override
   public List<Class> getRows()
   {
     return rows;
@@ -217,7 +218,7 @@ public class ClassFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(),
-      filter, firstRow, getObjectPosition(), formSelector };
+      filter, firstRow, getObjectPosition(), formSelector, pageSize };
   }
 
   @Override
@@ -229,6 +230,7 @@ public class ClassFinderBean extends FinderBean
     filter = (ClassFilter)stateArray[2];
     smartFilter = classTypeBean.filterToQuery(filter);
     formSelector = (String)stateArray[5];
+    pageSize = (Integer)stateArray[6];
 
     doFind(false);
 
@@ -250,7 +252,7 @@ public class ClassFinderBean extends FinderBean
         filter.setStartDateTime(dateTime);
         filter.setEndDateTime(dateTime);
 
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

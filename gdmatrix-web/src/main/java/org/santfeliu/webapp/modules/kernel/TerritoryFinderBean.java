@@ -71,6 +71,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
     this.filter = filter;
   }
 
+  @Override
   public List<V> getRows()
   {
     return rows;
@@ -123,7 +124,8 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isFinding(), getFilter(), firstRow, getObjectPosition() };
+    return new Object[]{ isFinding(), getFilter(), firstRow, 
+      getObjectPosition(), pageSize };
   }
 
   @Override
@@ -140,6 +142,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
 
       firstRow = (Integer)stateArray[2];
       setObjectPosition((Integer)stateArray[3]);
+      pageSize = (Integer)stateArray[4];      
     }
     catch (Exception ex)
     {

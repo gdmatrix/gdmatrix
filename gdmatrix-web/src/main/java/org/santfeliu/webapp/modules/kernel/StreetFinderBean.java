@@ -144,7 +144,7 @@ public class StreetFinderBean
       }
       else
       {
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()
@@ -219,7 +219,8 @@ public class StreetFinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isFinding(), getFilter(), firstRow, getObjectPosition(), provinceSelectItems, citySelectItems };
+    return new Object[]{ isFinding(), getFilter(), firstRow, 
+      getObjectPosition(), provinceSelectItems, citySelectItems, pageSize };
   }
 
   @Override
@@ -238,6 +239,7 @@ public class StreetFinderBean
       setObjectPosition((Integer)stateArray[3]);
       provinceSelectItems = (List<SelectItem>) stateArray[4];
       citySelectItems = (List<SelectItem>) stateArray[5];
+      pageSize = (Integer)stateArray[6];
     }
     catch (Exception ex)
     {

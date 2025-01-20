@@ -8,7 +8,7 @@
   <p:dataTable id="full_results_table" value="#{cityFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
-               rows="10" first="#{cityFinderBean.firstRow}"
+               rows="#{cityFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50" first="#{cityFinderBean.firstRow}"
                rowStyleClass="#{row.cityId == cityObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"

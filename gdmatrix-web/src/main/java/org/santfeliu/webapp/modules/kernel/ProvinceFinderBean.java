@@ -135,7 +135,7 @@ public class ProvinceFinderBean
       }
       else
       {
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

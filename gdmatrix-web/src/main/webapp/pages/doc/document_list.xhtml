@@ -14,7 +14,7 @@
                rowStyleClass="#{row.rowId == documentObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-               rows="10"
+               rows="#{documentFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50"
                rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_data}"
                rowKey="#{row.rowId}" expandedRow="true">
 

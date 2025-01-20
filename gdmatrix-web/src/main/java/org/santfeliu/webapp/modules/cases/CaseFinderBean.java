@@ -150,6 +150,7 @@ public class CaseFinderBean extends FinderBean
     }
   }
 
+  @Override
   public List getRows()
   {
     return rows;
@@ -169,7 +170,7 @@ public class CaseFinderBean extends FinderBean
   {
     this.formSelector = formSelector;
   }
-
+  
   public List<TableProperty> getTableProperties()
   {
     try
@@ -256,7 +257,7 @@ public class CaseFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition(), formSelector, rows, outdated };
+      getObjectPosition(), formSelector, rows, outdated, pageSize };
   }
 
   @Override
@@ -274,6 +275,7 @@ public class CaseFinderBean extends FinderBean
       formSelector = (String)stateArray[5];
       rows = (List<DataTableRow>)stateArray[6];
       outdated = (Boolean)stateArray[7];
+      pageSize = (Integer)stateArray[8];
     }
     catch (Exception ex)
     {
@@ -291,7 +293,7 @@ public class CaseFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()

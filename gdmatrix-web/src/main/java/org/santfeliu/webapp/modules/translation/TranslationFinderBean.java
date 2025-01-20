@@ -95,6 +95,7 @@ public class TranslationFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }
 
+  @Override
   public List<Translation> getRows()
   {
     return rows;
@@ -174,7 +175,7 @@ public class TranslationFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition()};
+      getObjectPosition(), pageSize };
   }
 
   @Override
@@ -192,6 +193,7 @@ public class TranslationFinderBean extends FinderBean
 
       firstRow = (Integer)stateArray[3];
       setObjectPosition((Integer)stateArray[4]);
+      pageSize = (Integer)stateArray[5];      
     }
     catch (Exception ex)
     {
@@ -213,7 +215,7 @@ public class TranslationFinderBean extends FinderBean
         filter.setText(setWildcards(text));
         String translation = filter.getTranslation();
         filter.setTranslation(setWildcards(translation));
-        rows = new BigList(20, 10)
+        rows = new BigList(2 * pageSize + 1, pageSize)
         {
           @Override
           public int getElementCount()
