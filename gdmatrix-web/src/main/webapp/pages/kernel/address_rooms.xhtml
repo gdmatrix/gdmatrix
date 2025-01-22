@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces" >
+
+  <p:dataTable id="address_rooms_table" value="#{addressRoomsTabBean.rows}" 
+               var="row" stripedRows="true" paginator="true" pageLinks="5"
+               resizableColumns="false" showGridlines="true"  rows="10"
+               size="small" paginatorPosition="bottom" 
+               rowIndexVar="firstRow" first="#{addressRoomsTabBean.firstRow}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+               rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}"
+               sortMode="multiple" allowUnsorting="true">
+
+
+
+    <p:column headerText="#{kernelBundle.room_id}" styleClass="col-1" 
+              sortBy="#{row.roomId}">
+      <h:outputText value="#{row.roomId}" />
+    </p:column>   
+
+    <p:column headerText="#{kernelBundle.room_name}" styleClass="col-10" 
+              sortBy="#{row.description}">
+      <h:outputText value="#{row.description}" />
+    </p:column> 
+
+    <p:column styleClass="text-right white-space-nowrap">
+      <p:commandButton icon="pi pi-arrow-circle-right"  
+                       action="#{navigatorBean.show('Room', row.roomId)}" 
+                       process="@this" update="@form:cnt"
+                       styleClass="rounded-button ui-button-flat"
+                       alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
+    </p:column>    
+
+  </p:dataTable>  
+
+  <gdm:saveBean value="addressRoomsTabBean" />  
+  
+</ui:composition>
