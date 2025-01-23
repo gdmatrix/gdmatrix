@@ -65,7 +65,7 @@ import org.santfeliu.util.MatrixConfig;
  */
 public class ScriptCache
 {
-  private static final int MAX_CACHE_SIZE = 50;
+  private static final int MAX_CACHE_SIZE = 200;
   private static long lastRefresh = System.currentTimeMillis();
 
   public static final String SCRIPT_DOCUMENT_TYPE  = "CODE";
@@ -80,7 +80,7 @@ public class ScriptCache
     JMXUtils.registerMBean("ScriptCache", getCacheMBean());
   }
 
-  public static synchronized Script getScript(String scriptName)
+  public static Script getScript(String scriptName)
     throws Exception
   {
     Script script = (Script) cache.get(scriptName);
@@ -107,20 +107,21 @@ public class ScriptCache
     return script;
   }
 
-  public static synchronized void clear()
+  public static void clear()
   {
     LOGGER.log(Level.FINE, "Clearing cache.");
 
     cache.clear();
   }
 
-  public static synchronized void refresh()
+  public static void refresh()
   {
     //get scripts modified since last refresh
 
     LOGGER.log(Level.FINE, "Refreshing cache.");
 
     long now = System.currentTimeMillis();
+    lastRefresh = now;
 
     String userId = MatrixConfig.getProperty("adminCredentials.userId");
     String password = MatrixConfig.getProperty("adminCredentials.password");
@@ -146,6 +147,7 @@ public class ScriptCache
       filter.setDateComparator("1"); //changeDateTime
       filter.setStartDate(dateTime);
 
+      long t0 = System.currentTimeMillis();
       List<Document> documents = client.findDocuments(filter);
       if (documents != null && !documents.isEmpty())
       {
@@ -156,6 +158,9 @@ public class ScriptCache
           cache.remove(docScriptName);
         }
       }
+      long t1 = System.currentTimeMillis();
+      long ellapsed = t1 - t0;
+      LOGGER.log(Level.INFO, "Scripts purged in {0} ms", ellapsed);
     }
     else
     {
@@ -163,7 +168,6 @@ public class ScriptCache
       //script document is found to be refreshed then keep cache clear.
       cache.clear();
     }
-    lastRefresh = now;
   }
 
   public static long getLastRefresh()
@@ -188,7 +192,12 @@ public class ScriptCache
     property.setName(SCRIPT_PROPERTY_NAME);
     property.getValue().add(scriptName);
     filter.getProperty().add(property);
+    long t0 = System.currentTimeMillis();
     List<Document> documents = client.findDocuments(filter);
+    long t1 = System.currentTimeMillis();
+    long ellapsed = t1 - t0;
+    LOGGER.log(Level.INFO, "Script {0} loaded in {1} ms",
+      new Object[]{ scriptName, ellapsed});
 
     if (!documents.isEmpty())
     {
