@@ -76,7 +76,7 @@ class Tool // extends IControl
   
   onRemove()
   {    
-  }
+  }  
 }
 
 export { Tool };

@@ -28,6 +28,8 @@ Bundle.getBundle("main").setTranslations("es", {
   "GetFeatureInfoTool.help": "Pulsa sobre el mapa para obtener información de las entitades.",
   "GetFeatureInfoTool.noDataFound": "Datos no encontrados.",
   
+  "PopupOnHoverTool.title": "Obtener información",    
+  
   "GoHomeControl.title": "Vista inicial",
   
   "LegendControl.title": "Leyenda",

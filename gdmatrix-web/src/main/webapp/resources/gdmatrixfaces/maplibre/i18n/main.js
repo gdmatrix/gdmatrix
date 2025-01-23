@@ -28,6 +28,8 @@ Bundle.getBundle("main").setTranslations("", {
   "GetFeatureInfoTool.help": "Press on the map to obtain information about the features.",
   "GetFeatureInfoTool.noDataFound": "No data found.",
 
+  "PopupOnHoverTool.title": "Get feature information",
+
   "GoHomeControl.title": "Initial view",
 
   "LegendControl.title": "Legend",

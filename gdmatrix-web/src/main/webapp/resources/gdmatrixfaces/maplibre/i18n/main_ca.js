@@ -27,6 +27,8 @@ Bundle.getBundle("main").setTranslations("ca", {
   "GetFeatureInfoTool.title": "Obtenir informació",
   "GetFeatureInfoTool.help": "Prem sobre el mapa per obtenir informació de les entitats.",
   "GetFeatureInfoTool.noDataFound": "No s'han trobat dades.",
+
+  "PopupOnHoverTool.title": "Obtenir informació",  
   
   "GoHomeControl.title": "Vista inicial",
   
