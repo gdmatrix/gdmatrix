@@ -80,13 +80,13 @@
         (:streetTypeId IS NULL OR lower(trim(a.street.streetTypeId)) = :streetTypeId)       
         ORDER BY ci.name, s.name, a.number1, a.floor, a.door
     </query>
-    <!--
+
     <hint name="eclipselink.join-fetch" value="a.street" />
-    <hint name="eclipselink.left-join-fetch" value="a.street.streetType" />
     <hint name="eclipselink.join-fetch" value="a.street.city" />
     <hint name="eclipselink.join-fetch" value="a.street.city.province" />
     <hint name="eclipselink.join-fetch" value="a.street.city.province.country" />
-    -->
+    <!-- <hint name="eclipselink.left-join-fetch" value="a.street.streetType" />   -->
+
   </named-query>
 
   <named-query name="findPersonAddresses">
