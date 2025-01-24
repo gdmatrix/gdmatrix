@@ -31,12 +31,12 @@
               oncomplete="endPanel('rightPanel');" />
       
       <p:treeNode icon="#{data.icon}" type="GROUP">
-        <h:outputText value="#{data.description}"/>
+        <h:outputText value="#{data.description}" escape="false"/>
       </p:treeNode>
       
       <p:treeNode icon="#{data.icon}" type="OBJECT"
                   styleClass="#{contextTreeBean.isEditingNode(data.objectId) ? 'current' : ''}">
-        <h:outputText value="#{data.description}"/>
+        <h:outputText value="#{data.description}" escape="false"/>
       </p:treeNode>
       
     </p:tree>
