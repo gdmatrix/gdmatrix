@@ -121,7 +121,6 @@ public class ScriptCache
     LOGGER.log(Level.FINE, "Refreshing cache.");
 
     long now = System.currentTimeMillis();
-    lastRefresh = now;
 
     String userId = MatrixConfig.getProperty("adminCredentials.userId");
     String password = MatrixConfig.getProperty("adminCredentials.password");
@@ -168,6 +167,7 @@ public class ScriptCache
       //script document is found to be refreshed then keep cache clear.
       cache.clear();
     }
+    lastRefresh = now;
   }
 
   public static long getLastRefresh()
