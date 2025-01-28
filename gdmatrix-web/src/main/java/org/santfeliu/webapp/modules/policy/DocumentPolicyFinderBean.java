@@ -226,7 +226,7 @@ public class DocumentPolicyFinderBean extends BaseBean
 
   public void find()
   {
-    doFind(true);
+    doFind(false);
     firstRow = 0;
   }
 
