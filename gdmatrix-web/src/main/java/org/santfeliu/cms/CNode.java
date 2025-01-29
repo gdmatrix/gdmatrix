@@ -1,38 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.cms;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ import org.matrix.cms.Property;
 
 /**
  *
- * @author unknown
+ * @author lopezrj-sf
  */
 public class CNode
 {
@@ -55,7 +54,7 @@ public class CNode
   {
     this.cWorkspace = cWorkspace;
     this.node = node;
-    this.propertyMap = new HashMap<String, Object>();
+    this.propertyMap = new HashMap<>();
     for (Property property : node.getProperty())
     {
       putProperty(property);
@@ -75,51 +74,48 @@ public class CNode
 
   public List<String> getChildrenNodeIdList()
   {
-    synchronized (cWorkspace)
+    String nodeId = getNodeId();
+    if (cWorkspace.getChildren(nodeId) == null)
     {
-      String nodeId = getNodeId();
-      if (cWorkspace.getChildren(nodeId) == null)
+      cWorkspace.initParentChildren(nodeId);
+      List<String> siblingNodeIdList = cWorkspace.getSiblings(nodeId);
+      List<String> finalSiblingNodeIdList = new ArrayList<>();
+      for (String siblingNodeId : siblingNodeIdList)
       {
-        cWorkspace.initParentChildren(nodeId);
-        List<String> siblingNodeIdList = cWorkspace.getSiblings(nodeId);
-        List<String> finalSiblingNodeIdList = new ArrayList<String>();
-        for (String siblingNodeId : siblingNodeIdList)
+        if (cWorkspace.getChildren(siblingNodeId) == null)
         {
-          if (cWorkspace.getChildren(siblingNodeId) == null)
-          {
-            cWorkspace.initParentChildren(siblingNodeId);
-            finalSiblingNodeIdList.add(siblingNodeId);
-          }
+          cWorkspace.initParentChildren(siblingNodeId);
+          finalSiblingNodeIdList.add(siblingNodeId);
         }
-        NodeFilter nodeFilter = new NodeFilter();
-        nodeFilter.getWorkspaceId().add(getWorkspaceId());
-        nodeFilter.getParentNodeId().add(nodeId);
-        nodeFilter.getParentNodeId().addAll(finalSiblingNodeIdList);
-        List<Node> fullNodeList = getPort().findNodes(nodeFilter);
-        Map<String, List<Node>> auxMap = new HashMap<String, List<Node>>();      
-        for (Node childNode : fullNodeList)
+      }
+      NodeFilter nodeFilter = new NodeFilter();
+      nodeFilter.getWorkspaceId().add(getWorkspaceId());
+      nodeFilter.getParentNodeId().add(nodeId);
+      nodeFilter.getParentNodeId().addAll(finalSiblingNodeIdList);
+      List<Node> fullNodeList = getPort().findNodes(nodeFilter);
+      Map<String, List<Node>> auxMap = new HashMap<>();
+      for (Node childNode : fullNodeList)
+      {
+        String parentNodeId = childNode.getParentNodeId();
+        if (!auxMap.containsKey(parentNodeId))
         {
-          String parentNodeId = childNode.getParentNodeId();
-          if (!auxMap.containsKey(parentNodeId))
-          {
-            auxMap.put(parentNodeId, new ArrayList<Node>());
-          }
-          auxMap.get(parentNodeId).add(childNode);
+          auxMap.put(parentNodeId, new ArrayList<>());
         }
-        for (List<Node> nodeList : auxMap.values())
+        auxMap.get(parentNodeId).add(childNode);
+      }
+      for (List<Node> nodeList : auxMap.values())
+      {
+        nodeList = quicksortNodesByIndex(nodeList);
+        for (Node childNode : nodeList)
         {
-          nodeList = quicksortNodesByIndex(nodeList);
-          for (Node childNode : nodeList)
-          {
-            CNode childCNode = new CNode(cWorkspace, childNode);
-            cWorkspace.putNode(childCNode, false);
-            cWorkspace.putParentChildren(childNode.getNodeId(),
-              childNode.getParentNodeId());
-          }
+          CNode childCNode = new CNode(cWorkspace, childNode);
+          cWorkspace.putNode(childCNode, false);
+          cWorkspace.putParentChildren(childNode.getNodeId(),
+            childNode.getParentNodeId());
         }
-      }     
-      return cWorkspace.getChildren(nodeId);
+      }
     }
+    return cWorkspace.getChildren(nodeId);
   }
 
   public String getWorkspaceId()
@@ -244,7 +240,7 @@ public class CNode
 
   public List<CNode> getChildren()
   {
-    List<CNode> cNodeList = new ArrayList<CNode>();
+    List<CNode> cNodeList = new ArrayList<>();
     for (String childNodeId : getChildrenNodeIdList())
     {
       CNode cNodeAux = cWorkspace.getNode(childNodeId);
@@ -329,14 +325,14 @@ public class CNode
 
   public List<String> getDifferentProperties(CNode cNode)
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     Map<String, Object> auxPropertyMap = cNode.getPropertiesMap();
     for (String propertyName : propertyMap.keySet())
     {
       if (propertyName.endsWith("$"))
       {
         if (!auxPropertyMap.containsKey(propertyName))
-        {          
+        {
           result.add(propertyName.substring(0, propertyName.length() - 1));
         }
         else
@@ -376,7 +372,7 @@ public class CNode
     }
     return result;
   }
-  
+
   public boolean hasTheSameLocation(CNode cNode)
   {
     if (this.getParentNodeId() == null && cNode.getParentNodeId() == null)
@@ -507,8 +503,8 @@ public class CNode
   }
 
   public List<Property> getProperties(boolean sort)
-  {    
-    List<Property> auxPropertyList = new ArrayList<Property>();
+  {
+    List<Property> auxPropertyList = new ArrayList<>();
     for (String propertyName : propertyMap.keySet())
     {
       if (!propertyName.endsWith("$"))
@@ -519,16 +515,12 @@ public class CNode
     }
     if (auxPropertyList.size() > 1 && sort)
     {
-      Collections.sort(auxPropertyList, new Comparator()
-        {
-          public int compare(Object o1, Object o2)
-          {
-            Property p1 = (Property)o1;
-            Property p2 = (Property)o2;
-            return p1.getName().compareToIgnoreCase(p2.getName());
-          }
-        }
-      );
+      Collections.sort(auxPropertyList, (Object o1, Object o2) ->
+      {
+        Property p1 = (Property)o1;
+        Property p2 = (Property)o2;
+        return p1.getName().compareToIgnoreCase(p2.getName());
+      });
     }
     return auxPropertyList;
   }
@@ -547,9 +539,9 @@ public class CNode
   private List<Node> quicksortNodesByIndex(List<Node> nodeList)
   {
     if (nodeList == null || nodeList.size() <= 1) return nodeList;
-    List<Node> result = new ArrayList<Node>();
-    List<Node> lessAuxList = new ArrayList<Node>();
-    List<Node> greaterAuxList = new ArrayList<Node>();
+    List<Node> result = new ArrayList<>();
+    List<Node> lessAuxList = new ArrayList<>();
+    List<Node> greaterAuxList = new ArrayList<>();
     Node pivotNode = nodeList.remove(0);
     for (Node auxNode : nodeList)
     {
@@ -563,8 +555,8 @@ public class CNode
       }
       else //same index
       {
-        int auxNodeId = Integer.valueOf(auxNode.getNodeId());
-        int pivotNodeId = Integer.valueOf(pivotNode.getNodeId());
+        int auxNodeId = Integer.parseInt(auxNode.getNodeId());
+        int pivotNodeId = Integer.parseInt(pivotNode.getNodeId());
         if (auxNodeId <= pivotNodeId)
         {
           lessAuxList.add(auxNode);
@@ -580,13 +572,13 @@ public class CNode
     result.addAll(quicksortNodesByIndex(greaterAuxList));
     return result;
   }
-  
+
   private void putProperty(Property property)
   {
     String propertyName = property.getName();
     propertyMap.put(propertyName, property.getValue().get(0));
     propertyMap.put(propertyName + "$",
-      Collections.unmodifiableList(new ArrayList<String>(property.getValue())));
+      Collections.unmodifiableList(new ArrayList<>(property.getValue())));
   }
 
   private Property getPropertyFromMap(String propertyName)

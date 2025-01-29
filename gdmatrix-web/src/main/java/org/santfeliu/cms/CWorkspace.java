@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.cms;
@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
+import org.apache.commons.collections.map.LRUMap;
 import org.matrix.cms.CMSConstants;
 import org.matrix.cms.CMSManagerPort;
 import org.matrix.cms.Node;
@@ -49,16 +50,16 @@ import org.santfeliu.jmx.CacheMBean;
 
 /**
  *
- * @author unknown
+ * @author lopezrj-sf
  */
 public class CWorkspace
 {
   private static final long FAST_PURGE_TIME = 1 * 60 * 1000; // 1 minute
   private static final long PARENTS_PURGE_TIME = 10 * 60 * 1000; // 10 minutes
-  
+
   private static final String PARAM_DESKTOP_MAIN_NODE = "desktopMainNode";
   private static final String PARAM_MOBILE_MAIN_NODE = "mobileMainNode";
-  
+
   private final CMSCache cmsCache;
   private final Workspace workspace;
   private final Map cNodeMap;
@@ -67,20 +68,20 @@ public class CWorkspace
   private long lastParentsPurgeMillis = 0;
   private final Map<String, String> parentsMap =
     Collections.synchronizedMap(new HashMap<>());
-  private final Map<String, List<String>> childrenMap = 
+  private final Map<String, List<String>> childrenMap =
     Collections.synchronizedMap(new HashMap<>());
   private final int cacheMaxSize;
   private String mainNodeId = null;
   private String mobileMainNodeId = null;
 
   public static final String NULL_MAIN_NODE = "-";
-  
+
   public CWorkspace(CMSCache cmsCache, Workspace workspace, int cacheMaxSize)
   {
     this.cmsCache = cmsCache;
     this.workspace = workspace;
     this.cacheMaxSize = cacheMaxSize;
-    this.cNodeMap = Collections.synchronizedMap(new CNodeMap(cacheMaxSize));
+    this.cNodeMap = Collections.synchronizedMap(new LRUMap(cacheMaxSize));
   }
 
   public CMSCache getCmsCache()
@@ -92,28 +93,28 @@ public class CWorkspace
   {
     return workspace;
   }
-  
+
   public int getNodeCount()
   {
     return cNodeMap.keySet().size();
   }
 
-  public synchronized int getParentsCount()
+  public int getParentsCount()
   {
     return parentsMap.keySet().size();
   }
 
-  public synchronized int getChildrenCount()
+  public int getChildrenCount()
   {
     return childrenMap.keySet().size();
   }
 
-  public synchronized boolean containsNode(String nodeId)
+  public boolean containsNode(String nodeId)
   {
     return cNodeMap.containsKey(nodeId);
   }
 
-  public synchronized CNode getNode(String nodeId)
+  public CNode getNode(String nodeId)
   {
     long nowMillis = System.currentTimeMillis();
     if (mustPurgeParentChildren(nowMillis))
@@ -138,7 +139,7 @@ public class CWorkspace
     return cNode;
   }
 
-  public synchronized Map<String, CNode> getNodes(List<String> nodeIdList)
+  public Map<String, CNode> getNodes(List<String> nodeIdList)
   {
     long nowMillis = System.currentTimeMillis();
     if (mustPurgeParentChildren(nowMillis))
@@ -183,7 +184,7 @@ public class CWorkspace
     property.getValue().add(propertyValue);
     filter.getProperty().add(property);
     List<Node> nodeList = getPort().findNodes(filter);
-    if (nodeList.size() > 0)
+    if (!nodeList.isEmpty())
     {
       String nodeId = nodeList.get(0).getNodeId();
       return getNode(nodeId);
@@ -197,7 +198,7 @@ public class CWorkspace
     filter.getWorkspaceId().add(workspace.getWorkspaceId());
     filter.setName(topic);
     List<Node> nodeList = getPort().findNodes(filter);
-    if (nodeList.size() > 0)
+    if (!nodeList.isEmpty())
     {
       String nodeId = nodeList.get(0).getNodeId();
       return getNode(nodeId);
@@ -205,16 +206,16 @@ public class CWorkspace
     return null;
   }
 
-  public synchronized void clear()
+  public void clear()
   {
     cNodeMap.clear();
     parentsMap.clear();
     childrenMap.clear();
     mainNodeId = null;
-    mobileMainNodeId = null;    
+    mobileMainNodeId = null;
   }
 
-  public synchronized void fastPurge()
+  public void fastPurge()
   {
     long nowMillis = System.currentTimeMillis();
     if (nowMillis > lastPurgeMillis + FAST_PURGE_TIME)
@@ -223,7 +224,7 @@ public class CWorkspace
     }
   }
 
-  public synchronized void purge()
+  public void purge()
   {
     List<Node> modifiedNodeList = getPort().findModifiedNodes(
       workspace.getWorkspaceId(), purgeDateTime);
@@ -240,7 +241,7 @@ public class CWorkspace
     }
   }
 
-  public synchronized String getFamilyWorkspaceId()
+  public String getFamilyWorkspaceId()
   {
     CWorkspace cWorkspaceAux = this;
     String refWorkspaceId = getWorkspace().getRefWorkspaceId();
@@ -252,7 +253,7 @@ public class CWorkspace
     return cWorkspaceAux.getWorkspace().getWorkspaceId();
   }
 
-  public synchronized String getNodeIdByProperty(String propertyName, 
+  public String getNodeIdByProperty(String propertyName,
     String propertyValue)
   {
     NodeFilter nodeFilter = new NodeFilter();
@@ -266,7 +267,7 @@ public class CWorkspace
     return nodeList.isEmpty() ? null :  nodeList.get(0).getNodeId();
   }
 
-  public synchronized String getSmallestRootNodeId()
+  public String getSmallestRootNodeId()
   {
     NodeFilter nodeFilter = new NodeFilter();
     nodeFilter.getWorkspaceId().add(workspace.getWorkspaceId());
@@ -300,11 +301,11 @@ public class CWorkspace
     if (mobileMainNodeId == null)
     {
       mobileMainNodeId = getNodeIdByProperty(PARAM_MOBILE_MAIN_NODE, "true");
-      if (mobileMainNodeId == null) mobileMainNodeId = NULL_MAIN_NODE;      
+      if (mobileMainNodeId == null) mobileMainNodeId = NULL_MAIN_NODE;
     }
     return mobileMainNodeId;
   }
-  
+
   protected void putNode(CNode cNode, boolean force)
   {
     String nodeId = cNode.getNode().getNodeId();
@@ -353,9 +354,9 @@ public class CWorkspace
   }
 
   private void purgeParents(Node currentNode, Node newNode)
-  {        
+  {
     String nodeId = newNode.getNodeId();
-    String currentParentNodeId = (currentNode != null ? 
+    String currentParentNodeId = (currentNode != null ?
       currentNode.getParentNodeId() :
       getParent(nodeId));
     String newParentNodeId = newNode.getParentNodeId();
@@ -451,7 +452,7 @@ public class CWorkspace
   {
     return nowMillis - lastParentsPurgeMillis > PARENTS_PURGE_TIME;
   }
-  
+
   CWorkspaceMBean getCacheMBean() throws NotCompliantMBeanException
   {
     return new CWorkspaceMBean();

@@ -150,7 +150,7 @@ public class FormFactory
     return Collections.unmodifiableMap(new HashMap(formCache));
   }
 
-  public void clearForms()
+  public synchronized void clearForms()
   {
     formCache.clear();
   }
