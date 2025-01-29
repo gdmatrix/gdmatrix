@@ -291,6 +291,20 @@ class LegendControl
       link.appendChild(div);
       link.classList.add("align-items-start");
     }
+    else if (graphic.startsWith("url:"))
+    {
+      let url = graphic.substring(4);
+      let img = document.createElement("img");
+      img.className = "block pt-1";
+      img.alt = "";
+      img.src = url;
+
+      const div = document.createElement("div");
+      div.appendChild(labelSpan);
+      div.appendChild(img);
+      link.appendChild(div);
+      link.classList.add("align-items-start");    
+    }
     else if (graphic === "auto")
     {
       let img = document.createElement("img");
