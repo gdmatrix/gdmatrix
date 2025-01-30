@@ -75,6 +75,18 @@ function showObject(typeId, objectId, parameters)
   _showObject(leap);
 }
 
+function viewObject(objectId, parameters)
+{
+  const leap = [
+    { "name" : "objectId", "value" : objectId }  
+  ];
+  if (parameters)
+  {
+    leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) }); 
+  }
+  _viewObject(leap);
+}
+
 function updateFontSize(size)
 {
   document.querySelector(":root").style.setProperty("--font-size", size + 'px');

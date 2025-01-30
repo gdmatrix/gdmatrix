@@ -46,6 +46,7 @@ import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
@@ -456,6 +457,21 @@ public class CaseCasesTabBean extends TabBean
     catch (Exception ex)
     {
       error(ex);
+    }
+  }
+
+  @Override
+  public void edit(String rowId)
+  {
+    List<? extends DataTableRow> rows = getRows();
+    for (DataTableRow row : rows)
+    {       
+      if (row.getRowId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript("PF('caseCasesDialog').show()");
+        return;
+      }
     }
   }
 

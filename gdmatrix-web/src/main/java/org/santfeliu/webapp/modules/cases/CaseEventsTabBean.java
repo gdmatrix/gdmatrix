@@ -44,6 +44,7 @@ import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
 import org.matrix.dic.DictionaryConstants;
+import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -336,6 +337,21 @@ public class CaseEventsTabBean extends TabBean
       create();
     }
   }
+
+  @Override
+  public void edit(String rowId)
+  {
+    List<? extends DataTableRow> rows = getRows();
+    for (DataTableRow row : rows)
+    {       
+      if (row.getRowId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript("PF('caseEventsDialog').show()");
+        return;
+      }
+    }
+  }  
 
   @Override
   public void load() throws Exception

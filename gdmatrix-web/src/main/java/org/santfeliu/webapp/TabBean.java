@@ -70,6 +70,10 @@ public abstract class TabBean extends BaseBean
   {
   }
 
+  public void edit(String rowId)
+  {
+  }
+
   public void store() throws Exception
   {
   }

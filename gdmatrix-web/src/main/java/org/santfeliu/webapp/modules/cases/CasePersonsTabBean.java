@@ -56,6 +56,7 @@ import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
+import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -81,7 +82,6 @@ import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
-
 
 /**
  *
@@ -625,6 +625,21 @@ public class CasePersonsTabBean extends TabBean
       create();
     }
   }
+
+  @Override
+  public void edit(String rowId)
+  {
+    List<? extends DataTableRow> rows = getRows();
+    for (DataTableRow row : rows)
+    {
+      if (row.getRowId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript("PF('casePersonsDialog').show()");
+        return;
+      }
+    }
+  }  
 
   @Override
   public void store()

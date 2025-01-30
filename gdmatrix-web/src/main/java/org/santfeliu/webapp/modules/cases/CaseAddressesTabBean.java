@@ -51,6 +51,7 @@ import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -346,6 +347,21 @@ public class CaseAddressesTabBean extends TabBean
     else
     {
       create();
+    }
+  }
+
+  @Override
+  public void edit(String rowId)
+  {
+    List<? extends DataTableRow> rows = getRows();
+    for (DataTableRow row : rows)
+    {       
+      if (row.getRowId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript("PF('caseAddressesDialog').show()");
+        return;
+      }
     }
   }
 

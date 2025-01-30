@@ -54,6 +54,7 @@ import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
 import org.matrix.security.AccessControl;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
@@ -554,6 +555,21 @@ public class CaseDocumentsTabBean extends TabBean
       create();
     }
   }
+
+  @Override
+  public void edit(String rowId)
+  {
+    List<? extends DataTableRow> rows = getRows();
+    for (DataTableRow row : rows)
+    {       
+      if (row.getRowId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript("PF('caseDocumentsDialog').show()");
+        return;
+      }
+    }
+  }  
 
   public void remove()
   {

@@ -72,6 +72,7 @@ public abstract class ObjectBean extends BaseBean
   protected String objectId = NEW_OBJECT_ID;
   private int searchTabSelector;
   private int editTabSelector;
+  private String editTabRowId;
   private transient ObjectSetup objectSetup;
   private transient ScriptClient scriptClient;
   private Map<String, Object> state = new HashMap<>();
@@ -127,6 +128,16 @@ public abstract class ObjectBean extends BaseBean
   public void setEditTabSelector(int selector)
   {
     this.editTabSelector = selector;
+  }
+
+  public String getEditTabRowId()
+  {
+    return editTabRowId;
+  }
+
+  public void setEditTabRowId(String editTabRowId)
+  {
+    this.editTabRowId = editTabRowId;
   }
 
   public int getEditModeSelector()
@@ -255,8 +266,9 @@ public abstract class ObjectBean extends BaseBean
     try
     {
       clear();
-      loadObject(parameters);
+      loadObject();
       loadObjectSetup();
+      processParameters(parameters);
       if (!NEW_OBJECT_ID.equals(objectId))
         executeAction(Action.POST_LOAD_ACTION);
       loadActiveEditTab();
@@ -280,11 +292,6 @@ public abstract class ObjectBean extends BaseBean
         load();
       }
     }
-  }
-
-  public void loadObject(Map<String, Object> parameters) throws Exception
-  {
-    loadObject();
   }
 
   public void loadObject() throws Exception
@@ -337,6 +344,11 @@ public abstract class ObjectBean extends BaseBean
         {
           tabBean.setObjectId(objectId);
           tabBean.load();
+          if (editTabRowId != null)
+          {
+            tabBean.edit(editTabRowId);
+            editTabRowId = null;
+          }
         }
       }
     }
@@ -515,6 +527,32 @@ public abstract class ObjectBean extends BaseBean
     return actionObject;
   }
 
+  protected void processParameters(Map<String, Object> parameters)
+  {
+    if (parameters != null)
+    {
+      int newEditTabSelector = 0;
+      try
+      {
+        String tabIndex = (String)parameters.get("tabIndex");
+        if (tabIndex != null)
+        {
+          newEditTabSelector = Integer.parseInt(tabIndex);
+        }
+        else
+        {
+          String viewId = (String)parameters.get("viewId");
+          String subviewId = (String)parameters.get("subviewId");
+          newEditTabSelector = getObjectSetup().findEditTabSelector(viewId, 
+            subviewId);
+        }
+      }
+      catch (Exception ex) { }
+      editTabSelector = newEditTabSelector;
+      editTabRowId = (String)parameters.get("rowId");
+    }    
+  }  
+  
   protected void addFacesMessages(List<Message> messages)
   {
     for (Message message : messages)

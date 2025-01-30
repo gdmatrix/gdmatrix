@@ -222,6 +222,20 @@ public class TemplateBean extends FacesBean implements Serializable
     return navigatorBean.show(typeId, objectId, parameters);
   }
 
+  public void viewObject()
+  {
+    Map<String, String> map = getExternalContext().getRequestParameterMap();
+    String objectId = map.get("objectId");
+    String jsonParams = map.get("parameters");
+    Map<String, Object> parameters = null;
+    if (jsonParams != null)
+    {
+      Gson gson = new Gson();
+      parameters = gson.fromJson(jsonParams, Map.class);
+    }
+    navigatorBean.view(objectId, parameters);
+  }
+
   public void login()
   {
     try

@@ -272,6 +272,33 @@ public class ObjectSetup implements Serializable
     return null;
   }
 
+  public int findEditTabSelector(String viewId, String subViewId)
+  {
+    int i = 0;
+    if (viewId != null)
+    {
+      for (EditTab editTab : editTabs)
+      {
+        if (viewId.equals(editTab.getViewId()))
+        {
+          if (subViewId == null) 
+          {
+            return i;
+          }
+          else //check subViewId
+          {
+            if (subViewId.equals(editTab.getSubviewId()))
+            {
+              return i;
+            }
+          }
+        }
+        i++;
+      }
+    }
+    return 0;
+  }
+
   public SearchTab findSearchTabByViewId(String viewId)
   {
     if (viewId != null)

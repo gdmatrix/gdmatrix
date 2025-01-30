@@ -41,6 +41,7 @@ import org.matrix.agenda.EventPlace;
 import org.matrix.agenda.EventPlaceFilter;
 import org.matrix.agenda.EventPlaceView;
 import org.matrix.kernel.Room;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.kernel.AddressObjectBean;
@@ -177,6 +178,20 @@ public class EventPlacesTabBean extends TabBean
     executeTabAction(POST_TAB_EDIT_ACTION, editing);
     return result;
   }
+  
+  @Override
+  public void edit(String rowId)
+  {
+    for (EventPlaceView row : getRows())
+    {
+      if (row.getEventPlaceId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript("PF('eventPlacesDialog').show()");
+        return;
+      }
+    }
+  }   
 
   @Override
   public void load()

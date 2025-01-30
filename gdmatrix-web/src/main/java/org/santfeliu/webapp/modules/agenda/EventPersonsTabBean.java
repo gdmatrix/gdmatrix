@@ -46,6 +46,7 @@ import javax.inject.Named;
 import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
 import org.matrix.agenda.AttendantView;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -336,6 +337,21 @@ public class EventPersonsTabBean extends TabBean
       create();
     }
   }
+  
+  @Override
+  public void edit(String rowId)
+  {
+    List<AttendantView> rows = getRows();
+    for (AttendantView row : rows)
+    {
+      if (row.getAttendantId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript("PF('eventPersonsDialog').show()");
+        return;
+      }
+    }
+  }  
 
   @Override
   public void load() throws Exception

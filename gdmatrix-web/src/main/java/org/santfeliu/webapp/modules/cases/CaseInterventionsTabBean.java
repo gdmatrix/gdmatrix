@@ -44,6 +44,7 @@ import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
+import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -464,6 +465,22 @@ public class CaseInterventionsTabBean extends TabBean
     catch (Exception ex)
     {
       error(ex);
+    }
+  }
+
+  @Override
+  public void edit(String rowId)
+  {
+    List<? extends DataTableRow> rows = getRows();
+    for (DataTableRow row : rows)
+    {       
+      if (row.getRowId().equals(rowId))
+      {
+        edit(row);
+        PrimeFaces.current().executeScript(
+          "PF('caseInterventionsDialog').show()");
+        return;
+      }
     }
   }
 
