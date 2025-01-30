@@ -202,7 +202,7 @@ public class PolicyFinderBean extends FinderBean
   {
     return new Object[]{ isFinding(), getFilterTabSelector(),
       filter, firstRow, getObjectPosition(), formSelector, rows, outdated, 
-      pageSize };
+      getPageSize() };
   }
 
   @Override
@@ -217,7 +217,7 @@ public class PolicyFinderBean extends FinderBean
     formSelector = (String)stateArray[5];
     rows = (List<Policy>)stateArray[6];
     outdated = (Boolean)stateArray[7];
-    pageSize = (Integer)stateArray[8];    
+    setPageSize((Integer)stateArray[8]);    
     setObjectPosition((Integer)stateArray[4]);
   }
 
@@ -231,7 +231,7 @@ public class PolicyFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(2 * pageSize + 1, pageSize)
+        rows = new BigList(2 * getPageSize() + 1, getPageSize())
         {
           @Override
           public int getElementCount()

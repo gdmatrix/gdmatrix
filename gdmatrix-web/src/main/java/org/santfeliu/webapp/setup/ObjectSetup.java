@@ -51,6 +51,7 @@ public class ObjectSetup implements Serializable
   private String findOnFirstLoad;
   private String smartSearchTipDocId;
   private String defaultSearchTabSelector;
+  private String defaultSearchPageSize;
   private List<SearchTab> searchTabs = new ArrayList<>();
   private List<EditTab> editTabs = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
@@ -123,6 +124,16 @@ public class ObjectSetup implements Serializable
   public void setDefaultSearchTabSelector(String defaultSearchTabSelector)
   {
     this.defaultSearchTabSelector = defaultSearchTabSelector;
+  }
+
+  public String getDefaultSearchPageSize() 
+  {
+    return defaultSearchPageSize;
+  }
+
+  public void setDefaultSearchPageSize(String defaultSearchPageSize) 
+  {
+    this.defaultSearchPageSize = defaultSearchPageSize;
   }
 
   public List<SearchTab> getSearchTabs()

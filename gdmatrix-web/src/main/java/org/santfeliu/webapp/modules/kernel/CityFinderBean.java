@@ -176,7 +176,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilter(), firstRow, 
-      getObjectPosition(), provinceSelectItems, pageSize };
+      getObjectPosition(), provinceSelectItems, getPageSize() };
   }
 
   @Override
@@ -194,7 +194,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       firstRow = (Integer)stateArray[2];
       setObjectPosition((Integer)stateArray[3]);
       provinceSelectItems = (List<SelectItem>) stateArray[4];
-      pageSize = (Integer)stateArray[5];
+      setPageSize((Integer)stateArray[5]);
     }
     catch (Exception ex)
     {

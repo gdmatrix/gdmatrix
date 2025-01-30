@@ -125,7 +125,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilter(), firstRow, 
-      getObjectPosition(), pageSize };
+      getObjectPosition(), getPageSize() };
   }
 
   @Override
@@ -142,7 +142,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
 
       firstRow = (Integer)stateArray[2];
       setObjectPosition((Integer)stateArray[3]);
-      pageSize = (Integer)stateArray[4];      
+      setPageSize((Integer)stateArray[4]);      
     }
     catch (Exception ex)
     {

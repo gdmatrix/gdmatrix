@@ -201,7 +201,7 @@ public class RoomFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter,
-      firstRow, getObjectPosition(), pageSize };
+      firstRow, getObjectPosition(), getPageSize() };
   }
 
   @Override
@@ -218,7 +218,7 @@ public class RoomFinderBean extends FinderBean
 
       firstRow = (Integer)stateArray[3];
       setObjectPosition((Integer)stateArray[4]);
-      pageSize = (Integer)stateArray[5];      
+      setPageSize((Integer)stateArray[5]);      
     }
     catch (Exception ex)
     {
@@ -234,7 +234,7 @@ public class RoomFinderBean extends FinderBean
     }
     else
     {
-      rows = new BigList(2 * pageSize + 1, pageSize)
+      rows = new BigList(2 * getPageSize() + 1, getPageSize())
       {
         @Override
         public int getElementCount()

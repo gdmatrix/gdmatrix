@@ -64,6 +64,8 @@ public abstract class FinderBean extends BaseBean
 {
   private static final String SMART_SEARCH_TIP_DOCID_PROPERTY =
     "smartSearchTipDocId";
+  private static final String DEFAULT_SEARCH_PAGE_SIZE_PROPERTY =
+    "defaultSearchPageSize";
   private static final Map<String, String> smartSearchTipContentMap =
     new HashMap();
   private static long lastSmartSearchTipRefresh = System.currentTimeMillis();
@@ -73,8 +75,7 @@ public abstract class FinderBean extends BaseBean
   private boolean finding;
   private transient ObjectSetup objectSetup;
   private transient ScriptClient scriptClient;
-  
-  protected int pageSize = 10;
+  private int pageSize = -1;
 
   public int getFilterTabSelector()
   {
@@ -130,6 +131,10 @@ public abstract class FinderBean extends BaseBean
 
   public int getPageSize() 
   {
+    if (pageSize == -1)
+    {
+      pageSize = getDefaultPageSize();
+    }
     return pageSize;
   }
 
@@ -179,6 +184,7 @@ public abstract class FinderBean extends BaseBean
   public void clear()
   {
     objectSetup = null;
+    pageSize = -1;
   }
 
   public void putDefaultFilter()
@@ -349,6 +355,35 @@ public abstract class FinderBean extends BaseBean
       return null;
     }
   }
+  
+  private int getDefaultPageSize()
+  {
+    try
+    {
+      String val = getObjectSetup().getDefaultSearchPageSize();
+      if (val == null)
+      {
+        val = getProperty(DEFAULT_SEARCH_PAGE_SIZE_PROPERTY);
+        if (val == null)
+        {
+          NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+          String typeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+          Type type = TypeCache.getInstance().getType(typeId);
+          PropertyDefinition propdef =
+            type.getPropertyDefinition("_" + DEFAULT_SEARCH_PAGE_SIZE_PROPERTY);
+          if (propdef != null && !propdef.getValue().isEmpty())
+          {
+            val = propdef.getValue().get(0);
+          }
+        }
+      }
+      return Integer.parseInt(val);
+    }
+    catch (Exception ex)
+    {
+      return 10;
+    }
+  }  
 
   private String getDocContent(String docId)
   {

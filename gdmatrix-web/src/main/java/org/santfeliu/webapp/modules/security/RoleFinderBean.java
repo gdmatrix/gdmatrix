@@ -189,7 +189,7 @@ public class RoleFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(),
-      filter, firstRow, getObjectPosition(), pageSize };
+      filter, firstRow, getObjectPosition(), getPageSize() };
   }
 
   @Override
@@ -205,7 +205,7 @@ public class RoleFinderBean extends FinderBean
 
     firstRow = (Integer)stateArray[3];
     setObjectPosition((Integer)stateArray[4]);
-    pageSize = (Integer)stateArray[5];    
+    setPageSize((Integer)stateArray[5]);    
   }
 
   private void doFind(boolean autoLoad)
@@ -218,7 +218,7 @@ public class RoleFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(2 * pageSize + 1, pageSize)
+        rows = new BigList(2 * getPageSize() + 1, getPageSize())
         {
           @Override
           public int getElementCount()

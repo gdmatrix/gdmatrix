@@ -263,7 +263,7 @@ public class TypeFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition(), rootTypeId, pageSize };
+      getObjectPosition(), rootTypeId, getPageSize() };
   }
 
   @Override
@@ -282,7 +282,7 @@ public class TypeFinderBean extends FinderBean
       firstRow = (Integer)stateArray[3];
       setObjectPosition((Integer)stateArray[4]);
       rootTypeId = ((String)stateArray[5]);
-      pageSize = (Integer)stateArray[6];
+      setPageSize((Integer)stateArray[6]);
     }
     catch (Exception ex)
     {
@@ -300,7 +300,7 @@ public class TypeFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(2 * pageSize + 1, pageSize)
+        rows = new BigList(2 * getPageSize() + 1, getPageSize())
         {
           @Override
           public int getElementCount()

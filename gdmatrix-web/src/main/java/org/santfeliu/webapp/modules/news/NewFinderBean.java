@@ -198,7 +198,7 @@ public class NewFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition(), rows, outdated, pageSize };
+      getObjectPosition(), rows, outdated, getPageSize() };
   }
 
   @Override
@@ -214,7 +214,7 @@ public class NewFinderBean extends FinderBean
       setObjectPosition((Integer) stateArray[4]);
       rows = (List<NewView>) stateArray[5];
       outdated = (Boolean) stateArray[6];
-      pageSize = (Integer)stateArray[7];      
+      setPageSize((Integer)stateArray[7]);      
     }
     catch (Exception ex)
     {
@@ -232,7 +232,7 @@ public class NewFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(2 * pageSize + 1, pageSize)
+        rows = new BigList(2 * getPageSize() + 1, getPageSize())
         {
           private final List<String> sections = getEditSections();
 
