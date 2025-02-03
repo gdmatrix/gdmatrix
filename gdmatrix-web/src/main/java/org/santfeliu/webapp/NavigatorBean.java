@@ -379,40 +379,8 @@ public class NavigatorBean extends WebBean implements Serializable
   }
 
   public void view(String objectId, Map<String, Object> parameters)
-  {     
-    int editTabSelector = 0;
-    String rowId = null;
-    try
-    {
-      if (parameters != null)
-      {
-        String tabIndex = (String)parameters.get("tabIndex");
-        if (tabIndex != null)
-        {
-          editTabSelector = Integer.parseInt(tabIndex);
-        }
-        else
-        {
-          BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
-          if (baseTypeInfo != null)
-          {        
-            ObjectSetup objectSetup = baseTypeInfo.getObjectSetup();
-            if (objectSetup != null)
-            {
-              String viewId = (String)parameters.get("viewId");
-              String subviewId = (String)parameters.get("subviewId");
-              editTabSelector = objectSetup.findEditTabSelector(viewId, 
-                subviewId);
-            }
-          }
-        }
-        rowId = (String)parameters.get("rowId");
-      }
-    }
-    catch (Exception ex) 
-    { 
-    }
-    view(objectId, editTabSelector, false, rowId);
+  {
+    view(objectId, 0, false, parameters);
   }
   
   public void view(String objectId, int editTabSelector, boolean resetPosition)
@@ -421,7 +389,7 @@ public class NavigatorBean extends WebBean implements Serializable
   }
   
   public void view(String objectId, int editTabSelector, boolean resetPosition, 
-    String rowId)
+    Map<String, Object> parameters)
   {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     if (baseTypeInfo == null) return;
@@ -438,8 +406,7 @@ public class NavigatorBean extends WebBean implements Serializable
     objectBean.setObjectId(objectId);
     objectBean.setSearchTabSelector(objectBean.getEditModeSelector());
     objectBean.setEditTabSelector(editTabSelector);
-    objectBean.setEditTabRowId(rowId);
-    objectBean.load();
+    objectBean.load(parameters);
 
     if (resetPosition)
     {

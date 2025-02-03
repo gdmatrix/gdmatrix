@@ -29,8 +29,6 @@
     <gdm:saveState value="#{templateBean.contextMid}" />
 
     <p:remoteCommand name="_showObject" action="#{templateBean.showObject}" update="@form:cnt" />
-    <p:remoteCommand name="_viewObject" action="#{templateBean.viewObject}" 
-                     update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs" />
 
     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" >
       <p:commandButton value="#{objectBundle.cancel}"

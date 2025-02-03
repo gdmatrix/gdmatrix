@@ -219,21 +219,15 @@ public class TemplateBean extends FacesBean implements Serializable
       Gson gson = new Gson();
       parameters = gson.fromJson(jsonParams, Map.class);
     }
-    return navigatorBean.show(typeId, objectId, parameters);
-  }
-
-  public void viewObject()
-  {
-    Map<String, String> map = getExternalContext().getRequestParameterMap();
-    String objectId = map.get("objectId");
-    String jsonParams = map.get("parameters");
-    Map<String, Object> parameters = null;
-    if (jsonParams != null)
+    if (typeId != null)
     {
-      Gson gson = new Gson();
-      parameters = gson.fromJson(jsonParams, Map.class);
+      return navigatorBean.show(typeId, objectId, parameters);
     }
-    navigatorBean.view(objectId, parameters);
+    else
+    {
+      navigatorBean.view(objectId, parameters);
+      return null;
+    }
   }
 
   public void login()

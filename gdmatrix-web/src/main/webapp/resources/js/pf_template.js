@@ -65,9 +65,12 @@ function enableUserPassButton()
 function showObject(typeId, objectId, parameters)
 {
   const leap = [
-    { "name" : "typeId", "value" : typeId },
     { "name" : "objectId", "value" : objectId }  
   ];
+  if (typeId !== null)
+  {
+    leap.push({ "name" : "typeId", "value" : typeId });
+  }
   if (parameters)
   {
     leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) }); 
@@ -77,14 +80,7 @@ function showObject(typeId, objectId, parameters)
 
 function viewObject(objectId, parameters)
 {
-  const leap = [
-    { "name" : "objectId", "value" : objectId }  
-  ];
-  if (parameters)
-  {
-    leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) }); 
-  }
-  _viewObject(leap);
+  showObject(null, objectId, parameters);
 }
 
 function updateFontSize(size)
