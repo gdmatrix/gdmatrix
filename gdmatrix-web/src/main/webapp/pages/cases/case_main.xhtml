@@ -34,7 +34,7 @@
       </emcomp:typeReference>
     </p:outputPanel>
 
-    <div class="field col-12 md:col-12">
+    <div class="field col-12 #{caseObjectBean.isRenderProperty('caseTypeId') or caseObjectBean.isMultipleObjectSetup() ? 'md:col-12' : 'md:col-9'}">
       <p:outputLabel for="@next"
                      value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}"
                      indicateRequired="true"/>
