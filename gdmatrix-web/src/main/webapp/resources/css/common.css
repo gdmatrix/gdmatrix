@@ -268,6 +268,15 @@ body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd
   background-color: var(--surface-100) !important;
 }
 
+body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd
+{
+  background: var(--surface-50);
+}
+body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd+tr.ui-expanded-row-content
+{
+  background: var(--surface-50);
+}
+
 .ui-menu-button.ui-button-flat button
 {
   background-color: transparent;
