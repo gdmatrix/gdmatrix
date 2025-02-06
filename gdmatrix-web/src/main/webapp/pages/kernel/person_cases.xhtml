@@ -65,7 +65,7 @@
                 sortBy="#{row.caseObject.caseId}">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-5"
+      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-4"
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('caseTitle')}"
                 sortBy="#{row.caseObject.title}">
         <h:outputText value="#{row.caseObject.title}"/>
@@ -75,11 +75,22 @@
                 sortBy="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
-      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="col-3"
+      <p:column headerText="#{kernelBundle.personCases_startDate}" styleClass="col-1"
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('startDate')}"
+                sortBy="#{row.caseObject.startDate}">
+        <h:outputText value="#{row.caseObject.startDate}" converter="dateConverter"/>
+      </p:column>  
+      <p:column headerText="#{kernelBundle.personCases_endDate}" styleClass="col-1"
+                rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('endDate')}"
+                sortBy="#{row.caseObject.endDate}">
+        <h:outputText value="#{row.caseObject.endDate}" converter="dateConverter"/>
+      </p:column>        
+      <p:column headerText="#{kernelBundle.personCases_comments}" 
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}"
                 sortBy="#{row.comments}">
         <h:outputText value="#{row.comments}"/>
-      </p:column>          
+      </p:column> 
+      
       <p:column styleClass="text-right white-space-nowrap">
         <h:panelGroup>
           <p:commandButton icon="pi pi-arrow-circle-right"  
