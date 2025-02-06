@@ -59,6 +59,10 @@ public class Query implements Serializable
   private String description;
   private String label;
   private String sql;
+  private String captureDateTime;
+  private String captureUserId;
+  private String changeDateTime;
+  private String changeUserId;  
   private final Connection connection = new Connection();
   private final List<Parameter> parameters = new ArrayList();
   private final List<Predicate> predicates = new ArrayList();
@@ -138,6 +142,46 @@ public class Query implements Serializable
     return upperSql.contains("INSERT") ||
       upperSql.contains("UPDATE") ||
       upperSql.contains("DELETE");
+  }
+
+  public String getCaptureDateTime()
+  {
+    return captureDateTime;
+  }
+
+  public void setCaptureDateTime(String captureDateTime)
+  {
+    this.captureDateTime = captureDateTime;
+  }
+
+  public String getCaptureUserId()
+  {
+    return captureUserId;
+  }
+
+  public void setCaptureUserId(String captureUserId)
+  {
+    this.captureUserId = captureUserId;
+  }
+
+  public String getChangeDateTime()
+  {
+    return changeDateTime;
+  }
+
+  public void setChangeDateTime(String changeDateTime)
+  {
+    this.changeDateTime = changeDateTime;
+  }
+
+  public String getChangeUserId()
+  {
+    return changeUserId;
+  }
+
+  public void setChangeUserId(String changeUserId)
+  {
+    this.changeUserId = changeUserId;
   }
 
   public List<Parameter> getParameters()

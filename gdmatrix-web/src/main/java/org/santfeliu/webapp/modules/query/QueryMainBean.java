@@ -306,6 +306,7 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
     query.setName(queryName);
     loadRoles(document);
     loadClassification(document);
+    loadAuditData(document);
     persistent = true;    
   }
 
@@ -485,5 +486,13 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
       acl.setRoleId(roleId);
       aclList.add(acl);
     }    
+  }
+  
+  private void loadAuditData(Document document)
+  {
+    query.setCaptureDateTime(document.getCaptureDateTime());
+    query.setCaptureUserId(document.getCaptureUserId());
+    query.setChangeDateTime(document.getChangeDateTime());
+    query.setChangeUserId(document.getChangeUserId());
   }
 }

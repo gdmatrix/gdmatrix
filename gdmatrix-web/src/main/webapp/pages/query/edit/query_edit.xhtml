@@ -7,6 +7,7 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:gdm="http://gdmatrix.org/faces"                
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/query/query_common.xhtml">
 
   <ui:define name="toolbar">    
@@ -121,6 +122,15 @@
                          lineNumbers="false"
                          style="font-size:14px" />                 
       </div>
+      
+      <div class="ui-fluid formgrid grid mt-2">
+        <emcomp:auditData creationDateTime="#{queryMainBean.query.captureDateTime}"
+                          creationUserId="#{queryMainBean.query.captureUserId}"
+                          changeDateTime="#{queryMainBean.query.changeDateTime}"
+                          changeUserId="#{queryMainBean.query.changeUserId}"
+                          rendered="#{!queryMainBean.query.captureDateTime != null}" />       
+      </div>
+      
     </p:panel>
     
     <p:panel styleClass="mt-3 top_rounded_panel">
