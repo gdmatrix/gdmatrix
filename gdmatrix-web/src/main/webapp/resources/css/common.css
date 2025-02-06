@@ -272,6 +272,7 @@ body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd
 {
   background: var(--surface-50);
 }
+
 body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd+tr.ui-expanded-row-content
 {
   background: var(--surface-50);
