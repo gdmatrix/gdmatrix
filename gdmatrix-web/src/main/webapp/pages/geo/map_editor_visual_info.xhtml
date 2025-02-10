@@ -11,7 +11,7 @@
 
   <div class="ui-fluid formgrid grid">
 
-    <div class="field col-12 md:col-3">
+    <div class="field col-12 md:col-6 xl:col-3">
       <p:outputLabel for="@next" value="Name" />
       <p:inputText value="#{geoMapBean.mapDocument.name}" 
                    pt:spellcheck="false" styleClass="code" required="true">
@@ -20,12 +20,12 @@
       </p:inputText>
     </div>
 
-    <div class="field col-12 md:col-3">
+    <div class="field col-12 md:col-6 xl:col-3">
       <p:outputLabel for="@next" value="Title" />
       <p:inputText value="#{geoMapBean.mapDocument.title}" required="true" />
     </div>
 
-    <div class="field col-12 md:col-3">
+    <div class="field col-12 md:col-6 xl:col-3">
       <p:outputLabel for="@next" value="Category" />
       <div class="ui-inputgroup">
         <p:selectOneMenu id="category_list" styleClass="border-round-left"
@@ -49,7 +49,7 @@
       </div>
     </div>    
     
-    <div class="field col-12 md:col-3">
+    <div class="field col-12 md:col-6 xl:col-3">
       <p:outputLabel for="@next" value="Base map name" />
       <p:autoComplete value="#{geoMapBean.mapDocument.baseMapName}"
                       maxResults="100" minQueryLength="2"

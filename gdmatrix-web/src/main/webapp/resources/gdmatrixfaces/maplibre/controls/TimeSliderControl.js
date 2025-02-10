@@ -156,7 +156,7 @@ class TimeSliderControl
     {
       if (e.code === "Enter") e.preventDefault();
     });
-    this.rangeElement.addEventListener("input", () => this.onRangeChanged());
+    this.rangeElement.addEventListener("change", () => this.onRangeChanged());
 
     this.updatePeriod();
     
@@ -511,6 +511,10 @@ class TimeSliderControl
           this.updateSourcesAndLayers();
         }
       }
+    }
+    else
+    {
+      this.div.style.display = "";
     }
   }
 
