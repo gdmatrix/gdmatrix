@@ -32,7 +32,9 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -47,7 +49,9 @@ import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.cases.CaseObjectBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.TableProperty;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -57,6 +61,55 @@ import org.santfeliu.webapp.setup.TableProperty;
 @RequestScoped
 public class AddressCasesTabBean extends TabBean
 {
+  private final Map<String, TabInstance> tabInstances = new HashMap();  
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
+  private GroupableRowsHelper groupableRowsHelper;
+    
+  public class TabInstance
+  {
+    String objectId = NEW_OBJECT_ID;
+    List<CaseAddressView> rows;
+    int firstRow = 0;
+    TypeSelectHelper typeSelectHelper = new TypeSelectHelper<CaseAddressView>()
+    {
+      @Override
+      public List<CaseAddressView> getRows()
+      {
+        return rows;
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return getGroupableRowsHelper().isGroupedViewEnabled();
+      }
+
+      @Override
+      public String getBaseTypeId()
+      {
+        return getTabBaseTypeId();
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }
+
+      @Override
+      public String getRowTypeId(CaseAddressView row)
+      {
+        return row.getCaseAddressTypeId() != null ? row.getCaseAddressTypeId() :
+          getTabBaseTypeId();
+      }
+    };
+
+    public TypeSelectHelper getTypeSelectHelper()
+    {
+      return typeSelectHelper;
+    }
+  }  
+  
   @Inject
   private AddressObjectBean addressObjectBean;
 
@@ -65,12 +118,6 @@ public class AddressCasesTabBean extends TabBean
 
   @Inject
   TypeTypeBean typeTypeBean;
-
-  private List<CaseAddressView> rows;
-  private int firstRow;
-  GroupableRowsHelper groupableRowsHelper;
-  private TypeSelectHelper typeSelectHelper;
-
 
   @PostConstruct
   public void init()
@@ -127,41 +174,13 @@ public class AddressCasesTabBean extends TabBean
         }
       }
     };
-    typeSelectHelper = new TypeSelectHelper<CaseAddressView>()
-    {
-      @Override
-      public List<CaseAddressView> getRows()
-      {
-        return rows;
-      }
-
-      @Override
-      public boolean isGroupedViewEnabled()
-      {
-        return getGroupableRowsHelper().isGroupedViewEnabled();
-      }
-
-      @Override
-      public String getBaseTypeId()
-      {
-        return getTabBaseTypeId();
-      }
-
-      @Override
-      public void resetFirstRow()
-      {
-        firstRow = 0;
-      }
-
-      @Override
-      public String getRowTypeId(CaseAddressView row)
-      {
-        return row.getCaseAddressTypeId();
-      }
-    };
-
   }
-
+  
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  } 
+  
   public GroupableRowsHelper getGroupableRowsHelper()
   {
     return groupableRowsHelper;
@@ -171,38 +190,68 @@ public class AddressCasesTabBean extends TabBean
   {
     this.groupableRowsHelper = groupableRowsHelper;
   }
-
-  public TypeSelectHelper getTypeSelectHelper()
-  {
-    return typeSelectHelper;
-  }
-
+  
   @Override
   public ObjectBean getObjectBean()
   {
     return addressObjectBean;
   }
 
+  public TabInstance getCurrentTabInstance()
+  {
+    EditTab tab = addressObjectBean.getActiveEditTab();
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
+    {
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
+    }
+    else
+      return EMPTY_TAB_INSTANCE;
+  }
+  
+  @Override
+  public String getObjectId()
+  {
+    return getCurrentTabInstance().objectId;
+  }
+
+  @Override
+  public void setObjectId(String objectId)
+  {
+    getCurrentTabInstance().objectId = objectId;
+  }
+
+    @Override
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
+  }
+  
   public List<CaseAddressView> getRows()
   {
-    return rows;
+    return getCurrentTabInstance().rows;
   }
 
   public void setRows(List<CaseAddressView> rows)
   {
-    this.rows = rows;
+    getCurrentTabInstance().rows = rows;
   }
 
   public int getFirstRow()
   {
-    return firstRow;
+    return getCurrentTabInstance().firstRow;
   }
 
   public void setFirstRow(int firstRow)
   {
-    this.firstRow = firstRow;
+    getCurrentTabInstance().firstRow = firstRow;
   }
-
+  
   @Override
   public void load()
   {
@@ -212,9 +261,11 @@ public class AddressCasesTabBean extends TabBean
       try
       {
         CaseAddressFilter filter = new CaseAddressFilter();
-        filter.setAddressId(addressObjectBean.getObjectId());
-        rows = CasesModuleBean.getPort(false).findCaseAddressViews(filter);
-        getTypeSelectHelper().load();
+        filter.setAddressId(addressObjectBean.getObjectId());        
+        List<CaseAddressView> auxList = 
+          CasesModuleBean.getPort(false).findCaseAddressViews(filter);
+        setRows(auxList);
+        getCurrentTabInstance().typeSelectHelper.load();
       }
       catch (Exception ex)
       {
@@ -223,12 +274,20 @@ public class AddressCasesTabBean extends TabBean
     }
     else
     {
-      rows = Collections.EMPTY_LIST;
-      firstRow = 0;
-      getTypeSelectHelper().load();
+      TabInstance tabInstance = getCurrentTabInstance();
+      tabInstance.objectId = NEW_OBJECT_ID;
+      tabInstance.rows = Collections.EMPTY_LIST;
+      getCurrentTabInstance().typeSelectHelper.load();
+      tabInstance.firstRow = 0;
     }
   }
-
+  
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
+  }
+  
   @Override
   public Serializable saveState()
   {

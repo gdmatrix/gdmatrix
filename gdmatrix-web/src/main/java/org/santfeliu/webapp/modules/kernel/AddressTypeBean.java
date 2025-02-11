@@ -123,7 +123,7 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons", "fa fa-person", 
       "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", 
-      "/pages/kernel/address_cases.xhtml", "addressCasesTabBean"));  
+      "/pages/kernel/address_cases.xhtml", "addressCasesTabBean", "cases", null));    
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_rooms", "pi pi-map-marker", 
       "/pages/kernel/address_rooms.xhtml", "addressRoomsTabBean"));     
     objectSetup.setEditTabs(editTabs);
