@@ -959,7 +959,12 @@ public class FormImporter
           (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE);
         outputText.setEscape(false);
         String styleClass = view.getProperty("class");
-        outputText.setStyleClass(styleClass != null ? styleClass : "col-12");
+        if (styleClass == null) styleClass = "col-12";
+        if (!styleClass.contains("py-"))
+        {
+           styleClass += " py-2";
+        }
+        outputText.setStyleClass(styleClass);
         outputText.setValue(encodeView(view, new StringBuilder()).toString());
         parent.getChildren().add(outputText);
       }
