@@ -27,36 +27,37 @@
       </f:facet>      
       
       <div class="ui-fluid formgrid grid m-2">      
-        <div class="field col-12 sm:col-6 md:col-6 xl:col-4">        
+        <div class="field col-12 md:col-6">        
           <p:outputLabel value="#{queryBundle.query_scope}:" for="@next" />
-          <p:selectOneMenu value="#{queryListBean.filterByScope}" styleClass="input_text">
-            <f:selectItem itemLabel=" " itemValue="" />
+          <p:selectOneMenu value="#{queryListBean.filterByScope}" styleClass="input_text" 
+                           hideNoSelectionOption="#{!queryListBean.renderBlankScope}">
+            <f:selectItem itemLabel=" " itemValue="" noSelectionOption="true" />
             <f:selectItems value="#{queryListBean.queryScopeSelectItems}" />                     
           </p:selectOneMenu>
         </div>  
-        <div class="field col-12 sm:col-6 md:col-6 xl:col-4">
+        <div class="field col-12 md:col-6">
           <p:outputLabel value="#{queryBundle.query_object}:" for="@next" />
           <p:selectOneMenu value="#{queryListBean.filterByObject}" styleClass="input_text">
             <f:selectItem itemLabel=" " itemValue="" />      
             <f:selectItems value="#{queryListBean.queryObjectSelectItems}" />                     
           </p:selectOneMenu>
         </div>  
-        <div class="field col-12 sm:col-6 md:col-6 xl:col-4">
+        <div class="field col-12 md:col-6">
           <p:outputLabel value="#{queryBundle.query_type}:" for="@next" />
           <p:selectOneMenu value="#{queryListBean.filterByType}" styleClass="input_text">
             <f:selectItem itemLabel=" " itemValue="" />      
             <f:selectItems value="#{queryListBean.queryTypeSelectItems}" />                     
           </p:selectOneMenu>
         </div>  
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel value="#{queryBundle.name}:" for="@next" />  
           <p:inputText id="filter_name" value="#{queryListBean.filterByName}" styleClass="input_text" />
         </div>
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel value="#{queryBundle.title}:" for="@next" />  
           <p:inputText id="filter_title" value="#{queryListBean.filterByTitle}" styleClass="input_text" />      
         </div>
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel value="#{queryBundle.base}:" for="@next" />  
           <p:inputText id="filter_base" value="#{queryListBean.filterByBase}" styleClass="input_text" />
         </div>

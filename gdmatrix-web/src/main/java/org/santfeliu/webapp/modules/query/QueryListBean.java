@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.query;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
@@ -104,6 +105,15 @@ public class QueryListBean extends WebBean implements Serializable
 
   public String getFilterByScope() 
   {
+    if (filterByScope == null || !isScopeVisible(filterByScope))
+    {
+      List<String> queryScopeList = 
+        getSelectedMenuItem().getMultiValuedProperty("queryScope");
+      if (!queryScopeList.isEmpty())
+      {
+        filterByScope = queryScopeList.get(0);
+      }
+    }
     return filterByScope;
   }
 
@@ -135,12 +145,27 @@ public class QueryListBean extends WebBean implements Serializable
   {
     if (queryScopeSelectItems == null)
     {
-      queryScopeSelectItems = DicModuleBean.getEnumTypeSelectItems(
-        QueryMainBean.QUERY_SCOPE_TYPEID);
+      queryScopeSelectItems = new ArrayList();  
+      List<SelectItem> allQueryScopeSelectItems = 
+        DicModuleBean.getEnumTypeSelectItems(QueryMainBean.QUERY_SCOPE_TYPEID);
+      for (SelectItem item : allQueryScopeSelectItems)
+      {
+        if (isScopeVisible((String)item.getValue()))
+        {
+          queryScopeSelectItems.add(item);
+        }
+      }
     }
     return queryScopeSelectItems;
   }
-
+  
+  public boolean isRenderBlankScope()
+  {
+    List<String> queryScopeList = 
+      getSelectedMenuItem().getMultiValuedProperty("queryScope");
+    return queryScopeList.isEmpty();
+  }
+  
   public List<SelectItem> getQueryTypeSelectItems()
   {
     if (queryTypeSelectItems == null)
@@ -187,11 +212,11 @@ public class QueryListBean extends WebBean implements Serializable
       filter.setTitle("%" + filterByTitle + "%");
     }
     
-    if (!StringUtils.isBlank(filterByScope))
+    if (!StringUtils.isBlank(getFilterByScope()))
     {
       Property property = new Property();
       property.setName(QueryMainBean.QUERY_SCOPE_PROPERTY);
-      property.getValue().add(filterByScope);
+      property.getValue().add(getFilterByScope());
       filter.getProperty().add(property);
     }
 
@@ -293,5 +318,12 @@ public class QueryListBean extends WebBean implements Serializable
       error(ex);
     }
   }
+  
+  private boolean isScopeVisible(String scope)
+  {
+    List<String> queryScopeList = 
+      getSelectedMenuItem().getMultiValuedProperty("queryScope");
+    return queryScopeList.isEmpty() || queryScopeList.contains(scope);
+  }  
   
 }
