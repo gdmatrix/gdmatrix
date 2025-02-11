@@ -44,6 +44,8 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.classif.ClassObjectBean;
 import static org.santfeliu.webapp.modules.policy.PolicyModuleBean.getPort;
+import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.webapp.util.RowStyleClassGenerator;
 
 /**
  *
@@ -250,6 +252,14 @@ public class ClassPoliciesTabBean extends TabBean
     {
       error(ex);
     }
+  }
+  
+  public String getRowStyleClass(Object row)
+  {
+    RowStyleClassGenerator styleClassGenerator = 
+      new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
+    Object rowObject = ((ClassPolicyView)row).getClassPolicy();
+    return styleClassGenerator.getStyleClass(rowObject);
   }
 
 }

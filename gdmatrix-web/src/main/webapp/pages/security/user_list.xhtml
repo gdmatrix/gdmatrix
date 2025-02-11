@@ -3,13 +3,15 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
-    
+
+  <h:outputStylesheet library="css" name="security.css" />    
+
   <p:dataTable value="#{userFinderBean.rows}" 
                var="row" stripedRows="true" 
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{userFinderBean.firstRow}"
-               rowStyleClass="#{row.userId == userObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{userFinderBean.getRowStyleClass(row)}#{row.userId == userObjectBean.objectId ? ' current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="#{userFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50"

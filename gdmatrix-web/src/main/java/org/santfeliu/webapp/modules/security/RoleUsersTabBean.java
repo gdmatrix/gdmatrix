@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.security;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,6 +43,8 @@ import static org.santfeliu.security.web.SecurityConfigBean.getPort;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.webapp.util.RowStyleClassGenerator;
 
 /**
  *
@@ -222,5 +223,12 @@ public class RoleUsersTabBean extends TabBean
       error(ex);
     }
   }
+  
+  public String getRowStyleClass(Object row)
+  {
+    RowStyleClassGenerator styleClassGenerator = 
+      new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
+    return styleClassGenerator.getStyleClass(row);
+  }  
 
 }

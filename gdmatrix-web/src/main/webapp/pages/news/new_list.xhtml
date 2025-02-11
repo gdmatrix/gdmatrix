@@ -9,7 +9,7 @@
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{newFinderBean.firstRow}"
-               rowStyleClass="#{row.newId == newObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{newFinderBean.getRowStyleClass(row)}#{row.newId == newObjectBean.objectId ? ' current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
                rows="#{newFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50"

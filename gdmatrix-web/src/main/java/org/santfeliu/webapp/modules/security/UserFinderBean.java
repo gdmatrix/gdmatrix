@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.security;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -208,6 +207,12 @@ public class UserFinderBean extends FinderBean
     setPageSize((Integer)stateArray[5]);    
   }
 
+  public String getRowStyleClass(Object row)
+  {
+    User user = (User)row;
+    return (user.isLocked() ? "locked" : "");
+  }
+  
   private void doFind(boolean autoLoad)
   {
     try

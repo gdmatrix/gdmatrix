@@ -12,7 +12,8 @@
     <!-- Results table -->
     <p:dataTable id="user_roles_table" value="#{userRolesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true"  rows="10"
+                 resizableColumns="false" showGridlines="true" rows="10"
+                 rowStyleClass="#{userRolesTabBean.getRowStyleClass(row)}"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{userRolesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

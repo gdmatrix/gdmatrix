@@ -52,6 +52,8 @@ import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.webapp.util.RowStyleClassGenerator;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -314,5 +316,12 @@ public class PersonCasesTabBean extends TabBean
       error(ex);
     }
   }
+  
+  public String getRowStyleClass(Object row)
+  {
+    RowStyleClassGenerator styleClassGenerator = 
+      new DateTimeRowStyleClassGenerator("startDate", "endDate", null);
+    return styleClassGenerator.getStyleClass(row);
+  }  
 
 }

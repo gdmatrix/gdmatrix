@@ -75,3 +75,8 @@
 {  
   margin-top: 10px;
 }
+
+.ui-datatable tr.locked
+{
+  color: var(--surface-500) !important;  
+}

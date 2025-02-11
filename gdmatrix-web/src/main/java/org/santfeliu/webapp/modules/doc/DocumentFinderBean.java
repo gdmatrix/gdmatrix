@@ -470,6 +470,7 @@ public class DocumentFinderBean extends FinderBean
       DocumentDataTableRow dataTableRow =
         new DocumentDataTableRow(document.getDocId(), document.getDocTypeId());
       dataTableRow.setValues(this, document, getTableProperties());
+      dataTableRow.setStyleClass(getRowStyleClass(document));      
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
@@ -499,6 +500,15 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
+  private String getRowStyleClass(Document document)
+  {
+    if (document.getState() != null)
+    {
+      return document.getState().value().toLowerCase();
+    }
+    return "";
+  }
+  
   public static class DocumentDataTableRow extends DataTableRow
   {
     private String contentId;

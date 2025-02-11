@@ -12,7 +12,8 @@
     <!-- Results table -->
     <p:dataTable id="policy_classes_table" value="#{policyClassesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true"  rows="10"
+                 resizableColumns="false" showGridlines="true" rows="10"
+                 rowStyleClass="#{policyClassesTabBean.getRowStyleClass(row)}"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{policyClassesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

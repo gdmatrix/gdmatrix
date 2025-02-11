@@ -1,0 +1,4 @@
+.ui-datatable tr.deleted
+{
+  color: var(--surface-500) !important;  
+}

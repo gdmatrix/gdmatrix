@@ -50,6 +50,8 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.webapp.util.RowStyleClassGenerator;
 /**
  *
  * @author blanquepa
@@ -221,6 +223,14 @@ public class NewFinderBean extends FinderBean
       error(ex);
     }
   }
+  
+  public String getRowStyleClass(Object row)
+  {
+    RowStyleClassGenerator styleClassGenerator = 
+      new DateTimeRowStyleClassGenerator("startDate,startTime",
+      "endDate,endTime", null);
+    return styleClassGenerator.getStyleClass(row);
+  }
 
   private void doFind(boolean autoLoad)
   {
@@ -353,5 +363,5 @@ public class NewFinderBean extends FinderBean
     }
     return sections;
   }
-
+  
 }

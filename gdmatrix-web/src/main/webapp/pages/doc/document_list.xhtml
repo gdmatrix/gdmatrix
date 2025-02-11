@@ -6,12 +6,14 @@
   xmlns:gdm="http://gdmatrix.org/faces"
   xmlns:jsf="http://xmlns.jcp.org/jsf">
 
+  <h:outputStylesheet library="css" name="doc.css" />      
+    
   <p:dataTable value="#{documentFinderBean.rows}" 
                var="row" stripedRows="true" 
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{documentFinderBean.firstRow}"
-               rowStyleClass="#{row.rowId == documentObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{row.styleClass}#{row.rowId == documentObjectBean.objectId ? ' current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="#{documentFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50"
