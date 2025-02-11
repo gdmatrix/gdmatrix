@@ -125,7 +125,8 @@ public class Quill extends UIInput
       context.getExternalContext().getRequestParameterMap();
     String value = params.get(inputParam);
 
-    if ("<br>".equals(value) || "<p><br></p>".equals(value))
+    if ("<br>".equals(value) || "<p><br></p>".equals(value) || 
+      "<p></p>".equals(value))
     {
       value = "";
     }
