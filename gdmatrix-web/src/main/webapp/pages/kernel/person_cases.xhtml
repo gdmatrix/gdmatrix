@@ -78,13 +78,13 @@
       </p:column>
       <p:column headerText="#{kernelBundle.personCases_startDate}" styleClass="col-1"
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('startDate')}"
-                sortBy="#{row.caseObject.startDate}">
-        <h:outputText value="#{row.caseObject.startDate}" converter="dateConverter"/>
+                sortBy="#{row.startDate}">
+        <h:outputText value="#{row.startDate}" converter="dateConverter"/>
       </p:column>  
       <p:column headerText="#{kernelBundle.personCases_endDate}" styleClass="col-1"
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('endDate')}"
-                sortBy="#{row.caseObject.endDate}">
-        <h:outputText value="#{row.caseObject.endDate}" converter="dateConverter"/>
+                sortBy="#{row.endDate}">
+        <h:outputText value="#{row.endDate}" converter="dateConverter"/>
       </p:column>        
       <p:column headerText="#{kernelBundle.personCases_comments}" 
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}"
