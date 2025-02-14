@@ -59,10 +59,11 @@ class LegendControl
         const ul = document.createElement("ul");
         ul.className = "legend";
         bodyDiv.appendChild(ul);
-
+        
         for (let childNode of legend.children)
         {
           this.populateNode(childNode, ul);
+          childNode.parent = legend;
         }
         this.updateLegendStyle();
       }
@@ -124,14 +125,15 @@ class LegendControl
       event.preventDefault();
       if (node.layerId) // layer node
       {
-        if (node.parent?.mode === "single")
-        {
-          this.changeSingleNodeVisibility(node);
-        }
-        else
-        {
-          this.changeNodeVisibility(node, "toggle");
-        }
+        this.changeNodeVisibility(node, "toggle");
+//        if (node.parent?.mode === "single")
+//        {
+//          this.changeSingleNodeVisibility(node);
+//        }
+//        else
+//        {
+//          this.changeNodeVisibility(node, "toggle");
+//        }
       }
       else // group node
       {
@@ -145,14 +147,14 @@ class LegendControl
             this.changeNodeVisibility(node.children[0], "visible");
           };
         }
-        else if (node.parent?.mode === "single")
-        {
-          this.changeSingleNodeVisibility(node);
-        }
         else
         {
           this.changeNodeVisibility(node, groupVisible ? "none" : "visible");
         }
+//        if (node.parent?.mode === "single")
+//        {
+//          this.changeSingleNodeVisibility(node);
+//        }
       }
       this.updateLegendStyle();
     });
@@ -172,26 +174,26 @@ class LegendControl
     }
   }
 
-  changeSingleNodeVisibility(node)
-  {
-    let visibleNode = null;
-    for (let childNode of node.parent.children)
-    {
-      if (childNode.link?.firstElementChild?.className === "pi pi-eye")
-      {
-        visibleNode = childNode;
-        break;
-      }
-    }
-    if (visibleNode)
-    {
-      this.changeNodeVisibility(visibleNode, "none");
-    }
-    if (visibleNode !== node)
-    {
-      this.changeNodeVisibility(node, "visible");
-    }    
-  }
+//  changeSingleNodeVisibility(node)
+//  {
+//    let visibleNode = null;
+//    for (let childNode of node.parent.children)
+//    {
+//      if (childNode.link?.firstElementChild?.className === "pi pi-eye")
+//      {
+//        visibleNode = childNode;
+//        break;
+//      }
+//    }
+//    if (visibleNode)
+//    {
+//      this.changeNodeVisibility(visibleNode, "none");
+//    }
+//    if (visibleNode !== node)
+//    {
+//      this.changeNodeVisibility(node, "visible");
+//    }
+//  }
 
   addNodeGraphicAndLabel(node, link)
   {
@@ -301,6 +303,7 @@ class LegendControl
 
       const div = document.createElement("div");
       div.appendChild(labelSpan);
+      div.classList.add("url");
       div.appendChild(img);
       link.appendChild(div);
       link.classList.add("align-items-start");    
@@ -425,8 +428,6 @@ class LegendControl
 
   changeNodeVisibility(node, mode = "toggle", sourceSet = null)
   {
-    console.info(node.label, mode);
-    
     const map = this.map;
     const layerId = node.layerId || null;
     if (sourceSet === null) sourceSet = new Set();
@@ -439,6 +440,7 @@ class LegendControl
       if (mode === "visible")
       {
         layer.metadata.visible = true;
+        this.hideSingleLayers(node);
       }
       else if (mode === "none")
       {
@@ -449,6 +451,7 @@ class LegendControl
         if (layer.metadata.visible === false)
         {
           layer.metadata.visible = true;
+          this.hideSingleLayers(node);
         }
         else
         {
@@ -488,8 +491,26 @@ class LegendControl
 
       setTimeout(() =>
         map.setLayoutProperty(masterLayerId, "visibility", visibility), 100);
+    }   
+  }
+  
+  hideSingleLayers(node)
+  {
+    if (node.parent)
+    {
+      if (node.parent.mode === "single")
+      {
+        for (let childNode of node.parent.children)
+        {
+          if (childNode !== node)
+          {
+            this.changeNodeVisibility(childNode, "none");
+          }
+        }
+      }
+      this.hideSingleLayers(node.parent);
     }
-  }  
+  }
 }
 
 export { LegendControl };
