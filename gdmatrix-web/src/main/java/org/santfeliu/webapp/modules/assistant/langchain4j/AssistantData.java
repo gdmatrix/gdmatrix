@@ -30,20 +30,22 @@
  */
 package org.santfeliu.webapp.modules.assistant.langchain4j;
 
-import dev.langchain4j.agent.tool.ToolExecutionRequest;
-import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
-import dev.langchain4j.model.StreamingResponseHandler;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
-import dev.langchain4j.model.output.Response;
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -173,7 +175,7 @@ public class AssistantData
     return apiKey;
   }
 
-  class Generator implements StreamingResponseHandler<AiMessage>
+  class Generator implements StreamingChatResponseHandler
   {
     final List<ChatMessage> memory = new ArrayList<>();
     final List<ToolSpecification> tools = new ArrayList<>();
@@ -197,15 +199,15 @@ public class AssistantData
     }
 
     @Override
-    public void onNext(String token)
+    public void onPartialResponse(String token)
     {
       listener.onNext(token);
     }
 
     @Override
-    public void onComplete(Response<AiMessage> response)
+    public void onCompleteResponse(ChatResponse chatResponse)
     {
-      processAiResponse(response);
+      processChatResponse(chatResponse);
     }
 
     @Override
@@ -237,31 +239,49 @@ public class AssistantData
       {
         if (tools.isEmpty())
         {
-          Response<AiMessage> response = model.generate(memory);
-          processAiResponse(response);
+          ChatResponse chatResponse = model.chat(memory);
+          processChatResponse(chatResponse);
         }
         else
         {
-          Response<AiMessage> response = model.generate(memory, tools);
-          processAiResponse(response);
+          ChatRequestParameters parameters = ChatRequestParameters.builder()
+            .toolSpecifications(tools)
+            .build();
+
+          ChatRequest chatRequest = new ChatRequest.Builder()
+            .messages(memory)
+            .parameters(parameters)
+            .build();
+
+          ChatResponse chatResponse = model.chat(chatRequest);
+          processChatResponse(chatResponse);
         }
       }
       else // streaming
       {
         if (tools.isEmpty())
         {
-          streamingModel.generate(memory, this);
+          streamingModel.chat(memory, this);
         }
         else
         {
-          streamingModel.generate(memory, tools, this);
+          ChatRequestParameters parameters = ChatRequestParameters.builder()
+            .toolSpecifications(tools)
+            .build();
+
+          ChatRequest chatRequest = new ChatRequest.Builder()
+            .messages(memory)
+            .parameters(parameters)
+            .build();
+
+          streamingModel.chat(chatRequest, this);
         }
       }
     }
 
-    private void processAiResponse(Response<AiMessage> response)
+    private void processChatResponse(ChatResponse chatResponse)
     {
-      AiMessage aiMessage = response.content();
+      AiMessage aiMessage = chatResponse.aiMessage();
       memory.add(aiMessage);
       listener.onMessage(aiMessage);
 
@@ -283,7 +303,7 @@ public class AssistantData
         {
           listener.onNext(aiMessage.text());
         }
-        listener.onComplete(response.finishReason());
+        listener.onComplete(chatResponse.finishReason());
       }
     }
   }

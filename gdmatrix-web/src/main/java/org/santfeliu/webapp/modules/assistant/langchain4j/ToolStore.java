@@ -30,10 +30,8 @@
  */
 package org.santfeliu.webapp.modules.assistant.langchain4j;
 
-import dev.langchain4j.agent.tool.JsonSchemaProperty;
-import static dev.langchain4j.agent.tool.JsonSchemaProperty.description;
-import static dev.langchain4j.agent.tool.JsonSchemaProperty.type;
 import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +76,8 @@ public class ToolStore
   private ToolSpecification createToolSpecification(String toolName)
     throws Exception
   {
-    ToolSpecification.Builder builder = ToolSpecification.builder();
-    builder.name(toolName);
+    ToolSpecification.Builder toolBuilder = ToolSpecification.builder();
+    toolBuilder.name(toolName);
 
     ScriptClient scriptClient = new ScriptClient();
     scriptClient.refreshCache();
@@ -92,53 +90,78 @@ public class ToolStore
       Callable fn = (Callable)value;
       Scriptable definition = (Scriptable)scriptClient.execute(fn);
       String description = ((String)definition.get("description", scope));
-      builder.description(description);
+      toolBuilder.description(description);
 
       Scriptable parameters = (Scriptable)definition.get("parameters", scope);
       if (parameters != null)
       {
+        JsonObjectSchema.Builder paramBuilder = JsonObjectSchema.builder();
+        List<String> requiredParams = new ArrayList<>();
+
         for (Object id : parameters.getIds())
         {
           if (id instanceof String)
           {
-            List<JsonSchemaProperty> properties = new ArrayList<>();
             String paramName = (String)id;
             Scriptable scriptParam = (Scriptable)parameters.get(paramName, scope);
             String paramType = (String)scriptParam.get("type", scope);
-            if (paramType != null)
-            {
-              properties.add(type(paramType));
-            }
             String paramDesc = (String)scriptParam.get("description", scope);
-            if (paramDesc != null)
+            boolean isRequired = Boolean.TRUE.equals(scriptParam.get("required", scope));
+
+            if (paramType.equalsIgnoreCase("boolean"))
             {
-              properties.add(description(paramDesc));
+              if (paramDesc == null)
+              {
+                paramBuilder.addBooleanProperty(paramName);
+              }
+              else
+              {
+                paramBuilder.addBooleanProperty(paramName, paramDesc);
+              }
             }
-            boolean required = Boolean.TRUE.equals(scriptParam.get("required", scope));
-            if (required)
+            else if (paramType.equalsIgnoreCase("number"))
             {
-              builder.addParameter(paramName, properties);
+              if (paramDesc == null)
+              {
+                paramBuilder.addNumberProperty(paramName);
+              }
+              else
+              {
+                paramBuilder.addNumberProperty(paramName, paramDesc);
+              }
             }
-            else
+            else if (paramType.equalsIgnoreCase("integer"))
             {
-              builder.addOptionalParameter(paramName, properties);
+              if (paramDesc == null)
+              {
+                paramBuilder.addIntegerProperty(paramName);
+              }
+              else
+              {
+                paramBuilder.addIntegerProperty(paramName, paramDesc);
+              }
+            }
+            else // string
+            {
+              if (paramDesc == null)
+              {
+                paramBuilder.addStringProperty(paramName);
+              }
+              else
+              {
+                paramBuilder.addStringProperty(paramName, paramDesc);
+              }
+            }
+
+            if (isRequired)
+            {
+              requiredParams.add(paramName);
             }
           }
         }
+        toolBuilder.parameters(paramBuilder.required(requiredParams).build());
       }
     }
-    return builder.build();
+    return toolBuilder.build();
   }
-
-
-//  private ToolSpecification createToolSpecification(String toolName)
-//  {
-//    ToolSpecification toolSpec = ToolSpecification.builder()
-//    .name(toolName)
-//      .description("Retorna l'estat de la meva queixa ciutadana")
-//      .addParameter("queixa_id", type("string"), description("Identificador de la queixa ciutadana"))
-//      .build();
-//    return toolSpec;
-//  }
-
 }

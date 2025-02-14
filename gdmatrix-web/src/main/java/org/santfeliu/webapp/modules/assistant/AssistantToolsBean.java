@@ -33,6 +33,11 @@ package org.santfeliu.webapp.modules.assistant;
 import com.google.gson.Gson;
 import dev.langchain4j.agent.tool.ToolParameters;
 import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.model.chat.request.json.JsonBooleanSchema;
+import dev.langchain4j.model.chat.request.json.JsonIntegerSchema;
+import dev.langchain4j.model.chat.request.json.JsonNumberSchema;
+import dev.langchain4j.model.chat.request.json.JsonSchemaElement;
+import dev.langchain4j.model.chat.request.json.JsonStringSchema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -153,13 +158,26 @@ public class AssistantToolsBean extends WebBean implements Serializable
   public String getParameterType(String name)
   {
     if (toolSpecification == null) return null;
-    return (String)toolSpecification.parameters().properties().get(name).get("type");
+    JsonSchemaElement schema = toolSpecification.parameters().properties().get(name);
+    if (schema instanceof JsonStringSchema) return "string";
+    else if (schema instanceof JsonNumberSchema) return "number";
+    else if (schema instanceof JsonIntegerSchema) return "integer";
+    else if (schema instanceof JsonBooleanSchema) return "boolean";
+    return String.valueOf(schema);
   }
 
   public String getParameterDescription(String name)
   {
     if (toolSpecification == null) return null;
-    return (String)toolSpecification.parameters().properties().get(name).get("description");
+    JsonSchemaElement schema = toolSpecification.parameters().properties().get(name);
+    try
+    {
+      return (String)schema.getClass().getMethod("description").invoke(schema);
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
   }
 
   public void addTool()
