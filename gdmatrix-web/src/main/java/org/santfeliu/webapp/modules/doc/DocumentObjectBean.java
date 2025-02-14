@@ -87,7 +87,7 @@ import org.santfeliu.web.UserSessionBean;
 public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();
-  private transient List<Document> versions;
+  private List<Document> versions;
   private String formSelector;
 
   /* new content */
@@ -550,12 +550,13 @@ public class DocumentObjectBean extends ObjectBean
 
   public void loadVersion(int version)
   {
+    System.out.println(">>> loadVersion " + version);
     if (!NEW_OBJECT_ID.equals(objectId) && document.getVersion() != version)
     {
       try
       {
         document = getPort(false).loadDocument(
-          objectId, -version, ContentInfo.METADATA);
+          objectId, version, ContentInfo.METADATA);
       }
       catch (Exception ex)
       {
