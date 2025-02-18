@@ -827,6 +827,8 @@ public class KernelManager implements KernelManagerPort
       StringUtils.isBlank(globalFilter.getDescription()) &&
       StringUtils.isBlank(globalFilter.getNumber()) &&
       StringUtils.isBlank(globalFilter.getGisReference()) &&
+      StringUtils.isBlank(globalFilter.getCadastralReference()) &&
+      StringUtils.isBlank(globalFilter.getCiv()) &&
       globalFilter.getMaxResults() == 0)
       throw new WebServiceException("FILTER_NOT_ALLOWED");
 
@@ -3057,6 +3059,12 @@ public class KernelManager implements KernelManagerPort
 
     String gisReference = filter.getGisReference();
     query.setParameter("gisReference", gisReference);
+
+    String cadastralReference = filter.getCadastralReference();
+    query.setParameter("cadastralReference", cadastralReference);
+
+    String civ = filter.getCiv();
+    query.setParameter("civ", civ);
 
     String comments = filter.getComments();
     if (comments != null)

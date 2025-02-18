@@ -125,6 +125,12 @@
       <p:inputText  value="#{personObjectBean.person.motherName}"  />
     </div>
 
+    <emcomp:auditData creationDateTime="#{personObjectBean.person.creationDateTime}"
+                      creationUserId="#{personObjectBean.person.creationUserId}"
+                      changeDateTime="#{personObjectBean.person.changeDateTime}"
+                      changeUserId="#{personObjectBean.person.changeUserId}"
+                      rendered="#{!personObjectBean.new}" />
+    
   </div>
-
+  
 </ui:composition>

@@ -53,6 +53,14 @@
       </property>
       <property name="motherName" type="xs:string" minOccurs="0">
       </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
     </entity>
 
     <entity name="Contact">
@@ -108,7 +116,19 @@
       </property>
       <property name="gisReference" type="xs:string" minOccurs="0">
       </property>
+      <property name="cadastralReference" type="xs:string" minOccurs="0">
+      </property>
+      <property name="civ" type="xs:string" minOccurs="0">
+      </property>
       <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
       </property>
     </entity>
 
@@ -419,6 +439,10 @@
       <property name="postOfficeBox" type="xs:string" minOccurs="0">
       </property>
       <property name="gisReference" type="xs:string" minOccurs="0">
+      </property>
+      <property name="cadastralReference" type="xs:string" minOccurs="0">
+      </property>
+      <property name="civ" type="xs:string" minOccurs="0">
       </property>
       <property name="comments" type="xs:string" minOccurs="0">
       </property>

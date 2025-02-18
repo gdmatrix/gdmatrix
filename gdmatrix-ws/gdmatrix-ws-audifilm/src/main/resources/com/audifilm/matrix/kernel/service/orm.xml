@@ -53,6 +53,8 @@
         (:floor IS NULL OR lower(trim(a.floor)) = :floor) AND
         (:door IS NULL OR lower(trim(a.door)) = :door) AND
         (:gisReference IS NULL OR a.gisReference LIKE :gisReference) AND
+        (:cadastralReference IS NULL OR a.cadastralReference LIKE :cadastralReference) AND
+        (:civ IS NULL OR a.civ LIKE :civ) AND
         (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments) AND
         (a.baixasw is NULL OR a.baixasw &lt;&gt; '1' ) AND
         (:streetTypeId IS NULL OR lower(trim(a.street.streetTypeId)) = :streetTypeId)        
@@ -73,6 +75,8 @@
         (:floor IS NULL OR lower(trim(a.floor)) = :floor) AND
         (:door IS NULL OR lower(trim(a.door)) = :door) AND
         (:gisReference IS NULL OR a.gisReference LIKE :gisReference) AND
+        (:cadastralReference IS NULL OR a.cadastralReference LIKE :cadastralReference) AND
+        (:civ IS NULL OR a.civ LIKE :civ) AND
         (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments) AND
         (a.baixasw is NULL OR a.baixasw &lt;&gt; '1' ) AND
         (:streetTypeId IS NULL OR lower(trim(a.street.streetTypeId)) = :streetTypeId)
@@ -1464,6 +1468,12 @@
       </basic>
       <basic name="gisReference">
         <column name="GISCOD"/>
+      </basic>
+      <basic name="cadastralReference">
+        <column name="REFCADASTRAL"/>
+      </basic>
+      <basic name="civ">
+        <column name="CIV"/>
       </basic>
       <basic name="postalCode">
         <column name="DOMCP"/>

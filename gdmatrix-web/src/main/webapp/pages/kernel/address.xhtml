@@ -97,38 +97,42 @@
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
-              <p:inputText value="#{addressFinderBean.filter.streetName}"
-                           />
+              <p:inputText value="#{addressFinderBean.filter.streetName}" />
             </div>
 
             <div class="field col-12 md:col-4">
               <p:outputLabel for="@next" value="#{kernelBundle.address_number}" />
-              <p:inputText value="#{addressFinderBean.filter.number}"
-                           />
+              <p:inputText value="#{addressFinderBean.filter.number}" />
             </div>
 
             <div class="field col-12 md:col-4">
               <p:outputLabel for="@next" value="#{kernelBundle.address_floor}" />
-              <p:inputText value="#{addressFinderBean.filter.floor}"
-                           />
+              <p:inputText value="#{addressFinderBean.filter.floor}" />
             </div>
 
             <div class="field col-12 md:col-4">
               <p:outputLabel for="@next" value="#{kernelBundle.address_door}" />
-              <p:inputText value="#{addressFinderBean.filter.door}"
-                           />
+              <p:inputText value="#{addressFinderBean.filter.door}" />
             </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.address_gis_reference}" />
-              <p:inputText value="#{addressFinderBean.filter.gisReference}"
-                           />
+              <p:inputText value="#{addressFinderBean.filter.gisReference}" />
             </div>
 
             <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_cadastral_reference}" />
+              <p:inputText value="#{addressFinderBean.filter.cadastralReference}" />
+            </div>            
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_civ}" />
+              <p:inputText value="#{addressFinderBean.filter.civ}" />
+            </div>
+            
+            <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.address_comments}" />
-              <p:inputText value="#{addressFinderBean.filter.comments}"
-                           />
+              <p:inputText value="#{addressFinderBean.filter.comments}" />
             </div>
 
           </div>

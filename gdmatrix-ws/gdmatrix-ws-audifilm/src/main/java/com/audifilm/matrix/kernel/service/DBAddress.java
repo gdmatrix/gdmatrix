@@ -37,6 +37,8 @@ public class DBAddress extends DBEntityBase
   private String stdaplmod;
   private String baixasw;
   private String valdata;
+  private String cadastralReference;
+  private String civ;
 
   private DBStreet street;
 
@@ -361,10 +363,14 @@ public class DBAddress extends DBEntityBase
     this.floor = TextUtils.leftPadding(address.getFloor(), "00");
     this.door = TextUtils.leftPadding(address.getDoor(), "00");
 
-    this.comments = address.getComments();
-    this.gisReference = address.getGisReference();
     this.postalCode = address.getPostalCode();
     this.postOfficeBox = address.getPostOfficeBox();
+
+    this.gisReference = address.getGisReference();
+    this.cadastralReference = address.getCadastralReference();
+    this.civ = address.getCiv();
+
+    this.comments = address.getComments();
   }
 
   public void copyTo(WSEndpoint endpoint, Address address)
@@ -396,5 +402,18 @@ public class DBAddress extends DBEntityBase
     address.setBlock(block);
     address.setFloor(floor);
     address.setGisReference(gisReference);
+    address.setCadastralReference(cadastralReference);
+    address.setCiv(civ);
+
+    address.setCreationUserId(getStdugr());
+    address.setChangeUserId(getStdumod());
+    if (getStddgr() != null && getStdhgr() != null)
+    {
+      address.setCreationDateTime(getStddgr() + getStdhgr());
+    }
+    if (getStddmod() != null && getStdhmod() != null)
+    {
+      address.setChangeDateTime(getStddmod() + getStdhmod());
+    }
   }
 }

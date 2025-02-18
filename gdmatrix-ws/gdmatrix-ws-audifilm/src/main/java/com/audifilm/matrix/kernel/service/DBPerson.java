@@ -24,7 +24,7 @@ public class DBPerson extends DBEntityBase
   private String nationalityId; // countryId
   private String birthCountryId;
   private String birthProvinceId;
-  private String birthCityId;  
+  private String birthCityId;
   private String fatherName;
   private String motherName;
   private int persvnum;
@@ -344,7 +344,7 @@ public class DBPerson extends DBEntityBase
     this.idiocod = idiocod;
   }
 
-  
+
 
   /* helper methods */
   public String getFullName()
@@ -361,7 +361,7 @@ public class DBPerson extends DBEntityBase
       buffer.append(" ").append(secondSurname);
     return buffer.toString();
   }
-  
+
   public String getNif()
   {
     if (nifnum == null) return null;
@@ -380,7 +380,7 @@ public class DBPerson extends DBEntityBase
     this.personType = DicTypeAdmin
       .getInstance(com.audifilm.matrix.dic.service.person.PersonType.class)
       .toLocalId(endpoint, person.getPersonTypeId());
-    
+
     this.name = person.getName();
     if (this.name != null)
     {
@@ -484,12 +484,21 @@ public class DBPerson extends DBEntityBase
     if (birthCityId != null)
     {
       person.setBirthCityId(
-        birthCountryId + KernelManager.PK_SEPARATOR + birthProvinceId + 
+        birthCountryId + KernelManager.PK_SEPARATOR + birthProvinceId +
         KernelManager.PK_SEPARATOR + birthCityId);
     }
     person.setFatherName(fatherName);
     person.setMotherName(motherName);
 
-
+    person.setCreationUserId(getStdugr());
+    person.setChangeUserId(getStdumod());
+    if (getStddgr() != null && getStdhgr() != null)
+    {
+      person.setCreationDateTime(getStddgr() + getStdhgr());
+    }
+    if (getStddmod() != null && getStdhmod() != null)
+    {
+      person.setChangeDateTime(getStddmod() + getStdhmod());
+    }
   }
 }
