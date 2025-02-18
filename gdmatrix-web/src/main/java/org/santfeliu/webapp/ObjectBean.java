@@ -429,6 +429,8 @@ public abstract class ObjectBean extends BaseBean
   {
     ActionObject actionObject = new ActionObject(object);
     actionObject.setMainObject(getObject());
+
+    ScriptClient client;
     try
     {
       ObjectSetup setup = getObjectSetup();
@@ -441,9 +443,17 @@ public abstract class ObjectBean extends BaseBean
         !setup.containsAction(actionName))
       {
         return actionObject;
-      }
-
-      ScriptClient client = getScriptClient(setup.getScriptName());
+      }      
+      client = getScriptClient(setup.getScriptName());
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+      return actionObject;
+    }
+    
+    if (client != null)
+    {
       Object callable = client.get(actionName);
       if (callable instanceof Callable)
       {
@@ -465,10 +475,6 @@ public abstract class ObjectBean extends BaseBean
         }
       }
     }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
 
     return actionObject;
   }
@@ -478,6 +484,8 @@ public abstract class ObjectBean extends BaseBean
     ActionObject actionObject =
       new ActionObject(object, getActiveEditTab().getSubviewId());
     actionObject.setMainObject(getObject());
+    
+    ScriptClient client = null;
     try
     {
       ObjectSetup setup = getObjectSetup();
@@ -491,8 +499,15 @@ public abstract class ObjectBean extends BaseBean
       {
         return actionObject;
       }
-
-      ScriptClient client = getScriptClient(setup.getScriptName());
+      client = getScriptClient(setup.getScriptName());
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    if (client != null)
+    {
       Object callable = client.get(actionName);
       if (callable instanceof Callable)
       {
@@ -518,10 +533,6 @@ public abstract class ObjectBean extends BaseBean
         }
         addFacesMessages(actionObject.getMessages());
       }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
     }
 
     return actionObject;
