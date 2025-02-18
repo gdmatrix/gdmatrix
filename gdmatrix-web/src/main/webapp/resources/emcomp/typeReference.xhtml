@@ -57,6 +57,7 @@
                         size="#{cc.attrs.size}"
                         scrollHeight="#{cc.attrs.scrollHeight}"
                         onclick="this.setSelectionRange(0, this.value.length)"
+                        onkeydown="if(event.keyCode===13)event.preventDefault()"
                         onchange="this.input.trigger('select')"
                         required="#{cc.attrs.required}"
                         disabled="#{cc.attrs.disabled}"

@@ -54,6 +54,7 @@
                         size="#{cc.attrs.size}"
                         scrollHeight="#{cc.attrs.scrollHeight}"
                         onclick="this.setSelectionRange(0, this.value.length)"
+                        onkeydown="if(event.keyCode===13)event.preventDefault()"
                         required="#{cc.attrs.required}"
                         widgetVar="#{cc.attrs.widgetVar}"
                         disabled="#{cc.attrs.disabled}">
