@@ -356,6 +356,7 @@ public class NavigatorBean extends WebBean implements Serializable
     if (objectId == null) objectId = baseTypeInfo.getObjectId();
 
     selectLeap.setSelectedObjectId(objectId);
+    selectLeap.setSelectedTypeId(baseTypeInfo.getBaseTypeId());
 
     return execute(selectLeap);
   }
@@ -543,9 +544,9 @@ public class NavigatorBean extends WebBean implements Serializable
 
     ObjectBean objectBean = baseTypeInfo.getObjectBean();
     if (objectBean != null)
-    {
+    {   
       leap.construct(objectBean);
-
+      
       baseTypeInfo.visit(objectBean.getObjectId());
       lastBaseTypeId = baseTypeInfo.getBaseTypeId();
       history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
@@ -918,10 +919,10 @@ public class NavigatorBean extends WebBean implements Serializable
       }
     }
 
-    void restoreTabBeansState(List<EditTab> tabs)
+    void restoreTabBeansState(List<EditTab> tabs, String objectId)
     {
       String baseTypeId = getBaseTypeId();
-      String objectId = getObjectId();
+      if (objectId == null) objectId = getObjectId();
 
       for (EditTab tab : tabs)
       {
@@ -1134,6 +1135,7 @@ public class NavigatorBean extends WebBean implements Serializable
     final String selectExpression;
     final String jsAction;
     String selectedObjectId;
+    String selectedTypeId;
 
     public SelectLeap(String baseTypeId, String selectExpression, String jsAction)
     {
@@ -1152,6 +1154,11 @@ public class NavigatorBean extends WebBean implements Serializable
       this.selectedObjectId = selectedObjectId;
     }
 
+    public void setSelectedTypeId(String selectedTypeId)
+    {
+      this.selectedTypeId = selectedTypeId;
+    }
+    
     @Override
     public void construct(ObjectBean objectBean)
     {
@@ -1164,8 +1171,18 @@ public class NavigatorBean extends WebBean implements Serializable
 
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
       BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
-      baseTypeInfo.restoreBeanState(objectBean);
-      baseTypeInfo.restoreTabBeansState(objectBean.getEditTabs());
+      baseTypeInfo.restoreBeanState(objectBean);      
+      if (baseTypeId != null && baseTypeId.equals(selectedTypeId))
+      {
+        try
+        {
+          objectBean.loadObjectSetup();
+        }
+        catch (Exception ex)
+        {
+        }
+      }
+      baseTypeInfo.restoreTabBeansState(objectBean.getEditTabs(), objectId);      
       FinderBean finderBean = objectBean.getFinderBean();
       finderBean.clear();
       baseTypeInfo.restoreBeanState(finderBean);
