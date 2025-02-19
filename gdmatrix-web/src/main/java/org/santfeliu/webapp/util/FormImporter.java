@@ -559,8 +559,8 @@ public class FormImporter
           List<View> radioViews = new ArrayList<>();
           findViews(form.getRootView(), reference, radioViews);
           SelectOneRadio selectOneRadio =
-            (SelectOneRadio)application.createComponent(SelectOneRadio.COMPONENT_TYPE);
-
+            (SelectOneRadio)application.createComponent(SelectOneRadio.COMPONENT_TYPE);          
+          
           for (View radioView : radioViews)
           {
             String radioId = radioView.getId();
@@ -580,6 +580,20 @@ public class FormImporter
             selectItem.setItemValue(itemValue);
             selectItem.setItemLabel(itemLabel);
             selectOneRadio.getChildren().add(selectItem);
+            if (selectOneRadio.getLayout() == null)
+            {
+              String layout = (String)radioView.getProperty("renderer");
+              if (layout != null) selectOneRadio.setLayout(layout);
+            }
+            if (!selectOneRadio.getAttributes().containsKey("viewStyleClass"))
+            {
+              String styleClass = (String)radioView.getProperty("class");
+              if (styleClass != null)
+              {
+                selectOneRadio.getAttributes().put("viewStyleClass", 
+                  styleClass);
+              }
+            }
           }
           importedReferences.add(reference);
           labelText = null;
@@ -729,6 +743,12 @@ public class FormImporter
         {
           styleClass += " col-12";
         }
+      }
+      else if (component instanceof SelectOneRadio)
+      {
+        String viewStyleClass = 
+          (String)component.getAttributes().get("viewStyleClass");
+        styleClass = (viewStyleClass != null ? viewStyleClass : "col-12");
       }
       else
       {
