@@ -51,6 +51,9 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.EditTab;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.enterprise.context.RequestScoped;
 import static org.santfeliu.webapp.setup.Action.POST_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_STORE_ACTION;
@@ -65,9 +68,19 @@ import static org.santfeliu.webapp.setup.Action.PRE_STORE_ACTION;
 @RequestScoped
 public class CaseObjectBean extends ObjectBean
 {
+  private static final DateTimeFormatter DAY_FORMATTER =
+    DateTimeFormatter.ofPattern("yyyyMMdd");
+  private static final DateTimeFormatter HOUR_FORMATTER =
+    DateTimeFormatter.ofPattern("HHmmss");  
+  
   private Case cas = new Case();
   private String formSelector;
 
+  private LocalDate startDate;
+  private String startTime;
+  private LocalDate endDate;
+  private String endTime;  
+  
   @Inject
   CaseTypeBean caseTypeBean;
 
@@ -102,6 +115,46 @@ public class CaseObjectBean extends ObjectBean
     this.formSelector = formSelector;
   }
 
+  public LocalDate getStartDate()
+  {
+    return startDate;
+  }
+
+  public void setStartDate(LocalDate startDate)
+  {
+    this.startDate = startDate;
+  }
+
+  public String getStartTime()
+  {
+    return startTime;
+  }
+
+  public void setStartTime(String startTime)
+  {
+    this.startTime = startTime;
+  }
+
+  public LocalDate getEndDate()
+  {
+    return endDate;
+  }
+
+  public void setEndDate(LocalDate endDate)
+  {
+    this.endDate = endDate;
+  }
+
+  public String getEndTime()
+  {
+    return endTime;
+  }
+
+  public void setEndTime(String endTime)
+  {
+    this.endTime = endTime;
+  }  
+  
   @Override
   public String getDescription()
   {
@@ -133,56 +186,6 @@ public class CaseObjectBean extends ObjectBean
       {
         currentClassIdList.add(classId);
       }
-    }
-  }
-
-  public Date getStartDate()
-  {
-    if (cas != null && cas.getStartDate() != null)
-    {
-      return TextUtils.parseInternalDate(cas.getStartDate());
-    }
-    else
-    {
-      return null;
-    }
-  }
-
-  public Date getEndDate()
-  {
-    if (cas != null && cas.getStartDate() != null)
-    {
-      return TextUtils.parseInternalDate(cas.getEndDate());
-    }
-    else
-    {
-      return null;
-    }
-  }
-
-  public void setStartDate(Date date)
-  {
-    if (cas != null)
-    {
-      if (date == null)
-      {
-        date = new Date();
-      }
-      cas.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
-      cas.setStartTime(TextUtils.formatDate(date, "HHmmss"));
-    }
-  }
-
-  public void setEndDate(Date date)
-  {
-    if (date != null && cas != null)
-    {
-      cas.setEndDate(TextUtils.formatDate(date, "yyyyMMdd"));
-    }
-    else if (date == null && cas != null)
-    {
-      cas.setEndDate(null);
-      cas.setEndTime(null);
     }
   }
 
@@ -248,10 +251,22 @@ public class CaseObjectBean extends ObjectBean
     formSelector = null;
 
     if (!NEW_OBJECT_ID.equals(objectId))
+    {
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
+      startDate = LocalDate.parse(cas.getStartDate(), DAY_FORMATTER);
+      startTime = cas.getStartTime();
+      endDate = (cas.getEndDate() != null ? 
+        LocalDate.parse(cas.getEndDate(), DAY_FORMATTER) : 
+        null);
+      endTime = cas.getEndTime();
+    }
     else
     {
       cas = new Case();
+      startDate = null;
+      startTime = null;
+      endDate = null;
+      endTime = null;      
       Type baseType =
         TypeCache.getInstance().getType(getBaseTypeInfo().getBaseTypeId());
       if (baseType.isInstantiable())
@@ -262,6 +277,11 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
+    setDefaultDateTimes();
+    cas.setStartDate(startDate.format(DAY_FORMATTER));
+    cas.setStartTime(startTime);
+    cas.setEndDate(endDate != null ? endDate.format(DAY_FORMATTER) : null);
+    cas.setEndTime(endTime);
     executeAction(PRE_STORE_ACTION, null, cas);
     cas = CasesModuleBean.getPort(false).storeCase(cas);
     setObjectId(cas.getCaseId());
@@ -292,7 +312,8 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public Serializable saveState()
   {
-    return new Object[] { cas, formSelector };
+    return new Object[] { cas, formSelector, startDate, startTime, endDate, 
+      endTime };
   }
 
   @Override
@@ -301,6 +322,10 @@ public class CaseObjectBean extends ObjectBean
     Object[] array = (Object[])state;
     this.cas = (Case) array[0];
     this.formSelector = (String)array[1];
+    this.startDate = (LocalDate)array[2];
+    this.startTime = (String)array[3];
+    this.endDate = (LocalDate)array[4];
+    this.endTime = (String)array[5];    
   }
 
   @Override
@@ -382,6 +407,30 @@ public class CaseObjectBean extends ObjectBean
       auxType = (superTypeId == null ? null : typeCache.getType(superTypeId));
     }
     return false;
-  }
+  } 
+  
+  private void setDefaultDateTimes()
+  {
+    if (startDate == null)
+    {
+      LocalDateTime now = LocalDateTime.now();
+      startDate = now.toLocalDate();
+      startTime = now.toLocalTime().format(HOUR_FORMATTER);
+      endDate = null;
+      endTime = null;
+    }
+    if (startTime == null)
+    {
+      startTime = "000000";
+    }
+    if (endDate == null && endTime != null)
+    {
+      endTime = null;
+    }
+    if (endDate != null && endTime == null)
+    {
+      endTime = (endDate.equals(startDate) ? startTime : "000000");
+    }
+  }  
 
 }

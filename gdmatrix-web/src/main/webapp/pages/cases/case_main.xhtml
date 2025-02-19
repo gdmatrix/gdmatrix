@@ -72,7 +72,7 @@
     <div class="field col-4 lg:col-2 xl:col-3">
       <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startTime', caseBundle.case_startTime)}" />
       <!-- TODO: disable if not editable -->
-      <p:inputText value="#{caseObjectBean.case.startTime}"
+      <p:inputText value="#{caseObjectBean.startTime}"
                    placeholder="HH:mm:ss"
                    disabled="#{!caseObjectBean.editable}" 
                    converter="TimeConverter" />
@@ -95,7 +95,7 @@
     <div class="field col-4 lg:col-2 xl:col-3">
       <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endTime', caseBundle.case_endTime)}" />
       <!-- TODO: disable if not editable -->
-      <p:inputText value="#{caseObjectBean.case.endTime}"
+      <p:inputText value="#{caseObjectBean.endTime}"
                    placeholder="HH:mm:ss"
                    disabled="#{!caseObjectBean.editable}" 
                    converter="TimeConverter"/>
