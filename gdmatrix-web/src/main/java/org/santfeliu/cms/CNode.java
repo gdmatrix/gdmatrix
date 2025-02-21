@@ -106,12 +106,15 @@ public class CNode
       for (List<Node> nodeList : auxMap.values())
       {
         nodeList = quicksortNodesByIndex(nodeList);
-        for (Node childNode : nodeList)
+        synchronized(this)
         {
-          CNode childCNode = new CNode(cWorkspace, childNode);
-          cWorkspace.putNode(childCNode, false);
-          cWorkspace.putParentChildren(childNode.getNodeId(),
-            childNode.getParentNodeId());
+          for (Node childNode : nodeList)
+          {
+            CNode childCNode = new CNode(cWorkspace, childNode);
+            cWorkspace.putNode(childCNode, false);      
+            cWorkspace.putParentChildren(childNode.getNodeId(),
+              childNode.getParentNodeId());
+          }
         }
       }
     }

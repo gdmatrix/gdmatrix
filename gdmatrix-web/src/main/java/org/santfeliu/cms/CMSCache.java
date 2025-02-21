@@ -78,10 +78,17 @@ public class CMSCache
       try
       {
         Workspace workspace = getPort().loadWorkspace(workspaceId);
-        cWorkspace = new CWorkspace(this, workspace, cWorkspaceCacheMaxSize);
-        putWorkspace(cWorkspace);
-        JMXUtils.registerMBean("CWorkspace_" + workspaceId,
-          cWorkspace.getCacheMBean());
+        synchronized(this)
+        {
+          cWorkspace = (CWorkspace)cWorkspaceMap.get(workspaceId);   
+          if (cWorkspace == null)
+          {
+            cWorkspace = new CWorkspace(this, workspace, cWorkspaceCacheMaxSize);
+            putWorkspace(cWorkspace);
+            JMXUtils.registerMBean("CWorkspace_" + workspaceId,
+              cWorkspace.getCacheMBean());
+          }
+        }
       }
       catch (Exception ex)
       {

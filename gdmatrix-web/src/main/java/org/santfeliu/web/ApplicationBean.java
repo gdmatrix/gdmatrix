@@ -136,7 +136,7 @@ public class ApplicationBean
     }
   }
 
-  public static ApplicationBean getInstance(ServletContext context)
+  public static synchronized ApplicationBean getInstance(ServletContext context)
   {
     ApplicationBean applicationBean =
       (ApplicationBean)context.getAttribute(BEAN_NAME);

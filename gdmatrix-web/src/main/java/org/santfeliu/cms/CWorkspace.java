@@ -73,7 +73,7 @@ public class CWorkspace
   private final int cacheMaxSize;
   private String mainNodeId = null;
   private String mobileMainNodeId = null;
-
+  
   public static final String NULL_MAIN_NODE = "-";
 
   public CWorkspace(CMSCache cmsCache, Workspace workspace, int cacheMaxSize)
@@ -121,7 +121,7 @@ public class CWorkspace
     {
       purgeParentChildren(nowMillis);
     }
-
+    
     CNode cNode = (CNode)cNodeMap.get(nodeId);
     if (cNode == null)
     {
@@ -380,7 +380,7 @@ public class CWorkspace
 
   //PARENTS MANAGEMENT METHODS
 
-  protected List<String> getSiblings(String nodeId)
+  protected synchronized List<String> getSiblings(String nodeId)
   {
     List<String> result = new ArrayList<>();
     String parentNodeId = getParent(nodeId);
@@ -401,7 +401,8 @@ public class CWorkspace
     return childrenMap.get(parentNodeId);
   }
 
-  protected void putParentChildren(String childNodeId, String parentNodeId)
+  protected synchronized void putParentChildren(String childNodeId, 
+    String parentNodeId)
   {
     parentsMap.put(childNodeId, parentNodeId);
     if (!childrenMap.containsKey(parentNodeId))
@@ -421,7 +422,7 @@ public class CWorkspace
     return parentsMap.get(childNodeId);
   }
 
-  private void removeParentChildren(String parentNodeId)
+  private synchronized void removeParentChildren(String parentNodeId)
   {
     if (childrenMap.containsKey(parentNodeId))
     {
