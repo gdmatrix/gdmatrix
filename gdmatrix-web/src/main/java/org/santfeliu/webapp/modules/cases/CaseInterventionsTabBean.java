@@ -487,15 +487,22 @@ public class CaseInterventionsTabBean extends TabBean
   @Override
   public void store() throws Exception
   {
-    String caseId = getObjectId();
-    editing.setCaseId(caseId);
-    editing = (Intervention) executeTabAction(PRE_TAB_STORE_ACTION, editing);
-    editing = CasesModuleBean.getPort(false).storeIntervention(editing);
-    executeTabAction(POST_TAB_STORE_ACTION, editing);
-    refreshHiddenTabInstances();
-    load();
-    editing = null;
-    growl("STORE_OBJECT");
+    try
+    {
+      String caseId = getObjectId();
+      editing.setCaseId(caseId);
+      editing = (Intervention) executeTabAction(PRE_TAB_STORE_ACTION, editing);
+      editing = CasesModuleBean.getPort(false).storeIntervention(editing);
+      executeTabAction(POST_TAB_STORE_ACTION, editing);
+      refreshHiddenTabInstances();
+      load();
+      editing = null;
+      growl("STORE_OBJECT");
+    }
+    catch(Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void cancel()
