@@ -5,6 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <p:dialog id="case_interventions_dialog" widgetVar="caseInterventionsDialog"
@@ -89,6 +90,7 @@
 
         <!-- Person -->
         <p:outputPanel styleClass="field col-12 md:col-6">
+          
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_person}"
                          styleClass="w-full" />
@@ -102,8 +104,19 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
-                                  disabled="#{!caseObjectBean.editable}">
+                                  disabled="#{!caseObjectBean.editable}"
+                                  rendered="#{empty caseInterventionsTabBean.casePersonViews}">
           </emcomp:objectReference>
+          
+          <p:selectOneMenu value="#{caseInterventionsTabBean.personId}"
+                           rendered="#{not empty caseInterventionsTabBean.casePersonViews}">
+            <f:selectItem itemValue="" itemLabel="" rendered="#{not caseInterventionsTabBean.singlePerson}" />
+            <f:selectItems value="#{caseInterventionsTabBean.casePersonViews}" 
+                           var="cpv" itemLabel="#{cpv.personView.fullName}" 
+                           itemValue="#{cpv.personView.personId}"/> 
+            
+          </p:selectOneMenu>
+          
         </p:outputPanel>
 
         <!-- Comments -->

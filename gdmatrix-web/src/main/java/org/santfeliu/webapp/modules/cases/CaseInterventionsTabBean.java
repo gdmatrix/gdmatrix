@@ -40,6 +40,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.cases.CasePersonFilter;
+import org.matrix.cases.CasePersonView;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
@@ -76,6 +78,8 @@ import org.santfeliu.webapp.util.WebUtils;
 @RequestScoped
 public class CaseInterventionsTabBean extends TabBean
 {
+  private static final String CASE_PERSON_TYPE_ID = "casePersonTypeId";
+  
   @Inject
   CaseTypeBean caseTypeBean;
 
@@ -131,6 +135,7 @@ public class CaseInterventionsTabBean extends TabBean
 
   private Intervention editing;
   private String formSelector;
+  private List<CasePersonView> casePersonViews;  
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -380,7 +385,7 @@ public class CaseInterventionsTabBean extends TabBean
   {
     return editing == null ? NEW_OBJECT_ID : editing.getIntTypeId();
   }
-
+  
   public void onPersonClear()
   {
     editing.setPersonId(null);
@@ -391,6 +396,7 @@ public class CaseInterventionsTabBean extends TabBean
     executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new Intervention();
     editing.setIntTypeId(getCreationTypeId());
+    setDefaultPerson(editing);    
     formSelector = null;
     executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
@@ -452,6 +458,7 @@ public class CaseInterventionsTabBean extends TabBean
     {
       if (intId != null)
       {
+        casePersonViews = null;
         executeTabAction(PRE_TAB_EDIT_ACTION, row);
         editing = CasesModuleBean.getPort(false).loadIntervention(intId);
         executeTabAction(POST_TAB_EDIT_ACTION, editing);
@@ -564,6 +571,54 @@ public class CaseInterventionsTabBean extends TabBean
       error(ex);
     }
   }
+  
+  public List<CasePersonView> getCasePersonViews()
+  {
+    if (casePersonViews != null)
+      return casePersonViews;
+    
+    casePersonViews = new ArrayList<>();   
+    
+    String casePersonTypeId = null;
+    EditTab tab = caseObjectBean.getActiveEditTab();
+    if (tab != null)
+      casePersonTypeId = tab.getProperties().getString(CASE_PERSON_TYPE_ID);
+    if (casePersonTypeId == null)
+      return casePersonViews;
+ 
+    try
+    {     
+      CasePersonFilter filter = new CasePersonFilter(); 
+      if (caseObjectBean.getObjectId() != null)
+      {
+        filter.setCaseId(caseObjectBean.getObjectId());
+        filter.setCasePersonTypeId(casePersonTypeId);
+        casePersonViews =
+          CasesModuleBean.getPort(false).findCasePersonViews(filter);
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    return casePersonViews;
+  }
+  
+  public boolean isSinglePerson()
+  {
+    return getCasePersonViews().size() == 1;
+  }
+  
+  private void setDefaultPerson(Intervention editing)
+  {
+    casePersonViews = null;
+    if (getCasePersonViews() != null && isSinglePerson())
+    {
+      String personId = getCasePersonViews().get(0).getPersonView().getPersonId();
+      editing.setPersonId(personId);
+    }
+  }   
 
   private List<CaseInterventionsDataTableRow> toDataTableRows(
     List<InterventionView> interventions) throws Exception
