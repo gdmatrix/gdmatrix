@@ -66,8 +66,8 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
-import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
@@ -113,9 +113,15 @@ public class CaseDocumentsTabBean extends TabBean
     List<CaseDocumentsDataTableRow> rows;
     int firstRow = 0;
     String currentVolume;
-    TypeSelectHelper typeSelectHelper =
-      new TypeSelectHelper<CaseDocumentsDataTableRow>()
+    RowsFilterHelper rowsFilterHelper =
+      new RowsFilterHelper<CaseDocumentsDataTableRow>()
     {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return CaseDocumentsTabBean.this.getObjectBean();
+      }
+      
       @Override
       public List<CaseDocumentsDataTableRow> getRows()
       {
@@ -130,27 +136,34 @@ public class CaseDocumentsTabBean extends TabBean
       }
 
       @Override
-      public String getBaseTypeId()
-      {
-        return CaseDocumentsTabBean.this.getTabBaseTypeId();
-      }
-
-      @Override
       public void resetFirstRow()
       {
         firstRow = 0;
       }
 
       @Override
-      public String getRowTypeId(CaseDocumentsDataTableRow row)
+      public List<TableProperty> getColumns() 
       {
-        return row.getTypeId();
+        return CaseDocumentsTabBean.this.getColumns();        
+      }
+
+      @Override
+      public String getFixedColumnValue(CaseDocumentsDataTableRow row, 
+        String columnName) 
+      {
+        return null; //No fixed columns        
+      }
+
+      @Override
+      public String getRowTypeId(CaseDocumentsDataTableRow row) 
+      {
+        return row.getTypeId();               
       }
     };
 
-    public TypeSelectHelper getTypeSelectHelper()
+    public RowsFilterHelper getRowsFilterHelper()
     {
-      return typeSelectHelper;
+      return rowsFilterHelper;
     }
   }
 
@@ -452,7 +465,7 @@ public class CaseDocumentsTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList2);
-        getCurrentTabInstance().typeSelectHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.load();
         executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
@@ -465,7 +478,7 @@ public class CaseDocumentsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.load();
       tabInstance.firstRow = 0;
     }
   }

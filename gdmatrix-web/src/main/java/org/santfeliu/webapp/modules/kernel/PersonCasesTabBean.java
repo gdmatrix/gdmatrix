@@ -46,7 +46,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
-import org.santfeliu.webapp.helpers.TypeSelectHelper;
+import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.modules.cases.CaseObjectBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
@@ -73,8 +73,15 @@ public class PersonCasesTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CasePersonView> rows;
     int firstRow = 0;
-    TypeSelectHelper typeSelectHelper = new TypeSelectHelper<CasePersonView>()
+    RowsFilterHelper rowsFilterHelper =
+      new RowsFilterHelper<CasePersonView>()
     {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return PersonCasesTabBean.this.getObjectBean();
+      }
+      
       @Override
       public List<CasePersonView> getRows()
       {
@@ -84,13 +91,8 @@ public class PersonCasesTabBean extends TabBean
       @Override
       public boolean isGroupedViewEnabled()
       {
-        return getGroupableRowsHelper().isGroupedViewEnabled();
-      }
-
-      @Override
-      public String getBaseTypeId()
-      {
-        return getTabBaseTypeId();
+        return PersonCasesTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
       }
 
       @Override
@@ -100,17 +102,48 @@ public class PersonCasesTabBean extends TabBean
       }
 
       @Override
-      public String getRowTypeId(CasePersonView row)
+      public List<TableProperty> getColumns() 
       {
-        return row.getCasePersonTypeId() != null ? row.getCasePersonTypeId() :
-          getTabBaseTypeId();
+        return Collections.EMPTY_LIST;
       }
 
+      @Override
+      public String getFixedColumnValue(CasePersonView row, 
+        String columnName) 
+      {
+        if ("caseId".equals(columnName))
+        {
+          return row.getCaseObject().getCaseId();
+        }
+        else if ("caseTitle".equals(columnName))
+        {
+          return row.getCaseObject().getTitle();
+        }
+        else if ("caseTypeId".equals(columnName))
+        {
+          return typeTypeBean.getTypeDescription(
+            row.getCaseObject().getCaseTypeId());
+        }
+        else if ("comments".equals(columnName))
+        {
+          return row.getComments();
+        }
+        else
+        {
+          return null;
+        }
+      }
+
+      @Override
+      public String getRowTypeId(CasePersonView row)
+      {
+        return row.getCasePersonTypeId();
+      }
     };
 
-    public TypeSelectHelper getTypeSelectHelper()
+    public RowsFilterHelper getRowsFilterHelper()
     {
-      return typeSelectHelper;
+      return rowsFilterHelper;
     }
   }
 
@@ -153,7 +186,7 @@ public class PersonCasesTabBean extends TabBean
       @Override
       public String getRowTypeColumnName()
       {
-        return "casePersonTypeId";
+        return null;
       }
 
       @Override
@@ -170,7 +203,7 @@ public class PersonCasesTabBean extends TabBean
         }
         else if ("caseTypeId".equals(columnName))
         {
-          return typeTypeBean.getDescription(
+          return typeTypeBean.getTypeDescription(
             casePersonView.getCaseObject().getCaseTypeId());
         }
         else if ("comments".equals(columnName))
@@ -275,7 +308,7 @@ public class PersonCasesTabBean extends TabBean
         List<CasePersonView> auxList =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
         setRows(auxList);
-        getCurrentTabInstance().typeSelectHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.load();
       }
       catch (Exception ex)
       {
@@ -287,7 +320,7 @@ public class PersonCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.load();
       tabInstance.firstRow = 0;
     }
   }

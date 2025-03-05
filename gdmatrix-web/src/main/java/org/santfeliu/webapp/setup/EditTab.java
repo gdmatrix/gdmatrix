@@ -56,6 +56,7 @@ public class EditTab implements Serializable
   private List<String> writeRoles = new ArrayList(); 
   private List<String> orderBy = new ArrayList();
   private String groupBy;
+  private String filterBy;
   private String typeId;
   private boolean showAllTypes = false;
 
@@ -198,6 +199,16 @@ public class EditTab implements Serializable
   public void setGroupBy(String groupBy)
   {
     this.groupBy = groupBy;
+  }
+
+  public String getFilterBy() 
+  {
+    return filterBy;
+  }
+
+  public void setFilterBy(String filterBy) 
+  {
+    this.filterBy = filterBy;
   }
 
   public String getTypeId()

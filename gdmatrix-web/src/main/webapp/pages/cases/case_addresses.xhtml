@@ -12,7 +12,7 @@
 
     <!-- Results table -->
     <p:dataTable id="case_addresses_table" 
-                 value="#{caseAddressesTabBean.tabInstances[tab.subviewId].typeSelectHelper.filteredRows}"
+                 value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="10"
                  size="small" paginatorPosition="bottom"
@@ -27,15 +27,15 @@
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
           <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
-                         rendered="#{caseAddressesTabBean.tabInstances[tab.subviewId].typeSelectHelper.renderCurrentTypeSelector}">
-            <p:outputLabel value="#{caseBundle.caseAddresses_type}:"
+                         rendered="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.renderFilterSelector}">
+            <p:outputLabel value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
-            <p:selectOneMenu value="#{caseAddressesTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeId}" touchable="true">
-              <f:selectItem itemLabel="" itemValue="" />
-              <f:selectItems value="#{caseAddressesTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeSelectItems}" />
-              <p:ajax event="valueChange" 
-                      listener="#{caseAddressesTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeChanged}"
+            <p:selectOneMenu value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" touchable="true">
+              <f:selectItem itemLabel="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
+              <f:selectItems value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueChanged}"
                       process="@this"
                       update="case_addresses_table" />
             </p:selectOneMenu>

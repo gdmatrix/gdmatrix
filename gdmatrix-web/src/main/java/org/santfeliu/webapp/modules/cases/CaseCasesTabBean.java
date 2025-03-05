@@ -55,8 +55,8 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
-import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
@@ -68,6 +68,7 @@ import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.DataTableRow.Value;
 import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
 import org.santfeliu.webapp.util.RowStyleClassGenerator;
@@ -97,8 +98,15 @@ public class CaseCasesTabBean extends TabBean
     List<CaseCasesDataTableRow> rows;
     int firstRow = 0;
     boolean relatedByPerson = false;
-    TypeSelectHelper typeSelectHelper = new TypeSelectHelper<CaseCasesDataTableRow>()
+    RowsFilterHelper rowsFilterHelper = 
+      new RowsFilterHelper<CaseCasesDataTableRow>()
     {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return CaseCasesTabBean.this.getObjectBean();        
+      }      
+
       @Override
       public List<CaseCasesDataTableRow> getRows()
       {
@@ -113,27 +121,34 @@ public class CaseCasesTabBean extends TabBean
       }
 
       @Override
-      public String getBaseTypeId()
-      {
-        return CaseCasesTabBean.this.getTabBaseTypeId();
-      }
-
-      @Override
       public void resetFirstRow()
       {
         firstRow = 0;
       }
 
       @Override
-      public String getRowTypeId(CaseCasesDataTableRow row)
+      public List<TableProperty> getColumns() 
       {
-        return row.getTypeId();
+        return CaseCasesTabBean.this.getColumns();        
       }
+
+      @Override
+      public String getFixedColumnValue(CaseCasesDataTableRow row, 
+        String columnName) 
+      {
+        return null; //No fixed columns        
+      }
+
+      @Override
+      public String getRowTypeId(CaseCasesDataTableRow row) 
+      {
+        return row.getTypeId();               
+      }      
     };
 
-    public TypeSelectHelper getTypeSelectHelper()
+    public RowsFilterHelper getRowsFilterHelper()
     {
-      return typeSelectHelper;
+      return rowsFilterHelper;
     }
   }
 
@@ -415,7 +430,7 @@ public class CaseCasesTabBean extends TabBean
               DictionaryConstants.CASE_CASE_TYPE : typeId;
             getCurrentTabInstance().rows = getResultsByDefault(typeId);
           }
-          getCurrentTabInstance().typeSelectHelper.load();
+          getCurrentTabInstance().rowsFilterHelper.load();
           executeTabAction(POST_TAB_LOAD_ACTION, null);
         }
       }
@@ -429,7 +444,7 @@ public class CaseCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.load();
       tabInstance.firstRow = 0;
     }
   }
@@ -691,6 +706,7 @@ public class CaseCasesTabBean extends TabBean
     private String caseIniDateTime;
     private String caseEndDateTime;
     private String personId; //If is related by person
+    private final CaseCaseView sourceRow;
 
     public CaseCasesDataTableRow(CaseCaseView row)
     {
@@ -719,6 +735,7 @@ public class CaseCasesTabBean extends TabBean
       }
       personId =
         DictionaryUtils.getPropertyValue(row.getProperty(), "personId");
+      sourceRow = row;
     }
 
     public boolean isReverseRelation()
@@ -789,6 +806,11 @@ public class CaseCasesTabBean extends TabBean
     public String getPersonId()
     {
       return personId;
+    }
+
+    public CaseCaseView getSourceRow() 
+    {
+      return sourceRow;
     }
 
     public String getPerson()

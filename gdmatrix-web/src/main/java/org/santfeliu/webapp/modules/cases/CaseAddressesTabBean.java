@@ -58,8 +58,8 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
-import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.AddressTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
@@ -98,9 +98,15 @@ public class CaseAddressesTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseAddressesDataTableRow> rows;
     int firstRow = 0;
-    TypeSelectHelper typeSelectHelper =
-      new TypeSelectHelper<CaseAddressesDataTableRow>()
+    RowsFilterHelper rowsFilterHelper =
+      new RowsFilterHelper<CaseAddressesDataTableRow>()
     {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return CaseAddressesTabBean.this.getObjectBean();
+      }
+      
       @Override
       public List<CaseAddressesDataTableRow> getRows()
       {
@@ -115,27 +121,34 @@ public class CaseAddressesTabBean extends TabBean
       }
 
       @Override
-      public String getBaseTypeId()
-      {
-        return CaseAddressesTabBean.this.getTabBaseTypeId();
-      }
-
-      @Override
       public void resetFirstRow()
       {
         firstRow = 0;
       }
 
       @Override
-      public String getRowTypeId(CaseAddressesDataTableRow row)
+      public List<TableProperty> getColumns() 
       {
-        return row.getTypeId();
+        return CaseAddressesTabBean.this.getColumns();        
+      }
+
+      @Override
+      public String getFixedColumnValue(CaseAddressesDataTableRow row, 
+        String columnName) 
+      {
+        return null; //No fixed columns        
+      }
+
+      @Override
+      public String getRowTypeId(CaseAddressesDataTableRow row) 
+      {
+        return row.getTypeId();               
       }
     };
 
-    public TypeSelectHelper getTypeSelectHelper()
+    public RowsFilterHelper getRowsFilterHelper()
     {
-      return typeSelectHelper;
+      return rowsFilterHelper;
     }
   }
 
@@ -410,7 +423,7 @@ public class CaseAddressesTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList2);
-        getCurrentTabInstance().typeSelectHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.load();
         executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
@@ -423,7 +436,7 @@ public class CaseAddressesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.load();
       tabInstance.firstRow = 0;
     }
   }

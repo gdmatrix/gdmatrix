@@ -507,6 +507,14 @@ public class ObjectSetup implements Serializable
     {
       editTab.setGroupBy(defaultGroupBy);
     }
+    
+    //FilterBy
+    String defaultFilterBy = defaultEditTab.getFilterBy();
+    String filterBy = editTab.getFilterBy();
+    if (defaultFilterBy != null && filterBy == null)
+    {
+      editTab.setFilterBy(defaultFilterBy);
+    }    
 
     //TypeId
     String defaultTypeId = defaultEditTab.getTypeId();

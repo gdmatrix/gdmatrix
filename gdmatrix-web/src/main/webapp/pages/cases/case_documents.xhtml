@@ -17,7 +17,7 @@
 
     <!-- Results table -->
     <p:dataTable id="case_documents_table"
-                 value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].typeSelectHelper.filteredRows}"
+                 value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="5"
                  size="small" paginatorPosition="bottom"
@@ -32,19 +32,19 @@
         <div class="flex w-12">
           <div class="flex flex-wrap flex-grow-1">
             <p:outputPanel styleClass="mr-4 mb-1 mt-1"
-                           rendered="#{caseDocumentsTabBean.tabInstances[tab.subviewId].typeSelectHelper.renderCurrentTypeSelector}">
-              <p:outputLabel value="#{caseBundle.caseDocuments_type}:"
+                           rendered="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.renderFilterSelector}">
+              <p:outputLabel value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                              styleClass="mr-2 vertical-align-middle"
                              for="@next" />
-              <p:selectOneMenu value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeId}" touchable="true">
-                <f:selectItem itemLabel="" itemValue="" />
-                <f:selectItems value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeSelectItems}" />
+              <p:selectOneMenu value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" touchable="true">
+                <f:selectItem itemLabel="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
+                <f:selectItems value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
                 <p:ajax event="valueChange"
-                        listener="#{caseDocumentsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeChanged}"
+                        listener="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueChanged}"
                         process="@this"
                         update="case_documents_table" />
               </p:selectOneMenu>
-            </p:outputPanel>
+            </p:outputPanel>          
             <div class="flex-grow-1 mb-1 mt-1">
               <p:outputLabel value="#{caseBundle.caseDocuments_volume}: "
                              styleClass="mr-2 vertical-align-middle"

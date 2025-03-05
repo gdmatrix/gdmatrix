@@ -52,8 +52,8 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
-import org.santfeliu.webapp.helpers.TypeSelectHelper;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
@@ -92,9 +92,15 @@ public class CaseInterventionsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseInterventionsDataTableRow> rows;
     int firstRow = 0;
-    TypeSelectHelper typeSelectHelper =
-      new TypeSelectHelper<CaseInterventionsDataTableRow>()
+    RowsFilterHelper rowsFilterHelper =
+      new RowsFilterHelper<CaseInterventionsDataTableRow>()
     {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return CaseInterventionsTabBean.this.getObjectBean();
+      }
+      
       @Override
       public List<CaseInterventionsDataTableRow> getRows()
       {
@@ -109,27 +115,34 @@ public class CaseInterventionsTabBean extends TabBean
       }
 
       @Override
-      public String getBaseTypeId()
-      {
-        return CaseInterventionsTabBean.this.getTabBaseTypeId();
-      }
-
-      @Override
       public void resetFirstRow()
       {
         firstRow = 0;
       }
 
       @Override
-      public String getRowTypeId(CaseInterventionsDataTableRow row)
+      public List<TableProperty> getColumns() 
       {
-        return row.getTypeId();
+        return CaseInterventionsTabBean.this.getColumns();        
+      }
+
+      @Override
+      public String getFixedColumnValue(CaseInterventionsDataTableRow row, 
+        String columnName) 
+      {
+        return null; //No fixed columns        
+      }
+
+      @Override
+      public String getRowTypeId(CaseInterventionsDataTableRow row) 
+      {
+        return row.getTypeId();               
       }
     };
 
-    public TypeSelectHelper getTypeSelectHelper()
+    public RowsFilterHelper getRowsFilterHelper()
     {
-      return typeSelectHelper;
+      return rowsFilterHelper;
     }
   }
 
@@ -430,7 +443,7 @@ public class CaseInterventionsTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
-        getCurrentTabInstance().typeSelectHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.load();
         executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
@@ -443,7 +456,7 @@ public class CaseInterventionsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().typeSelectHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.load();
       tabInstance.firstRow = 0;
     }
   }

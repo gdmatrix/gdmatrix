@@ -9,7 +9,7 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="person_events_table" value="#{personEventsTabBean.tabInstances[tab.subviewId].typeSelectHelper.filteredRows}"
+    <p:dataTable id="person_events_table" value="#{personEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom" 
@@ -21,21 +21,21 @@
       
       <f:facet name="header">        
         <div class="flex justify-content-end w-12">
-          
+
           <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
-                         rendered="#{personEventsTabBean.tabInstances[tab.subviewId].typeSelectHelper.renderCurrentTypeSelector}">
-            <p:outputLabel value="#{caseBundle.caseCases_type}:"
+                         rendered="#{personEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.renderFilterSelector}">
+            <p:outputLabel value="#{personEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
-            <p:selectOneMenu value="#{personEventsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeId}" touchable="true">
-              <f:selectItem itemLabel="" itemValue="" />
-              <f:selectItems value="#{personEventsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeSelectItems}" />
-              <p:ajax event="valueChange" 
-                      listener="#{personEventsTabBean.tabInstances[tab.subviewId].typeSelectHelper.currentTypeChanged}"
+            <p:selectOneMenu value="#{personEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" touchable="true">
+              <f:selectItem itemLabel="#{personEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
+              <f:selectItems value="#{personEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{personEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueChanged}"
                       process="@this"
                       update="person_events_table" />
             </p:selectOneMenu>
-          </p:outputPanel>    
+          </p:outputPanel>                    
           
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{personEventsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{personEventsTabBean.groupableRowsHelper.switchView}"
