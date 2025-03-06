@@ -48,6 +48,7 @@ class GetFeatureInfoTool extends Tool
     this.clearHighlight();
     this.panel.hide();
     this.setLastUtm(null);
+    this.removePopup();
   }
 
   reactivate()
@@ -69,14 +70,20 @@ class GetFeatureInfoTool extends Tool
     this.infoDiv = document.createElement("div");
     this.infoDiv.className = "custom_form";
     bodyDiv.appendChild(this.infoDiv);
-
-    this.createPopup();
   }
 
   createPopup()
   {
+    this.removePopup();
     const popup = new maplibregl.Popup(this.options.popup);
     this.popup = popup;
+    return popup;
+  }
+  
+  removePopup()
+  {
+    if (this.popup) this.popup.remove();
+    this.popup = null;    
   }
 
   clearHighlight()
@@ -281,8 +288,7 @@ class GetFeatureInfoTool extends Tool
             form = await form.render();
             if (form)
             {
-              const popup = this.popup;
-              popup.remove();
+              const popup = this.createPopup();
 
               const centroid = turf.centroid(feature);
               popup.setLngLat(centroid.geometry.coordinates);

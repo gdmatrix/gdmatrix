@@ -88,8 +88,16 @@ class FindFeatureControl
   
   createPopup()
   {
+    this.removePopup();
     const popup = new maplibregl.Popup(this.options.popup);
     this.popup = popup;
+    return popup;
+  }
+  
+  removePopup()
+  {
+    if (this.popup) this.popup.remove();
+    this.popup = null;    
   }
 
   initSourceAndLayers()
@@ -220,7 +228,7 @@ class FindFeatureControl
           this.clearMarkers();
           this.clearForms();
         }
-        this.popup.remove();
+        this.removePopup();
         
         this.data.features = await this.activeFinder.find();
         map.getSource("finder_results").setData(this.data);
@@ -365,7 +373,7 @@ class FindFeatureControl
     this.clearMarkers();
     this.clearForms();
     this.infoPanel.hide();
-    this.popup.remove();
+    this.removePopup();
   }  
 
   clearMarkers()
@@ -421,8 +429,9 @@ class FindFeatureControl
       finder.selectMarker(this.selectedMarker, this.selectedFeature);
       this.selectedMarker.addTo(map);            
     }
-
-    this.popup.remove();
+    
+    this.removePopup();
+    
     this.infoPanel.bodyDiv.innerHTML = "";
     
     if (source === "marker" || 
@@ -463,13 +472,12 @@ class FindFeatureControl
       form = await form.render();
       if (form)
       {
-        const popup = this.popup;
+        const popup = this.createPopup();
         const feature = form.feature;
         const centroid = turf.centroid(feature);
         popup.setLngLat(centroid.geometry.coordinates);
-
-        this.popup.setDOMContent(form.getElement());
-        this.popup.addTo(map);
+        popup.setDOMContent(form.getElement());
+        popup.addTo(map);
       }
     }
   }
@@ -503,7 +511,6 @@ class FindFeatureControl
     }
 
     this.createPanels(map);
-    this.createPopup();
 
     return div;
   }

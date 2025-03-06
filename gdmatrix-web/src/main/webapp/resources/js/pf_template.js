@@ -483,7 +483,7 @@ function initMenu()
   {
     var elem = event.target;
     var isDialog = false;
-    while (elem !== document.body)
+    while (elem && elem !== document.body)
     {
       if (elem.classList.contains("dialog_panel"))
       {

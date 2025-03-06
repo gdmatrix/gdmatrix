@@ -16,7 +16,7 @@ class PopupOnHoverTool extends Tool
             "position" : "right"
           }, ...options}); 
     this.layers = options?.layers || {}; //{ "layerId" : contentFn(feature), ... }
-    this.popupOptions = options?.popupOptions || {
+    this.popupOptions = options?.popup || options?.popupOptions || {
       closeButton: false,
       closeOnClick: false
     };
@@ -56,15 +56,27 @@ class PopupOnHoverTool extends Tool
         this.map.off("mouseleave", layerId, leaveHandlers[layerId]);
       }
     }
+    this.removePopup();
+  }
+ 
+  createPopup()
+  {
+    this.removePopup();
+    const popup = new maplibregl.Popup(this.popupOptions);
+    this.popup = popup;
+    return popup;
+  }
+  
+  removePopup()
+  {
+    if (this.popup) this.popup.remove();
+    this.popup = null;    
   }
  
   onAdd(map)
   {
     const div = super.onAdd(map);
  
-    console.info(this.popupOptions);
-    const popup = new maplibregl.Popup(this.popupOptions);
-
     const layers = this.layers;
     const enterHandlers = this.enterHandlers;
     const leaveHandlers = this.leaveHandlers;
@@ -87,6 +99,8 @@ class PopupOnHoverTool extends Tool
           coordinates = event.lngLat;
         }
         
+        const popup = this.createPopup();
+        
         let content = this.layers[layerId];
         let popupContent;
         if (typeof content === "function")
@@ -106,7 +120,7 @@ class PopupOnHoverTool extends Tool
       leaveHandlers[layerId] = () => 
       {
         map.getCanvas().style.cursor = "";
-        popup.remove();    
+        this.removePopup();
       };    
     }
     return div;

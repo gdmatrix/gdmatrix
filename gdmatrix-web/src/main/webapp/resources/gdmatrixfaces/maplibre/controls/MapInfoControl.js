@@ -79,6 +79,12 @@ class MapInfoControl
         attribUl.appendChild(attribLi);
       }
     }
+    const maplibreLink = document.createElement("a");
+    maplibreLink.target = "_blank";
+    maplibreLink.className = "block mt-2 no-underline";
+    maplibreLink.href = "https://maplibre.org/maplibre-gl-js/docs/";
+    maplibreLink.innerHTML = `<span class="pi pi-map"></span> MapLibre ${maplibregl.getVersion()}`;
+    bodyDiv.appendChild(maplibreLink);
   }
 
   onAdd(map)
