@@ -540,7 +540,7 @@ public class ObjectSetup implements Serializable
         Object property = propertyMap.get(propertyName);
         if (property == null)
         {
-          propertyMap.put(propertyName, property);
+          propertyMap.put(propertyName, defaultPropertyMap.get(propertyName));
         }
       }
     }

@@ -125,6 +125,8 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", "pi pi-key", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", "material-icons-outlined mi-policy text-lg", "/pages/policy/document_policies.xhtml", "documentPoliciesTabBean"));      
     objectSetup.setEditTabs(editTabs);
+    
+    objectSetup.getProperties().put("showTypeId", "true");
 
     return objectSetup;
   }

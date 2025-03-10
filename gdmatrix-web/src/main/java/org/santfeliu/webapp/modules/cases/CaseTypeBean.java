@@ -270,6 +270,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     
     objectSetup.setEditTabs(editTabs);
     
+    objectSetup.getProperties().put("showTypeId", "true");    
+    
     return objectSetup;
   }
 

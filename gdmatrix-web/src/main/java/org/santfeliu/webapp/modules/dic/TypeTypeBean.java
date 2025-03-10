@@ -101,22 +101,25 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   @Override
   public String describe(Type type)
   {
-    if (isPublicType(type.getTypeId()))
+    String description = type.getDescription();
+    ObjectSetup objectSetup = getObjectSetup(type.getTypeId());
+    if (objectSetup != null)
     {
-      ObjectSetup objectSetup = getObjectSetup(type.getTypeId());
-      if (objectSetup != null)
+      Boolean showTypeId =
+        objectSetup.getProperties().getBoolean("showTypeId");
+      
+      description = type.getDescription() 
+            + (showTypeId ? " (" + type.getTypeId() + ")" : "");
+    
+      if (isPublicType(type.getTypeId()))
       {
         String publicTypeSymbol =
           objectSetup.getProperties().getString("publicTypeSymbol");
         if (publicTypeSymbol != null)
-        {
-          return type.getDescription() 
-            + " (" + type.getTypeId() + ")" 
-            + " " + publicTypeSymbol;
-        }
+          return description + " " + publicTypeSymbol;
       }
     }
-    return type.getDescription() + " (" + type.getTypeId() + ")";
+    return description;
   }
 
   @Override
