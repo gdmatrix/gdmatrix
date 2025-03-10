@@ -144,37 +144,38 @@ public class IdeDocumentType implements Serializable
   static
   {
     Tab metadata = new Tab("metadata_editor.xhtml", "Metadata", "pi pi-list");
+    Tab acl = new Tab("acl_editor.xhtml", "ACL", "pi pi-key");
 
     registerType("javascript", "Javascript", "CODE", "workflow.js",
       "text/javascript", "fa fa-brands fa-js",
       new Tab("javascript_editor.xhtml", "JS Editor", "fa fa-brands fa-js"),
       new Tab("javascript_runner.xhtml", "JS Runner", "pi pi-play"),
-      metadata);
+      metadata, acl);
 
     registerType("html", "HTML form", "FORM", "workflow.html",
       "text/html", "fa fa-brands fa-html5",
       new Tab("html_editor.xhtml", "HTML Editor", "fa fa-brands fa-html5"),
       new Tab("html_preview.xhtml", "HTML preview", "pi pi-eye"),
-      metadata);
+      metadata, acl);
 
     registerType("template", "Template report", "REPORT", "report",
       "text/xml", "fa fa-file-code",
       new Tab("html_editor.xhtml", "HTML Editor", "fa fa-file-code"),
-      metadata);
+      metadata, acl);
 
     registerType("xsl", "XSL template", "TEMPLATE", "workflow.xsl",
       "text/xml", "fa fa-code",
       new Tab("xml_editor.xhtml", "XSL Editor", "fa fa-code"),
-      metadata);
+      metadata, acl);
 
     registerType("ant", "ANT project", "ANT", "ide.ant",
       "text/xml", "fa fa-bug",
       new Tab("xml_editor.xhtml", "ANT Editor", "fa fa-bug"),
-      metadata);
+      metadata, acl);
 
     registerType("ObjectSetup", "Object setup", "ObjectSetup", "setupName",
       "application/json", "fa fa-gear",
-      new Tab("json_editor.xhtml", "JSON Editor", "fa fa-gear"), metadata);
+      new Tab("json_editor.xhtml", "JSON Editor", "fa fa-gear"), metadata, acl);
   }
 
   public static List<IdeDocumentType> getTypes()

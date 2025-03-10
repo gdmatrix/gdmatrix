@@ -31,6 +31,8 @@
 package org.santfeliu.webapp.modules.ide.doc;
 
 import java.io.Serializable;
+import java.util.List;
+import org.matrix.security.AccessControl;
 
 /**
  *
@@ -45,6 +47,7 @@ public class IdeDocument implements Serializable
   String docId;
   int version;
   String metadata;
+  List<AccessControl> accessControl;
 
   public static String getReference(String typeName, String name)
   {
@@ -137,5 +140,15 @@ public class IdeDocument implements Serializable
   public void setMetadata(String metadata)
   {
     this.metadata = metadata;
+  }
+
+  public List<AccessControl> getAccessControl()
+  {
+    return accessControl;
+  }
+
+  public void setAccessControl(List<AccessControl> accessControl)
+  {
+    this.accessControl = accessControl;
   }
 }

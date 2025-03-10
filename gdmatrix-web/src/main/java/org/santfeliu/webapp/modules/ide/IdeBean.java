@@ -47,12 +47,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
+import org.matrix.security.AccessControl;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.dic.Type;
@@ -76,6 +78,8 @@ public class IdeBean extends WebBean implements Serializable
   private String typeName = "javascript";
   private String name;
   private IdeDocument document = new IdeDocument();
+  private String action = READ_ACTION;
+  private String roleToAdd;
 
   @Inject
   IdeDocumentCacheBean ideDocumentCacheBean;
@@ -100,6 +104,26 @@ public class IdeBean extends WebBean implements Serializable
   public void setName(String name)
   {
     this.name = name;
+  }
+
+  public String getAction()
+  {
+    return action;
+  }
+
+  public void setAction(String action)
+  {
+    this.action = action;
+  }
+
+  public String getRoleToAdd()
+  {
+    return roleToAdd;
+  }
+
+  public void setRoleToAdd(String roleToAdd)
+  {
+    this.roleToAdd = roleToAdd;
   }
 
   public IdeDocument getDocument()
@@ -235,6 +259,7 @@ public class IdeBean extends WebBean implements Serializable
         document.setVersion(version);
         document.setSource(source);
         document.setMetadata(metadataToJson(doc, type));
+        document.setAccessControl(doc.getAccessControl());
         saveCache();
       }
     }
@@ -281,6 +306,8 @@ public class IdeBean extends WebBean implements Serializable
       content.setData(new DataHandler(ds));
       doc.setContent(content);
       DictionaryUtils.setProperty(doc, type.getDocProperty(), name);
+      doc.getAccessControl().clear();
+      doc.getAccessControl().addAll(document.getAccessControl());
       DocumentManagerPort port = getPort();
       doc = port.storeDocument(doc);
       document.setDocId(doc.getDocId());
@@ -293,7 +320,6 @@ public class IdeBean extends WebBean implements Serializable
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
       error(ex);
     }
   }
@@ -310,6 +336,28 @@ public class IdeBean extends WebBean implements Serializable
         PrimeFaces.current().ajax().update("mainform:cnt");
       }
     }
+  }
+
+  public void addAccessControl()
+  {
+    if (!StringUtils.isBlank(roleToAdd))
+    {
+      boolean found = document.getAccessControl().stream().anyMatch(
+        ac -> ac.getRoleId().equals(roleToAdd) &&
+              ac.getAction().equals(action));
+      if (!found)
+      {
+        AccessControl ac = new AccessControl();
+        ac.setRoleId(roleToAdd);
+        ac.setAction(action);
+        document.getAccessControl().add(ac);
+      }
+    }
+  }
+
+  public void removeAccessControl(AccessControl ac)
+  {
+    document.getAccessControl().remove(ac);
   }
 
   @CMSAction
