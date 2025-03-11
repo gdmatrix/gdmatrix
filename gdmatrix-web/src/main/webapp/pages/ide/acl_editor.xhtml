@@ -11,7 +11,7 @@
   <div class="flex flex-column h-full">
     <ui:fragment rendered="#{ideBean.document.docId != null}">
       <p:dataTable value="#{ideBean.document.accessControl}" var="ac" 
-                   sortMode="single"
+                   sortMode="single" size="small" 
                    showGridlines="true">
         <p:column headerText="RoleId" sortable="true" sortBy="#{ac.roleId}" class="col-6">
           #{ac.roleId}

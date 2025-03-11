@@ -295,6 +295,10 @@ public class IdeBean extends WebBean implements Serializable
           doc = new Document();
         }
       }
+      if (StringUtils.isBlank(document.getTitle()))
+      {
+        document.setTitle(name);
+      }
       doc.setTitle(name + ": " + document.getTitle());
       doc.setDocTypeId(type.getDocTypeId());
       this.metadataFromJson(doc, document.getMetadata());
