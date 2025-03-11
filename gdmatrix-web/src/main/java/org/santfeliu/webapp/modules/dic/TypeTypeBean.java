@@ -49,6 +49,7 @@ import org.santfeliu.webapp.NavigatorBean;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
+import org.santfeliu.webapp.setup.PropertyMap;
 import org.santfeliu.webapp.util.WebUtils;
 
 
@@ -103,23 +104,53 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   {
     String description = type.getDescription();
     ObjectSetup objectSetup = getObjectSetup(type.getTypeId());
+
+    PropertyMap properties;
     if (objectSetup != null)
+      properties = objectSetup.getProperties();   
+    else 
+      properties = getTabProperties(type.getTypeId());
+    
+    if (properties != null)
     {
-      Boolean showTypeId =
-        objectSetup.getProperties().getBoolean("showTypeId");
-      
+      Boolean showTypeId = properties.getBoolean("showTypeId");
+
       description = type.getDescription() 
             + (showTypeId ? " (" + type.getTypeId() + ")" : "");
-    
+
       if (isPublicType(type.getTypeId()))
       {
         String publicTypeSymbol =
-          objectSetup.getProperties().getString("publicTypeSymbol");
+          properties.getString("publicTypeSymbol");
         if (publicTypeSymbol != null)
           return description + " " + publicTypeSymbol;
       }
     }
+
     return description;
+  }
+  
+  private PropertyMap getTabProperties(String typeId)
+  {
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean"); 
+    NavigatorBean.BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();      
+    try
+    {
+      List<EditTab> tabs = baseTypeInfo.getObjectSetup().getEditTabs();
+      for (EditTab tab : tabs)
+      {
+        String tabTypeId = tab.getTypeId();
+        if (tabTypeId != null)
+        {
+          org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
+          if (type.isDerivedFrom(tabTypeId))
+            return tab.getProperties();
+        }
+      }
+    }
+    catch (Exception ex) {}  
+
+    return null;
   }
 
   @Override
@@ -243,12 +274,15 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     else if (StringUtils.isBlank(query))
     {
       org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
-      for (org.santfeliu.dic.Type derived : type.getDerivedTypes(true))
+      if (type != null)
       {
-        String objectId = derived.getTypeId();
-        String description = getDescription(objectId);
-        items.add(new SelectItem(objectId, description));
-        if (maxResults > 0 && items.size() >= maxResults) break;
+        for (org.santfeliu.dic.Type derived : type.getDerivedTypes(true))
+        {
+          String objectId = derived.getTypeId();
+          String description = getDescription(objectId);
+          items.add(new SelectItem(objectId, description));
+          if (maxResults > 0 && items.size() >= maxResults) break;
+        }
       }
     }
     else
