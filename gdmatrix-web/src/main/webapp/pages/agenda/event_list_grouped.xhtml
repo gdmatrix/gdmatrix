@@ -32,36 +32,38 @@
             <f:convertDateTime pattern="HH:mm" />
           </h:outputText>
         </div>
-        <div class="eventDescription #{eventFinderBean.getEventTypeStyleClass(row.typeId)}">
-          <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" styleClass="eventType" />
-          <h:outputText value=": " styleClass="eventSeparator" />
-          <h:outputText value="#{row.summary}" styleClass="eventTitle" />
-        </div>
-        <div class="eventActions text-right white-space-nowrap">
-          <h:outputText value="#{eventFinderBean.publicTypeSymbol}" 
-                        styleClass="pi ui-button ui-button-flat publicIcon"
-                        rendered="#{eventFinderBean.renderPublicIcon and row.publicRow}"
-                        title="#{agendaBundle.event_public}" />
-          <h:outputText value="" styleClass="pi pi-eye-slash ui-button ui-button-flat onlyAtt"
-                        rendered="#{eventFinderBean.renderOnlyAttendantsIcon and row.onlyAttendants}"
-                        title="#{agendaBundle.event_onlyAttendants}" />
-          <p:commandButton icon="ui-icon fa fa-reply"
-                           styleClass="rounded-button ui-button-flat"
-                           action="#{navigatorBean.select(row.rowId)}"
-                           rendered="#{navigatorBean.selectionPending}"
-                           process="@this"
-                           update="@form:cnt"
-                           title="#{objectBundle.select}" alt="#{objectBundle.select}" />
-          <p:commandButton icon="pi pi-arrow-circle-right"
-                           styleClass="rounded-button ui-button-flat"
-                           action="#{eventFinderBean.view(rowIndex)}"
-                           onclick="PF('objectTabs').select(0);"
-                           resetValues="true"
-                           process="@this"
-                           oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
-                           update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                           title="#{objectBundle.show}" alt="#{objectBundle.show}"
-                           rendered="#{row.summary != '???'}" />
+        <div class="eventContainer #{eventFinderBean.getEventTypeStyleClass(row.typeId)}">
+          <div class="eventDescription">
+            <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" styleClass="eventType" />
+            <h:outputText value=": " styleClass="eventSeparator" />
+            <h:outputText value="#{row.summary}" styleClass="eventTitle" />
+          </div>
+          <div class="eventActions text-right white-space-nowrap">
+            <h:outputText value="#{eventFinderBean.publicTypeSymbol}" 
+                          styleClass="pi ui-button ui-button-flat publicIcon"
+                          rendered="#{eventFinderBean.renderPublicIcon and row.publicRow}"
+                          title="#{agendaBundle.event_public}" />
+            <h:outputText value="" styleClass="pi pi-eye-slash ui-button ui-button-flat onlyAtt"
+                          rendered="#{eventFinderBean.renderOnlyAttendantsIcon and row.onlyAttendants}"
+                          title="#{agendaBundle.event_onlyAttendants}" />
+            <p:commandButton icon="ui-icon fa fa-reply"
+                             styleClass="rounded-button ui-button-flat"
+                             action="#{navigatorBean.select(row.rowId)}"
+                             rendered="#{navigatorBean.selectionPending}"
+                             process="@this"
+                             update="@form:cnt"
+                             title="#{objectBundle.select}" alt="#{objectBundle.select}" />
+            <p:commandButton icon="pi pi-arrow-circle-right"
+                             styleClass="rounded-button ui-button-flat"
+                             action="#{eventFinderBean.view(rowIndex)}"
+                             onclick="PF('objectTabs').select(0);"
+                             resetValues="true"
+                             process="@this"
+                             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
+                             update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                             title="#{objectBundle.show}" alt="#{objectBundle.show}"
+                             rendered="#{row.summary != '???'}" />
+          </div>
         </div>
       </div>
     </p:dataViewListItem>
