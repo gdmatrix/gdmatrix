@@ -66,4 +66,5 @@ public class AgendaConstants
   
   public static final String DELETED_EVENT_DATETIME = "00010101000000";
   
+  public static final String HIDDEN_EVENT_STRING = "???";  
 }

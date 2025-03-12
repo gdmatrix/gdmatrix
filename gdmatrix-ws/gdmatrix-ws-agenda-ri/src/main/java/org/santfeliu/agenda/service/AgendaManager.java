@@ -142,6 +142,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
   private static final String THEMES_SEPARATOR = ",";
   private static final String CONFIDENT_TYPEID = "ConfidentPersonPerson";
 
+  @Deprecated
   public static final String HIDDEN_EVENT_STRING = "???";
   public static final String DELETED_EVENT_DATETIME = "00010101000000";
 
@@ -551,8 +552,8 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       }
       catch(NoResultException ex)
       {
-        event.setSummary(HIDDEN_EVENT_STRING);
-        event.setDescription(HIDDEN_EVENT_STRING);
+        event.setSummary(AgendaConstants.HIDDEN_EVENT_STRING);
+        event.setDescription(AgendaConstants.HIDDEN_EVENT_STRING);
       }
     }
 
@@ -575,36 +576,56 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
     //Find events with access allowed by trustors
     if (!isAdminUser && allEvents != null)
     {
-      queryBuilder.getFilter().setSecurityMode(SecurityMode.FILTERED);
+      EventFilter newFilter = cloneEventFilter(filter);
+      newFilter.setSecurityMode(SecurityMode.FILTERED);
+      newFilter.setFirstResult(0);
+      newFilter.setMaxResults(0);
+      queryBuilder.setFilter(newFilter);
       queryBuilder.setTrustors(getTrustors(user));
       List<Event> filteredEvents = queryBuilder.getEventList(entityManager);
-
-      boolean isFilteredEmpty =
-        (filteredEvents == null || filteredEvents.isEmpty());
-      int i = 0;
-      int f = 0;
-
-      while (i < allEvents.size())
+      Set<String> filteredEventIdSet = new HashSet<>();
+      for (Event filteredEvent : filteredEvents)
       {
-        Event event = allEvents.get(i);
-        String eventId = event.getEventId();
-
-        if (isFilteredEmpty || f >= filteredEvents.size()
-          || !eventId.equals(filteredEvents.get(f).getEventId()))
+        filteredEventIdSet.add(filteredEvent.getEventId());
+      }
+      for (Event event : allEvents)
+      {
+        if (!filteredEventIdSet.contains(event.getEventId()))
         {
-          event.setSummary(HIDDEN_EVENT_STRING);
-          event.setDescription(HIDDEN_EVENT_STRING);
+          event.setSummary(AgendaConstants.HIDDEN_EVENT_STRING);
+          event.setDescription(AgendaConstants.HIDDEN_EVENT_STRING);
         }
-        else f++;
-        
         events.add(event);
-        i++;
       }
     }
     else if (isAdminUser && allEvents != null)
       events.addAll(allEvents);
 
     return events;
+  }
+  
+  private EventFilter cloneEventFilter(EventFilter eventFilter)
+  {
+    EventFilter newEventFilter = new EventFilter();
+    newEventFilter.getEventId().addAll(eventFilter.getEventId());
+    newEventFilter.setContent(eventFilter.getContent());
+    newEventFilter.setPersonId(eventFilter.getPersonId());
+    newEventFilter.setRoomId(eventFilter.getRoomId());
+    newEventFilter.setStartDateTime(eventFilter.getStartDateTime());
+    newEventFilter.setEndDateTime(eventFilter.getEndDateTime());
+    newEventFilter.getEventTypeId().addAll(eventFilter.getEventTypeId());
+    newEventFilter.getThemeId().addAll(eventFilter.getThemeId());
+    newEventFilter.setStartChangeDateTime(eventFilter.getStartChangeDateTime());
+    newEventFilter.setEndChangeDateTime(eventFilter.getEndChangeDateTime());
+    newEventFilter.getProperty().addAll(eventFilter.getProperty());
+    newEventFilter.getOrderBy().addAll(eventFilter.getOrderBy());
+    newEventFilter.setSecurityMode(eventFilter.getSecurityMode());
+    newEventFilter.setIncludeMetadata(eventFilter.isIncludeMetadata());
+    newEventFilter.setReducedInfo(eventFilter.isReducedInfo());
+    newEventFilter.setFirstResult(eventFilter.getFirstResult());
+    newEventFilter.setMaxResults(eventFilter.getMaxResults());
+    newEventFilter.setDateComparator(eventFilter.getDateComparator());    
+    return newEventFilter;
   }
 
   private List<Event> findFilteredEvents(EventFilter filter, User user)
@@ -1969,16 +1990,17 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
 
   private boolean isEventHidden(Event event)
   {
-    return (HIDDEN_EVENT_STRING.equals(event.getSummary()) &&
-      HIDDEN_EVENT_STRING.equals(event.getDescription()));
+    return (AgendaConstants.HIDDEN_EVENT_STRING.equals(event.getSummary()) &&
+      AgendaConstants.HIDDEN_EVENT_STRING.equals(event.getDescription()));
   }
 
   private boolean isEventViewHidden(EventView eventView)
   {
-    return (HIDDEN_EVENT_STRING.equals(eventView.getSummary()) &&
-      HIDDEN_EVENT_STRING.equals(eventView.getDescription()));
+    return (AgendaConstants.HIDDEN_EVENT_STRING.equals(eventView.getSummary()) 
+      && 
+      AgendaConstants.HIDDEN_EVENT_STRING.equals(eventView.getDescription()));
   }
-  
+
   private void validateEventFilter(EventFilter filter) throws Exception
   {
     if (filter.getEventId().isEmpty() &&
