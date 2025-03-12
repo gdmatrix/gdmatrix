@@ -413,8 +413,13 @@ public abstract class FacesBean
 
   public void growl(String messageId, Object[] params)
   {
-    FacesUtils.addMessage("growl", messageId, null, params,
-      FacesMessage.SEVERITY_INFO);
+    this.growl(messageId, params, FacesMessage.SEVERITY_INFO);
+  }
+  
+  public void growl(String messageId, Object[] params, 
+    FacesMessage.Severity severity)
+  {
+    FacesUtils.addMessage("growl", messageId, null, params, severity);    
   }
 
   protected Locale getLocale()
