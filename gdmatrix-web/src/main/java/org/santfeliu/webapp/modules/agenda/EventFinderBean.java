@@ -44,12 +44,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.agenda.AgendaConstants;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
 import org.matrix.agenda.OrderByProperty;
+import org.matrix.agenda.SecurityMode;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.security.SecurityConstants;
 import org.primefaces.PrimeFaces;
@@ -85,8 +88,10 @@ public class EventFinderBean extends FinderBean
 {
   private static final String RENDER_PUBLIC_ICON = "renderPublicIcon";
   private static final String RENDER_ONLY_ATTENDANTS_ICON =
-    "renderOnlyAttendantsIcon";
+    "renderOnlyAttendantsIcon"; 
 
+  private static final String SECURITY_MODE_PROPERTY = "securityMode";
+  
   private String smartFilter;
   private EventFilter filter = new EventFilter();
   private List<EventDataTableRow> rows;
@@ -330,10 +335,11 @@ public class EventFinderBean extends FinderBean
       filter.getEventId().addAll(eventIds);
   }
 
-  public void onEventSelect(SelectEvent<ScheduleEvent<?>> selectEvent)
+  public void onEventSelect()
   {
-    ScheduleEvent<?> event = selectEvent.getObject();
-    navigatorBean.view(event.getId());
+    String eventId = getFacesContext().
+      getExternalContext().getRequestParameterMap().get("eventId");
+    navigatorBean.view(eventId);
   }
 
   public void onDateSelect(SelectEvent<LocalDateTime> selectEvent)
@@ -366,13 +372,18 @@ public class EventFinderBean extends FinderBean
   {
     try
     {
+      ScheduleEvent scheduleEvent = moveEvent.getScheduleEvent();
+      if (AgendaConstants.HIDDEN_EVENT_STRING.equals(scheduleEvent.getTitle()))
+      {
+        throw new Exception();
+      }
       int minutes = (moveEvent.getDayDelta() * 24 * 60) +
         moveEvent.getMinuteDelta();
-      LocalDateTime ldtStart = moveEvent.getScheduleEvent().getStartDate();
+      LocalDateTime ldtStart = scheduleEvent.getStartDate();
       ldtStart.plusMinutes(minutes);
-      LocalDateTime ldtEnd = moveEvent.getScheduleEvent().getEndDate();
+      LocalDateTime ldtEnd = scheduleEvent.getEndDate();
       ldtEnd.plusMinutes(minutes);
-      String eventId = moveEvent.getScheduleEvent().getId();
+      String eventId = scheduleEvent.getId();
       String startDateTime = toDateString(ldtStart);
       String endDateTime = toDateString(ldtEnd);
       updateEvent(eventId, startDateTime, endDateTime);
@@ -381,7 +392,7 @@ public class EventFinderBean extends FinderBean
     }
     catch (Exception ex)
     {
-      error("EVENT_MOVE_ERROR");
+      growl("EVENT_MOVE_ERROR", null, FacesMessage.SEVERITY_ERROR);      
     }
   }
 
@@ -389,10 +400,15 @@ public class EventFinderBean extends FinderBean
   {
     try
     {
+      ScheduleEvent scheduleEvent = resizeEvent.getScheduleEvent();
+      if (AgendaConstants.HIDDEN_EVENT_STRING.equals(scheduleEvent.getTitle()))
+      {
+        throw new Exception();
+      }
       int minutes = resizeEvent.getMinuteDeltaEnd();
-      LocalDateTime ldtEnd = resizeEvent.getScheduleEvent().getEndDate();
+      LocalDateTime ldtEnd = scheduleEvent.getEndDate();
       ldtEnd.plusMinutes(minutes);
-      String eventId = resizeEvent.getScheduleEvent().getId();
+      String eventId = scheduleEvent.getId();
       String endDateTime = toDateString(ldtEnd);
       updateEvent(eventId, null, endDateTime);
       scheduleEdit = true;
@@ -400,7 +416,7 @@ public class EventFinderBean extends FinderBean
     }
     catch (Exception ex)
     {
-      error("EVENT_RESIZE_ERROR");
+      growl("EVENT_RESIZE_ERROR", null, FacesMessage.SEVERITY_ERROR);
     }
   }
 
@@ -688,6 +704,17 @@ public class EventFinderBean extends FinderBean
       }
       else
       {
+        String securityMode = getProperty(SECURITY_MODE_PROPERTY);
+        if (securityMode != null && 
+          (!StringUtils.isBlank(filter.getRoomId()) ||
+          !StringUtils.isBlank(filter.getPersonId())))
+        {
+          SecurityMode sm = SecurityMode.valueOf(securityMode.toUpperCase());
+          filter.setSecurityMode(sm);
+        }
+        else
+          filter.setSecurityMode(SecurityMode.FILTERED);
+        
         rows = new BigList(2 * getPageSize() + 1, getPageSize())
         {
           @Override
@@ -811,6 +838,17 @@ public class EventFinderBean extends FinderBean
 
   private ScheduleModel loadEventModel()
   {
+    String securityMode = getProperty(SECURITY_MODE_PROPERTY);
+    if (securityMode != null && 
+      (!StringUtils.isBlank(filter.getRoomId()) ||
+      !StringUtils.isBlank(filter.getPersonId())))
+    {
+      SecurityMode sm = SecurityMode.valueOf(securityMode.toUpperCase());
+      filter.setSecurityMode(sm);
+    }
+    else
+      filter.setSecurityMode(SecurityMode.FILTERED);
+    
     eventModel = new LazyScheduleModel()
     {
       @Override
@@ -869,9 +907,10 @@ public class EventFinderBean extends FinderBean
     cloneFilter.setStartDateTime(filter.getStartDateTime());
     cloneFilter.setEndDateTime(filter.getEndDateTime());
     cloneFilter.getThemeId().addAll(filter.getThemeId());
+    cloneFilter.setSecurityMode(filter.getSecurityMode());    
     return cloneFilter;
   }
-
+  
   private LocalDateTime toLocalDateTime(String dateString)
   {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

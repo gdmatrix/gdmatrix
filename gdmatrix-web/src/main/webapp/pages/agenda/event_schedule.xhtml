@@ -3,8 +3,18 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-  <script>
-    
+  <script> 
+    function initSchedule() 
+    {
+      this.cfg.options.eventClick = function(e) {
+        if (e.event.title !== '???')
+        {
+          selectNode([{name:'eventId', value:e.event.id}]);            
+        }
+        return true;
+      };
+    }        
+
     function removeFocus()
     {
       document.activeElement.blur();
@@ -31,7 +41,7 @@
     
   </script>
 
-  <p:schedule id="schedule"
+  <p:schedule id="schedule" extender="initSchedule"
               rendered="#{eventFinderBean.renderSchedule}"
               value="#{eventFinderBean.eventModel}"
               widgetVar="schedule"
@@ -47,11 +57,7 @@
             process="@this"
             update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
-    <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"
-            process="@this"
-            update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
-    <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}"
+    <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}" 
             process="@this"
             update="@form:cnt:search_tabs:obj_tabs"
             oncomplete="if (updateScheduleEventStyles) updateScheduleEventStyles()" />
@@ -66,6 +72,12 @@
                 escape="false" />
 
   <p:remoteCommand name="updateSchedule" update="schedule" />
+  
+  <p:remoteCommand id="selectNodeCommand"
+                   name="selectNode" actionListener="#{eventFinderBean.onEventSelect}" 
+                   process="@this"
+                   update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                   oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />  
 
 </ui:composition>
 

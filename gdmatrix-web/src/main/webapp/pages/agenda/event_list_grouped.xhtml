@@ -60,7 +60,8 @@
                            process="@this"
                            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
                            update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                           title="#{objectBundle.show}" alt="#{objectBundle.show}" />
+                           title="#{objectBundle.show}" alt="#{objectBundle.show}"
+                           rendered="#{row.summary != '???'}" />
         </div>
       </div>
     </p:dataViewListItem>
