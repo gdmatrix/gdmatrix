@@ -363,8 +363,7 @@ public class EventObjectBean extends ObjectBean
         eventCopyTabBean.setCopyAttendants(true);        
         EventRow copy = eventCopyTabBean.duplicate(0, 0);
         eventCopyTabBean.copyRecurrences(false);
-        if (!getFacesContext().getMessages().hasNext())
-          info("DUPLICATE_END");
+        info("DUPLICATE_END");
         eventFinderBean.outdate();
         navigatorBean.view(copy.getEvent().getEventId());
       }
