@@ -77,7 +77,7 @@
             <t:inputHidden id="hiddenjumpcommand" value="#{userSessionBean.jumpCommand}" forceId="true" />
             <t:commandLink id="jumptoobjectaction" action="#{userSessionBean.jumpToObject}" value="Link to Object" forceId="true" />
             <t:inputHidden id="hiddenaction" value="#{userSessionBean.actionToExecute}" forceId="true" />
-            <t:commandLink id="doactionexecution" action="#{userSessionBean.executeAction}" value="Execute action" forceId="true" />
+            <t:commandLink id="doactionexecution" action="#{userSessionBean.executeRemoteAction}" value="Execute action" forceId="true" />
           </div> 
         </header>
         

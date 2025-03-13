@@ -127,8 +127,20 @@ function showObject(command)
   return true;
 }
 
-function executeAction(action)
+function executeRemoteAction(scriptName, methodName, paramList)
 {
+  var action = scriptName + "." + methodName;
+  if (paramList !== null)
+  {
+    action = action + "?";
+    for (var i = 0; i < paramList.length; i++)
+    {
+      if (i === 0)
+        action = action + paramList[0];
+      else
+        action = action + "|" + paramList[i];
+    }
+  }
   document.getElementById('hiddenaction').value = action;
   document.getElementById('doactionexecution').click(); 
   return true;

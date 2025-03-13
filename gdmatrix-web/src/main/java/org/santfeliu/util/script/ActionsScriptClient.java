@@ -30,6 +30,7 @@
  */
 package org.santfeliu.util.script;
 
+import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
@@ -40,6 +41,7 @@ import org.mozilla.javascript.Scriptable;
 public class ActionsScriptClient extends ScriptClient
 {
   public static final String ACTION_PARAM = "action";
+  private static final String REMOTE_PREFIX = "remote";
 
   @Override
   protected Scriptable createScope(Context context)
@@ -79,6 +81,36 @@ public class ActionsScriptClient extends ScriptClient
         scriptName = action;
       }
       result = executeScript(scriptName);
+    }
+    return result;
+  }
+
+  public Object executeRemoteAction(String action)
+    throws Exception
+  {
+    Object result = null;
+    if (action != null)
+    {
+      String scriptName;
+      action = action.substring(action.indexOf(":") + 1); //supress prefix
+      if (action.contains("."))
+      {
+        scriptName = action.substring(0, action.indexOf("."));
+        action = action.substring(action.indexOf(".") + 1);
+        if (action != null && action.startsWith(REMOTE_PREFIX))
+        {
+          executeScript(scriptName);
+          Object[] params = null;
+          if (action.contains("?"))
+          {
+            String[] parts = action.split("\\?");
+            action = parts[0];
+            params = parts[1].split("\\|");
+          }
+          Callable callable = (Callable) get(action);
+          result = execute((Callable) callable, params);
+        }
+      }
     }
     return result;
   }

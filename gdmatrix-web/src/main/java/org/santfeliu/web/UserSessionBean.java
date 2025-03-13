@@ -1490,30 +1490,64 @@ public final class UserSessionBean extends FacesBean implements Serializable
     this.actionToExecute = actionToExecute;
   }
 
-  public void executeAction()
+  public void executeRemoteAction()
   {
     if (this.actionToExecute != null)
-      executeAction(actionToExecute);
+    {
+      String outcome = null;
+      try
+      {
+        Object result = executeRemoteAction(actionToExecute);
+        if (result != null)
+          outcome = (String) result;
+      }
+      catch (Exception ex)
+      {
+        outcome = null;
+        error(ex);
+      }
+      
+      if (outcome != null)
+        executeAction(outcome);      
+    }
   }
-
-  public Object executeScriptAction(String action)
-    throws Exception
+  
+  public Object executeScriptAction(String action) throws Exception
   {
     Object result = null;
 
     if (action != null)
     {
-      ActionsScriptClient client = new ActionsScriptClient();
-      client.put("userSessionBean", this);
-      client.put("facesContext", getFacesContext());
-      client.put("externalContext", getExternalContext());
-      client.put("request", getExternalContext().getRequest());
-      client.put("application", getApplication());
+      ActionsScriptClient client = newActionsScriptClient();
       result = client.executeAction(action);
     }
 
     return result;
   }
+    
+  private Object executeRemoteAction(String action) throws Exception
+  {
+    Object result = null;
+
+    if (action != null)
+    {
+      ActionsScriptClient client = newActionsScriptClient();
+      result = client.executeRemoteAction(action);
+    }
+
+    return result;    
+  }  
+  
+  private ActionsScriptClient newActionsScriptClient()
+  {
+    ActionsScriptClient client = new ActionsScriptClient();
+    client.put("userSessionBean", this);
+    client.put("facesContext", getFacesContext());
+    client.put("externalContext", getExternalContext());
+    client.put("request", getExternalContext().getRequest());
+    client.put("application", getApplication()); 
+    return client;
+  }  
 
   public static String toUuid(String id)
   {
