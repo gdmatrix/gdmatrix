@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.ide.doc;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import org.matrix.security.AccessControl;
 
@@ -144,6 +145,10 @@ public class IdeDocument implements Serializable
 
   public List<AccessControl> getAccessControl()
   {
+    if (accessControl == null)
+    {
+      accessControl = new ArrayList<>();
+    }
     return accessControl;
   }
 

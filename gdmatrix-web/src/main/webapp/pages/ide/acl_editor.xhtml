@@ -9,55 +9,53 @@
                 xmlns:gdm="http://gdmatrix.org/faces">
 
   <div class="flex flex-column h-full">
-    <ui:fragment rendered="#{ideBean.document.docId != null}">
-      <p:dataTable value="#{ideBean.document.accessControl}" var="ac" 
-                   sortMode="single" size="small" 
-                   showGridlines="true">
-        <p:column headerText="RoleId" sortable="true" sortBy="#{ac.roleId}" class="col-6">
-          #{ac.roleId}
-        </p:column>
-        <p:column headerText="Action" sortable="true" sortBy="#{ac.action}" class="col-6">
-          #{ac.action}
-        </p:column>
+    <p:dataTable value="#{ideBean.document.accessControl}" var="ac" 
+                 sortMode="single" size="small" 
+                 showGridlines="true">
+      <p:column headerText="RoleId" sortable="true" sortBy="#{ac.roleId}" class="col-6">
+        #{ac.roleId}
+      </p:column>
+      <p:column headerText="Action" sortable="true" sortBy="#{ac.action}" class="col-6">
+        #{ac.action}
+      </p:column>
 
-        <p:column styleClass="text-center white-space-nowrap">
-          <p:commandButton action="#{ideBean.removeAccessControl(ac)}"
-                           process="@this" update="@namingcontainer"
-                           resetValues="true"
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           styleClass="rounded-button ui-button-flat">
-          </p:commandButton>
-        </p:column>
-        
-        <f:facet name="footer">
-          <div class="flex align-items-center">
-            <p:outputLabel value="RoleId:" for="@next" />
-            <p:autoComplete value="#{ideBean.roleToAdd}" var="roleId"
-                            maxResults="20" minQueryLength="1" styleClass="m-2" 
-                            itemLabel="#{roleId}" itemValue="#{roleId}" 
-                            scrollHeight="200" emptyMessage=""
-                            completeMethod="#{roleTypeBean.findIdsByQuery}">
-              <p:column>
-                #{roleTypeBean.getDescription(roleId)}
-              </p:column>
-            </p:autoComplete>
-            
-            <p:outputLabel value="Action:" for="@next" />
-            <p:selectOneMenu value="#{ideBean.action}" styleClass="m-2">
-              <f:selectItem itemValue="Read" itemLabel="Read" />
-              <f:selectItem itemValue="Write" itemLabel="Write" />
-              <f:selectItem itemValue="Execute" itemLabel="Execute" />              
-              <f:selectItem itemValue="Delete" itemLabel="Delete" />
-            </p:selectOneMenu>            
+      <p:column styleClass="text-center white-space-nowrap">
+        <p:commandButton action="#{ideBean.removeAccessControl(ac)}"
+                         process="@this" update="@namingcontainer"
+                         resetValues="true"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat">
+        </p:commandButton>
+      </p:column>
 
-            <p:commandButton action="#{ideBean.addAccessControl()}" styleClass="flex-shrink-0"
-              process="@parent" update="@namingcontainer" icon="pi pi-plus-circle" />
-          </div>
-        </f:facet>
+      <f:facet name="footer">
+        <div class="flex align-items-center">
+          <p:outputLabel value="RoleId:" for="@next" />
+          <p:autoComplete value="#{ideBean.roleToAdd}" var="roleId"
+                          maxResults="20" minQueryLength="1" styleClass="m-2" 
+                          itemLabel="#{roleId}" itemValue="#{roleId}" 
+                          scrollHeight="200" emptyMessage=""
+                          completeMethod="#{roleTypeBean.findIdsByQuery}">
+            <p:column>
+              #{roleTypeBean.getDescription(roleId)}
+            </p:column>
+          </p:autoComplete>
 
-      </p:dataTable>      
-    </ui:fragment>
+          <p:outputLabel value="Action:" for="@next" />
+          <p:selectOneMenu value="#{ideBean.action}" styleClass="m-2">
+            <f:selectItem itemValue="Read" itemLabel="Read" />
+            <f:selectItem itemValue="Write" itemLabel="Write" />
+            <f:selectItem itemValue="Execute" itemLabel="Execute" />              
+            <f:selectItem itemValue="Delete" itemLabel="Delete" />
+          </p:selectOneMenu>            
+
+          <p:commandButton action="#{ideBean.addAccessControl()}" styleClass="flex-shrink-0"
+            process="@parent" update="@namingcontainer" icon="pi pi-plus-circle" />
+        </div>
+      </f:facet>
+
+    </p:dataTable>      
   </div>
 
 </ui:composition>

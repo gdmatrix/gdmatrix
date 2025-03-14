@@ -262,6 +262,10 @@ public class IdeBean extends WebBean implements Serializable
         document.setAccessControl(doc.getAccessControl());
         saveCache();
       }
+      else
+      {
+        warn("NOT_FOUND");
+      }
     }
     catch (Exception ex)
     {
@@ -303,7 +307,9 @@ public class IdeBean extends WebBean implements Serializable
       doc.setDocTypeId(type.getDocTypeId());
       this.metadataFromJson(doc, document.getMetadata());
       Content content = new Content();
-      byte[] bytes = document.getSource().getBytes("UTF-8");
+      String source = document.getSource();
+      if (StringUtils.isBlank(source)) source = " ";
+      byte[] bytes = source.getBytes("UTF-8");
       String contentType = type.getDocContentType();
       content.setContentType(contentType);
       DataSource ds = new MemoryDataSource(bytes, "source", contentType);
