@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import org.apache.commons.lang.StringUtils;
 import org.mozilla.javascript.Callable;
 import org.santfeliu.util.script.ScriptClient;
+import java.lang.Thread;
 
 /**
  *
@@ -44,6 +45,10 @@ public class ToolExecutor extends ScriptClient
 {
   public String execute(ToolExecutionRequest request)
   {
+    ClassLoader classLoader = getClass().getClassLoader();
+    Thread thread = java.lang.Thread.currentThread();
+    thread.setContextClassLoader(classLoader);
+
     String functionName = request.name();
     String functionArgs = request.arguments();
     String resultText = null;

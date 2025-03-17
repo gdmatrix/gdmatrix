@@ -30,8 +30,6 @@
  */
 package org.santfeliu.webapp.modules.assistant;
 
-import com.google.gson.Gson;
-import dev.langchain4j.agent.tool.ToolParameters;
 import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.model.chat.request.json.JsonBooleanSchema;
 import dev.langchain4j.model.chat.request.json.JsonIntegerSchema;
@@ -41,7 +39,6 @@ import dev.langchain4j.model.chat.request.json.JsonStringSchema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
