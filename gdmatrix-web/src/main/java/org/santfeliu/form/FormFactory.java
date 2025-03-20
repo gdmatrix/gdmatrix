@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.form.builder.DocumentFormBuilder;
 import org.santfeliu.form.builder.PathFormBuilder;
 import org.santfeliu.form.builder.ReferenceFormBuilder;
@@ -68,7 +69,7 @@ public class FormFactory
     builders.add(new URLFormBuilder());
     builders.add(new TypeFormBuilder());
     builders.add(new DocumentFormBuilder());
-    formCache = new LRUMap(100);
+    formCache = new LRUMap(200);
   }
 
   public static FormFactory getInstance()
@@ -100,7 +101,7 @@ public class FormFactory
 
     if (updated)
     {
-      removeForm(selector, contextHash);
+      if (!StringUtils.isBlank(contextHash)) purgeFormsByContext(contextHash);
       form = null;
     }
     else
@@ -159,7 +160,7 @@ public class FormFactory
   {
     removeForm(selector);
   }
-
+  
   // builders
   public void addFormBuilder(FormBuilder builder)
   {
@@ -265,9 +266,16 @@ public class FormFactory
     }
   }
 
-  private synchronized void removeForm(String selector, String contextHash)
+  private synchronized void purgeFormsByContext(String contextHash)
   {
-    String key = selector + "/" + contextHash;
-    formCache.remove(key);
+    List<String> keyList = new ArrayList(formCache.keySet());
+    for (String key : keyList)
+    {
+      if (key.endsWith("/" + contextHash))
+      {
+        formCache.remove(key);
+      }
+    }
   }
+
 }
