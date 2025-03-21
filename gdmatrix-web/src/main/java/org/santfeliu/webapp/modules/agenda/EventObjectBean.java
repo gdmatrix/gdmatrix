@@ -58,8 +58,10 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.agenda.EventCopyTabBean.EventRow;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import static org.santfeliu.webapp.setup.Action.POST_COPY_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_COPY_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_STORE_ACTION;
 
@@ -353,26 +355,23 @@ public class EventObjectBean extends ObjectBean
     eventFinderBean.outdate();
   }
 
-  public void duplicate()
+  @Override
+  public void copyObject() throws Exception
   {
-    if (!isNew())
-    {
-      try
-      {
-        eventCopyTabBean.setEvent(event);
-        eventCopyTabBean.setCopyAttendants(true);        
-        EventRow copy = eventCopyTabBean.duplicate(0, 0);
-        eventCopyTabBean.copyRecurrences(false);
-        info("DUPLICATE_END");
-        eventFinderBean.outdate();
-        navigatorBean.view(copy.getEvent().getEventId());
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-  }
+    setDefaultDateTimes();
+    event.setStartDateTime(startDate.format(DAY_FORMATTER) + startTime);
+    event.setEndDateTime(endDate.format(DAY_FORMATTER) + endTime);
+    executeAction(PRE_COPY_ACTION);    
+    eventCopyTabBean.setEvent(event);
+    eventCopyTabBean.setCopyAttendants(true);        
+    EventRow copy = eventCopyTabBean.duplicate(0, 0);
+    eventCopyTabBean.copyRecurrences(false);
+    event = copy.getEvent();
+    setObjectId(event.getEventId());    
+    executeAction(POST_COPY_ACTION);
+    eventFinderBean.outdate();
+    navigatorBean.view(event.getEventId());
+  }  
     
   public void reserveRoomBeforeEvent()
   {

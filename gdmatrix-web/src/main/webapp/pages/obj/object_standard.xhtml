@@ -111,6 +111,15 @@
                       onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                       disabled="#{!objectBean.editable}"
                       oncomplete="if (isFacesError()) objectScrollUp()" />
+          <p:menuitem action="#{objectBean.copy}"
+                      value="#{objectBundle.copy}"
+                      icon="pi pi-copy"
+                      process="@form:cnt:search_tabs:obj_tabs"
+                      update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                      onclick="setTimeout(()=>PF('objectActions').hide(),200)"                      
+                      disabled="#{!objectBean.editable}"
+                      rendered="#{objectBean.renderCopyButton}"
+                      oncomplete="if (isFacesError()) objectScrollUp()" />              
           <p:menuitem action="#{objectBean.cancel}"
                       value="#{objectBundle.reload}"
                       icon="pi pi-undo"

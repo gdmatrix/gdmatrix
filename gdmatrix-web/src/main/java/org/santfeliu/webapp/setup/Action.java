@@ -46,6 +46,8 @@ public class Action implements Serializable
   public static final String POST_STORE_ACTION = "postStore";
   public static final String PRE_REMOVE_ACTION = "preRemove";
   public static final String POST_REMOVE_ACTION = "postRemove";
+  public static final String PRE_COPY_ACTION = "preCopy";
+  public static final String POST_COPY_ACTION = "postCopy";
     
   public static final String PRE_TAB_EDIT_ACTION = "preTabEdit";   
   public static final String POST_TAB_EDIT_ACTION = "postTabEdit";  
@@ -79,6 +81,8 @@ public class Action implements Serializable
     predefinedActionNames.add(POST_STORE_ACTION);
     predefinedActionNames.add(PRE_REMOVE_ACTION);
     predefinedActionNames.add(POST_REMOVE_ACTION);
+    predefinedActionNames.add(PRE_COPY_ACTION);
+    predefinedActionNames.add(POST_COPY_ACTION);
     
     //Tab actions
     predefinedActionNames.add(PRE_TAB_EDIT_ACTION);    

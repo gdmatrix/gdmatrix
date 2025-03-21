@@ -658,6 +658,41 @@ public abstract class ObjectBean extends BaseBean
       }
     }
   }
+  
+  public void copy()
+  {
+    try
+    {
+      copyObject();
+      growl("COPY_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+  
+  public void copyObject() throws Exception
+  {    
+  }
+  
+  public boolean isRenderCopyButton()
+  {
+    if (!isNew())
+    {
+      String typeId = getTypeBean().getTypeId(getObject());
+      if (typeId != null)
+      {
+        Type type = TypeCache.getInstance().getType(typeId);
+        PropertyDefinition propdef = type.getPropertyDefinition("copyEnabled");
+        if (propdef != null && !propdef.getValue().isEmpty())
+        {
+          return "true".equals(propdef.getValue().get(0));
+        }
+      }
+    }
+    return false;    
+  }
 
   public void remove()
   {
