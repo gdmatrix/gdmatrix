@@ -303,6 +303,11 @@ public class NavigatorBean extends WebBean implements Serializable
         {
           requestedObjectId = objectId;
         }
+        leap.setParameters(new HashMap());
+        for (String paramName : request.getParameterMap().keySet())
+        {
+          leap.getParameters().put(paramName, request.getParameter(paramName));
+        }   
       }
       else
       {
