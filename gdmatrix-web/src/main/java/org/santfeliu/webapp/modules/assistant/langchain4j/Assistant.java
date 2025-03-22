@@ -56,7 +56,10 @@ public class Assistant implements Serializable
   private boolean streaming;
   private Integer seed;
   private Double temperature;
+  private Double frequencyPenalty;
+  private Double topP;
   private Integer maxTokens;
+  private Integer timeout;
   private String instructions;
   private String docId;
   List<String> toolNames = new ArrayList<>();
@@ -196,6 +199,26 @@ public class Assistant implements Serializable
     this.temperature = temperature;
   }
 
+  public Double getFrequencyPenalty()
+  {
+    return frequencyPenalty;
+  }
+
+  public void setFrequencyPenalty(Double frequencyPenalty)
+  {
+    this.frequencyPenalty = frequencyPenalty;
+  }
+
+  public Double getTopP()
+  {
+    return topP;
+  }
+
+  public void setTopP(Double topP)
+  {
+    this.topP = topP;
+  }
+
   public Integer getMaxTokens()
   {
     return maxTokens;
@@ -204,6 +227,16 @@ public class Assistant implements Serializable
   public void setMaxTokens(Integer maxTokens)
   {
     this.maxTokens = maxTokens;
+  }
+
+  public Integer getTimeout()
+  {
+    return timeout;
+  }
+
+  public void setTimeout(Integer timeout)
+  {
+    this.timeout = timeout;
   }
 
   public List<String> getToolNames()
@@ -299,9 +332,15 @@ public class Assistant implements Serializable
       .append("|")
       .append(seed == null ? "-" : seed)
       .append("|")
+      .append(temperature == null ? "-" : temperature)
+      .append("|")
+      .append(frequencyPenalty == null ? "-" : frequencyPenalty)
+      .append("|")
+      .append(topP == null ? "-" : topP)
+      .append("|")
       .append(maxTokens == null ? "-" : maxTokens)
       .append("|")
-      .append(temperature == null ? "-" : temperature)
+      .append(timeout == null ? "-" : timeout)
       .append("|")
       .append(streaming)
       .append("|")

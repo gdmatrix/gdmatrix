@@ -45,13 +45,16 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.http.client.HttpClientBuilder;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.webapp.modules.assistant.httpclient.JdkHttpClientBuilder;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OLLAMA_PROVIDER;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OPENAI_PROVIDER;
 
@@ -106,6 +109,10 @@ public class AssistantData
 
   public AssistantData(Assistant assistant)
   {
+    Duration timeout = assistant.getTimeout() == null ?
+      null : Duration.ofSeconds(assistant.getTimeout());
+    HttpClientBuilder clientBuilder = new JdkHttpClientBuilder();
+
     if (OPENAI_PROVIDER.equals(assistant.getProvider()))
     {
       if (assistant.isStreaming())
@@ -114,7 +121,11 @@ public class AssistantData
           .apiKey(getApiKey(assistant.getApiKey()))
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
+          .frequencyPenalty(assistant.getFrequencyPenalty())
+          .topP(assistant.getTopP())
+          .timeout(timeout)
           .seed(assistant.getSeed())
+          .httpClientBuilder(clientBuilder)
           .maxTokens(assistant.getMaxTokens())
           .build();
       }
@@ -124,7 +135,11 @@ public class AssistantData
           .apiKey(getApiKey(assistant.getApiKey()))
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
+          .frequencyPenalty(assistant.getFrequencyPenalty())
+          .topP(assistant.getTopP())
+          .timeout(timeout)
           .seed(assistant.getSeed())
+          .httpClientBuilder(clientBuilder)
           .maxTokens(assistant.getMaxTokens())
           .build();
       }
@@ -137,7 +152,11 @@ public class AssistantData
           .baseUrl(assistant.getBaseUrl())
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
+          .repeatPenalty(assistant.getFrequencyPenalty())
+          .topP(assistant.getTopP())
+          .timeout(timeout)
           .seed(assistant.getSeed())
+          .httpClientBuilder(clientBuilder)
           .build();
       }
       else
@@ -146,7 +165,11 @@ public class AssistantData
           .baseUrl(assistant.getBaseUrl())
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
+          .repeatPenalty(assistant.getFrequencyPenalty())
+          .topP(assistant.getTopP())
+          .timeout(timeout)
           .seed(assistant.getSeed())
+          .httpClientBuilder(clientBuilder)
           .build();
       }
     }
