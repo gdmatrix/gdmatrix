@@ -143,7 +143,7 @@ body .side_panel .ui-panel-content
 .central_column .object_header .object_label
 {
   font-size: 14px;
-  font-weight: normal;
+  font-weight: bold;
   color:var(--text-color);
   flex-grow: 1;
 }
