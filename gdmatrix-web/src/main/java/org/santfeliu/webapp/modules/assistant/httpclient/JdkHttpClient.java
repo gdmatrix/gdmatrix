@@ -30,10 +30,15 @@
  */
 package org.santfeliu.webapp.modules.assistant.httpclient;
 
+/**
+ *
+ * @author realor
+ */
 import dev.langchain4j.exception.HttpException;
 import dev.langchain4j.http.client.HttpClient;
 import dev.langchain4j.http.client.HttpRequest;
 import dev.langchain4j.http.client.SuccessfulHttpResponse;
+import dev.langchain4j.http.client.sse.ServerSentEvent;
 import dev.langchain4j.http.client.sse.ServerSentEventListener;
 import dev.langchain4j.http.client.sse.ServerSentEventParser;
 
@@ -49,17 +54,12 @@ import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 
 import static dev.langchain4j.internal.Utils.getOrDefault;
-import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
 import static java.util.stream.Collectors.joining;
-import org.apache.commons.io.IOUtils;
 
-/**
- *
- * @author realor
- */
 public class JdkHttpClient implements HttpClient
 {
+  private static final String CHARSET = "UTF-8";
+
   private final java.net.http.HttpClient delegate;
   private final Duration readTimeout;
 
@@ -107,25 +107,21 @@ public class JdkHttpClient implements HttpClient
   {
     java.net.http.HttpRequest jdkRequest = toJdkRequest(request);
 
-    delegate.sendAsync(jdkRequest, BodyHandlers.ofString())
+    delegate.sendAsync(jdkRequest, BodyHandlers.ofInputStream())
       .thenAccept(jdkResponse ->
       {
         if (!isSuccessful(jdkResponse))
         {
-          listener.onError(new HttpException(jdkResponse.statusCode(), jdkResponse.body()));
+          listener.onError(new HttpException(jdkResponse.statusCode(), readBody(jdkResponse)));
           return;
         }
 
         SuccessfulHttpResponse response = fromJdkResponse(jdkResponse, null);
         listener.onOpen(response);
-        try
+
+        try (InputStream inputStream = jdkResponse.body())
         {
-          String body = jdkResponse.body();
-
-          byte[] bytes = body.getBytes(Charset.defaultCharset().toString());
-          InputStream inputStream = new ByteArrayInputStream(bytes);
-
-          parser.parse(inputStream, listener);
+          parseServerEvents(inputStream, listener);
           listener.onClose();
         }
         catch (IOException e)
@@ -188,5 +184,66 @@ public class JdkHttpClient implements HttpClient
   {
     int statusCode = response.statusCode();
     return statusCode >= 200 && statusCode < 300;
+  }
+
+  private static String readBody(java.net.http.HttpResponse<InputStream> response)
+  {
+    try (InputStream inputStream = response.body();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, CHARSET)))
+    {
+      return reader.lines().collect(joining(System.lineSeparator()));
+    }
+    catch (IOException e)
+    {
+      return "Cannot read error response body: " + e.getMessage();
+    }
+  }
+
+  private void parseServerEvents(InputStream httpResponseBody, ServerSentEventListener listener)
+  {
+    try (BufferedReader reader =
+      new BufferedReader(new InputStreamReader(httpResponseBody, CHARSET)))
+    {
+      String event = null;
+      StringBuilder data = new StringBuilder();
+
+      String line;
+      while ((line = reader.readLine()) != null)
+      {
+        if (line.isEmpty())
+        {
+          if (!data.isEmpty())
+          {
+            listener.onEvent(new ServerSentEvent(event, data.toString()));
+            event = null;
+            data.setLength(0);
+          }
+          continue;
+        }
+
+        if (line.startsWith("event:"))
+        {
+          event = line.substring("event:".length()).trim();
+        }
+        else if (line.startsWith("data:"))
+        {
+          String content = line.substring("data:".length());
+          if (!data.isEmpty())
+          {
+            data.append("\n");
+          }
+          data.append(content.trim());
+        }
+      }
+
+      if (!data.isEmpty())
+      {
+        listener.onEvent(new ServerSentEvent(event, data.toString()));
+      }
+    }
+    catch (IOException e)
+    {
+      listener.onError(e);
+    }
   }
 }
