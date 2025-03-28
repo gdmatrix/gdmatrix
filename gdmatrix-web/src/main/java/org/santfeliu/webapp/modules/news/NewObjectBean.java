@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.news;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cms.Node;
 import org.matrix.cms.NodeFilter;
 import org.matrix.cms.Property;
@@ -49,6 +51,7 @@ import org.matrix.news.NewStoreOptions;
 import org.matrix.news.Source;
 import org.matrix.news.SourceFilter;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.util.HTMLNormalizer;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.enc.Unicode;
 import org.santfeliu.web.UserSessionBean;
@@ -82,14 +85,7 @@ public class NewObjectBean extends ObjectBean
   @PostConstruct
   public void init()
   {
-    try
-    {
-      sources = NewsModuleBean.getPort(true).findSources(new SourceFilter());
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    initNew();    
   }
 
   public New getNewObject()
@@ -118,6 +114,18 @@ public class NewObjectBean extends ObjectBean
 
   public List<Source> getSources()
   {
+    if (sources == null)
+    {
+      try 
+      {
+        sources = NewsModuleBean.getPort(true).findSources(new SourceFilter());
+      }
+      catch (Exception ex) 
+      {
+        error(ex);
+      }
+    }
+    
     return sources;
   }
 
@@ -272,7 +280,7 @@ public class NewObjectBean extends ObjectBean
       decodeNewContent(newObject);
     }
     else
-      newObject = new New();
+      initNew();
   }
 
   @Override
@@ -284,10 +292,26 @@ public class NewObjectBean extends ObjectBean
 
     newObject.setUserId(UserSessionBean.getCurrentInstance().getUsername());
     newObject.setCustomUrl(newObject.getCustomUrl().trim());
+    
+    Date now = new Date();
+    if (StringUtils.isBlank(newObject.getStartDate()))
+    {
+      newObject.setStartDate(TextUtils.formatDate(now, "yyyyMMdd"));
+      newObject.setStartTime("000000");
+    }
+
+    if (StringUtils.isBlank(newObject.getEndDate()))
+    {
+      Calendar cal = Calendar.getInstance();
+      cal.add(Calendar.DAY_OF_MONTH, 30);
+      newObject.setEndDate(TextUtils.formatDate(cal.getTime(), "yyyyMMdd"));
+      newObject.setEndTime("000000");
+    }  
 
     encodeNewContent(newObject);
     newObject =
       NewsModuleBean.getPort(false).storeNew(newObject, newStoreOptions);
+    
     setObjectId(newObject.getNewId());
     decodeNewContent(newObject);
 
@@ -320,15 +344,20 @@ public class NewObjectBean extends ObjectBean
   }
 
   private void encodeNewContent(New newObject)
-  {
+  {    
+    newObject.setHeadline(
+      HTMLNormalizer.replaceSpecialChars(newObject.getHeadline()));    
     String headline = Unicode.encode(newObject.getHeadline(), true);
     newObject.setHeadline(headline.length() > 1000 ?
       headline.substring(0, 1000) : headline);
 
+    newObject.setSummary(
+      HTMLNormalizer.replaceSpecialChars(newObject.getSummary()));       
     String summary = Unicode.encode(newObject.getSummary(), true);
     newObject.setSummary(summary.length() > 4000 ?
       summary.substring(0, 4000) : summary);
 
+    newObject.setText(HTMLNormalizer.replaceSpecialChars(newObject.getText()));     
     newObject.setText(Unicode.encode(newObject.getText(), true));
   }
 
@@ -338,5 +367,11 @@ public class NewObjectBean extends ObjectBean
     newObject.setSummary(Unicode.decode(newObject.getSummary()));
     newObject.setText(Unicode.decode(newObject.getText()));
   }
+  
+  private void initNew()
+  {
+    newObject = new New();
+    newObject.setDraft(true);
+  }  
 
 }
