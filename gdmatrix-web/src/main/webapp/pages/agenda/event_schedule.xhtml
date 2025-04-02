@@ -3,17 +3,75 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-  <script> 
+  <script>
+    
+    function onMoveComplete(args) 
+    {
+      if (!args.moved) //error
+      {
+        if (window.currentEventDrop) window.currentEventDrop.revert();        
+      }      
+      else //success 
+      {
+        if (updateScheduleEventStyles) updateScheduleEventStyles();
+      }
+      window.currentEventDrop = null;
+    }
+    
+    function onResizeComplete(args) 
+    {
+      if (!args.resized) //error
+      {
+        if (window.currentEventResize) window.currentEventResize.revert();        
+      }      
+      else //success 
+      {
+        if (updateScheduleEventStyles) updateScheduleEventStyles();
+      }
+      window.currentEventResize = null;
+    }
+
     function initSchedule() 
     {
+      window.currentEventDrop = null;
+      window.currentEventResize = null;
       this.cfg.options.eventClick = function(e) {
         if (e.event.title !== '???')
         {
-          selectNode([{name:'eventId', value:e.event.id}]);            
+          selectEvent([
+            {name:'eventId', value:e.event.id}, 
+            {name:'eventStartStr', value:e.event.startStr}]);            
         }
         return true;
       };
-    }        
+      this.cfg.options.eventDrop = function(e) {
+        if (e.event.title !== '???') 
+        {
+          window.currentEventDrop = e;
+          moveEvent([
+            {name:'eventId', value:e.event.id},
+            {name:'eventStartStr', value:e.event.startStr},
+            {name:'eventEndStr', value:e.event.endStr}]);
+        }
+        else
+        {
+          e.revert();
+        }
+      };      
+      this.cfg.options.eventResize = function(e) {
+        if (e.event.title !== '???') 
+        {
+          window.currentEventResize = e;
+          resizeEvent([
+            {name:'eventId', value:e.event.id},
+            {name:'eventEndStr', value:e.event.endStr}]);
+        }
+        else
+        {
+          e.revert();
+        }
+      };      
+    }
 
     function removeFocus()
     {
@@ -57,14 +115,8 @@
             process="@this"
             update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
-    <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}" 
-            process="@this"
-            update="@form:cnt:search_tabs:obj_tabs"
-            oncomplete="if (updateScheduleEventStyles) updateScheduleEventStyles()" />
-    <p:ajax event="eventResize" listener="#{eventFinderBean.onEventResize}"
-            process="@this"
-            update="@form:cnt:search_tabs:obj_tabs"
-            oncomplete="if (updateScheduleEventStyles) updateScheduleEventStyles()" />
+    <p:ajax event="viewChange" 
+            process="@this" />    
   </p:schedule>
 
   <h:outputText value="#{agendaBundle.insufficientFilter}"
@@ -73,11 +125,23 @@
 
   <p:remoteCommand name="updateSchedule" update="schedule" />
   
-  <p:remoteCommand id="selectNodeCommand"
-                   name="selectNode" actionListener="#{eventFinderBean.onEventSelect}" 
+  <p:remoteCommand id="selectEventCommand"
+                   name="selectEvent" actionListener="#{eventFinderBean.onEventSelect}" 
                    process="@this"
                    update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                    oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />  
 
+  <p:remoteCommand id="moveEventCommand"
+                   name="moveEvent" actionListener="#{eventFinderBean.onEventMove}" 
+                   process="@this"
+                   update="@form:cnt:search_tabs:obj_tabs"
+                   oncomplete="onMoveComplete(args)" />    
+
+  <p:remoteCommand id="resizeEventCommand"
+                   name="resizeEvent" actionListener="#{eventFinderBean.onEventResize}" 
+                   process="@this"
+                   update="@form:cnt:search_tabs:obj_tabs"
+                   oncomplete="onResizeComplete(args)" />    
+  
 </ui:composition>
 

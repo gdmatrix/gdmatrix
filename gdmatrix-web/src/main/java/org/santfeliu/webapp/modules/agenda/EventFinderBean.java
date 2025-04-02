@@ -36,8 +36,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -48,7 +46,6 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import org.matrix.agenda.AgendaConstants;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
 import org.matrix.agenda.OrderByProperty;
@@ -56,12 +53,9 @@ import org.matrix.agenda.SecurityMode;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.security.SecurityConstants;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.schedule.ScheduleEntryMoveEvent;
-import org.primefaces.event.schedule.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
-import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -86,6 +80,9 @@ import org.santfeliu.webapp.util.DataTableRow;
 @RequestScoped
 public class EventFinderBean extends FinderBean
 {
+  private static final DateTimeFormatter HOUR_FORMATTER =
+    DateTimeFormatter.ofPattern("HHmmss");
+  
   private static final String RENDER_PUBLIC_ICON = "renderPublicIcon";
   private static final String RENDER_ONLY_ATTENDANTS_ICON =
     "renderOnlyAttendantsIcon"; 
@@ -339,6 +336,10 @@ public class EventFinderBean extends FinderBean
   {
     String eventId = getFacesContext().
       getExternalContext().getRequestParameterMap().get("eventId");
+    Date startDate = getDateFromScheduleParam("eventStartStr");
+    LocalDate startLocalDate = 
+      startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();        
+    setScheduleInitialDate(startLocalDate);
     navigatorBean.view(eventId);
   }
 
@@ -358,68 +359,68 @@ public class EventFinderBean extends FinderBean
   }
 
   public void onDateDblSelect(SelectEvent<LocalDateTime> selectEvent)
-  {
-    LocalDateTime localDateTime = selectEvent.getObject();
-    String startDateTime = toDateString(localDateTime);
-    String endDateTime = toDateString(localDateTime.plusHours(2));
+  {    
     navigatorBean.view(NEW_OBJECT_ID);
-    eventObjectBean.getEvent().setStartDateTime(startDateTime);
-    eventObjectBean.getEvent().setEndDateTime(endDateTime);
+    LocalDateTime startLocalDateTime = selectEvent.getObject();
+    LocalDateTime endLocalDateTime = startLocalDateTime.plusHours(2);    
+    eventObjectBean.setStartDate(startLocalDateTime.toLocalDate());
+    eventObjectBean.setStartTime(
+      startLocalDateTime.toLocalTime().format(HOUR_FORMATTER));
+    eventObjectBean.setEndDate(endLocalDateTime.toLocalDate());
+    eventObjectBean.setEndTime(
+      endLocalDateTime.toLocalTime().format(HOUR_FORMATTER));
+    setScheduleInitialDate(startLocalDateTime.toLocalDate());    
     dateDblClick = true;
   }
 
-  public void onEventMove(ScheduleEntryMoveEvent moveEvent)
+  public void onEventMove()
   {
+    boolean moved = true;
     try
     {
-      ScheduleEvent scheduleEvent = moveEvent.getScheduleEvent();
-      if (AgendaConstants.HIDDEN_EVENT_STRING.equals(scheduleEvent.getTitle()))
-      {
-        throw new Exception();
-      }
-      int minutes = (moveEvent.getDayDelta() * 24 * 60) +
-        moveEvent.getMinuteDelta();
-      LocalDateTime ldtStart = scheduleEvent.getStartDate();
-      ldtStart.plusMinutes(minutes);
-      LocalDateTime ldtEnd = scheduleEvent.getEndDate();
-      ldtEnd.plusMinutes(minutes);
-      String eventId = scheduleEvent.getId();
-      String startDateTime = toDateString(ldtStart);
-      String endDateTime = toDateString(ldtEnd);
+      //Params from component
+      String eventId = getFacesContext().
+        getExternalContext().getRequestParameterMap().get("eventId");
+      Date startDate = getDateFromScheduleParam("eventStartStr");
+      Date endDate = getDateFromScheduleParam("eventEndStr");      
+      String startDateTime = TextUtils.formatDate(startDate, "yyyyMMddHHmmss");
+      String endDateTime = TextUtils.formatDate(endDate, "yyyyMMddHHmmss");
       updateEvent(eventId, startDateTime, endDateTime);
       scheduleEdit = true;
-      growl("EVENT_MOVED");
+      growl("EVENT_MOVED");      
     }
     catch (Exception ex)
     {
+      moved = false;
       growl("EVENT_MOVE_ERROR", null, FacesMessage.SEVERITY_ERROR);      
     }
+    //Return value
+    PrimeFaces.current().ajax().addCallbackParam("moved", moved);    
   }
 
-  public void onEventResize(ScheduleEntryResizeEvent resizeEvent)
+  public void onEventResize()
   {
+    boolean resized = true;
     try
     {
-      ScheduleEvent scheduleEvent = resizeEvent.getScheduleEvent();
-      if (AgendaConstants.HIDDEN_EVENT_STRING.equals(scheduleEvent.getTitle()))
-      {
-        throw new Exception();
-      }
-      int minutes = resizeEvent.getMinuteDeltaEnd();
-      LocalDateTime ldtEnd = scheduleEvent.getEndDate();
-      ldtEnd.plusMinutes(minutes);
-      String eventId = scheduleEvent.getId();
-      String endDateTime = toDateString(ldtEnd);
+      //Params from component
+      String eventId = getFacesContext().
+        getExternalContext().getRequestParameterMap().get("eventId");
+      Date endDate = getDateFromScheduleParam("eventEndStr");
+      String endDateTime = TextUtils.formatDate(endDate, "yyyyMMddHHmmss");    
       updateEvent(eventId, null, endDateTime);
       scheduleEdit = true;
       growl("EVENT_RESIZED");
     }
     catch (Exception ex)
     {
+      resized = false;
       growl("EVENT_RESIZE_ERROR", null, FacesMessage.SEVERITY_ERROR);
     }
-  }
-
+    //Return value
+    PrimeFaces.current().ajax().addCallbackParam("resized", resized);        
+  }  
+  
   @Override
   public void smartFind()
   {
@@ -888,7 +889,7 @@ public class EventFinderBean extends FinderBean
         catch (Exception ex)
         {
         }
-        scheduleInitialDate = adjustInitialDate(start);
+        setScheduleInitialDate(start.toLocalDate());
       }
     };
     return eventModel;
@@ -956,21 +957,6 @@ public class EventFinderBean extends FinderBean
       eventEndDate.after(viewStartDate));
   }
 
-  private LocalDate adjustInitialDate(LocalDateTime scheduleViewStart)
-  {
-    if ("dayGridMonth".equals(scheduleView) &&
-      scheduleViewStart.getDayOfMonth() != 1)
-    {
-      TemporalAdjuster ta = TemporalAdjusters.firstDayOfNextMonth();
-      LocalDate firstDayOfNextMonth = scheduleViewStart.with(ta).toLocalDate();
-      return firstDayOfNextMonth;
-    }
-    else
-    {
-      return scheduleViewStart.toLocalDate();
-    }
-  }
-
   private boolean isRender(String name, boolean defValue)
   {
     String value = getProperty(name);
@@ -1022,6 +1008,13 @@ public class EventFinderBean extends FinderBean
     }
     return clientIdList;
   }
+  
+  private Date getDateFromScheduleParam(String paramName)
+  {
+    String paramValue = getFacesContext().getExternalContext().
+      getRequestParameterMap().get(paramName);
+    return TextUtils.parseUserDate(paramValue, "yyyy-MM-dd'T'HH:mm:ssXXX");    
+  }  
 
   public class EventDataTableRow extends DataTableRow
   {
