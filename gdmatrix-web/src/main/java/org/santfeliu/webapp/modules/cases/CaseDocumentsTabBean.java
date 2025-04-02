@@ -60,6 +60,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
+import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -1051,6 +1052,21 @@ public class CaseDocumentsTabBean extends TabBean
     {
       this.docViewUrl = docViewUrl;
     }
+    
+    @Override
+    protected Value getTablePropertyValue(BaseBean baseBean, 
+      TableProperty tableProperty, Object row) throws Exception
+    {
+      if (tableProperty.getName().equals("docTitle"))
+      {
+        Document document = ((CaseDocumentView)row).getDocument();
+        return new DefaultValue(DocumentTypeBean.formatTitle(document), 
+          DocumentTypeBean.getContentIcon(document) + 
+          " " + tableProperty.getIcon());
+      }
+      else
+        return super.getTablePropertyValue(baseBean, tableProperty, row);
+    }    
 
     @Override
     protected DataTableRow.Value getDefaultValue(String columnName)

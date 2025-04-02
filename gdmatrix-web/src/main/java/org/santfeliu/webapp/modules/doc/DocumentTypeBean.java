@@ -109,6 +109,7 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
       BUNDLE_PREFIX + "documentSearch_docTypeId", "col-3"));
     TableProperty titleColumn = new TableProperty("title",
       BUNDLE_PREFIX + "documentSearch_title", "col-8");
+    titleColumn.setIcon("text-xl mr-1");    
     searchTab.getTableProperties().add(titleColumn);
     
     searchTab.getOrderBy().add("changeDateTime:desc");

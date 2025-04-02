@@ -60,6 +60,7 @@
       <p:column headerText="#{newsBundle.new_documents_documentName}" styleClass="col-7"
                 sortBy="#{row.title}"
                 rendered="#{newDocumentsTabBean.groupableRowsHelper.isColumnRendered('docTitle')}">
+        <i class="#{documentTypeBean.getContentIcon(row.getMimeType())} text-xl mr-1"  />
         <h:outputText value="#{row.title}"/>
       </p:column>
 

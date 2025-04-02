@@ -55,6 +55,7 @@
 
       <p:column headerText="#{agendaBundle.eventDocuments_title}" styleClass="col-8"
                 rendered="#{eventDocumentsTabBean.groupableRowsHelper.isColumnRendered('documentTitle')}">
+        <i class="#{documentTypeBean.getContentIcon(row.getDocument())} text-xl mr-1"  />        
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 

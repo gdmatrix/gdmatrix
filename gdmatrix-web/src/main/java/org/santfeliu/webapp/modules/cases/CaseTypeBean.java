@@ -185,8 +185,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       BUNDLE_PREFIX + "caseDocuments_language", "col-1"));    
     TableProperty titleColumn = new TableProperty("docTitle", 
       BUNDLE_PREFIX + "caseDocuments_title", "col-5");        
-    titleColumn.setIcon("org.santfeliu.webapp.modules.doc.DocumentTypeBean." + 
-      "getContentIcon(row.getDocument()) + ' text-xl mr-1'");
+    titleColumn.setIcon("text-xl mr-1");
     documentsTab.getTableProperties().add(titleColumn);    
     documentsTab.getTableProperties().add(new TableProperty("caseDocTypeId", 
       BUNDLE_PREFIX + "caseDocuments_type", "col-3")); 

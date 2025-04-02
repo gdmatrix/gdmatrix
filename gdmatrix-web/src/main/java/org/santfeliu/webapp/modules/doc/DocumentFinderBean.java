@@ -541,7 +541,8 @@ public class DocumentFinderBean extends FinderBean
       {
         Document document = (Document)row;
         return new DefaultValue(DocumentTypeBean.formatTitle(document), 
-          DocumentTypeBean.getContentIcon(document));
+          DocumentTypeBean.getContentIcon(document) + 
+          " " + tableProperty.getIcon());
       }
       else
         return super.getTablePropertyValue(baseBean, tableProperty, row);
