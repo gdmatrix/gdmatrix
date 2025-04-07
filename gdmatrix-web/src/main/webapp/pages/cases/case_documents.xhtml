@@ -65,6 +65,11 @@
                            alt="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            title="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{caseDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-upload" styleClass="ui-button-flat"
+                           onclick="javascript:sendDocument();return false"
+                           process="@this" update="@none"
+                           alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
+                           disabled="#{!caseObjectBean.editable}" />          
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{caseDocumentsTabBean.create}"
                            process="@this"
@@ -164,7 +169,7 @@
 
     <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
       action="#{caseDocumentsTabBean.documentEdited}"
-      model="#{caseDocumentsTabBean.clientModel}"
+      model="#{caseDocumentsTabBean.sendClientModel}"
       function="editDocument"
       helpUrl="#{matrixClientBean.helpUrl}" />
     <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.UpdateDocumentCommand"
@@ -172,6 +177,11 @@
       model="#{caseDocumentsTabBean.clientModel}"
       function="updateDocument"
       helpUrl="#{matrixClientBean.helpUrl}"/>
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
+      action="#{caseDocumentsTabBean.documentSent}"
+      model="#{caseDocumentsTabBean.clientModel}"                   
+      function="sendDocument"
+      helpUrl="#{matrixClientBean.helpUrl}"/>    
 
     <gdm:saveBean value="caseDocumentsTabBean" />
 

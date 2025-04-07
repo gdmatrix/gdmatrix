@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
+import org.matrix.cases.CaseConstants;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
@@ -60,6 +61,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
+import static org.santfeliu.faces.matrixclient.model.DocMatrixClientModels.DOCTYPES_PARAMETER;
 import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -97,7 +99,7 @@ public class CaseDocumentsTabBean extends TabBean
   public static final String REMOVE_ALL = "removeAll";
 
   public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";
-
+  
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
   CaseDocumentsDataTableRow caseDocumentToRemove;
@@ -680,6 +682,15 @@ public class CaseDocumentsTabBean extends TabBean
   {
     tabInstances.clear();
   }
+  
+  public DefaultMatrixClientModel getSendClientModel()
+  {
+    clientModel = getClientModel();
+    Map creationDocTypes = 
+      DocModuleBean.getUserDocTypes(DictionaryConstants.CREATE_ACTION);
+    clientModel.putParameter(DOCTYPES_PARAMETER, creationDocTypes);
+    return clientModel;
+  }
 
   public DefaultMatrixClientModel getClientModel()
   {
@@ -707,6 +718,41 @@ public class CaseDocumentsTabBean extends TabBean
       error(ex);
     }
   }
+  
+  public String documentSent()
+  {   
+    try
+    {
+      String docId = (String) clientModel.parseResult();
+      if (docId != null)
+      {
+        spreadDocumentRoles(docId);
+        CaseDocument caseDocument = new CaseDocument();
+        caseDocument.setCaseId(getObjectId());
+        caseDocument.setDocId(docId);
+        String currentVolume = getCurrentVolume();
+        if (currentVolume != null && !"".equals(currentVolume) 
+            && !CaseConstants.UNDEFINED_VOLUME.equals(currentVolume))
+          caseDocument.setVolume(currentVolume);
+        
+        String caseDocTypeId = getCreationTypeId();
+        if (caseDocTypeId == null) 
+          caseDocTypeId = DictionaryConstants.CASE_DOCUMENT_TYPE;
+        caseDocument.setCaseDocTypeId(caseDocTypeId);
+        
+        CasesModuleBean.getPort(false).storeCaseDocument(caseDocument);
+        
+        this.load();
+      }
+    }
+    catch (Exception ex)
+    {
+      if (!"NO_FILE".equals(ex.getMessage()))
+        error(ex);
+    }
+
+    return null;
+  }  
 
   public CaseDocumentsDataTableRow getCaseDocumentToRemove()
   {

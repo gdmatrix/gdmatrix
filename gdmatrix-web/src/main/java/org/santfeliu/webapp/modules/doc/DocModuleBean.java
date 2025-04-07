@@ -30,14 +30,22 @@
  */
 package org.santfeliu.webapp.modules.doc;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Type;
+import org.matrix.dic.TypeFilter;
 import org.matrix.doc.DocumentManagerPort;
 import org.matrix.doc.DocumentManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.modules.dic.DicModuleBean;
 
 /**
  *
@@ -70,4 +78,43 @@ public class DocModuleBean
     }
     return getPort(userId, password);
   }
+  
+  public static Map getUserDocTypes(String action)
+  {
+    Map typesMap = new HashMap();
+    try
+    {
+      for (Type userDocType : getActionDocTypes(action))
+      {
+        String typeId = userDocType.getTypeId();
+        org.santfeliu.dic.Type type =
+          TypeCache.getInstance().getType(typeId);
+
+        if (type.isInstantiable())
+        {
+          String typePath = null;
+          if (DictionaryConstants.DOCUMENT_TYPE.equals(typeId))
+            typePath = type.formatTypePath(false, true, true);
+          else
+            typePath = type.formatTypePath(false, true, false);
+
+          typesMap.put(typeId, typePath);
+        }
+      }
+    }
+    catch(Exception ex)
+    {
+      //return empty map
+    }    
+    return typesMap;
+  }
+
+  private static List<Type> getActionDocTypes(String action)
+    throws Exception
+  {
+    TypeFilter filter = new TypeFilter();
+    filter.setAction(action);
+    filter.setTypePath("/" + DictionaryConstants.DOCUMENT_TYPE + "/%");
+    return DicModuleBean.getPort(false).findTypes(filter);
+  }  
 }
