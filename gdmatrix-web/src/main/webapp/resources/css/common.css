@@ -63,6 +63,11 @@ body .ui-autocomplete.class_reference .ui-autocomplete-multiple-container.ui-inp
   border-bottom-right-radius: 0;
 }
 
+body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-autocomplete-row > td
+{
+  padding: 0.5rem;
+}
+
 body .ui-paginator .ui-paginator-current
 {
   display: block;
