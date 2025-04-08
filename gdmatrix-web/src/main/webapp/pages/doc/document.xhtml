@@ -281,8 +281,8 @@
                          oncomplete="PF('versionsPanel').hide()"
                          />
         </p:column>
-        <p:column headerText="#{documentBundle.document_creationDate}">
-          <h:outputText value="#{docVersion.creationDate}000000">
+        <p:column headerText="#{documentBundle.documentSearch_changeDateTime}">
+          <h:outputText value="#{docVersion.changeDateTime}">
             <f:converter converterId="DateTimeConverter" />
             <f:attribute name="userFormat" value="dd/MM/yyyy" />
           </h:outputText>
