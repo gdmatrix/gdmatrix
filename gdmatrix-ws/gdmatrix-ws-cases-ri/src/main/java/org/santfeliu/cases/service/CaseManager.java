@@ -1575,6 +1575,7 @@ public class CaseManager implements CaseManagerPort
                 caseDocumentView.setCaseDocTypeId(caseDocTypeId != null ?
                     caseDocTypeId : DictionaryConstants.CASE_DOCUMENT_TYPE);
                 caseDocumentView.setComments(dbCaseDocument.getComments());
+                caseDocumentView.setVolume(dbCaseDocument.getVolume());
                 caseDocumentViewList.add(caseDocumentView);
               }
             }
@@ -2530,6 +2531,7 @@ public class CaseManager implements CaseManagerPort
           caseDocumentView.setCaseDocTypeId(caseDocTypeId != null ?
           caseDocTypeId : DictionaryConstants.CASE_DOCUMENT_TYPE);
           caseDocumentView.setComments(dbCaseDocument.getComments());
+          caseDocumentView.setVolume(dbCaseDocument.getVolume());
           caseDocumentViewList.add(caseDocumentView);
           caseDocumentView.setDocument(document);
         }

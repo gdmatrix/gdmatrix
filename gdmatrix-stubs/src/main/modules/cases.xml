@@ -461,6 +461,8 @@
       </property>
       <property name="comments" type="xs:string" minOccurs="0">
       </property>
+      <property name="volume" type="xs:string" minOccurs="0">
+      </property>
     </struct>
 
     <struct name="CaseEventFilter">
