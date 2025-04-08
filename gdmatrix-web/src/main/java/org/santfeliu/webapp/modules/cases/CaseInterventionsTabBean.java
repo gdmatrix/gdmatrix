@@ -33,9 +33,11 @@ package org.santfeliu.webapp.modules.cases;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -47,6 +49,8 @@ import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -444,6 +448,12 @@ public class CaseInterventionsTabBean extends TabBean
         }
         setRows(auxList);
         getCurrentTabInstance().rowsFilterHelper.load();
+        if (isInactiveHidden())
+        {
+          ResourceBundle bundle = ResourceBundle.getBundle(
+            "org.santfeliu.cases.web.resources.CaseBundle", getLocale());        
+          warn(bundle.getString("caseInterventions_inactiveHiddenWarning"));
+        }        
         executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
@@ -585,6 +595,35 @@ public class CaseInterventionsTabBean extends TabBean
     }
   }
   
+  public boolean isInactiveHidden()
+  {
+    Boolean hideInactive = (Boolean)UserSessionBean.getCurrentInstance()
+      .getAttribute("hideInactiveInterventions");
+    if (hideInactive == null)
+      return false;
+    else
+      return hideInactive;
+  }
+
+  public void setInactiveHidden(boolean hideInactive)
+  {
+    try
+    {
+      UserSessionBean.getCurrentInstance().getAttributes()
+        .put("hideInactiveInterventions", hideInactive); 
+      load();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public void switchInactive()
+  {
+    setInactiveHidden(!isInactiveHidden());
+  }  
+  
   public List<CasePersonView> getCasePersonViews()
   {
     if (casePersonViews != null)
@@ -635,15 +674,19 @@ public class CaseInterventionsTabBean extends TabBean
 
   private List<CaseInterventionsDataTableRow> toDataTableRows(
     List<InterventionView> interventions) throws Exception
-  {
+  {     
     List<CaseInterventionsDataTableRow> convertedRows = new ArrayList<>();
     for (InterventionView row : interventions)
     {
-      CaseInterventionsDataTableRow dataTableRow =
-        new CaseInterventionsDataTableRow(row);
-      dataTableRow.setValues(this, row, getTableProperties());
-      dataTableRow.setStyleClass(getRowStyleClass(row));
-      convertedRows.add(dataTableRow);
+      if (!isInactiveHidden() || row.getEndDate() == null || 
+        row.getEndDate().compareTo(TextUtils.formatDate(new Date(), "yyyyMMdd")) > 0)
+      {
+        CaseInterventionsDataTableRow dataTableRow =
+          new CaseInterventionsDataTableRow(row);
+        dataTableRow.setValues(this, row, getTableProperties());
+        dataTableRow.setStyleClass(getRowStyleClass(row));
+        convertedRows.add(dataTableRow);
+      }
     }
     return convertedRows;
   }

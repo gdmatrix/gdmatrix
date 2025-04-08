@@ -42,7 +42,13 @@
                       update="case_interventions_table" />
             </p:selectOneMenu>
           </p:outputPanel>
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+          <p:commandButton action="#{caseInterventionsTabBean.switchInactive}"
+                           icon="pi pi-eye-slash" 
+                           process="@this" update="case_interventions_table"
+                           styleClass="rounded-button #{caseInterventionsTabBean.inactiveHidden ? '' : 'ui-button-flat'}"
+                           alt="#{caseInterventionsTabBean.inactiveHidden ? caseBundle.caseInterventions_showInactive : caseBundle.caseInterventions_hideInactive}" 
+                           title="#{caseInterventionsTabBean.inactiveHidden ? caseBundle.caseInterventions_showInactive : caseBundle.caseInterventions_hideInactive}" />       
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"  
                            action="#{caseInterventionsTabBean.groupableRowsHelper.switchView}"
                            process="case_interventions_table"
                            update="case_interventions_table"
