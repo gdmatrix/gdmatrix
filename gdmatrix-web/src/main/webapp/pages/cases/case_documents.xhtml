@@ -19,7 +19,7 @@
     <p:dataTable id="case_documents_table"
                  value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" rows="5"
+                 resizableColumns="false" showGridlines="true" rows="10"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{caseDocumentsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -45,7 +45,8 @@
                         update="case_documents_table" />
               </p:selectOneMenu>
             </p:outputPanel>          
-            <div class="flex-grow-1 mb-1 mt-1">
+            <p:outputPanel styleClass="flex-grow-1 mb-1 mt-1"
+                           rendered="#{caseDocumentsTabBean.renderVolumeSelector}">
               <p:outputLabel value="#{caseBundle.caseDocuments_volume}: "
                              styleClass="mr-2 vertical-align-middle"
                              for="@next" />
@@ -55,7 +56,7 @@
                         listener="#{caseDocumentsTabBean.volumeChanged}"
                         update="case_documents_table" />
               </p:selectOneMenu>
-            </div>
+            </p:outputPanel>
           </div>
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseDocumentsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseDocumentsTabBean.groupableRowsHelper.switchView}"

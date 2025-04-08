@@ -62,6 +62,7 @@ import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
 import static org.santfeliu.faces.matrixclient.model.DocMatrixClientModels.DOCTYPES_PARAMETER;
+import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -216,6 +217,21 @@ public class CaseDocumentsTabBean extends TabBean
       public String getFixedColumnValue(Object row, String columnName)
       {
         return null; //No fixed columns
+      }
+      
+      @Override
+      public boolean isColumnRendered(String columnName)
+      {
+        boolean renderColumn = super.isColumnRendered(columnName);
+        if (renderColumn) //check volume column
+        {
+          if ("volume".equals(columnName))
+          {
+            String currentVol = CaseDocumentsTabBean.this.getCurrentVolume();
+            renderColumn = CaseConstants.SHOW_ALL_VOLUMES.equals(currentVol);
+          }
+        }
+        return renderColumn;
       }
     };
   }
@@ -397,69 +413,104 @@ public class CaseDocumentsTabBean extends TabBean
     {
       try
       {
+        List<CaseDocumentView> result;
+        volumeSelectItems.clear();        
         CaseManagerPort port = CasesModuleBean.getPort(false);
         List<String> volumes = port.findCaseVolumes(objectId);
-        Collections.sort(volumes, (s1, s2) ->
+        if (volumes != null && !volumes.isEmpty())
         {
-          if (s1 == null) s1 = "";
-          if (s2 == null) s2 = "";
-          return s2.compareTo(s1);
-        });
-        volumeSelectItems.clear();
-        volumeSelectItems.add(new SelectItem(null, ""));
-        for (String value : volumes)
-        {
-          if (!StringUtils.isBlank(value))
+          Collections.sort(volumes, (s1, s2) ->
           {
-            SelectItem selectItem = new SelectItem(value, value);
-            volumeSelectItems.add(selectItem);
+            if (s1 == null) s1 = "";
+            if (s2 == null) s2 = "";
+              return s1.compareTo(s2);
+          });
+          boolean addUndefined = false;
+          for (String value : volumes)
+          {
+            SelectItem selectItem;
+            if (!StringUtils.isBlank(value))
+            {
+              selectItem = new SelectItem(value, value);
+              volumeSelectItems.add(selectItem);
+            }
+            else //null or whitespaces
+            {
+              addUndefined = true;
+            }
           }
-        }
 
-        CaseDocumentFilter filter = new CaseDocumentFilter();
-        EditTab tab = caseObjectBean.getActiveEditTab();
-        String volume = tab.getProperties().getString("volume");
-        if (volume != null && getCurrentVolume() == null)
-        {
-          setCurrentVolume(volume);
-        }
+          if (addUndefined)
+          {
+            volumeSelectItems.add(0, new SelectItem(
+              CaseConstants.UNDEFINED_VOLUME, ""));          
+          }
+          EditTab tab = caseObjectBean.getActiveEditTab();
+          if ("true".equals(tab.getProperties().getString(
+            "enableShowAllVolumes")))
+          {
+            volumeSelectItems.add(0, new SelectItem(
+              CaseConstants.SHOW_ALL_VOLUMES, 
+              ApplicationBean.getCurrentInstance().translate(
+                "$$objectBundle.showAll")));                 
+          }
 
-        filter.setVolume(getCurrentVolume());
-        filter.setCaseId(objectId);
-        List<CaseDocumentView> auxListPre = port.findCaseDocumentViews(filter);
+          if (!existsSelectItem(volumeSelectItems, getCurrentVolume())) 
+          {
+            String volume = tab.getProperties().getString("volume");
+            if (volume != null && existsSelectItem(volumeSelectItems, volume))
+            {
+              setCurrentVolume(volume); //default value
+            }
+            else
+            {
+              setCurrentVolume((String)volumeSelectItems.get(0).getValue());
+            }
+          }
 
-        //Show only rows with document
-        List<CaseDocumentView> auxList = new ArrayList();
-        for (CaseDocumentView cdv : auxListPre)
-        {
-          if (cdv.getDocument() != null) auxList.add(cdv);
-        }
+          String filterVolume = (CaseConstants.SHOW_ALL_VOLUMES.equals(
+            getCurrentVolume()) ? null : getCurrentVolume());
+          CaseDocumentFilter filter = new CaseDocumentFilter();
+          filter.setVolume(filterVolume);
+          filter.setCaseId(objectId);
+          List<CaseDocumentView> auxListPre = port.findCaseDocumentViews(filter);
 
-        List<CaseDocumentView> result;
-        String typeId = getTabBaseTypeId();
-        if (typeId == null || tab.isShowAllTypes())
-        {
-          result = auxList;
+          //Show only rows with document
+          List<CaseDocumentView> auxList = new ArrayList();
+          for (CaseDocumentView cdv : auxListPre)
+          {
+            if (cdv.getDocument() != null) auxList.add(cdv);
+          }
+
+          String typeId = getTabBaseTypeId();
+          if (typeId == null || tab.isShowAllTypes())
+          {
+            result = auxList;
+          }
+          else
+          {
+            result = new ArrayList();
+            for (CaseDocumentView item : auxList)
+            {
+              try
+              {
+                Type caseDocType =
+                  TypeCache.getInstance().getType(item.getCaseDocTypeId());
+                if (caseDocType.isDerivedFrom(typeId))
+                {
+                  result.add(item);
+                }
+              }
+              catch (Exception ex)
+              {
+                // ignore: bad type?
+              }
+            }
+          }
         }
         else
         {
-          result = new ArrayList();
-          for (CaseDocumentView item : auxList)
-          {
-            try
-            {
-              Type caseDocType =
-                TypeCache.getInstance().getType(item.getCaseDocTypeId());
-              if (caseDocType.isDerivedFrom(typeId))
-              {
-                result.add(item);
-              }
-            }
-            catch (Exception ex)
-            {
-              // ignore: bad type?
-            }
-          }
+          result = Collections.EMPTY_LIST;
         }
         List<CaseDocumentsDataTableRow> auxList2 = toDataTableRows(result);
         if (getOrderBy() != null)
@@ -495,6 +546,16 @@ public class CaseDocumentsTabBean extends TabBean
       if (editing.getCaseDocTypeId() == null)
       {
         editing.setCaseDocTypeId("CaseDocument");
+      }             
+      String editingVolume = editing.getVolume();
+      if (editingVolume != null)
+      {
+        editingVolume = editingVolume.replace('\u00A0', ' ');
+      }
+      if (CaseConstants.UNDEFINED_VOLUME.equals(editingVolume) || 
+        StringUtils.isBlank(editingVolume))
+      {
+        editing.setVolume(null);
       }
       editing = (CaseDocument) executeTabAction(PRE_TAB_STORE_ACTION, editing);
       editing = CasesModuleBean.getPort(false).storeCaseDocument(editing);
@@ -540,10 +601,23 @@ public class CaseDocumentsTabBean extends TabBean
     getCurrentTabInstance().currentVolume = currentVolume;
   }
 
-  public List<SelectItem> getVolumeSelectItems()
+  public List<SelectItem> getVolumeSelectItems() 
   {
     return volumeSelectItems;
   }
+
+  public List<SelectItem> getRealVolumeSelectItems()
+  {
+    List<SelectItem> list = new ArrayList<>();
+    for (SelectItem item : volumeSelectItems)
+    {
+      if (!item.getValue().equals(CaseConstants.SHOW_ALL_VOLUMES)) //real value
+      {
+        list.add(item);
+      }
+    }
+    return list;
+  }  
 
   public void volumeChanged(AjaxBehaviorEvent e)
   {
@@ -776,10 +850,15 @@ public class CaseDocumentsTabBean extends TabBean
     this.removeMode = removeMode;
   }
 
+  public boolean isRenderVolumeSelector()
+  {
+    return !getRealVolumeSelectItems().isEmpty();
+  }
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing };
+    return new Object[]{ editing, getCurrentVolume() };
   }
 
   @Override
@@ -789,6 +868,7 @@ public class CaseDocumentsTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (CaseDocument)stateArray[0];
+      setCurrentVolume((String)stateArray[1]);
 
       load();
     }
@@ -915,7 +995,16 @@ public class CaseDocumentsTabBean extends TabBean
     }
    return false;
   }
-
+  
+  private boolean existsSelectItem(List<SelectItem> items, String value)
+  {
+    for (SelectItem item : items)
+    {
+      if (item.getValue().equals(value)) return true;
+    }
+    return false;
+  }
+  
   public class CaseDocumentsDataTableRow extends DataTableRow
   {
     private String docId;

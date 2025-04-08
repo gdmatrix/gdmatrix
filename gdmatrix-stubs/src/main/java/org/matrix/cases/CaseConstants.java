@@ -45,4 +45,5 @@ public class CaseConstants
   public static final String ACTIVE_DATE_COMPARATOR = "3";
 
   public static final String UNDEFINED_VOLUME = "UNDEFINED_VOLUME";
+  public static final String SHOW_ALL_VOLUMES = "SHOW_ALL_VOLUMES";
 }
