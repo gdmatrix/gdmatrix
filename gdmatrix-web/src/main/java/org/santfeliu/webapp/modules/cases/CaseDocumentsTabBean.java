@@ -550,12 +550,16 @@ public class CaseDocumentsTabBean extends TabBean
       String editingVolume = editing.getVolume();
       if (editingVolume != null)
       {
-        editingVolume = editingVolume.replace('\u00A0', ' ');
-      }
-      if (CaseConstants.UNDEFINED_VOLUME.equals(editingVolume) || 
-        StringUtils.isBlank(editingVolume))
-      {
-        editing.setVolume(null);
+        editingVolume = editingVolume.replace('\u00A0', ' ');      
+        if (CaseConstants.UNDEFINED_VOLUME.equals(editingVolume) || 
+          StringUtils.isBlank(editingVolume))
+        {
+          editing.setVolume(null);
+        }
+        else
+        {
+          editing.setVolume(editingVolume.trim());
+        }
       }
       editing = (CaseDocument) executeTabAction(PRE_TAB_STORE_ACTION, editing);
       editing = CasesModuleBean.getPort(false).storeCaseDocument(editing);
