@@ -52,6 +52,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import static org.matrix.dic.DictionaryConstants.WRITE_ACTION;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_SNAPSHOT_DOCID_PROPERTY;
 
 /**
  *
@@ -71,6 +72,7 @@ public class MapDocument implements Serializable
   String captureDateTime;
   String changeUserId;
   String changeDateTime;
+  String snapshotDocId;
   Style style; // MapLibre style
   final List<Property> property = new ArrayList<>();
   final List<AccessControl> accessControl = new ArrayList<>();
@@ -235,6 +237,16 @@ public class MapDocument implements Serializable
     this.changeDateTime = changeDateTime;
   }
 
+  public String getSnapshotDocId()
+  {
+    return snapshotDocId;
+  }
+
+  public void setSnapshotDocId(String snapshotDocId)
+  {
+    this.snapshotDocId = snapshotDocId;
+  }
+
   public List<Property> getProperty()
   {
     return property;
@@ -358,6 +370,9 @@ public class MapDocument implements Serializable
           break;
         case MAP_CATEGORY_NAME_PROPERTY:
           categoryName = value;
+          break;
+        case MAP_SNAPSHOT_DOCID_PROPERTY:
+          snapshotDocId = value;
           break;
         default:
           getProperty().add(documentProperty);

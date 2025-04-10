@@ -102,7 +102,9 @@ Bundle.getBundle("main").setTranslations("", {
   "GenericWfsFinder.filter": "Filter (CQL)",
   "GenericWfsFinder.outputExpression" : "Output expression (JS)",
   "GenericWfsFinder.sortBy" : "Sort by",
-  "GenericWfsFinder.addMarkers": "Add markers"
+  "GenericWfsFinder.addMarkers": "Add markers",
+
+  "SnapshotControl.title": "Take map snapshot"
 
 });
 

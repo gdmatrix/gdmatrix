@@ -123,6 +123,20 @@
 
         <p:tab>
           <f:facet name="title">
+            <span class="pi pi-camera mr-2"/>Snapshot
+          </f:facet>
+          
+          <ui:fragment rendered="#{geoMapBean.mapDocument.snapshotDocId != null}">
+            <a href="/documents/#{geoMapBean.mapDocument.snapshotDocId}" target="_blank" title="Maximize image">
+              <img src="/documents/#{geoMapBean.mapDocument.snapshotDocId}?cache=0" 
+                   alt="" title="" style="width:300px;max-width:100%" />
+            </a>
+            <div>Snapshot docId: #{geoMapBean.mapDocument.snapshotDocId}</div>
+          </ui:fragment>
+        </p:tab>
+        
+        <p:tab>
+          <f:facet name="title">
             <span class="pi pi-database mr-2"/>Auditory
           </f:facet>
 

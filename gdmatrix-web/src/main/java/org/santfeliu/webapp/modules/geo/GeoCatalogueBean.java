@@ -67,6 +67,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   MapView currentMapView;
   MapCategory currentMapCategory;
   Set<String> expandedCategories = new HashSet<>();
+  boolean snapshotVisible = false;
 
   transient MapDocument currentMapDocument;
 
@@ -97,6 +98,16 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   public void setCurrentMapCategory(MapCategory mapCategory)
   {
     currentMapCategory = new MapCategory(mapCategory);
+  }
+
+  public boolean isSnapshotVisible()
+  {
+    return snapshotVisible;
+  }
+
+  public void setSnapshotVisible(boolean snapshotVisible)
+  {
+    this.snapshotVisible = snapshotVisible;
   }
 
   public void createMap()

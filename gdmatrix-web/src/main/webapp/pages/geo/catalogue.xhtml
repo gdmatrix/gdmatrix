@@ -14,10 +14,16 @@
   <div class="flex flex-column h-full overflow-hidden geo_catalogue">
     <div class="p-2 flex align-items-center flex-grow-0 border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
-      <div class="flex-grow-1 align-items-center">
+      <div class="flex-grow-1 flex-shrink-0 align-items-center">
         <span class="pi pi-th-large"/>
         <strong>#{applicationBean.translate(userSessionBean.selectedMenuItem.label, 'geo')}</strong>
-        <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat" styleClass="ml-2"
+        
+        <p:selectBooleanButton value="#{geoCatalogueBean.snapshotVisible}" styleClass="ml-2"
+                               onIcon="pi pi-image" offIcon="pi pi-image"> 
+          <p:ajax process="@this" update="@form:cnt" />
+        </p:selectBooleanButton>
+        
+        <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat" styleClass="mx-2"
                       rendered="#{geoCatalogueBean.adminUser}">
           <p:menuitem icon="pi pi-plus-circle" 
                       action="#{geoCatalogueBean.createMapCategory}" value="Create category"
@@ -32,7 +38,7 @@
       <h:panelGroup id="map_filter" layout="block" styleClass="flex-grow-0 flex-shrink-1">
         <div class="ui-inputgroup">
           <p:inputText value="#{geoCatalogueBean.filter.keywords}"
-                       pt:spellcheck="false" autocomplete="off" 
+                       pt:spellcheck="false" autocomplete="off" styleClass="w-full"
                        placeholder="#{objectBundle.search}" />
           <p:commandButton id="find_maps"
                            action="#{geoCatalogueBean.findMaps}"

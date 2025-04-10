@@ -31,10 +31,16 @@
 package org.santfeliu.webapp.modules.geo;
 
 import com.google.gson.Gson;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +52,9 @@ import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.imageio.ImageIO;
 import javax.inject.Named;
+import org.apache.commons.io.IOUtils;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
@@ -692,6 +700,70 @@ public class GeoMapBean extends WebBean implements Serializable
   public void updateStatistics()
   {
     MapAccessLogger.clearStatistics();
+  }
+
+  public void saveSnapshot()
+  {
+    String snpBase64 = FacesContext.getCurrentInstance().getExternalContext()
+      .getRequestParameterMap().get("snapshot");
+    if (snpBase64 != null)
+    {
+      try
+      {
+        int index = snpBase64.indexOf(",");
+        if (index != -1)
+        {
+          byte[] data = Base64.getDecoder().decode(snpBase64.substring(index + 1));
+          BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
+
+          double aspect = 1.5;
+
+          int iwidth = image.getWidth();
+          int iheight = image.getHeight();
+
+          int width = iwidth;
+          int height = iheight;
+          int xmargin = 0;
+          int ymargin = 0;
+
+          double currentAspect = (double)iwidth / (double)iheight;
+          if (currentAspect < aspect)
+          {
+            ymargin = (int)((iheight * aspect - iwidth) / (2 * aspect));
+            height = iheight - 2 * ymargin;
+          }
+          else // currentAspect > aspect
+          {
+            xmargin = (int)((iwidth - aspect * iheight) / 2);
+            width = iwidth - 2 * xmargin;
+          }
+
+          BufferedImage cropImage =
+            new BufferedImage(width, height, image.getType());
+          cropImage.getGraphics().drawImage(
+            image, 0, 0, width, height, xmargin,
+            ymargin, xmargin + width, ymargin + height, null);
+
+          File file = File.createTempFile("map_snapshot", ".png");
+          try
+          {
+            ImageIO.write(cropImage, "png", file);
+            String mapName = getMapDocument().getName();
+            String snapshotDocId = getMapStore().storeMapSnapshot(mapName, file);
+            getMapDocument().setSnapshotDocId(snapshotDocId);
+          }
+          finally
+          {
+            file.delete();
+          }
+          growl("SNAPSHOT_SAVED");
+        }
+      }
+      catch (IOException ex)
+      {
+        error(ex);
+      }
+    }
   }
 
   // non public methods

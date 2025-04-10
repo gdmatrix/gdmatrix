@@ -9,17 +9,26 @@
 
   <p:dialog id="map_summary_dialog" widgetVar="mapSummaryDialog"
             resizable="false" responsive="true" position="center center"
-            minHeight="100" width="350" showEffect="fade" hideEffect="fade">
+            minHeight="100" width="350" height="300" showEffect="fade" hideEffect="fade"
+            style="max-height:90%">
 
     <f:facet name="header" rendered="#{geoCatalogueBean.currentMapView != null}">
       <div class="text-base">
         #{applicationBean.translate(geoCatalogueBean.currentMapView.title, 'geo')}
       </div>
     </f:facet>
+    
+    <div class="overflow-auto h-full">
+      <ui:fragment rendered="#{geoCatalogueBean.currentMapView.snapshotDocId != null and not geoCatalogueBean.snapshotVisible}">
+        <img src="/documents/#{geoCatalogueBean.currentMapView.snapshotDocId}?cache=0" 
+             alt="" title="" style="width:100%" />
+      </ui:fragment>
 
-    <h:outputText value="#{applicationBean.translateHtml(geoCatalogueBean.currentMapSummary, 'geo')}"
-                  rendered="#{geoCatalogueBean.currentMapView != null}"
-                  escape="false" />
+      <h:outputText value="#{applicationBean.translateHtml(geoCatalogueBean.currentMapSummary, 'geo')}"
+                    rendered="#{geoCatalogueBean.currentMapView != null}"
+                    escape="false" />
+
+    </div>
 
     <f:facet name="footer">
       <p:commandButton action="#{geoMapBean.loadMap(geoCatalogueBean.currentMapView.mapName, 'map_viewer')}"

@@ -3,6 +3,7 @@
 import { GoHomeControl } from "../controls/GoHomeControl.js";
 import { ZoomControl } from "../controls/ZoomControl.js";
 import { LoadingIndicatorControl } from "../controls/LoadingIndicatorControl.js";
+import { SnapshotControl } from "../controls/SnapshotControl.js";
 
 function init(map)
 {
@@ -38,6 +39,11 @@ function init(map)
   }), "top-right");
 
   map.addControl(new LoadingIndicatorControl(), "top-right");
+  
+  if (window.geoTakeSnapshots)
+  {
+    map.addControl(new SnapshotControl(), "top-left");    
+  }
 }
 
 export { init };

@@ -73,6 +73,7 @@ public class MapStore
   public static final String MAP_SUMMARY_PROPERTY = "summary";
   public static final String MAP_DESCRIPTION_PROPERTY = "description";
   public static final String MAP_KEYWORDS_PROPERTY = "keywords";
+  public static final String MAP_SNAPSHOT_DOCID_PROPERTY = "snapshotDocId";
   public static final String MAP_CATEGORY_NAME_PROPERTY = "category";
   public static final String MAP_CATEGORY_POSITION_PROPERTY = "position";
   public static final String MAP_CATEGORY_PARENT_PROPERTY = "parentCategory";
@@ -141,6 +142,8 @@ public class MapStore
 
     filter.getOutputProperty().add(MAP_NAME_PROPERTY);
     filter.getOutputProperty().add(MAP_CATEGORY_NAME_PROPERTY);
+    filter.getOutputProperty().add(MAP_SNAPSHOT_DOCID_PROPERTY);
+
     List<Document> documents = getPort().findDocuments(filter);
     for (Document document : documents)
     {
@@ -149,12 +152,15 @@ public class MapStore
         document.getProperty(), MAP_NAME_PROPERTY);
       String categoryName = DictionaryUtils.getPropertyValue(
         document.getProperty(), MAP_CATEGORY_NAME_PROPERTY);
+      String snapshotDocId = DictionaryUtils.getPropertyValue(
+        document.getProperty(), MAP_SNAPSHOT_DOCID_PROPERTY);
 
       MapGroup mapGroup = getMapGroup(categoryName, mapGroupMap);
 
       MapView mapView = new MapView();
       mapView.setTitle(mapTitle);
       mapView.setMapName(mapName);
+      mapView.setSnapshotDocId(snapshotDocId);
       mapGroup.getMapViews().add(mapView);
     }
     rootGroup.complete();
@@ -266,6 +272,15 @@ public class MapStore
     property.getValue().add(KeywordsManager.toKeywordsText(mapKeywords));
     document.getProperty().add(property);
 
+    String snapshotDocId = mapDocument.getSnapshotDocId();
+    if (!isBlank(snapshotDocId))
+    {
+      property = new Property();
+      property.setName(MAP_SNAPSHOT_DOCID_PROPERTY);
+      property.getValue().add(snapshotDocId);
+      document.getProperty().add(property);
+    }
+
     document.getAccessControl().clear();
     document.getAccessControl().addAll(mapDocument.getAccessControl());
 
@@ -302,6 +317,36 @@ public class MapStore
   {
     MapDocument mapDocument = loadMap(mapName);
     return mapDocument.getMergedSummaryAndDescription();
+  }
+
+  public String storeMapSnapshot(String mapName, File file)
+  {
+    String docId = getMapDocId(mapName);
+    if (docId == null) throw new RuntimeException("MAP_NOT_FOUND");
+
+    DocumentManagerPort port = getPort();
+    Document mapDocument = port.loadDocument(docId, 0, ContentInfo.METADATA);
+
+    String snapshotDocId = DictionaryUtils.getPropertyValue(
+      mapDocument.getProperty(), MAP_SNAPSHOT_DOCID_PROPERTY);
+
+    Document snapshotDocument = new Document();
+    snapshotDocument.setDocId(snapshotDocId);
+    snapshotDocument.setTitle("Snapshot of " + mapName);
+    snapshotDocument.setDocTypeId("IMAGE");
+    Content content = new Content();
+    content.setContentType("image/png");
+    content.setData(new DataHandler(new FileDataSource(file, "image/png")));
+    snapshotDocument.setContent(content);
+    snapshotDocument = port.storeDocument(snapshotDocument);
+    snapshotDocId = snapshotDocument.getDocId();
+
+    // add snapshotDocId property to mapDocument
+    DictionaryUtils.setPropertyValue(mapDocument.getProperty(),
+      MAP_SNAPSHOT_DOCID_PROPERTY, snapshotDocId, false);
+    port.storeDocument(mapDocument);
+
+    return snapshotDocId;
   }
 
   // Categories

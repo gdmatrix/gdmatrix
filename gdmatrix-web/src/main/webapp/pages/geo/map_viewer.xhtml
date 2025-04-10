@@ -60,7 +60,20 @@
   <gdm:saveState value="#{geoCatalogueBean.filter}" />
   <gdm:saveState value="#{geoCatalogueBean.currentMapView}" />
   <gdm:saveState value="#{geoCatalogueBean.expandedCategories}" />
+  
+  <ui:fragment rendered="#{geoMapBean.isEditorUser()}">
+    <script>
+      window.geoTakeSnapshots = true;
+    </script>
+    <p:remoteCommand name="saveSnapshot" update="@none" action="#{geoMapBean.saveSnapshot}"/>
+  </ui:fragment> 
 
+  <ui:fragment rendered="#{not geoMapBean.isEditorUser()}">
+    <script>
+      window.geoTakeSnapshots = false;
+    </script>      
+  </ui:fragment>   
+  
   <p:growl id="growl" life="1000" for="growl">
     <p:autoUpdate />
   </p:growl>

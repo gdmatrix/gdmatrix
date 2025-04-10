@@ -17,6 +17,7 @@
     <div class="flex-grow-1 flex-shrink-1 flex flex-column">
       <div class="font-bold mr-1">
         <p:commandLink value="#{applicationBean.translate(mapGroup.category.title, 'geo')}"
+                       action="#{geoCatalogueBean.expandMapCategory(mapGroup.category.name)}"
                        process="@this" update="@none"
                        onclick="setCategoryExpand(this, true)" />
       </div>
