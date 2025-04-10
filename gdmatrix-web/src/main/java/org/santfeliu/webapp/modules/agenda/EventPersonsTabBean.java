@@ -46,6 +46,8 @@ import javax.inject.Named;
 import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
 import org.matrix.agenda.AttendantView;
+import org.matrix.agenda.Event;
+import org.matrix.dic.PropertyDefinition;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -316,6 +318,34 @@ public class EventPersonsTabBean extends TabBean
     editing.setHidden(hidden);
   }
 
+  @Override
+  public String getTabBaseTypeId()
+  {
+    String tabBaseTypeId = super.getTabBaseTypeId();
+    if (tabBaseTypeId == null)
+    {
+      Event event = eventObjectBean.getObject();
+      if (event != null)
+      {
+        String typeId = event.getEventTypeId();
+        if (typeId != null)
+        {
+          Type type = TypeCache.getInstance().getType(typeId);
+          if (type != null)
+          {
+            PropertyDefinition propdef = 
+              type.getPropertyDefinition("_attendantTypeId");
+            if (propdef != null && !propdef.getValue().isEmpty())
+            {
+              tabBaseTypeId = propdef.getValue().get(0);
+            }
+          }
+        }  
+      }
+    }
+    return tabBaseTypeId;
+  }
+  
   public void edit(AttendantView row)
   {
     if (row != null)
