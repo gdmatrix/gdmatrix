@@ -881,6 +881,15 @@
         <url-pattern>/clock/*</url-pattern>
     </servlet-mapping>
     <servlet>
+        <description>Robots servlet</description>
+        <servlet-name>RobotsServlet</servlet-name>
+        <servlet-class>org.santfeliu.web.servlet.RobotsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RobotsServlet</servlet-name>
+        <url-pattern>/robots.txt</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <description>Stream servlet</description>
         <servlet-name>StreamServlet</servlet-name>
         <servlet-class>org.santfeliu.web.servlet.StreamServlet</servlet-class>
@@ -942,6 +951,7 @@
         <servlet-name>WorkServlet</servlet-name>
         <url-pattern>/work/*</url-pattern>
     </servlet-mapping>
+
     <!-- Filters -->
     <filter>
         <description>Set UTF-8 character encoding</description>
