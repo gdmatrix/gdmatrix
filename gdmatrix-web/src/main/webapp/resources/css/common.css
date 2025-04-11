@@ -68,19 +68,6 @@ body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-auto
   padding: 0.5rem;
 }
 
-.ui-autocomplete-panel .ui-autocomplete-table .ui-autocomplete-group td
-{
-  border-width: 0px 1px 1px 1px;
-  border-bottom-color: black;
-  border-left-color: rgba(0,0,0,0.08);
-  border-right-color: rgba(0,0,0,0.08);  
-}
-
-.ui-autocomplete-panel .ui-autocomplete-table .ui-autocomplete-group td:empty
-{
-  display:none;
-}
-
 body .ui-paginator .ui-paginator-current
 {
   display: block;

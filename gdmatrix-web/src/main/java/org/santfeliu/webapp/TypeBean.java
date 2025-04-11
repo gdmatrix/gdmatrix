@@ -284,29 +284,19 @@ public abstract class TypeBean<T, F> extends WebBean
 
     if (baseTypeInfo != null)
     {
-      List<String> ids = new ArrayList(); 
-
-      //Recents
+      List<String> ids = new ArrayList();
       ids.addAll(baseTypeInfo.getRecentObjectIdList());
-      if (!ids.isEmpty())
-      {
-        ids.stream().filter(id -> !StringUtils.isBlank(id))
-          .forEach(id -> 
-            items.add(new SelectItem(id, getDescription(id), "1_recents")));
-      }
-      
-      //Separator
-      items.add(new SelectItem("", "<hr>", "2_separator", false, false, true));
-      
-      //Favorites
       List<String> favIds = baseTypeInfo.getFavoriteObjectIdList();
       if (!favIds.isEmpty())
       {
         favIds.stream().filter(id -> !ids.contains(id))
-          .forEach(id -> 
-            items.add(new SelectItem(id, getDescription(id), "3_favs")));
+          .forEach(id -> ids.add(id));
       }
-      
+      if (!ids.isEmpty())
+      {
+        ids.stream().filter(id -> !StringUtils.isBlank(id))
+          .forEach(id -> items.add(new SelectItem(id, getDescription(id))));
+      }
     }
   }
 
@@ -322,9 +312,9 @@ public abstract class TypeBean<T, F> extends WebBean
     {
       if (i1 != null && i2 != null)
       {
-        String label1 = i1.getDescription() + ":" + (normalize ? 
+        String label1 = (normalize ? 
           TextUtils.normalize(i1.getLabel()) : i1.getLabel());
-        String label2 = i2.getDescription() + ":" + (normalize ? 
+        String label2 = (normalize ? 
           TextUtils.normalize(i2.getLabel()) : i2.getLabel());
         return (ignoreCase ? 
           label1.compareToIgnoreCase(label2) : 

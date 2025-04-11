@@ -61,8 +61,7 @@
                         onchange="this.input.trigger('select')"
                         required="#{cc.attrs.required}"
                         disabled="#{cc.attrs.disabled}"
-                        widgetVar="#{cc.attrs.widgetVar}"
-                        groupBy="#{item.description != null and not item.description.startsWith('$') ? item.description : ''}">
+                        widgetVar="#{cc.attrs.widgetVar}">
           
           <c:if test="#{not empty cc.attrs.requiredMessage}">
             <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
@@ -79,7 +78,7 @@
           </c:if>
 
           <p:column styleClass="#{item.value == typeReferenceBean.selectItem.value ? 'current' : ''}">
-            <h:outputText value="#{item.label}" escape="#{item.escape}" />
+            <h:outputText value="#{item.label}" />
           </p:column>
         </p:autoComplete>
         <p:commandButton id="show_button"

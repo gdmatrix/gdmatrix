@@ -76,7 +76,7 @@
           </c:if>
 
           <p:column styleClass="#{item.value == objectReferenceBean.selectItem.value ? 'current' : ''}">
-            <h:outputText value="#{item.label}" escape="#{item.escape}"/>
+            <h:outputText value="#{item.label}" />
           </p:column>
         </p:autoComplete>
         <p:commandButton id="show_button"

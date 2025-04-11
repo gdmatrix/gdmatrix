@@ -280,11 +280,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
         {
           String objectId = derived.getTypeId();
           String description = getDescription(objectId);
-          String typePath = "";
-          org.santfeliu.dic.Type superType = derived.getSuperType();
-          if (superType != null)
-            typePath = superType.formatTypePath(false, true, false, typeId);
-          items.add(new SelectItem(objectId, description, typePath));
+          items.add(new SelectItem(objectId, description));
           if (maxResults > 0 && items.size() >= maxResults) break;
         }
       }
@@ -294,17 +290,11 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       TypeFilter typeFilter = queryToFilter(query, typeId);
       typeFilter.setMaxResults(maxResults);
       List<Type> types = find(typeFilter);
-      for (Type t : types)
-      {       
-        String objectId = getObjectId(t);
-        String description = getDescription(t.getTypeId());
-        String typePath = "";
-        org.santfeliu.dic.Type type = 
-          TypeCache.getInstance().getType(t.getTypeId());         
-        org.santfeliu.dic.Type superType = type.getSuperType();
-        if (superType != null)
-          typePath = superType.formatTypePath(false, true, false, typeId);        
-        items.add(new SelectItem(objectId, description, typePath));
+      for (Type type : types)
+      {
+        String objectId = getObjectId(type);
+        String description = getDescription(type.getTypeId());
+        items.add(new SelectItem(objectId, description));
       }
     }
 
@@ -338,45 +328,25 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 
     if (baseTypeInfo != null)
     {
-      List<String> ids = new ArrayList(); 
-
-      //Recents
-      ids.addAll(baseTypeInfo.getRecentObjectIdList());
-      if (!ids.isEmpty())
+      List<String> ids = new ArrayList(baseTypeInfo.getRecentObjectIdList());
+      List<String> favIds = baseTypeInfo.getFavoriteObjectIdList();
+      if (!favIds.isEmpty())
       {
-        for (String id : ids)
-        {
-          if (!StringUtils.isBlank(id))
-          {
-            org.santfeliu.dic.Type type = TypeCache.getInstance().getType(id);
-            if (type.isDerivedFrom(typeId) || id.equals(typeId))
-            {
-              items.add(new SelectItem(id, getDescription(id), "$1"));
-            }
-          }
-        }        
-        
+        favIds.stream().filter(id -> !ids.contains(id))
+          .forEach(id -> ids.add(id));
       }
-      
-      //Separator
-      items.add(new SelectItem("", "<hr>", "$2", false, false, true));
-      
-      //Favorites
-      ids = baseTypeInfo.getFavoriteObjectIdList();
-      if (!ids.isEmpty())
+
+      for (String id : ids)
       {
-        for (String id : ids)
+        if (!StringUtils.isBlank(id))
         {
-          if (!StringUtils.isBlank(id))
+          org.santfeliu.dic.Type type = TypeCache.getInstance().getType(id);
+          if (type.isDerivedFrom(typeId) || id.equals(typeId))
           {
-            org.santfeliu.dic.Type type = TypeCache.getInstance().getType(id);
-            if (type.isDerivedFrom(typeId) || id.equals(typeId))
-            {
-              items.add(new SelectItem(id, getDescription(id), "$3"));
-            }
+            items.add(new SelectItem(id, getDescription(id)));
           }
-        }        
-      }   
+        }
+      }
     }
   }
 
