@@ -295,7 +295,7 @@ body .geo_catalogue_button.ui-button.ui-button-icon-only .ui-button-text
   }
 }
 
-@media (min-width: 2000px)
+@media (min-width: 1600px)
 {
   .geo_catalogue .category li
   {
@@ -303,4 +303,10 @@ body .geo_catalogue_button.ui-button.ui-button-icon-only .ui-button-text
   }
 }
 
-
+@media (min-width: 2000px)
+{
+  .geo_catalogue .category li
+  {
+    width: 20%;
+  }
+}
