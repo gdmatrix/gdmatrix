@@ -93,6 +93,7 @@
 
       <emcomp:dynamicProperties id="case_events_dynamic_properties" 
                                 typeId="#{caseEventsTabBean.caseEventTypeId}"
+                                object="#{caseEventsTabBean.editing.caseEventId == null ? caseObjectBean.case : caseEventsTabBean.editing}"
                                 formSelector="#{caseEventsTabBean.formSelector}"
                                 properties="#{caseEventsTabBean.editing.property}"
                                 oncomplete="PF('caseEventsDialog').resetPosition();" />

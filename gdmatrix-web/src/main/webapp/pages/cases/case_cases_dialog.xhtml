@@ -118,10 +118,10 @@
       
       <emcomp:dynamicProperties id="case_cases_dynamic_properties" 
                                 typeId="#{caseCasesTabBean.editing.caseCaseTypeId}"
+                                object="#{caseCasesTabBean.editing.caseCaseId == null ? caseObjectBean.case : caseCasesTabBean.editing}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 properties="#{caseCasesTabBean.editing.property}"
-                                oncomplete="PF('caseCasesDialog').resetPosition();" 
-                                dataHash="#{caseCasesTabBean.editing.caseCaseTypeId}"/>
+                                oncomplete="PF('caseCasesDialog').resetPosition();" />
     </h:panelGroup>
 
     <div class="text-right">

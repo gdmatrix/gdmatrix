@@ -91,6 +91,7 @@
 
       <emcomp:dynamicProperties id="event_cases_dynamic_properties" 
                                 typeId="#{eventCasesTabBean.editing.caseEventTypeId}"
+                                object="#{eventCasesTabBean.editing.caseEventId == null ? eventObjectBean.event : eventCasesTabBean.editing}"                                
                                 formSelector="#{eventCasesTabBean.formSelector}"
                                 properties="#{eventCasesTabBean.editing.property}"
                                 oncomplete="PF('eventCasesDialog').resetPosition();" />

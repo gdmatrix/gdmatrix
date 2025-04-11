@@ -304,12 +304,6 @@ public class DynamicPropertiesBean implements Serializable
     WebUtils.setValue("#{cc.attrs.formSelector}", String.class, formSelector);
   }
 
-  @Deprecated
-  public String getDataHash()
-  {
-    return null;
-  }
-
   public String getTypeId()
   {
     return WebUtils.getValue("#{cc.attrs.typeId}");
