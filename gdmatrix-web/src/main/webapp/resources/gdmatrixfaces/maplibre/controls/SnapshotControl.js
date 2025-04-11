@@ -21,8 +21,15 @@ class SnapshotControl
     {
       const map = this.map;
       const canvas = map.getCanvas();
-      const imageURL = canvas.toDataURL("image/png");
-      saveSnapshot([{name: 'snapshot', value: imageURL}]);
+      try
+      {
+        const imageURL = canvas.toDataURL("image/png");
+        saveSnapshot([{name: 'snapshot', value: imageURL}]);
+      }
+      catch (ex)
+      {
+        alert(ex);
+      }
     }
   }
 

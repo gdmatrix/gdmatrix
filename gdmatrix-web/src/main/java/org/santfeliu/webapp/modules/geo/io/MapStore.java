@@ -144,7 +144,12 @@ public class MapStore
     filter.getOutputProperty().add(MAP_CATEGORY_NAME_PROPERTY);
     filter.getOutputProperty().add(MAP_SNAPSHOT_DOCID_PROPERTY);
 
-    List<Document> documents = getPort().findDocuments(filter);
+    DocumentFilter snapshotFilter = new DocumentFilter();
+    snapshotFilter.setIncludeContentMetadata(false);
+    HashMap<String, MapView> mapViewCache = new HashMap<>();
+
+    DocumentManagerPort port = getPort();
+    List<Document> documents = port.findDocuments(filter);
     for (Document document : documents)
     {
       String mapTitle = document.getTitle();
@@ -162,6 +167,21 @@ public class MapStore
       mapView.setMapName(mapName);
       mapView.setSnapshotDocId(snapshotDocId);
       mapGroup.getMapViews().add(mapView);
+      if (snapshotDocId != null)
+      {
+        mapViewCache.put(snapshotDocId, mapView);
+        snapshotFilter.getDocId().add(snapshotDocId);
+      }
+    }
+
+    if (!mapViewCache.isEmpty())
+    {
+      List<Document> snapshotDocuments = port.findDocuments(snapshotFilter);
+      for (Document snapshotDocument : snapshotDocuments)
+      {
+        MapView mapView = mapViewCache.get(snapshotDocument.getDocId());
+        mapView.setSnapshotContentId(snapshotDocument.getContent().getContentId());
+      }
     }
     rootGroup.complete();
 

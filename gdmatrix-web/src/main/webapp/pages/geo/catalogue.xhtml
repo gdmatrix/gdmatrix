@@ -19,8 +19,8 @@
         <strong>#{applicationBean.translate(userSessionBean.selectedMenuItem.label, 'geo')}</strong>
         
         <p:selectBooleanButton value="#{geoCatalogueBean.snapshotVisible}" styleClass="ml-2"
-                               onIcon="pi pi-image" offIcon="pi pi-image"> 
-          <p:ajax process="@this" update="@form:cnt" />
+                               onIcon="pi pi-image" offIcon="pi pi-image" title="#{geoBundle.showImages}"> 
+          <p:ajax process="@this" update="@form:cnt:maps" />
         </p:selectBooleanButton>
         
         <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat" styleClass="mx-2"

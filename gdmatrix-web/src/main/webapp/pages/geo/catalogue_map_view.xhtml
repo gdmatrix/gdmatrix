@@ -24,9 +24,9 @@
       </div>
     </div>
     <p:commandLink action="#{geoCatalogueBean.showMap(mapView)}"
-                   rendered="#{mapView.snapshotDocId != null and geoCatalogueBean.snapshotVisible}"
+                   rendered="#{mapView.snapshotContentId != null and geoCatalogueBean.snapshotVisible}"
                    process="@this" update="@form:cnt">
-      <img src="/documents/#{mapView.snapshotDocId}?cache=0" class="snapshot"
+      <img src="/documents/#{mapView.snapshotContentId}" class="snapshot"
        alt="#{applicationBean.translate(mapView.title, 'geo')}" title="" />
     </p:commandLink>    
   </li>

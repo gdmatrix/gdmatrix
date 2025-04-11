@@ -756,7 +756,7 @@ public class GeoMapBean extends WebBean implements Serializable
           {
             file.delete();
           }
-          growl("SNAPSHOT_SAVED");
+          growl("MAP_SNAPSHOT_SAVED");
         }
       }
       catch (IOException ex)

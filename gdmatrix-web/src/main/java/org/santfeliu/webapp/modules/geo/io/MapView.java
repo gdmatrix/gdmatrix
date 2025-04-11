@@ -41,6 +41,7 @@ public class MapView implements Serializable
   String mapName;
   String title;
   String snapshotDocId;
+  String snapshotContentId;
 
   public String getMapName()
   {
@@ -70,6 +71,16 @@ public class MapView implements Serializable
   public void setSnapshotDocId(String snapshotDocId)
   {
     this.snapshotDocId = snapshotDocId;
+  }
+
+  public String getSnapshotContentId()
+  {
+    return snapshotContentId;
+  }
+
+  public void setSnapshotContentId(String snapshotContentId)
+  {
+    this.snapshotContentId = snapshotContentId;
   }
 
   @Override

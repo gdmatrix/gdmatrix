@@ -19,8 +19,8 @@
     </f:facet>
     
     <div class="overflow-auto h-full">
-      <ui:fragment rendered="#{geoCatalogueBean.currentMapView.snapshotDocId != null and not geoCatalogueBean.snapshotVisible}">
-        <img src="/documents/#{geoCatalogueBean.currentMapView.snapshotDocId}?cache=0" 
+      <ui:fragment rendered="#{geoCatalogueBean.currentMapView.snapshotContentId != null and not geoCatalogueBean.snapshotVisible}">
+        <img src="/documents/#{geoCatalogueBean.currentMapView.snapshotContentId}?cache=0" 
              alt="" title="" style="width:100%" />
       </ui:fragment>
 
