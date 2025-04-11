@@ -80,11 +80,17 @@ public class TypeReferenceBean extends ObjectReferenceBean
       TypeCache typeCache = TypeCache.getInstance();
       for (SelectItem item : auxSelectItems)
       {
-        String auxTypeId = (String)item.getValue();
-        Type type = typeCache.getType(auxTypeId);
-        if (type != null && type.isInstantiable())
-        {
+        String label = item.getLabel();
+        if (label.equalsIgnoreCase("<hr>"))
           selectItems.add(item);
+        else
+        {
+          String auxTypeId = (String)item.getValue();
+          Type type = typeCache.getType(auxTypeId);
+          if (type != null && type.isInstantiable())
+          {
+            selectItems.add(item);
+          }
         }
       }
     }
