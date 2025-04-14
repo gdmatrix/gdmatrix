@@ -26,9 +26,15 @@
     <p:commandLink action="#{geoCatalogueBean.showMap(mapView)}"
                    rendered="#{mapView.snapshotContentId != null and geoCatalogueBean.snapshotVisible}"
                    process="@this" update="@form:cnt">
-      <img src="/documents/#{mapView.snapshotContentId}" class="snapshot"
-       alt="#{applicationBean.translate(mapView.title, 'geo')}" title="" />
-    </p:commandLink>    
+      <ui:fragment rendered="#{geoCatalogueBean.isMapCategoryExpanded(mapGroup.category.name)}">      
+        <img src="/documents/#{mapView.snapshotContentId}" class="snapshot"
+         alt="#{applicationBean.translate(mapView.title, 'geo')}" title="" />
+      </ui:fragment>
+      <ui:fragment rendered="#{not geoCatalogueBean.isMapCategoryExpanded(mapGroup.category.name)}">      
+        <img _src="/documents/#{mapView.snapshotContentId}" class="snapshot"
+         alt="#{applicationBean.translate(mapView.title, 'geo')}" title="" />
+      </ui:fragment>
+    </p:commandLink>
   </li>
 
 </ui:composition>

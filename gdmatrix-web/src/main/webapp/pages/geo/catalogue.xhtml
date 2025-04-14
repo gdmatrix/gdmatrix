@@ -138,23 +138,39 @@
       elem.scrollIntoView({ behavior: "instant", block: "center", inline: "nearest" });
     }
     
+    function showSnapshots()
+    {
+      var snapshots = document.body.querySelectorAll(".category.expanded > ul > li > a > img.snapshot");
+      for (var snapshot of snapshots)
+      {
+        if (!snapshot.src)
+        {
+          snapshot.src = snapshot.attributes["_src"].textContent;
+        }
+      }
+    }
+    
     function setCategoryExpand(elem, expanded)
     {
+      elem = document.getElementById(elem.source);
+        
       while (!elem.classList.contains("category"))
       {
         elem = elem.parentElement;        
       }
+      
       if (expanded)
       {
         elem.classList.add("expanded");
         elem.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+        showSnapshots();
       }
       else
       {
         elem.classList.remove("expanded");        
       }
     }
-    
+        
   </script>
 
 </ui:composition>

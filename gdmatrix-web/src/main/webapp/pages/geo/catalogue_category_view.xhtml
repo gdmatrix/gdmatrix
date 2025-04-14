@@ -19,7 +19,7 @@
         <p:commandLink value="#{applicationBean.translate(mapGroup.category.title, 'geo')}"
                        action="#{geoCatalogueBean.expandMapCategory(mapGroup.category.name)}"
                        process="@this" update="@none"
-                       onclick="setCategoryExpand(this, true)" />
+                       oncomplete="setCategoryExpand(this, true)" />
       </div>
       <div class="flex flex-wrap">
         <ui:fragment rendered="#{mapGroup.category.description != null}">
@@ -45,12 +45,12 @@
       <p:commandButton action="#{geoCatalogueBean.expandMapCategory(mapGroup.category.name)}"
                        icon="pi pi-plus" title="#{objectBundle.show}" 
                        process="@this" update="@none"
-                       onclick="setCategoryExpand(this, true)" 
+                       oncomplete="setCategoryExpand(this, true)" 
                        styleClass="expand_button rounded-button ui-button-flat" />
       <p:commandButton action="#{geoCatalogueBean.collapseMapCategory(mapGroup.category.name)}"
                        icon="pi pi-minus" title="#{objectBundle.close}" 
                        process="@this" update="@none"
-                       onclick="setCategoryExpand(this, false)"
+                       oncomplete="setCategoryExpand(this, false)"
                        styleClass="collapse_button rounded-button ui-button-flat" />
     </div>
   </div>
