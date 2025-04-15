@@ -521,6 +521,12 @@ public class CaseInterventionsTabBean extends TabBean
     {
       String caseId = getObjectId();
       editing.setCaseId(caseId);
+      if (editing.getStartDate() == null)
+      {
+        Date now = new Date();
+        editing.setStartDate(TextUtils.formatDate(now, "yyyyMMdd"));
+        editing.setStartTime(TextUtils.formatDate(now, "HHmmss"));
+      }
       editing = (Intervention) executeTabAction(PRE_TAB_STORE_ACTION, editing);
       editing = CasesModuleBean.getPort(false).storeIntervention(editing);
       executeTabAction(POST_TAB_STORE_ACTION, editing);
