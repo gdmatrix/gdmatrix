@@ -42,6 +42,8 @@ public class MapView implements Serializable
   String title;
   String snapshotDocId;
   String snapshotContentId;
+  boolean featured;
+  int ranking;
 
   public String getMapName()
   {
@@ -81,6 +83,26 @@ public class MapView implements Serializable
   public void setSnapshotContentId(String snapshotContentId)
   {
     this.snapshotContentId = snapshotContentId;
+  }
+
+  public boolean isFeatured()
+  {
+    return featured;
+  }
+
+  public void setFeatured(boolean featured)
+  {
+    this.featured = featured;
+  }
+
+  public int getRanking()
+  {
+    return ranking;
+  }
+
+  public void setRanking(int ranking)
+  {
+    this.ranking = ranking;
   }
 
   @Override

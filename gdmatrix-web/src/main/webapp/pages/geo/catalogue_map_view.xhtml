@@ -7,8 +7,8 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <li class="p-2 flex-column #{geoCatalogueBean.currentMapView.mapName == mapView.mapName ? 'current_map' : ''}">
-    <div class="flex flex align-items-start mb-1">
+  <li class="px-2 pt-2 flex-column #{geoCatalogueBean.currentMapView.mapName == mapView.mapName ? 'current_map' : ''}">
+    <div class="flex flex align-items-start pb-1">
       <span class="pi pi-map mr-2 mt-1" />
       <div class="flex-grow-1">
         <p:commandLink action="#{geoCatalogueBean.showMap(mapView)}"
@@ -21,6 +21,14 @@
                          styleClass="rounded-button ui-button-flat geo_catalogue_button"
                          process="@this" update="@form:cnt:map_summary_dialog"
                          oncomplete="PF('mapSummaryDialog').show()" />
+        <ui:fragment rendered="#{mapView.featured}">
+          <i class="pi pi-star-fill" title="#{geoBundle.featuredMap}" />
+        </ui:fragment>
+        <ui:fragment rendered="#{mapView.ranking gt 0}">          
+          <span class="popularity" title="#{geoBundle.popularMap}">
+            <i class="fa fa-fire-flame-curved" /> #{mapView.ranking}
+          </span>
+        </ui:fragment>
       </div>
     </div>
     <p:commandLink action="#{geoCatalogueBean.showMap(mapView)}"

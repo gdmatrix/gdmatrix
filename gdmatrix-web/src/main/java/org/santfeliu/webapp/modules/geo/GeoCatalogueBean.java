@@ -216,11 +216,33 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   {
     try
     {
+      filter.setMapClass(0);
       mapGroup = getMapStore().findMaps(filter);
       currentMapCategory = null;
       expandedCategories.clear();
 
       if (!StringUtils.isBlank(filter.getKeywords()))
+      {
+        expandMapGroup(mapGroup);
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void findMapsByClass(int mapClass)
+  {
+    try
+    {
+      filter.setMapClass(mapClass);
+      filter.setKeywords(null);
+      mapGroup = getMapStore().findMaps(filter);
+      currentMapCategory = null;
+      expandedCategories.clear();
+
+      if (filter.getMapClass() > 0)
       {
         expandMapGroup(mapGroup);
       }

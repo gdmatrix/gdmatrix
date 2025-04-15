@@ -42,6 +42,7 @@ public class MapFilter implements Serializable
   String mapName;
   String categoryName;
   String keywords;
+  int mapClass; // 0: all, 1:featured, 2:most visited
 
   public String getTitle()
   {
@@ -81,5 +82,15 @@ public class MapFilter implements Serializable
   public void setKeywords(String keywords)
   {
     this.keywords = keywords;
+  }
+
+  public int getMapClass()
+  {
+    return mapClass;
+  }
+
+  public void setMapClass(int mapClass)
+  {
+    this.mapClass = mapClass;
   }
 }

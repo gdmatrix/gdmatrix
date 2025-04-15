@@ -34,6 +34,7 @@ import com.sun.xml.ws.util.ByteArrayDataSource;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,7 @@ import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.keywords.KeywordsManager;
 
 /**
@@ -78,6 +80,8 @@ public class MapStore
   public static final String MAP_CATEGORY_POSITION_PROPERTY = "position";
   public static final String MAP_CATEGORY_PARENT_PROPERTY = "parentCategory";
   public static final String MAP_CATEGORY_DESCRIPTION_PROPERTY = "description";
+  public static final String MAP_FEATURED_START_DATE_PROPERTY = "featuredStartDate";
+  public static final String MAP_FEATURED_END_DATE_PROPERTY = "featuredEndDate";
   public static final String GEO_ADMIN_ROLE = "GIS_ADMIN";
 
   private static List<MapCategory> categoryList;
@@ -108,6 +112,14 @@ public class MapStore
     if (!isBlank(mapFilter.getTitle()))
     {
       filter.setTitle("%" + mapFilter.getTitle() + "%");
+    }
+
+    if (mapFilter.getMapClass() == 1) // featured
+    {
+      Property property = new Property();
+      property.setName(MAP_FEATURED_START_DATE_PROPERTY);
+      property.getValue().add("%");
+      filter.getProperty().add(property);
     }
 
     if (!isBlank(mapFilter.getMapName()))
@@ -143,10 +155,16 @@ public class MapStore
     filter.getOutputProperty().add(MAP_NAME_PROPERTY);
     filter.getOutputProperty().add(MAP_CATEGORY_NAME_PROPERTY);
     filter.getOutputProperty().add(MAP_SNAPSHOT_DOCID_PROPERTY);
+    filter.getOutputProperty().add(MAP_FEATURED_START_DATE_PROPERTY);
+    filter.getOutputProperty().add(MAP_FEATURED_END_DATE_PROPERTY);
 
     DocumentFilter snapshotFilter = new DocumentFilter();
     snapshotFilter.setIncludeContentMetadata(false);
     HashMap<String, MapView> mapViewCache = new HashMap<>();
+
+    Map<String, Integer> rankings = MapAccessLogger.getPopularMaps(10);
+
+    String now = TextUtils.formatDate(new Date(), "yyyyMMdd");
 
     DocumentManagerPort port = getPort();
     List<Document> documents = port.findDocuments(filter);
@@ -159,13 +177,32 @@ public class MapStore
         document.getProperty(), MAP_CATEGORY_NAME_PROPERTY);
       String snapshotDocId = DictionaryUtils.getPropertyValue(
         document.getProperty(), MAP_SNAPSHOT_DOCID_PROPERTY);
-
-      MapGroup mapGroup = getMapGroup(categoryName, mapGroupMap);
+      String featuredStartDate = DictionaryUtils.getPropertyValue(
+        document.getProperty(), MAP_FEATURED_START_DATE_PROPERTY);
+      String featuredEndDate = DictionaryUtils.getPropertyValue(
+        document.getProperty(), MAP_FEATURED_END_DATE_PROPERTY);
 
       MapView mapView = new MapView();
       mapView.setTitle(mapTitle);
       mapView.setMapName(mapName);
+      Integer ranking = rankings.get(mapName);
+      if (ranking != null)
+      {
+        mapView.setRanking(ranking);
+      }
       mapView.setSnapshotDocId(snapshotDocId);
+      if (featuredStartDate != null)
+      {
+        if (featuredStartDate.compareTo(now) <= 0)
+        {
+          if (featuredEndDate == null || featuredEndDate.compareTo(now) >= 0)
+          mapView.setFeatured(true);
+        }
+      }
+      if (mapFilter.getMapClass() == 1 && !mapView.isFeatured()) continue;
+      else if (mapFilter.getMapClass() == 2 && mapView.getRanking() == 0) continue;
+
+      MapGroup mapGroup = getMapGroup(categoryName, mapGroupMap);
       mapGroup.getMapViews().add(mapView);
       if (snapshotDocId != null)
       {
@@ -275,6 +312,24 @@ public class MapStore
       property = new Property();
       property.setName(MAP_CATEGORY_NAME_PROPERTY);
       property.getValue().add(mapCategoryName);
+      document.getProperty().add(property);
+    }
+
+    String featuredStartDate = mapDocument.getFeaturedStartDate();
+    if (!isBlank(featuredStartDate))
+    {
+      property = new Property();
+      property.setName(MAP_FEATURED_START_DATE_PROPERTY);
+      property.getValue().add(featuredStartDate);
+      document.getProperty().add(property);
+    }
+
+    String featuredEndDate = mapDocument.getFeaturedEndDate();
+    if (!isBlank(featuredEndDate))
+    {
+      property = new Property();
+      property.setName(MAP_FEATURED_END_DATE_PROPERTY);
+      property.getValue().add(featuredEndDate);
       document.getProperty().add(property);
     }
 

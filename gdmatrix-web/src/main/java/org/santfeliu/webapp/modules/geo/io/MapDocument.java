@@ -48,11 +48,13 @@ import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_KEYWORDS_PROPERTY
 import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_NAME_PROPERTY;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_SUMMARY_PROPERTY;
 import static org.santfeliu.webapp.modules.geo.io.MapStore.BASE_MAP_NAME_PROPERTY;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_FEATURED_END_DATE_PROPERTY;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_FEATURED_START_DATE_PROPERTY;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_SNAPSHOT_DOCID_PROPERTY;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import static org.matrix.dic.DictionaryConstants.WRITE_ACTION;
-import static org.santfeliu.webapp.modules.geo.io.MapStore.MAP_SNAPSHOT_DOCID_PROPERTY;
 
 /**
  *
@@ -72,6 +74,8 @@ public class MapDocument implements Serializable
   String captureDateTime;
   String changeUserId;
   String changeDateTime;
+  String featuredStartDate;
+  String featuredEndDate;
   String snapshotDocId;
   Style style; // MapLibre style
   final List<Property> property = new ArrayList<>();
@@ -237,6 +241,26 @@ public class MapDocument implements Serializable
     this.changeDateTime = changeDateTime;
   }
 
+  public String getFeaturedStartDate()
+  {
+    return featuredStartDate;
+  }
+
+  public void setFeaturedStartDate(String featuredStartDate)
+  {
+    this.featuredStartDate = featuredStartDate;
+  }
+
+  public String getFeaturedEndDate()
+  {
+    return featuredEndDate;
+  }
+
+  public void setFeaturedEndDate(String featuredEndDate)
+  {
+    this.featuredEndDate = featuredEndDate;
+  }
+
   public String getSnapshotDocId()
   {
     return snapshotDocId;
@@ -373,6 +397,12 @@ public class MapDocument implements Serializable
           break;
         case MAP_SNAPSHOT_DOCID_PROPERTY:
           snapshotDocId = value;
+          break;
+        case MAP_FEATURED_START_DATE_PROPERTY:
+          featuredStartDate = value;
+          break;
+        case MAP_FEATURED_END_DATE_PROPERTY:
+          featuredEndDate = value;
           break;
         default:
           getProperty().add(documentProperty);

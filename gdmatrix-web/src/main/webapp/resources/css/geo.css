@@ -279,6 +279,21 @@ body .geo_catalogue_button.ui-button.ui-button-icon-only .ui-button-text
   border-color: var(--surface-700);  
 }
 
+.geo_catalogue .popularity
+{
+  background:var(--primary-color);
+  color:var(--primary-color-text);
+  border-radius:4px;
+  padding:1px;
+  padding-left: 4px;
+  padding-right: 4px;  
+}
+
+.w200 
+{ 
+  width: 200px; 
+}
+
 @media (min-width: 800px)
 {
   .geo_catalogue .category li

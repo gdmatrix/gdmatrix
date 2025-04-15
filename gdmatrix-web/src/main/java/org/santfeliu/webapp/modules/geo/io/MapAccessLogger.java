@@ -30,14 +30,17 @@
  */
 package org.santfeliu.webapp.modules.geo.io;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +61,50 @@ public class MapAccessLogger
 {
   static HashMap<String, List<Access>> statisticsMap = new HashMap();
   static final Logger LOGGER = Logger.getLogger("MapAccessLogger");
+
+  public static Map<String, Integer> getPopularMaps(int numMaps)
+  {
+    String value =
+      MatrixConfig.getProperty("org.santfeliu.geo.logAccess");
+
+    if (!"true".equals(value)) return Collections.emptyMap();
+
+    Map<String, Integer> visitedMaps = new HashMap<>();
+    try
+    {
+      Context initContext = new InitialContext();
+      Context envContext  = (Context)initContext.lookup("java:/comp/env");
+      DataSource ds = (DataSource)envContext.lookup("jdbc/matrix");
+      try (Connection conn = ds.getConnection())
+      {
+        try (PreparedStatement stmt = conn.prepareStatement(
+          "select mapname, count(*) " +
+          "from log_geomap where datetime > ? " +
+          "group by mapname order by count(*) desc"))
+        {
+          Date now = new Date(System.currentTimeMillis() - 365 * 24 * 3600 * 1000L);
+          SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+          stmt.setString(1, df.format(now));
+          stmt.setMaxRows(numMaps);
+
+          int ranking = 0;
+          try (ResultSet rs = stmt.executeQuery())
+          {
+            while (rs.next())
+            {
+              String mapName = rs.getString(1);
+              ranking++;
+              visitedMaps.put(mapName, ranking);
+            }
+          }
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+    }
+    return visitedMaps;
+  }
 
   public static synchronized List<Access> getStatistics(String mapName)
   {

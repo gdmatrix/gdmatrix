@@ -94,7 +94,7 @@
                                pt:spellcheck="false" />
             </div>            
 
-            <div class="field col-12">
+            <div class="field col-12 md:col-6">
               <p:outputLabel for="@next" value="Creation date: " />
               <div>
                 <p:datePicker value="#{geoMapBean.mapDocument.creationDate}"
@@ -106,6 +106,30 @@
                               showIcon="true" showTime="false"
                               monthNavigator="true" yearNavigator="true" />
               </div>
+            </div>
+
+            <div class="field col-6 md:col-3">
+              <p:outputLabel for="@next" value="Featured start date: " styleClass="w-full" />
+              <p:datePicker value="#{geoMapBean.mapDocument.featuredStartDate}"
+                            autocomplete="off"
+                            placeholder="dd/MM/yyyy"
+                            locale="ca"
+                            showOnFocus="false" styleClass="w-auto"
+                            converter="datePickerConverter" pattern="dd/MM/yyyy"
+                            showIcon="true" showTime="false"
+                            monthNavigator="true" yearNavigator="true" />
+            </div>
+            
+            <div class="field col-6 md:col-3">
+              <p:outputLabel for="@next" value="Featured end date: " styleClass="w-full" />
+              <p:datePicker value="#{geoMapBean.mapDocument.featuredEndDate}"
+                            autocomplete="off"
+                            placeholder="dd/MM/yyyy"
+                            locale="ca"
+                            showOnFocus="false" styleClass="w-auto"
+                            converter="datePickerConverter" pattern="dd/MM/yyyy"
+                            showIcon="true" showTime="false"
+                            monthNavigator="true" yearNavigator="true" />
             </div>
           </div>
         </p:tab>

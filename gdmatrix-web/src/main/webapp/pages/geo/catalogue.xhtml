@@ -10,31 +10,50 @@
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
                 var="objectBundle" />
   <h:outputStylesheet library="css" name="geo.css" />
-  
+
   <div class="flex flex-column h-full overflow-hidden geo_catalogue">
     <div class="p-2 flex align-items-center flex-grow-0 border-none border-solid border-bottom-1"
          style="border-color:var(--surface-border)">
       <div class="flex-grow-1 flex-shrink-0 align-items-center">
         <span class="pi pi-th-large"/>
         <strong>#{applicationBean.translate(userSessionBean.selectedMenuItem.label, 'geo')}</strong>
-        
-        <p:selectBooleanButton value="#{geoCatalogueBean.snapshotVisible}" styleClass="ml-2"
-                               onIcon="pi pi-image" offIcon="pi pi-image" title="#{geoBundle.showImages}"> 
+
+        <p:selectBooleanButton value="#{geoCatalogueBean.snapshotVisible}" styleClass="ml-2 mr-1"
+                               onIcon="pi pi-image" offIcon="pi pi-image" title="#{geoBundle.showImages}">
           <p:ajax process="@this" update="@form:cnt:maps" />
         </p:selectBooleanButton>
-        
-        <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat" styleClass="mx-2"
-                      rendered="#{geoCatalogueBean.adminUser}">
-          <p:menuitem icon="pi pi-plus-circle" 
-                      action="#{geoCatalogueBean.createMapCategory}" value="Create category"
-                      resetValues="true"
-                      process="@this" update="@form:cnt:catalogue_category_dialog"
-                      oncomplete="PF('catalogueCategoryDialog').show()" />
-          <p:menuitem icon="pi pi-plus-circle" 
-                      action="#{geoCatalogueBean.createMap}" value="Create map"
+
+        <p:menuButton icon="pi pi-filter" buttonStyleClass="ui-button-outlined" 
+                      buttonStyle="border-color:var(--surface-300)" 
+                      styleClass="mx-1" menuStyleClass="w200" >
+          <p:menuitem icon="pi pi-star-fill"
+                      action="#{geoCatalogueBean.findMapsByClass(1)}"
+                      value="#{geoBundle.featuredMaps}"
+                      process="@this" update="@form:cnt" />
+          <p:menuitem icon="fa fa-fire-flame-curved"
+                      action="#{geoCatalogueBean.findMapsByClass(2)}"
+                      value="#{geoBundle.popularMaps}"
+                      process="@this" update="@form:cnt" />
+          <p:menuitem icon="pi pi-th-large"
+                      action="#{geoCatalogueBean.findMapsByClass(0)}"
+                      value="#{geoBundle.allMaps}"
                       process="@this" update="@form:cnt" />
         </p:menuButton>
-      </div>      
+        
+        <p:menuButton icon="pi pi-plus-circle" buttonStyleClass="ui-button-outlined" 
+                      buttonStyle="border-color:var(--surface-300)" 
+                      styleClass="mx-1" menuStyleClass="w200" 
+                      rendered="#{geoCatalogueBean.adminUser}">
+          <p:menuitem icon="pi pi-folder-open"
+                      action="#{geoCatalogueBean.createMapCategory}" value="#{geoBundle.createCategory}"
+                      resetValues="true"                      
+                      process="@this" update="@form:cnt:catalogue_category_dialog"
+                      oncomplete="PF('catalogueCategoryDialog').show()" />
+          <p:menuitem icon="pi pi-map"
+                      action="#{geoCatalogueBean.createMap}" value="#{geoBundle.createMap}"
+                      process="@this" update="@form:cnt" />
+        </p:menuButton>
+      </div>
       <h:panelGroup id="map_filter" layout="block" styleClass="flex-grow-0 flex-shrink-1">
         <div class="ui-inputgroup">
           <p:inputText value="#{geoCatalogueBean.filter.keywords}"
@@ -49,13 +68,13 @@
         </div>
       </h:panelGroup>
     </div>
-    
-    <p:messages showSummary="true" styleClass="messages ml-3 mr-3" 
+
+    <p:messages showSummary="true" styleClass="messages ml-3 mr-3"
                 rendered="#{geoCatalogueBean.currentMapCategory == null}"
                 showIcon="true" closable="true" forIgnores="growl login_messages">
       <p:autoUpdate />
     </p:messages>
-    
+
     <h:panelGroup id="maps" layout="block" styleClass="flex-grow-1 overflow-auto pl-3 pr-3">
 
       <div class="pt-1">
@@ -81,7 +100,7 @@
               <ui:repeat value="#{mapGroup1.mapGroups}" var="mapGroup2">
                 <li class="category#{geoCatalogueBean.isMapCategoryExpanded(mapGroup2.category.name) ? ' expanded' : ''}">
                   <ui:param name="mapGroup" value="#{mapGroup2}" />
-                  <ui:include src="/pages/geo/catalogue_category_view.xhtml" />                  
+                  <ui:include src="/pages/geo/catalogue_category_view.xhtml" />
                   <ul class="list-none">
                     <ui:repeat value="#{mapGroup2.mapViews}" var="mapView2">
                       <ui:param name="mapView" value="#{mapView2}" />
@@ -107,20 +126,20 @@
         </ui:repeat>
       </ul>
     </h:panelGroup>
-    
+
   </div>
 
   <p:fileUpload listener="#{geoCatalogueBean.uploadCategoryImage}"
-                mode="simple" skinSimple="true" 
+                mode="simple" skinSimple="true"
                 widgetVar="categoryImageUpload" auto="true"
                 process="@this" update="@form:cnt:maps"
-                style="display:none" /> 
-    
+                style="display:none" />
+
   <ui:include src="/pages/geo/catalogue_map_dialog.xhtml" />
   <ui:include src="/pages/geo/catalogue_category_dialog.xhtml" />
-  
+
   <gdm:saveBean value="geoCatalogueBean" />
-  
+
   <script>
     // remove duplicates in detachedWidgets
     PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
@@ -137,7 +156,7 @@
       var elem = elems[0];
       elem.scrollIntoView({ behavior: "instant", block: "center", inline: "nearest" });
     }
-    
+
     function showSnapshots()
     {
       var snapshots = document.body.querySelectorAll(".category.expanded > ul > li > a > img.snapshot");
@@ -149,16 +168,16 @@
         }
       }
     }
-    
+
     function setCategoryExpand(elem, expanded)
     {
       elem = document.getElementById(elem.source);
-        
+
       while (!elem.classList.contains("category"))
       {
-        elem = elem.parentElement;        
+        elem = elem.parentElement;
       }
-      
+
       if (expanded)
       {
         elem.classList.add("expanded");
@@ -167,10 +186,10 @@
       }
       else
       {
-        elem.classList.remove("expanded");        
+        elem.classList.remove("expanded");
       }
     }
-        
+
   </script>
 
 </ui:composition>
