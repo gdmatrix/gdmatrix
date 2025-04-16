@@ -286,7 +286,8 @@ body .geo_catalogue_button.ui-button.ui-button-icon-only .ui-button-text
   border-radius:4px;
   padding:1px;
   padding-left: 4px;
-  padding-right: 4px;  
+  padding-right: 4px;
+  white-space: nowrap;
 }
 
 .w200 
