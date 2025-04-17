@@ -36,7 +36,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.DocumentManagerPort;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -257,6 +256,7 @@ public class AssistantBean extends WebBean implements Serializable
   {
     this.view = view;
     threadsBean.createThread();
+    threadsBean.setEditionEnabled(false);
   }
 
   public void updateAssistants() throws Exception

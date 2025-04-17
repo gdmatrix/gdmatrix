@@ -33,9 +33,6 @@ package org.santfeliu.webapp.modules.assistant.langchain4j;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
-import static dev.langchain4j.data.message.ChatMessageType.AI;
-import static dev.langchain4j.data.message.ChatMessageType.TOOL_EXECUTION_RESULT;
-import static dev.langchain4j.data.message.ChatMessageType.USER;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.data.message.UserMessage;
@@ -43,6 +40,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static dev.langchain4j.data.message.ChatMessageType.AI;
+import static dev.langchain4j.data.message.ChatMessageType.USER;
+import static dev.langchain4j.data.message.ChatMessageType.TOOL_EXECUTION_RESULT;
 
 /**
  *

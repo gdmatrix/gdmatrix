@@ -30,10 +30,13 @@
  */
 package org.santfeliu.webapp.modules.assistant.langchain4j;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.langchain4j.data.message.ChatMessage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -127,5 +130,33 @@ public class Thread implements Serializable
   public void setMessages(List<ChatMessage> messages)
   {
     this.messages = messages;
+  }
+
+  public void fromJson(String jsonArray)
+  {
+    Gson gson = new Gson();
+    List<Map<String, Object>> list =
+      (List<Map<String, Object>>)gson.fromJson(jsonArray, List.class);
+
+    messages.clear();
+    for (Map<String, Object> map : list)
+    {
+      ChatMessage chatMessage = ChatMessageAdapter.fromMap(map);
+      messages.add(chatMessage);
+    }
+  }
+
+  public String toJson()
+  {
+    List<Map> list = new ArrayList<>();
+    for (ChatMessage message : messages)
+    {
+      list.add(ChatMessageAdapter.toMap(message));
+    }
+    Gson gson  = new GsonBuilder()
+      .disableHtmlEscaping()
+      .setPrettyPrinting()
+      .create();
+    return gson.toJson(list);
   }
 }

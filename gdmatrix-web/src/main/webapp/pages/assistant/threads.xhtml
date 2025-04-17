@@ -40,9 +40,30 @@
 
     <div class="flex-grow-1 pt-0 flex w-full overflow-x-hidden">
 
-      <div id="assistant_body"
-           class="flex-grow-1 p-2 pt-0 flex flex-column relative overflow-x-hidden"
-           style="color:var(--text-color)">
+      <h:panelGroup id="thread_editor" layout="block"
+        styleClass="flex-grow-1 p-2 pt-0 flex flex-column relative overflow-x-hidden"
+        style="color:var(--text-color)" rendered="#{threadsBean.editionEnabled}">
+       
+        <div class="p-2 flex flex-column h-full">
+          <gdm:codemirror id="json_editor" language="json" lineNumbers="true" 
+                          value="#{threadsBean.json}" styleClass="flex-grow-1 h-full overflow-auto" />
+          <div class="flex-grow-0 py-2 text-center">
+            <p:commandButton icon="pi pi-save" 
+                             action="#{threadsBean.endEdition}" 
+                             process="@this @form:cnt:json_editor" update="@form:cnt"
+                             value="#{objectBundle.store}" 
+                             styleClass="mr-2" />
+            <p:commandButton icon="pi pi-times" 
+                             action="#{threadsBean.cancelEdition}"
+                             process="@this" update="@form:cnt"
+                             value="#{objectBundle.cancel}" />
+          </div>  
+        </div>
+      </h:panelGroup>
+      
+      <h:panelGroup id="assistant_body" layout="block"
+        styleClass="flex-grow-1 p-2 pt-0 flex flex-column relative overflow-x-hidden"
+        style="color:var(--text-color)" rendered="#{not threadsBean.editionEnabled}">
 
         <h:panelGroup id="floating_bar" layout="block"
                       styleClass="absolute top-0 right-0 p-2 flex surface-0 border-round">
@@ -52,15 +73,28 @@
                                    rendered="#{assistantBean.isAssistantEditable()}"> 
               <p:ajax process="@this" update="@none" />
             </p:selectBooleanButton>
+            <p:commandButton action="#{threadsBean.setEditionEnabled(true)}" 
+                             styleClass="ml-2 mini"
+                             icon="pi pi-pencil" value="#{objectBundle.edit}"
+                             process="@this" update="@form:cnt"
+                             rendered="#{assistantBean.isAssistantEditable()}" /> 
             <p:commandButton id="info" 
                              rendered="#{threadsBean.thread.isPersistent()}"
                              value="Info" type="button" icon="pi pi-info-circle" 
                              styleClass="ml-2 mini" />
-            <p:overlayPanel for="info" style="width:400px;" appendTo="@(body)">
-              <p:outputLabel value="#{assistantBundle.threadId}:" for="@next" />
-              <p:inputText id="thread_id" value="#{threadsBean.threadId}" size="36" 
-                           readonly="true" styleClass="code ml-2" />
-              <pe:clipboard trigger="thread_id" action="copy" target="thread_id" /> 
+            <p:overlayPanel for="info" style="width:350px;" appendTo="@(body)">
+              <div class="flex flex-column">
+                <p:outputLabel value="#{assistantBundle.threadId}:" for="@next" styleClass="p-1" />
+                <p:inputText id="thread_id" value="#{threadsBean.threadId}" size="36" 
+                             readonly="true" styleClass="code py-2" />
+                <pe:clipboard trigger="thread_id" action="copy" target="thread_id" />
+              </div>
+              <div class="flex flex-column mt-2">
+                <p:outputLabel value="#{assistantBundle.threadLink}:" for="@next" styleClass="p-1" />
+                <p:inputText id="thread_link" value="#{threadsBean.threadLink}" size="36" 
+                             readonly="true" styleClass="code py-2" />
+                <pe:clipboard trigger="thread_link" action="copy" target="thread_link" />
+              </div>
             </p:overlayPanel>
             <p:commandButton value="#{assistantBundle.newThread}"
                              title="#{assistantBundle.newThread}"
@@ -88,11 +122,7 @@
                       styleClass="ml-2 mini white-space-nowrap threads_panel_button first_time" />
         </h:panelGroup>
 
-        <h:panelGroup layout="block" id="message_list"
-             class="flex-grow-1 flex-shrink-1 message_list overflow-y-auto overflow-x-hidden">
-          <ul class="list-none pl-0">
-          </ul>
-        </h:panelGroup>
+        <div class="message_list flex-grow-1 flex-shrink-1 overflow-y-auto overflow-x-hidden" />
 
         <h:panelGroup id="uploaded_file" layout="block">
           <h:panelGroup styleClass="mb-1"
@@ -145,7 +175,8 @@
           </div>
         </h:panelGroup>
 
-      </div>
+      </h:panelGroup>
+      
 
       <p:panel id="threads_panel" styleClass="threads_panel flex-grow-0 v-full first_time"
                widgetVar="threadsPanel" closeSpeed="50">
@@ -163,7 +194,7 @@
             <li class="p-2 #{threadsBean.threadId == thread.threadId ? 'current' : ''}">
               <p:commandLink action="#{threadsBean.changeThread(thread.threadId)}"
                              process="@this"
-                             update="@form:cnt:input_panel @form:cnt:message_list @form:cnt:threads_panel @form:cnt:floating_bar"
+                             update="@form:cnt"
                              styleClass="flex flex-column no-underline"
                              oncomplete="endPanel();">
                 

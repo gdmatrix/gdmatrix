@@ -44,7 +44,6 @@ import org.apache.commons.io.IOUtils;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
-import static org.matrix.doc.DocumentConstants.UNIVERSAL_LANGUAGE;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
 import org.matrix.doc.OrderByProperty;
@@ -52,6 +51,7 @@ import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MemoryDataSource;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
+import static org.matrix.doc.DocumentConstants.UNIVERSAL_LANGUAGE;
 
 /**
  *

@@ -45,6 +45,7 @@ import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -86,8 +87,10 @@ public class ThreadsBean extends WebBean implements Serializable
   List<ThreadSummary> threads;
   String text;
   boolean debugEnabled = false;
+  boolean editionEnabled = false;
   String attachedFilename;
   String attachedDocId;
+  String json;
 
   @Inject
   AssistantBean assistantBean;
@@ -100,6 +103,17 @@ public class ThreadsBean extends WebBean implements Serializable
   public String getThreadId()
   {
     return thread.getThreadId();
+  }
+
+  public String getThreadLink()
+  {
+    String host = System.getProperty("host");
+    if (host == null) host = "localhost";
+    ServletContext context = (ServletContext)getExternalContext().getContext();
+    String contextPath = context.getContextPath();
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    return "https://" + host + "/" + contextPath + "go.faces?xmid=" +
+      userSessionBean.getSelectedMid() + "&threadid=" + getThreadId();
   }
 
   public List<ChatMessage> getMessages()
@@ -126,6 +140,16 @@ public class ThreadsBean extends WebBean implements Serializable
     this.debugEnabled = debugEnabled;
   }
 
+  public boolean isEditionEnabled()
+  {
+    return editionEnabled;
+  }
+
+  public void setEditionEnabled(boolean editionEnabled)
+  {
+    this.editionEnabled = editionEnabled;
+  }
+
   public String getText()
   {
     return text;
@@ -136,12 +160,51 @@ public class ThreadsBean extends WebBean implements Serializable
     this.text = text;
   }
 
+  public String getJson()
+  {
+    if (json == null)
+    {
+      json = thread.toJson();
+    }
+    return json;
+  }
+
+  public void setJson(String json)
+  {
+    this.json = json;
+  }
+
+  public void endEdition()
+  {
+    try
+    {
+      thread.fromJson(json);
+      getThreadStore().saveThread(thread);
+      editionEnabled = false;
+      json = null;
+      repaintThread();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void cancelEdition()
+  {
+    editionEnabled = false;
+    json = null;
+    repaintThread();
+  }
+
   public void changeThread(String threadId)
   {
     try
     {
       thread = getThreadStore().loadThread(threadId);
       repaintThread();
+      editionEnabled = false;
+      json = null;
     }
     catch (Exception ex)
     {

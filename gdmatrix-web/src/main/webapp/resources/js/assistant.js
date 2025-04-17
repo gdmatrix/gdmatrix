@@ -71,7 +71,7 @@ function createDots()
 
 function sendMessage()
 {
-  var listElem = document.querySelector(".message_list > ul");
+  var listElem = getMessageList();
   var textarea = PF("textarea").getJQ();
   var text = textarea.val().trim();
   
@@ -102,7 +102,7 @@ async function showResponse(threadId)
   var queue = await response.json();
   var end = false;
 
-  const listElem = document.querySelector(".message_list > ul");
+  const listElem = getMessageList();
   let markdownElem;
   let htmlElem;
 
@@ -193,6 +193,19 @@ function endPanel()
   {
     closePanel();
   }
+}
+
+function getMessageList()
+{
+  var messageList = document.querySelector(".message_list");
+  var listElem = messageList.firstElementChild;
+  if (!listElem)
+  {
+    listElem = document.createElement("ul");
+    listElem.className = "list-none pl-0";
+    messageList.appendChild(listElem);
+  }
+  return listElem;
 }
 
 function scrollMessages()
