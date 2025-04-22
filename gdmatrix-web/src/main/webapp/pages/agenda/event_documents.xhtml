@@ -2,6 +2,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:p="http://primefaces.org/ui">
 
@@ -27,6 +28,11 @@
                            alt="#{eventDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            title="#{eventDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{eventDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-upload" styleClass="ui-button-flat"
+                           onclick="javascript:sendDocument();return false"
+                           process="@this" update="@none"
+                           alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
+                           disabled="#{!eventObjectBean.editable}" />           
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventDocumentsTabBean.create}"
                            process="@this"
@@ -67,34 +73,71 @@
       </p:column>
 
       <p:column styleClass="text-right white-space-nowrap">
+        
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this"
                          update="@form:cnt"
                          action="#{navigatorBean.show('Document', row.document.docId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
-        <p:commandButton icon="pi pi-pencil"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{eventDocumentsTabBean.edit(row)}"
-                         process="@this"
-                         update="@form:cnt:search_tabs:event_documents_dialog"
-                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         resetValues="true"
-                         oncomplete="PF('eventDocumentsDialog').show()" />
-        <p:commandButton action="#{eventDocumentsTabBean.remove(row)}"
-                         process="@this"
-                         update="@form:cnt:search_tabs:tabs"
-                         icon="pi pi-trash"
-                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat"
-                         disabled="#{!eventObjectBean.editable}">
-          <p:confirm header="#{objectBundle.confirm_remove_header}"
-                     message="#{objectBundle.confirm_remove_message}"
-                     icon="pi pi-info-circle" />
-        </p:commandButton>
+        
+        <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                      menuStyleClass="w200"
+                      title="#{objectBundle.actions}">
+          <p:menuitem value="#{agendaBundle.eventDocuments_edit_row}"
+                      icon="pi pi-pencil"
+                      styleClass="rounded-button ui-button-flat w200"
+                      action="#{eventDocumentsTabBean.edit(row)}"
+                      process="@this"
+                      update="@form:cnt:search_tabs:event_documents_dialog"
+                      title="#{objectBundle.edit}"
+                      resetValues="true"
+                      oncomplete="PF('eventDocumentsDialog').show()"
+                       />
+          <p:menuitem value="#{agendaBundle.eventDocuments_edit_content}"
+                      onclick="javascript:editDocument({docId:'#{row.document.docId}'});return false"
+                      process="@this" update="event_documents_table"
+                      styleClass="rounded-button ui-button-flat w200"
+                      icon="fa fa-pen-to-square"
+                      />
+          <p:menuitem value="#{agendaBundle.eventDocuments_update_content}"
+                      onclick="javascript:updateDocument({docId:'#{row.document.docId}'});return false"
+                      process="@this" update="@none"
+                      styleClass="rounded-button ui-button-flat w200"
+                      icon="pi pi-paperclip"
+                      />
+          <p:menuitem value="#{objectBundle.delete}"
+                      icon="pi pi-trash"
+                      action="#{eventDocumentsTabBean.remove(row)}"
+                      process="@this"
+                      update="@form:cnt:search_tabs:tabs"
+                      styleClass="rounded-button ui-button-flat w200"
+                      disabled="#{!eventObjectBean.editable}" >
+                    <p:confirm header="#{objectBundle.confirm_remove_header}"
+                   message="#{objectBundle.confirm_remove_message}"
+                   icon="pi pi-info-circle" />
+          </p:menuitem>
+        </p:menuButton>
+        
       </p:column>
     </p:dataTable>
-
+    
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
+      action="#{eventDocumentsTabBean.documentEdited}"
+      model="#{eventDocumentsTabBean.sendClientModel}"
+      function="editDocument"
+      helpUrl="#{matrixClientBean.helpUrl}" />
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.UpdateDocumentCommand"
+      action="#{eventDocumentsTabBean.documentEdited}"
+      model="#{eventDocumentsTabBean.clientModel}"
+      function="updateDocument"
+      helpUrl="#{matrixClientBean.helpUrl}"/>
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
+      action="#{eventDocumentsTabBean.documentSent}"
+      model="#{eventDocumentsTabBean.clientModel}"                   
+      function="sendDocument"
+      helpUrl="#{matrixClientBean.helpUrl}"/>   
+    
     <gdm:saveBean value="eventDocumentsTabBean" />
     
   </f:subview>

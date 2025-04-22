@@ -40,16 +40,25 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.agenda.Event;
 import org.matrix.agenda.EventDocument;
 import org.matrix.agenda.EventDocumentFilter;
 import org.matrix.agenda.EventDocumentView;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.PropertyDefinition;
+import org.matrix.doc.ContentInfo;
+import org.matrix.doc.Document;
+import org.matrix.security.AccessControl;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
+import static org.santfeliu.faces.matrixclient.model.DocMatrixClientModels.DOCTYPES_PARAMETER;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
@@ -71,11 +80,14 @@ import org.santfeliu.webapp.util.WebUtils;
 @RequestScoped
 public class EventDocumentsTabBean extends TabBean
 {
+  public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";
+  
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
   private EventDocument editing;
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private GroupableRowsHelper groupableRowsHelper;
+  private DefaultMatrixClientModel clientModel;  
 
   public class TabInstance
   {
@@ -384,6 +396,76 @@ public class EventDocumentsTabBean extends TabBean
   {
     tabInstances.clear();
   }
+  
+  public DefaultMatrixClientModel getClientModel()
+  {
+    if (clientModel == null)
+    {
+      clientModel = new DefaultMatrixClientModel();
+    }
+    return clientModel;
+  }
+
+  public void setClientModel(DefaultMatrixClientModel clientModel)
+  {
+    this.clientModel = clientModel;
+  }
+  
+  public DefaultMatrixClientModel getSendClientModel()
+  {
+    clientModel = getClientModel();
+    Map creationDocTypes = 
+      DocModuleBean.getUserDocTypes(DictionaryConstants.CREATE_ACTION);
+    clientModel.putParameter(DOCTYPES_PARAMETER, creationDocTypes);
+    return clientModel;
+  }  
+
+  public void documentEdited()
+  {
+    try
+    {
+      clientModel.parseResult();
+      this.load();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public String documentSent()
+  {   
+    editing = null;
+    
+    try
+    {
+      String docId = (String) clientModel.parseResult();
+      if (docId != null)
+      {
+        spreadDocumentRoles(docId);
+        EventDocument eventDocument = new EventDocument();
+        eventDocument.setDocId(docId);
+        eventDocument.setEventId(getObjectId());
+        String eventDocTypeId = getCreationTypeId();
+        if (eventDocTypeId == null) 
+          eventDocTypeId = DictionaryConstants.EVENT_DOCUMENT_TYPE;
+        eventDocument.setEventDocTypeId(eventDocTypeId);
+        eventDocument = 
+          (EventDocument)executeTabAction(PRE_TAB_STORE_ACTION, eventDocument);
+        AgendaModuleBean.getClient(false).storeEventDocument(eventDocument);
+        executeTabAction(POST_TAB_STORE_ACTION, editing);
+        
+        load();
+      }
+    }
+    catch (Exception ex)
+    {
+      if (!"NO_FILE".equals(ex.getMessage()))
+        error(ex);
+    }
+
+    return null;
+  }    
 
   @Override
   public Serializable saveState()
@@ -405,7 +487,7 @@ public class EventDocumentsTabBean extends TabBean
       error(ex);
     }
   }
-
+  
   private boolean isNew(EventDocument eventDocument)
   {
     return (eventDocument != null && eventDocument.getEventDocId() == null);
@@ -421,5 +503,100 @@ public class EventDocumentsTabBean extends TabBean
       }
     }
   }
+  
+  private void spreadDocumentRoles(String docId) throws Exception
+  {
+    Event event = eventObjectBean.getEvent();
+    String eventTypeId = event.getEventTypeId();
+    if (eventTypeId != null)
+    {
+      Type eventType = TypeCache.getInstance().getType(eventTypeId);
+      String spreadRoles = getSpreadRoles(eventType);
+      if (spreadRoles != null)
+      {
+        Document document = 
+          DocModuleBean.getPort(true).loadDocument(docId, 0, ContentInfo.ID);
+        if (document != null)
+        {
+          boolean update = false;
+          if ("true".equalsIgnoreCase(spreadRoles)) //Spread Case roles
+          {
+            List<AccessControl> accessControlList = new ArrayList();
+            accessControlList.addAll(eventType.getAccessControl());
+            accessControlList.addAll(event.getAccessControl());
+            for (AccessControl ac : accessControlList)
+            {
+              if (!containsAC(document.getAccessControl(), ac))
+              {
+                update = true;
+                document.getAccessControl().add(ac);
+              }
+            }
+          }
+          else
+          {
+            String[] actions = {DictionaryConstants.READ_ACTION, 
+              DictionaryConstants.WRITE_ACTION, 
+              DictionaryConstants.DELETE_ACTION};
+            for (String action : actions)
+            {
+              AccessControl ac = new AccessControl();
+              ac.setAction(action);
+              ac.setRoleId(spreadRoles);
+              if (!containsAC(document.getAccessControl(), ac))
+              {
+                document.getAccessControl().add(ac);
+                update = true;
+              }
+            }            
+          }
+          if (update)
+          {
+            try
+            {
+              DocModuleBean.getPort(true).storeDocument(document);
+              info("DOCUMENT_SECURITY_UPDATED");
+            }
+            catch (Exception ex) 
+            {
+            }
+          }
+          else
+          {
+            warn("DOCUMENT_SECURITY_NOT_UPDATED");
+          }
+        }
+      }
+    }
+  }
+
+  private String getSpreadRoles(Type caseType)
+  {
+    if (caseType != null)
+    {
+      PropertyDefinition pd =
+        caseType.getPropertyDefinition(SPREAD_ROLES_PROPERTY);
+      if (pd != null && pd.getValue() != null && !pd.getValue().isEmpty())
+      {
+        String value = pd.getValue().get(0);
+        if ("false".equals(value))
+          return null;
+        else 
+          return value;
+      }
+    }
+    return null;
+  }
+  
+  private boolean containsAC(List<AccessControl> acl, AccessControl ac)
+  {
+    for (AccessControl item : acl)
+    {
+      if (ac.getAction().equals(item.getAction()) &&
+          ac.getRoleId().equals(item.getRoleId()))
+        return true;
+    }
+   return false;
+  }    
 
 }

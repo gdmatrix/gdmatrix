@@ -31,7 +31,12 @@
                            resetValues="true"
                            alt="#{newDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            title="#{newDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{newDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />          
+                           rendered="#{newDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />    
+          <p:commandButton icon="pi pi-upload" styleClass="ui-button-flat"
+                           onclick="javascript:sendDocument();return false"
+                           process="@this" update="@none"
+                           alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
+                           disabled="#{!newObjectBean.editable}" />            
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{newDocumentsTabBean.create}" 
                            process="@this"
@@ -72,32 +77,66 @@
       </p:column>
        
       <p:column styleClass="text-right white-space-nowrap">
+        
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          process="@this" update="@form:cnt"
                          action="#{navigatorBean.show('Document', row.documentId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
-        <p:commandButton icon="pi pi-pencil"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{newDocumentsTabBean.edit(row)}"
-                         process="@this"
-                         update="@form:cnt:search_tabs:new_documents_dialog"
-                         resetValues="true"
-                         oncomplete="PF('newDocumentsDialog').show()"
-                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}" /> 
-        <p:commandButton action="#{newDocumentsTabBean.remove(row)}"
-                         process="@this"
-                         update="@form:cnt:search_tabs:tabs"
-                         icon="pi pi-trash"
-                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat"
-                         disabled="#{!newObjectBean.editable}">
-          <p:confirm header="#{objectBundle.confirm_remove_header}"
-                     message="#{objectBundle.confirm_remove_message}"
-                     icon="pi pi-info-circle" />
-        </p:commandButton>
+        <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                      menuStyleClass="w200"
+                      title="#{objectBundle.actions}">
+          <p:menuitem value="#{newsBundle.new_documents_edit_row}"
+                      icon="pi pi-pencil"
+                      styleClass="rounded-button ui-button-flat w200"
+                      action="#{newDocumentsTabBean.edit(row)}"
+                      process="@this"
+                      update="@form:cnt:search_tabs:new_documents_dialog"
+                      resetValues="true"
+                      oncomplete="PF('newDocumentsDialog').show()"
+                       />
+          <p:menuitem value="#{newsBundle.new_documents_edit_content}"
+                      onclick="javascript:editDocument({docId:'#{row.documentId}'});return false"
+                      process="@this" update="new_documents_table"
+                      styleClass="rounded-button ui-button-flat w200"
+                      icon="fa fa-pen-to-square"
+                      />
+          <p:menuitem value="#{newsBundle.new_documents_update_content}"
+                      onclick="javascript:updateDocument({docId:'#{row.documentId}'});return false"
+                      process="@this" update="@none"
+                      styleClass="rounded-button ui-button-flat w200"
+                      icon="pi pi-paperclip"
+                      />
+          <p:menuitem value="#{objectBundle.delete}"
+                      icon="pi pi-trash"
+                      action="#{newDocumentsTabBean.remove(row)}"
+                      process="@this"
+                      update="@form:cnt:search_tabs:tabs"
+                      styleClass="rounded-button ui-button-flat w200"
+                      disabled="#{!newObjectBean.editable}" >
+                    <p:confirm header="#{objectBundle.confirm_remove_header}"
+                   message="#{objectBundle.confirm_remove_message}"
+                   icon="pi pi-info-circle" />
+          </p:menuitem>
+        </p:menuButton> 
       </p:column>
     </p:dataTable>
+    
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
+      action="#{newDocumentsTabBean.documentEdited}"
+      model="#{newDocumentsTabBean.sendClientModel}"
+      function="editDocument"
+      helpUrl="#{matrixClientBean.helpUrl}" />
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.UpdateDocumentCommand"
+      action="#{newDocumentsTabBean.documentEdited}"
+      model="#{newDocumentsTabBean.clientModel}"
+      function="updateDocument"
+      helpUrl="#{matrixClientBean.helpUrl}"/>
+    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
+      action="#{newDocumentsTabBean.documentSent}"
+      model="#{newDocumentsTabBean.clientModel}"                   
+      function="sendDocument"
+      helpUrl="#{matrixClientBean.helpUrl}"/>      
     
     <gdm:saveBean value="newDocumentsTabBean" />
     

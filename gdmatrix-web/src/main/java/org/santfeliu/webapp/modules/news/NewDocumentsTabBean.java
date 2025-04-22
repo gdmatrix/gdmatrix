@@ -40,14 +40,28 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.doc.ContentInfo;
+import org.matrix.doc.Document;
 import org.matrix.news.NewDocument;
+import org.matrix.news.NewSection;
+import org.matrix.security.AccessControl;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.doc.web.DocumentConfigBean;
+import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
+import static org.santfeliu.faces.matrixclient.model.DocMatrixClientModels.DOCTYPES_PARAMETER;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.faces.menu.model.MenuModel;
+import org.santfeliu.news.web.NewsConfigBean;
+import org.santfeliu.web.ApplicationBean;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.EditTab;
@@ -66,6 +80,7 @@ public class NewDocumentsTabBean extends TabBean
   private NewDocument editing;
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private GroupableRowsHelper groupableRowsHelper;
+  private DefaultMatrixClientModel clientModel;
 
   public class TabInstance
   {
@@ -359,6 +374,61 @@ public class NewDocumentsTabBean extends TabBean
   {
     tabInstances.clear();
   }
+     
+  public DefaultMatrixClientModel getClientModel()
+  {
+    if (clientModel == null)
+    {
+      clientModel = new DefaultMatrixClientModel();
+    }
+    return clientModel;
+  }
+
+  public void setClientModel(DefaultMatrixClientModel clientModel)
+  {
+    this.clientModel = clientModel;
+  }
+  
+  public DefaultMatrixClientModel getSendClientModel()
+  {
+    clientModel = getClientModel();
+    Map creationDocTypes = 
+      DocModuleBean.getUserDocTypes(DictionaryConstants.CREATE_ACTION);
+    clientModel.putParameter(DOCTYPES_PARAMETER, creationDocTypes);
+    return clientModel;
+  }  
+
+  public void documentEdited()
+  {
+    try
+    {
+      clientModel.parseResult();
+      this.load();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public String documentSent()
+  {   
+    editing = null;
+    
+    try
+    {
+      String docId = (String) clientModel.parseResult();
+      if (docId != null)
+        return storeSentDocument(docId);
+    }
+    catch (Exception ex)
+    {
+      if (!"NO_FILE".equals(ex.getMessage()))
+        error(ex);
+    }
+
+    return null;
+  }    
 
   @Override
   public Serializable saveState()
@@ -380,6 +450,148 @@ public class NewDocumentsTabBean extends TabBean
       error(ex);
     }
   }
+  
+  private String storeSentDocument(String docId)
+  {
+    try
+    {
+      updateDocumentRoles(docId);
+      info("DOCUMENT_SECURITY_UPDATED");
+    }
+    catch (Exception ex)
+    {
+      if ("ACTION_DENIED".equals(ex.getMessage()))
+      {
+        warn("DOCUMENT_SECURITY_NOT_UPDATED");
+      }
+      else
+      {
+        error(ex);
+        return null;
+      }
+    }
+    
+    try
+    {
+      NewDocument newDocument = new NewDocument();
+      newDocument.setNewId(getObjectId());
+      newDocument.setDocumentId(docId);
+      newDocument.setNewDocTypeId(NewsConfigBean.EXTENDED_INFO_TYPE);
+      NewsModuleBean.getPort(false).storeNewDocument(newDocument);
+      load();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
+  }  
+  
+  private void updateDocumentRoles(String docId) throws Exception
+  {
+    Document document =
+      DocModuleBean.getPort(false).loadDocument(docId, 0, ContentInfo.ID);
+    if (document != null)
+    {
+      String workspaceId =
+        UserSessionBean.getCurrentInstance().getWorkspaceId();
+      MenuModel menuModel = ApplicationBean.getCurrentInstance().
+        createMenuModel(workspaceId);
+      List<String> readRoleList = new ArrayList<>();
+      List<String> writeRoleList = new ArrayList<>();
+      List<NewSection> newSectionList = 
+        NewsConfigBean.getPort().findNewSectionsFromCache(getObjectId());
+      int i = 0;
+      boolean readNotProtected = false;
+      boolean writeNotProtected = false;
+      while (i < newSectionList.size()
+        && (!readNotProtected || !writeNotProtected))
+      {
+        NewSection ns = newSectionList.get(i++);
+        MenuItemCursor nodeMic = menuModel.getMenuItemByMid(ns.getSectionId());
+        if (!readNotProtected)
+        {
+          if (nodeMic.getViewRoles().isEmpty())
+          {
+            readNotProtected = true;
+          }
+          else
+          {
+            readRoleList.addAll(nodeMic.getViewRoles());          
+          }          
+        }
+        if (!writeNotProtected)
+        {
+          if (nodeMic.getEditRoles().isEmpty())
+          {
+            writeNotProtected = true;
+          }
+          else
+          {
+            writeRoleList.addAll(nodeMic.getEditRoles());
+          }
+        }
+      }
+      if (readNotProtected)
+      {
+        AccessControl ac = new AccessControl();
+        ac.setAction(DictionaryConstants.READ_ACTION);
+        ac.setRoleId("EVERYONE");
+        if (!containsAC(document.getAccessControl(), ac))
+        {
+          document.getAccessControl().add(ac);
+        }
+      }
+      else
+      {
+        for (String readRole : readRoleList)
+        {
+          AccessControl ac = new AccessControl();
+          ac.setAction(DictionaryConstants.READ_ACTION);
+          ac.setRoleId(readRole);
+          if (!containsAC(document.getAccessControl(), ac))
+          {
+            document.getAccessControl().add(ac);
+          }
+        }
+      }
+      if (writeNotProtected)
+      {
+        AccessControl ac = new AccessControl();
+        ac.setAction(DictionaryConstants.WRITE_ACTION);
+        ac.setRoleId("EVERYONE");
+        if (!containsAC(document.getAccessControl(), ac))
+        {
+          document.getAccessControl().add(ac);
+        }
+      }
+      else
+      {
+        for (String writeRole : writeRoleList)
+        {
+          AccessControl ac = new AccessControl();
+          ac.setAction(DictionaryConstants.WRITE_ACTION);
+          ac.setRoleId(writeRole);
+          if (!containsAC(document.getAccessControl(), ac))
+          {
+            document.getAccessControl().add(ac);
+          }
+        }
+      }
+      DocumentConfigBean.getClient().storeDocument(document);
+    }    
+  }  
+  
+  private boolean containsAC(List<AccessControl> acl, AccessControl ac)
+  {
+    for (AccessControl item : acl)
+    {
+      if (ac.getAction().equals(item.getAction()) &&
+          ac.getRoleId().equals(item.getRoleId()))
+        return true;
+    }
+   return false;
+  }  
 
   private boolean isNew(NewDocument newDocument)
   {
