@@ -68,7 +68,8 @@
                        class="inputfield w-full"/>
         </div>
         
-        <div class="field col-12 md:col-12">
+        <p:outputPanel styleClass="field col-12 md:col-12" 
+                       rendered="#{documentObjectBean.renderDocumentURL}">
           <p:outputLabel for="@next" value="Document URL" />
           <div class="ui-inputgroup">
             <p:inputText id="doc_url" 
@@ -85,7 +86,7 @@
                           title="#{objectBundle.download}"
                           icon="pi pi-download" />
           </div>
-        </div>        
+        </p:outputPanel>        
 
         <div class="field col-12 md:col-12">
           <p:outputLabel for="@next" value="Content URL" />

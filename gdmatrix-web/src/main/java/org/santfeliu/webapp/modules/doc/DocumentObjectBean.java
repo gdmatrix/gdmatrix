@@ -41,7 +41,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import javax.activation.DataHandler;
 import javax.activation.URLDataSource;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.model.SelectItem;
@@ -246,6 +245,16 @@ public class DocumentObjectBean extends ObjectBean
     return language == null ? "" : DocumentUtils.extendLanguage(language);
   }
 
+  public boolean isRenderDocumentURL()
+  {
+    if (versions == null) //first load
+      return true;
+    else if (versions.isEmpty()) //new document 
+      return false;
+    else
+      return (document.getVersion() == versions.get(0).getVersion());
+  }
+  
   @Override
   public String getDescription()
   {
