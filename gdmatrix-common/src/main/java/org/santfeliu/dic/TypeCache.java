@@ -58,25 +58,25 @@ import org.santfeliu.util.TextUtils;
  */
 public class TypeCache
 {
-  private static Map<String, TypeCache> typeCaches =
-    Collections.synchronizedMap(new HashMap<String, TypeCache>());
+  private static final Map<String, TypeCache> typeCaches =
+    Collections.synchronizedMap(new HashMap<>());
 
-  private int maxSize = 3000; // 3000 types
-  private Map typeMap = Collections.synchronizedMap(new LRUMap(maxSize));
-  private Map<String, List> childrenMap =
-    Collections.synchronizedMap(new HashMap<String, List>());
-  private Map<String, String> parentsMap =
-    Collections.synchronizedMap(new HashMap<String, String>());
-  private Map<String, List> actionsMap =
-    Collections.synchronizedMap(new HashMap<String, List>());
+  private final int maxSize = 3000; // 3000 types
+  private final Map typeMap = Collections.synchronizedMap(new LRUMap(maxSize));
+  private final Map<String, List> childrenMap =
+    Collections.synchronizedMap(new HashMap<>());
+  private final Map<String, String> parentsMap =
+    Collections.synchronizedMap(new HashMap<>());
+  private final Map<String, List> actionsMap =
+    Collections.synchronizedMap(new HashMap<>());
 
   private Credentials credentials;
 
   private long lastSyncMillis;
-  private long syncMillis = 10 * 1000; // 10 seconds
+  private final long syncMillis = 10 * 1000; // 10 seconds
 
   private long lastPurgeMillis;
-  private long purgeMillis = 60 * 1000; // 1 minute
+  private final long purgeMillis = 60 * 1000; // 1 minute
 
   /* by default, this method returns instance with admin credentials */
   public static synchronized TypeCache getInstance()
@@ -147,14 +147,17 @@ public class TypeCache
       {
         type = new Type(this, getPort().loadType(typeId));
         typeMap.put(typeId, type);
+        String actualTypeId = type.getTypeId();
+        typeMap.put(actualTypeId, type); //Ensure put id with prefix
         String superTypeId = type.getSuperTypeId();
         if (superTypeId != null)
         {
           parentsMap.put(typeId, superTypeId);
+          parentsMap.put(actualTypeId, superTypeId);
           List children = childrenMap.get(superTypeId);
           if (children != null)
           {
-            if (!children.contains(typeId)) children.add(typeId);
+            if (!children.contains(actualTypeId)) children.add(actualTypeId);
           }
         }
       }
@@ -171,7 +174,7 @@ public class TypeCache
     List<String> children = childrenMap.get(superTypeId);
     if (children == null)
     {
-      children = new ArrayList<String>();
+      children = new ArrayList<>();
       childrenMap.put(superTypeId, children);
 
       TypeFilter filter = new TypeFilter();
@@ -329,21 +332,25 @@ public class TypeCache
       super(CacheMBean.class);
     }
 
+    @Override
     public String getName()
     {
       return "TypeCache(" + credentials.getUserId() + ")";
     }
 
+    @Override
     public long getMaxSize()
     {
       return maxSize;
     }
 
+    @Override
     public long getSize()
     {
       return typeMap.size();
     }
 
+    @Override
     public String getDetails()
     {
       return "typeMapSize=" + getSize() + "/" + getMaxSize() + "," +
@@ -352,11 +359,13 @@ public class TypeCache
         "actionsMapSize=" + actionsMap.size();
     }
 
+    @Override
     public void clear()
     {
       TypeCache.this.clear();
     }
 
+    @Override
     public void update()
     {
       long nowMillis = System.currentTimeMillis();
