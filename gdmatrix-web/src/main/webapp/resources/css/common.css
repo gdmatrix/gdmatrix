@@ -63,7 +63,8 @@ body .ui-autocomplete.class_reference .ui-autocomplete-multiple-container.ui-inp
   border-bottom-right-radius: 0;
 }
 
-body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-autocomplete-row > td
+body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-autocomplete-row > td,
+body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-selectonemenu-row > td
 {
   padding: 0.5rem;
 }
