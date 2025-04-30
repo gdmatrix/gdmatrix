@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
@@ -66,6 +67,7 @@ public class CaseFinderBean extends FinderBean
   private int firstRow;
   private boolean outdated;
   private String formSelector;
+  private String sortBy;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -170,6 +172,16 @@ public class CaseFinderBean extends FinderBean
   {
     this.formSelector = formSelector;
   }
+
+  public String getSortBy() 
+  {
+    return sortBy;
+  }
+
+  public void setSortBy(String sortBy) 
+  {
+    this.sortBy = sortBy;
+  }
   
   public List<TableProperty> getTableProperties()
   {
@@ -202,6 +214,65 @@ public class CaseFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
+  public void sortByColumn(String columnName)
+  {
+    if (sortBy == null) //first sort
+    {
+      sortBy = columnName + ":asc";  
+    }
+    else
+    {
+      String currentColumnName = sortBy.split(":")[0];
+      if (currentColumnName.equals(columnName)) //direction switch
+      {
+        if (sortBy.endsWith(":desc"))
+        {
+          sortBy = columnName + ":asc";
+        }
+        else
+        {
+          sortBy = columnName + ":desc";
+        }
+      }
+      else
+      {
+        sortBy = columnName + ":asc";
+      }
+    }
+    find();
+  }
+  
+  public String getSortIcon(String columnName)
+  {
+    if (!getOrderByColumns().contains(columnName) || !isFinding())
+    {
+      return null; //no sorting enabled
+    }
+    else if (sortBy == null) //sorting enabled, but no sort column selected
+    {
+      return "pi pi-sort-alt";
+    }    
+    else //sorting enabled, and sort column selected
+    {
+      String currentColumnName = sortBy.split(":")[0];
+      if (currentColumnName.equals(columnName)) //sorted by this column
+      {
+        if (sortBy.endsWith(":desc")) //desc
+        {
+          return "pi pi-sort-amount-down";
+        }
+        else //asc
+        {
+          return "pi pi-sort-amount-up";
+        }
+      }
+      else //not sorted by this column
+      {
+        return "pi pi-sort-alt";
+      }
+    }
+  }
+  
   @Override
   public void smartFind()
   {
@@ -257,7 +328,8 @@ public class CaseFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition(), formSelector, rows, outdated, getPageSize() };
+      getObjectPosition(), formSelector, rows, outdated, getPageSize(), 
+      sortBy };
   }
 
   @Override
@@ -276,6 +348,7 @@ public class CaseFinderBean extends FinderBean
       rows = (List<DataTableRow>)stateArray[6];
       outdated = (Boolean)stateArray[7];
       setPageSize((Integer)stateArray[8]);
+      sortBy = (String)stateArray[9];
     }
     catch (Exception ex)
     {
@@ -404,6 +477,33 @@ public class CaseFinderBean extends FinderBean
     return convertedRows;
   }
 
+  private List<String> getOrderByColumns()
+  {
+    try
+    {
+      int tabSelector = caseObjectBean.getSearchTabSelector();
+      tabSelector =
+        tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
+      List<String> orderByColumns = 
+        getObjectSetup().getSearchTabs().get(tabSelector).getOrderByColumns();
+      if (orderByColumns == null || orderByColumns.isEmpty())
+      {
+        //default value
+        orderByColumns = Arrays.asList("caseId", "title", "caseTypeId", 
+          "startDate", "endDate");
+      }
+      if (!isFinding())
+      {
+        sortBy = null;
+      }
+      return new ArrayList(orderByColumns);      
+    }
+    catch (Exception ex)
+    {
+      return Collections.EMPTY_LIST;
+    }
+  }  
+  
   private String setWildcards(String text)
   {
     if (text != null)
@@ -425,11 +525,18 @@ public class CaseFinderBean extends FinderBean
 
   private void setOrderBy(CaseFilter filter) throws Exception
   {
-    int tabSelector = caseObjectBean.getSearchTabSelector();
-    tabSelector =
-      tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
-    List<String> orderBy =
-      getObjectSetup().getSearchTabs().get(tabSelector).getOrderBy();
+    List<String> orderBy;
+    if (sortBy == null)
+    {
+      int tabSelector = caseObjectBean.getSearchTabSelector();
+      tabSelector =
+        tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
+      orderBy = getObjectSetup().getSearchTabs().get(tabSelector).getOrderBy();
+    }
+    else
+    {
+      orderBy = Arrays.asList(sortBy);
+    }
 
     if (orderBy != null && !orderBy.isEmpty())
     {

@@ -8,7 +8,7 @@
   
   <h:outputStylesheet library="css" name="cases.css" />    
   
-  <p:dataTable value="#{caseFinderBean.rows}"
+  <p:dataTable id="case_table" value="#{caseFinderBean.rows}" 
                var="row" stripedRows="true"
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
@@ -19,11 +19,23 @@
                rows="#{caseFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50"
                rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_data}"
                rowKey="#{row.rowId}" expandedRow="true">
-
+    
     <p:columns value="#{caseFinderBean.columns}" var="column"  columnIndexVar="i"
                filterable="false" sortable="false" resizable="false"
-               headerText="#{applicationBean.translate(column.label)}" 
                field="#{column.name}" styleClass="#{column.styleClass}">
+      <f:facet name="header">
+        <h:panelGroup>
+          <h:outputText value="#{applicationBean.translate(column.label)}" />
+          <p:commandButton icon="#{caseFinderBean.getSortIcon(column.name)}"
+                           alt="#{objectBundle.sort}: #{applicationBean.translate(column.label)}" 
+                           title="#{objectBundle.sort}: #{applicationBean.translate(column.label)}"
+                           styleClass="ui-button-flat"
+                           action="#{caseFinderBean.sortByColumn(column.name)}"
+                           process="@this"
+                           update="mainform:search_tabs:case_table"
+                           rendered="#{caseFinderBean.getSortIcon(column.name) != null}" />
+        </h:panelGroup>
+      </f:facet>
       <i class="#{row.values[i].icon}" jsf:rendered="#{column.icon != null}" />
       <h:outputText value="#{row.values[i].label}" escape="#{column.escape}" />
     </p:columns>

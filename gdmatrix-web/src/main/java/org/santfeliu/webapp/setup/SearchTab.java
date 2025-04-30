@@ -47,6 +47,7 @@ public class SearchTab
   private List<TableProperty> tableProperties = new ArrayList<>();
   
   private List<String> orderBy = new ArrayList<>();
+  private List<String> orderByColumns = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
 
   public SearchTab(String label, String viewId)
@@ -93,6 +94,16 @@ public class SearchTab
   public void setOrderBy(List<String> orderBy)
   {
     this.orderBy = orderBy;
+  }
+
+  public List<String> getOrderByColumns() 
+  {
+    return orderByColumns;
+  }
+
+  public void setOrderByColumns(List<String> orderByColumns) 
+  {
+    this.orderByColumns = orderByColumns;
   }
 
   public void setProperties(PropertyMap properties)
