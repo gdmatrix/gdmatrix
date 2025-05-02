@@ -104,7 +104,9 @@ Bundle.getBundle("main").setTranslations("", {
   "GenericWfsFinder.sortBy" : "Sort by",
   "GenericWfsFinder.addMarkers": "Add markers",
 
-  "SnapshotControl.title": "Take map snapshot"
+  "SnapshotControl.title": "Take map snapshot",
+  
+  "PickupTool.title": "Pickup elements"
 
 });
 
