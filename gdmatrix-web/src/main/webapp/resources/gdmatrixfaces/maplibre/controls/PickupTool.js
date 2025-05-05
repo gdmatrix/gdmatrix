@@ -108,7 +108,16 @@ class PickupTool extends Tool
     {
       codeSelection.add(code);
     }
-    this.updateHighlight(true);
+    if (codeSelection.size > 0)
+    {
+      // fly to general zoom to load all geometries from source
+      map.flyTo({ center: map.getStyle().center, zoom: map.getStyle().zoom, maxDuration: 2000 });    
+      setTimeout(() => this.updateHighlight(true), 3000);
+    }
+    else
+    {
+      this.updateHighlight();
+    }
   }
   
   async savePickup()
@@ -139,6 +148,7 @@ class PickupTool extends Tool
     const points = [];
     
     let features = map.querySourceFeatures(this.sourceId);
+    console.info(features.length);
     for (let feat of features)
     {
       let code = String(feat.properties[this.propertyName]);
