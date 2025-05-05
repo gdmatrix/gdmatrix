@@ -123,6 +123,12 @@ public class EventObjectBean extends ObjectBean
   {
     return isNew() ? null : event;
   }
+  
+  @Override
+  public String getObjectTypeId()
+  {
+    return event.getEventTypeId();
+  }  
 
   @Override
   public String getDescription()
@@ -312,7 +318,7 @@ public class EventObjectBean extends ObjectBean
 
   @Override
   public void storeObject() throws Exception
-  {
+  {    
     setDefaultDateTimes();
     event.setStartDateTime(startDate.format(DAY_FORMATTER) + startTime);
     event.setEndDateTime(endDate.format(DAY_FORMATTER) + endTime);

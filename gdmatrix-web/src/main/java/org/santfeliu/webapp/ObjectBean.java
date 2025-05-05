@@ -249,6 +249,11 @@ public abstract class ObjectBean extends BaseBean
   }
 
   public abstract Object getObject();
+  
+  public String getObjectTypeId()
+  {
+    return (isNew() ? null : getTypeBean().getTypeId(getObject()));
+  }
 
   public BaseTypeInfo getBaseTypeInfo()
   {
@@ -303,10 +308,10 @@ public abstract class ObjectBean extends BaseBean
     String setupName = getProperty(OBJECT_SETUP_PROPERTY);
     if (setupName == null)
     {
-      // look in dictionary
-      String typeId = isNew() ? getBaseTypeInfo().getBaseTypeId() :
-        getTypeBean().getTypeId(getObject());
-
+      // look in dictionary      
+      String typeId = getObjectTypeId(); 
+      if (typeId == null) typeId = getBaseTypeInfo().getBaseTypeId(); 
+      
       if (typeId != null)
       {
         Type type = TypeCache.getInstance().getType(typeId);
@@ -327,7 +332,7 @@ public abstract class ObjectBean extends BaseBean
       objectSetup = ObjectSetupCache.getConfig(setupName);
     }
   }
-
+  
   public void loadActiveEditTab() throws Exception
   {
     EditTab tab = getActiveEditTab();

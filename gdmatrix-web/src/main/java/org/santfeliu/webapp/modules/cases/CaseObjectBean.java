@@ -167,6 +167,12 @@ public class CaseObjectBean extends ObjectBean
     return isNew() ? null : cas;
   }
 
+  @Override
+  public String getObjectTypeId()
+  {
+    return cas.getCaseTypeId();
+  }
+  
   public Case getCase()
   {
     return cas;
@@ -276,7 +282,7 @@ public class CaseObjectBean extends ObjectBean
   
   @Override
   public void storeObject() throws Exception
-  {
+  {    
     setDefaultDateTimes();
     cas.setStartDate(startDate.format(DAY_FORMATTER));
     cas.setStartTime(startTime);
