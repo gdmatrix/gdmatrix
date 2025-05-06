@@ -112,7 +112,7 @@
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_themes_dialog"
-                         update="event_themes_table event_themes_panel"
+                         update="@form:cnt:search_tabs:tabs event_themes_panel"
                          oncomplete="closePFDialog('eventThemesDialog')" />
         <p:commandButton action="#{eventThemesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

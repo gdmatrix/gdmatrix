@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.agenda;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -44,6 +43,14 @@ import org.matrix.agenda.EventThemeView;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 
 /**
  *
@@ -124,6 +131,7 @@ public class EventThemesTabBean extends TabBean
   @Override
   public void load()
   {
+    executeTabAction(PRE_TAB_LOAD_ACTION, null);
     if (!isNew())
     {
       try
@@ -132,6 +140,7 @@ public class EventThemesTabBean extends TabBean
         filter.setEventId(eventObjectBean.getObjectId());
         rows = AgendaModuleBean.getClient(false).
           findEventThemeViewsFromCache(filter);
+        executeTabAction(POST_TAB_LOAD_ACTION, null);
       }
       catch (Exception ex)
       {
@@ -147,7 +156,9 @@ public class EventThemesTabBean extends TabBean
 
   public void create()
   {
+    executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new EventTheme();
+    executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
   @Override
@@ -165,7 +176,9 @@ public class EventThemesTabBean extends TabBean
 
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
+        editing = (EventTheme)executeTabAction(PRE_TAB_STORE_ACTION, editing);
         AgendaModuleBean.getClient(false).storeEventTheme(editing);
+        executeTabAction(POST_TAB_STORE_ACTION, editing);
         editing = null;
         load();
         growl("STORE_OBJECT");
@@ -189,8 +202,11 @@ public class EventThemesTabBean extends TabBean
       {
         editing = null;
       }
-
+      
+      row = (EventThemeView)executeTabAction(PRE_TAB_REMOVE_ACTION, row);
       AgendaModuleBean.getClient(false).removeEventTheme(rowEventThemeId);
+      executeTabAction(POST_TAB_REMOVE_ACTION, row);
+      
       load();
       growl("REMOVE_OBJECT");
     }
