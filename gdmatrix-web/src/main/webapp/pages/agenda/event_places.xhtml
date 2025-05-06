@@ -185,7 +185,7 @@
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_places_dialog"
-                         update="event_places_table event_places_panel"
+                         update="@form:cnt:search_tabs:tabs event_places_panel"
                          oncomplete="closePFDialog('eventPlacesDialog')" />
         <p:commandButton action="#{eventPlacesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
