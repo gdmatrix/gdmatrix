@@ -497,12 +497,12 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
           {
             //Output property
             if (!isCounterQuery())
-              selectBuffer.append(",o" + userPropsCount + ".value ");
-            fromBuffer.append(", dom_metadata o" + userPropsCount + " ");
-            appendOperator(whereBuffer, "AND");
-            whereBuffer.append("d.docid = o" + userPropsCount +
-              ".docid (+) AND " + "d.version = o" + userPropsCount +
-              ".version (+) AND o" + userPropsCount + ".propname = ?propname" + userPropsCount + " ");
+              selectBuffer.append(", o" + userPropsCount + ".value as v" + 
+                userPropsCount);
+            fromBuffer.append(" left outer join dom_metadata o" + userPropsCount + 
+              " on (d.docid = o" + userPropsCount + ".docid and d.version = o" + 
+              userPropsCount + ".version and o" + userPropsCount + 
+              ".propname = ?propname" + userPropsCount + ") ");
             parameters.put("propname" + userPropsCount, orderPropName);
             orderPropName = "o" + userPropsCount + ".value";
             userPropsCount++;
@@ -518,7 +518,7 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
           if (obBuffer.length() == 0)
             obBuffer.append(" ORDER BY " + orderPropName);
           else
-            obBuffer.append("," + orderPropName);
+            obBuffer.append(", " + orderPropName);
         }
       }
 
@@ -555,13 +555,12 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
           {
             //Output property
             if (!isCounterQuery())
-              selectBuffer.append(",o" + userPropsCount + ".value ");
-            fromBuffer.append(", dom_metadata o" + userPropsCount + " ");
-
-            appendOperator(whereBuffer, "AND");
-            whereBuffer.append("d.docid = o" + userPropsCount +
-              ".docid (+) AND " + "d.version = o" + userPropsCount +
-              ".version (+) AND o" + userPropsCount + ".propname = ?propname" + userPropsCount + " ");
+              selectBuffer.append(", o" + userPropsCount + ".value as v" + 
+                userPropsCount);
+            fromBuffer.append(" left outer join dom_metadata o" + userPropsCount + 
+              " on (d.docid = o" + userPropsCount + ".docid and d.version = o" + 
+              userPropsCount + ".version and o" + userPropsCount + 
+              ".propname = ?propname" + userPropsCount + ") ");
             parameters.put("propname" + userPropsCount, orderPropName);
             orderPropName = "o" + userPropsCount + ".value";
             userPropsCount++;
@@ -576,7 +575,7 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
           if (obBuffer.length() == 0)
             obBuffer.append(" ORDER BY " + orderPropName);
           else
-            obBuffer.append("," + orderPropName);
+            obBuffer.append(", " + orderPropName);
         }
       }
       if (obBuffer.length() == 0 && !isCounterQuery())

@@ -413,14 +413,12 @@ public class JPQLFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
         {
           orderPropName = orderByProperty.getName();
           //Output property
-          if (!isCounterQuery())
-            selectBuffer.append(",o" + userPropsCount + ".value ");
-          fromBuffer.append(", dom_metadata o" + userPropsCount + " ");
-
-          appendOperator(whereBuffer, "AND");
-          whereBuffer.append("d.docid = o" + userPropsCount +
-            ".docid (+) AND " + "d.version = o" + userPropsCount +
-            ".version (+) AND o" + userPropsCount + ".propname = ?propname" + userPropsCount + " ");
+          int idx = fromBuffer.indexOf("DBDocument d");
+          fromBuffer.replace(idx, idx + 12, 
+            "DBDocument d LEFT JOIN DBProperty o" + userPropsCount + 
+            " ON (d.docId = o" + userPropsCount + ".docId and d.version = o" + 
+            userPropsCount + ".version and o" + userPropsCount + 
+            ".name = :propname" + userPropsCount + ")");          
           parameters.put("propname" + userPropsCount, orderPropName);
           orderPropName = "o" + userPropsCount + ".value";
           userPropsCount++;
