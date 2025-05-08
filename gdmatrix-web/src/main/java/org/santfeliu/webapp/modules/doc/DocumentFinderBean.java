@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.doc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -72,6 +73,7 @@ public class DocumentFinderBean extends FinderBean
   private boolean outdated;
   private String formSelector;
   private List<String> selectedStates;
+  private String sortBy;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -225,6 +227,16 @@ public class DocumentFinderBean extends FinderBean
     this.selectedStates = selectedStates;
   }
 
+  public String getSortBy() 
+  {
+    return sortBy;
+  }
+
+  public void setSortBy(String sortBy) 
+  {
+    this.sortBy = sortBy;
+  }  
+  
   public List<SelectItem> getLanguageValues()
   {
     List<SelectItem> results = new ArrayList();
@@ -243,6 +255,65 @@ public class DocumentFinderBean extends FinderBean
     return results;
   }
 
+  public void sortByColumn(String columnName)
+  {
+    if (sortBy == null) //first sort
+    {
+      sortBy = columnName + ":asc";  
+    }
+    else
+    {
+      String currentColumnName = sortBy.split(":")[0];
+      if (currentColumnName.equals(columnName)) //direction switch
+      {
+        if (sortBy.endsWith(":desc"))
+        {
+          sortBy = columnName + ":asc";
+        }
+        else
+        {
+          sortBy = columnName + ":desc";
+        }
+      }
+      else
+      {
+        sortBy = columnName + ":asc";
+      }
+    }
+    find();
+  }
+  
+  public String getSortIcon(String columnName)
+  {
+    if (!getOrderByColumns().contains(columnName) || !isFinding())
+    {
+      return null; //no sorting enabled
+    }
+    else if (sortBy == null) //sorting enabled, but no sort column selected
+    {
+      return "pi pi-sort-alt";
+    }    
+    else //sorting enabled, and sort column selected
+    {
+      String currentColumnName = sortBy.split(":")[0];
+      if (currentColumnName.equals(columnName)) //sorted by this column
+      {
+        if (sortBy.endsWith(":desc")) //desc
+        {
+          return "pi pi-sort-amount-down";
+        }
+        else //asc
+        {
+          return "pi pi-sort-amount-up";
+        }
+      }
+      else //not sorted by this column
+      {
+        return "pi pi-sort-alt";
+      }
+    }
+  }  
+  
   @Override
   public void smartFind()
   {
@@ -308,7 +379,7 @@ public class DocumentFinderBean extends FinderBean
   {
     return new Object[]{ isFinding(), getFilterTabSelector(),
       filter, firstRow, getObjectPosition(), formSelector, rows, outdated,
-      selectedStates, getPageSize() };
+      selectedStates, getPageSize(), sortBy };
   }
 
   @Override
@@ -320,12 +391,13 @@ public class DocumentFinderBean extends FinderBean
     filter = (DocumentFilter)stateArray[2];
     firstRow = (Integer)stateArray[3];
     smartFilter = documentTypeBean.filterToQuery(filter);
+    setObjectPosition((Integer)stateArray[4]);
     formSelector = (String)stateArray[5];
     rows = (List<DocumentDataTableRow>)stateArray[6];
     outdated = (Boolean)stateArray[7];
     selectedStates = (List<String>)stateArray[8];
     setPageSize((Integer)stateArray[9]);
-    setObjectPosition((Integer)stateArray[4]);
+    sortBy = (String)stateArray[10];    
   }
 
   private void doFind(boolean autoLoad)
@@ -391,6 +463,7 @@ public class DocumentFinderBean extends FinderBean
                 filter.getClassId().clear();
                 filter.getClassId().addAll(classIds);
               }
+              filter.getOutputProperty().clear();
               List<TableProperty> tableProperties = getTableProperties();
               for (TableProperty tableProperty : tableProperties)
               {
@@ -476,14 +549,48 @@ public class DocumentFinderBean extends FinderBean
     return convertedRows;
   }
 
+  private List<String> getOrderByColumns()
+  {
+    try
+    {
+      int tabSelector = documentObjectBean.getSearchTabSelector();
+      tabSelector =
+        tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
+      List<String> orderByColumns = 
+        getObjectSetup().getSearchTabs().get(tabSelector).getOrderByColumns();
+      if (orderByColumns == null || orderByColumns.isEmpty())
+      {
+        //default value
+        orderByColumns = Arrays.asList("docId", "title", "docTypeId");
+      }
+      if (!isFinding())
+      {
+        sortBy = null;
+      }
+      return new ArrayList(orderByColumns);      
+    }
+    catch (Exception ex)
+    {
+      return Collections.EMPTY_LIST;
+    }
+  }  
+  
   private void setOrderBy(DocumentFilter filter) throws Exception
   {
-    int tabSelector = documentObjectBean.getSearchTabSelector();
-    tabSelector =
-      tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
-    List<String> orderBy =
-      getObjectSetup().getSearchTabs().get(tabSelector).getOrderBy();
+    List<String> orderBy;
+    if (sortBy == null)
+    {
+      int tabSelector = documentObjectBean.getSearchTabSelector();
+      tabSelector =
+        tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
+      orderBy = getObjectSetup().getSearchTabs().get(tabSelector).getOrderBy();
+    }
+    else
+    {
+      orderBy = Arrays.asList(sortBy);
+    }
 
+    filter.getOrderByProperty().clear();
     if (orderBy != null && !orderBy.isEmpty())
     {
       for (String item : orderBy)
