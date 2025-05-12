@@ -31,14 +31,19 @@
 package org.santfeliu.webapp;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.santfeliu.dic.Type;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -65,7 +70,7 @@ public class RecentObjectsBean implements Serializable
     }
 
     if (treeNode == null)
-    {
+    {      
       System.out.println(">>> getRecentObjectsTreeNode");
 
       treeNode = new DefaultTreeNode("", null);
@@ -110,10 +115,11 @@ public class RecentObjectsBean implements Serializable
         }
       }
       updateCount = navigatorBean.getUpdateCount();
+      removeDuplicatedNodes();
     }
     return treeNode;
   }
-
+  
   public void onNodeExpand(NodeExpandEvent event)
   {
     RecentType recentType = (RecentType)event.getTreeNode().getData();
@@ -147,6 +153,75 @@ public class RecentObjectsBean implements Serializable
     return recentObject.getObjectId().equals(baseTypeInfo.getObjectId());
   }
 
+  private void removeDuplicatedNodes() 
+  {
+    List<TreeNode> nodesToDelete = new ArrayList<>();
+    List<TreeNode> recObjNodes = getRecentObjectNodes(treeNode);
+    
+    Map<String, List<TreeNode>> groupedNodes = new HashMap<>();
+    for (TreeNode node : recObjNodes) 
+    {
+      RecentObject recObj = (RecentObject)node.getData();
+      String objectId = recObj.getObjectId();
+      if (!groupedNodes.containsKey(objectId))
+      {
+        groupedNodes.put(objectId, new ArrayList<>());
+      }
+      groupedNodes.get(objectId).add(node);
+    }
+    
+    for (List<TreeNode> nodeGroup : groupedNodes.values()) 
+    {
+      if (nodeGroup.size() > 1) 
+      {        
+        for (TreeNode currentNode : nodeGroup) 
+        {
+          TreeNode currentParentNode = currentNode.getParent();
+          RecentType currentParentType = 
+            (RecentType)currentParentNode.getData();
+          for (TreeNode otherNode : nodeGroup) 
+          {
+            if (otherNode != currentNode)
+            {
+              TreeNode otherParentNode = otherNode.getParent();
+              RecentType otherParentType = 
+                (RecentType)otherParentNode.getData();
+              if (otherParentType.isDescendantOf(currentParentType)) 
+              {
+                nodesToDelete.add(currentNode);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    for (TreeNode node : nodesToDelete)
+    {
+      TreeNode recentTypeNode = node.getParent();
+      recentTypeNode.getChildren().remove(node);
+      if (recentTypeNode.getChildren().isEmpty())
+      {
+        treeNode.getChildren().remove(recentTypeNode);                  
+      }      
+    }
+  }
+
+  private List<TreeNode> getRecentObjectNodes(TreeNode node) 
+  {
+    List<TreeNode> result = new ArrayList<>();
+    if (node.getData() instanceof RecentObject) 
+    {
+      result.add(node);
+    }
+    for (Object child : node.getChildren()) 
+    {
+      result.addAll(getRecentObjectNodes((TreeNode)child));
+    }
+    return result;
+  }  
+  
   public class RecentType
   {
     String baseTypeId;
@@ -168,11 +243,21 @@ public class RecentObjectsBean implements Serializable
       return icon;
     }
 
+    public boolean isDescendantOf(RecentType other)
+    {
+      Type type = TypeCache.getInstance().getType(baseTypeId);
+      if (type != null)
+      {
+        return type.isDerivedFrom(other.getBaseTypeId());          
+      }
+      return false;
+    }
+
     @Override
     public String toString()
     {
       return baseTypeId;
-    }
+    }    
   }
 
   public class RecentObject

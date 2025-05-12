@@ -37,6 +37,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.NavigatorBean.DirectLeap;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -66,6 +68,7 @@ public class HistoryBean implements Serializable
       entries = new ArrayList<>();
       entries.addAll(navigatorBean.getHistory().getEntries());
       updateCount = navigatorBean.getUpdateCount();
+      removeDuplicatedEntries();
     }
     return entries;
   }
@@ -113,4 +116,44 @@ public class HistoryBean implements Serializable
       navigatorBean.getBaseTypeInfo(baseTypeId);
     return baseTypeInfo == null ? null : baseTypeInfo.getIcon();
   }
+  
+  private void removeDuplicatedEntries() 
+  {
+    List<DirectLeap> copyEntries = new ArrayList(entries);
+    for (DirectLeap entry : copyEntries)
+    {
+      if (!NavigatorBean.NEW_OBJECT_ID.equals(entry.getObjectId()))
+      {      
+        if (entry.getObjectId().equals(navigatorBean.getObjectId()))
+        {
+          entries.remove(entry);        
+        }
+        else
+        {
+          for (DirectLeap otherEntry : copyEntries)
+          {
+            if (otherEntry != entry && 
+              otherEntry.getObjectId().equals(entry.getObjectId()))
+            {
+              if (isTypeDescendantOf(otherEntry, entry))
+              {
+                entries.remove(entry);
+                break;
+              }
+            }
+          }     
+        }
+      }
+    }
+  }  
+  
+  private boolean isTypeDescendantOf(DirectLeap entry1, DirectLeap entry2)
+  {
+    Type type = TypeCache.getInstance().getType(entry1.getBaseTypeId());
+    if (type != null)
+    {
+      return type.isDerivedFrom(entry2.getBaseTypeId());          
+    }
+    return false;
+  }  
 }
