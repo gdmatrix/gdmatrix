@@ -44,6 +44,7 @@ import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.modules.dic.DicModuleBean;
 
@@ -83,7 +84,17 @@ public class DocModuleBean
   {
     Map typesMap = new HashMap();
     try
-    {
+    { 
+      UserPreferences userPreferences =
+        UserSessionBean.getCurrentInstance().getUserPreferences();
+      
+      List<String> favoriteTypeIds = null;
+      if (userPreferences.existsPreference(DictionaryConstants.TYPE_TYPE))
+      {
+        favoriteTypeIds = 
+          userPreferences.getPreferences(DictionaryConstants.TYPE_TYPE);
+      }    
+     
       for (Type userDocType : getActionDocTypes(action))
       {
         String typeId = userDocType.getTypeId();
@@ -97,7 +108,8 @@ public class DocModuleBean
             typePath = type.formatTypePath(false, true, true);
           else
             typePath = type.formatTypePath(false, true, false);
-
+          if (favoriteTypeIds != null && favoriteTypeIds.contains(typeId))
+            typeId = "*" + typeId; //Mark as favorite
           typesMap.put(typeId, typePath);
         }
       }
