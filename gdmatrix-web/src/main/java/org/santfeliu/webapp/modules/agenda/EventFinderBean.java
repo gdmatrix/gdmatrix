@@ -507,6 +507,7 @@ public class EventFinderBean extends FinderBean
     searchEventTypeId = null;
     searchEventThemeId = null;
     rows = null;
+    eventModel = null;
     setFinding(false);
     formSelector = null;
     scheduleInitialDate = null;
@@ -591,7 +592,7 @@ public class EventFinderBean extends FinderBean
 
   public boolean isRenderSchedule()
   {
-    return (
+    return isFinding() && (
       !filter.getEventId().isEmpty() ||
       !StringUtils.isBlank(filter.getContent()) ||
       !StringUtils.isBlank(filter.getPersonId()) ||
@@ -659,7 +660,7 @@ public class EventFinderBean extends FinderBean
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView, formSelector, rows,
-      searchEventTypeId, outdated, scheduleEdit, getPageSize() };
+      searchEventTypeId, outdated, scheduleEdit, getPageSize(), eventModel };
   }
 
   @Override
@@ -688,6 +689,7 @@ public class EventFinderBean extends FinderBean
         scheduleEdit = false;
       }
       setPageSize((Integer)stateArray[13]);
+      eventModel = (ScheduleModel)stateArray[14];
     }
     catch (Exception ex)
     {
@@ -705,6 +707,7 @@ public class EventFinderBean extends FinderBean
       }
       else
       {
+        eventModel = null; //reload schedule events
         String securityMode = getProperty(SECURITY_MODE_PROPERTY);
         if (securityMode != null && 
           (!StringUtils.isBlank(filter.getRoomId()) ||
