@@ -62,7 +62,7 @@ public class MapAccessLogger
   static HashMap<String, List<Access>> statisticsMap = new HashMap();
   static final Logger LOGGER = Logger.getLogger("MapAccessLogger");
 
-  public static Map<String, Integer> getPopularMaps(int numMaps)
+  public static Map<String, Integer> getPopularMaps(int rankingCount, int rankingDays)
   {
     String value =
       MatrixConfig.getProperty("org.santfeliu.geo.logAccess");
@@ -82,10 +82,11 @@ public class MapAccessLogger
           "from log_geomap where datetime > ? " +
           "group by mapname order by count(*) desc"))
         {
-          Date now = new Date(System.currentTimeMillis() - 365 * 24 * 3600 * 1000L);
+          long millis = rankingDays * 24 * 3600 * 1000L;
+          Date now = new Date(System.currentTimeMillis() - millis);
           SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
           stmt.setString(1, df.format(now));
-          stmt.setMaxRows(numMaps);
+          stmt.setMaxRows(rankingCount);
 
           int ranking = 0;
           try (ResultSet rs = stmt.executeQuery())

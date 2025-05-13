@@ -75,7 +75,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   {
     if (mapGroup == null)
     {
-      mapGroup = getMapStore().findMaps(filter);
+      mapGroup = getMapStore().findMaps(filter, getRankingCount(), getRankingDays());
     }
     return mapGroup;
   }
@@ -88,6 +88,40 @@ public class GeoCatalogueBean extends WebBean implements Serializable
   public void setCurrentMapView(MapView mapView)
   {
     currentMapView = mapView;
+  }
+
+  public int getRankingCount()
+  {
+    int count = 10;
+    String value = getProperty("rankingCount");
+    if (value != null)
+    {
+      try
+      {
+        count = Integer.parseInt(value);
+      }
+      catch (Exception ex)
+      {
+      }
+    }
+    return count;
+  }
+
+  public int getRankingDays()
+  {
+    int days = 30;
+    String value = getProperty("rankingDays");
+    if (value != null)
+    {
+      try
+      {
+        days = Integer.parseInt(value);
+      }
+      catch (Exception ex)
+      {
+      }
+    }
+    return days;
   }
 
   public MapCategory getCurrentMapCategory()
@@ -202,7 +236,8 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     {
       MapFilter mapFilter = new MapFilter();
       mapFilter.setMapName(name);
-      MapGroup mapGroupFound = mapStore.findMaps(mapFilter);
+      MapGroup mapGroupFound = mapStore.findMaps(mapFilter,
+        getRankingCount(), getRankingDays());
       explodeMapViews(mapGroupFound, mapViews);
     }
     catch (Exception ex)
@@ -217,7 +252,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     try
     {
       filter.setMapClass(0);
-      mapGroup = getMapStore().findMaps(filter);
+      mapGroup = getMapStore().findMaps(filter, getRankingCount(), getRankingDays());
       currentMapCategory = null;
       expandedCategories.clear();
 
@@ -238,7 +273,7 @@ public class GeoCatalogueBean extends WebBean implements Serializable
     {
       filter.setMapClass(mapClass);
       filter.setKeywords(null);
-      mapGroup = getMapStore().findMaps(filter);
+      mapGroup = getMapStore().findMaps(filter, getRankingCount(), getRankingDays());
       currentMapCategory = null;
       expandedCategories.clear();
 

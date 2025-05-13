@@ -97,7 +97,8 @@ public class MapStore
     documentManagerPort = DocModuleBean.getPort(userId, password);
   }
 
-  public MapGroup findMaps(MapFilter mapFilter)
+  public MapGroup findMaps(MapFilter mapFilter,
+    int rankingCount, int rankingDays)
   {
     LOGGER.log(Level.INFO, "Finding maps with name {0} and keywords {1}",
       new Object[]{mapFilter.getMapName(), mapFilter.getKeywords()});
@@ -162,7 +163,8 @@ public class MapStore
     snapshotFilter.setIncludeContentMetadata(false);
     HashMap<String, MapView> mapViewCache = new HashMap<>();
 
-    Map<String, Integer> rankings = MapAccessLogger.getPopularMaps(10);
+    Map<String, Integer> rankings =
+      MapAccessLogger.getPopularMaps(rankingCount, rankingDays);
 
     String now = TextUtils.formatDate(new Date(), "yyyyMMdd");
 
