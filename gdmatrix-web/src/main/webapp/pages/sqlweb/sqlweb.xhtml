@@ -124,6 +124,9 @@
                 <p:menuitem value="PDF" icon="pi pi-file-pdf">
                   <p:dataExporter type="pdf" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
                 </p:menuitem>
+                <p:menuitem value="TXT" icon="pi pi-file">
+                  <p:dataExporter type="txt" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+                </p:menuitem>
               </p:menuButton>
             </div>            
             <div class="flex flex-wrap justify-content-start flex-grow-0">
@@ -161,7 +164,7 @@
           </f:facet>
           <h:outputText value="#{rowIndex + 1}" />
         </p:column>
-        <p:columns value="#{sqlwebBean.columns}" var="column" >
+        <p:columns value="#{sqlwebBean.columns}" var="column" title="#{column.name}" >
           <f:facet name="header">
             <h:outputText value="#{column.name}"
                           title="#{column.description != null ? column.description : sqlwebBean.columnType}" />

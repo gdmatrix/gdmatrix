@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.sqlweb;
 
+import org.santfeliu.webapp.exporters.FixedWidthTextExporter;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -89,7 +90,7 @@ public class SqlwebBean extends WebBean implements Serializable
   private String password;
   private String sql;
   private int maxRows = 1000;
-  private boolean showRowNumbers = true;
+  private boolean showRowNumbers = false;
   private boolean editMode = true;
   private Column[] columns;
   private List<Object[]> rows;
@@ -108,8 +109,9 @@ public class SqlwebBean extends WebBean implements Serializable
 
   @PostConstruct
   public void init()
-  {    
+  {
     restoreParameters();
+    FixedWidthTextExporter.register();
   }
 
   public String getTitle()
@@ -265,7 +267,7 @@ public class SqlwebBean extends WebBean implements Serializable
   {
     return UserSessionBean.getCurrentInstance().isUserInRole("QUERY_EDITOR");
   }
-  
+
   public String getContent()
   {
     return "/pages/sqlweb/sqlweb.xhtml";
@@ -295,7 +297,7 @@ public class SqlwebBean extends WebBean implements Serializable
     exception = null;
     long t0 = System.currentTimeMillis();
     try
-    {      
+    {
       try (Connection conn = getConnection())
       {
         conn.setAutoCommit(false);
@@ -357,8 +359,8 @@ public class SqlwebBean extends WebBean implements Serializable
           else // is update
           {
             updateCount = statement.getUpdateCount();
-          }          
-          if (deferredExecution) 
+          }
+          if (deferredExecution)
             removeParameters();
           else
             saveParameters();
@@ -421,13 +423,13 @@ public class SqlwebBean extends WebBean implements Serializable
     }
     return value;
   }
-  
+
   public String getCellStyleClass()
   {
     Column column = (Column)getValue("#{column}");
     Object[] row = (Object[])getValue("#{row}");
     Object value = row[column.getIndex()];
-    if ((column.isLob() && !showLobValues) || 
+    if ((column.isLob() && !showLobValues) ||
       (value == null && !showNullAsEmpty))
     {
       return "specialValue";
@@ -499,7 +501,7 @@ public class SqlwebBean extends WebBean implements Serializable
     {
       return getColumnDescriptionMap().get(name);
     }
-    
+
     public boolean isLob()
     {
       return ("CLOB".equals(type) || "BLOB".equals(type));
@@ -515,12 +517,12 @@ public class SqlwebBean extends WebBean implements Serializable
   {
     StringBuilder sb = new StringBuilder();
     try (Reader reader = clob.getCharacterStream();
-       BufferedReader br = new BufferedReader(reader))      
+       BufferedReader br = new BufferedReader(reader))
     {
       char[] buffer = new char[numChars];
       br.read(buffer);
       sb.append(buffer);
-    } 
+    }
     catch (Exception ex)
     {
     }
@@ -528,26 +530,26 @@ public class SqlwebBean extends WebBean implements Serializable
     if (result.length() >= numChars) result = result + "...";
     return result;
   }
-  
+
   private String getBlobPreview(Blob blob, int numChars)
   {
     byte[] bytes = new byte[numChars];
     int bytesRead = 0;
     try (InputStream is = blob.getBinaryStream();
-      BufferedInputStream bis = new BufferedInputStream(is)) 
+      BufferedInputStream bis = new BufferedInputStream(is))
     {
       bytesRead = bis.read(bytes, 0, numChars);
-    } 
-    catch (Exception e) 
+    }
+    catch (Exception e)
     {
     }
     byte[] trimmedBytes = new byte[bytesRead];
     System.arraycopy(bytes, 0, trimmedBytes, 0, bytesRead);
     String result = new String(trimmedBytes, StandardCharsets.UTF_8);
-    if (result.length() >= numChars) result = result + "...";    
+    if (result.length() >= numChars) result = result + "...";
     return result;
   }
-  
+
   private void restoreParameters()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -558,7 +560,7 @@ public class SqlwebBean extends WebBean implements Serializable
     password = (String)userSessionBean.getAttribute("sqlweb.password");
     sql = (String)userSessionBean.getAttribute("sqlweb.sql");
 
-    if (dsn == null) dsn = getProperty(JDBC_DSN_PROPERTY);    
+    if (dsn == null) dsn = getProperty(JDBC_DSN_PROPERTY);
     if (driver == null) driver = getProperty(JDBC_DRIVER_PROPERTY);
     if (url == null) url = getProperty(JDBC_URL_PROPERTY);
     if (username == null) username = getProperty(JDBC_USERNAME_PROPERTY);
@@ -574,7 +576,7 @@ public class SqlwebBean extends WebBean implements Serializable
     userSessionBean.setAttribute("sqlweb.password", password);
     userSessionBean.setAttribute("sqlweb.sql", sql);
   }
-  
+
   private void removeParameters()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -585,8 +587,8 @@ public class SqlwebBean extends WebBean implements Serializable
     userSessionBean.getAttributes().remove("sqlweb.password");
     userSessionBean.getAttributes().remove("sqlweb.sql");
   }
-  
-  private Connection getConnection() 
+
+  private Connection getConnection()
     throws NamingException, SQLException, ClassNotFoundException
   {
     if (!StringUtils.isBlank(dsn))
@@ -595,7 +597,7 @@ public class SqlwebBean extends WebBean implements Serializable
       javax.naming.Context envContext  =
          (javax.naming.Context)initContext.lookup("java:/comp/env");
       DataSource ds = (DataSource)envContext.lookup(dsn);
-      return ds.getConnection();      
+      return ds.getConnection();
     }
     else
     {
