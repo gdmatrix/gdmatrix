@@ -118,6 +118,9 @@
                   <p:dataExporter type="csv" target="result_table" fileName="results_#{sqlwebBean.timeStamp}"
                                   options="#{sqlwebBean.csvOptions}" />
                 </p:menuitem>
+                <p:menuitem value="CSV (no quote)" icon="pi pi-file-excel">
+                  <p:dataExporter type="csvnq" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+                </p:menuitem>
                 <p:menuitem value="XML" icon="pi pi-file">
                   <p:dataExporter type="xml" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
                 </p:menuitem>

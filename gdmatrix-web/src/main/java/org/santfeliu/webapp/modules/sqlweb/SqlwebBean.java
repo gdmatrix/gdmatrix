@@ -64,6 +64,7 @@ import org.primefaces.component.export.ExporterOptions;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.webapp.exporters.CSVNoQuoteExporter;
 
 /**
  *
@@ -112,6 +113,7 @@ public class SqlwebBean extends WebBean implements Serializable
   {
     restoreParameters();
     FixedWidthTextExporter.register();
+    CSVNoQuoteExporter.register();
   }
 
   public String getTitle()
