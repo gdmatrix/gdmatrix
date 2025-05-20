@@ -34,8 +34,6 @@ import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.chat.request.ChatRequest;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
@@ -46,6 +44,8 @@ import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.http.client.HttpClientBuilder;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -69,8 +69,8 @@ public class AssistantData
   private static final Map<String, AssistantData> dataCache = new HashMap<>();
   private static long lastPurge;
 
-  private ChatLanguageModel model;
-  private StreamingChatLanguageModel streamingModel;
+  private ChatModel model;
+  private StreamingChatModel streamingModel;
   private final List<String> toolNames;
   private final String instructions;
   private long lastAccess;
