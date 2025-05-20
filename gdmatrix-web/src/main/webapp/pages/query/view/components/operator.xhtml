@@ -21,14 +21,14 @@
             <f:selectItem itemLabel="#{queryBundle.AND}" itemValue="AND" itemDescription="AND" />
             <f:selectItem itemLabel="#{queryBundle.OR}" itemValue="OR" itemDescription="OR" />
             <f:selectItem itemLabel="#{queryBundle.NOR}" itemValue="NOR" itemDescription="NOR" />            
-            <p:ajax event="valueChange" process="@this" update="@parent" />
+            <p:ajax event="valueChange" process="mainform:instance_editor" update="@parent" />
           </p:selectOneMenu>
         </div>
         <div class="flex-grow-0 ml-3">          
           <p:commandButton action="#{queryViewBean.removeExpression(operator)}"
                            styleClass="expr_button remove ui-button-flat"
                            icon="pi pi-minus-circle"
-                           process="@this" update="@parent:@parent" />
+                           process="mainform:instance_editor" update="@parent:@parent" />
         </div>
       </div>  
     </c:otherwise>
@@ -54,7 +54,7 @@
                          styleClass="expr_button add ui-button-flat"
                          rendered="#{queryViewBean.isAddButtonRendered(operator)}"
                          icon="pi pi-plus-circle"
-                         process="@this" update="@parent" />
+                         process="mainform:instance_editor" update="@parent" />
       </c:otherwise>
     </c:choose>      
   </p:outputPanel>

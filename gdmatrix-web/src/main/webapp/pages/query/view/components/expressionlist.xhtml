@@ -10,12 +10,12 @@
       <p:commandLink action="#{queryViewBean.addExpression(exprName)}"
                      value="#{queryViewBean.getExpressionLabel(exprName)}"
                      styleClass="expr_option"
-                     process="@this" update="@parent:@parent:@parent" />    
+                     process="mainform:instance_editor" update="@parent:@parent:@parent" />    
     </p:dataViewListItem>
   </p:dataView>
   <p:commandButton action="#{queryViewBean.cancel}"
                    value="#{objectBundle.cancel}"
-                   process="@this" update="@parent"
+                   process="mainform:instance_editor" update="@parent"
                    styleClass="mt-2"
                    icon="pi pi-times" />
 
