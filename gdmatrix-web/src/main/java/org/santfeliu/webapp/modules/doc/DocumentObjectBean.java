@@ -37,6 +37,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import javax.activation.DataHandler;
@@ -75,7 +76,9 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import static org.matrix.doc.DocumentConstants.DELETE_OLD_VERSIONS;
 import org.matrix.security.AccessControl;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.NavigatorBean;
 
 /**
  *
@@ -249,12 +252,12 @@ public class DocumentObjectBean extends ObjectBean
   {
     if (versions == null) //first load
       return true;
-    else if (versions.isEmpty()) //new document 
+    else if (versions.isEmpty()) //new document
       return false;
     else
       return (document.getVersion() == versions.get(0).getVersion());
   }
-  
+
   @Override
   public String getDescription()
   {
@@ -347,6 +350,25 @@ public class DocumentObjectBean extends ObjectBean
       url = urlBuffer.toString();
     }
     return url;
+  }
+
+  @Override
+  protected void processParameters(Map<String, Object> parameters)
+  {
+    if (parameters != null && document != null)
+    {
+      for (String key : parameters.keySet())
+      {
+        Object value = parameters.get(key);
+        if (!"xmid".equals(key) &&
+            !"smid".equals(key) &&
+            !NavigatorBean.OBJECTID_PARAMETER.equals(key))
+        {
+          DictionaryUtils.setProperty(document, key, value);
+        }
+      }
+    }
+    super.processParameters(parameters);
   }
 
   @Override
