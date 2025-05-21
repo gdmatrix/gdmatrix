@@ -252,7 +252,7 @@ public class SqlWebBean extends WebBean implements Savable
       Connection conn = getConnection();
       try
       {
-        conn.setAutoCommit(false);
+        conn.setAutoCommit(true);
         Statement statement = conn.createStatement();
         try
         {

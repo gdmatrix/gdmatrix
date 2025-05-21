@@ -302,7 +302,7 @@ public class SqlwebBean extends WebBean implements Serializable
     {
       try (Connection conn = getConnection())
       {
-        conn.setAutoCommit(false);
+        conn.setAutoCommit(true);
         try (Statement statement = conn.createStatement())
         {
           statement.setMaxRows(maxRows);
