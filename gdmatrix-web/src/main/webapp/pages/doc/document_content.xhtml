@@ -5,7 +5,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:pe="http://primefaces.org/ui/extensions">
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
     <style>
         body ui-fileupload.ui-fileupload-withdropzone.ui-state-drag 
@@ -106,6 +107,9 @@
                           icon="pi pi-download"  />
           </div>
         </div>
+        
+        <emcomp:auditData creationDateTime="#{documentObjectBean.document.content.captureDateTime}" 
+                          creationUserId="#{documentObjectBean.document.content.captureUserId}" />
         
       </h:panelGroup>
 
