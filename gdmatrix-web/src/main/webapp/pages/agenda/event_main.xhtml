@@ -35,11 +35,8 @@
       <div class="field col-12"
                      rendered="true">
         <p:outputLabel for="title"
-                       value="#{agendaBundle.event_title}"
-                       indicateRequired="true" />
+                       value="#{agendaBundle.event_title}" />
         <p:inputText id="title" value="#{eventObjectBean.event.summary}"
-                     required="#{not empty param['mainform:search_tabs:store']}"
-                     requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}"
                      styleClass="inputfield w-full"
                      readonly="#{!eventObjectBean.editable}"/>
       </div>
