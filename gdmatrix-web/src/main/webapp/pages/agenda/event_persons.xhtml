@@ -15,7 +15,8 @@
                  rowIndexVar="firstRow" first="#{eventPersonsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50" rows="10" emptyMessage="#{objectBundle.no_data}"
+                 rowsPerPageTemplate="#{eventPersonsTabBean.pageSizeOptions}" 
+                 rows="#{eventPersonsTabBean.pageSize}" emptyMessage="#{objectBundle.no_data}"
                  styleClass="eventPersonsTable"
                  rowStyleClass="#{eventPersonsTabBean.isAttendantAvailable(row) ? 
                                   null : 'standardBlink'}">

@@ -17,10 +17,10 @@
                  size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow"
                  first="#{personAddressesTabBean.firstRow}"
-                 rows="10"                  
+                 rows="#{personAddressesTabBean.pageSize}"                  
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50" 
+                 rowsPerPageTemplate="#{personAddressesTabBean.pageSizeOptions}" 
                  emptyMessage="#{objectBundle.no_data}"
                  sortMode="multiple" allowUnsorting="true">
 

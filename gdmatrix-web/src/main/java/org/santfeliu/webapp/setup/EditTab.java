@@ -59,6 +59,8 @@ public class EditTab implements Serializable
   private String filterBy;
   private String typeId;
   private boolean showAllTypes = false;
+  private Integer pageSize;
+  private List<Integer> pageSizeOptions;
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -229,6 +231,26 @@ public class EditTab implements Serializable
   public void setShowAllTypes(boolean showAllTypes)
   {
     this.showAllTypes = showAllTypes;
+  }
+
+  public Integer getPageSize() 
+  {
+    return pageSize;
+  }
+
+  public void setPageSize(Integer pageSize) 
+  {
+    this.pageSize = pageSize;
+  }
+
+  public List<Integer> getPageSizeOptions() 
+  {
+    return pageSizeOptions;
+  }
+
+  public void setPageSizeOptions(List<Integer> pageSizeOptions) 
+  {
+    this.pageSizeOptions = pageSizeOptions;
   }
 
   public String getBaseTypeId()

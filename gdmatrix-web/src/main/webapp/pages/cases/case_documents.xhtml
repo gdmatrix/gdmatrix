@@ -19,12 +19,12 @@
     <p:dataTable id="case_documents_table"
                  value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" rows="10"
+                 resizableColumns="false" showGridlines="true" rows="#{caseDocumentsTabBean.pageSize}"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{caseDocumentsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}"
+                 rowsPerPageTemplate="#{caseDocumentsTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true"
                  sortMode="multiple" allowUnsorting="true">
 

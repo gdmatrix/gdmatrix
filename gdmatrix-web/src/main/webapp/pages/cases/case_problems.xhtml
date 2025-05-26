@@ -12,12 +12,12 @@
     <!-- Results table -->
     <p:dataTable id="case_problems_table" value="#{caseProblemsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true"  rows="10"
+                 resizableColumns="false" showGridlines="true" rows="#{caseProblemsTabBean.pageSize}"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{caseProblemsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50" emptyMessage="#{objectBundle.no_data}">
+                 rowsPerPageTemplate="#{caseProblemsTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">

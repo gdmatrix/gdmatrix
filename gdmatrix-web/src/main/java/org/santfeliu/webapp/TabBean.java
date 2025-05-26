@@ -32,6 +32,11 @@ package org.santfeliu.webapp;
 
 import org.santfeliu.webapp.setup.EditTab;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -44,6 +49,10 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 public abstract class TabBean extends BaseBean
 {
+  private static final Integer DEFAULT_PAGE_SIZE = 10;
+  private static final List<Integer> DEFAULT_PAGE_SIZE_OPTIONS = 
+    Arrays.asList(5, 10, 25, 50); 
+  
   private String objectId = NavigatorBean.NEW_OBJECT_ID;
 
   public String getObjectId()
@@ -132,6 +141,29 @@ public abstract class TabBean extends BaseBean
     }
   }
 
+  public int getPageSize()
+  {
+    EditTab editTab = getObjectBean().getActiveEditTab();
+    return (editTab.getPageSize() != null ? editTab.getPageSize() : 
+      DEFAULT_PAGE_SIZE);
+  }
+  
+  public String getPageSizeOptions()
+  {
+    EditTab editTab = getObjectBean().getActiveEditTab();
+    List<Integer> options = (editTab.getPageSizeOptions() != null ? 
+      editTab.getPageSizeOptions() : new ArrayList(DEFAULT_PAGE_SIZE_OPTIONS));
+    Integer pageSize = getPageSize();
+    if (!options.contains(pageSize))
+    {
+      options.add(pageSize);
+    }
+    Collections.sort(options);
+    //Convert to "o1,o2,o3,..."
+    return options.stream().map(String::valueOf)
+      .collect(Collectors.joining(","));    
+  }
+  
   public String getTabBaseTypeId()
   {
     EditTab editTab = getObjectBean().getActiveEditTab();

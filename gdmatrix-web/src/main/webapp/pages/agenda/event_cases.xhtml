@@ -11,12 +11,13 @@
     <!-- Results table -->
     <p:dataTable id="event_cases_table" value="#{eventCasesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" rows="10"
+                 resizableColumns="false" showGridlines="true" 
+                 rows="#{eventCasesTabBean.pageSize}"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{eventCasesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50"
+                 rowsPerPageTemplate="#{eventCasesTabBean.pageSizeOptions}"
                  emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true">
 
