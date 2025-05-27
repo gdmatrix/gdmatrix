@@ -72,7 +72,7 @@
         </p:column>
       </p:headerRow>
 
-      <p:column styleClass="w-1">
+      <p:column styleClass="w-1" rendered="#{caseCasesTabBean.renderDirectionColumn}">
         <i class="pi pi-#{row.reverseRelation ? 'arrow-left' : 'arrow-right'} text-xl"
            style="#{row.reverseRelation ? 'color:red' : 'color:green'}"></i>
       </p:column>
