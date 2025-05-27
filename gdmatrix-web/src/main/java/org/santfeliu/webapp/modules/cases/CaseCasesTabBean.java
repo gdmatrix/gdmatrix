@@ -212,6 +212,16 @@ public class CaseCasesTabBean extends TabBean
     this.groupableRowsHelper = groupableRowsHelper;
   }
 
+  public boolean isRenderDirectionColumn()
+  {
+    EditTab tab = caseObjectBean.getActiveEditTab();
+    if (tab != null && tab.getProperties().containsKey("renderDirectionColumn"))
+    {
+      return tab.getProperties().getBoolean("renderDirectionColumn");
+    }
+    else return true; //default value
+  }
+  
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
