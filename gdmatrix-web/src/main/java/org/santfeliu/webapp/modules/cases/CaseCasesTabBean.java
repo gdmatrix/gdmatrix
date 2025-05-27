@@ -671,7 +671,7 @@ public class CaseCasesTabBean extends TabBean
         if (pd != null)
         {
           String sourceTypeId = pd.getValue().get(0);
-          return caseType.isDerivedFrom(sourceTypeId);
+          return caseType != null && caseType.isDerivedFrom(sourceTypeId);
         }
         else
         {
