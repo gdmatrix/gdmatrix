@@ -1176,8 +1176,11 @@ public class NavigatorBean extends WebBean implements Serializable
 
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
       BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
-      baseTypeInfo.restoreBeanState(objectBean);      
-      if (baseTypeId != null && baseTypeId.equals(selectedTypeId))
+      baseTypeInfo.restoreBeanState(objectBean);
+      objectBean.getRootTypeId();
+      Type selectedType = TypeCache.getInstance().getType(selectedTypeId);
+      if (selectedType != null && 
+          selectedType.isDerivedFrom(objectBean.getRootTypeId()))
       {
         try
         {
