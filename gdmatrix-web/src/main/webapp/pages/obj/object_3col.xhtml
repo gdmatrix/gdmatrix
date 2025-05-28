@@ -83,6 +83,19 @@
           </p:messages>
 
           <div class="object_data">
+            <script>
+              function onTabShow(editModeSelector, ...activeIndexFunctions)
+              {
+                var activeIndex = PF('searchTabs').getActiveIndex();
+                if (activeIndex &gt;= 0 &amp;&amp; 
+                  activeIndex &lt; editModeSelector)
+                {
+                  var f = (activeIndex &lt; activeIndexFunctions.length ? activeIndexFunctions[activeIndex] : updateResults);
+                  f();
+                }
+                document.querySelector('.object_data').scrollTop = 0;
+              }
+            </script>
             <ui:insert name="object"></ui:insert>
           </div>
         </p:outputPanel>

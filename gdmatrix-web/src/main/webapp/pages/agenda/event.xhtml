@@ -216,16 +216,6 @@
 
   <ui:define name="object">
     <script>
-      function onTabShow()
-      {
-        var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex &gt;= 0 &amp;&amp;
-          activeIndex &lt; #{eventObjectBean.editModeSelector})
-        {
-          updateResults();
-        }
-      }
-
       function updateScheduleEventStyles()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
@@ -248,7 +238,7 @@
                widgetVar="searchTabs"
                activeIndex="#{eventObjectBean.searchTabSelector}"
                touchable="false"
-               onTabShow="onTabShow()">
+               onTabShow="onTabShow(#{eventObjectBean.editModeSelector})">
 
       <p:ajax event="tabChange" oncomplete="updateScheduleEventStyles()" />
 

@@ -147,16 +147,6 @@
   </ui:define>
 
   <ui:define name="object">
-    <script>
-      function onTabShow()
-      {
-        var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0)
-        {
-          updateResults();
-        }
-      }
-    </script>
     <p:remoteCommand name="updateResults"
                      action="#{roomFinderBean.update}"
                      process="@this"
@@ -166,7 +156,7 @@
                widgetVar="searchTabs"
                activeIndex="#{roomObjectBean.searchTabSelector}"
                touchable="false"
-               onTabShow="onTabShow()">
+               onTabShow="onTabShow(#{roomObjectBean.editModeSelector})">
 
       <p:tab>
         <f:facet name="title">

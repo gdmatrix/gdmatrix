@@ -73,16 +73,6 @@
   </ui:define>
 
   <ui:define name="object">  
-    <script>
-      function onTabShow()
-      {
-        var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0)
-        {
-          updateResults();
-        }
-      }
-    </script>
     <p:remoteCommand name="updateResults"
                      action="#{reportFinderBean.update}"
                      process="@this" 
@@ -92,7 +82,7 @@
                widgetVar="searchTabs"
                activeIndex="#{reportObjectBean.searchTabSelector}"
                touchable="false"
-               onTabShow="onTabShow()">
+               onTabShow="onTabShow(#{reportObjectBean.editModeSelector})">
 
       <p:tab>
         <f:facet name="title">

@@ -126,20 +126,6 @@
   </ui:define>
 
   <ui:define name="object">
-    <script>
-      function onTabShow()
-      {
-        var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0)
-        {
-          updateList();
-        }
-        else if (activeIndex === 1)
-        {
-          updateTree();
-        }
-      }
-    </script>
     <p:remoteCommand name="updateList"
                      action="#{classFinderBean.updateList}"
                      process="@this"
@@ -154,7 +140,7 @@
                widgetVar="searchTabs"
                activeIndex="#{classObjectBean.searchTabSelector}"
                touchable="false"
-               onTabShow="onTabShow()">
+               onTabShow="onTabShow(#{classObjectBean.editModeSelector}, updateList, updateTree)">
 
       <p:tab>
         <f:facet name="title">
