@@ -258,11 +258,12 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   public List<SelectItem> getSelectItems(String query, String typeId,
     boolean addNavigatorItems, boolean sorted)
   {
-    return getSelectItems(query, typeId, addNavigatorItems, sorted, 0);
+    return getSelectItems(query, typeId, addNavigatorItems, sorted, 0, true);
   }
 
   public List<SelectItem> getSelectItems(String query, String typeId,
-    boolean addNavigatorItems, boolean sorted, int maxResults)
+    boolean addNavigatorItems, boolean sorted, int maxResults, 
+    boolean addNonInstantiable)
   {
     List<SelectItem> items = new ArrayList<>();
 
@@ -284,7 +285,8 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
           org.santfeliu.dic.Type superType = derived.getSuperType();
           if (superType != null)
             typePath = superType.formatTypePath(false, true, false, typeId);
-          items.add(new SelectItem(objectId, description, typePath));
+          if (addNonInstantiable || derived.isInstantiable())
+            items.add(new SelectItem(objectId, description, typePath));
           if (maxResults > 0 && items.size() >= maxResults) break;
         }
       }
@@ -303,8 +305,10 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
           TypeCache.getInstance().getType(t.getTypeId());         
         org.santfeliu.dic.Type superType = type.getSuperType();
         if (superType != null)
-          typePath = superType.formatTypePath(false, true, false, typeId);        
-        items.add(new SelectItem(objectId, description, typePath));
+          typePath = superType.formatTypePath(false, true, false, typeId); 
+        if (addNonInstantiable || t.isInstantiable())        
+          items.add(new SelectItem(objectId, description, typePath));
+        if (maxResults > 0 && items.size() >= maxResults) break;
       }
     }
 

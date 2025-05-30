@@ -30,7 +30,6 @@
  */
 package org.santfeliu.webapp.composite;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -47,8 +46,6 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 import org.primefaces.event.SelectEvent;
-import org.santfeliu.dic.Type;
-import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
@@ -69,36 +66,10 @@ public class TypeReferenceBean extends ObjectReferenceBean
     String typeId = getTypeId();
     boolean showNavigatorItems = isShowNavigatorItems();
 
-    int maxResults = getMaxResults();
-
-    List<SelectItem> auxSelectItems = typeTypeBean.getSelectItems(
-      query, typeId, showNavigatorItems, true, maxResults);
-
-    if (!isShowNonInstantiableItems())
-    {     
-      selectItems = new ArrayList();
-      TypeCache typeCache = TypeCache.getInstance();
-      for (SelectItem item : auxSelectItems)
-      {
-        String label = item.getLabel();
-        if (label.equalsIgnoreCase("<hr>"))
-          selectItems.add(item);
-        else
-        {
-          String auxTypeId = (String)item.getValue();
-          Type type = typeCache.getType(auxTypeId);
-          if (type != null && type.isInstantiable())
-          {
-            selectItems.add(item);
-          }
-        }
-      }
-    }
-    else
-    {
-      selectItems = auxSelectItems;
-    }
-    
+    selectItems = typeTypeBean.getSelectItems(
+      query, typeId, showNavigatorItems, true, getMaxResults(), 
+      isShowNonInstantiableItems());
+  
     String objectId = WebUtils.getValue("#{cc.attrs.value}");
     if (!StringUtils.isBlank(objectId))
     {
