@@ -8,11 +8,9 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
 
-  <p:outputPanel id="cnt" 
-                 styleClass="app_content"
-                 style="max-width:#{userSessionBean.selectedMenuItem.properties.maxWidth};">
+  <p:outputPanel id="cnt" styleClass="app_content">
     
-    <div class="nav_path_panel flex flex-row align-items-center flex-shrink-0">
+    <div class="nav_path_panel flex flex-row align-items-center flex-shrink-0 p-2">
       <p:outputPanel id="nav_path"
                      class="nav_path flex-grow-1">
         <ui:repeat value="#{userSessionBean.selectedMenuItem.cursorPath}" var="item" offset="1">
@@ -35,7 +33,7 @@
                      styleClass="flex-grow-0 side_menu_panel dialog_panel"
                      rendered="#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible != 'false'}">
 
-        <div class="p-2 font-bold">#{userSessionBean.selectedMenuItem.parent.parent.label}</div> 
+        <div class="p-2 font-bold" style="color:var(--text-color);font-size: 14px">#{userSessionBean.selectedMenuItem.parent.parent.label}</div> 
 
         <sf:treeMenu id="side_menu" var="item" expandDepth="3" styleClass="side_menu"
                      expandSelected="true"

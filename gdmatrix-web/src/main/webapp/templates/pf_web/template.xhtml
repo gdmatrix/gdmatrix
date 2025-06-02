@@ -19,10 +19,15 @@
 
     <div class="flex flex-column h-full overflow-hidden">
       <ui:include src="header.xhtml"></ui:include>
-      <div class="content_footer">
-        <ui:include src="content.xhtml"></ui:include>
-        <ui:include src="footer.xhtml"></ui:include>
-      </div>      
+      <div class="flex content_assistant">
+        <div class="content_footer flex-grow-1">
+          <ui:include src="content.xhtml"></ui:include>
+          <ui:include src="footer.xhtml"></ui:include>
+        </div>
+        <div class="assistant_panel hidden">
+          <ui:include src="/pages/assistant/assistant_panel.xhtml"></ui:include>
+        </div>
+      </div>
     </div>
 
     <p:ajaxStatus onstart="showOverlay()" onsuccess="hideOverlay()" delay="2000" />
