@@ -40,7 +40,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -97,12 +99,16 @@ public class ThreadsBean extends WebBean implements Serializable
 
   public Thread getThread()
   {
+    if (thread == null)
+    {
+      createThread();
+    }
     return thread;
   }
 
   public String getThreadId()
   {
-    return thread.getThreadId();
+    return getThread().getThreadId();
   }
 
   public String getThreadLink()
@@ -118,7 +124,7 @@ public class ThreadsBean extends WebBean implements Serializable
 
   public List<ChatMessage> getMessages()
   {
-    return thread.getMessages();
+    return getThread().getMessages();
   }
 
   public List<ThreadSummary> getThreads()
@@ -351,7 +357,7 @@ public class ThreadsBean extends WebBean implements Serializable
         @Override
         public void onError(Throwable t)
         {
-          queue.push(t.toString());
+          queue.push(getErrorObject(t));
           queue.push(0);
         }
       });
@@ -454,6 +460,19 @@ public class ThreadsBean extends WebBean implements Serializable
     }
     ThreadStore threadStore = ThreadStore.getInstance(userId);
     return threadStore;
+  }
+
+  private Map<String, String> getErrorObject(Throwable t)
+  {
+    Throwable cause = t.getCause();
+    if (cause != null)
+    {
+      t = cause;
+    }
+    Map error = new HashMap<>();
+    error.put("type", "ERROR");
+    error.put("text", t.toString());
+    return error;
   }
 
   private void pushMessage(StreamQueue queue, ChatMessage message,

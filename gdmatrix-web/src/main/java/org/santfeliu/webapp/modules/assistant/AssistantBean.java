@@ -110,11 +110,15 @@ public class AssistantBean extends WebBean implements Serializable
 
   public String getAssistantId()
   {
-    return assistant.getAssistantId();
+    return getAssistant().getAssistantId();
   }
 
   public Assistant getAssistant()
   {
+    if (assistant == null)
+    {
+      initAssistant();
+    }
     return assistant;
   }
 
@@ -219,32 +223,15 @@ public class AssistantBean extends WebBean implements Serializable
       }
     }
 
-    String assistantId =
-      UserSessionBean.getCurrentInstance().getSelectedMenuItem()
-        .getProperty(ASSISTANTID_PROPERTY);
-    if (assistantId != null)
-    {
-      try
-      {
-        assistant = getAssistantStore().loadAssistant(assistantId);
-      }
-      catch (Exception ex)
-      {
-        createAssistant();
-        error(ex);
-      }
-    }
-    else
-    {
-      createAssistant();
-    }
+    initAssistant();
+
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
   }
 
   public String getContent()
   {
-    return "/pages/assistant/" + view + ".xhtml";
+    return "/pages/assistant/assistant_panel.xhtml";
   }
 
   public String getView()
@@ -294,5 +281,28 @@ public class AssistantBean extends WebBean implements Serializable
 
     String writeRoleId = (String)assistant.getWriteRoleId();
     return userSessionBean.isUserInRole(writeRoleId);
+  }
+
+  void initAssistant()
+  {
+    String assistantId =
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem()
+        .getProperty(ASSISTANTID_PROPERTY);
+    if (assistantId != null)
+    {
+      try
+      {
+        assistant = getAssistantStore().loadAssistant(assistantId);
+      }
+      catch (Exception ex)
+      {
+        createAssistant();
+        error(ex);
+      }
+    }
+    else
+    {
+      createAssistant();
+    }
   }
 }

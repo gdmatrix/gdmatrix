@@ -26,7 +26,7 @@
         <li>
           <p:commandLink action="#{assistantBean.changeAssistant(assistant.assistantId)}"
                          process="@this" 
-                         update="#{assistantBean.view == 'threads' ? '@form:cnt:assistants_dialog @form:cnt:assistant_toolbar' : '@form:cnt'}" 
+                         update="#{assistantBean.view == 'threads' ? '@parent:@parent:assistants_dialog @parent:@parent:assistant_toolbar' : '@parent:@parent:@parent'}" 
                          styleClass="block"
                          oncomplete="if (scrollMessages) scrollMessages()">
             #{assistant.name}

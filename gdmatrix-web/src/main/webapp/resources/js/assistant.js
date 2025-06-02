@@ -6,12 +6,12 @@ if (typeof markdownConverter === "undefined")
 }
 
 function updateSendButton()
-{  
+{
   var text = PF("textarea").getJQ().val().trim();
   var sendButton = PF("sendButton");
-  
+
   var waiting = document.querySelector(".dot-typing") ? true : false;  
- 
+
   if (text.length === 0 || waiting)
   {
     sendButton.disable();
@@ -98,11 +98,13 @@ function sendMessage()
 
 async function showResponse(threadId)
 {
+  const listElem = getMessageList();
+  if (!listElem) return;
+
   var response = await fetch("/stream/" + threadId);
   var queue = await response.json();
   var end = false;
 
-  const listElem = getMessageList();
   let markdownElem;
   let htmlElem;
 
@@ -130,7 +132,7 @@ async function showResponse(threadId)
       end = true;
     }
     else if (item === 1) // start AI response
-    {      
+    {
       var itemElem = createMessage("AI");  
       listElem.appendChild(itemElem);
       markdownElem = itemElem.querySelector(".markdown");  
@@ -162,12 +164,12 @@ async function showResponse(threadId)
   }
 }
 
-function showPanel()
+function showThreadsPanel()
 {
-  var panel = PF("threadsPanel");
-  panel.show();
-  panel.getJQ().css("display", "flex");
-  panel.getJQ().removeClass("first_time");
+  var threadsPanel = PF("threadsPanel");
+  threadsPanel.show();
+  threadsPanel.getJQ().css("display", "flex");
+  threadsPanel.getJQ().removeClass("first_time");
 
   var threadsPanelButton = PF("threadsPanelButton");
   threadsPanelButton.getJQ().css("display", "none");
@@ -176,10 +178,10 @@ function showPanel()
   return false;
 }
 
-function closePanel()
+function closeThreadsPanel()
 {
-  var panel = PF("threadsPanel");
-  panel.close();
+  var threadsPanel = PF("threadsPanel");
+  threadsPanel.close();
 
   var threadsPanelButton = PF("threadsPanelButton");
   threadsPanelButton.getJQ().css("display", "inline");
@@ -187,17 +189,18 @@ function closePanel()
   return false;
 }
 
-function endPanel()
+function endThreadsPanel()
 {
   if (700 > window.innerWidth)
   {
-    closePanel();
+    closeThreadsPanel();
   }
 }
 
 function getMessageList()
 {
   var messageList = document.querySelector(".message_list");
+  if (!messageList) return;
   var listElem = messageList.firstElementChild;
   if (!listElem)
   {

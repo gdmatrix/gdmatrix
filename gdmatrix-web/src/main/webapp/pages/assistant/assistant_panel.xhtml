@@ -1,0 +1,27 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <h:outputStylesheet library="css" name="assistant.css" />
+  <h:outputScript library="js" name="showdown.js" />
+  <h:outputScript library="js" name="assistant.js" />
+  
+  <h:panelGroup layout="block" id="assistant_panel" styleClass="flex flex-column h-full assistant_container">
+    <ui:include src="/pages/assistant/#{assistantBean.view}.xhtml" />  
+    <ui:include src="/pages/assistant/assistants_dialog.xhtml" />
+  </h:panelGroup>
+
+  <gdm:saveBean value="threadsBean" />
+  <gdm:saveBean value="assistantBean" />
+  
+  <script>
+    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    document.title = "#{userSessionBean.selectedMenuItem.label}";
+  </script>
+  
+</ui:composition>

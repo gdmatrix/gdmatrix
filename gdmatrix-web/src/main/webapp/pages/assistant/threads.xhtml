@@ -8,10 +8,6 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <h:outputStylesheet library="css" name="assistant.css" />
-  <h:outputScript library="js" name="showdown.js" />
-  <h:outputScript library="js" name="assistant.js" />
-
   <div class="flex flex-column h-full">
     <h:panelGroup layout="block" id="assistant_toolbar"
          styleClass="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
@@ -20,7 +16,7 @@
         <p:commandButton title="#{assistantBundle.assistants}"
                          icon="pi pi-ellipsis-v"
                          oncomplete="PF('assistantsDialog').show()"
-                         styleClass="rounded-button ui-button-flat flex-shrink-0"
+                         styleClass="ui-button-flat flex-shrink-0"
                          process="@this" update="assistants_dialog" />
         <span class="flex-grow-1 font-bold pl-1">#{assistantBean.assistant.name}</span>
       </div>
@@ -29,7 +25,7 @@
                          action="#{assistantBean.setView('assistant')}"
                          icon="pi pi-cog"
                          rendered="#{assistantBean.isAssistantEditable()}"
-                         process="@form:cnt" update="@form:cnt" />
+                         process="assistant_panel" update="assistant_panel" />
       </div>
     </h:panelGroup>
 
@@ -50,12 +46,12 @@
           <div class="flex-grow-0 py-2 text-center">
             <p:commandButton icon="pi pi-save" 
                              action="#{threadsBean.endEdition}" 
-                             process="@this @form:cnt:json_editor" update="@form:cnt"
+                             process="@this @form:cnt:json_editor" update="assistant_panel"
                              value="#{objectBundle.store}" 
                              styleClass="mr-2" />
             <p:commandButton icon="pi pi-times" 
                              action="#{threadsBean.cancelEdition}"
-                             process="@this" update="@form:cnt"
+                             process="@this" update="assistant_panel"
                              value="#{objectBundle.cancel}" />
           </div>  
         </div>
@@ -67,7 +63,7 @@
 
         <h:panelGroup id="floating_bar" layout="block"
                       styleClass="absolute top-0 right-0 p-2 flex surface-0 border-round">
-            <p:selectBooleanButton value="#{threadsBean.debugEnabled}" styleClass="mini"
+            <p:selectBooleanButton value="#{threadsBean.debugEnabled}" styleClass="mini white-space-nowrap"
                                    onIcon="fa fa-bug" offIcon="fa fa-bug"
                                    onLabel="Debug on" offLabel="Debug off"
                                    rendered="#{assistantBean.isAssistantEditable()}"> 
@@ -76,7 +72,7 @@
             <p:commandButton action="#{threadsBean.setEditionEnabled(true)}" 
                              styleClass="ml-2 mini"
                              icon="pi pi-pencil" value="#{objectBundle.edit}"
-                             process="@this" update="@form:cnt"
+                             process="@this" update="assistant_panel"
                              rendered="#{assistantBean.isAssistantEditable()}" /> 
             <p:commandButton id="info" 
                              rendered="#{threadsBean.thread.isPersistent()}"
@@ -102,14 +98,14 @@
                              icon="pi pi-plus-circle"
                              rendered="#{threadsBean.thread.isPersistent()}"
                              styleClass="white-space-nowrap mini ml-2"
-                             process="@form:cnt" update="@form:cnt" />
+                             process="assistant_panel" update="assistant_panel" />
             <p:commandButton value="#{objectBundle.delete}"
                              title="#{objectBundle.delete}"
                              action="#{threadsBean.deleteThread}"
                              rendered="#{threadsBean.thread.isPersistent()}"
                              icon="pi pi-trash"
                              styleClass="ml-2 white-space-nowrap mini"
-                             process="@form:cnt" update="@form:cnt">
+                             process="assistant_panel" update="assistant_panel">
               <p:confirm header="#{objectBundle.delete}"
                          message="#{assistantBundle.deleteThread}"
                          icon="pi pi-info-circle" />
@@ -117,7 +113,7 @@
             <p:button value="#{assistantBundle.threads}"
                       title="#{assistantBundle.threads}"
                       widgetVar="threadsPanelButton"
-                      onclick="return showPanel()"
+                      onclick="return showThreadsPanel()"
                       icon="fa fa-comment-dots"
                       styleClass="ml-2 mini white-space-nowrap threads_panel_button first_time" />
         </h:panelGroup>
@@ -149,17 +145,18 @@
                       oncomplete="PF('fileUpload').getJQ().css('display','none');updateSendButton();scrollMessages()"
                       global="false" />
 
-        <h:panelGroup id="input_panel"
-                      styleClass="flex-grow-0 flex-shrink-0 flex pt-0" layout="block">
+        <h:panelGroup id="input_panel" layout="block"
+                      styleClass="flex-grow-0 flex-shrink-0 flex pt-0" 
+                      style="max-height:40%">
           <p:inputTextarea id="question" value="#{threadsBean.text}"
                            pt:spellcheck="false"
                            widgetVar="textarea"
                            onkeyup="updateSendButton()"
-                           styleClass="w-full" rows="3"
+                           styleClass="w-full" style="max-height:100%" rows="3"
                            placeholder="#{threadsBean.inputPlaceholder}" />
           <div class="flex flex-column">
             <p:commandButton action="#{threadsBean.sendMessage()}"
-                             process="@form:cnt" 
+                             process="assistant_panel" 
                              update="question threads_panel uploaded_file floating_bar"
                              widgetVar="sendButton"
                              title="#{objectBundle.send}"
@@ -174,7 +171,10 @@
                              icon="pi pi-paperclip" styleClass="ui-button-outlined mt-1 ml-2" />
           </div>
         </h:panelGroup>
-
+        
+        <script>
+          jQuery(document).ready(() => updateSendButton());
+        </script>
       </h:panelGroup>
       
 
@@ -184,7 +184,7 @@
           <i class="fa fa-comment-dots vertical-align-middle m-1"></i>
 
           <span>#{assistantBundle.threads}</span>
-          <p:commandLink onclick="return closePanel();"
+          <p:commandLink onclick="return closeThreadsPanel();"
                          class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
             <span class="ui-icon ui-icon-closethick"></span>
           </p:commandLink>
@@ -194,9 +194,9 @@
             <li class="p-2 #{threadsBean.threadId == thread.threadId ? 'current' : ''}">
               <p:commandLink action="#{threadsBean.changeThread(thread.threadId)}"
                              process="@this"
-                             update="@form:cnt"
+                             update="@parent:@parent:assistant_panel"
                              styleClass="flex flex-column no-underline"
-                             oncomplete="endPanel();">
+                             oncomplete="endThreadsPanel();">
                 
                 <h:outputText value="#{thread.dateTime}" styleClass="time"
                               converter="DateTimeConverter" /> 
@@ -210,24 +210,15 @@
     </div>
   </div>
 
-  <ui:include src="/pages/assistant/assistants_dialog.xhtml" />
-
-  <gdm:saveBean value="threadsBean" />
-  <gdm:saveBean value="assistantBean" />
-
   <script>
     var aiLabel = "#{assistantBundle.assistant}";
     var userLabel = "#{assistantBundle.you}";
     
-    jQuery(document).ready(() => updateSendButton());
-
     if (window.assistantResizeDetection === undefined)
     {
       window.addEventListener("resize", scrollMessages);
       window.assistantResizeDetection = true;
     }
-    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-    document.title = "#{userSessionBean.selectedMenuItem.label}";
-  </script>
-    
+  </script>  
+  
 </ui:composition>

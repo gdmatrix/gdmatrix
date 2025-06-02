@@ -7,8 +7,6 @@
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org">
 
-  <h:outputStylesheet library="css" name="assistant.css" />
-
   <div class="flex flex-column h-full overflow-x-hidden">
     <h:panelGroup layout="block" id="assistant_toolbar"
          class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
@@ -28,35 +26,35 @@
                            action="#{assistantBean.setView('threads')}"
                            icon="fa fa-comment-dots"
                            styleClass="mini"
-                           process="@form:cnt" update="@form:cnt" />
+                           process="assistant_panel" update="assistant_panel" />
           <p:commandButton value="#{objectBundle.create}"
                            title="#{objectBundle.create}"
                            action="#{assistantBean.createAssistant}"
                            icon="pi pi-plus-circle"
                            styleClass="mini"
                            rendered="#{assistantBean.isAdminUser()}"
-                           process="@this" update="@form:cnt" />
+                           process="@this" update="assistant_panel" />
           <p:commandButton value="#{objectBundle.reload}"
                            title="#{objectBundle.reload}"
                            action="#{assistantBean.reloadAssistant}"
                            icon="pi pi-refresh"
                            styleClass="mini"
                            rendered="#{assistantBean.isAssistantEditable()}"
-                           process="@this" update="@form:cnt" />
+                           process="@this" update="assistant_panel" />
           <p:commandButton value="#{objectBundle.store}"
                            title="#{objectBundle.store}"
                            action="#{assistantBean.saveAssistant}"
                            icon="pi pi-save"
                            styleClass="mini"
                            rendered="#{assistantBean.isAssistantEditable()}"
-                           process="@form:cnt" update="@form:cnt" />
+                           process="assistant_panel" update="assistant_panel" />
           <p:commandButton value="#{objectBundle.delete}"
                            title="#{objectBundle.delete}"
                            action="#{assistantBean.deleteAssistant}"
                            icon="pi pi-trash"
                            styleClass="mini"
                            rendered="#{assistantBean.isAssistantEditable()}"
-                           process="@this" update="@form:cnt">
+                           process="@this" update="assistant_panel">
             <p:confirm header="#{objectBundle.delete}"
                        message="#{assistantBundle.deleteAssistant}"
                        icon="pi pi-info-circle" />
@@ -94,31 +92,14 @@
           </f:facet>
           <ui:include src="/pages/assistant/assistant_tools.xhtml" />
         </p:tab>
-        <!--
-        <p:tab>
-          <f:facet name="title">
-            <span class="pi pi-copy mr-2"/>#{assistantBundle.files}
-          </f:facet>
-          <ui:include src="/pages/assistant/assistant_files.xhtml" />
-        </p:tab>
-        -->
       </p:tabView>
     </div>
   </div>
 
-  <ui:include src="/pages/assistant/assistants_dialog.xhtml" />
-
-  <gdm:saveBean value="threadsBean" />
-  <gdm:saveBean value="assistantBean" />
   <gdm:saveBean value="assistantToolsBean" />
 
   <p:growl for="growl" life="1500" >
     <p:autoUpdate />
   </p:growl>
-
-  <script>
-    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-    document.title = "#{userSessionBean.selectedMenuItem.label}";
-  </script>
 
 </ui:composition>

@@ -21,7 +21,7 @@
                          alt="#{objectBundle.add}" title="#{objectBundle.add}"
                          styleClass="rounded-button ui-button-flat"
                          process="@this"
-                         update="@form:cnt:assistant_tabs:assistant_tools_dialog"
+                         update="@parent:@parent:@parent:assistant_tabs:assistant_tools_dialog"
                          resetValues="true"
                          oncomplete="PF('assistantToolsDialog').show()" />
       </div>
@@ -43,7 +43,7 @@
                        alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                        styleClass="rounded-button ui-button-flat"
                        process="@this"
-                       update="@form:cnt:assistant_tabs:assistant_tools_dialog"
+                       update="@parent:@parent:@parent:assistant_tabs:assistant_tools_dialog"
                        resetValues="true"
                        oncomplete="PF('assistantToolsDialog').show()"
                        />
@@ -137,7 +137,7 @@
                        action="#{assistantToolsBean.acceptTool}"
                        styleClass="m-1" value="#{objectBundle.accept}"
                        icon="pi pi-check"
-                       process="@form:cnt:assistant_tabs:assistant_tools_dialog"
+                       process="@parent:@parent:@parent:assistant_tabs:assistant_tools_dialog"
                        update="assistant_tools_panel assistant_tools_table"
                        oncomplete="closePFDialog('assistantToolsDialog')"
                        />
@@ -145,7 +145,7 @@
                        styleClass="m-1" value="#{objectBundle.cancel}"
                        icon="pi pi-times"
                        process="@this"
-                       update="@form:cnt:assistant_tabs:assistant_tools_dialog" global="false"
+                       update="@parent:@parent:@parent:assistant_tabs:assistant_tools_dialog" global="false"
                        onclick="PF('assistantToolsDialog').hide()" />
     </f:facet>
 
