@@ -50,11 +50,13 @@ import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.webapp.DataTableRowExportable;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.RowsExportHelper;
 import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
@@ -80,7 +82,8 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 @Named
 @RequestScoped
-public class CaseCasesTabBean extends TabBean
+public class CaseCasesTabBean extends TabBean  
+  implements DataTableRowExportable
 {
   private static final String TYPEID1_PROPERTY = "typeId1";
   private static final String TYPEID2_PROPERTY = "typeId2";
@@ -286,6 +289,7 @@ public class CaseCasesTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  @Override
   public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -295,11 +299,30 @@ public class CaseCasesTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  @Override
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
+  
+  @Override
+  public List<? extends DataTableRow> getExportableRows() 
+  {
+    return getCurrentTabInstance().rowsFilterHelper.getFilteredRows();    
+  }
 
+  @Override
+  public int getRowExportLimit()
+  {
+    return RowsExportHelper.getActiveEditTabRowExportLimit(caseObjectBean);
+  }
+  
+  @Override
+  public boolean isExportable()
+  {
+    return RowsExportHelper.isActiveEditTabExportable(caseObjectBean);
+  } 
+  
   public CaseCase getEditing()
   {
     return editing;

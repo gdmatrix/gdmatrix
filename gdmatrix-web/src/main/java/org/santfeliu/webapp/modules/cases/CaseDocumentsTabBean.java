@@ -64,12 +64,14 @@ import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
 import static org.santfeliu.faces.matrixclient.model.DocMatrixClientModels.DOCTYPES_PARAMETER;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.webapp.BaseBean;
+import org.santfeliu.webapp.DataTableRowExportable;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
+import org.santfeliu.webapp.helpers.RowsExportHelper;
 import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
@@ -93,7 +95,8 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 @Named
 @RequestScoped
-public class CaseDocumentsTabBean extends TabBean
+public class CaseDocumentsTabBean extends TabBean  
+  implements DataTableRowExportable
 {
   public static final String UNLINK = "unlink";
   public static final String REMOVE = "remove";
@@ -390,6 +393,7 @@ public class CaseDocumentsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  @Override
   public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -399,11 +403,30 @@ public class CaseDocumentsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  @Override
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
 
+  @Override
+  public List<? extends DataTableRow> getExportableRows() 
+  {
+    return getCurrentTabInstance().rowsFilterHelper.getFilteredRows();    
+  }  
+
+  @Override
+  public int getRowExportLimit()
+  {
+    return RowsExportHelper.getActiveEditTabRowExportLimit(caseObjectBean);
+  }
+  
+  @Override
+  public boolean isExportable()
+  {
+    return RowsExportHelper.isActiveEditTabExportable(caseObjectBean);
+  }
+  
   @Override
   public void load()
   {

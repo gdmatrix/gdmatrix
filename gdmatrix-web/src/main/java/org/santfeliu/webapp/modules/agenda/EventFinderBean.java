@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
@@ -65,12 +66,15 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.exporters.CSVDataTableRowsExporter;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.DataTableRowExportable;
+import org.santfeliu.webapp.helpers.RowsExportHelper;
 
 /**
  *
@@ -78,7 +82,8 @@ import org.santfeliu.webapp.util.DataTableRow;
  */
 @Named
 @RequestScoped
-public class EventFinderBean extends FinderBean
+public class EventFinderBean extends FinderBean 
+  implements DataTableRowExportable
 {
   private static final DateTimeFormatter HOUR_FORMATTER =
     DateTimeFormatter.ofPattern("HHmmss");
@@ -119,6 +124,12 @@ public class EventFinderBean extends FinderBean
   @Inject
   TypeTypeBean typeTypeBean;
 
+  @PostConstruct
+  public void init()
+  {
+    CSVDataTableRowsExporter.register();
+  }  
+  
   @Override
   public ObjectBean getObjectBean()
   {
@@ -174,6 +185,7 @@ public class EventFinderBean extends FinderBean
     this.formSelector = formSelector;
   }
 
+  @Override
   public List<TableProperty> getTableProperties()
   {
     try
@@ -190,11 +202,38 @@ public class EventFinderBean extends FinderBean
     }
   }
 
+  @Override
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
 
+  @Override
+  public List<? extends DataTableRow> getExportableRows()
+  {
+    if (rows.size() <= getPageSize())
+    {
+      return rows;
+    }
+    else
+    {      
+      filter.setSecurityMode(getSecurityMode());
+      return ((BigList)rows).getElements(0, Integer.MAX_VALUE);
+    }
+  }
+
+  @Override
+  public int getRowExportLimit()
+  {
+    return RowsExportHelper.getActiveSearchTabRowExportLimit(eventObjectBean);
+  }
+  
+  @Override
+  public boolean isExportable()
+  {
+    return RowsExportHelper.isActiveSearchTabExportable(eventObjectBean);
+  }
+  
   public int getFirstRow()
   {
     return firstRow;
@@ -708,17 +747,7 @@ public class EventFinderBean extends FinderBean
       else
       {
         eventModel = null; //reload schedule events
-        String securityMode = getProperty(SECURITY_MODE_PROPERTY);
-        if (securityMode != null && 
-          (!StringUtils.isBlank(filter.getRoomId()) ||
-          !StringUtils.isBlank(filter.getPersonId())))
-        {
-          SecurityMode sm = SecurityMode.valueOf(securityMode.toUpperCase());
-          filter.setSecurityMode(sm);
-        }
-        else
-          filter.setSecurityMode(SecurityMode.FILTERED);
-        
+        filter.setSecurityMode(getSecurityMode());
         rows = new BigList(2 * getPageSize() + 1, getPageSize())
         {
           @Override
@@ -842,17 +871,7 @@ public class EventFinderBean extends FinderBean
 
   private ScheduleModel loadEventModel()
   {
-    String securityMode = getProperty(SECURITY_MODE_PROPERTY);
-    if (securityMode != null && 
-      (!StringUtils.isBlank(filter.getRoomId()) ||
-      !StringUtils.isBlank(filter.getPersonId())))
-    {
-      SecurityMode sm = SecurityMode.valueOf(securityMode.toUpperCase());
-      filter.setSecurityMode(sm);
-    }
-    else
-      filter.setSecurityMode(SecurityMode.FILTERED);
-    
+    filter.setSecurityMode(getSecurityMode());
     eventModel = new LazyScheduleModel()
     {
       @Override
@@ -1017,7 +1036,19 @@ public class EventFinderBean extends FinderBean
     String paramValue = getFacesContext().getExternalContext().
       getRequestParameterMap().get(paramName);
     return TextUtils.parseUserDate(paramValue, "yyyy-MM-dd'T'HH:mm:ssXXX");    
-  }  
+  }
+
+  private SecurityMode getSecurityMode()
+  {
+    String securityMode = getProperty(SECURITY_MODE_PROPERTY);
+    if (securityMode != null && 
+      (!StringUtils.isBlank(filter.getRoomId()) ||
+      !StringUtils.isBlank(filter.getPersonId())))
+    {
+      return SecurityMode.valueOf(securityMode.toUpperCase());      
+    }
+    else return SecurityMode.FILTERED;
+  }
 
   public class EventDataTableRow extends DataTableRow
   {

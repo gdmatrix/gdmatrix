@@ -63,6 +63,7 @@ public class FixedWidthTextExporter
     if (!registered)
     {
       DataExporters.register(DataTable.class, FixedWidthTextExporter.class, "txt");
+      registered = true;
     }
   }
 

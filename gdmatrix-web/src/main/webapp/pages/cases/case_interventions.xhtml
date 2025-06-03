@@ -27,6 +27,9 @@
                  rowsPerPageTemplate="#{caseInterventionsTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true"
                  sortMode="multiple" allowUnsorting="true">
+      
+      <f:attribute name="exportableBean" value="#{caseInterventionsTabBean}" />
+    
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
           <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
@@ -42,7 +45,26 @@
                       process="@this"
                       update="case_interventions_table" />
             </p:selectOneMenu>
-          </p:outputPanel>
+          </p:outputPanel> 
+          <h:panelGroup id="csvButtonWrapper" 
+                        rendered="#{caseInterventionsTabBean.isExportable() &amp;&amp; caseInterventionsTabBean.rows != null}">
+            <p:commandButton disabled="#{caseInterventionsTabBean.exportableRows.size() &gt; caseInterventionsTabBean.rowExportLimit}" 
+                             icon="pi pi-download"
+                             styleClass="rounded-button ui-button-flat">
+              <p:dataExporter type="csv_dtr" 
+                              target="case_interventions_table" 
+                              fileName="export" />                     
+            </p:commandButton>        
+            <p:tooltip for="csvButtonWrapper" 
+                       showEffect="fade" hideEffect="fade">
+              <h:outputText rendered="#{caseInterventionsTabBean.exportableRows.size() &lt;= caseInterventionsTabBean.rowExportLimit}"
+                            value="CSV" />
+              <h:outputFormat rendered="#{caseInterventionsTabBean.exportableRows.size() &gt; caseInterventionsTabBean.rowExportLimit}"
+                              value="#{objectBundle.rowExportLimit}">
+                <f:param value="#{caseInterventionsTabBean.rowExportLimit}" />
+              </h:outputFormat>
+            </p:tooltip>
+          </h:panelGroup>          
           <p:commandButton action="#{caseInterventionsTabBean.switchInactive}"
                            icon="pi pi-eye-slash" 
                            process="@this" update="case_interventions_table"

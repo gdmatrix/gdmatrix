@@ -27,6 +27,8 @@
                  rowsPerPageTemplate="#{caseDocumentsTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true"
                  sortMode="multiple" allowUnsorting="true">
+      
+      <f:attribute name="exportableBean" value="#{caseDocumentsTabBean}" />
 
       <f:facet name="header">
         <div class="flex w-12">
@@ -58,6 +60,25 @@
               </p:selectOneMenu>
             </p:outputPanel>
           </div>
+          <h:panelGroup id="csvButtonWrapper" 
+                        rendered="#{caseDocumentsTabBean.isExportable() &amp;&amp; caseDocumentsTabBean.rows != null}">
+            <p:commandButton disabled="#{caseDocumentsTabBean.exportableRows.size() &gt; caseDocumentsTabBean.rowExportLimit}" 
+                             icon="pi pi-download"
+                             styleClass="rounded-button ui-button-flat">
+              <p:dataExporter type="csv_dtr" 
+                              target="case_documents_table" 
+                              fileName="export" />                     
+            </p:commandButton>        
+            <p:tooltip for="csvButtonWrapper" 
+                       showEffect="fade" hideEffect="fade">
+              <h:outputText rendered="#{caseDocumentsTabBean.exportableRows.size() &lt;= caseDocumentsTabBean.rowExportLimit}"
+                            value="CSV" />
+              <h:outputFormat rendered="#{caseDocumentsTabBean.exportableRows.size() &gt; caseDocumentsTabBean.rowExportLimit}"
+                              value="#{objectBundle.rowExportLimit}">
+                <f:param value="#{caseDocumentsTabBean.rowExportLimit}" />
+              </h:outputFormat>
+            </p:tooltip>
+          </h:panelGroup>                    
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseDocumentsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseDocumentsTabBean.groupableRowsHelper.switchView}"
                            process="case_documents_table"

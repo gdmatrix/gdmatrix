@@ -61,6 +61,8 @@ public class EditTab implements Serializable
   private boolean showAllTypes = false;
   private Integer pageSize;
   private List<Integer> pageSizeOptions;
+  private Boolean exportable;
+  private Integer rowExportLimit;
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -251,6 +253,26 @@ public class EditTab implements Serializable
   public void setPageSizeOptions(List<Integer> pageSizeOptions) 
   {
     this.pageSizeOptions = pageSizeOptions;
+  }
+
+  public Boolean getExportable() 
+  {
+    return exportable;
+  }
+
+  public void setExportable(Boolean exportable) 
+  {
+    this.exportable = exportable;
+  }
+
+  public Integer getRowExportLimit() 
+  {
+    return rowExportLimit;
+  }
+
+  public void setRowExportLimit(Integer rowExportLimit) 
+  {
+    this.rowExportLimit = rowExportLimit;
   }
 
   public String getBaseTypeId()

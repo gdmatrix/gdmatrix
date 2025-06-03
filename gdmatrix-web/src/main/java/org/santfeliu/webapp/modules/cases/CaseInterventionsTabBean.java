@@ -73,6 +73,8 @@ import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
 import org.santfeliu.webapp.util.RowStyleClassGenerator;
 import org.santfeliu.webapp.util.WebUtils;
+import org.santfeliu.webapp.DataTableRowExportable;
+import org.santfeliu.webapp.helpers.RowsExportHelper;
 
 /**
  *
@@ -80,7 +82,8 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 @Named
 @RequestScoped
-public class CaseInterventionsTabBean extends TabBean
+public class CaseInterventionsTabBean extends TabBean 
+  implements DataTableRowExportable
 {
   private static final String CASE_PERSON_TYPE_ID = "casePersonTypeId";
   
@@ -306,6 +309,7 @@ public class CaseInterventionsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  @Override
   public List<TableProperty> getTableProperties()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -315,11 +319,30 @@ public class CaseInterventionsTabBean extends TabBean
       return Collections.EMPTY_LIST;
   }
 
+  @Override  
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
 
+  @Override
+  public List<? extends DataTableRow> getExportableRows() 
+  {
+    return getCurrentTabInstance().rowsFilterHelper.getFilteredRows();    
+  }  
+
+  @Override
+  public int getRowExportLimit()
+  {
+    return RowsExportHelper.getActiveEditTabRowExportLimit(caseObjectBean);
+  }
+  
+  @Override
+  public boolean isExportable()
+  {
+    return RowsExportHelper.isActiveEditTabExportable(caseObjectBean);
+  }  
+  
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;

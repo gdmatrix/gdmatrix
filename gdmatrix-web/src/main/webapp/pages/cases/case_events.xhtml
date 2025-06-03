@@ -25,6 +25,8 @@
                  rowsPerPageTemplate="#{caseEventsTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true"
                  sortMode="multiple" allowUnsorting="true">
+      
+      <f:attribute name="exportableBean" value="#{caseEventsTabBean}" />
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -41,7 +43,26 @@
                       process="@this"
                       update="case_events_table" />
             </p:selectOneMenu>
-          </p:outputPanel>          
+          </p:outputPanel>
+          <h:panelGroup id="csvButtonWrapper" 
+                        rendered="#{caseEventsTabBean.isExportable() &amp;&amp; caseEventsTabBean.rows != null}">
+            <p:commandButton disabled="#{caseEventsTabBean.exportableRows.size() &gt; caseEventsTabBean.rowExportLimit}" 
+                             icon="pi pi-download"
+                             styleClass="rounded-button ui-button-flat">
+              <p:dataExporter type="csv_dtr" 
+                              target="case_events_table" 
+                              fileName="export" />                     
+            </p:commandButton>        
+            <p:tooltip for="csvButtonWrapper" 
+                       showEffect="fade" hideEffect="fade">
+              <h:outputText rendered="#{caseEventsTabBean.exportableRows.size() &lt;= caseEventsTabBean.rowExportLimit}"
+                            value="CSV" />
+              <h:outputFormat rendered="#{caseEventsTabBean.exportableRows.size() &gt; caseEventsTabBean.rowExportLimit}"
+                              value="#{objectBundle.rowExportLimit}">
+                <f:param value="#{caseEventsTabBean.rowExportLimit}" />
+              </h:outputFormat>
+            </p:tooltip>
+          </h:panelGroup>          
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseEventsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseEventsTabBean.groupableRowsHelper.switchView}"
                            process="case_events_table"

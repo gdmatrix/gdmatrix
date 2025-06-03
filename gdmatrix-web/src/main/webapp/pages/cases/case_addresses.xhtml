@@ -23,6 +23,8 @@
                  rowsPerPageTemplate="#{caseAddressesTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true"
                  sortMode="multiple" allowUnsorting="true">
+      
+      <f:attribute name="exportableBean" value="#{caseAddressesTabBean}" />
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -39,7 +41,26 @@
                       process="@this"
                       update="case_addresses_table" />
             </p:selectOneMenu>
-          </p:outputPanel>          
+          </p:outputPanel>
+          <h:panelGroup id="csvButtonWrapper" 
+                        rendered="#{caseAddressesTabBean.isExportable() &amp;&amp; caseAddressesTabBean.rows != null}">
+            <p:commandButton disabled="#{caseAddressesTabBean.exportableRows.size() &gt; caseAddressesTabBean.rowExportLimit}" 
+                             icon="pi pi-download"
+                             styleClass="rounded-button ui-button-flat">
+              <p:dataExporter type="csv_dtr" 
+                              target="case_addresses_table" 
+                              fileName="export" />                     
+            </p:commandButton>        
+            <p:tooltip for="csvButtonWrapper" 
+                       showEffect="fade" hideEffect="fade">
+              <h:outputText rendered="#{caseAddressesTabBean.exportableRows.size() &lt;= caseAddressesTabBean.rowExportLimit}"
+                            value="CSV" />
+              <h:outputFormat rendered="#{caseAddressesTabBean.exportableRows.size() &gt; caseAddressesTabBean.rowExportLimit}"
+                              value="#{objectBundle.rowExportLimit}">
+                <f:param value="#{caseAddressesTabBean.rowExportLimit}" />
+              </h:outputFormat>
+            </p:tooltip>
+          </h:panelGroup>                    
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseAddressesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseAddressesTabBean.groupableRowsHelper.switchView}"
                            process="case_addresses_table"

@@ -3,9 +3,10 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:p="http://primefaces.org/ui"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
   xmlns:jsf="http://xmlns.jcp.org/jsf">
 
-  <p:dataTable value="#{eventFinderBean.rows}" var="row"
+  <p:dataTable id="event_table" value="#{eventFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{eventFinderBean.firstRow}"
@@ -16,6 +17,33 @@
                rowIndexVar="rowIndex"
                rendered="true" emptyMessage="#{objectBundle.no_data}"
                rowKey="#{row.rowId}" expandedRow="true">
+    
+    <f:attribute name="exportableBean" value="#{eventFinderBean}" />
+    
+    <f:facet name="header">
+      <p:outputPanel styleClass="text-right" 
+                     rendered="#{eventFinderBean.isExportable() &amp;&amp; eventFinderBean.rows != null}">
+        <h:panelGroup id="csvButtonWrapper">
+          <p:commandButton disabled="#{eventFinderBean.rows.size() &gt; eventFinderBean.rowExportLimit}" 
+                           icon="pi pi-download"
+                           styleClass="rounded-button ui-button-flat">
+            <p:dataExporter type="csv_dtr" 
+                            target="event_table" 
+                            fileName="export" />                     
+          </p:commandButton>        
+          <p:tooltip for="csvButtonWrapper" 
+                     showEffect="fade" hideEffect="fade">
+            <h:outputText rendered="#{eventFinderBean.rows.size() &lt;= eventFinderBean.rowExportLimit}"
+                          value="CSV" />
+            <h:outputFormat rendered="#{eventFinderBean.rows.size() &gt; eventFinderBean.rowExportLimit}"
+                            value="#{objectBundle.rowExportLimit}">
+              <f:param value="#{eventFinderBean.rowExportLimit}" />
+            </h:outputFormat>
+          </p:tooltip>                 
+        </h:panelGroup>
+      </p:outputPanel>
+    </f:facet>
+    
     <p:columns value="#{eventFinderBean.columns}" var="column"  columnIndexVar="i"
                filterable="false" sortable="false" resizable="false"
                headerText="#{applicationBean.translate(column.label)}"

@@ -4,7 +4,6 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui"
   xmlns:f="http://xmlns.jcp.org/jsf/core"
-  xmlns:gdm="http://gdmatrix.org/faces"
   xmlns:jsf="http://xmlns.jcp.org/jsf">
 
   <h:outputStylesheet library="css" name="doc.css" />      
@@ -21,6 +20,32 @@
                rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_data}"
                rowKey="#{row.rowId}" expandedRow="true">
 
+    <f:attribute name="exportableBean" value="#{documentFinderBean}" />
+    
+    <f:facet name="header">
+      <p:outputPanel styleClass="text-right" 
+                     rendered="#{documentFinderBean.isExportable() &amp;&amp; documentFinderBean.rows != null}">
+        <h:panelGroup id="csvButtonWrapper">
+          <p:commandButton disabled="#{documentFinderBean.rows.size() &gt; documentFinderBean.rowExportLimit}" 
+                           icon="pi pi-download"
+                           styleClass="rounded-button ui-button-flat">
+            <p:dataExporter type="csv_dtr" 
+                            target="document_table" 
+                            fileName="export" />                     
+          </p:commandButton>        
+          <p:tooltip for="csvButtonWrapper" 
+                     showEffect="fade" hideEffect="fade">
+            <h:outputText rendered="#{documentFinderBean.rows.size() &lt;= documentFinderBean.rowExportLimit}"
+                          value="CSV" />
+            <h:outputFormat rendered="#{documentFinderBean.rows.size() &gt; documentFinderBean.rowExportLimit}"
+                            value="#{objectBundle.rowExportLimit}">
+              <f:param value="#{documentFinderBean.rowExportLimit}" />
+            </h:outputFormat>
+          </p:tooltip>                  
+        </h:panelGroup>
+      </p:outputPanel>
+    </f:facet>
+    
     <p:columns value="#{documentFinderBean.columns}" var="column" columnIndexVar="i"
                filterable="false" sortable="false" resizable="false"                
                field="#{column.name}" styleClass="#{column.styleClass}">

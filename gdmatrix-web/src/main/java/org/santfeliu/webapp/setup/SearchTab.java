@@ -49,6 +49,8 @@ public class SearchTab
   private List<String> orderBy = new ArrayList<>();
   private List<String> orderByColumns = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
+  private Boolean exportable;
+  private Integer rowExportLimit;
 
   public SearchTab(String label, String viewId)
   {
@@ -114,6 +116,26 @@ public class SearchTab
   public PropertyMap getProperties()
   {
     return properties;
+  }
+
+  public Boolean getExportable() 
+  {
+    return exportable;
+  }
+
+  public void setExportable(Boolean exportable) 
+  {
+    this.exportable = exportable;
+  }
+
+  public Integer getRowExportLimit() 
+  {
+    return rowExportLimit;
+  }
+
+  public void setRowExportLimit(Integer rowExportLimit) 
+  {
+    this.rowExportLimit = rowExportLimit;
   }
 
 }

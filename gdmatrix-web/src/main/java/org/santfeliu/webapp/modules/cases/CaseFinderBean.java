@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,11 +48,14 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.exporters.CSVDataTableRowsExporter;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
 import org.santfeliu.webapp.util.RowStyleClassGenerator;
+import org.santfeliu.webapp.DataTableRowExportable;
+import org.santfeliu.webapp.helpers.RowsExportHelper;
 
 /**
  *
@@ -59,7 +63,7 @@ import org.santfeliu.webapp.util.RowStyleClassGenerator;
  */
 @Named
 @RequestScoped
-public class CaseFinderBean extends FinderBean
+public class CaseFinderBean extends FinderBean implements DataTableRowExportable
 {
   private String smartFilter;
   private CaseFilter filter = new CaseFilter();
@@ -68,7 +72,7 @@ public class CaseFinderBean extends FinderBean
   private boolean outdated;
   private String formSelector;
   private String sortBy;
-
+  
   @Inject
   NavigatorBean navigatorBean;
 
@@ -78,6 +82,12 @@ public class CaseFinderBean extends FinderBean
   @Inject
   CaseObjectBean caseObjectBean;
 
+  @PostConstruct
+  public void init()
+  {
+    CSVDataTableRowsExporter.register();
+  }  
+  
   @Override
   public ObjectBean getObjectBean()
   {
@@ -182,7 +192,8 @@ public class CaseFinderBean extends FinderBean
   {
     this.sortBy = sortBy;
   }
-  
+
+  @Override
   public List<TableProperty> getTableProperties()
   {
     try
@@ -199,9 +210,35 @@ public class CaseFinderBean extends FinderBean
     }
   }
 
+  @Override
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
+  }
+
+  @Override
+  public List<? extends DataTableRow> getExportableRows()
+  {
+    if (rows.size() <= getPageSize())
+    {
+      return rows;
+    }
+    else
+    {
+      return ((BigList)rows).getElements(0, Integer.MAX_VALUE);
+    }
+  }
+  
+  @Override
+  public int getRowExportLimit()
+  {
+    return RowsExportHelper.getActiveSearchTabRowExportLimit(caseObjectBean);
+  }
+  
+  @Override
+  public boolean isExportable()
+  {
+    return RowsExportHelper.isActiveSearchTabExportable(caseObjectBean);
   }
 
   public int getFirstRow()
@@ -571,5 +608,5 @@ public class CaseFinderBean extends FinderBean
       getRowStyleClassGenerator();
     return styleClassGenerator.getStyleClass(row);
   }
-
+ 
 }

@@ -24,6 +24,8 @@
                  rowsPerPageTemplate="#{casePersonsTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true"
                  sortMode="multiple" allowUnsorting="true">
+      
+      <f:attribute name="exportableBean" value="#{casePersonsTabBean}" />
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -41,7 +43,25 @@
                       update="case_persons_table" />
             </p:selectOneMenu>
           </p:outputPanel>          
-          
+          <h:panelGroup id="csvButtonWrapper" 
+                        rendered="#{casePersonsTabBean.isExportable() &amp;&amp; casePersonsTabBean.rows != null}">
+            <p:commandButton disabled="#{casePersonsTabBean.exportableRows.size() &gt; casePersonsTabBean.rowExportLimit}" 
+                             icon="pi pi-download"
+                             styleClass="rounded-button ui-button-flat">
+              <p:dataExporter type="csv_dtr" 
+                              target="case_persons_table" 
+                              fileName="export" />                     
+            </p:commandButton>        
+            <p:tooltip for="csvButtonWrapper" 
+                       showEffect="fade" hideEffect="fade">
+              <h:outputText rendered="#{casePersonsTabBean.exportableRows.size() &lt;= casePersonsTabBean.rowExportLimit}"
+                            value="CSV" />
+              <h:outputFormat rendered="#{casePersonsTabBean.exportableRows.size() &gt; casePersonsTabBean.rowExportLimit}"
+                              value="#{objectBundle.rowExportLimit}">
+                <f:param value="#{casePersonsTabBean.rowExportLimit}" />
+              </h:outputFormat>
+            </p:tooltip>
+          </h:panelGroup>                    
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{casePersonsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
                            action="#{casePersonsTabBean.groupableRowsHelper.switchView}"
                            process="case_persons_table"

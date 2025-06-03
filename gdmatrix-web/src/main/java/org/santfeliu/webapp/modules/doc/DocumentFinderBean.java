@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -54,9 +55,12 @@ import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.exporters.CSVDataTableRowsExporter;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.setup.TableProperty;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.DataTableRowExportable;
+import org.santfeliu.webapp.helpers.RowsExportHelper;
 
 /**
  *
@@ -64,7 +68,8 @@ import org.santfeliu.webapp.util.DataTableRow;
  */
 @Named
 @RequestScoped
-public class DocumentFinderBean extends FinderBean
+public class DocumentFinderBean extends FinderBean 
+  implements DataTableRowExportable
 {
   private String smartFilter;
   private DocumentFilter filter = new DocumentFilter();
@@ -84,6 +89,12 @@ public class DocumentFinderBean extends FinderBean
   @Inject
   DocumentObjectBean documentObjectBean;
 
+  @PostConstruct
+  public void init()
+  {
+    CSVDataTableRowsExporter.register();
+  }  
+  
   @Override
   public DocumentObjectBean getObjectBean()
   {
@@ -126,6 +137,7 @@ public class DocumentFinderBean extends FinderBean
     this.formSelector = formSelector;
   }
 
+  @Override
   public List<TableProperty> getTableProperties()
   {
     try
@@ -142,11 +154,42 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
+  @Override
   public List<TableProperty> getColumns()
   {
     return TablePropertyHelper.getColumnTableProperties(getTableProperties());
   }
+  
+  @Override
+  public List<? extends DataTableRow> getExportableRows()
+  {
+    if (rows.size() <= getPageSize())
+    {
+      return rows;
+    }
+    else
+    {
+      if (StringUtils.isBlank(filter.getContentSearchExpression()))
+      {
+        filter.setContentSearchExpression(null);
+      }
+      return ((BigList)rows).getElements(0, Integer.MAX_VALUE);
+    }
+  }
 
+  @Override
+  public int getRowExportLimit()
+  {
+    return RowsExportHelper.getActiveSearchTabRowExportLimit(
+      documentObjectBean);
+  }
+  
+  @Override
+  public boolean isExportable()
+  {
+    return RowsExportHelper.isActiveSearchTabExportable(documentObjectBean);
+  }
+  
   @Override
   public String getObjectId(int position)
   {

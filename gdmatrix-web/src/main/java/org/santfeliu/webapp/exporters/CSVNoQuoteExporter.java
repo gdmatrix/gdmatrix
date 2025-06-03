@@ -64,6 +64,7 @@ public class CSVNoQuoteExporter
     if (!registered)
     {
       DataExporters.register(DataTable.class, CSVNoQuoteExporter.class, "csvnq");
+      registered = true;
     }
   }
 

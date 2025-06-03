@@ -32,6 +32,7 @@ package org.santfeliu.webapp.setup;
 
 import java.io.Serializable;
 import java.util.Objects;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  *
@@ -47,14 +48,17 @@ public class TableProperty implements Serializable, Comparable<TableProperty>
   private String mode = "column";
   private String typeId;
   private boolean escape = true;
+  private String exportLabel;
+  private Boolean exportable;
   
   public TableProperty()
   {
+    this.name = RandomStringUtils.randomAlphanumeric(8);
   }
   
   public TableProperty(String name, String label)
   {
-    this.name = name;        
+    this.name = (name != null ? name : RandomStringUtils.randomAlphanumeric(8));        
     this.label = label;
   }
   
@@ -151,6 +155,26 @@ public class TableProperty implements Serializable, Comparable<TableProperty>
     this.escape = escape;
   }
 
+  public String getExportLabel() 
+  {
+    return exportLabel;
+  }
+
+  public void setExportLabel(String exportLabel) 
+  {
+    this.exportLabel = exportLabel;
+  }
+
+  public Boolean getExportable() 
+  {
+    return exportable;
+  }
+
+  public void setExportable(Boolean exportable) 
+  {
+    this.exportable = exportable;
+  }
+  
   @Override
   public int compareTo(TableProperty o)
   {

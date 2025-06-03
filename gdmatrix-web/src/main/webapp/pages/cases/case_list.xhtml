@@ -7,7 +7,7 @@
   xmlns:jsf="http://xmlns.jcp.org/jsf">
   
   <h:outputStylesheet library="css" name="cases.css" />    
-  
+
   <p:dataTable id="case_table" value="#{caseFinderBean.rows}" 
                var="row" stripedRows="true"
                paginator="true" pageLinks="5"
@@ -19,6 +19,32 @@
                rows="#{caseFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50"
                rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_data}"
                rowKey="#{row.rowId}" expandedRow="true">
+    
+    <f:attribute name="exportableBean" value="#{caseFinderBean}" />
+    
+    <f:facet name="header">
+      <p:outputPanel styleClass="text-right" 
+                     rendered="#{caseFinderBean.isExportable() &amp;&amp; caseFinderBean.rows != null}">
+        <h:panelGroup id="csvButtonWrapper">
+          <p:commandButton disabled="#{caseFinderBean.rows.size() &gt; caseFinderBean.rowExportLimit}" 
+                           icon="pi pi-download"
+                           styleClass="rounded-button ui-button-flat">
+            <p:dataExporter type="csv_dtr" 
+                            target="case_table" 
+                            fileName="export" />                     
+          </p:commandButton>
+          <p:tooltip for="csvButtonWrapper" 
+                     showEffect="fade" hideEffect="fade">
+            <h:outputText rendered="#{caseFinderBean.rows.size() &lt;= caseFinderBean.rowExportLimit}"
+                          value="CSV" />
+            <h:outputFormat rendered="#{caseFinderBean.rows.size() &gt; caseFinderBean.rowExportLimit}"
+                            value="#{objectBundle.rowExportLimit}">
+              <f:param value="#{caseFinderBean.rowExportLimit}" />
+            </h:outputFormat>
+          </p:tooltip>          
+        </h:panelGroup>          
+      </p:outputPanel>
+    </f:facet>
     
     <p:columns value="#{caseFinderBean.columns}" var="column"  columnIndexVar="i"
                filterable="false" sortable="false" resizable="false"
