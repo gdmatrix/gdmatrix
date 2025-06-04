@@ -167,6 +167,12 @@
   color: red;
 }
 
+.message .think
+{
+  color: var(--surface-500);
+  font-style: italic;
+}
+
 /*
 .message.TOOL_EXECUTION_RESULT .avatar
 {

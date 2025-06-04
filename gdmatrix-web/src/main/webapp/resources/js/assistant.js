@@ -52,7 +52,7 @@ function createMessage(role, markdown = "")
         </div>
         <div class="content mt-1">
           <div class="markdown hidden">${markdown}</div>
-          <div class="html">${markdownConverter.makeHtml(markdown)}</div>
+          <div class="html">${markdownToHtml(markdown)}</div>
         </div>
       </div>
     </div>
@@ -108,13 +108,6 @@ async function showResponse(threadId)
   let markdownElem;
   let htmlElem;
 
-  const lastItemElem = listElem.querySelector(":scope > li:last-child");
-  if (lastItemElem)
-  {
-    markdownElem = lastItemElem.querySelector(".markdown");  
-    htmlElem = lastItemElem.querySelector(".html");
-  }
-
   if (queue.length > 0)
   {
     var dotsElem = listElem.querySelector(".dot-typing"); // remove dots
@@ -122,6 +115,13 @@ async function showResponse(threadId)
     {
       dotsElem.parentElement.removeChild(dotsElem);
     }
+  }
+
+  const lastItemElem = listElem.querySelector(":scope > li:last-child");
+  if (lastItemElem)
+  {
+    markdownElem = lastItemElem.querySelector(".markdown");  
+    htmlElem = lastItemElem.querySelector(".html");
   }
 
   for (var item of queue)
@@ -141,7 +141,7 @@ async function showResponse(threadId)
     else if (typeof item === "string")
     {
       markdownElem.textContent += item;
-      htmlElem.innerHTML = markdownConverter.makeHtml(markdownElem.textContent);
+      htmlElem.innerHTML = markdownToHtml(markdownElem.textContent);
       scrollMessages();
     }
     else if (typeof item === "object") // message
@@ -162,6 +162,32 @@ async function showResponse(threadId)
   {
     setTimeout(() => showResponse(threadId), 0);
   }
+}
+
+function markdownToHtml(text)
+{
+  let html = "";
+  let index = text.indexOf("<think>");
+  if (index !== -1)
+  {
+    html = "<p class='think'><b>Thinking:</b> ";
+
+    let index2 = text.indexOf("</think>");
+    if (index2 !== -1)
+    {
+      html += text.substring(index + 7, index2) + "</p>" +
+              markdownConverter.makeHtml(text.substring(index2 + 9));    
+    }
+    else
+    {
+      html += text.substring(index + 8) + "</p>";
+    }    
+  }
+  else
+  {
+    html = markdownConverter.makeHtml(text);    
+  }
+  return html;
 }
 
 function showThreadsPanel()

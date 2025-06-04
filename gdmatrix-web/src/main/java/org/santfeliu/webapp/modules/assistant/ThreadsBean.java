@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.assistant;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
+import static dev.langchain4j.data.message.ChatMessageType.TOOL_EXECUTION_RESULT;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.output.FinishReason;
@@ -330,6 +331,10 @@ public class ThreadsBean extends WebBean implements Serializable
         {
           getMessages().add(message);
           pushMessage(queue, message, false);
+          if (message.type().equals(TOOL_EXECUTION_RESULT))
+          {
+            started = false;
+          }
         }
 
         @Override
