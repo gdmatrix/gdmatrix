@@ -358,6 +358,27 @@ public class GeoMapLegendBean extends WebBean implements Serializable
     }
   }
 
+  public void insertBaseLegend()
+  {
+    clearInsertBaseLegend(legendTreeRoot);
+
+    LegendGroup legendGroup = (LegendGroup)legendSelection.get(0).getData();
+    legendGroup.setInsertBaseLegend(true);
+  }
+
+  private void clearInsertBaseLegend(TreeNode<LegendItem> treeNode)
+  {
+    LegendItem data = treeNode.getData();
+    if (data instanceof LegendGroup)
+    {
+      LegendGroup legendGroup = (LegendGroup)data;
+      legendGroup.setInsertBaseLegend(false);
+    }
+    for (TreeNode<LegendItem> childNode : treeNode.getChildren())
+    {
+      clearInsertBaseLegend(childNode);
+    }
+  }
 
   private LegendTreeNode populateLegendItem(LegendItem legendItem,
     LegendTreeNode parentTreeNode)

@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.geo.metadata;
 
+import static java.lang.Boolean.TRUE;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class LegendGroup extends LegendItem
   String mode = MULTIPLE;
   List<LegendItem> children;
   boolean expanded = true;
+  boolean insertBaseLegend = false;
 
   public LegendGroup()
   {
@@ -59,6 +61,8 @@ public class LegendGroup extends LegendItem
     if (this.mode == null) mode = MULTIPLE;
     Object value = properties.get("expanded");
     this.expanded =  value == null || Boolean.TRUE.equals(value);
+    value = properties.get("insertBaseLegend");
+    this.insertBaseLegend = TRUE.equals(value);
     children = new ArrayList<>();
     List list = (List)properties.get("children");
     if (list != null)
@@ -83,6 +87,16 @@ public class LegendGroup extends LegendItem
   public void setMode(String mode)
   {
     this.mode = mode;
+  }
+
+  public boolean isInsertBaseLegend()
+  {
+    return insertBaseLegend;
+  }
+
+  public void setInsertBaseLegend(boolean insertBaseLegend)
+  {
+    this.insertBaseLegend = insertBaseLegend;
   }
 
   public List<LegendItem> getChildren()

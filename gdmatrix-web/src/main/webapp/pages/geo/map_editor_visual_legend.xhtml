@@ -20,6 +20,9 @@
     <p:treeNode type="group" styleClass="#{geoMapLegendBean.isCutLegendNode(node) ? 'legend_cut_node' : ''}">
       <span class="pi pi-folder#{item.expanded ? '-open' : ''} mr-1"/><h:outputText value="#{item.label}"/>
       <span class="text-color border-500 border-solid border-round border-1 ml-1 p-1 code">#{item.mode}</span>
+      <ui:fragment rendered="#{node.data.insertBaseLegend}">
+        <i class="fa fa-circle-arrow-left" title="base legend insert point" />
+      </ui:fragment>  
     </p:treeNode>
 
     <p:treeNode type="layer" styleClass="#{geoMapLegendBean.isCutLegendNode(node) ? 'legend_cut_node' : ''}">
@@ -28,7 +31,7 @@
 
   </p:tree>
 
-  <p:contextMenu id="legend_menu" for="legend">
+  <p:contextMenu id="legend_menu" for="legend" styleClass="w200">
     <p:menuitem value="Edit group" action="#{geoMapLegendBean.editLegendGroup}"
                 rendered="#{geoMapLegendBean.isLegendNodeSelected('group')}"
                 update="@form:cnt:map_tabs:legend_group_dialog"
@@ -71,7 +74,9 @@
     <p:menuitem value="Remove" action="#{geoMapLegendBean.removeLegendNodes}"
                 icon="pi pi-trash" update="legend"
                 rendered="#{!geoMapLegendBean.isTopLegendNode()}" />
-
+    <p:menuitem value="Insert base legend" action="#{geoMapLegendBean.insertBaseLegend}"
+                icon="fa fa-circle-arrow-left" update="legend"
+                rendered="#{geoMapLegendBean.isLegendNodeSelected('group')}" />
   </p:contextMenu>
 
   <p:dialog id="legend_group_dialog" widgetVar="legendGroupDialog"

@@ -434,6 +434,8 @@ class LegendControl
 
     if (layerId) // layer node
     {
+      console.info("layer node " + layerId);
+      
       const layer = map.getLayer(layerId);
       if (layer.metadata === undefined) layer.metadata = {};
 
@@ -475,6 +477,10 @@ class LegendControl
       for (let childNode of node.children)
       {
         this.changeNodeVisibility(childNode, mode, sourceSet);
+      }
+      if (mode === "visible")
+      {
+        this.hideSingleLayers(node);
       }
     }
     for (let sourceId of sourceSet)

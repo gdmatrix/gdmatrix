@@ -332,20 +332,39 @@ public class StyleMetadata
     LegendGroup legendGroup = getLegend(true);
     LegendGroup impLegendGroup = other.getLegend(true);
 
+    LegendGroup legendInsertGroup = getLegendInsertGroup(legendGroup);
+    if (legendInsertGroup == null) legendInsertGroup = legendGroup;
+
     List<LegendItem> items = impLegendGroup.getChildren();
     if ("bottom".equals(position) || legendGroup.getChildren().isEmpty())
     {
-      legendGroup.getChildren().addAll(items);
+      legendInsertGroup.getChildren().addAll(items);
     }
     else
     {
       int index = 0;
       for (LegendItem item : items)
       {
-        legendGroup.getChildren().add(index, item);
+        legendInsertGroup.getChildren().add(index, item);
         index++;
       }
     }
+  }
+
+  private LegendGroup getLegendInsertGroup(LegendGroup legendGroup)
+  {
+    if (legendGroup.isInsertBaseLegend()) return legendGroup;
+    
+    for (LegendItem legendItem : legendGroup.getChildren())
+    {
+      if (legendItem instanceof LegendGroup)
+      {
+        legendGroup = (LegendGroup)legendItem;
+        legendGroup = getLegendInsertGroup(legendGroup);
+        if (legendGroup != null) return legendGroup;
+      }
+    }
+    return null;
   }
 
   private int indexOfLayer(List<Layer> layers, String layerId)
