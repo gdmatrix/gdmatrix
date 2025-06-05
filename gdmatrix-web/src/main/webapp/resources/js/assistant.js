@@ -1,10 +1,5 @@
 /* assistant.js */
 
-if (typeof markdownConverter === "undefined")
-{
-  markdownConverter = new showdown.Converter();
-}
-
 function updateSendButton()
 {
   var text = PF("textarea").getJQ().val().trim();
@@ -128,24 +123,30 @@ async function showResponse(threadId)
   {
     if (item === 0)
     {
-      updateSendButton();      
+      updateSendButton();
       end = true;
     }
-    else if (item === 1) // start AI response
+    else if (typeof item === "string") // tokens from streaming
     {
-      var itemElem = createMessage("AI");  
-      listElem.appendChild(itemElem);
-      markdownElem = itemElem.querySelector(".markdown");  
-      htmlElem = itemElem.querySelector(".html");
-    }
-    else if (typeof item === "string")
-    {
+      if (!lastItemElem.querySelector(".message.AI"))
+      {
+        var itemElem = createMessage("AI");  
+        listElem.appendChild(itemElem);
+        markdownElem = itemElem.querySelector(".markdown");  
+        htmlElem = itemElem.querySelector(".html");
+      }
       markdownElem.textContent += item;
       htmlElem.innerHTML = markdownToHtml(markdownElem.textContent);
       scrollMessages();
     }
     else if (typeof item === "object") // message
     {
+      if (lastItemElem && 
+          lastItemElem.querySelector(".message.AI .html")?.textContent?.length === 0)
+      {
+        // previous AI message is empty, remove it.
+        lastItemElem.parentElement.removeChild(lastItemElem);
+      }
       const type = item.type;
       let text = item.text;
       if (!text || type === "TOOL_EXECUTION_RESULT")
@@ -167,25 +168,35 @@ async function showResponse(threadId)
 function markdownToHtml(text)
 {
   let html = "";
-  let index = text.indexOf("<think>");
+  let index = text.lastIndexOf("<think>");
   if (index !== -1)
   {
-    html = "<p class='think'><b>Thinking:</b> ";
+    let think = "";
+    let message = "";
 
-    let index2 = text.indexOf("</think>");
-    if (index2 !== -1)
+    let index2 = text.lastIndexOf("</think>");
+    if (index2 !== -1 && index2 > index)
     {
-      html += text.substring(index + 7, index2) + "</p>" +
-              markdownConverter.makeHtml(text.substring(index2 + 9));    
+      think = text.substring(index + 7, index2);
+      message = text.substring(index2 + 8);
     }
     else
     {
-      html += text.substring(index + 8) + "</p>";
-    }    
+      think = text.substring(index + 7);
+    }
+    if (think.trim().length > 0)
+    {
+      html = "<p class='think'><b>Thinking:</b> " + think + "</p>" +
+              markdown.render(message);
+    }
+    else
+    {
+      html = markdown.render(message);    
+    }
   }
   else
   {
-    html = markdownConverter.makeHtml(text);    
+    html = markdown.render(text);    
   }
   return html;
 }

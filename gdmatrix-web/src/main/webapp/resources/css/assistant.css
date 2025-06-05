@@ -277,7 +277,15 @@
   font-weight: bold;
 }
 
+.katex
+{
+  font-size: 16px;
+}
 
+.katex span[aria-hidden=true]
+{
+  display: none;
+}
 
 @keyframes dot-typing 
 {

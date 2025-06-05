@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.assistant;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
-import static dev.langchain4j.data.message.ChatMessageType.TOOL_EXECUTION_RESULT;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.output.FinishReason;
@@ -310,16 +309,9 @@ public class ThreadsBean extends WebBean implements Serializable
 
       assistant.generate(getMessages(), new ChatMessageListener()
       {
-        boolean started = false;
-
         @Override
         public void onNext(String tokens)
         {
-          if (!started)
-          {
-            queue.push(1);
-            started = true;
-          }
           if (!StringUtils.isEmpty(tokens))
           {
             queue.push(tokens);
@@ -331,10 +323,6 @@ public class ThreadsBean extends WebBean implements Serializable
         {
           getMessages().add(message);
           pushMessage(queue, message, false);
-          if (message.type().equals(TOOL_EXECUTION_RESULT))
-          {
-            started = false;
-          }
         }
 
         @Override
