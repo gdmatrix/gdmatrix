@@ -53,6 +53,7 @@ public class CSVNoQuoteExporter
   private static boolean registered;
   private static final String SEPARATOR = ";";
   private static final String QUOTE = "\"";
+  static final String FORMAT_TAG = "$";
 
   public CSVNoQuoteExporter()
   {
@@ -93,6 +94,32 @@ public class CSVNoQuoteExporter
   protected void exportCellValue(FacesContext context, DataTable table,
     UIColumn col, String text, int index)
   {
+    String title = col.getTitle();
+    int padding = 0;
+    if (title != null)
+    {
+      int pos = title.indexOf(FORMAT_TAG);
+      if (pos != -1)
+      {
+        String spadding = title.substring(pos + FORMAT_TAG.length());
+        try
+        {
+          padding = Integer.parseInt(spadding);
+        }
+        catch (Exception ex)
+        {
+        }
+      }
+    }
+
+    if (padding > 0)
+    {
+      while (text.length() < padding)
+      {
+        text = " " + text;
+      }
+    }
+
     if (index > 0)
     {
       document.append(SEPARATOR);
