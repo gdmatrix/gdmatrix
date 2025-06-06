@@ -100,9 +100,6 @@ async function showResponse(threadId)
   var queue = await response.json();
   var end = false;
 
-  let markdownElem;
-  let htmlElem;
-
   if (queue.length > 0)
   {
     var dotsElem = listElem.querySelector(".dot-typing"); // remove dots
@@ -112,11 +109,14 @@ async function showResponse(threadId)
     }
   }
 
-  const lastItemElem = listElem.querySelector(":scope > li:last-child");
-  if (lastItemElem)
+  let markdownElem;
+  let htmlElem;
+
+  let aiMessageElem = listElem.querySelector(":scope > li:last-child .message.AI");
+  if (aiMessageElem)
   {
-    markdownElem = lastItemElem.querySelector(".markdown");  
-    htmlElem = lastItemElem.querySelector(".html");
+    markdownElem = aiMessageElem.querySelector(".markdown");  
+    htmlElem = aiMessageElem.querySelector(".html");
   }
 
   for (var item of queue)
@@ -128,11 +128,12 @@ async function showResponse(threadId)
     }
     else if (typeof item === "string") // tokens from streaming
     {
-      if (!lastItemElem.querySelector(".message.AI"))
+      if (!aiMessageElem)
       {
         var itemElem = createMessage("AI");  
         listElem.appendChild(itemElem);
-        markdownElem = itemElem.querySelector(".markdown");  
+        aiMessageElem = itemElem.querySelector(".message");
+        markdownElem = itemElem.querySelector(".markdown");
         htmlElem = itemElem.querySelector(".html");
       }
       markdownElem.textContent += item;
@@ -141,11 +142,11 @@ async function showResponse(threadId)
     }
     else if (typeof item === "object") // message
     {
-      if (lastItemElem && 
-          lastItemElem.querySelector(".message.AI .html")?.textContent?.length === 0)
+      if (htmlElem && htmlElem.textContent?.length === 0)
       {
         // previous AI message is empty, remove it.
-        lastItemElem.parentElement.removeChild(lastItemElem);
+        var itemElem = aiMessageElem.parentElement;
+        itemElem.parentElement.removeChild(itemElem);
       }
       const type = item.type;
       let text = item.text;
@@ -155,6 +156,12 @@ async function showResponse(threadId)
       }
       var itemElem = createMessage(type, text);
       listElem.appendChild(itemElem);
+      if (type === "AI")
+      {
+        aiMessageElem = itemElem.querySelector(".message");
+        markdownElem = itemElem.querySelector(".markdown");
+        htmlElem = itemElem.querySelector(".html");
+      }
       scrollMessages();
     }
   }
