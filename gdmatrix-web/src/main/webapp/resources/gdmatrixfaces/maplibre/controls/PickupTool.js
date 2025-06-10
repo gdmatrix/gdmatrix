@@ -23,6 +23,7 @@ class PickupTool extends Tool
     this.restServiceUrl = options.restServiceUrl; // the service url to send & read data
     this.referenceText = options.referenceText || "Reference"; // the reference field label 
     this.helpText = options.helpText || ""; // the tool help
+    this.sourceIdsToUpdate = options.sourceIdsToUpdate || [];
 
     this.codeSelection = new Set();
 
@@ -133,6 +134,32 @@ class PickupTool extends Tool
       body: JSON.stringify(codes)
     });
     this.resultDiv.textContent = JSON.stringify(await response.json(), null, 2);
+    
+    if (this.sourceIdsToUpdate.length > 0)
+    {
+      const map = this.map;
+      const sources = map.getStyle().sources;
+      const seed = "_seed=" + Math.random();
+  
+      for (let sourceId of this.sourceIdsToUpdate)
+      {
+        let source = sources[sourceId];
+        if (source.type === "geojson" && typeof source.data === "string")
+        {
+          let url = source.data;
+          if (url.indexOf("?") === -1)
+          {
+            url += "?" + seed;
+          }
+          else
+          {
+            url += "&" + seed;
+          }
+          console.info("Refresh " + sourceId);
+          map.getSource(sourceId).setData(url);
+        }
+      }
+    }
   }
   
   clearPickup()
@@ -148,7 +175,6 @@ class PickupTool extends Tool
     const points = [];
     
     let features = map.querySourceFeatures(this.sourceId);
-    console.info(features.length);
     for (let feat of features)
     {
       let code = String(feat.properties[this.propertyName]);
