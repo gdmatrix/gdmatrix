@@ -739,22 +739,18 @@ public abstract class ObjectBean extends BaseBean
       getSelectedMenuItem().getDirectProperty(OBJECT_SETUP_PROPERTY);
     return setupName == null;
   }
-
+  
   public boolean isRenderProperty(String propName)
   {
-    try
-    {
-      propName = "render" + StringUtils.capitalize(propName);
-      Object value = getObjectSetup().getProperties().get(propName);
-      if (value == null)
-        return true;
-      else
-        return Boolean.parseBoolean(value.toString());
-    }
-    catch (Exception ex)
-    {
-      return false;
-    }
+    boolean renderProperty = true;
+    EditTab tab = getActiveEditTab();
+    if (tab != null)
+      renderProperty = tab.isRenderProperty(propName);
+    
+    if (renderProperty)
+      renderProperty = isRenderPropertyLegacy(propName); //fallback
+
+    return renderProperty;
   }
 
   @Override
@@ -777,4 +773,22 @@ public abstract class ObjectBean extends BaseBean
     state.clear();
     actions = null;
   }
+  
+  @Deprecated
+  private boolean isRenderPropertyLegacy(String propName)
+  {
+    try
+    {
+      propName = "render" + StringUtils.capitalize(propName);
+      Object value = getObjectSetup().getProperties().get(propName);
+      if (value == null)
+        return true;
+      else
+        return Boolean.parseBoolean(value.toString());
+    }
+    catch (Exception ex)
+    {
+      return false;
+    }    
+  }  
 }

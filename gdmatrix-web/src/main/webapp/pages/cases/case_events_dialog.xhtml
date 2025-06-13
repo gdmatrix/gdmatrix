@@ -58,7 +58,7 @@
 
         <!-- Type -->
         <p:outputPanel styleClass="field col-12" 
-                       rendered="#{!caseEventsTabBean.leafBaseType}">
+                       rendered="#{!caseEventsTabBean.leafBaseType and caseObjectBean.isRenderProperty('caseEventTypeId')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseEvents_type}"
                          indicateRequired="true" />
@@ -82,12 +82,12 @@
         </p:outputPanel>
 
         <!-- Comments -->
-        <div class="field col-12">
+        <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseEvents_comments}" />
           <p:inputTextarea value="#{caseEventsTabBean.editing.comments}"
                            readonly="#{!caseObjectBean.editable}"/>
-        </div>
+        </p:outputPanel>
 
       </div>
 

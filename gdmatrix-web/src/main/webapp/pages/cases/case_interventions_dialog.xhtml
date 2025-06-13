@@ -38,7 +38,7 @@
       <div class="ui-fluid formgrid grid" >
 
         <p:outputPanel styleClass="field col-12" 
-                       rendered="#{!caseInterventionsTabBean.leafBaseType}">
+                       rendered="#{!caseInterventionsTabBean.leafBaseType and caseObjectBean.isRenderProperty('intTypeId')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_type}"
                          styleClass="w-full" indicateRequired="true" />
@@ -64,7 +64,7 @@
 
 
         <!-- Dates -->
-        <p:outputPanel styleClass="field col-12 md:col-3">
+        <p:outputPanel styleClass="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('startDate')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_startDate}"/>
           <p:datePicker value="#{caseInterventionsTabBean.startDateTime}"
@@ -76,7 +76,7 @@
                         disabled="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
-        <p:outputPanel class="field col-12 md:col-3">
+        <p:outputPanel class="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_endDate}"/>
           <p:datePicker value="#{caseInterventionsTabBean.endDateTime}"
@@ -89,7 +89,7 @@
         </p:outputPanel>
 
         <!-- Person -->
-        <p:outputPanel styleClass="field col-12 md:col-6">
+        <p:outputPanel styleClass="field col-12 md:col-6" rendered="#{caseObjectBean.isRenderProperty('personId')}">
           
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_person}"
@@ -120,7 +120,7 @@
         </p:outputPanel>
 
         <!-- Comments -->
-        <p:outputPanel class="field col-12">
+        <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_comments}" />
           <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}"

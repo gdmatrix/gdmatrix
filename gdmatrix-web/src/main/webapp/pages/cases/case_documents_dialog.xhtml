@@ -80,8 +80,7 @@
         </p:outputPanel>
 
         <!-- Volume -->
-
-        <div class="field col-12 md:col-6">
+        <p:outputPanel class="field col-12 md:col-6" rendered="#{caseObjectBean.isRenderProperty('volume')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_volume}" />
           <p:selectOneMenu value="#{caseDocumentsTabBean.editing.volume}" 
@@ -92,15 +91,15 @@
               <h:outputText value="#{itemValue == 'UNDEFINED_VOLUME' ? '' : itemValue}" />
             </p:column>            
           </p:selectOneMenu>
-        </div>
+        </p:outputPanel>
 
         <!-- Comments -->
-        <div class="field col-12">
+        <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_comments}" />
           <p:inputTextarea value="#{caseDocumentsTabBean.editing.comments}" 
                            readonly="#{!caseObjectBean.editable}"/>
-        </div>
+        </p:outputPanel>
         
         <emcomp:auditData creationUserId="#{caseDocumentsTabBean.editing.creationUserId}" 
                           creationDateTime="#{caseDocumentsTabBean.editing.creationDateTime}"      

@@ -58,7 +58,7 @@
         </p:outputPanel>
 
         <!-- Type -->
-        <p:outputPanel styleClass="field col-12" rendered="#{!caseCasesTabBean.leafBaseType}">
+        <p:outputPanel styleClass="field col-12" rendered="#{!caseCasesTabBean.leafBaseType and caseObjectBean.isRenderProperty('caseCaseTypeId')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_type}"
                          styleClass="w-full"
@@ -82,7 +82,7 @@
         </p:outputPanel>
 
         <!-- Dates -->
-        <p:outputPanel styleClass="field col-12 md:col-3">
+        <p:outputPanel styleClass="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('startDate')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_startDate}"/>
           <p:datePicker value="#{caseCasesTabBean.editing.startDate}"
@@ -94,7 +94,7 @@
                         disabled="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
 
-        <p:outputPanel class="field col-12 md:col-3">
+        <p:outputPanel class="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_endDate}"/>
           <p:datePicker value="#{caseCasesTabBean.editing.endDate}"
@@ -107,7 +107,7 @@
         </p:outputPanel>
 
         <!-- Comments -->
-        <p:outputPanel class="field col-12">
+        <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_comments}" />
           <p:inputTextarea value="#{caseCasesTabBean.editing.comments}" 

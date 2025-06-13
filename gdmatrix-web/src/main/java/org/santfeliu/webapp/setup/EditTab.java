@@ -33,7 +33,9 @@ package org.santfeliu.webapp.setup;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -63,6 +65,7 @@ public class EditTab implements Serializable
   private List<Integer> pageSizeOptions;
   private Boolean exportable;
   private Integer rowExportLimit;
+  private Set<String> hideProperties = new HashSet();  
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -273,6 +276,21 @@ public class EditTab implements Serializable
   public void setRowExportLimit(Integer rowExportLimit) 
   {
     this.rowExportLimit = rowExportLimit;
+  }
+  
+  public Set<String> getHideProperties()
+  {
+    return hideProperties;
+  }
+
+  public void setHideProperties(Set<String> hideProperties)
+  {
+    this.hideProperties = hideProperties;
+  }
+  
+  public boolean isRenderProperty(String propertyName)
+  {    
+    return hideProperties == null || !hideProperties.contains(propertyName);
   }
 
   public String getBaseTypeId()

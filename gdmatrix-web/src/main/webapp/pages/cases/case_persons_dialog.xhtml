@@ -71,7 +71,7 @@
 
               <!-- Type -->
               <p:outputPanel styleClass="field col-12 md:col-6" 
-                             rendered="#{!casePersonsTabBean.leafBaseType}">
+                             rendered="#{!casePersonsTabBean.leafBaseType and caseObjectBean.isRenderProperty('casePersonTypeId')}">
                 <p:outputLabel for="@next" 
                                value="#{caseBundle.casePersons_type}"
                                indicateRequired="true" />
@@ -93,7 +93,7 @@
               </p:outputPanel>
 
               <!-- Dates -->
-              <p:outputPanel styleClass="field col-12 md:col-3">
+              <p:outputPanel styleClass="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('startDate')}">
                 <p:outputLabel for="@next" 
                                value="#{caseBundle.casePersons_startDate}" />
                 <p:datePicker value="#{casePersonsTabBean.editing.startDate}" 
@@ -105,7 +105,7 @@
                               yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
               </p:outputPanel>
 
-              <p:outputPanel class="field col-12 md:col-3">
+              <p:outputPanel class="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('startDate')}">
                 <p:outputLabel for="@next" 
                                value="#{caseBundle.casePersons_endDate}"/>
                 <p:datePicker value="#{casePersonsTabBean.editing.endDate}" 
@@ -118,7 +118,7 @@
 
               <!-- Address -->
               <p:outputPanel styleClass="field col-12" 
-                             rendered="#{casePersonsTabBean.editing.personId != null}">
+                             rendered="#{casePersonsTabBean.editing.personId != null and caseObjectBean.isRenderProperty('addressId')}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
                 <emcomp:objectReference value="#{casePersonsTabBean.editing.addressId}"
                                         process="@form:cnt:search_tabs:case_persons_dialog"
@@ -135,7 +135,8 @@
             </div>
 
             <!-- Contacts -->     
-            <h:panelGroup id="contacts_panel" styleClass="ui-fluid formgrid grid" rendered="#{casePersonsTabBean.editing.personId != null}">
+            <h:panelGroup id="contacts_panel" styleClass="ui-fluid formgrid grid" 
+                          rendered="#{casePersonsTabBean.editing.personId != null and caseObjectBean.isRenderProperty('contacts')}">
 
               <div class="field col-12"> 
 
