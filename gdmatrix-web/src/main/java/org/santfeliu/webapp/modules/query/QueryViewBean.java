@@ -560,7 +560,7 @@ public class QueryViewBean extends WebBean implements Serializable
     try
     {
       queryMainBean.setCreateNewVersion(false);
-      queryMainBean.saveQuery();
+      queryMainBean.saveQuery(false);
       info("QUERY_SAVED");
     }
     catch (Exception ex)
@@ -574,7 +574,7 @@ public class QueryViewBean extends WebBean implements Serializable
     try
     {
       queryMainBean.setCreateNewVersion(true);
-      queryMainBean.saveQuery();
+      queryMainBean.saveQuery(false);
       info("QUERY_SAVED");
     }
     catch (Exception ex)

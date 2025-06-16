@@ -312,6 +312,11 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
 
   public void saveQuery() throws Exception
   {
+    saveQuery(true);
+  }
+
+  public void saveQuery(boolean refreshDocuments) throws Exception
+  {
     if (StringUtils.isBlank(query.getName())) 
       throw new Exception("INVALID_QUERY_NAME");
 
@@ -389,7 +394,7 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
     loadRoles(document);
     persistent = true;
 
-    queryListBean.clearDocuments();
+    if (refreshDocuments) queryListBean.clearDocuments();
   }
   
   public void removeQuery()

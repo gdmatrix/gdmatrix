@@ -190,67 +190,16 @@ public class QueryListBean extends WebBean implements Serializable
 
   public void search()
   {
-    DocumentFilter filter = new DocumentFilter();
-    filter.setFirstResult(0);
-    filter.setDocTypeId(QueryMainBean.QUERY_TYPEID);
-    if (!StringUtils.isBlank(filterByName))
-    {
-      Property property = new Property();
-      property.setName(QueryMainBean.QUERY_NAME_PROPERTY);
-      property.getValue().add("%" + filterByName + "%");
-      filter.getProperty().add(property);
-    }
-    filter.getOutputProperty().add(QueryMainBean.QUERY_NAME_PROPERTY);
-    filter.getOutputProperty().add(QueryMainBean.QUERY_DESCRIPTION_PROPERTY);
-    filter.getOutputProperty().add(QueryMainBean.QUERY_UPDATE_PROPERTY);
-    OrderByProperty orderProperty = new OrderByProperty();
-    orderProperty.setName(QueryMainBean.QUERY_NAME_PROPERTY);
-    filter.getOrderByProperty().add(orderProperty);
-
-    if (!StringUtils.isBlank(filterByTitle))
-    {
-      filter.setTitle("%" + filterByTitle + "%");
-    }
-    
-    if (!StringUtils.isBlank(getFilterByScope()))
-    {
-      Property property = new Property();
-      property.setName(QueryMainBean.QUERY_SCOPE_PROPERTY);
-      property.getValue().add(getFilterByScope());
-      filter.getProperty().add(property);
-    }
-
-    if (!StringUtils.isBlank(filterByObject))
-    {
-      Property property = new Property();
-      property.setName(QueryMainBean.QUERY_OBJECT_PROPERTY);
-      property.getValue().add(filterByObject);
-      filter.getProperty().add(property);
-    }
-
-    if (!StringUtils.isBlank(filterByType))
-    {
-      Property property = new Property();
-      property.setName(QueryMainBean.QUERY_TYPE_PROPERTY);
-      property.getValue().add(filterByType);
-      filter.getProperty().add(property);
-    }
-
-    if (!StringUtils.isBlank(filterByBase))
-    {
-      Property property = new Property();
-      property.setName(QueryMainBean.QUERY_BASE_PROPERTY);
-      property.getValue().add(filterByBase);
-      filter.getProperty().add(property);
-    }
-
-    firstRow = 0;
-    documents = QueryMainBean.getDocumentManagerClient().findDocuments(filter);
+    doFind();
     queryMainBean.setView("query_list");
   }
   
   public List<Document> getDocuments()
   {
+    if (documents == null)
+    {
+      doFind();
+    }
     return documents;
   }
 
@@ -324,6 +273,66 @@ public class QueryListBean extends WebBean implements Serializable
     List<String> queryScopeList = 
       getSelectedMenuItem().getMultiValuedProperty("queryScope");
     return queryScopeList.isEmpty() || queryScopeList.contains(scope);
+  }
+
+  private void doFind()
+  {
+    DocumentFilter filter = new DocumentFilter();
+    filter.setFirstResult(0);
+    filter.setDocTypeId(QueryMainBean.QUERY_TYPEID);
+    if (!StringUtils.isBlank(filterByName))
+    {
+      Property property = new Property();
+      property.setName(QueryMainBean.QUERY_NAME_PROPERTY);
+      property.getValue().add("%" + filterByName + "%");
+      filter.getProperty().add(property);
+    }
+    filter.getOutputProperty().add(QueryMainBean.QUERY_NAME_PROPERTY);
+    filter.getOutputProperty().add(QueryMainBean.QUERY_DESCRIPTION_PROPERTY);
+    filter.getOutputProperty().add(QueryMainBean.QUERY_UPDATE_PROPERTY);
+    OrderByProperty orderProperty = new OrderByProperty();
+    orderProperty.setName(QueryMainBean.QUERY_NAME_PROPERTY);
+    filter.getOrderByProperty().add(orderProperty);
+
+    if (!StringUtils.isBlank(filterByTitle))
+    {
+      filter.setTitle("%" + filterByTitle + "%");
+    }
+    
+    if (!StringUtils.isBlank(getFilterByScope()))
+    {
+      Property property = new Property();
+      property.setName(QueryMainBean.QUERY_SCOPE_PROPERTY);
+      property.getValue().add(getFilterByScope());
+      filter.getProperty().add(property);
+    }
+
+    if (!StringUtils.isBlank(filterByObject))
+    {
+      Property property = new Property();
+      property.setName(QueryMainBean.QUERY_OBJECT_PROPERTY);
+      property.getValue().add(filterByObject);
+      filter.getProperty().add(property);
+    }
+
+    if (!StringUtils.isBlank(filterByType))
+    {
+      Property property = new Property();
+      property.setName(QueryMainBean.QUERY_TYPE_PROPERTY);
+      property.getValue().add(filterByType);
+      filter.getProperty().add(property);
+    }
+
+    if (!StringUtils.isBlank(filterByBase))
+    {
+      Property property = new Property();
+      property.setName(QueryMainBean.QUERY_BASE_PROPERTY);
+      property.getValue().add(filterByBase);
+      filter.getProperty().add(property);
+    }
+
+    firstRow = 0;
+    documents = QueryMainBean.getDocumentManagerClient().findDocuments(filter);    
   }  
   
 }
