@@ -152,7 +152,7 @@ public class InputTextEditor extends JPanel
     this.add(formatComboBox,
       new GridBagConstraints(1, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
         new Insets(2, 2, 2, 2), 0, 0));
-    maxLengthSpinner.setModel(new SpinnerNumberModel(0, 0, 1000, 1));
+    maxLengthSpinner.setModel(new SpinnerNumberModel(0, 0, 4000, 1));
     requiredLabel.setText("Required:");
     helpLabel.setText("(0: any length)");
     formatComboBox.setEditable(true);
