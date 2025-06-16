@@ -72,6 +72,11 @@
 {
 }
 
+.query_list .result_list thead
+{
+  display: none;
+}
+
 .query_list .result_list .col_icon
 {
   text-align: center;

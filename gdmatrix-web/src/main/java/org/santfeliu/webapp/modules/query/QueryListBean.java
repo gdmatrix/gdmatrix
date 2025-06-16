@@ -196,17 +196,36 @@ public class QueryListBean extends WebBean implements Serializable
   
   public List<Document> getDocuments()
   {
-    if (documents == null)
-    {
-      doFind();
-    }
     return documents;
   }
 
   public void clearDocuments()
   {
-    documents = null;
-  }  
+    clearDocuments(true);
+  }
+  
+  public void clearDocuments(boolean reload)
+  {
+    if (reload)
+    {
+      doFind();
+    }
+    else
+    {
+      documents = null;
+    }
+  }
+  
+  public void clearSearch()
+  {
+    filterByName = null;
+    filterByTitle = null;  
+    filterByBase = null;  
+    filterByScope = null;
+    filterByType = null;
+    filterByObject = null;
+    clearDocuments(false);
+  }
 
   public int getFirstRow()
   {

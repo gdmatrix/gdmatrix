@@ -62,19 +62,33 @@
           <p:inputText id="filter_base" value="#{queryListBean.filterByBase}" styleClass="input_text" />
         </div>
         <div class="col-12 text-right">
+          <p:commandButton value="#{objectBundle.clear}"
+                           action="#{queryListBean.clearSearch}"
+                           styleClass="w-auto"
+                           process="@this"
+                           update="@form:cnt"
+                           icon="fa fa-broom" />          
           <p:commandButton id="query_search_button"
                            action="#{queryListBean.search}" 
                            value="#{objectBundle.search}"
                            process="@this query_list_filter" update="@form:cnt"                       
                            icon="pi pi-search"
-                           styleClass="w-auto" />          
+                           styleClass="ml-2 w-auto" />          
           <p:defaultCommand target="query_search_button" scope="query_list_filter" />
         </div>
       </div>
     </p:panel>  
     
-    <p:panel styleClass="mt-3 top_rounded_panel">
+    <p:panel styleClass="mt-3 mb-3 top_rounded_panel">
       
+      <div class="col-12 text-left">
+        <p:commandButton action="#{queryMainBean.createQuery}" 
+                         value="#{objectBundle.create}" 
+                         process="@this" update="@form:cnt"                       
+                         icon="pi pi-plus-circle"
+                         styleClass="w-auto" />                
+      </div>          
+ 
       <p:dataTable value="#{queryListBean.documents}" var="document"
                    styleClass="result_list"
                    paginator="true" pageLinks="5"
@@ -104,14 +118,6 @@
       </p:dataTable>
 
     </p:panel>  
-      
-    <div class="col-12 text-left">
-      <p:commandButton action="#{queryMainBean.createQuery}" 
-                       value="#{objectBundle.create}" 
-                       process="@this" update="@form:cnt"                       
-                       icon="pi pi-plus-circle"
-                       styleClass="w-auto" />                
-    </div>    
 
   </h:panelGroup>
     
