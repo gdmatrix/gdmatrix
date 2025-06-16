@@ -22,47 +22,52 @@
         <p:commandButton id="switch_sql_button" 
                          type="button" icon="pi pi-eye" 
                          onclick="switchSql();this.blur();"                         
-                         styleClass="rounded-button ui-button-flat"
-                         rendered="#{sqlwebBean.editMode}"
+                         styleClass="rounded-button ui-button-flat"                         
+                         rendered="#{sqlwebBean.deferredExecution}"
                          title="#{sqlWebBundle.change_view}" />
       </f:facet>
       
-      <h:panelGroup id="sqlweb_edit_panel" 
-                    rendered="#{sqlwebBean.editMode}" 
-                    styleClass="ui-fluid formgrid grid">
-        <p:outputPanel styleClass="field col-12 md:col-4 xl:col-2">
-          <p:outputLabel value="#{sqlWebBundle.dsn}:" for="@next" />
-          <p:inputText value="#{sqlwebBean.dsn}"
-                       disabled="#{!sqlwebBean.dsnEnabled}"
-                       pt:spellcheck="false" styleClass="code" />    
-        </p:outputPanel>
-        <div class="field col-12 md:col-4 xl:col-3">
-          <p:outputLabel value="#{sqlWebBundle.driver}:" for="@next" />
-          <p:inputText value="#{sqlwebBean.driver}" 
-                       pt:spellcheck="false" styleClass="code" />    
-        </div>
-        <div class="field col-12 md:col-4 xl:col-3">
-          <p:outputLabel value="#{sqlWebBundle.url}:" for="@next" />
-          <p:inputText value="#{sqlwebBean.url}" 
-                       pt:spellcheck="false" styleClass="code" />    
-        </div>
-        <div class="field col-12 md:col-4 xl:col-2">
-          <p:outputLabel value="#{sqlWebBundle.username}:" for="@next" />
-          <p:inputText value="#{sqlwebBean.username}" pt:spellcheck="false" />
-        </div>
-        <div class="field col-12 md:col-4 xl:col-2">
-          <p:outputLabel value="#{sqlWebBundle.password}:" for="@next" />
-          <p:password value="#{sqlwebBean.password}" redisplay="true" />    
-        </div>
-        <div class="field col-12">
-          <p:outputLabel value="#{sqlWebBundle.sql_statement}:" for="@next" />
-          <gdm:codemirror language="sql"
-                          style="font-size:14px"
-                          lineNumbers="false"
-                          value="#{sqlwebBean.sql}" />
-        </div>
-      </h:panelGroup>
+      <h:panelGroup id="sqlweb_edit_panel">
+        <h:panelGroup rendered="#{sqlwebBean.editMode}" 
+                      styleClass="ui-fluid formgrid grid">
+          <p:outputPanel styleClass="field col-12 md:col-4 xl:col-2">
+            <p:outputLabel value="#{sqlWebBundle.dsn}:" for="@next" />
+            <p:inputText value="#{sqlwebBean.dsn}"
+                         disabled="#{!sqlwebBean.dsnEnabled}"
+                         pt:spellcheck="false" styleClass="code" />    
+          </p:outputPanel>
+          <div class="field col-12 md:col-4 xl:col-3">
+            <p:outputLabel value="#{sqlWebBundle.driver}:" for="@next" />
+            <p:inputText value="#{sqlwebBean.driver}" 
+                         pt:spellcheck="false" styleClass="code" />    
+          </div>
+          <div class="field col-12 md:col-4 xl:col-3">
+            <p:outputLabel value="#{sqlWebBundle.url}:" for="@next" />
+            <p:inputText value="#{sqlwebBean.url}" 
+                         pt:spellcheck="false" styleClass="code" />    
+          </div>
+          <div class="field col-12 md:col-4 xl:col-2">
+            <p:outputLabel value="#{sqlWebBundle.username}:" for="@next" />
+            <p:inputText value="#{sqlwebBean.username}" pt:spellcheck="false" />
+          </div>
+          <div class="field col-12 md:col-4 xl:col-2">
+            <p:outputLabel value="#{sqlWebBundle.password}:" for="@next" />
+            <p:password value="#{sqlwebBean.password}" redisplay="true" />    
+          </div>
+          <div class="field col-12">
+            <p:outputLabel value="#{sqlWebBundle.sql_statement}:" for="@next" />
+            <gdm:codemirror language="sql"
+                            style="font-size:14px"
+                            lineNumbers="false"
+                            value="#{sqlwebBean.sql}" />
+          </div>
+        </h:panelGroup>
 
+        <h:panelGroup rendered="#{!sqlwebBean.editMode}">
+          <h:outputText value="#{sqlwebBean.htmlDescription}" escape="false" />            
+        </h:panelGroup>
+      </h:panelGroup>
+      
       <div class="flex flex-wrap">
         <div class="flex-grow-1">
           <p:outputLabel value="#{sqlWebBundle.max_rows}:" for="@next" styleClass="mr-2 mb-2" />
@@ -211,7 +216,8 @@
       }
     });
     
-    var renderSql = true;
+    var renderSql = (#{sqlwebBean.deferredExecution});    
+    switchSql();
     
     function switchSql()
     {

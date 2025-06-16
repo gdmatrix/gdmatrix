@@ -103,6 +103,7 @@ public class SqlwebBean extends WebBean implements Serializable
   private boolean showLobValues = false;
   private boolean showNullAsEmpty = false;
   private int firstRow = 0;
+  private String htmlDescription;
 
   public SqlwebBean()
   {
@@ -224,6 +225,16 @@ public class SqlwebBean extends WebBean implements Serializable
   public void setFirstRow(int firstRow)
   {
     this.firstRow = firstRow;
+  }
+
+  public String getHtmlDescription() 
+  {
+    return htmlDescription;
+  }
+
+  public void setHtmlDescription(String htmlDescription) 
+  {
+    this.htmlDescription = htmlDescription;
   }
 
   public Map<String, String> getColumnDescriptionMap()

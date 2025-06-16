@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.enterprise.context.RequestScoped;
@@ -671,6 +672,10 @@ public class QueryViewBean extends WebBean implements Serializable
       }
     }
     sqlWebBean.setDeferredExecution(true);
+    if (!sqlWebBean.isEditMode())
+    {
+      sqlWebBean.setHtmlDescription(getExecutionHtmlDescription());
+    }
     queryMainBean.setView("query_results");
   }
 
@@ -714,4 +719,138 @@ public class QueryViewBean extends WebBean implements Serializable
     }
   }
   
+  // QUERY HTML DESCRIPTION
+  
+  private String getExecutionHtmlDescription()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<div class='mb-4'>");
+    String queryLabel = selectedInstance.getQuery().getLabel();
+    List<String> mainParamNames = extractMainParameters(queryLabel);
+    for (String mainParamName : mainParamNames)
+    {
+      String mainParamValue = 
+        selectedInstance.getGlobalParameterValuesMap().get(mainParamName);
+      String labeledValue = getLabeledValue(mainParamName, mainParamValue);
+      queryLabel = queryLabel.replace("${" + mainParamName + "}", 
+        "<b>" + labeledValue + "</b>");
+    }
+    sb.append(getItemHtml(queryLabel, 0));
+    sb.append(getExpressionHtmlDescription(getRootExpression(), 0, true, null));    
+    sb.append("</div>");
+    return sb.toString();
+  }  
+  
+  private String getItemHtml(String text, int depth)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<div style='margin-left: ").append(depth * 20).
+      append("px;' class='mt-1 mb-1'>");
+    sb.append(text);
+    sb.append("</div>");
+    return sb.toString();
+  }
+
+  private String getExpressionHtmlDescription(
+    Expression expression, int depth, boolean first, Operator currentOperator)
+  {
+    StringBuilder sb = new StringBuilder();
+    if (!first)
+    {
+      String argumentSeparator = 
+        translate(currentOperator.getType() + "_link");
+      sb.append(getItemHtml(argumentSeparator, depth));          
+    }      
+    if (expression instanceof Operator)
+    {
+      Operator operator = (Operator)expression;
+      if (!operator.getType().equals(Operator.ROOT))
+      {
+        String operatorLabel = translate(operator.getType());        
+        sb.append(getItemHtml(operatorLabel, depth));
+      }
+      int i = 0;
+      for (Expression expr : operator.getArguments())
+      {
+        sb.append(
+          getExpressionHtmlDescription(expr, depth + 1, (i == 0), operator));
+        i++;
+      }
+    }
+    else // Predicate
+    {
+      Predicate predicate = (Predicate)expression;
+      String predicateLabel = predicate.getLabel();      
+      for (Object paramName : predicate.getParameterValuesMap().keySet())
+      {
+        String paramValue = 
+          (String)predicate.getParameterValuesMap().get(paramName);
+        String sParamName = (String)paramName;
+        String labeledValue = getLabeledValue(sParamName, paramValue);
+        predicateLabel = predicateLabel.replace("${" + sParamName + "}", 
+          "<b>" + labeledValue + "</b>");
+      }
+      sb.append(getItemHtml(predicateLabel, depth));        
+    }
+    return sb.toString();
+  }
+  
+  private String translate(String key)
+  {
+    try
+    {
+      String queryBundlePath = 
+        "org.santfeliu.misc.query.web.resources.QueryBundle";      
+      ResourceBundle bundle = ResourceBundle.getBundle(queryBundlePath, 
+        getFacesContext().getViewRoot().getLocale());
+      return bundle.getString(key);
+    }
+    catch (Exception ex)
+    {
+      return key;
+    }
+  }
+  
+  private List<String> extractMainParameters(String text) 
+  {
+    List<String> result = new ArrayList<>();
+    Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
+    Matcher matcher = pattern.matcher(text);
+    while (matcher.find()) 
+    {
+      result.add(matcher.group(1));
+    }
+    return result;
+  }
+  
+  private String getLabeledValue(String paramName, String value)
+  {       
+    Parameter parameter = getQuery().getParameter(paramName);
+    if (parameter != null)
+    {
+      if (!StringUtils.isBlank(StringUtils.defaultString(parameter.getSql())))
+      {
+        List<SelectItem> items = getParameterSelectItemsMap().get(paramName);
+        if (items != null)
+        {
+          for (SelectItem item : items)
+          {
+            String itemValue = (String)item.getValue();
+            if (itemValue != null && 
+              itemValue.equals(value))
+            {
+              return StringUtils.defaultIfBlank(item.getLabel(), "N/A");
+            }
+          }
+        }
+      }
+      else if (parameter.getFormat().equals(Parameter.DATE))
+      {
+        return StringUtils.defaultIfBlank(
+          TextUtils.formatInternalDate(value, "dd/MM/yyyy"), "N/A");
+      }
+    }    
+    return StringUtils.defaultIfBlank(value, "N/A");
+  }
+
 }
