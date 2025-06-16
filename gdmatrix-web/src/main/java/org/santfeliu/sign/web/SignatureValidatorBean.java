@@ -201,7 +201,9 @@ public class SignatureValidatorBean extends WebBean
       {
         sigId = sigId.trim();
         DocumentManagerClient client = getDocumentManagerClient();
-        document = client.loadDocumentByName(null, "sigId", sigId, null, 0);
+        document = client.loadDocumentByName(null, "xmlSigId", sigId, null, 0);
+        if (document == null)
+          document = client.loadDocumentByName(null, "sigId", sigId, null, 0);
         if (document == null) warn("doc:DOCUMENT_NOT_FOUND");
         else
         {
@@ -227,7 +229,7 @@ public class SignatureValidatorBean extends WebBean
     String transformationName = getSignatureTransformationName();
     if (transformationName == null) return;
     Content content = document.getContent();
-    ArrayList<Transformer> transformers = new ArrayList<Transformer>();
+    ArrayList<Transformer> transformers = new ArrayList<>();
     Transformation pattern = new Transformation(null, transformationName,
       content.getContentType(), content.getFormatId(), 
       "text/html", null, null, null);

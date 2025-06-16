@@ -49,7 +49,7 @@ import org.santfeliu.util.MatrixConfig;
 public class DocumentManagerSource implements Source
 {
   public static final String SIGID = "sigId";
-  
+  public static final String XMLSIGID = "xmlSigId";
   private Document document;
   
   public DocumentManagerSource()
@@ -59,6 +59,18 @@ public class DocumentManagerSource implements Source
   @Override
   public Document getDocument(String sigId) throws Exception 
   {
+    return getDocument(sigId, SIGID);
+  }
+  
+  public Document getBiometricSignatureDocument(String xmlSigId) 
+    throws Exception 
+  {
+    return getDocument(xmlSigId, XMLSIGID);
+  }
+  
+  private Document getDocument(String sigId, String sigIdPropName) 
+    throws Exception 
+  {
     String username = MatrixConfig.getProperty("adminCredentials.userId");
     String password = MatrixConfig.getProperty("adminCredentials.password");    
     CachedDocumentManagerClient client = 
@@ -66,7 +78,7 @@ public class DocumentManagerSource implements Source
     if (document == null)
     {
       DocumentFilter filter = new DocumentFilter();
-      DictionaryUtils.setProperty(filter, SIGID, sigId);
+      DictionaryUtils.setProperty(filter, sigIdPropName, sigId);
       List<org.matrix.doc.Document> documents = client.findDocuments(filter);
       if (documents != null && !documents.isEmpty())
       {
@@ -101,6 +113,7 @@ public class DocumentManagerSource implements Source
       }
     }
     result.getProperties().addAll(doc.getProperty());
+    result.extractSignatures();
     return result;
   }
  

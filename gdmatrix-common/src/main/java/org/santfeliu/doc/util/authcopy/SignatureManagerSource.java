@@ -66,6 +66,7 @@ public class SignatureManagerSource implements Source
       SignedDocument doc = port.getDocument(sigId);
       document = toDocument(doc);
       document.setCsv(sigId);
+      document.extractSignatures();      
     }
 
     return document;    

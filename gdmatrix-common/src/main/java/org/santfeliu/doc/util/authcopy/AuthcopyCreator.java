@@ -90,9 +90,17 @@ public class AuthcopyCreator
     Document document = source.getDocument(id);
     if (document == null)
       throw new Exception(bundle.getString(NO_DOCUMENT_FOUND_EXCEPTION));
-
+    
     //Signatures
-    document.extractSignatures();
+    if (!document.isSigned() && document.isXmlSignedDocument())
+    {
+      //Maybe biometric signature
+      DocumentManagerSource documentManagerSource = new DocumentManagerSource();
+      Document bioSigDocument  = 
+        documentManagerSource.getBiometricSignatureDocument(id);
+      if (bioSigDocument != null && bioSigDocument.isSigned())
+        document = bioSigDocument;
+    }
 
     //Transforms if needed
     if (!document.isPdf())
