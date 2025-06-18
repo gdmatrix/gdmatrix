@@ -26,6 +26,14 @@
         </div>
         <div class="assistant_panel hidden">
           <ui:include src="/pages/assistant/assistant_panel.xhtml"></ui:include>
+          <div class="assistant_slider">
+            <a href="#" onclick="maximizeAssistantPanel(event)" class="assistant_max" title="Maximize">
+              <i class="pi pi-chevron-left" />
+            </a>
+            <a href="#" onclick="minimizeAssistantPanel(event)" class="assistant_min" title="Minimize">
+              <i class="pi pi-chevron-right" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -35,7 +43,8 @@
     <gdm:saveState value="#{templateBean.contextMid}" />
 
     <p:remoteCommand name="_showObject" action="#{templateBean.showObject}" update="@form:cnt" />
-
+    <p:remoteCommand name="_showPage" action="#{templateBean.showPage}" update="@form:cnt"  />
+    
     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" >
       <p:commandButton value="#{objectBundle.cancel}"
                        icon="pi pi-times"

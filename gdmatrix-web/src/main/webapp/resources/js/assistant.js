@@ -2,7 +2,7 @@
 
 function updateSendButton()
 {
-  var text = PF("textarea").getJQ().val().trim();
+  var text = PF("assistantTextarea").getJQ().val().trim();
   var sendButton = PF("sendButton");
 
   var waiting = document.querySelector(".dot-typing") ? true : false;  
@@ -67,7 +67,7 @@ function createDots()
 function sendMessage()
 {
   var listElem = getMessageList();
-  var textarea = PF("textarea").getJQ();
+  var textarea = PF("assistantTextarea").getJQ();
   var text = textarea.val().trim();
   
   var docId = document.querySelector(".attached_docid").textContent;

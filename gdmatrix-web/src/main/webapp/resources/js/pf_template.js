@@ -32,6 +32,39 @@ function showContent(mid)
   }
 }
 
+function showObject(typeId, objectId, parameters)
+{
+  const leap = [
+    { "name" : "objectId", "value" : objectId }  
+  ];
+  if (typeId !== null)
+  {
+    leap.push({ "name" : "typeId", "value" : typeId });
+  }
+  if (parameters)
+  {
+    leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) }); 
+  }
+  _showObject(leap);
+}
+
+function viewObject(objectId, parameters)
+{
+  showObject(null, objectId, parameters);
+}
+
+function showPage(type, id)
+{
+  const params = [
+    { name: 'type', value: type }
+  ];
+  if (id)
+  {
+    params.push({ name: 'id', value: id });
+  }  
+  _showPage(params);
+}
+
 function setBannerZIndex(value)
 {
   var elems = document.getElementsByClassName("bannerFixed");
@@ -60,27 +93,6 @@ function enableUserPassButton()
       }
     }
   }
-}
-
-function showObject(typeId, objectId, parameters)
-{
-  const leap = [
-    { "name" : "objectId", "value" : objectId }  
-  ];
-  if (typeId !== null)
-  {
-    leap.push({ "name" : "typeId", "value" : typeId });
-  }
-  if (parameters)
-  {
-    leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) }); 
-  }
-  _showObject(leap);
-}
-
-function viewObject(objectId, parameters)
-{
-  showObject(null, objectId, parameters);
 }
 
 function updateFontSize(size)

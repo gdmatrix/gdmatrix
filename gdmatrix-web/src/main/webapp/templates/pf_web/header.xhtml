@@ -18,8 +18,8 @@
 
       <div class="flex flex-row w-full">
         <div class="menu_button flex-grow-0 flex-shrink-0 align-items-center">
-          <p:button onclick="hideDialogPanels();return showDialogPanel('main_menu_panel', event);" icon="pi pi-bars"
-                    class="rounded-button" />
+          <p:button onclick="hideDialogPanels();return showDialogPanel('main_menu_panel', event);" 
+                    icon="pi pi-bars" class="rounded-button ui-button-flat" />
         </div>
 
         <a href="#{userSessionBean.selectedMenuItem.properties.homeUrl}" class="logo flex-shrink-1" />
@@ -93,44 +93,32 @@
           -->
 
           <div class="user_toolbar flex flex-row flex-grow-0 flex-shrink-0">
-            <p:link href="#" styleClass="login_button ml-2 mr-2"
+            <p:link href="#" styleClass="header_button ml-2 mr-2"
                     title="#{webBundle.identification}"
                     onclick="hideDialogPanels();showDialogPanel('login_panel', event); enableUserPassButton();return false;"
                     rendered="#{userSessionBean.anonymousUser}">
               <i class="pi pi-user" />
             </p:link>
 
-            <p:link href="#" styleClass="login_button ml-2 mr-2"
+            <p:link href="#" styleClass="header_button ml-2 mr-2"
                     title="#{userSessionBean.displayName}"
                     onclick="hideDialogPanels();return showDialogPanel('login_panel', event);"
                     rendered="#{not userSessionBean.anonymousUser}">
               #{templateBean.userInitial}
             </p:link>
 
-            <p:link href="#" styleClass="login_button ml-2 mr-2"
+            <p:link href="#" styleClass="header_button ml-2 mr-2"
                     title="#{webBundle.configuration}"
                     onclick="hideDialogPanels();return showDialogPanel('config_panel', event);">
               <i class="pi pi-cog" />
             </p:link>
 
-            <p:link styleClass="ml-2 mr-2 assistant_button"
-                    title="Maximize assistant" style="color:var(--primary-color-text)"
-                    onclick="maximizeAssistantPanel(event)">
-              <i class="mi-outlined mi-smart-toy" style="font-size: 24px" />
+            <p:link styleClass="header_button ml-2 mr-2"
+                    title="Assistant"
+                    onclick="toggleAssistantPanel(event);">
+              <i class="mi-outlined mi-smart-toy" />
             </p:link>
-
-            <p:link styleClass="ml-2 mr-2 assistant_button"
-                    title="Show assistant" style="color:var(--primary-color-text)"
-                    onclick="showAssistantPanel(event)">
-              <i class="mi-outlined mi-smart-toy" style="font-size: 16px" />
-            </p:link>
-
-            <p:link styleClass="ml-2 mr-2 assistant_button"
-                    title="Hide assistant" style="color:var(--primary-color-text)"
-                    onclick="hideAssistantPanel(event)">
-              <i class="pi pi-times" style="font-size: 16px" />
-            </p:link>
-
+            
           </div>
         </div>
       </div>
@@ -150,6 +138,19 @@
         };
         initMenu();
 
+        function toggleAssistantPanel(event)
+        {
+          var assistantPanel = document.querySelector(".assistant_panel");
+          if (assistantPanel.classList.contains("hidden"))
+          {
+            minimizeAssistantPanel(event);
+          }
+          else
+          {
+            hideAssistantPanel(event);
+          }    
+        }
+
         function maximizeAssistantPanel(event)
         {
           event.preventDefault();
@@ -160,9 +161,16 @@
           assistantPanel.classList.remove("hidden");
           assistantPanel.style.width = "100%";
           assistantPanel.style.height = "100%";
+
+          var maxButton = document.querySelector(".assistant_max");
+          maxButton.classList.add("hidden");
+          var minButton = document.querySelector(".assistant_min");
+          minButton.classList.remove("hidden");
+          PF("assistantTextarea").jq.focus();
+//          showThreadsPanel();
         }
 
-        function showAssistantPanel(event)
+        function minimizeAssistantPanel(event)
         {
           event.preventDefault();
           var contentPanel = document.querySelector(".content_footer");
@@ -172,6 +180,12 @@
           assistantPanel.classList.remove("hidden");
           assistantPanel.style.width = "";
           assistantPanel.style.height = "";
+          var maxButton = document.querySelector(".assistant_max");
+          maxButton.classList.remove("hidden");
+          var minButton = document.querySelector(".assistant_min");
+          minButton.classList.add("hidden");
+          PF("assistantTextarea").jq.focus();
+//          closeThreadsPanel();
         }
 
         function hideAssistantPanel(event)
@@ -184,6 +198,7 @@
           assistantPanel.classList.add("hidden");
           assistantPanel.style.width = "";
           assistantPanel.style.height = "";
+//          closeThreadsPanel();
         }
 
         window.addEventListener("load", () => {

@@ -37,8 +37,10 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,6 +51,8 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.modules.geo.GeoMapBean;
 import org.santfeliu.webapp.util.ContextMenuTypesFinder;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.santfeliu.webapp.util.WebUtils.TOPWEB_PROPERTY;
@@ -60,7 +64,7 @@ import static org.santfeliu.webapp.util.WebUtils.TOPWEB_PROPERTY;
 */
 @Named
 @RequestScoped
-public class TemplateBean extends FacesBean implements Serializable
+public class TemplateBean extends WebBean implements Serializable
 {
   public static final String TOOLBAR_ENABLED_PROPERTY = "toolbarEnabled";
   public static final String HIGHLIGHTED_PROPERTY = "highlighted";
@@ -227,6 +231,31 @@ public class TemplateBean extends FacesBean implements Serializable
     {
       navigatorBean.view(objectId, parameters);
       return null;
+    }
+  }
+
+  public void showPage()
+  {
+    ExternalContext externalContext = getExternalContext();
+    Map<String, String> parameterMap = externalContext.getRequestParameterMap();
+    String type = parameterMap.get("type");
+    String id = parameterMap.get("id");
+    System.out.println(type + "," + id);
+    String mid = getProperty(type + ".mid");
+    if (mid != null)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      userSessionBean.setSelectedMid(mid);
+      if ("Map".equals(type))
+      {
+        GeoMapBean geoMapBean = CDI.current().select(GeoMapBean.class).get();
+        geoMapBean.loadMap(id);
+        geoMapBean.setView("map_viewer");
+      }
+      else
+      {
+        userSessionBean.executeSelectedMenuItem();
+      }
     }
   }
 
