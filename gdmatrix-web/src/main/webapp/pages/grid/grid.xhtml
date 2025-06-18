@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:sf="http://faces.santfeliu.org">
+
+  <h:outputStylesheet library="css" name="grid.css" />
+  
+  <div class="card_grid">
+    <ui:repeat value="#{gridBean.cards}" var="card">
+      <div class="card aspect#{card.aspect}">
+        <a href="#" onclick="showPage('#{card.type}', '#{card.id}')">
+          <img src="/documents/#{card.imageId}" alt="" />
+          <div class="title">#{card.title}</div>
+        </a>
+      </div>
+    </ui:repeat>
+  </div>
+  
+  <gdm:saveBean value="gridBean" />
+  
+  <script>
+    window.history.pushState({}, '', '/pages/grid/grid.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    document.title = "#{userSessionBean.selectedMenuItem.label}";  
+  </script>    
+  
+</ui:composition>

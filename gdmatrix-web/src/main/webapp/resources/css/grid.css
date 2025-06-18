@@ -1,0 +1,118 @@
+/* grid.css */
+
+.card_grid
+{
+  box-sizing: border-box;
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 4px;
+  width: 100%;
+  justify-content: center;
+}
+
+.card_grid .card 
+{
+  margin: 8px;
+  vertical-align: middle;
+  height: 240px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: hidden;
+  position:relative;
+  border-radius: 8px;
+  transition: transform 0.4s;
+  background: var(--surface-200);
+}
+
+.card_grid .card > a:hover .title,
+.card_grid .card > a:focus .title
+{
+  background-color: var(--surface-900);
+  color: var(--surface-0);
+}
+
+.card_grid .card img
+{
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.card_grid .card .title
+{
+  position:absolute;
+  bottom:0;
+  text-align: center;
+  width: 100%;
+  height: auto;
+  padding:4px;
+  background: var(--primary-color);
+  color: var(--primary-color-text);
+  display: flex;
+  align-items: end;
+  justify-content: center;
+}
+
+.card.aspect1
+{
+  flex-basis: 200px;
+}
+
+.card.aspect2
+{
+  flex-basis: 227px;
+}
+
+.card.aspect3
+{
+  flex-basis: 251px;
+}
+
+.card.aspect4
+{
+  flex-basis: 273px;
+}
+
+.card.aspect5
+{
+  flex-basis: 295px;
+}
+
+.card.aspect6
+{
+  flex-basis: 313px;
+}
+
+.card.aspect7
+{
+  flex-basis: 351px;
+}
+
+.card.aspect8
+{
+  flex-basis: 377px;
+}
+
+.card.aspect9
+{
+  flex-basis: 400px;
+}
+
+@container (width < 800px) 
+{
+  .card_grid .card
+  {
+    height: 220px;
+  }
+}
+
+@container (width < 600px) 
+{
+  .card_grid .card  
+  {
+    height: 200px;
+  }
+}
+
+
