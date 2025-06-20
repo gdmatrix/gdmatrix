@@ -127,7 +127,11 @@
   </p:growl>            
 
   <script>
-    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    controlNavigationHistory({
+      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "IDE"
+    });
+
     if (!window._refreshSessionTimerId)
     {
       const minutes = 10; // refresh session interval

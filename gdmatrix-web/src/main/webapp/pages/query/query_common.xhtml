@@ -51,26 +51,10 @@
   </h:panelGroup>
 
   <script>
-    window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-
-    if (window.popStateListener)
-    {
-      window.removeEventListener("popstate", window.popStateListener);
-    }
-
-    window.popStateListener = () => {
-      var pfButton = PF("querySearchButton");
-      if (pfButton)
-      {
-        var id = pfButton.id;
-        var button = document.getElementById(id);
-        button.click();
-      }
-      ;
-    };
-
-    window.addEventListener("popstate", window.popStateListener);
-    document.title = "#{queryMainBean.query != null ? queryMainBean.query.title : userSessionBean.selectedMenuItem.label}";
+    controlNavigationHistory({
+      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "#{queryMainBean.query != null ? queryMainBean.query.title : userSessionBean.selectedMenuItem.label}"
+    });
   </script>       
 
 </ui:composition>

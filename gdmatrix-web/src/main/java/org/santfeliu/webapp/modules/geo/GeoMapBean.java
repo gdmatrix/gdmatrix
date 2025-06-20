@@ -31,11 +31,9 @@
 package org.santfeliu.webapp.modules.geo;
 
 import com.google.gson.Gson;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -54,7 +52,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.imageio.ImageIO;
 import javax.inject.Named;
-import org.apache.commons.io.IOUtils;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.webapp.modules.geo.metadata.Service;
 import org.santfeliu.webapp.modules.geo.metadata.ServiceParameters;
@@ -798,10 +795,7 @@ public class GeoMapBean extends WebBean implements Serializable
     String mapName = getProperty(MAP_NAME_PROPERTY);
     if (mapName == null)
     {
-      if (!FacesContext.getCurrentInstance().isPostback()) // GET
-      {
-        mapName = (String)parameters.get(MAP_NAME_PROPERTY);
-      }
+      mapName = (String)parameters.get(MAP_NAME_PROPERTY);
     }
 
     if (mapName != null)

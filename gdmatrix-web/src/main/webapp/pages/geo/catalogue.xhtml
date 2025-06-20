@@ -145,8 +145,10 @@
     PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
       (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
 
-    document.title = "#{userSessionBean.selectedMenuItem.label}";
-    window.history.pushState({}, document.title, '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    controlNavigationHistory({
+      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "#{userSessionBean.selectedMenuItem.label}"
+    });
 
     setTimeout(() => window.location.hash = "");
 

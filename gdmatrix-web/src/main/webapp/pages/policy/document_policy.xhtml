@@ -199,8 +199,10 @@
     </h:panelGroup>
 
     <script>
-      window.history.pushState({}, '', '/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-      document.title = "#{userSessionBean.selectedMenuItem.label}";
+      controlNavigationHistory({
+        url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+        title : "#{userSessionBean.selectedMenuItem.label}"
+      });
     </script>
 
     <gdm:saveBean value="documentPolicyFinderBean" />

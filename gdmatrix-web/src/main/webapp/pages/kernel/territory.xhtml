@@ -251,13 +251,7 @@
   </p:outputPanel> 
 
   <script>
-    if (window.popStateListener)
-    {
-      window.removeEventListener("popstate", window.popStateListener);
-    }
-
     controlNavigationHistory(#{navigatorBean.jsonPageState});
-
   </script>
   
 </ui:composition>

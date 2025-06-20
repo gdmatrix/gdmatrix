@@ -84,32 +84,16 @@
     PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
       (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
     
-    document.title = "#{geoMapBean.mapDocument.title == null ? geoMapBean.mapDocument.name : geoMapBean.mapDocument.title}";  
-    //window.history.pushState({},document.title,'/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;map_name=#{geoMapBean.mapDocument.name}');
     var mid = '#{userSessionBean.selectedMenuItem.mid}';
     var mapName = '#{geoMapBean.mapDocument.name}';
     var params = new URLSearchParams(window.location.search);
     params.set("xmid", mid);
     params.set("map_name", mapName);
-    var url = 'go.faces?' + params.toString();    
-    window.history.pushState({},document.title, url);
-
-    if (window.popStateListener)
-    {
-      window.removeEventListener("popstate", window.popStateListener);
-    }
-
-    window.popStateListener = () => {
-      var pfButton = PrimeFaces.widgets["showCatalogueButton"];
-      if (pfButton)
-      {
-        var id = pfButton.id;
-        var button = document.getElementById(id);
-        button.click();
-      };
-    };
-
-    window.addEventListener("popstate", window.popStateListener);
+    var url = '/go.faces?' + params.toString();
+    controlNavigationHistory({
+      url : url,
+      title : "#{geoMapBean.mapDocument.title == null ? geoMapBean.mapDocument.name : geoMapBean.mapDocument.title}"
+    });
   </script>
   
 </ui:composition>

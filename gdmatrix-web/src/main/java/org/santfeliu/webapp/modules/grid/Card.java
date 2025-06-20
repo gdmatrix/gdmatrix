@@ -30,7 +30,10 @@
  */
 package org.santfeliu.webapp.modules.grid;
 
+import com.google.gson.Gson;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -103,5 +106,28 @@ public class Card implements Serializable
   public void setPriority(int priority)
   {
     this.priority = priority;
+  }
+
+  public String getJsonParameters()
+  {
+    // TODO: improve parameter generation (extend Card class)
+    Map<String, String> params = new HashMap();
+    if ("Map".equals(type))
+    {
+      params.put("map_name", id);
+    }
+    else if ("New".equals(type))
+    {
+      params.put("newid", id);
+    }
+    else if ("Query".equals(type))
+    {
+      params.put("name", id);
+    }
+    else if ("Workflow".equals(type))
+    {
+      params.put("instanceid", id);
+    }
+    return new Gson().toJson(params);
   }
 }

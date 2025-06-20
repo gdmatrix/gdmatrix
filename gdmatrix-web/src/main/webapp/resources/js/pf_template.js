@@ -35,7 +35,7 @@ function showContent(mid)
 function showObject(typeId, objectId, parameters)
 {
   const leap = [
-    { "name" : "objectId", "value" : objectId }  
+    { "name" : "objectId", "value" : objectId }
   ];
   if (typeId !== null)
   {
@@ -43,26 +43,81 @@ function showObject(typeId, objectId, parameters)
   }
   if (parameters)
   {
-    leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) }); 
+    leap.push({ "name" : "parameters", "value" : JSON.stringify(parameters) });
   }
+  console.info("showObject", leap);
   _showObject(leap);
+  return false;
 }
 
 function viewObject(objectId, parameters)
 {
   showObject(null, objectId, parameters);
+  return false;
 }
 
-function showPage(type, id)
+function showPage(pageType, parameters)
 {
-  const params = [
-    { name: 'type', value: type }
+  const page = [
+    { name: "pageType", value: pageType }
   ];
-  if (id)
+  if (parameters)
   {
-    params.push({ name: 'id', value: id });
-  }  
-  _showPage(params);
+    for (let parameter in parameters)
+    {
+      page.push({ name: parameter, value: parameters[parameter] });
+    }
+  }
+  console.info("showPage", page);
+  _showPage(page);
+  return false;
+}
+
+function controlNavigationHistory(pageState)
+{
+  console.info("controlNavigationHistory", pageState);
+  if (window._popstate)
+  {
+    window._popstate = false;
+  }
+  else
+  {
+    if (pageState.url !== document.location.pathname + document.location.search)
+    {
+      window.history.pushState(pageState, null, pageState.url);
+    }
+  }
+  document.title = `${pageState.title}`;
+}
+
+function setupPopupListener()
+{
+  console.info("setupPopupListener");
+  if (window.popStateListener)
+  {
+    window.removeEventListener("popstate", window.popStateListener);
+  }
+
+  window.popStateListener = event =>
+  {
+    window._popstate = true;
+    var prevPageState = event.state;
+    if (prevPageState && prevPageState.baseTypeId)
+    {
+      showObject(prevPageState.baseTypeId, prevPageState.objectId);
+    }
+    else
+    {
+      let params = new URLSearchParams(document.location.search);
+      let mid = params.get("xmid");
+      if (mid)
+      {
+        showPage("Node", Object.fromEntries(params));
+      }
+    }
+  };
+
+  window.addEventListener("popstate", window.popStateListener);
 }
 
 function setBannerZIndex(value)
@@ -415,7 +470,7 @@ function initMenu()
   var links = mainMenu.querySelectorAll(":scope .menuitem .entry");
   for (let link of links)
   {
-    link.addEventListener("click", (event) => 
+    link.addEventListener("click", (event) =>
     {
       if (!link.classList.contains("ui-link"))
       {
@@ -449,11 +504,11 @@ function initMenu()
       upAnchor.title = "Anterior";
       upAnchor.className = "menuitem";
       upAnchor.href = "#";
-      upAnchor.addEventListener("click", (event) => 
+      upAnchor.addEventListener("click", (event) =>
       {
         event.preventDefault();
-        event.cancelBubble = true; 
-        scrollSubMenuUp(subMenu); 
+        event.cancelBubble = true;
+        scrollSubMenuUp(subMenu);
       });
       upAnchor.innerHTML = '<i class="fa fa-caret-up" />';
       upItem.appendChild(upAnchor);
@@ -465,10 +520,10 @@ function initMenu()
       downAnchor.title = "Següent";
       downAnchor.className = "menuitem";
       downAnchor.href = "#";
-      downAnchor.addEventListener("click", (event) => 
+      downAnchor.addEventListener("click", (event) =>
       {
         event.preventDefault();
-        event.cancelBubble = true; 
+        event.cancelBubble = true;
         scrollSubMenuDown(subMenu);
       });
       downAnchor.innerHTML = '<i class="fa fa-caret-down" />';
@@ -483,7 +538,7 @@ function initMenu()
 
   // register once
   if (document._menuInitialized) return;
-  
+
   document._menuInitialized = true;
 
   window.addEventListener("resize", () =>
@@ -491,7 +546,7 @@ function initMenu()
     doMenuLayout();
   });
 
-  document.body.addEventListener("click", (event) => 
+  document.body.addEventListener("click", (event) =>
   {
     var elem = event.target;
     var isDialog = false;
@@ -520,7 +575,7 @@ function hideDialogPanels()
   for (let panel of panels)
   {
     panel.classList.remove("show");
-  }  
+  }
   setBannerZIndex("");
 }
 
@@ -531,8 +586,8 @@ function showDialogPanel(panelClass, event)
   {
     event.preventDefault();
     event.cancelBubble = true;
-  }  
-  const panel = typeof panelClass === "string" ? 
+  }
+  const panel = typeof panelClass === "string" ?
     document.querySelector("." + panelClass) : panelClass;
   if (panel) panel.classList.add("show");
   return false;
@@ -546,7 +601,7 @@ function hideDialogPanel(panelClass, event)
     event.preventDefault();
     event.cancelBubble = true;
   }
-  const panel = typeof panelClass === "string" ? 
+  const panel = typeof panelClass === "string" ?
     document.querySelector("." + panelClass) : panelClass;
   if (panel) panel.classList.remove("show");
   return false;
@@ -554,7 +609,7 @@ function hideDialogPanel(panelClass, event)
 
 function toggleDialogPanel(panelClass, event)
 {
-  const panel = typeof panelClass === "string" ? 
+  const panel = typeof panelClass === "string" ?
     document.querySelector("." + panelClass) : panelClass;
   if (panel)
   {
@@ -564,7 +619,7 @@ function toggleDialogPanel(panelClass, event)
     }
     else
     {
-      showDialogPanel(panel, event);    
+      showDialogPanel(panel, event);
     }
   }
   return false;
@@ -588,7 +643,7 @@ function loadNodeCss(baseUrl, urls)
   if (urls instanceof Array)
   {
     const head = document.getElementsByTagName("head")[0];
-    
+
     var links = [...head.querySelectorAll("link")];
     for (var link of links)
     {
@@ -597,7 +652,7 @@ function loadNodeCss(baseUrl, urls)
         head.removeChild(link);
       }
     }
-    
+
     for (var url of urls)
     {
       link = document.createElement("link");

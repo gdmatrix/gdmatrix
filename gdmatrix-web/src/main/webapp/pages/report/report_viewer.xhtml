@@ -18,7 +18,10 @@
   <gdm:saveBean value="reportFinderBean"  />  
   
   <script>
-    window.history.pushState({},'','/pages/report_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    controlNavigationHistory({
+      url : "/pages/report_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "#{userSessionBean.selectedMenuItem.label}"
+    });
   </script>  
   
 </ui:composition>

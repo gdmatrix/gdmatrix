@@ -550,37 +550,5 @@ function closePFDialog(widgetVar)
   }
 }
 
-function controlNavigationHistory(pageState)
-{
-  if (window.popStateListener)
-  {
-    window.removeEventListener("popstate", window.popStateListener);
-  }
-
-  window.popStateListener = event => {
-    window._popstate = true;
-    var prevPageState = event.state;
-    if (prevPageState) 
-    {
-      showObject(prevPageState.baseTypeId, prevPageState.objectId);
-    }
-  };
-
-  window.addEventListener("popstate", window.popStateListener);
-
-  if (window._popstate)
-  {
-    window._popstate = false;
-  }
-  else
-  {
-    if (pageState.url !== document.location.pathname + document.location.search)
-    {
-      window.history.pushState(pageState, null, pageState.url);
-    }
-  }
-  document.title = `${pageState.title}`;  
-}
-
 initKeyCapture();
 checkFirefoxFontSizeChange();

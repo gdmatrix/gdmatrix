@@ -11,7 +11,7 @@
   <div class="card_grid">
     <ui:repeat value="#{gridBean.cards}" var="card">
       <div class="card aspect#{card.aspect}">
-        <a href="#" onclick="showPage('#{card.type}', '#{card.id}')">
+        <a href="#" onclick="return showPage('#{card.type}', #{card.jsonParameters})">
           <img src="/documents/#{card.imageId}" alt="" />
           <div class="title">#{card.title}</div>
         </a>
@@ -22,8 +22,10 @@
   <gdm:saveBean value="gridBean" />
   
   <script>
-    window.history.pushState({}, '', '/pages/grid/grid.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}');
-    document.title = "#{userSessionBean.selectedMenuItem.label}";  
+    controlNavigationHistory({
+      url : "/pages/grid/grid.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "#{userSessionBean.selectedMenuItem.label}"
+    });
   </script>    
   
 </ui:composition>

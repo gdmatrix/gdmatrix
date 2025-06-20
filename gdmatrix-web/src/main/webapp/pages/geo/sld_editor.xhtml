@@ -111,25 +111,10 @@
     }
     CQLAssistant.serviceUrl = #{geoSldBean.serviceUrlString};
 
-    window.history.pushState({}, '','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-
-    if (window.popStateListener)
-    {
-      window.removeEventListener("popstate", window.popStateListener);
-    }
-
-    window.popStateListener = () => {
-      var pfButton = PrimeFaces.widgets["showCatalogueButton"];
-      if (pfButton)
-      {
-        var id = pfButton.id;
-        var button = document.getElementById(id);
-        button.click();
-      };
-    };
-
-    window.addEventListener("popstate", window.popStateListener);
-    document.title = "SLD #{geoSldBean.sldName}"; 
+    controlNavigationHistory({
+      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "SLD #{geoSldBean.sldName}"
+    });
   </script>
 
 </ui:composition>

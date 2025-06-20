@@ -238,23 +238,22 @@ public class TemplateBean extends WebBean implements Serializable
   {
     ExternalContext externalContext = getExternalContext();
     Map<String, String> parameterMap = externalContext.getRequestParameterMap();
-    String type = parameterMap.get("type");
-    String id = parameterMap.get("id");
-    System.out.println(type + "," + id);
-    String mid = getProperty(type + ".mid");
-    if (mid != null)
+
+    String pageType = parameterMap.get("pageType");
+    if (pageType == null) pageType = "Node";
+    String mid = parameterMap.get("mid");
+    System.out.println(pageType + "," + mid);
+
+    if ("Node".equals(pageType))
     {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      userSessionBean.setSelectedMid(mid);
-      if ("Map".equals(type))
+      show(mid);
+    }
+    else
+    {
+      mid = getProperty(pageType + ".mid");
+      if (mid != null)
       {
-        GeoMapBean geoMapBean = CDI.current().select(GeoMapBean.class).get();
-        geoMapBean.loadMap(id);
-        geoMapBean.setView("map_viewer");
-      }
-      else
-      {
-        userSessionBean.executeSelectedMenuItem();
+        show(mid);
       }
     }
   }

@@ -95,7 +95,10 @@
   <gdm:saveBean value="documentViewerBean" /> 
 
   <script>
-    window.history.pushState({}, '', '/pages/doc/document_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}');
+    controlNavigationHistory({
+      url : "/pages/doc/document_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "#{userSessionBean.selectedMenuItem.label}"
+    });
   </script>    
 
 </ui:composition>

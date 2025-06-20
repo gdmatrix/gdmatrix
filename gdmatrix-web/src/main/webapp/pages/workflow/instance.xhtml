@@ -303,25 +303,10 @@
   <gdm:saveBean value="workflowInstanceListBean" />
 
   <script>
-    window.history.pushState({},'','/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}');
-
-    if (window.popStateListener)
-    {
-      window.removeEventListener("popstate", window.popStateListener);
-    }
-
-    window.popStateListener = () => {
-      var pfButton = PF("exitButton");
-      if (pfButton)
-      {
-        var id = pfButton.id;
-        var button = document.getElementById(id);
-        button.click();
-      };
-    };
-
-    window.addEventListener("popstate", window.popStateListener);
-    document.title = "#{workflowBundle.instance} #{workflowInstanceBean.instanceId}";
+    controlNavigationHistory({
+      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;instanceid=#{workflowInstanceBean.instanceId}",
+      title : "#{workflowBundle.instance} #{workflowInstanceBean.instanceId}"
+    });
   </script>
   
   
