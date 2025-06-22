@@ -25,6 +25,16 @@
   background: var(--surface-200);
 }
 
+.card_grid .card > a img
+{
+  transition: transform 0.5s;
+}
+
+.card_grid .card > a:hover img
+{
+  transform: scale(1.1);
+}
+
 .card_grid .card > a:hover .title,
 .card_grid .card > a:focus .title
 {
