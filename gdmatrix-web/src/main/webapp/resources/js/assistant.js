@@ -5,12 +5,12 @@ function updateSendButton()
   var text = PF("assistantTextarea").getJQ().val().trim();
   var sendButton = PF("sendButton");
 
-  var waiting = document.querySelector(".dot-typing") ? true : false;  
+  var waiting = document.querySelector(".dot-typing") ? true : false;
 
   if (text.length === 0 || waiting)
   {
     sendButton.disable();
-  } 
+  }
   else
   {
     sendButton.enable();
@@ -26,14 +26,14 @@ function createMessage(role, markdown = "")
     case "AI": icon = "mi-outlined mi-smart-toy"; break;
     case "TOOL_EXECUTION_RESULT": icon = "pi pi-cog"; break;
     default: icon = "pi pi-cog"; break;
-  }  
-  
+  }
+
   let roleLabel = role;
   if (role === "AI") roleLabel = aiLabel || role;
-  else if (role === "USER") roleLabel = userLabel || role;  
-  
+  else if (role === "USER") roleLabel = userLabel || role;
+
   const itemElem = document.createElement("li");
-  itemElem.innerHTML = 
+  itemElem.innerHTML =
   `
     <div class="flex m-2 mb-4 message ${role}">
       <div class="flex-grow-0">
@@ -69,13 +69,13 @@ function sendMessage()
   var listElem = getMessageList();
   var textarea = PF("assistantTextarea").getJQ();
   var text = textarea.val().trim();
-  
+
   var docId = document.querySelector(".attached_docid").textContent;
   if (docId)
   {
-    text += "\n(docId: [" + docId + "](/documents/" + docId + "))";    
+    text += "\n(docId: [" + docId + "](/documents/" + docId + "))";
   }
-  
+
   textarea.val(text);
 
   var sendButton = PF("sendButton");
@@ -83,10 +83,10 @@ function sendMessage()
 
   var itemElem = createMessage("USER", text);
   listElem.appendChild(itemElem);
-  
+
   var dotsElem = createDots();
   listElem.appendChild(dotsElem);
-  
+
   scrollMessages();
   setTimeout(() => textarea.val(""), 0);
 }
@@ -115,7 +115,7 @@ async function showResponse(threadId)
   let aiMessageElem = listElem.querySelector(":scope > li:last-child .message.AI");
   if (aiMessageElem)
   {
-    markdownElem = aiMessageElem.querySelector(".markdown");  
+    markdownElem = aiMessageElem.querySelector(".markdown");
     htmlElem = aiMessageElem.querySelector(".html");
   }
 
@@ -130,7 +130,7 @@ async function showResponse(threadId)
     {
       if (!aiMessageElem)
       {
-        var itemElem = createMessage("AI");  
+        var itemElem = createMessage("AI");
         listElem.appendChild(itemElem);
         aiMessageElem = itemElem.querySelector(".message");
         markdownElem = itemElem.querySelector(".markdown");
@@ -153,6 +153,10 @@ async function showResponse(threadId)
       if (!text || type === "TOOL_EXECUTION_RESULT")
       {
         text = "```json\n" + JSON.stringify(item, null, 2) + "\n```";
+      }
+      else if (type === "ACTION")
+      {
+        eval(item.text);
       }
       var itemElem = createMessage(type, text);
       listElem.appendChild(itemElem);
@@ -198,12 +202,12 @@ function markdownToHtml(text)
     }
     else
     {
-      html = markdown.render(message);    
+      html = markdown.render(message);
     }
   }
   else
   {
-    html = markdown.render(text);    
+    html = markdown.render(text);
   }
   return html;
 }

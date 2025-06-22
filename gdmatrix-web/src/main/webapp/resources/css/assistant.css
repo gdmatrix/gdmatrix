@@ -151,6 +151,21 @@
   font-family: monospace;
 }
 
+.message.ACTION .avatar
+{
+  background: #000080;
+}
+
+.message.ACTION .avatar > span
+{
+  color: white;
+}
+
+.message.ACTION .content
+{
+  font-family: monospace;
+}
+
 .message.ERROR .avatar
 {
   background: red;

@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.activation.DataHandler;
@@ -331,7 +330,13 @@ public class ThreadsBean extends WebBean implements Serializable
           ToolExecutor executor = new ToolExecutor();
           executor.put("userId", userId);
           executor.put("threadId", threadId);
-          return executor.execute(toolRequest);
+          String result = executor.execute(toolRequest);
+          String action = executor.getAction();
+          if (action != null)
+          {
+            pushAction(queue, action);
+          }
+          return result;
         }
 
         @Override
@@ -350,7 +355,7 @@ public class ThreadsBean extends WebBean implements Serializable
         @Override
         public void onError(Throwable t)
         {
-          queue.push(getErrorObject(t));
+          pushError(queue, t);
           queue.push(0);
         }
       });
@@ -455,19 +460,6 @@ public class ThreadsBean extends WebBean implements Serializable
     return threadStore;
   }
 
-  private Map<String, String> getErrorObject(Throwable t)
-  {
-    Throwable cause = t.getCause();
-    if (cause != null)
-    {
-      t = cause;
-    }
-    Map error = new HashMap<>();
-    error.put("type", "ERROR");
-    error.put("text", t.toString());
-    return error;
-  }
-
   private void pushMessage(StreamQueue queue, ChatMessage message,
     boolean listing)
   {
@@ -500,5 +492,20 @@ public class ThreadsBean extends WebBean implements Serializable
         queue.push(ChatMessageAdapter.toMap(message));
       }
     }
+  }
+
+  private void pushAction(StreamQueue queue, String action)
+  {
+    queue.push(Map.of("type", "ACTION", "text", action));
+  }
+
+  private void pushError(StreamQueue queue, Throwable t)
+  {
+    Throwable cause = t.getCause();
+    if (cause != null)
+    {
+      t = cause;
+    }
+    queue.push(Map.of("type", "ERROR", "text", t.toString()));
   }
 }

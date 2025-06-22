@@ -82,4 +82,10 @@ public class ToolExecutor extends ScriptClient
 
     return resultText;
   }
+
+  public String getAction()
+  {
+    Object value = get("action");
+    return value instanceof String ? (String)value : null;
+  }
 }
