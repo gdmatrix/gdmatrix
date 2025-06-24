@@ -36,6 +36,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -44,6 +46,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -660,6 +664,60 @@ public class GeoMapBean extends WebBean implements Serializable
 
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
+  }
+
+  public String getJsonPageState()
+  {
+    String mid = getSelectedMenuItem().getMid();
+    Map<String, String> jsonState = new HashMap<>();
+    StringBuilder urlBuffer = new StringBuilder("go.faces?xmid=" + mid);
+
+    String title = "Map";
+    if (mapDocument != null)
+    {
+      if (mapDocument.getTitle() != null)
+      {
+        title = mapDocument.getTitle();
+      }
+      else
+      {
+        title = mapDocument.getName();
+      }
+      jsonState.put(MAP_NAME_PROPERTY, mapDocument.getName());
+      urlBuffer.append("&").append(MAP_NAME_PROPERTY)
+        .append("=").append(mapDocument.getName());
+    }
+
+    try
+    {
+      Map<String, String> map = getExternalContext().getRequestParameterMap();
+      for (Entry<String, String> entry : map.entrySet())
+      {
+        // filter some JSF POST parameters
+        String name = entry.getKey();
+        if (name.startsWith("javax.") ||
+            name.startsWith("hidden") || // TODO: remove it when not needed
+            name.startsWith("mainform") ||
+            name.startsWith(MAP_NAME_PROPERTY) ||
+            name.equals("xmid") ||
+            name.equals("smid") ||
+            name.equals("page_type") ||
+            name.startsWith("_")) continue;
+
+        String value = entry.getValue();
+        urlBuffer.append("&").append(name).append("=");
+        urlBuffer.append(URLEncoder.encode(value, "UTF-8"));
+      }
+    }
+    catch (UnsupportedEncodingException ex)
+    {
+    }
+
+    jsonState.put("title", title);
+    jsonState.put("url", urlBuffer.toString());
+
+    Gson gson = new Gson();
+    return gson.toJson(jsonState);
   }
 
   public String getJsonMap()

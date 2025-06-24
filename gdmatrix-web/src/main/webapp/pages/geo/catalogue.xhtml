@@ -150,7 +150,7 @@
       title : "#{userSessionBean.selectedMenuItem.label}"
     });
 
-    setTimeout(() => window.location.hash = "");
+    setTimeout(() => history.replaceState(null, null, ' '), 0); // remove #hash
 
     var elems = document.getElementsByClassName("current_map");
     if (elems.length > 0)

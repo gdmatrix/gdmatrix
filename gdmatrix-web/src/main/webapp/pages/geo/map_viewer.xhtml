@@ -49,7 +49,7 @@
                   encoder="#{geoMapBean.encoder}"
                   styleClass="flex-grow-1 h-full" />
   </div>
-
+  
   <div id="map_info" style="display:none" aria-hidden="true">
     <h:outputText value="#{applicationBean.translateHtml(geoMapBean.mapDocument.mergedSummaryAndDescription, 'geo')}"
                   escape="false" />
@@ -84,16 +84,7 @@
     PrimeFaces.detachedWidgets = PrimeFaces.detachedWidgets.filter(
       (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
     
-    var mid = '#{userSessionBean.selectedMenuItem.mid}';
-    var mapName = '#{geoMapBean.mapDocument.name}';
-    var params = new URLSearchParams(window.location.search);
-    params.set("xmid", mid);
-    params.set("map_name", mapName);
-    var url = '/go.faces?' + params.toString();
-    controlNavigationHistory({
-      url : url,
-      title : "#{geoMapBean.mapDocument.title == null ? geoMapBean.mapDocument.name : geoMapBean.mapDocument.title}"
-    });
+    controlNavigationHistory(#{geoMapBean.jsonPageState});
   </script>
   
 </ui:composition>
