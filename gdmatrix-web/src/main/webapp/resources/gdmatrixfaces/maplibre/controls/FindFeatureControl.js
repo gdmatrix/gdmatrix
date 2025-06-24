@@ -64,6 +64,7 @@ class FindFeatureControl
     this.findButton.addEventListener("click", (event) => {
       event.preventDefault();
       this.find();
+      this.updateUrl();
     });
     this.buttonsDiv.appendChild(this.findButton);
 
@@ -248,7 +249,7 @@ class FindFeatureControl
         }
         this.listFeatures();
         this.addMarkers();
-        this.addForms();
+        this.addForms();        
       }
       catch (ex)
       {
@@ -396,6 +397,53 @@ class FindFeatureControl
   {
     this.forms.clear();
   }
+  
+  paramsToForm(params)
+  {
+    const inputs = this.formDiv.querySelectorAll("input");
+    for (const input of inputs)
+    {
+      let value = params.get(input.id);
+      if (value !== null)
+      {
+        input.value = value;
+      }
+    }
+
+    const selects = this.formDiv.querySelectorAll("select");
+    for (const select of selects)
+    {
+      let value = params.get(select.id);
+      if (value !== null)
+      {
+        select.value = value;
+      }
+    }
+  }
+  
+  paramsFromForm(params)
+  {
+    const inputs = this.formDiv.querySelectorAll("input");
+    for (const input of inputs)
+    {
+      let value = input.value;
+      if (value)
+      {
+        params.set(input.id, value);
+      }
+    }
+
+    const selects = this.formDiv.querySelectorAll("select");
+    for (const select of selects)
+    {
+      let value = select.value;
+      if (value)
+      {
+        params.set(select.id, value);
+      }
+    }
+  }  
+  
 
   selectFeature(feature, finder, source)
   {
@@ -481,7 +529,48 @@ class FindFeatureControl
       }
     }
   }
+  
+  onLoad()
+  {
+    if (this.finders.length === 0) return;
+    
+    let selectedFinder = this.finders[0];
 
+    const params = new URLSearchParams(document.location.search);
+    const finderName = params.get("finder");
+
+    if (finderName)
+    {
+      for (const finder of this.finders)
+      {
+        if (finder.name === finderName)
+        {
+          selectedFinder = finder;
+          break;
+        }
+      }
+    }
+    this.setActiveFinder(selectedFinder);
+    this.paramsToForm(params);
+    if (finderName) this.find();
+  }
+  
+  updateUrl()
+  {
+    const baseUrl = document.location.protocol + "//" + 
+                    document.location.hostname + 
+                    document.location.pathname;
+            
+    const params = new URLSearchParams(document.location.search);
+    params.set("finder", this.activeFinder.name);
+    this.paramsFromForm(params);
+    
+    let url = baseUrl + "?" + params.toString();
+    if (document.location.hash) url += document.location.hash;
+    
+    window.history.replaceState({}, '', url);
+  }
+  
   onAdd(map)
   {
     this.map = map;
@@ -505,12 +594,9 @@ class FindFeatureControl
       this.findPanel.show();
     });
 
-    if (this.finders.length > 0)
-    {
-      this.setActiveFinder(this.finders[0]);
-    }
-
     this.createPanels(map);
+    
+    map.on("load", () => this.onLoad());
 
     return div;
   }

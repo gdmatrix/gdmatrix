@@ -29,7 +29,7 @@ class FeatureFinder
       element.innerHTML = this.createFormFields();
     }
   }
-
+  
   createFormFields()
   {
     return `<input type="text" name="name" />`; // legacy method
