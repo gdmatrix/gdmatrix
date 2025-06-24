@@ -34,6 +34,7 @@ import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import java.util.logging.Level;
 import org.apache.commons.lang.StringUtils;
 import org.mozilla.javascript.Callable;
+import org.mozilla.javascript.ConsString;
 import org.santfeliu.util.script.ScriptClient;
 
 /**
@@ -86,6 +87,8 @@ public class ToolExecutor extends ScriptClient
   public String getAction()
   {
     Object value = get("action");
-    return value instanceof String ? (String)value : null;
+    if (value instanceof String) return (String)value;
+    if (value instanceof ConsString) return value.toString();
+    return null;
   }
 }

@@ -156,6 +156,8 @@ async function showResponse(threadId)
       }
       else if (type === "ACTION")
       {
+        console.info("ACTION", item.text);
+        text = "```json\n" + item.text + "\n```";
         eval(item.text);
       }
       var itemElem = createMessage(type, text);

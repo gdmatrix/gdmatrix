@@ -284,7 +284,9 @@ public class ThreadsBean extends WebBean implements Serializable
   public void sendMessage()
   {
     final StreamQueue queue = StreamQueue.getInstance(getThreadId(), true);
-    String userId = UserSessionBean.getCurrentInstance().getUserId();
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    String userId = userSessionBean.getUserId();
+    String mid = userSessionBean.getSelectedMid();
     String threadId = getThreadId();
     attachedFilename = null;
     attachedDocId = null;
@@ -329,6 +331,7 @@ public class ThreadsBean extends WebBean implements Serializable
         {
           ToolExecutor executor = new ToolExecutor();
           executor.put("userId", userId);
+          executor.put("mid", mid);
           executor.put("threadId", threadId);
           String result = executor.execute(toolRequest);
           String action = executor.getAction();
