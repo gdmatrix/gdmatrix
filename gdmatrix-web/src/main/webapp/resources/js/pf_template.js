@@ -59,7 +59,7 @@ function viewObject(objectId, parameters)
 function showPage(pageType, parameters)
 {
   const page = [
-    { name: "pageType", value: pageType }
+    { name: "page_type", value: pageType }
   ];
   if (parameters)
   {

@@ -239,10 +239,9 @@ public class TemplateBean extends WebBean implements Serializable
     ExternalContext externalContext = getExternalContext();
     Map<String, String> parameterMap = externalContext.getRequestParameterMap();
 
-    String pageType = parameterMap.get("pageType");
+    String pageType = parameterMap.get("page_type");
     if (pageType == null) pageType = "Node";
     String mid = parameterMap.get("mid");
-    System.out.println(pageType + "," + mid);
 
     if ("Node".equals(pageType))
     {

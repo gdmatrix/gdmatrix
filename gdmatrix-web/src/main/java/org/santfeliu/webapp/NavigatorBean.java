@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+import com.google.gson.Gson;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
@@ -204,14 +205,15 @@ public class NavigatorBean extends WebBean implements Serializable
         }
       }
     }
-    JSONObject json = new JSONObject();
 
-    json.put("baseTypeId", baseTypeId);
-    json.put("objectId", objectId);
-    json.put("title", pageTitle);
-    json.put("url", pageUrl);
+    Map<String, String> map = Map.of(
+      "baseTypeId", baseTypeId,
+      "objectId", objectId,
+      "title", pageTitle,
+      "url", pageUrl);
 
-    return json.toJSONString();
+    Gson gson = new Gson();
+    return gson.toJson(map);
   }
 
   public String getContent()
@@ -275,7 +277,7 @@ public class NavigatorBean extends WebBean implements Serializable
     leap.setSearchTabSelector(objectId == null ?
       baseTypeInfo.getDefaultSearchTabSelector() : -1);
 
-    return execute(leap, true);    
+    return execute(leap, true);
   }
 
   public String show(String objectTypeId, String objectId,
@@ -307,7 +309,7 @@ public class NavigatorBean extends WebBean implements Serializable
         for (String paramName : request.getParameterMap().keySet())
         {
           leap.getParameters().put(paramName, request.getParameter(paramName));
-        }   
+        }
       }
       else
       {
@@ -388,13 +390,13 @@ public class NavigatorBean extends WebBean implements Serializable
   {
     view(objectId, 0, false, parameters);
   }
-  
+
   public void view(String objectId, int editTabSelector, boolean resetPosition)
   {
     view(objectId, editTabSelector, resetPosition, null);
   }
-  
-  public void view(String objectId, int editTabSelector, boolean resetPosition, 
+
+  public void view(String objectId, int editTabSelector, boolean resetPosition,
     Map<String, Object> parameters)
   {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
@@ -549,9 +551,9 @@ public class NavigatorBean extends WebBean implements Serializable
 
     ObjectBean objectBean = baseTypeInfo.getObjectBean();
     if (objectBean != null)
-    {   
+    {
       leap.construct(objectBean);
-      
+
       baseTypeInfo.visit(objectBean.getObjectId());
       lastBaseTypeId = baseTypeInfo.getBaseTypeId();
       history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
@@ -622,7 +624,7 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       return getProperty(OBJECT_BEAN_PROPERTY);
     }
-    
+
     public int getDefaultSearchTabSelector()
     {
       try
@@ -1163,7 +1165,7 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       this.selectedTypeId = selectedTypeId;
     }
-    
+
     @Override
     public void construct(ObjectBean objectBean)
     {
@@ -1179,7 +1181,7 @@ public class NavigatorBean extends WebBean implements Serializable
       baseTypeInfo.restoreBeanState(objectBean);
       objectBean.getRootTypeId();
       Type selectedType = TypeCache.getInstance().getType(selectedTypeId);
-      if (selectedType != null && 
+      if (selectedType != null &&
           selectedType.isDerivedFrom(objectBean.getRootTypeId()))
       {
         try
@@ -1190,7 +1192,7 @@ public class NavigatorBean extends WebBean implements Serializable
         {
         }
       }
-      baseTypeInfo.restoreTabBeansState(objectBean.getEditTabs(), objectId);      
+      baseTypeInfo.restoreTabBeansState(objectBean.getEditTabs(), objectId);
       FinderBean finderBean = objectBean.getFinderBean();
       finderBean.clear();
       baseTypeInfo.restoreBeanState(finderBean);

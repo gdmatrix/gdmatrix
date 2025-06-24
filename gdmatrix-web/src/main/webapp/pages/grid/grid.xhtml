@@ -26,6 +26,7 @@
       url : "/pages/grid/grid.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}",
       title : "#{userSessionBean.selectedMenuItem.label}"
     });
+    setTimeout(() => history.replaceState(null, null, ' '), 0); // remove #hash
   </script>    
   
 </ui:composition>
