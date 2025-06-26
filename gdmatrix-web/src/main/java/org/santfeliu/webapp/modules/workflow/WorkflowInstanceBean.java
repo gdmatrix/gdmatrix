@@ -406,7 +406,10 @@ public class WorkflowInstanceBean extends FacesBean implements Serializable
           org.santfeliu.form.FormFactory.getInstance();
 
         boolean updateForm = getFacesContext().getRenderResponse();
-        if (updateForm) formFactory.clearForm(selector);
+        if (updateForm && debugModeEnabled)
+        {
+          formFactory.clearForm(selector);
+        }
         return formFactory.getForm(selector, variables, updateForm);
       }
       catch (Exception ex)

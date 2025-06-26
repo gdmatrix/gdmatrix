@@ -70,7 +70,7 @@ public class HtmlForm implements Form, Serializable
   Map<String, HtmlView> viewsByRef = new HashMap();
   boolean evaluated;
   boolean contextDependant;
-  long expires = 0;
+  long expires;
   String lastModified;
   public static final String TEXT_FORMAT = "text";
   public static final String NUMBER_FORMAT = "number";
@@ -78,10 +78,12 @@ public class HtmlForm implements Form, Serializable
   public static final String DATE_FORMAT = "date";
   public static final String TIME_FORMAT = "time";
   public static final String DATETIME_FORMAT = "datetime";
+  public static final long EXPIRE_MILLIS = 5 * 60 * 1000;
 
   public HtmlForm()
   {
     id = UUID.randomUUID().toString();
+    expires = System.currentTimeMillis() + EXPIRE_MILLIS;
   }
 
   @Override
@@ -413,8 +415,6 @@ public class HtmlForm implements Form, Serializable
   @Override
   public boolean isOutdated()
   {
-    // TODO: implement strategy to detect source changes
-
     if (expires == 0) return false;
     long now = System.currentTimeMillis();
     return (now > expires);

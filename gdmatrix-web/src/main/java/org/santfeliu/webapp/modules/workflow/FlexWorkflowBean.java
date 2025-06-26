@@ -41,10 +41,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.component.html.HtmlOutputText;
 import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.santfeliu.form.FormFactory;
 import org.santfeliu.util.Properties;
 import org.santfeliu.webapp.util.ComponentUtils;
 import static org.santfeliu.webapp.util.FormImporter.ACTION_METHOD_OPTION;
@@ -134,6 +134,11 @@ public class FlexWorkflowBean extends WorkflowBean implements Serializable
         Map<String, Object> options = new HashMap<>();
         options.put(ACTION_METHOD_OPTION, "flexWorkflowBean.doAction");
         options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
+
+        if (instanceBean.isDebugModeEnabled())
+        {
+          FormFactory.getInstance().clearForm(selector);
+        }
 
         ComponentUtils.includeFormComponents(panel, selector,
            "flexWorkflowBean.value", "flexWorkflowBean.values", data, options);

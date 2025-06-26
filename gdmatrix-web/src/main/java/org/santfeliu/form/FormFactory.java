@@ -115,8 +115,9 @@ public class FormFactory
       form = restoreForm(selector, "");
     }
 
-    if (form == null) // form not found in cache
+    if (form == null || form.isOutdated()) // form not found in cache or outdated
     {
+      form = null;
       // call builders to create form
       Iterator<FormBuilder> iter = builders.iterator();
       while (iter.hasNext() && form == null)
@@ -160,7 +161,7 @@ public class FormFactory
   {
     removeForm(selector);
   }
-  
+
   // builders
   public void addFormBuilder(FormBuilder builder)
   {
