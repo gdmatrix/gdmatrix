@@ -359,6 +359,10 @@ function updateItemHeight(item)
 function onMenuClick(event)
 {
   doMenuLayout();
+  if (menuSetup.onClick)
+  {
+    menuSetup.onClick(event);
+  }
 }
 
 function onMenuOver(event)

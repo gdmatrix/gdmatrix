@@ -134,20 +134,32 @@
           vertical: {
             multiDrop: true,
             hoverDrop: false
+          },
+          onClick: function(event)
+          {
+            if (isAssistantVisible())
+            {
+              minimizeAssistantPanel(event);
+            }
           }
         };
         initMenu();
+        
+        function isAssistantVisible()
+        {
+          var assistantPanel = document.querySelector(".assistant_panel");
+          return !assistantPanel.classList.contains("hidden");          
+        }
 
         function toggleAssistantPanel(event)
         {
-          var assistantPanel = document.querySelector(".assistant_panel");
-          if (assistantPanel.classList.contains("hidden"))
+          if (isAssistantVisible())
           {
-            minimizeAssistantPanel(event);
+            hideAssistantPanel(event);
           }
           else
           {
-            hideAssistantPanel(event);
+            minimizeAssistantPanel(event);
           }    
         }
 
