@@ -117,6 +117,124 @@ function quillInit(clientId, readonly, maxLength)
       dialogElem.parentNode.removeChild(dialogElem);
     });    
   };
+  
+  const handleLink = (quill) =>
+  {
+    const range = quill.getSelection();
+    if (!range) return;
+    
+    const existingDialog = document.getElementById('link-dialog');
+    if (existingDialog) existingDialog.remove();    
+
+    const getLinkAtCursor = (quill, range) => 
+    {
+      const format = quill.getFormat(range);
+      if (format.link) {
+        const Link = Quill.import('formats/link');
+        const [blot] = quill.scroll.descendant(Link, range.index);
+        return blot?.domNode || null;
+      }
+      return null;
+    };
+
+    const existingLink = getLinkAtCursor(quill, range);
+    const url = existingLink?.getAttribute('href') || '';
+    const target = existingLink?.getAttribute('target') || '_self';
+
+    const dialogElem = document.createElement("div");
+    dialogElem.className = "ql-dialog";
+    dialogElem.id = 'link-dialog';
+    dialogElem.style.padding = "10px";
+
+    dialogElem.innerHTML = `
+      <div>
+        <label for="link-url">URL:</label><br />
+        <div style="display: flex; gap: 5px; align-items: stretch;">
+          <input type="text" id="link-url" value="${url}" style="flex: 1;" />
+          <button id="link-open" title="Show" style="white-space: nowrap;margin:0">Show</button>
+        </div>
+      </div>
+      <div>
+        <label for="link-target">Target:</label><br />
+        <select id="link-target" style="width: 100%;">
+          <option value="_self" ${target === '_self' ? 'selected' : ''}></option>
+          <option value="_blank" ${target === '_blank' ? 'selected' : ''}>_blank</option>
+        </select>
+      </div>
+      <div style="text-align: right; margin-top: 10px;">
+        <button id="link-submit">Save</button>
+        ${existingLink ? '<button id="link-remove">Remove</button>' : ''}    
+        <button id="link-cancel">Cancel</button>
+      </div>
+    `;
+
+    document.body.appendChild(dialogElem);
+
+    const urlInput = document.getElementById('link-url');
+    const targetSelect = document.getElementById('link-target');
+    const open = document.getElementById('link-open');
+    if (open) 
+    {
+      open.onclick = () => {
+        let val = urlInput.value.trim();
+        if (!val) return;
+
+        let urlToOpen = '';
+
+        if (/^https?:\/\//i.test(val)) {
+          // Absolute URL with http or https prefix
+          urlToOpen = val;
+        } else if (val.startsWith('/')) {
+          // Relative to current location
+          urlToOpen = window.location.origin + val;
+        } else {
+          urlToOpen = 'http://' + val;
+        }
+
+        window.open(urlToOpen, '_blank');
+      };
+    }    
+    const submit = document.getElementById('link-submit');
+    const cancel = document.getElementById('link-cancel');
+    const remove = document.getElementById('link-remove');
+
+    //Save click
+    submit.onclick = () => 
+    {
+      const linkUrl = urlInput.value.trim();
+      const linkTarget = targetSelect.value;
+
+      if (linkUrl) 
+      {
+        quill.formatText(range.index, range.length, 'link', linkUrl);
+
+        setTimeout(() => 
+        {
+          const node = getLinkAtCursor(quill, range);
+          if (node) 
+            node.setAttribute('target', linkTarget);
+        }, 0);
+      }
+
+      dialogElem.remove();
+    };
+
+    //Cancel click
+    cancel.onclick = () => 
+    {
+      dialogElem.remove();
+    };
+
+    //Remove click
+    if (remove) 
+    {
+      remove.onclick = () => 
+      {
+        quill.formatText(range.index, range.length, 'link', false);
+        dialogElem.remove();
+      };
+    }
+  }
 
   const editorElem = document.getElementById(editorId);
 
@@ -126,12 +244,17 @@ function quillInit(clientId, readonly, maxLength)
       toolbar: {
         container: toolbarOptions,
         handlers: {
-          image: () => handleImage(quill)
+          image: () => handleImage(quill),
+          link: () => handleLink(quill)
         }
       }
     }
   });
   
+  //Remove native tooltip
+  const tooltip = document.querySelector('.ql-tooltip');
+  if (tooltip) tooltip.remove();
+
   const elems = rootElem.getElementsByClassName("ql-toolbar");
   if (elems.length > 0)
   {
