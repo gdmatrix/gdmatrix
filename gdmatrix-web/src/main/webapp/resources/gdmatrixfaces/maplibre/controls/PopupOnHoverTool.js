@@ -20,6 +20,8 @@ class PopupOnHoverTool extends Tool
       closeButton: false,
       closeOnClick: false
     };
+    this.hoverSourcceId = null;
+    this.hoverFeatureId = null;
     this.enterHandlers = {};
     this.leaveHandlers = {};
   }
@@ -89,6 +91,21 @@ class PopupOnHoverTool extends Tool
         map.getCanvas().style.cursor = "pointer";
 
         const feature = event.features[0];
+
+        if (this.hoverSourceId && this.hoverFeatureId)
+        {
+          console.info("hover off", this.hoverSourceId, this.hoverFeatureId);
+          map.setFeatureState({ source : this.hoverSourceId, id: this.hoverFeatureId },
+          { "hover" : false });
+        }
+        
+        this.hoverSourceId = map.getLayer(layerId).source;
+        this.hoverFeatureId = feature.id;
+
+        console.info("hover on", this.hoverSourceId, this.hoverFeatureId);
+        map.setFeatureState({ source : this.hoverSourceId, id:this.hoverFeatureId },
+        { "hover" : true });
+        
         let coordinates;
         if (feature.geometry.type === "Point")
         {
@@ -119,12 +136,19 @@ class PopupOnHoverTool extends Tool
 
       leaveHandlers[layerId] = () => 
       {
+        if (this.hoverSourceId && this.hoverFeatureId)
+        {
+          console.info("hover off", this.hoverSourceId, this.hoverFeatureId);
+          map.setFeatureState({ source : this.hoverSourceId, id: this.hoverFeatureId },
+          { "hover" : false });
+        }
+        
         map.getCanvas().style.cursor = "";
         this.removePopup();
       };    
     }
     return div;
-  }
+  }  
 }
 
 export { PopupOnHoverTool };
