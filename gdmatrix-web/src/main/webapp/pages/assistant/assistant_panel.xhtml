@@ -19,13 +19,13 @@
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
   
+  <ui:fragment rendered="#{assistantBean.isAssistantNode()}"> 
   <script>
-    /*
     controlNavigationHistory({
       url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
       title : "#{userSessionBean.selectedMenuItem.label}"
     });
-    */
   </script>
+  </ui:fragment>
   
 </ui:composition>

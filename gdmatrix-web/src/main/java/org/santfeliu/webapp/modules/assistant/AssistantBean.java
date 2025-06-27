@@ -39,6 +39,7 @@ import javax.inject.Named;
 import org.matrix.doc.DocumentManagerPort;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.web.UserSessionBean;
+import static org.santfeliu.web.UserSessionBean.ACTION;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.assistant.langchain4j.Assistant;
 import org.santfeliu.webapp.modules.assistant.langchain4j.AssistantStore;
@@ -197,6 +198,12 @@ public class AssistantBean extends WebBean implements Serializable
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     return userSessionBean.isUserInRole(ASSISTANT_ADMIN_ROLEID);
+  }
+
+  public boolean isAssistantNode()
+  {
+    String action = getProperty(ACTION);
+    return "#{assistantBean.show}".equals(action);
   }
 
   public void changeAssistant(String assistantId)
