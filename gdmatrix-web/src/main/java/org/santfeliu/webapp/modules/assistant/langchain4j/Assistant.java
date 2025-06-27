@@ -59,6 +59,7 @@ public class Assistant implements Serializable
   private Double frequencyPenalty;
   private Double topP;
   private Integer maxTokens;
+  private Integer numCtx;
   private Integer timeout;
   private String instructions;
   private String docId;
@@ -229,6 +230,16 @@ public class Assistant implements Serializable
     this.maxTokens = maxTokens;
   }
 
+  public Integer getNumCtx()
+  {
+    return numCtx;
+  }
+
+  public void setNumCtx(Integer numCtx)
+  {
+    this.numCtx = numCtx;
+  }
+
   public Integer getTimeout()
   {
     return timeout;
@@ -339,6 +350,8 @@ public class Assistant implements Serializable
       .append(topP == null ? "-" : topP)
       .append("|")
       .append(maxTokens == null ? "-" : maxTokens)
+      .append("|")
+      .append(numCtx == null ? "-" : numCtx)
       .append("|")
       .append(timeout == null ? "-" : timeout)
       .append("|")

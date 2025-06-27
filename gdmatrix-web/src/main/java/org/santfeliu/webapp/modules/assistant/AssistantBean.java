@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.assistant;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -133,6 +134,14 @@ public class AssistantBean extends WebBean implements Serializable
   {
     assistant = new Assistant();
     assistant.setName("New assistant");
+    activeTabIndex = 0;
+  }
+
+  public void copyAssistant()
+  {
+    assistant.setName("New assistant");
+    assistant.setAssistantId(UUID.randomUUID().toString());
+    assistant.setDocId(null);
     activeTabIndex = 0;
   }
 

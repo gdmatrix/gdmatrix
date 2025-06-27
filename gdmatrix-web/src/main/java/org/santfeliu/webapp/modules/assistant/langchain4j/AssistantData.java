@@ -155,6 +155,7 @@ public class AssistantData
           .repeatPenalty(assistant.getFrequencyPenalty())
           .topP(assistant.getTopP())
           .timeout(timeout)
+          .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
           .httpClientBuilder(clientBuilder)
           .build();
@@ -168,6 +169,7 @@ public class AssistantData
           .repeatPenalty(assistant.getFrequencyPenalty())
           .topP(assistant.getTopP())
           .timeout(timeout)
+          .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
           .httpClientBuilder(clientBuilder)
           .build();

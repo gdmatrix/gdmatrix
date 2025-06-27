@@ -34,6 +34,13 @@
                            styleClass="mini"
                            rendered="#{assistantBean.isAdminUser()}"
                            process="@this" update="assistant_panel" />
+          <p:commandButton value="#{objectBundle.copy}"
+                           title="#{objectBundle.copy}"
+                           action="#{assistantBean.copyAssistant}"
+                           icon="pi pi-copy"
+                           styleClass="mini"
+                           rendered="#{assistantBean.isAdminUser()}"
+                           process="@this" update="assistant_panel" />
           <p:commandButton value="#{objectBundle.reload}"
                            title="#{objectBundle.reload}"
                            action="#{assistantBean.reloadAssistant}"
