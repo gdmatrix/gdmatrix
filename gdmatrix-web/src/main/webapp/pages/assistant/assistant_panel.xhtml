@@ -14,18 +14,18 @@
   <h:panelGroup layout="block" id="assistant_panel" styleClass="flex flex-column h-full assistant_container">
     <ui:include src="/pages/assistant/#{assistantBean.view}.xhtml" />  
     <ui:include src="/pages/assistant/assistants_dialog.xhtml" />
+
+    <p:outputPanel id="assistant_history">
+      <ui:fragment rendered="#{assistantBean.isAssistantNode()}"> 
+      <script>
+        controlNavigationHistory(#{assistantBean.jsonPageState});
+      </script>
+      </ui:fragment>
+    </p:outputPanel>
+    
   </h:panelGroup>
 
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
-  
-  <ui:fragment rendered="#{assistantBean.isAssistantNode()}"> 
-  <script>
-    controlNavigationHistory({
-      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
-      title : "#{userSessionBean.selectedMenuItem.label}"
-    });
-  </script>
-  </ui:fragment>
-  
+    
 </ui:composition>

@@ -98,14 +98,14 @@
                              icon="pi pi-plus-circle"
                              rendered="#{threadsBean.thread.isPersistent()}"
                              styleClass="white-space-nowrap mini ml-2"
-                             process="assistant_panel" update="assistant_panel" />
+                             process="assistant_panel" update="assistant_panel assistant_history" />
             <p:commandButton value="#{objectBundle.delete}"
                              title="#{objectBundle.delete}"
                              action="#{threadsBean.deleteThread}"
                              rendered="#{threadsBean.thread.isPersistent()}"
                              icon="pi pi-trash"
                              styleClass="ml-2 white-space-nowrap mini"
-                             process="assistant_panel" update="assistant_panel">
+                             process="assistant_panel" update="assistant_panel assistant_history">
               <p:confirm header="#{objectBundle.delete}"
                          message="#{assistantBundle.deleteThread}"
                          icon="pi pi-info-circle" />
@@ -194,7 +194,7 @@
             <li class="p-2 #{threadsBean.threadId == thread.threadId ? 'current' : ''}">
               <p:commandLink action="#{threadsBean.changeThread(thread.threadId)}"
                              process="@this"
-                             update="@parent:@parent:assistant_panel"
+                             update="@parent:@parent:assistant_panel @parent:@parent:assistant_history"
                              styleClass="flex flex-column no-underline"
                              oncomplete="endThreadsPanel();">
                 

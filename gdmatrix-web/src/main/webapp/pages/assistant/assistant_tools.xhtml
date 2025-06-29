@@ -39,14 +39,18 @@
     
     <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton action="#{assistantToolsBean.editTool(toolName)}"
-                       icon="pi pi-pencil"
-                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       icon="pi pi-info-circle"
+                       alt="#{objectBundle.show}" title="#{objectBundle.show}"
                        styleClass="rounded-button ui-button-flat"
                        process="@this"
                        update="@parent:@parent:@parent:assistant_tabs:assistant_tools_dialog"
                        resetValues="true"
                        oncomplete="PF('assistantToolsDialog').show()"
                        />
+      <p:button onclick="return showPage('IDE', {type:'javascript', name:'#{toolName}'})" 
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       icon="pi pi-pencil"
+                        styleClass="rounded-button ui-button-flat" />      
       <p:commandButton action="#{assistantToolsBean.removeTool(toolName)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"

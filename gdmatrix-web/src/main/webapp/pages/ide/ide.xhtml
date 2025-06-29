@@ -30,7 +30,7 @@
           <f:selectItems value="#{ideBean.typeSelectItems}" />
           <p:ajax event="valueChange"
                   listener="#{ideBean.onTypeChange}"
-                  update="@form:cnt:editor @form:cnt:name"
+                  update="@form:cnt:editor @form:cnt:name @form:cnt:ide_history"
                   process="@this editor" />
         </p:selectOneMenu>
       </div>
@@ -48,7 +48,7 @@
                         emptyMessage="">
           <p:ajax event="itemSelect"
                   listener="#{ideBean.onNameSelect}"
-                  update="editor docs_panel"
+                  update="editor docs_panel @form:cnt:ide_history"
                   process="@this editor" />
           <p:column>
             <span class="code">#{docName}</span>
@@ -56,7 +56,7 @@
         </p:autoComplete>
         <div class="ui-inputgroup ml-1">
           <p:commandButton action="#{ideBean.save}"
-                           process="@form:cnt" update="@form:cnt:docs_panel"
+                           process="@form:cnt" update="@form:cnt:docs_panel @form:cnt:ide_history"
                            icon="pi pi-save" />
           <p:commandButton action="#{ideBean.create}"
                            process="@form:cnt" update="@form:cnt"
@@ -126,11 +126,9 @@
     <p:autoUpdate />
   </p:growl>            
 
+  <p:outputPanel id="ide_history">
   <script>
-    controlNavigationHistory({
-      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
-      title : "IDE"
-    });
+    controlNavigationHistory(#{ideBean.jsonPageState});
 
     if (!window._refreshSessionTimerId)
     {
@@ -138,5 +136,6 @@
       window._refreshSessionTimerId = setInterval(() => refreshSession(), minutes * 60 * 1000);
     }
   </script>
+  </p:outputPanel>
 
 </ui:composition>

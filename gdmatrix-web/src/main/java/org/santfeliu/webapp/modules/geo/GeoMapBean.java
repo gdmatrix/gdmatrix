@@ -47,7 +47,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.CDI;
@@ -69,8 +68,6 @@ import org.santfeliu.webapp.modules.geo.io.SvgStore;
 import org.santfeliu.webapp.modules.geo.ogc.ServiceCapabilities;
 import org.santfeliu.faces.maplibre.encoder.StyleEncoder;
 import org.santfeliu.faces.maplibre.encoder.TranslateStyleEncoder;
-import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import org.santfeliu.faces.maplibre.model.Layer;
 import org.santfeliu.faces.maplibre.model.Light;
 import org.santfeliu.faces.maplibre.model.Sky;
@@ -82,6 +79,9 @@ import org.santfeliu.webapp.modules.geo.metadata.LegendGroup;
 import org.santfeliu.webapp.modules.geo.metadata.LegendItem;
 import org.santfeliu.webapp.modules.geo.metadata.LegendLayer;
 import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
+import static org.santfeliu.webapp.modules.geo.io.MapStore.GEO_ADMIN_ROLE;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 
 /**
  *
@@ -91,7 +91,8 @@ import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 @RequestScoped
 public class GeoMapBean extends WebBean implements Serializable
 {
-  public static final String MAP_NAME_PROPERTY = "map_name";
+  public static final String MAP_NAME_PARAMETER = "map_name";
+  public static final String MAP_VIEW_PARAMETER = "map_view";
 
   private MapDocument mapDocument;
   private String view = "catalogue"; // or "map_viewer", "map_editor", "sld_editor"
@@ -668,11 +669,12 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public String getJsonPageState()
   {
-    String mid = getSelectedMenuItem().getMid();
+    MenuItemCursor menuItem = getSelectedMenuItem();
+    String mid = menuItem.getMid();
     Map<String, String> jsonState = new HashMap<>();
-    StringBuilder urlBuffer = new StringBuilder("go.faces?xmid=" + mid);
+    StringBuilder urlBuffer = new StringBuilder("/go.faces?xmid=" + mid);
 
-    String title = "Map";
+    String title;
     if (mapDocument != null)
     {
       if (mapDocument.getTitle() != null)
@@ -683,9 +685,21 @@ public class GeoMapBean extends WebBean implements Serializable
       {
         title = mapDocument.getName();
       }
-      jsonState.put(MAP_NAME_PROPERTY, mapDocument.getName());
-      urlBuffer.append("&").append(MAP_NAME_PROPERTY)
+      if ("map_editor".equals(view))
+      {
+        title += " (Edit)";
+      }
+
+      jsonState.put(MAP_NAME_PARAMETER, mapDocument.getName());
+      jsonState.put(MAP_VIEW_PARAMETER, view);
+      urlBuffer.append("&").append(MAP_NAME_PARAMETER)
         .append("=").append(mapDocument.getName());
+      urlBuffer.append("&").append(MAP_VIEW_PARAMETER)
+        .append("=").append(view);
+    }
+    else
+    {
+      title = menuItem.getLabel();
     }
 
     try
@@ -698,7 +712,7 @@ public class GeoMapBean extends WebBean implements Serializable
         if (name.startsWith("javax.") ||
             name.startsWith("hidden") || // TODO: remove it when not needed
             name.startsWith("mainform") ||
-            name.startsWith(MAP_NAME_PROPERTY) ||
+            name.startsWith(MAP_NAME_PARAMETER) ||
             name.equals("xmid") ||
             name.equals("smid") ||
             name.equals("page_type") ||
@@ -740,7 +754,7 @@ public class GeoMapBean extends WebBean implements Serializable
 
   public boolean isCatalogueEnabled()
   {
-    return getProperty(MAP_NAME_PROPERTY) == null;
+    return getProperty(MAP_NAME_PARAMETER) == null;
   }
 
   public List<Access> getStatistics()
@@ -850,10 +864,10 @@ public class GeoMapBean extends WebBean implements Serializable
     ExternalContext extContext = getExternalContext();
     Map<String, String> parameters = extContext.getRequestParameterMap();
 
-    String mapName = getProperty(MAP_NAME_PROPERTY);
+    String mapName = getProperty(MAP_NAME_PARAMETER);
     if (mapName == null)
     {
-      mapName = (String)parameters.get(MAP_NAME_PROPERTY);
+      mapName = (String)parameters.get(MAP_NAME_PARAMETER);
     }
 
     if (mapName != null)
@@ -869,8 +883,16 @@ public class GeoMapBean extends WebBean implements Serializable
         else
         {
           refresh();
-          MapAccessLogger.registerAccess(mapName, extContext);
-          setView("map_viewer");
+          String mapView = parameters.get(MAP_VIEW_PARAMETER);
+          if ("map_editor".equals(mapView))
+          {
+            setView("map_editor");
+          }
+          else
+          {
+            MapAccessLogger.registerAccess(mapName, extContext);
+            setView("map_viewer");
+          }
         }
       }
       catch (Exception ex)

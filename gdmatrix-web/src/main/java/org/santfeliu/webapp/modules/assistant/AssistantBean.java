@@ -30,21 +30,26 @@
  */
 package org.santfeliu.webapp.modules.assistant;
 
+import com.google.gson.Gson;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.DocumentManagerPort;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.web.UserSessionBean;
-import static org.santfeliu.web.UserSessionBean.ACTION;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.modules.assistant.langchain4j.Assistant;
 import org.santfeliu.webapp.modules.assistant.langchain4j.AssistantStore;
 import org.santfeliu.webapp.modules.assistant.langchain4j.AssistantStore.AssistantSummary;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.santfeliu.web.UserSessionBean.ACTION;
 
 /**
  *
@@ -54,6 +59,10 @@ import org.santfeliu.webapp.modules.doc.DocModuleBean;
 @RequestScoped
 public class AssistantBean extends WebBean implements Serializable
 {
+  public static final String THREADID_PARAMETER = "threadid";
+  public static final String ASSISTANT_VIEW_PARAMETER = "assistant_view";
+  public static final String ASSISTANTID_PARAMETER = "assistantid";
+
   public static final String ASSISTANTID_PROPERTY = "assistantId";
   public static final String ASSISTANT_ADMIN_ROLEID = "ASSISTANT_ADMIN";
 
@@ -119,9 +128,40 @@ public class AssistantBean extends WebBean implements Serializable
   {
     if (assistant == null)
     {
-      initAssistant();
+      initAssistant(null);
     }
     return assistant;
+  }
+
+  public String getJsonPageState()
+  {
+    MenuItemCursor menuItem = getSelectedMenuItem();
+    String mid = menuItem.getMid();
+    Map<String, String> jsonState = new HashMap<>();
+    StringBuilder urlBuffer = new StringBuilder("/go.faces?xmid=" + mid);
+    String threadId = threadsBean.getThreadId();
+    String assistantId = getAssistantId();
+
+    String title = menuItem.getLabel();
+
+    if (!isBlank(threadId) && threadsBean.getThread().isPersistent())
+    {
+      urlBuffer.append("&").append(THREADID_PARAMETER).append("=").append(threadId);
+      title += " - " + threadId;
+    }
+
+    if (!isBlank(assistantId) && getAssistant().isPersistent())
+    {
+      urlBuffer.append("&").append(ASSISTANTID_PARAMETER).append("=").append(assistantId);
+      if ("assistant".equals(view)) title += " - " + getAssistant().getName();
+    }
+    urlBuffer.append("&").append(ASSISTANT_VIEW_PARAMETER).append("=").append(view);
+
+    jsonState.put("title", title);
+    jsonState.put("url", urlBuffer.toString());
+
+    Gson gson = new Gson();
+    return gson.toJson(jsonState);
   }
 
   public AssistantStore getAssistantStore()
@@ -221,25 +261,35 @@ public class AssistantBean extends WebBean implements Serializable
 
   public String show()
   {
-    threadsBean.createThread();
-
-    if (!getFacesContext().isPostback())
+    Map<String, String> map = getExternalContext().getRequestParameterMap();
+    try
     {
-      try
+      String threadId = map.get(THREADID_PARAMETER);
+      if (threadId == null)
       {
-        String threadId = getExternalContext().getRequestParameterMap().get("threadid");
-        if (threadId != null)
-        {
-          threadsBean.changeThread(threadId);
-        }
+        threadsBean.createThread();
       }
-      catch (Exception ex)
+      else
       {
-        error(ex);
+        threadsBean.changeThread(threadId);
       }
     }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
 
-    initAssistant();
+    String reqView = map.get(ASSISTANT_VIEW_PARAMETER);
+    if ("assistant".equals(reqView))
+    {
+      setView("assistant");
+    }
+    else
+    {
+      setView("threads");
+    }
+
+    initAssistant(map.get(ASSISTANTID_PARAMETER));
 
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
@@ -258,8 +308,16 @@ public class AssistantBean extends WebBean implements Serializable
   public void setView(String view)
   {
     this.view = view;
-    threadsBean.createThread();
     threadsBean.setEditionEnabled(false);
+  }
+
+  public void showThreads()
+  {
+    setView("threads");
+    if (threadsBean.getThread().isPersistent())
+    {
+      threadsBean.changeThread(threadsBean.getThreadId());
+    }
   }
 
   public void updateAssistants() throws Exception
@@ -299,12 +357,19 @@ public class AssistantBean extends WebBean implements Serializable
     return userSessionBean.isUserInRole(writeRoleId);
   }
 
-  void initAssistant()
+  void initAssistant(String assistantId)
   {
-    String assistantId =
-      UserSessionBean.getCurrentInstance().getSelectedMenuItem()
+    if (assistantId == null)
+    {
+      assistantId = UserSessionBean.getCurrentInstance().getSelectedMenuItem()
         .getProperty(ASSISTANTID_PROPERTY);
-    if (assistantId != null)
+    }
+
+    if (assistantId == null)
+    {
+      createAssistant();
+    }
+    else
     {
       try
       {
@@ -315,10 +380,6 @@ public class AssistantBean extends WebBean implements Serializable
         createAssistant();
         error(ex);
       }
-    }
-    else
-    {
-      createAssistant();
     }
   }
 }

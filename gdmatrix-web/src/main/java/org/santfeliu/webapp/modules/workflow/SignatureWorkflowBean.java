@@ -325,8 +325,8 @@ public class SignatureWorkflowBean extends WorkflowBean
 
       String mid = userSessionBean.getSelectedMid();
       String returnParams = "xmid=" + mid + "&" +
-        WorkflowInstanceListBean.INSTANCEID_PARAM + "=" + instanceId + "&" +
-        WorkflowInstanceListBean.ACCESS_TOKEN_PARAM + "=" + wfAccessToken;
+        WorkflowInstanceListBean.INSTANCEID_PARAMETER + "=" + instanceId + "&" +
+        WorkflowInstanceListBean.ACCESS_TOKEN_PARAMETER + "=" + wfAccessToken;
 
       String signatureCode = (String)initResult.get("signatureCode"); // VALID2
       if (signatureCode == null)

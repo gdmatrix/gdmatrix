@@ -149,10 +149,7 @@
       if (elem) elem.scrollTop = 0;
     }
     
-    controlNavigationHistory({
-      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
-      title : "#{geoMapBean.mapDocument.title == null ? geoMapBean.mapDocument.name : geoMapBean.mapDocument.title}"
-    });
+    controlNavigationHistory(#{geoMapBean.jsonPageState});
   </script>
 
 </ui:composition>

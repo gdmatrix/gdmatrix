@@ -97,11 +97,9 @@ public class WorkflowInstanceListBean extends WebBean implements Serializable
   public static final String HELP_BUTTON_URL_PROPERTY =
     "workflow." + HELP_BUTTON_URL;
 
-
-
-  public static final String WORKFLOW_PARAM = "workflow";
-  public static final String INSTANCEID_PARAM = "instanceid";
-  public static final String ACCESS_TOKEN_PARAM = "access_token";
+  public static final String WORKFLOW_PARAMETER = "workflow";
+  public static final String INSTANCEID_PARAMETER = "instanceid";
+  public static final String ACCESS_TOKEN_PARAMETER = "access_token";
   public static final String LOGIN_ACCESS_TOKEN_SEPARATOR = "$";
 
   static final int VARIABLE_COUNT = 3;
@@ -263,8 +261,8 @@ public class WorkflowInstanceListBean extends WebBean implements Serializable
     {
       Map parameters = new HashMap();
       parameters.putAll(getExternalContext().getRequestParameterMap());
-      String extWorkflowName = (String)parameters.remove(WORKFLOW_PARAM);
-      String extInstanceId = (String)parameters.remove(INSTANCEID_PARAM);
+      String extWorkflowName = (String)parameters.remove(WORKFLOW_PARAMETER);
+      String extInstanceId = (String)parameters.remove(INSTANCEID_PARAMETER);
       if (extWorkflowName != null)
       {
         // create new instance passing parameters as variables
@@ -280,7 +278,7 @@ public class WorkflowInstanceListBean extends WebBean implements Serializable
         if (accessToken != null)
         {
           // check workflow accessToken
-          if (!accessToken.equals(parameters.remove(ACCESS_TOKEN_PARAM)))
+          if (!accessToken.equals(parameters.remove(ACCESS_TOKEN_PARAMETER)))
             throw new Exception("INVALID_INSTANCE_TOKEN");
 
           // special login case <token>$<form_variable>

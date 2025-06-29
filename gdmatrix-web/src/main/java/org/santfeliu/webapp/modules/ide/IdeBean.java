@@ -37,6 +37,7 @@ import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.activation.DataHandler;
@@ -47,6 +48,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
@@ -60,6 +62,7 @@ import org.primefaces.event.SelectEvent;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.MemoryDataSource;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -75,6 +78,9 @@ import org.santfeliu.webapp.modules.ide.doc.IdeDocumentType.Tab;
 @RequestScoped
 public class IdeBean extends WebBean implements Serializable
 {
+  public static final String TYPE_PARAMETER = "type";
+  public static final String NAME_PARAMETER = "name";
+
   private String typeName = "javascript";
   private String name;
   private IdeDocument document = new IdeDocument();
@@ -370,11 +376,45 @@ public class IdeBean extends WebBean implements Serializable
     document.getAccessControl().remove(ac);
   }
 
+  public String getJsonPageState()
+  {
+    MenuItemCursor menuItem = getSelectedMenuItem();
+    String mid = menuItem.getMid();
+    Map<String, String> jsonState = new HashMap<>();
+    StringBuilder urlBuffer = new StringBuilder("/go.faces?xmid=" + mid);
+    String title;
+    if (!isBlank(typeName) && !isBlank(name))
+    {
+      title = typeName + ":" + name;
+      urlBuffer.append("&").append(TYPE_PARAMETER).append("=").append(typeName);
+      urlBuffer.append("&").append(NAME_PARAMETER).append("=").append(name);
+    }
+    else
+    {
+      title = menuItem.getLabel();
+    }
+    jsonState.put("title", title);
+    jsonState.put("url", urlBuffer.toString());
+
+    Gson gson = new Gson();
+    return gson.toJson(jsonState);
+  }
+
   @CMSAction
   public String show()
   {
     try
     {
+      Map<String, String> map = getExternalContext().getRequestParameterMap();
+      String reqTypeName = map.get(TYPE_PARAMETER);
+      String reqName = map.get(NAME_PARAMETER);
+      if (!isBlank(reqTypeName) && !isBlank(reqName))
+      {
+        typeName = reqTypeName;
+        name = reqName;
+        load();
+      }
+
       String template = UserSessionBean.getCurrentInstance().getTemplate();
       return "/templates/" + template + "/template.xhtml";
     }

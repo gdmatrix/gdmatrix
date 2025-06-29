@@ -43,6 +43,10 @@
                     title="#{objectBundle.view}"
                     styleClass="rounded-button ui-button-flat"
                     target="_blank" />
+      <p:button onclick="return showPage('IDE', {type:'javascript', name:'#{script}'})" 
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       icon="pi pi-pencil"
+                        styleClass="rounded-button ui-button-flat" />
       <p:commandButton action="#{geoMapControlsBean.removeScript(script)}"
                        process="@this" update="@namingcontainer"
                        resetValues="true"

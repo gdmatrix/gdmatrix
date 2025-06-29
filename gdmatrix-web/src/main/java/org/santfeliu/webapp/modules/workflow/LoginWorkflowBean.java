@@ -139,8 +139,8 @@ public class LoginWorkflowBean extends WorkflowBean
 
         String mid = userSessionBean.getSelectedMid();
         String url = "/go.faces?xmid=" + mid + "&" +
-          WorkflowInstanceListBean.INSTANCEID_PARAM + "=" + wfInstanceId + "&" +
-          WorkflowInstanceListBean.ACCESS_TOKEN_PARAM + "=" + wfAccessToken;
+          WorkflowInstanceListBean.INSTANCEID_PARAMETER + "=" + wfInstanceId + "&" +
+          WorkflowInstanceListBean.ACCESS_TOKEN_PARAMETER + "=" + wfAccessToken;
 
         getExternalContext().redirect(url);
       }
@@ -169,8 +169,8 @@ public class LoginWorkflowBean extends WorkflowBean
 
       String mid = userSessionBean.getSelectedMid();
       String returnParams = "xmid=" + mid + "&" +
-        WorkflowInstanceListBean.INSTANCEID_PARAM + "=" + wfInstanceId + "&" +
-        WorkflowInstanceListBean.ACCESS_TOKEN_PARAM + "=" + wfAccessToken;
+        WorkflowInstanceListBean.INSTANCEID_PARAMETER + "=" + wfInstanceId + "&" +
+        WorkflowInstanceListBean.ACCESS_TOKEN_PARAMETER + "=" + wfAccessToken;
 
       userSessionBean.setAttribute(ACTION_ATTRIBUTE, AUTH_ACTION);
       userSessionBean.setAttribute(RETURN_PARAMS_ATTRIBUTE, returnParams);
