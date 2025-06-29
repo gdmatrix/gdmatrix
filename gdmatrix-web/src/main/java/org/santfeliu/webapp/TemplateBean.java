@@ -36,8 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.el.ELContext;
+import javax.el.MethodExpression;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.CDI;
+import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
@@ -45,14 +47,12 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.geo.GeoMapBean;
 import org.santfeliu.webapp.util.ContextMenuTypesFinder;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.santfeliu.webapp.util.WebUtils.TOPWEB_PROPERTY;
@@ -203,20 +203,49 @@ public class TemplateBean extends WebBean implements Serializable
     userSessionBean.executeSelectedMenuItem();
   }
 
-  // execute mid without context change
+  // execute mid without context change preserving faces view
   public void show(String mid)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     userSessionBean.setSelectedMid(mid);
-    userSessionBean.executeSelectedMenuItem();
+    MenuItemCursor menuItem = userSessionBean.getSelectedMenuItem();
+    String action = menuItem.getAction();
+
+    while (action == null && menuItem.hasChildren())
+    {
+      menuItem = menuItem.getFirstChild();
+      action = menuItem.getAction();
+    }
+
+    if (action == null) return;
+    menuItem.select();
+
+    if (action.startsWith("#{") && action.endsWith("}"))
+    {
+      try
+      {
+        FacesContext context = getFacesContext();
+        ELContext elContext = context.getELContext();
+        Application application = context.getApplication();
+        MethodExpression methodExpression = application.getExpressionFactory()
+          .createMethodExpression(elContext, action, String.class, new Class[0]);
+        methodExpression.invoke(elContext, new Object[0]);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
   }
 
-  public String showObject()
+  public void showObject()
   {
-    Map<String, String> map = getExternalContext().getRequestParameterMap();
-    String typeId = map.get("typeId");
-    String objectId = map.get("objectId");
-    String jsonParams = map.get("parameters");
+    ExternalContext externalContext = getExternalContext();
+    Map<String, String> parameterMap = externalContext.getRequestParameterMap();
+
+    String typeId = parameterMap.get("typeId");
+    String objectId = parameterMap.get("objectId");
+    String jsonParams = parameterMap.get("parameters");
     Map<String, Object> parameters = null;
     if (jsonParams != null)
     {
@@ -225,12 +254,11 @@ public class TemplateBean extends WebBean implements Serializable
     }
     if (typeId != null)
     {
-      return navigatorBean.show(typeId, objectId, parameters);
+      navigatorBean.show(typeId, objectId, parameters);
     }
     else
     {
       navigatorBean.view(objectId, parameters);
-      return null;
     }
   }
 
@@ -249,7 +277,7 @@ public class TemplateBean extends WebBean implements Serializable
     }
     else
     {
-      mid = getProperty(pageType + ".mid");
+      mid = getProperty(pageType + ".mid"); // TODO: replace with MenuFinder
       if (mid != null)
       {
         show(mid);

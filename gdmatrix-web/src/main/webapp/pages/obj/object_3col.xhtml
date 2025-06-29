@@ -75,10 +75,9 @@
             </div>
           </div>
 
-          <p:messages showSummary="true" styleClass="messages" 
+          <p:messages id="pmsg" showSummary="true" styleClass="messages" 
                       showIcon="true" closable="false" forIgnores="growl"
-                      rendered="#{objectBean.activeTabBean == null or 
-                                  !objectBean.activeTabBean.dialogVisible}">
+                      style="#{objectBean.activeTabBean == null or !objectBean.activeTabBean.dialogVisible ? '':'display:none'}">
             <p:autoUpdate />
           </p:messages>
 

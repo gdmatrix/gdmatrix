@@ -134,6 +134,7 @@
   </p:outputPanel>
 
 
+  <!--
   <f:metadata>
     <f:viewAction action="#{objectBean.selectTabWithErrors}"
                   onPostback="true" phase="PROCESS_VALIDATIONS" />
@@ -141,14 +142,19 @@
     <f:viewAction action="#{objectBean.loadActiveEditTab}"
                   onPostback="true" />
   </f:metadata>
-
+  -->
+  
   <p:tabView dynamic="true"
              cache="true"
              id="tabs"
              widgetVar="objectTabs"
              touchable="false"
              activeIndex="#{objectBean.editTabSelector}">
-    <p:ajax event="tabChange" process="@this" update="@none" />
+    <p:ajax event="tabChange" process="@this" update="@none" 
+            listener="#{objectBean.loadActiveEditTab}" />
+    <f:event type="postValidate" 
+             listener="#{objectBean.selectTabWithErrors}" />
+
     <c:forEach items="#{objectBean.editTabs}" var="tab" >
       <p:tab disabled="#{objectBean.isDisabledEditTab(tab)}"
              rendered="#{objectBean.isRenderedEditTab(tab)}">
