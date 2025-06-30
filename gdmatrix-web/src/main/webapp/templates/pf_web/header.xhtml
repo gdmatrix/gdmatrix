@@ -178,8 +178,10 @@
           maxButton.classList.add("hidden");
           var minButton = document.querySelector(".assistant_min");
           minButton.classList.remove("hidden");
-          PF("assistantTextarea").jq.focus();
-//          showThreadsPanel();
+          if (PrimeFaces.widgets["assistantTextarea"])
+          {
+            PF("assistantTextarea").jq.focus();
+          }
         }
 
         function minimizeAssistantPanel(event)
@@ -196,8 +198,10 @@
           maxButton.classList.remove("hidden");
           var minButton = document.querySelector(".assistant_min");
           minButton.classList.add("hidden");
-          PF("assistantTextarea").jq.focus();
-//          closeThreadsPanel();
+          if (PrimeFaces.widgets["assistantTextarea"])
+          {
+            PF("assistantTextarea").jq.focus();
+          }
         }
 
         function hideAssistantPanel(event)
@@ -210,7 +214,6 @@
           assistantPanel.classList.add("hidden");
           assistantPanel.style.width = "";
           assistantPanel.style.height = "";
-//          closeThreadsPanel();
         }
 
         window.addEventListener("load", () => {
