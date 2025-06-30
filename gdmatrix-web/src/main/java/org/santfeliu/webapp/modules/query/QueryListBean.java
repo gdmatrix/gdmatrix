@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.model.SelectItem;
@@ -196,6 +197,10 @@ public class QueryListBean extends WebBean implements Serializable
   
   public List<Document> getDocuments()
   {
+    if (documents == null)
+    {
+      doFind();
+    }
     return documents;
   }
 
@@ -206,14 +211,7 @@ public class QueryListBean extends WebBean implements Serializable
   
   public void clearDocuments(boolean reload)
   {
-    if (reload)
-    {
-      doFind();
-    }
-    else
-    {
-      documents = null;
-    }
+    documents = (reload ? null : Collections.EMPTY_LIST);
   }
   
   public void clearSearch()
@@ -273,7 +271,7 @@ public class QueryListBean extends WebBean implements Serializable
   }
 
   public void showQuery()
-  {    
+  {
     try
     {
       String queryName = getQueryName();

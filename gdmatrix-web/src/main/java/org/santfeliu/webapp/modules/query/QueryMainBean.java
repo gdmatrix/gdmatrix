@@ -35,10 +35,12 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.ExternalContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -204,14 +206,46 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
       return "/pages/query/query_list.xhtml";
     }
   }
-  
+
   public String show()
   {
-    if ("query_list".equals(view)) queryListBean.search();
+    loadFromParameters();
     
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";    
   }
+  
+  private void loadFromParameters()
+  {
+    ExternalContext extContext = getExternalContext();
+    Map<String, String> parameters = extContext.getRequestParameterMap();
+    String queryName = getProperty(QUERY_NAME_PROPERTY);
+    if (queryName == null)
+    {
+      queryName = (String)parameters.get(QUERY_NAME_PROPERTY);
+    }
+    if (queryName != null)
+    {
+      try
+      {
+        loadQuery(queryName);
+        if (query != null)
+        {
+          setCreateNewVersion(true);
+          setView("query_view");
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+        setView("query_list");
+      }
+    }
+    else
+    {
+      if ("query_list".equals(view)) queryListBean.search();
+    }
+  }  
   
   public String getReadRolesString()
   {
@@ -289,7 +323,7 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
   public void loadQuery(String queryName) throws Exception
   {
     Document document = getDocumentManagerClient().loadDocumentByName(
-      QUERY_TYPEID, QUERY_NAME_PROPERTY, queryName, null, -1);
+      QUERY_TYPEID, QUERY_NAME_PROPERTY, queryName, null, 0);
     if (document == null) throw new Exception("QUERY_NOT_FOUND");
     
     QueryReader reader = new QueryReader();
