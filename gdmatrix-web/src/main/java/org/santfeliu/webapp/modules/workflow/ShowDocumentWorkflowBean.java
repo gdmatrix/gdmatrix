@@ -37,7 +37,6 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 
-import org.santfeliu.faces.browser.HtmlBrowser;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.form.Form;
 
@@ -50,23 +49,23 @@ import org.santfeliu.workflow.form.Form;
 @RequestScoped
 public class ShowDocumentWorkflowBean extends WorkflowBean implements Serializable
 {
-  transient private HtmlBrowser browser;
   private String message;
   private boolean IFrame;
+  private String url;
   private boolean showPrintButton;
 
   public ShowDocumentWorkflowBean()
   {
   }
 
-  public void setBrowser(HtmlBrowser browser)
+  public String getUrl()
   {
-    this.browser = browser;
+    return url;
   }
 
-  public HtmlBrowser getBrowser()
+  public void setUrl(String url)
   {
-    return browser;
+    this.url = url;
   }
 
   public void setMessage(String message)
@@ -105,14 +104,13 @@ public class ShowDocumentWorkflowBean extends WorkflowBean implements Serializab
     Properties parameters = form.getParameters();
 
     message = "";
-    browser = new HtmlBrowser();
-    browser.setUrl("about:blank");
+    url = "about:blank";
 
     Object value;
     value = parameters.get("message");
     if (value != null) message = String.valueOf(value);
     value = parameters.get("url");
-    if (value != null) browser.setUrl(String.valueOf(value));
+    if (value != null) url = String.valueOf(value);
     value = parameters.get("iframe");
     if (value != null) IFrame = Boolean.parseBoolean(String.valueOf(value));
     value = parameters.get("showPrintButton");

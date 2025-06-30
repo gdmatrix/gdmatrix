@@ -12,7 +12,7 @@
     <h:outputText value="#{workflowInstanceBean.translate(showDocumentWorkflowBean.message)}" />
 
     <sf:printableGroup name="printDocument">
-      <sf:browser binding="#{showDocumentWorkflowBean.browser}"
+      <sf:browser url="#{showDocumentWorkflowBean.url}"
                   port="#{applicationBean.defaultPort}"
                   iframe="#{showDocumentWorkflowBean.IFrame}"
                   translator="#{workflowInstanceBean.translationEnabled ? 
