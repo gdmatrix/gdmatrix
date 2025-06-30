@@ -112,7 +112,12 @@ function setupPopupListener()
       let mid = params.get("xmid");
       if (mid)
       {
-        showPage("Node", Object.fromEntries(params));
+        const fparams = Object.fromEntries(params);
+        delete fparams["xmid"];
+        delete fparams["smid"];
+        fparams["mid"] = mid;
+        console.info("fparams", fparams);
+        showPage("Node", fparams);
       }
     }
   };
