@@ -370,7 +370,6 @@ public class DataTableRow implements Serializable
 
   public abstract class Value
   {
-    protected Object sorted;
     protected String label;
     protected String icon;
 
@@ -379,14 +378,19 @@ public class DataTableRow implements Serializable
       return label;
     }
 
-    public Object getSorted()
-    {
-      return sorted;
-    }
-
     public String getIcon()
     {
       return icon;
+    }
+    
+    public Object getSorted() //default sorted value
+    {
+      return label;
+    }
+
+    public String getRawValue() //default raw value
+    {
+      return (String)getSorted();
     }
   }
 
@@ -396,7 +400,6 @@ public class DataTableRow implements Serializable
     {
       if (value != null)
         this.label = value.toString();
-      this.sorted = label;
     }
 
     public DefaultValue(Object value, String icon)
@@ -408,6 +411,8 @@ public class DataTableRow implements Serializable
 
   public class DateValue extends Value
   {
+    private Object sorted;
+    
     public DateValue(String value)
     {
       String pattern = (value != null && value.length() == 14 ?
@@ -420,11 +425,20 @@ public class DataTableRow implements Serializable
     {
       this(value);
       this.icon = icon;
+    }
+
+    @Override
+    public Object getSorted()
+    {
+      return sorted;
     }    
   }
 
   public class EnumTypeValue extends Value
   {
+    private Object sorted;
+    private String rawValue;
+    
     public EnumTypeValue(String enumTypeId, Object value, PropertyType propType)
       throws Exception
     {
@@ -448,6 +462,7 @@ public class DataTableRow implements Serializable
           sorted = label;
         }
       }
+      rawValue = (String)value;
     }
     
     public EnumTypeValue(String enumTypeId, Object value, PropertyType propType,
@@ -455,11 +470,25 @@ public class DataTableRow implements Serializable
     {
       this(enumTypeId, value, propType);
       this.icon = icon;
-    }     
+    }
+
+    @Override
+    public Object getSorted()
+    {
+      return sorted;
+    }
+    
+    @Override
+    public String getRawValue() 
+    {
+      return rawValue;
+    }
   }
 
   public class TypeValue extends Value
   {
+    private String rawValue;    
+    
     public TypeValue(String value)
     {
       label = value;
@@ -467,18 +496,27 @@ public class DataTableRow implements Serializable
       if (keyType != null)
         label = keyType.getDescription();
 
-      sorted = label;
+      rawValue = value;
     }
     
     public TypeValue(String value, String icon)
     {
       this(value);
       this.icon = icon;
-    }       
+    }
+    
+    @Override
+    public String getRawValue() 
+    {
+      return rawValue;
+    }    
   }
 
   public class NumericValue extends Value
   {
+    private Object sorted;
+    private String rawValue;    
+    
     public NumericValue(String value)
     {
       label = value;
@@ -492,13 +530,26 @@ public class DataTableRow implements Serializable
         }
         catch (NumberFormatException ex) { }
       }
+      rawValue = value;
     }
     
     public NumericValue(String value, String icon)
     {
       this(value);
       this.icon = icon;
-    }       
+    }
+    
+    @Override
+    public Object getSorted()
+    {
+      return sorted;
+    }    
+    
+    @Override
+    public String getRawValue() 
+    {
+      return rawValue;
+    }    
   }
 
   public class CustomProperty
