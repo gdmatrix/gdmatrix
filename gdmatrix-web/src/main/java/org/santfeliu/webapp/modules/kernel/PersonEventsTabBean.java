@@ -73,8 +73,8 @@ public class PersonEventsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<AttendantView> rows;
     int firstRow = 0;
-    RowsFilterHelper rowsFilterHelper =
-      new RowsFilterHelper<AttendantView>()
+    RowsFilterHelper rowsFilterHelper = RowsFilterHelper.create(null, prev -> 
+      new RowsFilterHelper<AttendantView>(prev)
     {
       @Override
       public ObjectBean getObjectBean() 
@@ -108,20 +108,23 @@ public class PersonEventsTabBean extends TabBean
       }
 
       @Override
-      public String getFixedColumnValue(AttendantView row, String columnName) 
+      public Item getFixedColumnValue(AttendantView row, String columnName) 
       {
         if ("eventTypeId".equals(columnName))
         {
-          return typeTypeBean.getTypeDescription(
-            row.getEvent().getEventTypeId());
+          String typeId = row.getEvent().getEventTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());          
         }        
         else if ("summary".equals(columnName))
         {
-          return row.getEvent().getSummary();
+          return new Item(row.getEvent().getSummary());
         }
         else if ("attendantTypeId".equals(columnName))
         {
-          return typeTypeBean.getTypeDescription(row.getAttendantTypeId());
+          String typeId = row.getAttendantTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());          
         }
         else
         {
@@ -134,12 +137,96 @@ public class PersonEventsTabBean extends TabBean
       {
         return row.getAttendantTypeId();
       }
-    };
+    });
 
+    RowsFilterHelper rowsFilterHelper2 = 
+      RowsFilterHelper.create(rowsFilterHelper, prev -> 
+        new RowsFilterHelper<AttendantView>(prev)
+    {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return PersonEventsTabBean.this.getObjectBean();
+      }
+      
+      @Override
+      public List<AttendantView> getRows()
+      {
+        return prev.getFilteredRows();
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return PersonEventsTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }
+
+      @Override
+      public List<TableProperty> getColumns() 
+      {
+        return Collections.EMPTY_LIST;
+      }
+
+      @Override
+      public Item getFixedColumnValue(AttendantView row, String columnName) 
+      {
+        if ("eventTypeId".equals(columnName))
+        {
+          String typeId = row.getEvent().getEventTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());          
+        }        
+        else if ("summary".equals(columnName))
+        {
+          return new Item(row.getEvent().getSummary());
+        }
+        else if ("attendantTypeId".equals(columnName))
+        {
+          String typeId = row.getAttendantTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());          
+        }
+        else
+        {
+          return null;
+        }
+      }
+
+      @Override
+      public String getRowTypeId(AttendantView row) 
+      {
+        return row.getAttendantTypeId();
+      }
+    });
+    
     public RowsFilterHelper getRowsFilterHelper()
     {
       return rowsFilterHelper;
     }
+    
+    public RowsFilterHelper getRowsFilterHelper2()
+    {
+      return rowsFilterHelper2;
+    }
+    
+    public RowsFilterHelper getActiveRowsFilterHelper()
+    {
+      if (rowsFilterHelper2.isRendered())
+      {
+        return rowsFilterHelper2;
+      }
+      else
+      {
+        return rowsFilterHelper;
+      }
+    }    
   }
 
   @Inject
@@ -306,7 +393,8 @@ public class PersonEventsTabBean extends TabBean
           }
           getCurrentTabInstance().rows = result;
         }
-        getCurrentTabInstance().rowsFilterHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.reset();
+        getCurrentTabInstance().rowsFilterHelper2.reset();
       }
       catch (Exception ex)
       {
@@ -319,7 +407,8 @@ public class PersonEventsTabBean extends TabBean
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
-      getCurrentTabInstance().rowsFilterHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.reset();
+      getCurrentTabInstance().rowsFilterHelper2.reset();
     }
   }
 

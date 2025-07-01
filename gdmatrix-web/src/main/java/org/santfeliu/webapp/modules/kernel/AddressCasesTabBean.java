@@ -72,8 +72,8 @@ public class AddressCasesTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseAddressView> rows;
     int firstRow = 0;
-    RowsFilterHelper rowsFilterHelper =
-      new RowsFilterHelper<CaseAddressView>()
+    RowsFilterHelper rowsFilterHelper = RowsFilterHelper.create(null, prev -> 
+      new RowsFilterHelper<CaseAddressView>(prev)
     {
       @Override
       public ObjectBean getObjectBean() 
@@ -107,25 +107,26 @@ public class AddressCasesTabBean extends TabBean
       }
 
       @Override
-      public String getFixedColumnValue(CaseAddressView row, 
+      public Item getFixedColumnValue(CaseAddressView row, 
         String columnName) 
       {
         if ("caseId".equals(columnName))
         {
-          return row.getCaseObject().getCaseId();
+          return new Item(row.getCaseObject().getCaseId());
         }
         else if ("caseTitle".equals(columnName))
         {
-          return row.getCaseObject().getTitle();
+          return new Item(row.getCaseObject().getTitle());
         }
         else if ("caseTypeId".equals(columnName))
         {
-          return typeTypeBean.getTypeDescription(
-            row.getCaseObject().getCaseTypeId());
+          String typeId = row.getCaseObject().getCaseTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
         }
         else if ("comments".equals(columnName))
         {
-          return row.getComments();
+          return new Item(row.getComments());
         }
         else
         {
@@ -138,11 +139,98 @@ public class AddressCasesTabBean extends TabBean
       {
         return row.getCaseAddressTypeId();
       }
-    };
+    });
 
+    RowsFilterHelper rowsFilterHelper2 = 
+      RowsFilterHelper.create(rowsFilterHelper, prev -> 
+        new RowsFilterHelper<CaseAddressView>(prev)
+    {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return AddressCasesTabBean.this.getObjectBean();
+      }
+      
+      @Override
+      public List<CaseAddressView> getRows()
+      {
+        return prev.getFilteredRows();
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return AddressCasesTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }
+
+      @Override
+      public List<TableProperty> getColumns() 
+      {
+        return Collections.EMPTY_LIST;        
+      }
+
+      @Override
+      public Item getFixedColumnValue(CaseAddressView row, 
+        String columnName) 
+      {
+        if ("caseId".equals(columnName))
+        {
+          return new Item(row.getCaseObject().getCaseId());
+        }
+        else if ("caseTitle".equals(columnName))
+        {
+          return new Item(row.getCaseObject().getTitle());
+        }
+        else if ("caseTypeId".equals(columnName))
+        {
+          String typeId = row.getCaseObject().getCaseTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
+        }
+        else if ("comments".equals(columnName))
+        {
+          return new Item(row.getComments());
+        }
+        else
+        {
+          return null;
+        }
+      }
+
+      @Override
+      public String getRowTypeId(CaseAddressView row) 
+      {
+        return row.getCaseAddressTypeId();
+      }      
+    });
+    
     public RowsFilterHelper getRowsFilterHelper()
     {
       return rowsFilterHelper;
+    }
+    
+    public RowsFilterHelper getRowsFilterHelper2()
+    {
+      return rowsFilterHelper2;
+    }
+    
+    public RowsFilterHelper getActiveRowsFilterHelper()
+    {
+      if (rowsFilterHelper2.isRendered())
+      {
+        return rowsFilterHelper2;
+      }
+      else
+      {
+        return rowsFilterHelper;
+      }
     }
   }  
   
@@ -301,7 +389,8 @@ public class AddressCasesTabBean extends TabBean
         List<CaseAddressView> auxList = 
           CasesModuleBean.getPort(false).findCaseAddressViews(filter);
         setRows(auxList);
-        getCurrentTabInstance().rowsFilterHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.reset();
+        getCurrentTabInstance().rowsFilterHelper2.reset();
       }
       catch (Exception ex)
       {
@@ -313,7 +402,8 @@ public class AddressCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().rowsFilterHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.reset();
+      getCurrentTabInstance().rowsFilterHelper2.reset();
       tabInstance.firstRow = 0;
     }
   }

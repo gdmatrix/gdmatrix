@@ -15,7 +15,7 @@
 
     <!-- Results table -->
     <p:dataTable id="case_cases_table"
-                 value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
+                 value="#{caseCasesTabBean.tabInstances[tab.subviewId].activeRowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom"
@@ -31,13 +31,14 @@
       <f:attribute name="exportableBean" value="#{caseCasesTabBean}" />
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">
-          <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
-                         rendered="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.renderFilterSelector}">
+        <div class="flex flex-wrap w-12">
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.rendered}">
             <p:outputLabel value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
-            <p:selectOneMenu value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" touchable="true">
+            <p:selectOneMenu value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
               <f:selectItem itemLabel="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
               <f:selectItems value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
               <p:ajax event="valueChange"
@@ -45,43 +46,60 @@
                       process="@this"
                       update="case_cases_table" />
             </p:selectOneMenu>
-          </p:outputPanel>          
-          <h:panelGroup id="csvButtonWrapper" 
-                        rendered="#{caseCasesTabBean.isExportable() &amp;&amp; caseCasesTabBean.rows != null}">
-            <p:commandButton disabled="#{caseCasesTabBean.exportableRows.size() &gt; caseCasesTabBean.rowExportLimit}" 
-                             icon="pi pi-download"
-                             styleClass="rounded-button ui-button-flat">
-              <p:dataExporter type="csv_dtr" 
-                              target="case_cases_table" 
-                              fileName="export" />                     
-            </p:commandButton>        
-            <p:tooltip for="csvButtonWrapper" 
-                       showEffect="fade" hideEffect="fade">
-              <h:outputText rendered="#{caseCasesTabBean.exportableRows.size() &lt;= caseCasesTabBean.rowExportLimit}"
-                            value="CSV" />
-              <h:outputFormat rendered="#{caseCasesTabBean.exportableRows.size() &gt; caseCasesTabBean.rowExportLimit}"
-                              value="#{objectBundle.rowExportLimit}">
-                <f:param value="#{caseCasesTabBean.rowExportLimit}" />
-              </h:outputFormat>
-            </p:tooltip>
-          </h:panelGroup>          
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{caseCasesTabBean.groupableRowsHelper.switchView}"
-                           process="case_cases_table"
-                           update="case_cases_table"
-                           resetValues="true"
-                           alt="#{caseCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           title="#{caseCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{caseCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />
-          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
-                           action="#{caseCasesTabBean.create}"
-                           process="@this"
-                           update="@form:cnt:search_tabs:case_cases_dialog"
-                           resetValues="true"
-                           oncomplete="PF('caseCasesDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
-                           rendered="#{not caseCasesTabBean.relatedByPerson}"
-                           disabled="#{!caseObjectBean.editable}"/>
+          </p:outputPanel>
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.rendered}">
+            <p:outputLabel value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterByLabel}:"
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
+              <f:selectItem itemLabel="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.showAllLabel}" itemValue="SHOW_ALL" />
+              <f:selectItems value="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{caseCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueChanged}"
+                      process="@this"
+                      update="case_cases_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          <div class="flex-grow-1 text-right">          
+            <h:panelGroup id="csvButtonWrapper" 
+                          rendered="#{caseCasesTabBean.isExportable() &amp;&amp; caseCasesTabBean.rows != null}">
+              <p:commandButton disabled="#{caseCasesTabBean.exportableRows.size() &gt; caseCasesTabBean.rowExportLimit}" 
+                               icon="pi pi-download"
+                               styleClass="rounded-button ui-button-flat">
+                <p:dataExporter type="csv_dtr" 
+                                target="case_cases_table" 
+                                fileName="export" />                     
+              </p:commandButton>        
+              <p:tooltip for="csvButtonWrapper" 
+                         showEffect="fade" hideEffect="fade">
+                <h:outputText rendered="#{caseCasesTabBean.exportableRows.size() &lt;= caseCasesTabBean.rowExportLimit}"
+                              value="CSV" />
+                <h:outputFormat rendered="#{caseCasesTabBean.exportableRows.size() &gt; caseCasesTabBean.rowExportLimit}"
+                                value="#{objectBundle.rowExportLimit}">
+                  <f:param value="#{caseCasesTabBean.rowExportLimit}" />
+                </h:outputFormat>
+              </p:tooltip>
+            </h:panelGroup>          
+            <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                             action="#{caseCasesTabBean.groupableRowsHelper.switchView}"
+                             process="case_cases_table"
+                             update="case_cases_table"
+                             resetValues="true"
+                             alt="#{caseCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                             title="#{caseCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                             rendered="#{caseCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />
+            <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
+                             action="#{caseCasesTabBean.create}"
+                             process="@this"
+                             update="@form:cnt:search_tabs:case_cases_dialog"
+                             resetValues="true"
+                             oncomplete="PF('caseCasesDialog').show()"
+                             alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                             rendered="#{not caseCasesTabBean.relatedByPerson}"
+                             disabled="#{!caseObjectBean.editable}"/>
+          </div>
         </div>
       </f:facet>
 

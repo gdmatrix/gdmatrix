@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -509,8 +510,8 @@ public class ObjectSetup implements Serializable
     }
     
     //FilterBy
-    String defaultFilterBy = defaultEditTab.getFilterBy();
-    String filterBy = editTab.getFilterBy();
+    Map<String, Object> defaultFilterBy = defaultEditTab.getFilterBy();
+    Map<String, Object> filterBy = editTab.getFilterBy();
     if (defaultFilterBy != null && filterBy == null)
     {
       editTab.setFilterBy(defaultFilterBy);

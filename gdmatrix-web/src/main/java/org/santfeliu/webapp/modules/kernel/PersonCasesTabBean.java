@@ -73,8 +73,8 @@ public class PersonCasesTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CasePersonView> rows;
     int firstRow = 0;
-    RowsFilterHelper rowsFilterHelper =
-      new RowsFilterHelper<CasePersonView>()
+    RowsFilterHelper rowsFilterHelper = RowsFilterHelper.create(null, prev -> 
+      new RowsFilterHelper<CasePersonView>(prev)
     {
       @Override
       public ObjectBean getObjectBean() 
@@ -108,25 +108,26 @@ public class PersonCasesTabBean extends TabBean
       }
 
       @Override
-      public String getFixedColumnValue(CasePersonView row, 
+      public Item getFixedColumnValue(CasePersonView row, 
         String columnName) 
       {
         if ("caseId".equals(columnName))
         {
-          return row.getCaseObject().getCaseId();
+          return new Item(row.getCaseObject().getCaseId());
         }
         else if ("caseTitle".equals(columnName))
         {
-          return row.getCaseObject().getTitle();
+          return new Item(row.getCaseObject().getTitle());
         }
         else if ("caseTypeId".equals(columnName))
         {
-          return typeTypeBean.getTypeDescription(
-            row.getCaseObject().getCaseTypeId());
+          String typeId = row.getCaseObject().getCaseTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
         }
         else if ("comments".equals(columnName))
         {
-          return row.getComments();
+          return new Item(row.getComments());
         }
         else
         {
@@ -139,12 +140,99 @@ public class PersonCasesTabBean extends TabBean
       {
         return row.getCasePersonTypeId();
       }
-    };
+    });
+    
+    RowsFilterHelper rowsFilterHelper2 = 
+      RowsFilterHelper.create(rowsFilterHelper, prev -> 
+        new RowsFilterHelper<CasePersonView>(prev)
+    {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return PersonCasesTabBean.this.getObjectBean();
+      }
+      
+      @Override
+      public List<CasePersonView> getRows()
+      {
+        return prev.getFilteredRows();
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return PersonCasesTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }
+
+      @Override
+      public List<TableProperty> getColumns() 
+      {
+        return Collections.EMPTY_LIST;
+      }
+
+      @Override
+      public Item getFixedColumnValue(CasePersonView row, 
+        String columnName) 
+      {
+        if ("caseId".equals(columnName))
+        {
+          return new Item(row.getCaseObject().getCaseId());
+        }
+        else if ("caseTitle".equals(columnName))
+        {
+          return new Item(row.getCaseObject().getTitle());
+        }
+        else if ("caseTypeId".equals(columnName))
+        {
+          String typeId = row.getCaseObject().getCaseTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
+        }
+        else if ("comments".equals(columnName))
+        {
+          return new Item(row.getComments());
+        }
+        else
+        {
+          return null;
+        }
+      }
+
+      @Override
+      public String getRowTypeId(CasePersonView row)
+      {
+        return row.getCasePersonTypeId();
+      }
+    });    
 
     public RowsFilterHelper getRowsFilterHelper()
     {
       return rowsFilterHelper;
     }
+    
+    public RowsFilterHelper getRowsFilterHelper2()
+    {
+      return rowsFilterHelper2;
+    }
+    
+    public RowsFilterHelper getActiveRowsFilterHelper()
+    {
+      if (rowsFilterHelper2.isRendered())
+      {
+        return rowsFilterHelper2;
+      }
+      else
+      {
+        return rowsFilterHelper;
+      }
+    }    
   }
 
   public Map<String, TabInstance> getTabInstances()
@@ -308,7 +396,8 @@ public class PersonCasesTabBean extends TabBean
         List<CasePersonView> auxList =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
         setRows(auxList);
-        getCurrentTabInstance().rowsFilterHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.reset();
+        getCurrentTabInstance().rowsFilterHelper2.reset();
       }
       catch (Exception ex)
       {
@@ -320,7 +409,8 @@ public class PersonCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().rowsFilterHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.reset();
+      getCurrentTabInstance().rowsFilterHelper2.reset();
       tabInstance.firstRow = 0;
     }
   }

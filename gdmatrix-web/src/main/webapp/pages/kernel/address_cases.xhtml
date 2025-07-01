@@ -10,7 +10,7 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-      <p:dataTable id="case_results_table" value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}" 
+      <p:dataTable id="case_results_table" value="#{addressCasesTabBean.tabInstances[tab.subviewId].activeRowsFilterHelper.filteredRows}" 
                    var="row" stripedRows="true" paginator="true" pageLinks="5"
                    resizableColumns="false" showGridlines="true"
                    size="small" paginatorPosition="bottom" 
@@ -25,13 +25,14 @@
                    sortMode="multiple" allowUnsorting="true">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12"> 
-          <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
-                         rendered="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.renderFilterSelector}">
+        <div class="flex flex-wrap w-12"> 
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.rendered}">
             <p:outputLabel value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
-            <p:selectOneMenu value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" touchable="true">
+            <p:selectOneMenu value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
               <f:selectItem itemLabel="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
               <f:selectItems value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
               <p:ajax event="valueChange"
@@ -39,15 +40,32 @@
                       process="@this"
                       update="case_results_table" />
             </p:selectOneMenu>
-          </p:outputPanel>                     
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{addressCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{addressCasesTabBean.groupableRowsHelper.switchView}"
-                           process="case_results_table"
-                           update="case_results_table"
-                           resetValues="true"
-                           alt="#{addressCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           title="#{addressCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{addressCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />          
+          </p:outputPanel>
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.rendered}">
+            <p:outputLabel value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterByLabel}:"
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
+              <f:selectItem itemLabel="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.showAllLabel}" itemValue="SHOW_ALL" />
+              <f:selectItems value="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{addressCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueChanged}"
+                      process="@this"
+                      update="case_results_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          <div class="flex-grow-1 text-right">          
+            <p:commandButton icon="pi pi-list" styleClass="rounded-button #{addressCasesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                             action="#{addressCasesTabBean.groupableRowsHelper.switchView}"
+                             process="case_results_table"
+                             update="case_results_table"
+                             resetValues="true"
+                             alt="#{addressCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                             title="#{addressCasesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                             rendered="#{addressCasesTabBean.groupableRowsHelper.groupedViewEnabled}" />          
+          </div>
         </div>              
       </f:facet> 
       

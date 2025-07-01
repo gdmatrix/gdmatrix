@@ -17,7 +17,7 @@
 
     <!-- Results table -->
     <p:dataTable id="case_documents_table"
-                 value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
+                 value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].activeRowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="#{caseDocumentsTabBean.pageSize}"
                  size="small" paginatorPosition="bottom"
@@ -31,75 +31,91 @@
       <f:attribute name="exportableBean" value="#{caseDocumentsTabBean}" />
 
       <f:facet name="header">
-        <div class="flex w-12">
-          <div class="flex flex-wrap flex-grow-1">
-            <p:outputPanel styleClass="mr-4 mb-1 mt-1"
-                           rendered="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.renderFilterSelector}">
-              <p:outputLabel value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
-                             styleClass="mr-2 vertical-align-middle"
-                             for="@next" />
-              <p:selectOneMenu value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" touchable="true">
-                <f:selectItem itemLabel="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
-                <f:selectItems value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
-                <p:ajax event="valueChange"
-                        listener="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueChanged}"
-                        process="@this"
-                        update="case_documents_table" />
-              </p:selectOneMenu>
-            </p:outputPanel>          
-            <p:outputPanel styleClass="flex-grow-1 mb-1 mt-1"
-                           rendered="#{caseDocumentsTabBean.renderVolumeSelector}">
-              <p:outputLabel value="#{caseBundle.caseDocuments_volume}: "
-                             styleClass="mr-2 vertical-align-middle"
-                             for="@next" />
-              <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}" touchable="true">
-                <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
-                <p:ajax event="valueChange"
-                        listener="#{caseDocumentsTabBean.volumeChanged}"
-                        update="case_documents_table" />
-              </p:selectOneMenu>
-            </p:outputPanel>
+        <div class="flex flex-wrap w-12">
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.rendered}">
+            <p:outputLabel value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
+              <f:selectItem itemLabel="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
+              <f:selectItems value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueChanged}"
+                      process="@this"
+                      update="case_documents_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.rendered}">
+            <p:outputLabel value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterByLabel}:"
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
+              <f:selectItem itemLabel="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.showAllLabel}" itemValue="SHOW_ALL" />
+              <f:selectItems value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueChanged}"
+                      process="@this"
+                      update="case_documents_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mb-1 mt-1"
+                         rendered="#{caseDocumentsTabBean.renderVolumeSelector}">
+            <p:outputLabel value="#{caseBundle.caseDocuments_volume}: "
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}" touchable="true">
+              <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{caseDocumentsTabBean.volumeChanged}"
+                      update="case_documents_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          <div class="flex-grow-1 text-right">       
+            <h:panelGroup id="csvButtonWrapper" 
+                          rendered="#{caseDocumentsTabBean.isExportable() &amp;&amp; caseDocumentsTabBean.rows != null}">
+              <p:commandButton disabled="#{caseDocumentsTabBean.exportableRows.size() &gt; caseDocumentsTabBean.rowExportLimit}" 
+                               icon="pi pi-download"
+                               styleClass="rounded-button ui-button-flat">
+                <p:dataExporter type="csv_dtr" 
+                                target="case_documents_table" 
+                                fileName="export" />                     
+              </p:commandButton>        
+              <p:tooltip for="csvButtonWrapper" 
+                         showEffect="fade" hideEffect="fade">
+                <h:outputText rendered="#{caseDocumentsTabBean.exportableRows.size() &lt;= caseDocumentsTabBean.rowExportLimit}"
+                              value="CSV" />
+                <h:outputFormat rendered="#{caseDocumentsTabBean.exportableRows.size() &gt; caseDocumentsTabBean.rowExportLimit}"
+                                value="#{objectBundle.rowExportLimit}">
+                  <f:param value="#{caseDocumentsTabBean.rowExportLimit}" />
+                </h:outputFormat>
+              </p:tooltip>
+            </h:panelGroup>                    
+            <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseDocumentsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                             action="#{caseDocumentsTabBean.groupableRowsHelper.switchView}"
+                             process="case_documents_table"
+                             update="case_documents_table"
+                             resetValues="true"
+                             alt="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                             title="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                             rendered="#{caseDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />
+            <p:commandButton icon="pi pi-upload" styleClass="ui-button-flat"
+                             onclick="javascript:sendDocument();return false"
+                             process="@this" update="@none"
+                             alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
+                             disabled="#{!caseObjectBean.editable}" />          
+            <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                             action="#{caseDocumentsTabBean.create}"
+                             process="@this"
+                             update="@form:cnt:search_tabs:case_documents_dialog"
+                             resetValues="true"
+                             oncomplete="PF('caseDocumentsDialog').show()"
+                             alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                             disabled="#{!caseObjectBean.editable}"/>
           </div>
-          <h:panelGroup id="csvButtonWrapper" 
-                        rendered="#{caseDocumentsTabBean.isExportable() &amp;&amp; caseDocumentsTabBean.rows != null}">
-            <p:commandButton disabled="#{caseDocumentsTabBean.exportableRows.size() &gt; caseDocumentsTabBean.rowExportLimit}" 
-                             icon="pi pi-download"
-                             styleClass="rounded-button ui-button-flat">
-              <p:dataExporter type="csv_dtr" 
-                              target="case_documents_table" 
-                              fileName="export" />                     
-            </p:commandButton>        
-            <p:tooltip for="csvButtonWrapper" 
-                       showEffect="fade" hideEffect="fade">
-              <h:outputText rendered="#{caseDocumentsTabBean.exportableRows.size() &lt;= caseDocumentsTabBean.rowExportLimit}"
-                            value="CSV" />
-              <h:outputFormat rendered="#{caseDocumentsTabBean.exportableRows.size() &gt; caseDocumentsTabBean.rowExportLimit}"
-                              value="#{objectBundle.rowExportLimit}">
-                <f:param value="#{caseDocumentsTabBean.rowExportLimit}" />
-              </h:outputFormat>
-            </p:tooltip>
-          </h:panelGroup>                    
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseDocumentsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{caseDocumentsTabBean.groupableRowsHelper.switchView}"
-                           process="case_documents_table"
-                           update="case_documents_table"
-                           resetValues="true"
-                           alt="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           title="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{caseDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />
-          <p:commandButton icon="pi pi-upload" styleClass="ui-button-flat"
-                           onclick="javascript:sendDocument();return false"
-                           process="@this" update="@none"
-                           alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
-                           disabled="#{!caseObjectBean.editable}" />          
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
-                           action="#{caseDocumentsTabBean.create}"
-                           process="@this"
-                           update="@form:cnt:search_tabs:case_documents_dialog"
-                           resetValues="true"
-                           oncomplete="PF('caseDocumentsDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
-                           disabled="#{!caseObjectBean.editable}"/>
         </div>
       </f:facet>
 

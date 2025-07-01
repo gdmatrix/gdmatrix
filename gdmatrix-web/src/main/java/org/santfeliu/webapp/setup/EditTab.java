@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -58,7 +59,7 @@ public class EditTab implements Serializable
   private List<String> writeRoles = new ArrayList(); 
   private List<String> orderBy = new ArrayList();
   private String groupBy;
-  private String filterBy;
+  private Map<String, Object> filterBy;
   private String typeId;
   private boolean showAllTypes = false;
   private Integer pageSize;
@@ -208,12 +209,12 @@ public class EditTab implements Serializable
     this.groupBy = groupBy;
   }
 
-  public String getFilterBy() 
+  public Map<String, Object> getFilterBy() 
   {
     return filterBy;
   }
 
-  public void setFilterBy(String filterBy) 
+  public void setFilterBy(Map<String, Object> filterBy) 
   {
     this.filterBy = filterBy;
   }
@@ -305,6 +306,80 @@ public class EditTab implements Serializable
     }
     else return null;
   }
+  
+  public String getFilterByName()
+  {
+    if (filterBy != null)
+    {
+      return (String)filterBy.get("name");
+    }
+    return null;
+  }
+  
+  public String getFilterByLabel()
+  {
+    if (filterBy != null)
+    {
+      return (String)filterBy.get("label");
+    }
+    return null;
+  }  
+  
+  public String getLinkedFilterByName(String filterValue)
+  {
+    if (filterBy != null)
+    {
+      Map linkedFilterBy = (Map)filterBy.get("linkedFilterBy");
+      if (linkedFilterBy != null)
+      {
+        Map valueFilterBy = (Map)linkedFilterBy.get("*");
+        if (valueFilterBy == null)
+        {
+          valueFilterBy = (Map)linkedFilterBy.get("%");
+          if (valueFilterBy == null)
+          {
+            if (filterValue != null)
+            {
+              valueFilterBy = (Map)linkedFilterBy.get(filterValue);
+            }
+          }
+        }
+        if (valueFilterBy != null)
+        {
+          return (String)valueFilterBy.get("name");
+        }
+      }
+    }
+    return null;
+  }
+
+  public String getLinkedFilterByLabel(String filterValue)
+  {
+    if (filterBy != null)
+    {    
+      Map linkedFilterBy = (Map)filterBy.get("linkedFilterBy");
+      if (linkedFilterBy != null)
+      {
+        Map valueFilterBy = (Map)linkedFilterBy.get("*");
+        if (valueFilterBy == null)
+        {
+          valueFilterBy = (Map)linkedFilterBy.get("%");
+          if (valueFilterBy == null)
+          {
+            if (filterValue != null)
+            {            
+              valueFilterBy = (Map)linkedFilterBy.get(filterValue);
+            }
+          }
+        }
+        if (valueFilterBy != null)
+        {
+          return (String)valueFilterBy.get("label");
+        }
+      }
+    }
+    return null;    
+  }  
   
   public static String createSubviewId(String viewId)
   {

@@ -99,8 +99,8 @@ public class CaseInterventionsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseInterventionsDataTableRow> rows;
     int firstRow = 0;
-    RowsFilterHelper rowsFilterHelper =
-      new RowsFilterHelper<CaseInterventionsDataTableRow>()
+    RowsFilterHelper rowsFilterHelper = RowsFilterHelper.create(null, prev -> 
+      new RowsFilterHelper<CaseInterventionsDataTableRow>(prev)
     {
       @Override
       public ObjectBean getObjectBean() 
@@ -134,7 +134,7 @@ public class CaseInterventionsTabBean extends TabBean
       }
 
       @Override
-      public String getFixedColumnValue(CaseInterventionsDataTableRow row, 
+      public Item getFixedColumnValue(CaseInterventionsDataTableRow row, 
         String columnName) 
       {
         return null; //No fixed columns        
@@ -145,11 +145,77 @@ public class CaseInterventionsTabBean extends TabBean
       {
         return row.getTypeId();               
       }
-    };
+    });
 
+    RowsFilterHelper rowsFilterHelper2 = 
+      RowsFilterHelper.create(rowsFilterHelper, prev -> 
+        new RowsFilterHelper<CaseInterventionsDataTableRow>(prev)
+    {
+      @Override
+      public ObjectBean getObjectBean() 
+      {
+        return CaseInterventionsTabBean.this.getObjectBean();
+      }
+      
+      @Override
+      public List<CaseInterventionsDataTableRow> getRows()
+      {
+        return prev.getFilteredRows();
+      }
+
+      @Override
+      public boolean isGroupedViewEnabled()
+      {
+        return CaseInterventionsTabBean.this.getGroupableRowsHelper().
+          isGroupedViewEnabled();
+      }
+
+      @Override
+      public void resetFirstRow()
+      {
+        firstRow = 0;
+      }
+
+      @Override
+      public List<TableProperty> getColumns() 
+      {
+        return CaseInterventionsTabBean.this.getColumns();        
+      }
+
+      @Override
+      public Item getFixedColumnValue(CaseInterventionsDataTableRow row, 
+        String columnName) 
+      {
+        return null; //No fixed columns        
+      }
+
+      @Override
+      public String getRowTypeId(CaseInterventionsDataTableRow row) 
+      {
+        return row.getTypeId();               
+      }      
+    });
+    
     public RowsFilterHelper getRowsFilterHelper()
     {
       return rowsFilterHelper;
+    }
+    
+    public RowsFilterHelper getRowsFilterHelper2()
+    {
+      return rowsFilterHelper2;
+    }
+    
+    public RowsFilterHelper getActiveRowsFilterHelper()
+    {
+      if (rowsFilterHelper2.isRendered())
+      {
+        return rowsFilterHelper2;
+      }
+      else
+      {
+        return rowsFilterHelper;
+      }
     }
   }
 
@@ -328,8 +394,9 @@ public class CaseInterventionsTabBean extends TabBean
   @Override
   public List<? extends DataTableRow> getExportableRows() 
   {
-    return getCurrentTabInstance().rowsFilterHelper.getFilteredRows();    
-  }  
+    return getCurrentTabInstance().getActiveRowsFilterHelper().
+      getFilteredRows();
+  }
 
   @Override
   public int getRowExportLimit()
@@ -470,7 +537,8 @@ public class CaseInterventionsTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
-        getCurrentTabInstance().rowsFilterHelper.load();
+        getCurrentTabInstance().rowsFilterHelper.reset();
+        getCurrentTabInstance().rowsFilterHelper2.reset();
         if (isInactiveHidden())
         {
           ResourceBundle bundle = ResourceBundle.getBundle(
@@ -489,7 +557,8 @@ public class CaseInterventionsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().rowsFilterHelper.load();
+      getCurrentTabInstance().rowsFilterHelper.reset();
+      getCurrentTabInstance().rowsFilterHelper2.reset();      
       tabInstance.firstRow = 0;
     }
   }

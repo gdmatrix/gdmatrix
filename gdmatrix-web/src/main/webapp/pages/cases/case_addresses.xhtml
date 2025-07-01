@@ -12,7 +12,7 @@
 
     <!-- Results table -->
     <p:dataTable id="case_addresses_table" 
-                 value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filteredRows}"
+                 value="#{caseAddressesTabBean.tabInstances[tab.subviewId].activeRowsFilterHelper.filteredRows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="#{caseAddressesTabBean.pageSize}"
                  size="small" paginatorPosition="bottom"
@@ -27,13 +27,14 @@
       <f:attribute name="exportableBean" value="#{caseAddressesTabBean}" />
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">
-          <p:outputPanel styleClass="flex-grow-1 mr-4 mb-1 mt-1"
-                         rendered="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.renderFilterSelector}">
+        <div class="flex flex-wrap w-12">
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.rendered}">
             <p:outputLabel value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
-            <p:selectOneMenu value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" touchable="true">
+            <p:selectOneMenu value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
               <f:selectItem itemLabel="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
               <f:selectItems value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
               <p:ajax event="valueChange"
@@ -42,41 +43,58 @@
                       update="case_addresses_table" />
             </p:selectOneMenu>
           </p:outputPanel>
-          <h:panelGroup id="csvButtonWrapper" 
-                        rendered="#{caseAddressesTabBean.isExportable() &amp;&amp; caseAddressesTabBean.rows != null}">
-            <p:commandButton disabled="#{caseAddressesTabBean.exportableRows.size() &gt; caseAddressesTabBean.rowExportLimit}" 
-                             icon="pi pi-download"
-                             styleClass="rounded-button ui-button-flat">
-              <p:dataExporter type="csv_dtr" 
-                              target="case_addresses_table" 
-                              fileName="export" />                     
-            </p:commandButton>        
-            <p:tooltip for="csvButtonWrapper" 
-                       showEffect="fade" hideEffect="fade">
-              <h:outputText rendered="#{caseAddressesTabBean.exportableRows.size() &lt;= caseAddressesTabBean.rowExportLimit}"
-                            value="CSV" />
-              <h:outputFormat rendered="#{caseAddressesTabBean.exportableRows.size() &gt; caseAddressesTabBean.rowExportLimit}"
-                              value="#{objectBundle.rowExportLimit}">
-                <f:param value="#{caseAddressesTabBean.rowExportLimit}" />
-              </h:outputFormat>
-            </p:tooltip>
-          </h:panelGroup>                    
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseAddressesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{caseAddressesTabBean.groupableRowsHelper.switchView}"
-                           process="case_addresses_table"
-                           update="case_addresses_table"
-                           resetValues="true"
-                           alt="#{caseAddressesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}" 
-                           title="#{caseAddressesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
-                           rendered="#{caseAddressesTabBean.groupableRowsHelper.groupedViewEnabled}" />
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
-                           action="#{caseAddressesTabBean.create}"
-                           process="@this"
-                           update="@form:cnt:search_tabs:case_addresses_dialog"
-                           resetValues="true"
-                           oncomplete="PF('caseAddressesDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
-                           disabled="#{!caseObjectBean.editable}"/>
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.rendered}">
+            <p:outputLabel value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterByLabel}:"
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValue}" 
+                             touchable="true" styleClass="min-w-0">
+              <f:selectItem itemLabel="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.showAllLabel}" itemValue="SHOW_ALL" />
+              <f:selectItems value="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{caseAddressesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueChanged}"
+                      process="@this"
+                      update="case_addresses_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          <div class="flex-grow-1 text-right">          
+            <h:panelGroup id="csvButtonWrapper" 
+                          rendered="#{caseAddressesTabBean.isExportable() &amp;&amp; caseAddressesTabBean.rows != null}">
+              <p:commandButton disabled="#{caseAddressesTabBean.exportableRows.size() &gt; caseAddressesTabBean.rowExportLimit}" 
+                               icon="pi pi-download"
+                               styleClass="rounded-button ui-button-flat">
+                <p:dataExporter type="csv_dtr" 
+                                target="case_addresses_table" 
+                                fileName="export" />                     
+              </p:commandButton>        
+              <p:tooltip for="csvButtonWrapper" 
+                         showEffect="fade" hideEffect="fade">
+                <h:outputText rendered="#{caseAddressesTabBean.exportableRows.size() &lt;= caseAddressesTabBean.rowExportLimit}"
+                              value="CSV" />
+                <h:outputFormat rendered="#{caseAddressesTabBean.exportableRows.size() &gt; caseAddressesTabBean.rowExportLimit}"
+                                value="#{objectBundle.rowExportLimit}">
+                  <f:param value="#{caseAddressesTabBean.rowExportLimit}" />
+                </h:outputFormat>
+              </p:tooltip>
+            </h:panelGroup>                    
+            <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseAddressesTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                             action="#{caseAddressesTabBean.groupableRowsHelper.switchView}"
+                             process="case_addresses_table"
+                             update="case_addresses_table"
+                             resetValues="true"
+                             alt="#{caseAddressesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                             title="#{caseAddressesTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                             rendered="#{caseAddressesTabBean.groupableRowsHelper.groupedViewEnabled}" />
+            <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                             action="#{caseAddressesTabBean.create}"
+                             process="@this"
+                             update="@form:cnt:search_tabs:case_addresses_dialog"
+                             resetValues="true"
+                             oncomplete="PF('caseAddressesDialog').show()"
+                             alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                             disabled="#{!caseObjectBean.editable}"/>
+          </div>
         </div>
       </f:facet>
 
