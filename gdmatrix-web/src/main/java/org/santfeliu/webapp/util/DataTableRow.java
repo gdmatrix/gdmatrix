@@ -171,18 +171,18 @@ public class DataTableRow implements Serializable
           }
           customPropertyMap.put(propertyName, new CustomProperty(index++, 
             propertyName, rowProperty.getLabel(), value, 
-            rowProperty.isEscape()));
+            rowProperty.isEscape(), rowProperty.getStyleClass()));
         }
       }
     }
   }
     
   public void addCustomProperty(String name, String label, String value, 
-    boolean escape)
+    boolean escape, String styleClass)
   {
     int index = getMaxCustomPropertyIndex() + 1;
     customPropertyMap.put(name, new CustomProperty(index, name, label, 
-      new DefaultValue(value), escape));
+      new DefaultValue(value), escape, styleClass));
   }
 
   public CustomProperty getCustomProperty(String name)
@@ -559,15 +559,17 @@ public class DataTableRow implements Serializable
     private String label;
     private Value value;
     private boolean escape;
+    private String styleClass;
 
     public CustomProperty(int index, String name, String label, Value value, 
-      boolean escape)
+      boolean escape, String styleClass)
     {
       this.index = index;
       this.name = name;
       this.label = label;
       this.value = value;
       this.escape = escape;
+      this.styleClass = styleClass;
     }
 
     public int getIndex()
@@ -618,6 +620,16 @@ public class DataTableRow implements Serializable
     public void setEscape(boolean escape) 
     {
       this.escape = escape;
+    }
+
+    public String getStyleClass() 
+    {
+      return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) 
+    {
+      this.styleClass = styleClass;
     }
   }
 

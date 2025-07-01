@@ -73,7 +73,7 @@
     
     <p:rowExpansion rendered="#{not row.customProperties.isEmpty()}">
       <p:dataTable value="#{row.customProperties}" var="customProperty"
-                   styleClass="customProperties" rowStyleClass="row" 
+                   styleClass="customProperties" rowStyleClass="row #{customProperty.styleClass}" 
                    showGridlines="false" stripedRows="false">
         <p:column styleClass="cell propName #{row.styleClass}">
           <h:outputText value="#{customProperty.label}" />
