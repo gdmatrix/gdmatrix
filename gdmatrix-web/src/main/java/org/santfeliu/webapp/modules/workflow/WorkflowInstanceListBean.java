@@ -260,7 +260,19 @@ public class WorkflowInstanceListBean extends WebBean implements Serializable
     try
     {
       Map parameters = new HashMap();
-      parameters.putAll(getExternalContext().getRequestParameterMap());
+      Map<String, String> parameterMap =
+        getExternalContext().getRequestParameterMap();
+      for (Map.Entry<String, String> entry : parameterMap.entrySet())
+      {
+        String name = entry.getKey();
+        if (!name.startsWith("javax.") &&
+            !name.startsWith("mainform") &&
+            !name.startsWith("_"))
+        {
+          String value = entry.getValue();
+          parameters.put(name, value);
+        }
+      }
       String extWorkflowName = (String)parameters.remove(WORKFLOW_PARAMETER);
       String extInstanceId = (String)parameters.remove(INSTANCEID_PARAMETER);
       if (extWorkflowName != null)
