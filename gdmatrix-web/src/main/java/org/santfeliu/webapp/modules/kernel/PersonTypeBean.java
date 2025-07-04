@@ -141,7 +141,7 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
     PersonFilter filter = new PersonFilter();
     if (query.matches("\\d+"))
       filter.getPersonId().add(query);
-    else if (query.matches("(\\d+\\D+|\\D+\\d+)"))
+    else if (query.matches("(\\d+\\D+|\\D+\\d+\\D?)"))
       filter.setNif(query);
     else
       filter.setFullName(query);
