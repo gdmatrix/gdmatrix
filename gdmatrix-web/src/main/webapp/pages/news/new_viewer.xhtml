@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+
+  <ui:fragment rendered="#{newViewerBean.newObject != null}"> 
+  
+    <p:outputPanel id="new-panel" styleClass="new_body w-full p-4" style="max-width: 800px;color:var(--text-color)">  
+
+      <h2 style="color:var(--primary-color)">#{newViewerBean.newObject.headline}</h2>
+      <div class="flex justify-content-end p-2">
+        #{newViewerBean.startDate}
+      </div>
+        
+      <ui:fragment rendered="#{newViewerBean.imageContentId != null}">
+       <img src="/documents/#{newViewerBean.imageContentId}" alt="" class="w-full" /> 
+      </ui:fragment>
+
+      <h:outputText value="#{newViewerBean.newObject.summary}" escape="false" rendered="false" />
+
+      <h:outputText value="#{newViewerBean.newObject.text}" escape="false" />      
+      
+    </p:outputPanel>
+    
+    <gdm:saveBean value="newViewerBean" /> 
+
+    <script>
+      controlNavigationHistory({
+        url : "/pages/news/new_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;newid=#{newViewerBean.newObject.newId}",
+        title : "#{userSessionBean.selectedMenuItem.label}"
+      });
+      
+      document.querySelector(".content_footer").scrollTo(0,0);
+    </script>
+
+  </ui:fragment>
+  
+</ui:composition>
