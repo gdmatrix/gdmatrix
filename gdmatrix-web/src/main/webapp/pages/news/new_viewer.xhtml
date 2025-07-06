@@ -18,7 +18,7 @@
       </div>
         
       <ui:fragment rendered="#{newViewerBean.imageContentId != null}">
-       <img src="/documents/#{newViewerBean.imageContentId}" alt="" class="w-full" /> 
+       <img src="/imgscale/#{newViewerBean.imageContentId}?width=800&amp;crop=auto" alt="" class="w-full" /> 
       </ui:fragment>
 
       <h:outputText value="#{newViewerBean.newObject.summary}" escape="false" rendered="false" />

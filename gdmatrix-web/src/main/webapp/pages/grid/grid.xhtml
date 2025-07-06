@@ -12,7 +12,7 @@
     <ui:repeat value="#{gridBean.cards}" var="card">
       <div class="card aspect#{card.aspect}">
         <a href="#" onclick="return showPage('#{card.type}', #{card.jsonParameters})">
-          <img src="/documents/#{card.imageId}" alt="" />
+          <img src="/imgscale/#{card.imageId}?width=800&amp;crop=auto" alt="" />
           <div class="title">#{card.title}</div>
         </a>
       </div>
