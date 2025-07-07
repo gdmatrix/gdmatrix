@@ -42,7 +42,10 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.classif.ClassCache;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -65,6 +68,9 @@ import org.santfeliu.webapp.helpers.RowsExportHelper;
 @RequestScoped
 public class CaseFinderBean extends FinderBean implements DataTableRowExportable
 {
+  //Dictionary properties
+  private static final String PERSON_SEARCH_ENABLED = "_personSearchEnabled";
+
   private String smartFilter;
   private CaseFilter filter = new CaseFilter();
   private List<DataTableRow> rows;
@@ -72,7 +78,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   private boolean outdated;
   private String formSelector;
   private String sortBy;
-  
+
   @Inject
   NavigatorBean navigatorBean;
 
@@ -86,8 +92,8 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   public void init()
   {
     CSVDataTableRowsExporter.register();
-  }  
-  
+  }
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -183,12 +189,12 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     this.formSelector = formSelector;
   }
 
-  public String getSortBy() 
+  public String getSortBy()
   {
     return sortBy;
   }
 
-  public void setSortBy(String sortBy) 
+  public void setSortBy(String sortBy)
   {
     this.sortBy = sortBy;
   }
@@ -228,13 +234,13 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       return ((BigList)rows).getElements(0, Integer.MAX_VALUE);
     }
   }
-  
+
   @Override
   public int getRowExportLimit()
   {
     return RowsExportHelper.getActiveSearchTabRowExportLimit(caseObjectBean);
   }
-  
+
   @Override
   public boolean isExportable()
   {
@@ -255,7 +261,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   {
     if (sortBy == null) //first sort
     {
-      sortBy = columnName + ":asc";  
+      sortBy = columnName + ":asc";
     }
     else
     {
@@ -278,7 +284,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     }
     find();
   }
-  
+
   public String getSortIcon(String columnName)
   {
     if (!getOrderByColumns().contains(columnName) || !isFinding())
@@ -288,7 +294,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     else if (sortBy == null) //sorting enabled, but no sort column selected
     {
       return "pi pi-sort-alt";
-    }    
+    }
     else //sorting enabled, and sort column selected
     {
       String currentColumnName = sortBy.split(":")[0];
@@ -309,7 +315,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       }
     }
   }
-  
+
   @Override
   public void smartFind()
   {
@@ -361,11 +367,30 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     formSelector = null;
   }
 
+  public boolean isRenderPersonId()
+  {
+    try
+    {
+      String typeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      Type type = TypeCache.getInstance().getType(typeId);
+      PropertyDefinition pd = type.getPropertyDefinition(PERSON_SEARCH_ENABLED);
+      if (pd != null && !pd.getValue().isEmpty() &&
+        pd.getValue().get(0).equalsIgnoreCase("true"))
+      {
+        return isRender("personId");
+      }
+    }
+    catch (Exception ex)
+    {
+    }
+    return false; //default value
+  }
+
   @Override
   public Serializable saveState()
   {
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
-      getObjectPosition(), formSelector, rows, outdated, getPageSize(), 
+      getObjectPosition(), formSelector, rows, outdated, getPageSize(),
       sortBy };
   }
 
@@ -521,26 +546,26 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       int tabSelector = caseObjectBean.getSearchTabSelector();
       tabSelector =
         tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
-      List<String> orderByColumns = 
+      List<String> orderByColumns =
         getObjectSetup().getSearchTabs().get(tabSelector).getOrderByColumns();
       if (orderByColumns == null || orderByColumns.isEmpty())
       {
         //default value
-        orderByColumns = Arrays.asList("caseId", "title", "caseTypeId", 
+        orderByColumns = Arrays.asList("caseId", "title", "caseTypeId",
           "startDate", "endDate");
       }
       if (!isFinding())
       {
         sortBy = null;
       }
-      return new ArrayList(orderByColumns);      
+      return new ArrayList(orderByColumns);
     }
     catch (Exception ex)
     {
       return Collections.EMPTY_LIST;
     }
-  }  
-  
+  }
+
   private String setWildcards(String text)
   {
     if (text != null)
@@ -608,5 +633,5 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       getRowStyleClassGenerator();
     return styleClassGenerator.getStyleClass(row);
   }
- 
+
 }

@@ -162,6 +162,21 @@
               <p:inputText value="#{caseFinderBean.filter.searchExpression}"/>
             </p:outputPanel>
             
+            <!-- PersonId -->
+            <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.renderPersonId}">
+              <p:outputLabel for="@next" value="#{caseBundle.case_person}" />
+              <emcomp:objectReference value="#{caseFinderBean.filter.personId}"
+                                      type="Person"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      minQueryLength="3"
+                                      renderShowButton="false"
+                                      onselect="showPanel('leftPanel')"
+                                      process="@form:cnt:find_selector"
+                                      update="@form:cnt:find_selector">
+              </emcomp:objectReference>
+            </p:outputPanel>            
+
           </div>
 
           <emcomp:dynamicProperties id="case_dynamic_properties"
