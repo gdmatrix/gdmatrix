@@ -266,6 +266,20 @@ public abstract class FinderBean extends BaseBean
     }
   }
 
+  public boolean isRender(String propertyName)
+  {
+    try
+    {
+      List hideProperties = (List)getObjectSetup().getProperties().
+        get("hideFinderProperties");
+      return (hideProperties == null || !hideProperties.contains(propertyName));
+    }
+    catch (Exception ex)
+    {
+      return true;
+    }    
+  }  
+  
   protected ActionObject executeAction(String actionName, Object object)
   {
     ActionObject actionObject = new ActionObject(object);
@@ -300,7 +314,7 @@ public abstract class FinderBean extends BaseBean
 
     return actionObject;
   }
-
+  
   private void loadObjectSetup() throws Exception
   {
     String setupName = getProperty("objectSetup");

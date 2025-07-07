@@ -66,19 +66,20 @@
           <div class="ui-fluid formgrid grid">
 
             <!-- CaseId -->
-            <div class="field col-12">
+            <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('caseId')}">
               <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
               <p:chips value="#{caseFinderBean.caseIdList}"/>
-            </div>
+            </p:outputPanel>
 
             <!-- Title -->
-            <div class="field col-12">
+            <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('title')}">
               <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
               <p:inputText value="#{caseFinderBean.filter.title}" />
-            </div>
+            </p:outputPanel>
 
             <!-- ClassId -->
-            <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderClassId}">
+            <p:outputPanel styleClass="field col-12" 
+                           rendered="#{caseObjectBean.renderClassId and caseFinderBean.isRender('classId')}">
               <p:outputLabel for="@next" value="#{caseBundle.case_classId}" />
               <emcomp:objectReference value="#{caseFinderBean.classId}"
                                       type="Class"
@@ -91,7 +92,7 @@
             </p:outputPanel>
 
             <!-- TypeId -->
-            <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderTypeId}">
+            <p:outputPanel styleClass="field col-12" rendered="#{caseObjectBean.renderTypeId and caseFinderBean.isRender('typeId')}">
               <p:outputLabel for="@next" value="#{caseBundle.case_caseTypeId}" />
               <emcomp:typeReference value="#{caseFinderBean.filter.caseTypeId}"
                                     type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
@@ -109,12 +110,12 @@
             </p:outputPanel>
 
             <!-- Description -->
-            <div class="field col-12">
+            <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('description')}">
               <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
               <p:inputText value="#{caseFinderBean.filter.description}" />
-            </div>
+            </p:outputPanel>
 
-            <div class="field col-12">
+            <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('date')}">
               <p:fieldset legend="#{caseBundle.caseSearch_date}"
                           toggleable="true" collapsed="true" >
 
@@ -153,14 +154,14 @@
                 </div>
 
               </p:fieldset>
-            </div>
+            </p:outputPanel>
 
             <!-- searchExpression -->
-            <div class="field col-12">
+            <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('searchExpression')}">
               <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}" />
               <p:inputText value="#{caseFinderBean.filter.searchExpression}"/>
-            </div>
-
+            </p:outputPanel>
+            
           </div>
 
           <emcomp:dynamicProperties id="case_dynamic_properties"
