@@ -52,8 +52,8 @@
 
   <script>
     controlNavigationHistory({
-      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
-      title : "#{queryMainBean.query != null ? queryMainBean.query.title : userSessionBean.selectedMenuItem.label}"
+      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;query_name=#{queryMainBean.query.name}",
+      title : "#{queryMainBean.query.title != null ? queryMainBean.query.title : userSessionBean.selectedMenuItem.label}"
     });
   </script>       
 

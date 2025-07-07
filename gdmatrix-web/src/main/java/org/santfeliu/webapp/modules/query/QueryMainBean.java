@@ -217,14 +217,14 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
   
   private void loadFromParameters()
   {
-    ExternalContext extContext = getExternalContext();
-    Map<String, String> parameters = extContext.getRequestParameterMap();
     String queryName = getProperty(QUERY_NAME_PROPERTY);
     if (queryName == null)
     {
+      ExternalContext extContext = getExternalContext();
+      Map<String, String> parameters = extContext.getRequestParameterMap();
       queryName = (String)parameters.get(QUERY_NAME_PROPERTY);
     }
-    if (queryName != null)
+    if (!StringUtils.isBlank(queryName))
     {
       try
       {
@@ -243,7 +243,7 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
     }
     else
     {
-      if ("query_list".equals(view)) queryListBean.search();
+      queryListBean.search();
     }
   }  
   
