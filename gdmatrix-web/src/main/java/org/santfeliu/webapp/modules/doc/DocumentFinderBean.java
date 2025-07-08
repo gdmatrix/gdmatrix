@@ -119,7 +119,7 @@ public class DocumentFinderBean extends FinderBean
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
       filter.setDocTypeId(baseTypeId);
     }
-    return filter;
+    return filter != null ? (DocumentFilter) getSessionProperties(filter) : filter;
   }
 
   public void setFilter(DocumentFilter filter)
@@ -363,8 +363,9 @@ public class DocumentFinderBean extends FinderBean
     setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
+    filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);    
     selectedStates = null;
+    clearSessionProperties();      
     doFind(true);
     firstRow = 0;
   }
@@ -389,6 +390,7 @@ public class DocumentFinderBean extends FinderBean
     }
     smartFilter = documentTypeBean.filterToQuery(filter);
     doFind(true);
+    setSessionProperties(filter);    
     firstRow = 0;
   }
 

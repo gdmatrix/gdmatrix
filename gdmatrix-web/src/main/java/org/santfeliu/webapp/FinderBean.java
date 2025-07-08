@@ -31,10 +31,12 @@
 package org.santfeliu.webapp;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.activation.DataHandler;
+import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
@@ -66,6 +68,11 @@ public abstract class FinderBean extends BaseBean
     "smartSearchTipDocId";
   private static final String DEFAULT_SEARCH_PAGE_SIZE_PROPERTY =
     "defaultSearchPageSize";
+  private static final String SESSION_PROPERTIES = 
+    "sessionProperties";
+  private static final String FILTER_PREFIX = 
+    "finder:"; 
+  
   private static final Map<String, String> smartSearchTipContentMap =
     new HashMap();
   private static long lastSmartSearchTipRefresh = System.currentTimeMillis();
@@ -314,6 +321,96 @@ public abstract class FinderBean extends BaseBean
 
     return actionObject;
   }
+    
+  protected Object getSessionProperties(Object filter)
+  {    
+    if (WebUtils.isRenderResponsePhase())
+    {
+      List<String> propNames = getSessionPropertyNames();
+      if (propNames != null && !propNames.isEmpty())
+      {    
+        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();        
+        for (String propName: propNames)
+        {
+          setSessionValuesToFilter(userSessionBean, filter, propName);
+        } 
+      }
+    }
+    return filter;
+  } 
+  
+  protected void setSessionProperties(Object filter)
+  {
+    List<String> propNames = getSessionPropertyNames();
+    if (propNames != null && !propNames.isEmpty())
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      for (String propName: propNames)
+      {
+        setFilterValuesToSession(userSessionBean, filter, propName);
+      } 
+    }    
+  }  
+
+  protected void clearSessionProperties()
+  {
+    List<String> propNames = getSessionPropertyNames();
+    if (propNames != null && !propNames.isEmpty())
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      for (String propName: propNames)
+      {
+        userSessionBean.getAttributes().remove(FILTER_PREFIX + propName);
+      } 
+    }      
+  }
+  
+  private List<String> getSessionPropertyNames()
+  {
+    try
+    {
+      return getObjectSetup().getProperties().getList(SESSION_PROPERTIES);
+    }
+    catch (Exception ex)
+    {
+      return Collections.EMPTY_LIST;
+    }
+  }    
+  
+  private void setSessionValuesToFilter(UserSessionBean userSessionBean, 
+    Object filter, String propName)
+  {
+    String value = 
+      (String) userSessionBean.getAttribute(FILTER_PREFIX + propName);
+    
+    Property pValue = DictionaryUtils.getProperty(filter, propName);
+    if (value != null && (pValue == null || !pValue.getValue().isEmpty()) ||
+      (value == null && pValue != null && !pValue.getValue().isEmpty()))
+    {          
+      DictionaryUtils.setProperty(filter, propName, value);
+    }    
+  }
+  
+  private void setFilterValuesToSession(UserSessionBean userSessionBean, 
+    Object filter, String propName)
+  {
+    Property property = DictionaryUtils.getProperty(filter, propName);
+    
+    if (property != null)
+    {
+      String value = (property.getValue().isEmpty() ? null :
+          property.getValue().get(0));    
+
+      String sessionValue = 
+        (String) userSessionBean.getAttribute(FILTER_PREFIX + propName);
+
+      if ((value != null && !value.equals(sessionValue)) 
+        || (value == null && sessionValue != null))
+      {
+        userSessionBean.getAttributes().put(FILTER_PREFIX + propName, value);
+      }  
+    }
+  }   
   
   private void loadObjectSetup() throws Exception
   {

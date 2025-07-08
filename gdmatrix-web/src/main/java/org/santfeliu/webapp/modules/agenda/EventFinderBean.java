@@ -156,7 +156,7 @@ public class EventFinderBean extends FinderBean
       filter.getEventTypeId().clear();
       filter.getEventTypeId().add(baseTypeId);
     }
-    return filter;
+    return filter != null ? (EventFilter) getSessionProperties(filter) : filter;
   }
 
   public void setFilter(EventFilter filter)
@@ -471,6 +471,7 @@ public class EventFinderBean extends FinderBean
     filter.setDateComparator("S");
     setSearchEventTypeId(null);
     setSearchEventThemeId(null);
+    clearSessionProperties();      
     doFind(true);
     firstRow = 0;
   }
@@ -506,6 +507,7 @@ public class EventFinderBean extends FinderBean
     }
 
     doFind(true);
+    setSessionProperties(filter);    
     firstRow = 0;
   }
 
