@@ -163,9 +163,17 @@ public class ContextTreeBean implements Serializable
 
   public void setSelectedNode(TreeNode treeNode)
   {
+    expandNode(treeNode);
     this.selectedNode = treeNode;
   }
-
+  
+  public void setSelectedNode(String objectId)
+  {
+    TreeNode node = getTreeNode(objectId);
+    if (node != null)
+      setSelectedNode(node);
+  }
+  
   public TreeNode getSelectedNode()
   {
     return selectedNode;
@@ -266,7 +274,7 @@ public class ContextTreeBean implements Serializable
 
           selectedNode.getChildren().add(newNode);
           this.selectedNode = newNode;
-          
+                    
           return navigatorBean.show(newData.typeId, newData.objectId);
         }
         else
@@ -315,6 +323,47 @@ public class ContextTreeBean implements Serializable
     }
     return null;
   }
+  
+  private void expandNode(TreeNode node)
+  {
+    if (node != null)
+    {
+      node.setExpanded(true);
+      if (node.getParent() != null)
+        expandNode(node.getParent());
+    }
+  }
+  
+  private TreeNode getTreeNode(String objectId)
+  {
+    return getTreeNode(objectId, getTreeNode());
+  }
+  
+  private TreeNode getTreeNode(String objectId, TreeNode node)
+  {
+    if (objectId == null || node == null)
+      return null;
+    
+    if (node instanceof ObjectTreeNode)
+    {
+      String nodeId = ((ObjectTreeNode)node).getData().getObjectId();
+      if (objectId.equals(nodeId))
+        return node;
+    }
+    
+    if (!node.isLeaf())
+    {
+      List<TreeNode> children = node.getChildren();
+      for (int i = 0; i < children.size(); i++)
+      {
+        TreeNode result = getTreeNode(objectId, children.get(i));
+        if (result != null)
+          return result;
+      } 
+    }    
+    return null;
+  }
+  
 
   public class ObjectTreeNode extends DefaultTreeNode<ObjectData>
   {
@@ -369,6 +418,11 @@ public class ContextTreeBean implements Serializable
         {
           ObjectTreeNode childNode = new ObjectTreeNode(childData);
           getChildren().add(childNode);
+          if (selectedNode != null 
+            && childNode.getRowKey().equals(selectedNode.getRowKey()))
+          {
+            setSelectedNode(childNode);
+          }        
         }
       }
     }
