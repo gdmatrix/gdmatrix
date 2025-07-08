@@ -157,8 +157,9 @@ async function showResponse(threadId)
       else if (type === "ACTION")
       {
         console.info("ACTION", item.text);
-        text = "```json\n" + item.text + "\n```";
         eval(item.text);
+        if (!aiDebugEnabled) continue;
+        text = "```json\n" + item.text + "\n```";
       }
       var itemElem = createMessage(type, text);
       listElem.appendChild(itemElem);

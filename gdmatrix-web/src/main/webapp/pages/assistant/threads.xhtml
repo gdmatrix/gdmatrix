@@ -66,6 +66,7 @@
             <p:selectBooleanButton value="#{threadsBean.debugEnabled}" styleClass="mini white-space-nowrap"
                                    onIcon="fa fa-bug" offIcon="fa fa-bug"
                                    onLabel="Debug on" offLabel="Debug off"
+                                   onchange="changeDebugEnabled(this)"
                                    rendered="#{assistantBean.isAssistantEditable()}"> 
               <p:ajax process="@this" update="@none" />
             </p:selectBooleanButton>
@@ -213,6 +214,12 @@
   <script>
     var aiLabel = "#{assistantBundle.assistant}";
     var userLabel = "#{assistantBundle.you}";
+    var aiDebugEnabled = #{threadsBean.debugEnabled};
+    
+    function changeDebugEnabled(elem)
+    {
+      aiDebugEnabled = elem.checked;
+    }
     
     if (window.assistantResizeDetection === undefined)
     {
