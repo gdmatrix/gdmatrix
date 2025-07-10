@@ -537,8 +537,8 @@ public class CaseInterventionsTabBean extends TabBean
             new DataTableRowComparator(getColumns(), getOrderBy()));
         }
         setRows(auxList);
-        getCurrentTabInstance().rowsFilterHelper.reset();
-        getCurrentTabInstance().rowsFilterHelper2.reset();
+        getCurrentTabInstance().rowsFilterHelper.refresh();
+        getCurrentTabInstance().rowsFilterHelper2.refresh();
         if (isInactiveHidden())
         {
           ResourceBundle bundle = ResourceBundle.getBundle(
@@ -557,8 +557,8 @@ public class CaseInterventionsTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().rowsFilterHelper.reset();
-      getCurrentTabInstance().rowsFilterHelper2.reset();      
+      getCurrentTabInstance().rowsFilterHelper.refresh();
+      getCurrentTabInstance().rowsFilterHelper2.refresh();
       tabInstance.firstRow = 0;
     }
   }

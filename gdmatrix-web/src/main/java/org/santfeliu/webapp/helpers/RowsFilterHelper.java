@@ -102,6 +102,22 @@ public abstract class RowsFilterHelper<T>
     this.filterValue = filterValue;
   }
 
+  public void refresh() //use when storing or removing a row
+  {
+    filteredRows = null;
+    filterValueItems = null;
+    boolean found = false;
+    for (SelectItem item : getFilterValueItems())
+    {
+      if (item.getValue().equals(filterValue))
+      {
+        found = true;
+        break;
+      }
+    }
+    if (!found) filterValue = SHOW_ALL;
+  }
+  
   public List<T> getFilteredRows()
   {
     if (filteredRows == null)
@@ -137,7 +153,7 @@ public abstract class RowsFilterHelper<T>
   {
     this.filteredRows = filteredRows;
   }
-
+  
   public void reset()
   {
     filterValueItems = null;
@@ -274,9 +290,9 @@ public abstract class RowsFilterHelper<T>
             return StringUtils.defaultString(o1.getLabel()).compareTo(
               StringUtils.defaultString(o2.getLabel()));
           }
-        });
+        });        
       }
-    }
+    }    
     return itemList;
   }
 

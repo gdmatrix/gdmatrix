@@ -530,8 +530,8 @@ public class CaseCasesTabBean extends TabBean
               DictionaryConstants.CASE_CASE_TYPE : typeId;
             getCurrentTabInstance().rows = getResultsByDefault(typeId);
           }
-        getCurrentTabInstance().rowsFilterHelper.reset();
-        getCurrentTabInstance().rowsFilterHelper2.reset();
+        getCurrentTabInstance().rowsFilterHelper.refresh();
+        getCurrentTabInstance().rowsFilterHelper2.refresh();
           executeTabAction(POST_TAB_LOAD_ACTION, null);
         }
       }
@@ -545,8 +545,8 @@ public class CaseCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().rowsFilterHelper.reset();
-      getCurrentTabInstance().rowsFilterHelper2.reset();        
+      getCurrentTabInstance().rowsFilterHelper.refresh();
+      getCurrentTabInstance().rowsFilterHelper2.refresh();
       tabInstance.firstRow = 0;
     }
   }

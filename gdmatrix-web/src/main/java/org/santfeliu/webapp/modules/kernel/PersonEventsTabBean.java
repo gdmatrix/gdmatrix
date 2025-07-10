@@ -393,8 +393,8 @@ public class PersonEventsTabBean extends TabBean
           }
           getCurrentTabInstance().rows = result;
         }
-        getCurrentTabInstance().rowsFilterHelper.reset();
-        getCurrentTabInstance().rowsFilterHelper2.reset();
+        getCurrentTabInstance().rowsFilterHelper.refresh();
+        getCurrentTabInstance().rowsFilterHelper2.refresh();
       }
       catch (Exception ex)
       {
@@ -407,8 +407,8 @@ public class PersonEventsTabBean extends TabBean
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
       tabInstance.firstRow = 0;
-      getCurrentTabInstance().rowsFilterHelper.reset();
-      getCurrentTabInstance().rowsFilterHelper2.reset();
+      getCurrentTabInstance().rowsFilterHelper.refresh();
+      getCurrentTabInstance().rowsFilterHelper2.refresh();
     }
   }
 

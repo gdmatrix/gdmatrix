@@ -389,8 +389,8 @@ public class AddressCasesTabBean extends TabBean
         List<CaseAddressView> auxList = 
           CasesModuleBean.getPort(false).findCaseAddressViews(filter);
         setRows(auxList);
-        getCurrentTabInstance().rowsFilterHelper.reset();
-        getCurrentTabInstance().rowsFilterHelper2.reset();
+        getCurrentTabInstance().rowsFilterHelper.refresh();
+        getCurrentTabInstance().rowsFilterHelper2.refresh();
       }
       catch (Exception ex)
       {
@@ -402,8 +402,8 @@ public class AddressCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().rowsFilterHelper.reset();
-      getCurrentTabInstance().rowsFilterHelper2.reset();
+      getCurrentTabInstance().rowsFilterHelper.refresh();
+      getCurrentTabInstance().rowsFilterHelper2.refresh();
       tabInstance.firstRow = 0;
     }
   }

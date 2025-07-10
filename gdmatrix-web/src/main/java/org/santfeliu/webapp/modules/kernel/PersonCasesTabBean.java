@@ -396,8 +396,8 @@ public class PersonCasesTabBean extends TabBean
         List<CasePersonView> auxList =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
         setRows(auxList);
-        getCurrentTabInstance().rowsFilterHelper.reset();
-        getCurrentTabInstance().rowsFilterHelper2.reset();
+        getCurrentTabInstance().rowsFilterHelper.refresh();
+        getCurrentTabInstance().rowsFilterHelper2.refresh();
       }
       catch (Exception ex)
       {
@@ -409,8 +409,8 @@ public class PersonCasesTabBean extends TabBean
       TabInstance tabInstance = getCurrentTabInstance();
       tabInstance.objectId = NEW_OBJECT_ID;
       tabInstance.rows = Collections.EMPTY_LIST;
-      getCurrentTabInstance().rowsFilterHelper.reset();
-      getCurrentTabInstance().rowsFilterHelper2.reset();
+      getCurrentTabInstance().rowsFilterHelper.refresh();
+      getCurrentTabInstance().rowsFilterHelper2.refresh();
       tabInstance.firstRow = 0;
     }
   }
