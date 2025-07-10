@@ -88,6 +88,9 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
   public static final String QUERY_OBJECT_PROPERTY = "query_object";
   public static final String QUERY_CODE_PROPERTY = "query_code";
 
+  // Request parameters
+  public static final String QUERY_VIEW_PROPERTY = "query_view";
+
   private Query query = new Query();
   private boolean persistent = false;
   private final Set<String> readRoles = new HashSet();
@@ -218,11 +221,13 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
   private void loadFromParameters()
   {
     String queryName = getProperty(QUERY_NAME_PROPERTY);
+    String queryView = null;
     if (queryName == null)
     {
       ExternalContext extContext = getExternalContext();
       Map<String, String> parameters = extContext.getRequestParameterMap();
       queryName = (String)parameters.get(QUERY_NAME_PROPERTY);
+      queryView = (String)parameters.get(QUERY_VIEW_PROPERTY);
     }
     if (!StringUtils.isBlank(queryName))
     {
@@ -232,7 +237,7 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
         if (query != null)
         {
           setCreateNewVersion(true);
-          setView("query_view");
+          setView("edit".equals(queryView) ? "query_edit" : "query_view");
         }
       }
       catch (Exception ex)
@@ -245,7 +250,32 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
     {
       queryListBean.search();
     }
-  }  
+  }
+
+  public String getQueryUrl()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("/go.faces?xmid=" + 
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem().getMid());
+    sb.append("&" + QUERY_NAME_PROPERTY + "=" + getQuery().getName());
+    sb.append("&" + QUERY_VIEW_PROPERTY + "=" + 
+      ("query_edit".equals(getView()) ? "edit" : "view"));
+    return sb.toString();
+  }
+  
+  public String getQueryTitle()
+  {
+    if (getQuery().getTitle() != null)
+    {
+      return getQuery().getTitle() + 
+        ("query_edit".equals(getView()) ? " (Edit)" : "");
+    }
+    else
+    {
+      return UserSessionBean.getCurrentInstance().getSelectedMenuItem().
+        getLabel();
+    }
+  }
   
   public String getReadRolesString()
   {
