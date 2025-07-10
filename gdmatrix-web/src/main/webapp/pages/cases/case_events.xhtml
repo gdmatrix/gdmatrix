@@ -36,7 +36,7 @@
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
             <p:selectOneMenu value="#{caseEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" 
-                             touchable="true" styleClass="min-w-0">
+                             touchable="true">
               <f:selectItem itemLabel="#{caseEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
               <f:selectItems value="#{caseEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
               <p:ajax event="valueChange"
@@ -51,7 +51,7 @@
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
             <p:selectOneMenu value="#{caseEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValue}" 
-                             touchable="true" styleClass="min-w-0">
+                             touchable="true">
               <f:selectItem itemLabel="#{caseEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.showAllLabel}" itemValue="SHOW_ALL" />
               <f:selectItems value="#{caseEventsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueItems}" />
               <p:ajax event="valueChange"

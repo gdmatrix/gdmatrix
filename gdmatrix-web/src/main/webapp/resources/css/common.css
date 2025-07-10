@@ -133,6 +133,11 @@ body .ui-paginator .ui-paginator-current
   margin-top: 4px;
 }
 
+.rowsFilter .ui-selectonemenu
+{
+  min-width: 100px !important;
+}
+
 .rowsFilter .ui-selectonemenu span.ui-selectonemenu-label
 {
   white-space: normal;

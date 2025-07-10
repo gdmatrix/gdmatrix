@@ -6,7 +6,7 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:gdm="http://gdmatrix.org/faces">
-
+  
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
@@ -32,7 +32,7 @@
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
             <p:selectOneMenu value="#{personCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" 
-                             touchable="true" styleClass="min-w-0">
+                             touchable="true">
               <f:selectItem itemLabel="#{personCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.showAllLabel}" itemValue="SHOW_ALL" />
               <f:selectItems value="#{personCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValueItems}" />
               <p:ajax event="valueChange"
@@ -47,7 +47,7 @@
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
             <p:selectOneMenu value="#{personCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValue}" 
-                             touchable="true" styleClass="min-w-0">
+                             touchable="true">
               <f:selectItem itemLabel="#{personCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.showAllLabel}" itemValue="SHOW_ALL" />
               <f:selectItems value="#{personCasesTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueItems}" />
               <p:ajax event="valueChange"
