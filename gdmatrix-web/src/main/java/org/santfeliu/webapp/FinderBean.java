@@ -394,15 +394,14 @@ public abstract class FinderBean extends BaseBean
   private void setFilterValuesToSession(UserSessionBean userSessionBean, 
     Object filter, String propName)
   {
+    String sessionValue = 
+      (String) userSessionBean.getAttribute(FILTER_PREFIX + propName);
+      
     Property property = DictionaryUtils.getProperty(filter, propName);
-    
     if (property != null)
     {
       String value = (property.getValue().isEmpty() ? null :
           property.getValue().get(0));    
-
-      String sessionValue = 
-        (String) userSessionBean.getAttribute(FILTER_PREFIX + propName);
 
       if ((value != null && !value.equals(sessionValue)) 
         || (value == null && sessionValue != null))
@@ -410,6 +409,8 @@ public abstract class FinderBean extends BaseBean
         userSessionBean.getAttributes().put(FILTER_PREFIX + propName, value);
       }  
     }
+    else if (sessionValue != null)
+      userSessionBean.getAttributes().put(FILTER_PREFIX + propName, null);  
   }   
   
   private void loadObjectSetup() throws Exception
