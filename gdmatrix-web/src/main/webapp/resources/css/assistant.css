@@ -246,12 +246,9 @@
   font-family: monospace !important;
 }
 
-.dot-typing
-{
+.dot-typing {
   margin-left: 24px;
-}
-
-.dot-typing > div {
+  margin-bottom: 24px;
   position: relative;
   left: -9999px;
   width: 8px;
@@ -261,6 +258,11 @@
   color: #9880ff;
   box-shadow: 9984px 0 0 0 #9880ff, 9999px 0 0 0 #9880ff, 10014px 0 0 0 #9880ff;
   animation: dot-typing 1.5s infinite linear;
+}
+
+.dot-typing.invisible
+{
+  visibility: hidden;
 }
 
 #assistant_body .ui-fileupload .ui-fileupload-buttonbar

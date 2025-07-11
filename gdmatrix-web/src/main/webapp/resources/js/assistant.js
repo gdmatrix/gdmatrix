@@ -5,9 +5,10 @@ function updateSendButton()
   var text = PF("assistantTextarea").getJQ().val().trim();
   var sendButton = PF("sendButton");
 
-  var waiting = document.querySelector(".dot-typing") ? true : false;
+  var dotsElem = document.querySelector(".message_list .dot-typing");
+  var inProgress = dotsElem && !dotsElem.classList.contains("invisible");
 
-  if (text.length === 0 || waiting)
+  if (text.length === 0 || inProgress)
   {
     sendButton.disable();
   }
@@ -55,13 +56,25 @@ function createMessage(role, markdown = "")
   return itemElem;
 }
 
-function createDots()
+function showDots()
 {
-  const itemElem = document.createElement("li");
-  itemElem.className = "dot-typing";
-  const dotsElem = document.createElement("div");
-  itemElem.appendChild(dotsElem);
-  return itemElem;
+  const dotsElem = document.querySelector(".message_list .dot-typing");
+  if (dotsElem) dotsElem.classList.remove("invisible");
+}
+
+function hideDots()
+{
+  const dotsElem = document.querySelector(".message_list .dot-typing");
+  if (dotsElem) dotsElem.classList.add("invisible");
+}
+
+function setLinkTarget(htmlElem)
+{
+  const links = htmlElem.querySelectorAll("a");
+  for (let link of links)
+  {
+    link.target = "_blank";
+  }  
 }
 
 function sendMessage()
@@ -84,8 +97,7 @@ function sendMessage()
   var itemElem = createMessage("USER", text);
   listElem.appendChild(itemElem);
 
-  var dotsElem = createDots();
-  listElem.appendChild(dotsElem);
+  showDots();
 
   scrollMessages();
   setTimeout(() => textarea.val(""), 0);
@@ -99,15 +111,6 @@ async function showResponse(threadId)
   var response = await fetch("/stream/" + threadId);
   var queue = await response.json();
   var end = false;
-
-  if (queue.length > 0)
-  {
-    var dotsElem = listElem.querySelector(".dot-typing"); // remove dots
-    if (dotsElem)
-    {
-      dotsElem.parentElement.removeChild(dotsElem);
-    }
-  }
 
   let markdownElem;
   let htmlElem;
@@ -125,6 +128,7 @@ async function showResponse(threadId)
     {
       updateSendButton();
       end = true;
+      hideDots();
     }
     else if (typeof item === "string") // tokens from streaming
     {
@@ -138,6 +142,7 @@ async function showResponse(threadId)
       }
       markdownElem.textContent += item;
       htmlElem.innerHTML = markdownToHtml(markdownElem.textContent);
+      setLinkTarget(htmlElem);
       scrollMessages();
     }
     else if (typeof item === "object") // message
@@ -168,6 +173,7 @@ async function showResponse(threadId)
         aiMessageElem = itemElem.querySelector(".message");
         markdownElem = itemElem.querySelector(".markdown");
         htmlElem = itemElem.querySelector(".html");
+        setLinkTarget(htmlElem);
       }
       scrollMessages();
     }
@@ -258,6 +264,10 @@ function getMessageList()
     listElem = document.createElement("ul");
     listElem.className = "list-none pl-0";
     messageList.appendChild(listElem);
+
+    const dotsElem = document.createElement("div");
+    dotsElem.className = "dot-typing invisible";
+    messageList.appendChild(dotsElem);
   }
   return listElem;
 }
