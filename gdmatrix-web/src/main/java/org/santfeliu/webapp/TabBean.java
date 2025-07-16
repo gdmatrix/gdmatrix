@@ -33,9 +33,9 @@ package org.santfeliu.webapp;
 import org.santfeliu.webapp.setup.EditTab;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -49,10 +49,9 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 public abstract class TabBean extends BaseBean
 {
-  private static final Integer DEFAULT_PAGE_SIZE = 10;
-  private static final List<Integer> DEFAULT_PAGE_SIZE_OPTIONS = 
-    Arrays.asList(5, 10, 25, 50); 
-  
+  private static final int DEFAULT_PAGE_SIZE = 10;
+  private static final String DEFAULT_PAGE_SIZE_OPTIONS = "5,10,25,50";
+
   private String objectId = NavigatorBean.NEW_OBJECT_ID;
 
   public String getObjectId()
@@ -144,26 +143,65 @@ public abstract class TabBean extends BaseBean
   public int getPageSize()
   {
     EditTab editTab = getObjectBean().getActiveEditTab();
-    return (editTab.getPageSize() != null ? editTab.getPageSize() : 
-      DEFAULT_PAGE_SIZE);
+    if (editTab.getPageSize() != null)
+    {
+      Object pageSize = editTab.getPageSize();
+      if (pageSize instanceof Double)
+      {
+        return ((Double)pageSize).intValue();
+      }
+      else if (pageSize instanceof String)
+      {
+        if ("ALL".equals((String)pageSize) || "all".equals((String)pageSize))
+        {
+          return 0;
+        }
+      }
+    }
+    return DEFAULT_PAGE_SIZE;
   }
-  
+
   public String getPageSizeOptions()
   {
     EditTab editTab = getObjectBean().getActiveEditTab();
-    List<Integer> options = (editTab.getPageSizeOptions() != null ? 
-      editTab.getPageSizeOptions() : new ArrayList(DEFAULT_PAGE_SIZE_OPTIONS));
-    Integer pageSize = getPageSize();
-    if (!options.contains(pageSize))
+    if (editTab.getPageSizeOptions() != null)
     {
-      options.add(pageSize);
+      boolean addAllOption = false;
+      List<Object> tabOptions = editTab.getPageSizeOptions();
+      List<Integer> options = new ArrayList<>();
+      for (Object tabOption : tabOptions)
+      {
+        if (tabOption instanceof Double)
+        {
+          options.add(((Double)tabOption).intValue());
+        }
+        else if (tabOption instanceof String)
+        {
+          if ("ALL".equals((String)tabOption) ||
+            "all".equals((String)tabOption))
+          {
+            addAllOption = true;
+          }
+        }
+      }
+      Integer pageSize = getPageSize();
+      if (!options.contains(pageSize) && pageSize > 0)
+      {
+        options.add(pageSize);
+      }
+      Collections.sort(options);
+      //Convert to "o1,o2,o3,..."
+      String result = options.stream().map(String::valueOf).
+        collect(Collectors.joining(","));
+      if (addAllOption)
+      {
+        result = "{ShowAll|'" + getShowAllLabel() + "'}," + result;
+      }
+      return result;
     }
-    Collections.sort(options);
-    //Convert to "o1,o2,o3,..."
-    return options.stream().map(String::valueOf)
-      .collect(Collectors.joining(","));    
+    return DEFAULT_PAGE_SIZE_OPTIONS;
   }
-  
+
   public String getTabBaseTypeId()
   {
     EditTab editTab = getObjectBean().getActiveEditTab();
@@ -199,5 +237,12 @@ public abstract class TabBean extends BaseBean
       getObjectBean().executeTabAction(actionName, object);
     return actionObject.getObject();
   }
+  
+  private String getShowAllLabel()
+  {
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.web.obj.resources.ObjectBundle", getLocale());
+    return bundle.getString("all");
+  }  
 
 }

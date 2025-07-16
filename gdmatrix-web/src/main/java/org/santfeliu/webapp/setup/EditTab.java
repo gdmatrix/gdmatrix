@@ -62,8 +62,8 @@ public class EditTab implements Serializable
   private Map<String, Object> filterBy;
   private String typeId;
   private boolean showAllTypes = false;
-  private Integer pageSize;
-  private List<Integer> pageSizeOptions;
+  private Object pageSize;
+  private List<Object> pageSizeOptions;
   private Boolean exportable;
   private Integer rowExportLimit;
   private Set<String> hideProperties = new HashSet();  
@@ -239,22 +239,22 @@ public class EditTab implements Serializable
     this.showAllTypes = showAllTypes;
   }
 
-  public Integer getPageSize() 
+  public Object getPageSize() 
   {
     return pageSize;
   }
 
-  public void setPageSize(Integer pageSize) 
+  public void setPageSize(Object pageSize)
   {
     this.pageSize = pageSize;
   }
 
-  public List<Integer> getPageSizeOptions() 
+  public List<Object> getPageSizeOptions() 
   {
     return pageSizeOptions;
   }
 
-  public void setPageSizeOptions(List<Integer> pageSizeOptions) 
+  public void setPageSizeOptions(List<Object> pageSizeOptions) 
   {
     this.pageSizeOptions = pageSizeOptions;
   }
