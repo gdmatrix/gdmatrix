@@ -174,7 +174,7 @@ public abstract class RowsFilterHelper<T>
   public boolean isRendered()
   {
     return (getRows() != null && !getRows().isEmpty() &&
-      !isGroupedViewEnabled() && getFilterValueItems().size() > 1 &&
+      getFilterValueItems().size() > 1 &&
       checkLinked());
   }
 
@@ -252,7 +252,7 @@ public abstract class RowsFilterHelper<T>
     if (prevRowsFilterHelper == null) //first filter
     {
       filterBy = getActiveEditTab().getFilterByName();
-      if (filterBy == null) filterBy = "typeId";
+      if (filterBy == null && !isGroupedViewEnabled()) filterBy = "typeId";
     }
     else //linked filter
     {
