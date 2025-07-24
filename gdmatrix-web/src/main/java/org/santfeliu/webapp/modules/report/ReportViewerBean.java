@@ -380,7 +380,11 @@ public class ReportViewerBean extends WebBean implements Serializable
 
     try
     {
-      outcome = executeReport(reportName, parameters);
+      MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
+      MenuItemCursor cursor = menuModel.getSelectedMenuItem();
+      String reportNameProperty = 
+        cursor.getBrowserSensitiveProperty(REPORT_NAME_PROPERTY); 
+      outcome = executeReport(reportNameProperty, parameters);
     }
     catch (Exception ex)
     {
@@ -418,16 +422,9 @@ public class ReportViewerBean extends WebBean implements Serializable
   private String executeReport(String reportName, Map parameters)
     throws Exception
   {
-    String outcome;
-
-    if (reportName == null)
-    {
-      MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-      MenuItemCursor cursor = menuModel.getSelectedMenuItem();
-      reportName = cursor.getBrowserSensitiveProperty(REPORT_NAME_PROPERTY);
-    }
     if (reportName == null)
       throw new Exception("UNDEFINED_REPORT_NAME");
+    
     setReportName(reportName);
 
     if (parameters == null)
@@ -439,11 +436,9 @@ public class ReportViewerBean extends WebBean implements Serializable
     mergeUserParameters(parameters);
 
     formSelector = getFormSelector();
-    outcome = show();
 
-    return outcome;
+    return show();
   }
-
 
   /* private methods */
   private String show()
