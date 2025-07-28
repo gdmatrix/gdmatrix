@@ -1,3 +1,13 @@
+.procedure_list
+{
+  container-type: size;
+}
+
+.result_table 
+{
+  height: min(100%, 100dvh); 
+}
+
 .result_table a
 {
   text-decoration: none;
@@ -86,6 +96,5 @@ body .procedure_view .ui-panel-content
   } 
   
 }
-
 
 

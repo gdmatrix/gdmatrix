@@ -11,7 +11,7 @@
 
   <h:outputStylesheet library="css" name="procedures.css" />
 
-  <div class="flex flex-column h-full overflow-hidden mx-auto w-11 lg:w-9">
+  <div class="procedure_list flex flex-column overflow-hidden w-full h-full p-2">
 
     <p:defaultCommand target="search_button"  /> 
 
@@ -20,7 +20,7 @@
       <p:autoUpdate />
     </p:messages>
 
-    <div class="flex w-full overflow-x-hidden gap-2 my-4 align-items-start">
+    <div class="flex w-full overflow-x-hidden gap-2 align-items-start">
 
       <div class="flex flex-wrap overflow-y-auto w-full md:w-6 border-1 surface-border border-round max-h-full">
 
@@ -89,7 +89,7 @@
                      rowStyleClass="#{row.period} #{row.id == procedureListBean.procedure.id ? 'current' : ''}"
                      styleClass="result_table w-full"
                      stripedRows="true" 
-                     paginator="true" rows=""
+                     paginator="true" 
                      paginatorPosition="bottom"                     
                      paginatorTemplate="{CurrentPageReport}"
                      currentPageReportTemplate="{totalRecords} #{workflowBundle.proceduresFound}"
