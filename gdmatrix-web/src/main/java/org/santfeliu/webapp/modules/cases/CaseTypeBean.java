@@ -293,7 +293,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       if (!query.endsWith("%")) query += "%";
       filter.setTitle(query);
     }
-    if (typeId != null)
+    if (typeId != null && !DictionaryConstants.CASE_TYPE.equals(typeId))
     {
       filter.setCaseTypeId(typeId);
     }

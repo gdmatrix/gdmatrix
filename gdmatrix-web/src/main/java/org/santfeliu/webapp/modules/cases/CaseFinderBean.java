@@ -42,6 +42,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.classif.ClassCache;
 import org.santfeliu.dic.Type;
@@ -116,7 +117,8 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     if (filter != null && StringUtils.isBlank(filter.getCaseTypeId()))
     {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      filter.setCaseTypeId(baseTypeId);
+      if (!DictionaryConstants.CASE_TYPE.equals(baseTypeId))
+        filter.setCaseTypeId(baseTypeId);
     }
     
     return filter != null ? (CaseFilter) getSessionProperties(filter) : filter;
@@ -338,8 +340,10 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     if (StringUtils.isBlank(filter.getCaseTypeId()))
     {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      filter.setCaseTypeId(baseTypeId);
+        filter.setCaseTypeId(baseTypeId);
     }
+    if (DictionaryConstants.CASE_TYPE.equals(filter.getCaseTypeId()))
+      filter.setCaseTypeId(null);
     smartFilter = caseTypeBean.filterToQuery(filter);
     doFind(true);
     setSessionProperties(filter);
