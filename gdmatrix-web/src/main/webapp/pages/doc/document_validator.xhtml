@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+
+  <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                var="documentBundle"/>
+
+  <div class="document_validator">
+
+    <div class="p-2">
+      <sf:browser url="#{documentValidatorBean.headerURL}"
+                  port="#{applicationBean.defaultPort}"
+                  rendered="#{documentValidatorBean.headerRender}"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}" />
+    </div>
+
+    <div class="m-2 px-2 py-4 border-round flex flex-wrap justify-content-center surface-ground">
+
+      <p:messages id="pmsg" showSummary="true" styleClass="messages w-12 md:w-10" 
+                  showIcon="true" closable="false" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>
+
+      <h:panelGroup id="input_panel" styleClass="document_reference ui-fluid formgrid grid w-12 md:w-10">
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="sigId" value="#{documentBundle.reference} "  />
+          <div class="ui-inputgroup">
+            <p:inputText id="sigId" value="#{documentValidatorBean.sigId}" />
+            <p:commandButton action="#{documentValidatorBean.validate}"
+                             process="@form:input_panel" update="@form:document_panel"
+                             value="#{documentBundle.validate}" />        
+          </div>
+        </div>
+      </h:panelGroup> 
+
+      <h:panelGroup id="document_panel" styleClass="w-12 md:w-10">
+
+        <p:card class="" rendered="#{documentValidatorBean.document != null}">
+          <f:facet name="title">
+            <div class="px-3">
+              <h:outputText value="#{documentValidatorBean.document.title}" />
+            </div>
+          </f:facet>     
+          <f:facet name="subtitle">
+            
+            <div class="px-3 flex flex-wrap justify-content-between">
+              <div class="w-12 md:w-6">
+                <div class="">
+                  <p:outputLabel for="@next" value="#{documentBundle.docId}: " />            
+                  <h:outputText value="#{documentValidatorBean.document.docId}" />
+                </div>
+                <div class="">
+                  <h:outputText value="#{documentBundle.language}: " />
+                  <h:outputText value="#{documentValidatorBean.language}" />          
+                </div>
+                <div class="">
+                  <h:outputText value="#{documentBundle.size}:  " />
+                  <h:outputText value="#{documentValidatorBean.size}" />           
+                </div>
+              </div>
+
+              <div class="w-12 lg:w-6 flex justify-content-start lg:justify-content-end py-3 ui-inputgroup">   
+
+                <p:linkButton href="#{documentValidatorBean.downloadURL}"
+                              styleClass="border-round-left-md" icon="pi pi-download">
+                  <h:outputText value="#{documentBundle.download}" />
+                </p:linkButton>
+
+                <p:linkButton href="#{documentValidatorBean.viewURL}"
+                              styleClass="" icon="pi pi-eye"
+                              rendered="#{documentValidatorBean.viewURL != null}" 
+                              target="_blank">
+                  <h:outputText value="#{documentBundle.view}" />
+                </p:linkButton>  
+                
+                <p:linkButton href="#{documentValidatorBean.sourceURL}"
+                              styleClass="" icon="pi pi-file"
+                              rendered="#{documentValidatorBean.sourceURL != null}" 
+                              target="_blank">
+                  <h:outputText value="#{documentBundle.sourceDocument}" />
+                </p:linkButton>                      
+               
+              </div>
+            </div>
+
+          </f:facet>
+
+          <div class="field col-12">
+            <pe:documentViewer style="height:70vh;width:100%" url="#{documentValidatorBean.viewURL}" />
+          </div>
+
+        </p:card>
+      </h:panelGroup>
+    </div>
+
+    <div class="p-2">
+      <sf:browser id="footerBrowser"
+                  url="#{documentValidatorBean.footerURL}"
+                  port="#{applicationBean.defaultPort}"
+                  rendered="#{documentValidatorBean.footerRender}"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}" />  
+    </div>
+
+  </div>
+
+  <gdm:saveBean value="documentViewerBean" /> 
+
+  <script>
+    controlNavigationHistory({
+      url: "/pages/doc/document_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title: "#{userSessionBean.selectedMenuItem.label}"
+    });
+  </script>    
+
+</ui:composition>

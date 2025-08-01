@@ -43,6 +43,7 @@ import org.matrix.doc.DocumentManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.doc.client.CachedDocumentManagerClient;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
@@ -79,6 +80,31 @@ public class DocModuleBean
     }
     return getPort(userId, password);
   }
+  
+  public static CachedDocumentManagerClient getClient(String userId, 
+    String password) throws Exception
+  {
+    CachedDocumentManagerClient client = 
+      new CachedDocumentManagerClient(userId, password);
+    return client;
+  }
+  
+  public static CachedDocumentManagerClient getClient(boolean asAdmin) 
+    throws Exception
+  {
+    String userId;
+    String password;
+    if (asAdmin)
+    {
+      userId = MatrixConfig.getProperty("adminCredentials.userId");
+      password = MatrixConfig.getProperty("adminCredentials.password");
+    } else
+    {
+      userId = UserSessionBean.getCurrentInstance().getUsername();
+      password = UserSessionBean.getCurrentInstance().getPassword();
+    }
+    return getClient(userId, password);
+  }  
   
   public static Map getUserDocTypes(String action)
   {

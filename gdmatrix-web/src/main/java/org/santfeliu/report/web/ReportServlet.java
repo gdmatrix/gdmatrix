@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.soap.MTOMFeature;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.report.ExportOptions;
 import org.matrix.report.Parameter;
@@ -80,6 +81,7 @@ public class ReportServlet extends HttpServlet
   public static final String SOURCE = "src";
   public static final String CONNECTION_NAME_PARAMETER = "connectionName";
   public static final String FORMAT_PARAMETER = "format";
+  public static final String SAVEAS_PARAMETER = "saveas";
   private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
   public ReportServlet()
@@ -245,7 +247,7 @@ public class ReportServlet extends HttpServlet
     {
       String paramName = (String)enu.nextElement();
       String paramValue = request.getParameter(paramName);
-      if (paramValue.length() > 0)
+      if (paramValue.length() > 0 && !SAVEAS_PARAMETER.equals(paramName))
       {
         Parameter parameter = new Parameter();
         parameter.setName(paramName);
@@ -272,8 +274,9 @@ public class ReportServlet extends HttpServlet
       connectionName = null;
     DataHandler dh = port.executeReport(reportId, connectionName,
       parameters, options);
-
-    String filename = null;
+    
+    String filename = 
+      StringUtils.trimToNull(request.getParameter(SAVEAS_PARAMETER));
     if (format.equalsIgnoreCase("rtf"))
     {
       filename = reportId + ".rtf";
@@ -284,7 +287,7 @@ public class ReportServlet extends HttpServlet
     }
     sendData(dh, response, filename);
   }
-
+  
   private void showError(HttpServletResponse response, Exception ex)
     throws IOException
   {
