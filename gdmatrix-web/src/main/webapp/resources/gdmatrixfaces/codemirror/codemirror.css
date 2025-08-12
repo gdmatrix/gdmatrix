@@ -10,3 +10,20 @@
 {
   color: inherit !important;
 }
+
+/* search panel */
+.cm-search.cm-panel *
+{
+  font-size: 12px;
+  font-family: var(--font-family);
+}
+
+.cm-search.cm-panel label input[type=checkbox]
+{
+  vertical-align: middle;
+}
+
+.cm-search.cm-panel button
+{
+  text-transform: capitalize;
+}
