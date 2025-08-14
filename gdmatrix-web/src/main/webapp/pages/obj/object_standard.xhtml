@@ -93,7 +93,7 @@
           <c:forEach items="#{objectBean.actions}" var="action">
             <p:menuitem icon="#{action.icon}"
                         value="#{action.label}" action="#{objectBean.callAction(action.name)}"
-                        rendered="#{not empty action.label and not action.isUrlAction()}"
+                        rendered="#{not empty action.label and not action.isUrlAction() and not action.isJsAction()}"
                         process="@this"
                         onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                         update="@form:cnt:search_tabs:tabs object_header"/>
@@ -102,6 +102,12 @@
                         onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                         url="#{action.url}" target="#{action.urlTarget}"
                         rendered="#{not empty action.label and action.isUrlAction()}" />
+            <p:menuitem icon="#{action.icon}"
+                        value="#{action.label}"
+                        onclick="setTimeout(()=>PF('objectActions').hide(),200); #{action.getJsAction()}"
+                        process="@this"
+                        update="#{action.getJsUpdate()}" 
+                        rendered="#{not empty action.label and action.isJsAction()}"/>               
           </c:forEach>
           <p:menuitem action="#{objectBean.copy}"
                       value="#{objectBundle.copy}"
@@ -127,7 +133,7 @@
                       onclick="setTimeout(()=>PF('objectActions').hide(),200)"
                       update="@form:cnt:search_tabs:obj_tabs"
                       resetValues="true"
-                      global="false" />
+                      global="false" />  
         </p:menu>
       </p:overlayPanel>
     </div>

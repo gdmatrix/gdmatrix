@@ -63,7 +63,8 @@ public class Action implements Serializable
 
   public final static Set<String> predefinedActionNames;
 
-  private static final String URL_PREFIX = "url:";
+  public static final String URL_PREFIX = "url:";
+  public static final String JS_PREFIX = "javascript:";  
 
   private String label;
   private String name;
@@ -100,8 +101,6 @@ public class Action implements Serializable
   
   public Action(String label, String name)
   {
-
-    
     this.label = label;
     this.name = name;
   }
@@ -162,7 +161,12 @@ public class Action implements Serializable
   {
     return this.name != null && this.name.startsWith(URL_PREFIX);
   }
-
+  
+  public boolean isJsAction()
+  {
+    return this.name != null && this.name.startsWith(JS_PREFIX);    
+  }
+  
   public String getUrl()
   {
     if (this.name != null && this.name.startsWith(URL_PREFIX))
@@ -176,6 +180,32 @@ public class Action implements Serializable
     String url = getUrl();
     return url != null && url.matches("https?://.*") ? "_blank" : "_self";
   }
+  
+  public String getJsAction()
+  {
+    if (this.name != null && this.name.startsWith(JS_PREFIX))
+    {
+      if (this.parameters.length > 0)
+        return (String) this.parameters[0];
+      else
+        return this.name.substring(JS_PREFIX.length());
+    }
+    else
+      return "";    
+  }
+  
+  public String getJsUpdate()
+  {
+    if (this.name != null && this.name.startsWith(JS_PREFIX))
+    {
+      if (this.parameters.length > 1)
+        return (String) this.parameters[1];
+      else
+        return "@form:cnt:search_tabs:obj_tabs";
+    }
+    else
+      return "";    
+  }  
   
   public boolean isAction(String name)
   {
