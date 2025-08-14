@@ -30,10 +30,10 @@
  */
 package org.santfeliu.webapp.modules.report;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.EnumTypeItem;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
+import org.matrix.doc.OrderByProperty;
 import org.matrix.report.Report;
 import org.santfeliu.dic.EnumTypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
@@ -72,7 +73,7 @@ public class ReportFinderBean extends FinderBean
   private String technology;
   private String theme;
   private List<EnumTypeItem> themeItems;
-  
+    
   @Inject
   NavigatorBean navigatorBean;  
   
@@ -80,21 +81,8 @@ public class ReportFinderBean extends FinderBean
   ReportTypeBean reportTypeBean;  
   
   @Inject
-  ReportObjectBean reportObjectBean;  
-  
-  @PostConstruct
-  public void init()
-  {
-    try    
-    {
-      themeItems = EnumTypeCache.getInstance().getItems("ReportThemes");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
+  ReportObjectBean reportObjectBean; 
+    
   @Override
   public List<Report> getRows()
   {
@@ -136,6 +124,7 @@ public class ReportFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }
 
+  @Override
   public DocumentFilter getFilter()
   {
     return filter;
@@ -165,7 +154,12 @@ public class ReportFinderBean extends FinderBean
   {
     this.technology = technology;
   }
-
+    
+//  public Technology[] getTechnologies()
+//  {
+//    return ReportObjectBean.Technology.values();
+//  }
+    
   public String getTheme()
   {
     return theme;
@@ -188,6 +182,9 @@ public class ReportFinderBean extends FinderBean
 
   public List<EnumTypeItem> getThemeItems()
   {
+    if (themeItems == null)   
+      themeItems = EnumTypeCache.getInstance().getItems("ReportThemes");
+
     return themeItems;
   }
 
@@ -238,6 +235,35 @@ public class ReportFinderBean extends FinderBean
   {
     return reportObjectBean;
   }
+  
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
+      getObjectPosition(), rows, outdated, getPageSize() };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      setFinding((Boolean)stateArray[0]);
+      setFilterTabSelector((Integer)stateArray[1]);
+      filter = (DocumentFilter)stateArray[2];
+      smartFilter = reportTypeBean.filterToQuery(filter);
+      firstRow = (Integer)stateArray[3];
+      setObjectPosition((Integer)stateArray[4]);
+      rows = (List<Report>)stateArray[5];
+      outdated = (Boolean)stateArray[6];
+      setPageSize((Integer)stateArray[7]);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
   
   private void doFind(boolean autoLoad)
   {
@@ -299,7 +325,11 @@ public class ReportFinderBean extends FinderBean
               filter.getOutputProperty().add("technology");
               filter.getOutputProperty().add("theme");              
               filter.getOutputProperty().add("defaultConnectionName");
-              filter.setIncludeContentMetadata(false);
+              filter.setIncludeContentMetadata(false);              
+              OrderByProperty orderBy = new OrderByProperty();
+              orderBy.setName("title");
+              orderBy.setDescending(false);
+              filter.getOrderByProperty().add(orderBy);
               
               List<Document> documents =
                 DocModuleBean.getPort(false).findDocuments(filter);
@@ -364,24 +394,35 @@ public class ReportFinderBean extends FinderBean
   private List<Report> toReports(List<Document> documents) 
     throws Exception
   {
-    List<Report> convertedRows = new ArrayList();
+    List<Report> convertedRows = new ArrayList<>();
     for (Document doc : documents)
     {
-      Report report = new Report();
-      report.setReportId(
-        DictionaryUtils.getPropertyValue(doc.getProperty(), "report"));
-      report.setTechnology(
-        DictionaryUtils.getPropertyValue(doc.getProperty(), "technology"));
-      report.setDefaultConnectionName(
-        DictionaryUtils.getPropertyValue(doc.getProperty(), "defaultConnectionName"));
-      report.setDocId(doc.getDocId());
-      report.setTitle(doc.getTitle());
-      report.getProperty().addAll(doc.getProperty());
-
-      convertedRows.add(report);
+      convertedRows.add(toReport(doc));
     }
     
     return convertedRows;       
-  }  
+  } 
+  
+  private Report toReport(Document document)
+  {
+    if (document == null)
+      return null;
+    
+    Report report = new Report();
+    report.setReportId(
+      DictionaryUtils.getPropertyValue(document.getProperty(), "report"));
+    report.setTechnology(
+      DictionaryUtils.getPropertyValue(document.getProperty(), "technology"));
+    report.setDefaultConnectionName(
+      DictionaryUtils.getPropertyValue(document.getProperty(), "defaultConnectionName"));
+    report.setDocId(document.getDocId());
+    report.setTitle(document.getTitle());
+    report.setCaptureDateTime(document.getCaptureDateTime());
+    report.setCaptureUserId(document.getCaptureUserId());
+    report.setChangeDateTime(document.getChangeDateTime());
+    report.setChangeUserId(document.getChangeUserId());
+    report.getProperty().addAll(document.getProperty()); 
+    return report;
+  }
   
 }

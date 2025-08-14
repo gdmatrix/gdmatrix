@@ -39,11 +39,8 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.dic.Property;
@@ -127,7 +124,6 @@ public class ReportViewerBean extends WebBean implements Serializable
 
   private String reportName;
   private Map parameters = new HashMap<>();
-  private String reportTemplate;
   private String outputFormat;
 
   private Map formValues = new HashMap<>();
@@ -186,21 +182,6 @@ public class ReportViewerBean extends WebBean implements Serializable
     outputFormat = getSelectedMenuItem().getProperty(OUTPUT_FORMAT_PROPERTY);
 
     return outputFormat == null ? HTML_OUTPUT_FORMAT : outputFormat;
-  }
-
-  public String getReportTemplate()
-  {
-    if (reportTemplate != null)
-      return reportTemplate;
-
-    reportTemplate = getSelectedMenuItem().getProperty("reportTemplate");
-
-    return reportTemplate == null ? "default" : reportTemplate;
-  }
-
-  public void setReportTemplate(String reportTemplate)
-  {
-    this.reportTemplate = reportTemplate;
   }
 
   //Report methods
@@ -401,15 +382,7 @@ public class ReportViewerBean extends WebBean implements Serializable
     try
     {
       Map params = getReportDefaultParameters(report);
-      if (StringUtils.isBlank(reportTemplate)) //target _blank
-      {
-        setParameters(params);
-        ExternalContext externalContext =
-          FacesContext.getCurrentInstance().getExternalContext();
-        externalContext.redirect(getReportURL(report.getReportId(), false));
-      }
-      else
-        outcome = executeReport(report.getReportId(), params);
+      outcome = executeReport(report.getReportId(), params);
     }
     catch (Exception ex)
     {
@@ -443,8 +416,7 @@ public class ReportViewerBean extends WebBean implements Serializable
   /* private methods */
   private String show()
   {
-    String template = UserSessionBean.getCurrentInstance().getTemplate();
-    return "/templates/" + template + "/template.xhtml";
+    return "report_browser.xhtml";
   }
 
   private void updateComponents(UIComponent panel)

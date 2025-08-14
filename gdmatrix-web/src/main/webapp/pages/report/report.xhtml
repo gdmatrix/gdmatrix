@@ -28,17 +28,7 @@
           <p:outputLabel for="@next" value="#{reportBundle.reportDescription}" />
           <p:inputText value="#{reportFinderBean.filter.title}" /> 
         </div> 
-        
-        <div class="field col-12">    
-          <p:outputLabel for="@next" value="#{reportBundle.reportTechnology}" />
-          <p:selectOneMenu value="#{reportFinderBean.technology}">
-            <f:selectItem itemValue="" itemLabel="" />            
-            <f:selectItem itemValue="jasper" itemLabel="Jasper" />
-            <f:selectItem itemValue="template" itemLabel="Template" />     
-            <f:selectItem itemValue="script" itemLabel="Script" />            
-          </p:selectOneMenu>
-        </div> 
-        
+       
         <h:panelGroup styleClass="field col-12" rendered="#{!reportFinderBean.themeConfigured}">    
           <p:outputLabel for="@next" value="#{reportBundle.reportThemes}" />
           <p:selectOneMenu value="#{reportFinderBean.theme}" >
@@ -71,7 +61,7 @@
 
     </p:outputPanel>    
   </ui:define>
-
+  
   <ui:define name="object">  
     <p:remoteCommand name="updateResults"
                      action="#{reportFinderBean.update}"
@@ -96,11 +86,11 @@
 
       <p:tab>
         <f:facet name="title">
-          <i class="pi pi-pencil mr-2"></i>
-          <h:outputText value="#{reportBundle.report}"/>
+          <i class="pi pi-play mr-2"></i>
+          <h:outputText value="#{reportBundle.tab_execution}"/>
         </f:facet>
-        <h:panelGroup id="obj_tabs">         
-          <ui:include src="/pages/report/report_standard.xhtml" />
+        <h:panelGroup id="obj_tabs">  
+          <ui:include src="report_main.xhtml" />
         </h:panelGroup>
       </p:tab>
 

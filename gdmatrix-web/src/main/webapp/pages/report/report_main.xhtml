@@ -1,0 +1,153 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
+    <p:outputPanel class="flex flex-grow-0 align-items-center justify-content-start align-self-center"
+                   rendered="#{objectBean.finderBean.isScrollEnabled()}">
+        <p:commandButton icon="ui-icon pi pi-step-backward"
+                         styleClass="rounded-button ui-button-flat mr-2"
+                         action="#{objectBean.finderBean.viewPrevious}"
+                         process="@this"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasPrevious()}"
+                         title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
+                         />
+        <span class="align-self-center">
+          <h:outputText value="#{objectBean.finderBean.objectPosition + 1}">
+            <f:convertNumber type="number"
+                             groupingUsed="true" />
+          </h:outputText> /
+          <h:outputText value="#{objectBean.finderBean.objectCount}">
+            <f:convertNumber type="number"
+                             groupingUsed="true" />
+          </h:outputText>
+        </span>
+        <p:commandButton icon="ui-icon pi pi-step-forward"
+                         styleClass="rounded-button ui-button-flat ml-2 mr-2"
+                         action="#{objectBean.finderBean.viewNext}"
+                         process="@this"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasNext()}"
+                         title="#{objectBundle.next}" alt="#{objectBundle.next}"
+                         />
+    </p:outputPanel>
+    
+    <div class="flex flex-grow-1 justify-content-start align-self-center">
+      <h:outputText value="#{objectBean.objectId}" styleClass="main_object_id" />
+      <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
+    </div>
+    <div class="flex flex-grow-1 justify-content-end"> 
+      <p:button icon="pi pi-pencil" 
+                       styleClass="rounded-button ui-button-flat"
+                       onclick="return showPage('IDE', {type:'template', name:'#{reportObjectBean.report.reportId}'})" 
+                       alt="#{reportBundle.editCode}" title="#{reportBundle.editCode}"
+                       rendered="#{reportObjectBean.isEditable()}"/>         
+      <p:commandButton icon="ui-icon pi pi-star"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
+                       rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-star-fill"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
+                       rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
+                       />
+    </div>
+  </p:outputPanel>
+
+  <div class="ui-fluid formgrid grid">
+    
+    <div class="col-12 p-2 mb-3">
+      <div class="col-12 p-2 border-bottom-1">#{reportBundle.parameters}</div>
+    </div>
+    
+    <p:dataTable id="reports_table" value="#{reportObjectBean.report.parameterDefinition}" 
+                 var="pd" stripedRows="true" paginator="false" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="20"
+                 size="small" paginatorPosition="bottom" 
+                 rowIndexVar="firstRow" first="#{reportObjectBean.firstRow}"
+                 styleClass="w-full p-2" editable="true" editMode="cell"
+                 rendered="#{empty reportObjectBean.formSelector}"
+                 emptyMessage="#{objectBundle.no_data}" >
+
+      <p:column headerText="#{reportBundle.parameterName}" styleClass="col-2">
+        <h:outputText value="#{pd.name}" />
+      </p:column>   
+
+      <p:column headerText="#{reportBundle.parameterDescription}" styleClass="col-5">
+        <h:outputText value="#{pd.description}" />
+      </p:column> 
+
+      <p:column headerText="#{reportBundle.parameterValue}" styleClass="col-5">  
+        <p:inputText value="#{pd.defaultValue}" class="w-full"/>        
+      </p:column>     
+
+    </p:dataTable>  
+
+    <div class="field col-12">
+      <h:panelGroup id="dynamic_form" 
+                    styleClass="ui-fluid formgrid grid" layout="block"
+                    rendered="#{not empty reportObjectBean.formSelector}">
+        <f:event type="postAddToView"
+                 listener="#{reportObjectBean.loadDynamicComponents}" />
+      </h:panelGroup>
+      <h:outputText id="form_selector" />     
+    </div>
+
+  </div> 
+
+  <div class="tab_footer text-right pt-3"> 
+
+    <p:splitButton value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html')}" icon="pi pi-play"
+                   process="@form:cnt:search_tabs:obj_tabs" update="@form:cnt"
+                   rendered="#{not empty reportObjectBean.report.reportId}">
+      
+      <p:submenu label="HTML">
+        <p:menuitem value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html')}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-o" />
+        <p:menuitem value="#{reportBundle.executeNewTab}" action="#{reportObjectBean.executeReport('html', true)}" target="_blank" ajax="false" icon="pi pi-external-link"/>          
+      </p:submenu>
+      
+      <p:submenu label="PDF" rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}">
+        <p:menuitem value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('pdf')}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-pdf" 
+                    rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>
+        <p:menuitem value="#{reportBundle.executeNewTab}" action="#{reportObjectBean.executeReport('pdf', true)}" target="_blank" ajax="false" icon="pi pi-external-link" 
+                    rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>           
+      </p:submenu>      
+   
+    </p:splitButton>    
+  </div>
+  
+  <div class="reportPanel">
+    <ui:include src="/pages/report/report_browser.xhtml" /> 
+  </div>
+  
+  <script>
+    function objectScrollUp()
+    {
+      var elems = document.getElementsByClassName("object_data");
+      if (elems.length > 0)
+        elems[0].scrollTop = 0;
+    }
+
+    controlNavigationHistory(#{navigatorBean.jsonPageState});
+
+  </script>
+
+</ui:composition>
+

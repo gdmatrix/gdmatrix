@@ -78,6 +78,18 @@ public class ReportModuleBean implements Serializable
     return port;
   }
   
+  public static ReportManagerPort getPort(boolean asAdmin) throws Exception
+  {
+    Credentials credentials;
+    
+    if (asAdmin)
+      credentials = getReportAdminCredentials();
+    else
+      credentials = UserSessionBean.getCurrentInstance().getCredentials();
+    
+    return getPort(credentials);
+  }
+  
   public static ReportManagerPort getPort() throws Exception
   {
     return getPort(getReportAdminCredentials());
@@ -90,7 +102,7 @@ public class ReportModuleBean implements Serializable
 
     if (runAsAdmin)
     {
-      credentials = ReportModuleBean.getReportAdminCredentials();
+      credentials = getReportAdminCredentials();
     }
     else
     {

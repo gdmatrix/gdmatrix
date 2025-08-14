@@ -52,6 +52,8 @@ import org.santfeliu.webapp.setup.ObjectSetup;
 @ApplicationScoped
 public class ReportTypeBean extends TypeBean<Report, DocumentFilter>
 {
+  private static final String BUNDLE_PREFIX = "$$reportBundle.";
+  
   public static final String REPORT_DOC_TYPE = "REPORT";  
 
   @Override
@@ -69,7 +71,7 @@ public class ReportTypeBean extends TypeBean<Report, DocumentFilter>
   @Override
   public String getTypeId(Report report)
   {
-    return report.getDocTypeId();
+    return DictionaryConstants.REPORT_TYPE;
   }
 
   @Override
@@ -96,7 +98,7 @@ public class ReportTypeBean extends TypeBean<Report, DocumentFilter>
   {
     ObjectSetup objectSetup = new ObjectSetup();
     objectSetup.setViewId("/pages/report/report.xhtml");
-       
+    
     return objectSetup;
   }
 

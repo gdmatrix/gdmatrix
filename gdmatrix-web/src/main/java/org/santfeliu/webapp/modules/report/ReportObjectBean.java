@@ -33,8 +33,9 @@ package org.santfeliu.webapp.modules.report;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import java.util.Set;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlOutputText;
@@ -42,9 +43,14 @@ import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.doc.DocumentConstants;
 import org.matrix.report.ParameterDefinition;
 import org.matrix.report.Report;
+import org.matrix.security.AccessControl;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -64,7 +70,7 @@ public class ReportObjectBean extends ObjectBean
 {
   private Report report = new Report();
   private int firstRow;
-  private boolean executing = false;
+  private boolean targetBlank = false;
   private String formSelector;
   private Map<String, Object> parameters = new HashMap<>();
 
@@ -78,12 +84,31 @@ public class ReportObjectBean extends ObjectBean
   NavigatorBean navigatorBean;  
   
   @Inject
-  ReportViewerBean reportViewerBean;    
-
-  @PostConstruct
-  public void init()
+  ReportViewerBean reportViewerBean;   
+  
+  public enum Technology
   {
-  }
+    SCRIPT("Script"),
+    TEMPLATE("Template"),
+    JASPER("Jasper reports");
+    
+    private final String description;
+    
+    private Technology (String description)
+    {
+      this.description = description;
+    }
+    
+    public String getId()
+    {
+      return this.name().toLowerCase();
+    }
+
+    public String getDescription()
+    {
+      return description;
+    }
+  }    
 
   public int getFirstRow()
   {
@@ -124,9 +149,7 @@ public class ReportObjectBean extends ObjectBean
   {
     this.parameters = parameters;
   }
-
-
-
+  
   @Override
   public Report getObject()
   {
@@ -158,9 +181,9 @@ public class ReportObjectBean extends ObjectBean
   
   public String getContent()
   {
-    if (executing)
+    if (targetBlank)
     {
-      executing = false;
+      targetBlank = false;
       return reportViewerBean.getContent();
     }
     else
@@ -184,13 +207,18 @@ public class ReportObjectBean extends ObjectBean
         formSelector = "form:" + formName;
         report.getParameterDefinition().stream()
           .forEach(pd -> parameters.put(pd.getName(), pd.getDefaultValue()));     
-      }
+      }        
     }
     else
       report = new Report();
   }
- 
-  public void executeReport(String outputFormat, String template)
+  
+  public void executeReport(String outputFormat)
+  {
+    this.executeReport(outputFormat, false);
+  }
+   
+  public void executeReport(String outputFormat, boolean targetBlank)
   {
     try
     {
@@ -209,9 +237,10 @@ public class ReportObjectBean extends ObjectBean
           }
         }
       }
-      reportViewerBean.setReportTemplate(template != null ? template : "default");
+
       reportViewerBean.executeReport(report);
-      executing = true;
+      
+      this.targetBlank = targetBlank;
     }
     catch (Exception ex)
     {
@@ -222,19 +251,44 @@ public class ReportObjectBean extends ObjectBean
   @Override
   public boolean isEditable()
   {
+    if (UserSessionBean.getCurrentInstance().isUserInRole(
+      DocumentConstants.DOC_ADMIN_ROLE))
+      return true;
+
+    if (!super.isEditable()) return false; //tab protection
+
+    Type currentType =
+      TypeCache.getInstance().getType(report.getDocTypeId());
+    if (currentType == null) return true;
+
+    Set<AccessControl> acls = new HashSet();
+    acls.addAll(currentType.getAccessControl());
+    acls.addAll(report.getAccessControl());
+    for (AccessControl acl : acls)
+    {
+      String action = acl.getAction();
+      if (DictionaryConstants.WRITE_ACTION.equals(action))
+      {
+        String roleId = acl.getRoleId();
+        if (UserSessionBean.getCurrentInstance().isUserInRole(roleId))
+          return true;
+      }
+    }
     return false;
   }
   
   @Override
   public Serializable saveState()
   {
-    return report;
+    return new Object[] { report, formSelector };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
-    this.report = (Report)state;
+    Object[] array = (Object[])state;
+    this.report = (Report)array[0];
+    this.formSelector = (String)array[1];
   }
 
   @Override
@@ -260,20 +314,24 @@ public class ReportObjectBean extends ObjectBean
     {
       HtmlOutputText hidden =
         (HtmlOutputText)panel.findComponent("form_selector");
-      String actualFormSelector = (String)hidden.getStyleClass();
-
-      if (formSelector != null && !formSelector.equals(actualFormSelector))
+      
+      if (hidden != null)
       {
-        hidden.setStyleClass(formSelector);
+        String actualFormSelector = hidden.getStyleClass();
 
-        panel.getChildren().clear();
+        if (formSelector != null && !formSelector.equals(actualFormSelector))
+        {
+          hidden.setStyleClass(formSelector);
 
-        Map<String, Object> options = new HashMap<>();
-        options.put(ACTION_METHOD_OPTION, "reportObjectBean.doAction");
-        options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
+          panel.getChildren().clear();
 
-        ComponentUtils.includeFormComponents(panel, formSelector,
-           "reportObjectBean.parameters", "reportObjectBean.parameters", parameters, options);
+          Map<String, Object> options = new HashMap<>();
+          options.put(ACTION_METHOD_OPTION, "reportObjectBean.doAction");
+          options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
+
+          ComponentUtils.includeFormComponents(panel, formSelector,
+             "reportObjectBean.parameters", "reportObjectBean.parameters", parameters, options);
+        } 
       }
     }
     catch (Exception ex)

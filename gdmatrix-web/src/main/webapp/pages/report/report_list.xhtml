@@ -2,7 +2,8 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"  
   xmlns:ui="http://java.sun.com/jsf/facelets"      
-  xmlns:p="http://primefaces.org/ui">
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:f="http://xmlns.jcp.org/jsf/core">
 
   <p:dataTable value="#{reportFinderBean.rows}"
                var="row" stripedRows="true" 
@@ -17,13 +18,10 @@
 
     <p:column headerText="#{reportBundle.reportId}" styleClass="col-3">
       <h:outputText value="#{row.reportId}" />
-    </p:column>                
+    </p:column>  
     <p:column headerText="#{reportBundle.reportDescription}" styleClass="col-8">
       <h:outputText value="#{row.title}" />
     </p:column> 
-    <p:column headerText="#{reportBundle.reportTechnology}" styleClass="col-1">
-      <h:outputText value="#{row.technology}" />
-    </p:column>     
     <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="pi pi-arrow-circle-right" styleClass="rounded-button ui-button-flat" 
                        title="#{objectBundle.show}" alt="#{objectBundle.show}"
