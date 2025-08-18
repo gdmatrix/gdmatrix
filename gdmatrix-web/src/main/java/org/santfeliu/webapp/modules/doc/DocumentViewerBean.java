@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.doc;
@@ -77,13 +77,15 @@ public class DocumentViewerBean extends WebBean implements Serializable
   public static final String PRINT_ENABLED_PROPERTY = "printEnabled";
   @CMSProperty
   public static final String FOOTER_DOCID_PROPERTY = "footer.docId";
-  public static final String DOC_SERVLET_URL = "/documents/";  
-  
+  @CMSProperty
+  public static final String EDITOR_LANGUAGE_PROPERTY = "editor.language";
+
+  public static final String DOC_SERVLET_URL = "/documents/";
   private static final String OUTCOME = "/pages/doc/document_viewer.xhtml";
 
   private String headerBrowserUrl;
   private String footerBrowserUrl;
-  
+
   private boolean keepLocking;
   private transient String tempUrl;
   private DocumentEditor editor;
@@ -108,10 +110,10 @@ public class DocumentViewerBean extends WebBean implements Serializable
   {
     return (isEditorUser() && !isEditing());
   }
-  
+
   public boolean isEditorUser()
   {
-    MenuItemCursor mic = 
+    MenuItemCursor mic =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     List<String> editRoles;
     try
@@ -122,7 +124,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     {
       return false;
     }
-    
+
     if (editRoles == null || editRoles.isEmpty()) return true;
     return UserSessionBean.getCurrentInstance().isUserInRole(editRoles);
   }
@@ -148,6 +150,16 @@ public class DocumentViewerBean extends WebBean implements Serializable
     return (value == null) ? "400px" : value;
   }
 
+  public String getEditorLanguage()
+  {
+    String language = getProperty(EDITOR_LANGUAGE_PROPERTY);
+    if (language == null)
+    {
+      language = "html";
+    }
+    return language;
+  }
+
   public boolean isEditing()
   {
     return (editor != null && editor.isLockUser());
@@ -163,7 +175,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
   {
     return editor.getDocument();
   }
-  
+
   public String getLockUserId()
   {
     return (editor != null ? editor.getDocument().getLockUserId() : null);
@@ -214,11 +226,11 @@ public class DocumentViewerBean extends WebBean implements Serializable
   {
     this.footerBrowserUrl = footerBrowserUrl;
   }
-  
+
   public String getContent()
   {
     return OUTCOME;
-  }  
+  }
 
   // action methods
   @CMSAction
@@ -228,7 +240,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     {
       editor = null;
       String template = UserSessionBean.getCurrentInstance().getTemplate();
-      return "/templates/" + template + "/template.xhtml";      
+      return "/templates/" + template + "/template.xhtml";
     }
     catch (Exception ex)
     {
@@ -241,7 +253,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
   {
     keepLocking = false;
     MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-    MenuItemCursor mic = menuModel.getSelectedMenuItem();        
+    MenuItemCursor mic = menuModel.getSelectedMenuItem();
     String docId = getDocId(mic);
     try
     {
@@ -290,7 +302,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
       }
     }
   }
-  
+
   private String getDocumentUrl()
   {
     MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
@@ -328,18 +340,18 @@ public class DocumentViewerBean extends WebBean implements Serializable
     }
     return url;
   }
-  
+
   private String getDocumentServletURL()
   {
     return getContextURL() + DOC_SERVLET_URL;
   }
-  
+
   private Document getDocumentFromWS(String docId)
     throws Exception
   {
     return getClient().loadDocument(docId, 0, ContentInfo.ALL);
   }
-    
+
   public void setKeepLocking(boolean keepLocking)
   {
     this.keepLocking = keepLocking;
@@ -352,25 +364,25 @@ public class DocumentViewerBean extends WebBean implements Serializable
 
   public String getTranslationGroup()
   {
-    MenuItemCursor cursor = 
+    MenuItemCursor cursor =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     String docId = getDocId(cursor);
     return ("doc:" + docId);
   }
 
   private String getDocId(MenuItemCursor mic)
-  {    
+  {
     return getDocId(mic, true);
   }
-  
+
   private String getDocId(MenuItemCursor mic, boolean directProperty)
-  {    
-    String docId = 
+  {
+    String docId =
       mic.getBrowserSensitiveProperty(DOCID_PROPERTY, !directProperty);
 
     return docId;
   }
-  
+
   private Document getTranslation(Document document, String language)
     throws Exception
   {
@@ -378,13 +390,13 @@ public class DocumentViewerBean extends WebBean implements Serializable
     for (RelatedDocument relDoc : relDocs)
     {
       RelationType relType = relDoc.getRelationType();
-      String relName = relDoc.getName();        
+      String relName = relDoc.getName();
       if (RelationType.TRANSLATION.equals(relType) && language.equals(relName))
       {
         return getClient().loadDocument(relDoc.getDocId(), 0, ContentInfo.ALL);
       }
     }
-    
+
     return document;
   }
 

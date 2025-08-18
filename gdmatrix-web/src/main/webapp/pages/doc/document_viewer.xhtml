@@ -65,7 +65,8 @@
         <!--
         <gdm:tinyMCE value="#{documentViewerBean.editor.documentData}" />
         -->
-        <gdm:codemirror lineNumbers="true" language="html" 
+        <gdm:codemirror lineNumbers="true" 
+                        language="#{documentViewerBean.editorLanguage}" 
                         value="#{documentViewerBean.editor.documentData}" />
 
       </p:outputPanel>

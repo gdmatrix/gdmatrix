@@ -149,7 +149,12 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     case "css":
       const { css } = CM["@codemirror/lang-css"];
       extensions.push(css());
-      break;    
+      break;
+
+    case "markdown":
+      const { markdown } = CM["@codemirror/lang-markdown"];
+      extensions.push(markdown());
+      break;
     
     default:
       const { javascript } = CM["@codemirror/lang-javascript"];

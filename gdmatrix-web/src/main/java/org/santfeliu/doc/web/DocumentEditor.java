@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.web;
@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,7 +162,7 @@ public class DocumentEditor implements Serializable
         if (!keepLocking)
           unlockDocument();
         TemporaryDataSource dataSource =
-          
+
           writeDocument(documentData, document.getContent().getContentType());
         DataHandler dataHandler = new DataHandler(dataSource);
         document.getContent().setContentId(null);
@@ -199,7 +200,7 @@ public class DocumentEditor implements Serializable
     }
     else if (lockuser != null)
       throw new DocumentLockedByUser(lockuser);
-    
+
     return false;
   }
 
@@ -216,11 +217,11 @@ public class DocumentEditor implements Serializable
 
     return true;
   }
-  
+
   private List<String> getCSSList()
   {
     List list = new ArrayList();
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
 
     list.add("/templates/" + userSessionBean.getTemplate() + "/css/template.css");
     list.add("/themes/" + userSessionBean.getTheme() + "/theme.css");
@@ -241,7 +242,7 @@ public class DocumentEditor implements Serializable
     }
     return buffer;
   }
-  
+
   private CachedDocumentManagerClient getClient()
     throws Exception
   {
@@ -255,7 +256,7 @@ public class DocumentEditor implements Serializable
   private String readDocument(DataSource dataSource) throws IOException
   {
     String result;
-    try (InputStream is = dataSource.getInputStream()) 
+    try (InputStream is = dataSource.getInputStream())
     {
       StringBuilder sb = new StringBuilder();
       int numRead;
@@ -270,22 +271,27 @@ public class DocumentEditor implements Serializable
   }
 
   private TemporaryDataSource writeDocument(String documentData,
-    String contentType)
-    throws Exception
+    String contentType) throws Exception
   {
-    File file;
-    FileOutputStream out;
-    try (InputStream in = IOUtils.toInputStream(documentData))
-    {
-      file = File.createTempFile("htmleditor",".tmp");
-      out = new FileOutputStream(file);
-      //Correcció dels atributs aria-label als enllaços
-      String scriptName = MatrixConfig.getProperty("htmlFixer.script");
-      HtmlFixer htmlFixer = new HtmlFixer(scriptName);
-      htmlFixer.fixCode(in, out);
-    }
-    out.close();
+    File file = File.createTempFile("editor", ".tmp");
 
+    try (InputStream in = IOUtils.toInputStream(documentData, Charset.defaultCharset()))
+    {
+      try (FileOutputStream out = new FileOutputStream(file))
+      {
+        if (contentType.contains("html"))
+        {
+          //If file is html fix aria label errors
+          String scriptName = MatrixConfig.getProperty("htmlFixer.script");
+          HtmlFixer htmlFixer = new HtmlFixer(scriptName);
+          htmlFixer.fixCode(in, out);
+        }
+        else
+        {
+          IOUtils.copy(in, out);
+        }
+      }
+    }
     TemporaryDataSource dataSource = new TemporaryDataSource(file, contentType);
 
     return dataSource;
@@ -313,11 +319,11 @@ public class DocumentEditor implements Serializable
     return (lockuser != null &&
       lockuser.trim().equals(UserSessionBean.getCurrentInstance().getUsername().trim()));
   }
-  
+
   public class DocumentLockedByUser extends Exception
   {
     private final String userId;
-    
+
     private DocumentLockedByUser(String lockuser)
     {
       super("DOCUMENT_LOCKED_BY_ANOTHER_USER");
