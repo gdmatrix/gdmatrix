@@ -47,6 +47,7 @@ import dev.langchain4j.http.client.HttpClientBuilder;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
+import dev.langchain4j.model.chat.request.ResponseFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,6 +126,7 @@ public class AssistantData
           .topP(assistant.getTopP())
           .timeout(timeout)
           .seed(assistant.getSeed())
+          .returnThinking(false)
           .httpClientBuilder(clientBuilder)
           .maxTokens(assistant.getMaxTokens())
           .build();
@@ -139,6 +141,7 @@ public class AssistantData
           .topP(assistant.getTopP())
           .timeout(timeout)
           .seed(assistant.getSeed())
+          .returnThinking(false)
           .httpClientBuilder(clientBuilder)
           .maxTokens(assistant.getMaxTokens())
           .build();
@@ -157,6 +160,7 @@ public class AssistantData
           .timeout(timeout)
           .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
+          .returnThinking(false)
           .httpClientBuilder(clientBuilder)
           .build();
       }
@@ -171,6 +175,7 @@ public class AssistantData
           .timeout(timeout)
           .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
+          .returnThinking(false)
           .httpClientBuilder(clientBuilder)
           .build();
       }

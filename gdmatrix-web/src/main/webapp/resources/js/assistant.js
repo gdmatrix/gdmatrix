@@ -147,15 +147,29 @@ async function showResponse(threadId)
     }
     else if (typeof item === "object") // message
     {
+      console.info(item);
       if (htmlElem && htmlElem.textContent?.length === 0)
       {
         // previous AI message is empty, remove it.
         var itemElem = aiMessageElem.parentElement;
-        itemElem.parentElement.removeChild(itemElem);
+        if (itemElem?.parentElement) itemElem.parentElement.removeChild(itemElem);
       }
       const type = item.type;
       let text = item.text;
-      if (!text || type === "TOOL_EXECUTION_RESULT")
+      let toolExecutionRequests = item.toolExecutionRequests;
+
+      if (toolExecutionRequests)
+      {
+        let json = JSON.stringify(
+        {
+          type: "AI", 
+          toolExecutionRequests: toolExecutionRequests 
+        }, null, 2); 
+        var itemElem = createMessage(type, "```json\n" + json + "\n```");
+        listElem.appendChild(itemElem);
+      }
+      
+      if (type === "TOOL_EXECUTION_RESULT")
       {
         text = "```json\n" + JSON.stringify(item, null, 2) + "\n```";
       }
