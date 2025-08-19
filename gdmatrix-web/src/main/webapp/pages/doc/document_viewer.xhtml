@@ -13,6 +13,11 @@
 
   <div class="doc_body">
 
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl" class="pl-2 pr-2">
+      <p:autoUpdate />
+    </p:messages>
+    
     <p:outputPanel id="header"
                    rendered="#{documentViewerBean.headerBrowserUrl!=null}"
                    styleClass="headerDocument">
@@ -28,12 +33,12 @@
                          styleClass="m-1"
                          process="@this" update="document-panel"
                          icon="pi pi-file-edit" 
-                         rendered="#{documentViewerBean.renderEditButton and userSessionBean.menuModel.browserType == 'desktop'}"
+                         rendered="#{documentViewerBean.renderEditButton}"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"/>
 
         <p:commandButton styleClass="m-1" type="button"
                          icon="pi pi-print" 
-                         rendered="#{documentViewerBean.printEnabled and not documentViewerBean.editing and not documentViewerBean.iframe and userSessionBean.menuModel.browserType == 'desktop'}"
+                         rendered="#{documentViewerBean.printEnabled and not documentViewerBean.editing and not documentViewerBean.iframe}"
                          alt="#{documentBundle.print_new_window}">
           <p:printer target="pnlPrint"/>        
         </p:commandButton>
