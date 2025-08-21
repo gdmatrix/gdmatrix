@@ -65,9 +65,11 @@ import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
+import org.primefaces.component.tree.TreeDragDropInfo;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.TreeDragDropEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
@@ -161,12 +163,13 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   //Tree
   private TreeNode treeRoot;
+  private TreeNode selectedNode;
 
   //Misc
   private Integer activeTabIndex;
   private org.primefaces.model.menu.MenuModel nodePathModel;
   private final CMSConfigHelper configHelper;
-
+  
   public NodeEditBean()
   {
     configHelper = new CMSConfigHelper();
@@ -671,6 +674,8 @@ public class NodeEditBean extends FacesBean implements Serializable
       {
         expandNodeId(nodeId, true);
       }
+      selectedNode = 
+        getNode(UserSessionBean.getCurrentInstance().getSelectedMid());
     }
     return treeRoot;
   }
@@ -678,6 +683,16 @@ public class NodeEditBean extends FacesBean implements Serializable
   public void setTreeRoot(TreeNode treeRoot)
   {
     this.treeRoot = treeRoot;
+  }
+
+  public TreeNode getSelectedNode()
+  {
+    return selectedNode;
+  }
+
+  public void setSelectedNode(TreeNode selectedNode)
+  {
+    this.selectedNode = selectedNode;
   }
 
   public Integer getActiveTabIndex()
@@ -740,9 +755,61 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     TreeNode<NodeInfo> treeNode = event.getTreeNode();
     String nodeId = treeNode.getData().getNodeId();
-    selectMenuItem(nodeId);
+    selectMenuItem(nodeId);    
   }
 
+  public boolean checkDrop(TreeDragDropInfo info)
+  {
+    return true;
+  }
+  
+  public void onDragDrop(TreeDragDropEvent event) 
+  {
+    try
+    {
+      TreeNode dropNode = event.getDropNode();
+      String parentNodeId = ((NodeInfo)dropNode.getData()).getNodeId();
+      if (parentNodeId != null)
+      {
+        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+        CWorkspace cWorkspace = userSessionBean.getMenuModel().getCWorkspace();
+        TreeNode dragNode = event.getDragNode();
+        String draggedNodeId = ((NodeInfo)dragNode.getData()).getNodeId();
+        CNode draggedCNode = cWorkspace.getNode(draggedNodeId);
+        int nodeIndex = 1;
+        int dropIndex = event.getDropIndex(); //0..N
+        if (dropIndex > 0)
+        {
+          CNode parentCNode = cWorkspace.getNode(parentNodeId);
+          List<CNode> auxChildren = new ArrayList(parentCNode.getChildren());
+          if (dropIndex < auxChildren.size())
+          {
+            CNode nextCNode = auxChildren.get(dropIndex);
+            nodeIndex = nextCNode.getNode().getIndex();            
+          }
+          else //new last node
+          {
+            nodeIndex = 
+              auxChildren.get(auxChildren.size() - 1).getNode().getIndex() + 1;
+          }
+        }
+        Node node = cloneCNode(draggedCNode, true);
+        String message = "Dragged " + draggedNodeId + " - " + "Dropped on " + 
+          parentNodeId + " - index " + dropIndex;
+        node.setParentNodeId(parentNodeId);
+        node.setIndex(nodeIndex);
+        CMSConfigBean.getPort().storeNode(node);
+        updateCache();            
+        resetTree();
+        info(message);
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }    
+  }
+  
   public List getPropertyValues()
   {
     List<PropertyValueWrapper> values = new ArrayList();
@@ -1059,7 +1126,7 @@ public class NodeEditBean extends FacesBean implements Serializable
   public void moveNodeUp()
   {
     try
-    {
+    {      
       swapNode(getSelectedCNode().getPreviousSibling());
       info("NODE_MOVED");
     }
@@ -1170,7 +1237,7 @@ public class NodeEditBean extends FacesBean implements Serializable
     try
     {
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      String workspaceId = userSessionBean.getWorkspaceId();
+      String workspaceId = userSessionBean.getWorkspaceId();      
       String nodeId = userSessionBean.getSelectedMid();
       String newNodeId = null;
       CNode cNode = getSelectedCNode();
@@ -1226,7 +1293,7 @@ public class NodeEditBean extends FacesBean implements Serializable
       error(ex);
     }
   }
-
+  
   public void copyNode()
   {
     try
@@ -2110,6 +2177,29 @@ public class NodeEditBean extends FacesBean implements Serializable
     {
       loadNode(n);
     }
+  }
+  
+  private TreeNode getNode(String nodeId)
+  {
+    return getNode(getMainTreeNode(), nodeId);
+  }
+  
+  private TreeNode getNode(TreeNode node, String nodeId)
+  {
+    if (nodeId.equals(((NodeInfo)node.getData()).getNodeId()))
+    {
+      return node;
+    }
+    else
+    {
+      for (Object obj : node.getChildren())
+      {
+        TreeNode child = (TreeNode)obj;
+        TreeNode n = getNode(child, nodeId);
+        if (n != null) return n;
+      }
+    }
+    return null;
   }
 
   private void loadNode(TreeNode node)
