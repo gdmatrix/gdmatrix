@@ -34,7 +34,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -42,12 +44,15 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.matrix.cases.InterventionFilter;
+import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.classif.ClassCache;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.BigList;
+import org.santfeliu.util.TextUtils;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -79,6 +84,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   private boolean outdated;
   private String formSelector;
   private String sortBy;
+  private InterventionFilter interventionFilter = new InterventionFilter();
   
   @Inject
   NavigatorBean navigatorBean;
@@ -154,6 +160,20 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       filter.getCaseId().addAll(caseIdList);
     }
   }
+  
+  public List<String> getIntIdList()
+  {
+    return interventionFilter.getIntId();
+  }
+
+  public void setIntIdList(List<String> intIdList)
+  {
+    interventionFilter.getIntId().clear();
+    if (intIdList != null)
+    {
+      interventionFilter.getIntId().addAll(intIdList);
+    }
+  }  
 
   public String getClassId()
   {
@@ -200,6 +220,16 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   public void setSortBy(String sortBy) 
   {
     this.sortBy = sortBy;
+  }
+
+  public InterventionFilter getInterventionFilter()
+  {
+    return interventionFilter;
+  }
+
+  public void setInterventionFilter(InterventionFilter interventionFilter)
+  {
+    this.interventionFilter = interventionFilter;
   }
 
   @Override
@@ -452,9 +482,13 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
                 filter.getClassId().clear();
                 filter.getClassId().addAll(classIds);
               }
+              if (isFilterByIntervention())
+                setInterventionsFilter(interventionFilter, filter);             
               int count = CasesModuleBean.getPort(false).countCases(filter);
               filter.setTitle(title);
               CaseFinderBean.this.setClassId(classId);
+              if (isFilterByIntervention())
+                filter.getCaseId().clear();              
               return count;
             }
             catch (Exception ex)
@@ -468,7 +502,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
           public List getElements(int firstResult, int maxResults)
           {
             try
-            {
+            {           
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               String title = filter.getTitle();
@@ -481,7 +515,17 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
                 filter.getClassId().clear();
                 filter.getClassId().addAll(classIds);
               }
-
+              if (isFilterByIntervention())
+              {
+                boolean hasInterventions = 
+                  setInterventionsFilter(interventionFilter, filter);
+                if (!hasInterventions)
+                {
+                  ResourceBundle bundle = ResourceBundle.getBundle(
+                    "org.santfeliu.web.resources.MessageBundle", getLocale());        
+                  warn(bundle.getString("NO_INTERVENTIONS_MATCH"));
+                }
+              } 
               String searchExpression = filter.getSearchExpression();
               if (StringUtils.isBlank(searchExpression))
                 setOrderBy(filter);
@@ -497,6 +541,10 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
               filter.setSearchExpression(searchExpression);
 
               CaseFinderBean.this.setClassId(classId);
+              
+              if (isFilterByIntervention())
+                filter.getCaseId().clear();  
+              
               return toDataTableRows(cases);
             }
             catch (Exception ex)
@@ -639,6 +687,42 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     RowStyleClassGenerator styleClassGenerator =
       getRowStyleClassGenerator();
     return styleClassGenerator.getStyleClass(row);
+  }
+  
+  private boolean isFilterByIntervention()
+  {
+    return (interventionFilter.getIntId() != null && 
+      !interventionFilter.getIntId().isEmpty()) ||
+      (interventionFilter.getIntTypeId() != null && 
+      !interventionFilter.getIntTypeId().isBlank());
+  }
+  
+  private boolean setInterventionsFilter(InterventionFilter intFilter, 
+    CaseFilter caseFilter) throws Exception
+  {
+    String intTypeId = intFilter.getIntTypeId() != null ? 
+      intFilter.getIntTypeId() : DictionaryConstants.INTERVENTION_TYPE;
+    intFilter.setIntTypeId(intTypeId);
+    if (intFilter.getIntId().isEmpty() && intFilter.getFromDate() == null)
+    {
+      Date today = new Date();
+      intFilter.setFromDate(TextUtils.formatDate(today, "yyyyMMdd"));
+      intFilter.setToDate(TextUtils.formatDate(today, "yyyyMMdd"));
+    }   
+    else if (!intFilter.getIntId().isEmpty())
+    {
+      intFilter.setFromDate(null);
+      intFilter.setToDate(null);      
+    }
+    intFilter.setMaxResults(1000);
+    List<InterventionView> intViews = 
+      CasesModuleBean.getPort(false).findInterventionViews(intFilter);
+    caseFilter.getCaseId().clear();       
+    for (InterventionView intView : intViews)
+    {
+      caseFilter.getCaseId().add(intView.getCaseId());        
+    }
+    return !intViews.isEmpty();
   }
      
 }

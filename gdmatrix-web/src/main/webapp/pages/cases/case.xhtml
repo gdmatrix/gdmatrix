@@ -115,6 +115,7 @@
               <p:inputText value="#{caseFinderBean.filter.description}" />
             </p:outputPanel>
 
+            <!-- Dates -->
             <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('date')}">
               <p:fieldset legend="#{caseBundle.caseSearch_date}"
                           toggleable="true" collapsed="true" >
@@ -155,14 +156,14 @@
 
               </p:fieldset>
             </p:outputPanel>
-
+            
             <!-- searchExpression -->
             <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('searchExpression')}">
               <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}" />
               <p:inputText value="#{caseFinderBean.filter.searchExpression}"/>
             </p:outputPanel>
             
-            <!-- PersonId -->
+            <!-- personId -->
             <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.renderPersonId}">
               <p:outputLabel for="@next" value="#{caseBundle.case_person}" />
               <emcomp:objectReference value="#{caseFinderBean.filter.personId}"
@@ -175,8 +176,70 @@
                                       process="@form:cnt:find_selector"
                                       update="@form:cnt:find_selector">
               </emcomp:objectReference>
-            </p:outputPanel>            
-
+            </p:outputPanel> 
+            
+            <!-- interventions -->
+            <p:outputPanel id="interventions_filter" styleClass="field col-12" 
+                           rendered="#{caseFinderBean.isRender('interventions')}">
+              <p:fieldset legend="#{caseBundle.caseSearch_interventions}"
+                          toggleable="true" collapsed="true">
+     
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
+                  <p:chips value="#{caseFinderBean.intIdList}"/>
+                </div>  
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{caseBundle.caseInterventions_type}" />
+                  <emcomp:typeReference value="#{caseFinderBean.interventionFilter.intTypeId}"
+                        type="Intervention"
+                        showNavigatorItems="true"                                    
+                        styleClass="w-full"
+                        scrollHeight="200"
+                        queryDelay="1000"
+                        minQueryLength="3"
+                        renderShowButton="false"
+                        process="@form:cnt:find_selector"
+                        update="@form:find_selector:interventions_filter">
+                  </emcomp:typeReference>
+                </div> 
+                <p:outputPanel styleClass="field col-12" 
+                               rendered="#{caseFinderBean.interventionFilter.intTypeId != null}">
+                  <p:outputLabel for="@next" value="#{caseBundle.caseSearch_date}" />
+                  <p:selectOneMenu value="#{caseFinderBean.interventionFilter.dateComparator}"
+                                   style="vertical-align:middle"
+                                   touchable="true">
+                    <f:selectItem itemLabel="#{caseBundle.caseSearch_startDate}" itemValue="1" />
+                    <f:selectItem itemLabel="#{caseBundle.caseSearch_endDate}" itemValue="2" />
+                    <f:selectItem itemLabel="#{caseBundle.caseSearch_activeDate}" itemValue="3" />
+                  </p:selectOneMenu>
+                </p:outputPanel>                  
+                <p:outputPanel styleClass="field col-12" 
+                               rendered="#{caseFinderBean.interventionFilter.intTypeId != null}">
+                  <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputStartDate}" />
+                  <p:datePicker value="#{caseFinderBean.interventionFilter.fromDate}"
+                                autocomplete="off"
+                                placeholder="dd/MM/yyyy"
+                                locale="#{caseFinderBean.language}"
+                                showOnFocus="false"
+                                converter="datePickerConverter" pattern="dd/MM/yyyy"
+                                showIcon="true" showTime="false"
+                                monthNavigator="true" yearNavigator="true" />
+                </p:outputPanel>
+                <p:outputPanel styleClass="field col-12" 
+                               rendered="#{caseFinderBean.interventionFilter.intTypeId != null}">
+                  <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputEndDate}" />
+                  <p:datePicker value="#{caseFinderBean.interventionFilter.toDate}"
+                                autocomplete="off"
+                                placeholder="dd/MM/yyyy"
+                                locale="#{caseFinderBean.language}"
+                                showOnFocus="false"
+                                converter="datePickerConverter" pattern="dd/MM/yyyy"
+                                showIcon="true" showTime="false"
+                                monthNavigator="true" yearNavigator="true" />
+                </p:outputPanel>                
+              </p:fieldset>
+            </p:outputPanel>    
+            
           </div>
 
           <emcomp:dynamicProperties id="case_dynamic_properties"
