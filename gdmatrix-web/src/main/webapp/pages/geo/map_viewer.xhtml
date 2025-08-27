@@ -9,8 +9,9 @@
   <h:outputStylesheet library="css" name="geo.css" />
   
   <div class="flex flex-column h-full overflow-hidden">
-    <div class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
-         style="border-color:var(--surface-border)">
+    <p:outputPanel class="p-2 flex flex-grow-0 align-items-center border-none border-solid border-bottom-1"
+         style="border-color:var(--surface-border)"
+         rendered="#{userSessionBean.selectedMenuItem.properties.renderMapHeader != 'false'}">
       <div class="flex-grow-0 align-items-center" style="color:var(--text-color)">
         <span class="pi pi-map"/>
         <strong>#{applicationBean.translate(geoMapBean.mapDocument.title, 'geo')}</strong>
@@ -44,7 +45,7 @@
                            process="@this" update="@form:cnt" />
         </div>
       </div>      
-    </div>
+    </p:outputPanel>
     <gdm:maplibre value="#{geoMapBean.userStyle}" 
                   encoder="#{geoMapBean.encoder}"
                   styleClass="flex-grow-1 h-full" />
