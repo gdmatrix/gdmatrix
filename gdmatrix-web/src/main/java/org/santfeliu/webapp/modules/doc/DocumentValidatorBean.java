@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.doc;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
@@ -40,6 +41,7 @@ import org.matrix.doc.Document;
 import org.matrix.translation.TranslationConstants;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
+import org.santfeliu.util.template.Template;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
@@ -116,12 +118,12 @@ public class DocumentValidatorBean extends WebBean implements Serializable
     return OUTCOME;
   }    
     
-  public String getDownloadURL()
+  public String getDownloadURL() 
   {
     return document != null ? getAuthcopyURL(true) : null;
   }
 
-  public String getViewURL()
+  public String getViewURL() 
   {
     return document != null ? getAuthcopyURL(false) : null;
   }
@@ -217,12 +219,22 @@ public class DocumentValidatorBean extends WebBean implements Serializable
     if (sigId == null || document == null)
       return null;
     
-    String url = getContextPath() + "/reports/authcopy.pdf?sigId=" + sigId;
+    String url;
     if (downloadable)
-    {
-      String filename = DocumentUtils.getFilename(document.getTitle());
-      url += "&saveas=" + filename + ".pdf";
-    }
-    return url;
+      url = getProperty("downloadURL");
+    else 
+      url = getProperty("viewURL");
+        
+    if (url == null)
+      return null;
+    
+    if (url.startsWith("/"))
+      url = getContextPath() + url;
+    
+    HashMap vars = new HashMap();
+    vars.put("sigId", sigId);    
+    vars.put("filename", DocumentUtils.getFilename(document.getTitle()));
+    Template t = Template.create(url);
+    return t.merge(vars);    
   }    
 }

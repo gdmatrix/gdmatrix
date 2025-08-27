@@ -67,12 +67,13 @@
               </div>
 
               <div class="w-12 lg:w-6 flex justify-content-start lg:justify-content-end py-3 ui-inputgroup">   
-
-                <p:linkButton href="#{documentValidatorBean.downloadURL}"
-                              styleClass="border-round-left-md" icon="pi pi-download">
-                  <h:outputText value="#{documentBundle.download}" />
-                </p:linkButton>
-
+         
+                  <p:linkButton href="#{documentValidatorBean.downloadURL}" 
+                                rendered="#{documentValidatorBean.downloadURL != null}"
+                                styleClass="border-round-left-md" icon="pi pi-download">
+                    <h:outputText value="#{documentBundle.download}" />
+                  </p:linkButton>
+                
                 <p:linkButton href="#{documentValidatorBean.viewURL}"
                               styleClass="" icon="pi pi-eye"
                               rendered="#{documentValidatorBean.viewURL != null}" 
@@ -92,9 +93,9 @@
 
           </f:facet>
 
-          <div class="field col-12">
+          <h:panelGroup styleClass="field col-12" rendered="#{documentValidatorBean.viewURL != null}">
             <pe:documentViewer style="height:70vh;width:100%" url="#{documentValidatorBean.viewURL}" />
-          </div>
+          </h:panelGroup>
 
         </p:card>
       </h:panelGroup>
