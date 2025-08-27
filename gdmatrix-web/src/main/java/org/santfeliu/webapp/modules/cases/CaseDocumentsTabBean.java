@@ -717,6 +717,8 @@ public class CaseDocumentsTabBean extends TabBean
 
   public void volumeChanged(AjaxBehaviorEvent e)
   {
+    getCurrentTabInstance().rowsFilterHelper.reset();
+    getCurrentTabInstance().rowsFilterHelper2.reset();
     load();
   }
 

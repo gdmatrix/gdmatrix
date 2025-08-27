@@ -33,6 +33,18 @@
       <f:facet name="header">
         <div class="flex flex-wrap w-12">
           <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
+                         rendered="#{caseDocumentsTabBean.renderVolumeSelector}">
+            <p:outputLabel value="#{caseBundle.caseDocuments_volume}: "
+                           styleClass="mr-2 vertical-align-middle"
+                           for="@next" />
+            <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}" touchable="true">
+              <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
+              <p:ajax event="valueChange"
+                      listener="#{caseDocumentsTabBean.volumeChanged}"
+                      update="case_documents_table" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
                          rendered="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.rendered}">
             <p:outputLabel value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                            styleClass="mr-2 vertical-align-middle"
@@ -59,18 +71,6 @@
               <p:ajax event="valueChange"
                       listener="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper2.filterValueChanged}"
                       process="@this"
-                      update="case_documents_table" />
-            </p:selectOneMenu>
-          </p:outputPanel>
-          <p:outputPanel styleClass="rowsFilter flex-grow-0 mb-1 mt-1"
-                         rendered="#{caseDocumentsTabBean.renderVolumeSelector}">
-            <p:outputLabel value="#{caseBundle.caseDocuments_volume}: "
-                           styleClass="mr-2 vertical-align-middle"
-                           for="@next" />
-            <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}" touchable="true">
-              <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
-              <p:ajax event="valueChange"
-                      listener="#{caseDocumentsTabBean.volumeChanged}"
                       update="case_documents_table" />
             </p:selectOneMenu>
           </p:outputPanel>
