@@ -2,6 +2,43 @@
 
 if (window.ogcLoaded === undefined)
 {
+  class OGCServerInspector
+  {
+    static async getFeatureTypes(serviceUrl)
+    {
+      const layerUrl = "/proxy?url=" + serviceUrl +
+        "&service=wfs" +
+        "&version=1.1.0" + 
+        "&request=GetCapabilities";
+
+      const response = await fetch(layerUrl);
+      const text = await response.text();
+      return this.parseCapabilities(text);
+    }
+    
+    static parseCapabilities(responseText)
+    {
+      const xsdNS = "http://www.w3.org/2001/XMLSchema";
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(responseText, "application/xml");
+      const featureTypes = [];
+      const featureElemList = xmlDoc.querySelectorAll("FeatureType");
+      for (let featureElem of featureElemList)
+      {
+        var keywords = [...featureElem.getElementsByTagName("ows:Keyword")]
+          .map(x => x.textContent);
+        const featureType = 
+        {
+          name : featureElem.querySelector("Name").textContent,
+          title : featureElem.querySelector("Title").textContent,
+          description : featureElem.querySelector("Abstract").textContent,
+          keywords : keywords
+        };
+        featureTypes.push(featureType);
+      }
+      return featureTypes;
+    }
+  }
 
   class FeatureTypeInspector
   {
@@ -366,6 +403,7 @@ if (window.ogcLoaded === undefined)
     }
   }
   
+  window.OGCServerInspector = OGCServerInspector;
   window.FeatureTypeInspector = FeatureTypeInspector;
   window.CQLAssistant = CQLAssistant;
   window.ogcLoaded = true;

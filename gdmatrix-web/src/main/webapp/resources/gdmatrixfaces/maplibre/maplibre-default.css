@@ -21,6 +21,11 @@
   overflow: hidden;
 }
 
+.maplibre_handler:hover div
+{
+  background-color: var(--surface-400);  
+}
+
 .maplibre_handler div
 {
   position: absolute;
@@ -360,6 +365,113 @@
 .maplibre_panel_container .scroller .panel ul.legend li > div .graphic.circle
 {
   border-radius: 50%;
+}
+
+/* Layer control */
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.tab_selector
+{
+  display: flex;
+  flex-direction: row;
+  list-style-type: none;
+  padding: 0;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.tab_selector > li > a
+{
+  text-decoration: none; 
+  padding: 6px;
+  color: var(--surface-800);
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.tab_selector > li > a.active
+{
+  border: 1px solid var(--surface-500);
+  border-radius: var(--border-radius);
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.sources
+{
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.sources > li
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--surface-300);
+  border-radius: var(--border-radius);
+  padding: 2px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  display: flex;
+  flex-direction: row;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.sources > li:hover,
+.maplibre_panel_container .scroller .panel .layer_setup ul.layers > li:hover
+{
+  border-color: var(--surface-500);
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.sources > li > .text
+{
+  flex-grow: 1;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.sources > li > .buttons
+{
+  flex-grow: 0;
+  align-content: center;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.sources > li > .text div.name
+{
+  font-weight: bold;  
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.layers
+{
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.layers > li
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--surface-300);
+  border-radius: var(--border-radius);
+  padding: 2px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  display: flex;
+  flex-direction: column;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.layers ul.options
+{
+  list-style-type: none;
+  padding-left: 16px;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.layers ul.options ul.prop_list
+{
+  list-style-type: none;
+  padding-left: 16px;  
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.layers div.options ul.prop_list li
+{
+  display: flex;
+  flex-direction: row;
+  padding: 2px;
+}
+
+.maplibre_panel_container .scroller .panel .layer_setup ul.layers div.options ul.prop_list li input[type=color]
+{
+  padding: 2px;
 }
 
 /* Measure controls */
