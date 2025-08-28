@@ -158,7 +158,7 @@ async function showResponse(threadId)
       let text = item.text;
       let toolExecutionRequests = item.toolExecutionRequests;
 
-      if (toolExecutionRequests)
+      if (toolExecutionRequests && toolExecutionRequests.length > 0)
       {
         let json = JSON.stringify(
         {
