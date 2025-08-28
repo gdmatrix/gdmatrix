@@ -32,6 +32,7 @@ package org.santfeliu.sign.web;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -50,9 +51,10 @@ import org.santfeliu.doc.transform.TransformationRequest;
 import org.santfeliu.doc.transform.Transformer;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.doc.web.DocumentReader;
-import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.MimeTypeMap;
+import org.santfeliu.util.template.Template;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
@@ -89,6 +91,10 @@ public class SignatureValidatorBean extends WebBean
   @CMSProperty
   public static final String SIGNATURE_TRANSFORMATION_NAME_PROPERTY =
     "signatureTransformationName";
+  
+  @CMSProperty
+  public static final String AUTHCOPY_URL_PROPERTY =
+    "authcopyURL";  
 
   public static final String SIGID_PARAM = "sigid";
 
@@ -114,9 +120,9 @@ public class SignatureValidatorBean extends WebBean
 
   public String getDownloadUrl()
   {
-    return DocumentUrlBuilder.getDocumentUrl(document, true);
+    return getAuthcopyURL(true);
   }
-
+  
   public String getViewUrl()
   {
     return viewUrl;
@@ -160,7 +166,7 @@ public class SignatureValidatorBean extends WebBean
     if (value == null) return false;
     else return "true".equalsIgnoreCase(value);
   }
-
+  
   public String getLanguage()
   {
     Content content = document.getContent();
@@ -271,35 +277,72 @@ public class SignatureValidatorBean extends WebBean
       }
     }
   }
-
+    
   private void findViewUrl()
   {
-    Content content = document.getContent();
-    String contentType = content.getContentType();
-    if ("application/pdf".equals(contentType))
-    {
-      viewUrl = DocumentUrlBuilder.getDocumentUrl(document);
-    }
-    else
-    {
-      // transformation to pdf
-      TransformationRequest request = new TransformationRequest();
-      request.setTargetContentType("application/pdf");
-      Transformation tr = new Transformation(document, request);
-      Transformation transformation =
-        TransformationManager.findTransformations(tr, null);
-      if (transformation != null)
-      {
-        String transformerId = transformation.getTransformerId();
-        String transformationName = transformation.getName();
-        String contentId = content.getContentId();
-        viewUrl = WorkServlet.URL_PATTERN + getDocumentServletURL() +
-          contentId + "?" + DocumentReader.TRANSFORM_WITH_PARAM + "=" +
-          transformerId + "/" + transformationName;
-      }
-      else viewUrl = null;
-    }
+    viewUrl = getAuthcopyURL(false);
   }
+   
+  private String getAuthcopyURL(boolean downloadable)
+  {  
+    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+      getMenuModel().getSelectedMenuItem();
+    String authcopyURL = menuItem.getProperty(AUTHCOPY_URL_PROPERTY);
+    
+    if (authcopyURL == null)
+    {
+      //fallback
+      Content content = document.getContent();
+      String contentType = content.getContentType();
+      if ("application/pdf".equals(contentType) || downloadable)
+      {
+        authcopyURL = getDocumentServletURL() + 
+          "${contentId}/${filename}.${extension}";
+      }
+      else
+      {
+        // transformation to pdf
+        TransformationRequest request = new TransformationRequest();
+        request.setTargetContentType("application/pdf");
+        Transformation tr = new Transformation(document, request);
+        Transformation transformation =
+          TransformationManager.findTransformations(tr, null);
+        if (transformation != null)
+        {
+          String transformerId = transformation.getTransformerId();
+          String transformationName = transformation.getName();
+          authcopyURL = WorkServlet.URL_PATTERN + getDocumentServletURL() +
+            "${contentId}?" + DocumentReader.TRANSFORM_WITH_PARAM + "=" +
+            transformerId + "/" + transformationName;
+        }
+        else authcopyURL = null;
+      }      
+    }    
+    
+    String url = getContextPath() + authcopyURL;
+    
+    HashMap vars = new HashMap();
+    vars.put("sigId", sigId); 
+    String filename = DocumentUtils.getFilename(document.getTitle()); 
+    vars.put("filename",filename); 
+    String docId = document.getDocId();
+    vars.put("docId", docId);
+    Content content = document.getContent();
+    String contentId = content.getContentId();
+    vars.put("contentId", contentId);
+    String extension =
+      MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
+    vars.put("extension", extension);
+    
+    if (downloadable)
+    {
+      url += url.contains("?") ? "&" : "?";
+      url += "saveas=${filename}.${extension}";
+    }
+
+    Template t = Template.create(url);
+    return t.merge(vars);        
+  }  
 
   private String getDocumentServletURL()
   {

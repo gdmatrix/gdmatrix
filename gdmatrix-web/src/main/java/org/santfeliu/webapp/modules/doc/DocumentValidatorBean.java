@@ -41,6 +41,7 @@ import org.matrix.doc.Document;
 import org.matrix.translation.TranslationConstants;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
+import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.template.Template;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -239,6 +240,15 @@ public class DocumentValidatorBean extends WebBean implements Serializable
     HashMap vars = new HashMap();
     vars.put("sigId", sigId);    
     vars.put("filename", DocumentUtils.getFilename(document.getTitle()));
+    String docId = document.getDocId();
+    vars.put("docId", docId);
+    Content content = document.getContent();
+    String contentId = content.getContentId();
+    vars.put("contentId", contentId);
+    String extension =
+      MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
+    vars.put("extension", extension);
+    
     Template t = Template.create(url);
     return t.merge(vars);    
   }    
