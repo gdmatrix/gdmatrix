@@ -61,7 +61,16 @@ function resetForm()
 function setMid(mid)
 {
   var action = document.forms[0].action;
-  document.forms[0].action = action + "?smid=" + mid;
+  var index = action.indexOf("?");
+  var query = "";
+  if (index > 0)
+  {
+    action = action.substring(0, index);
+    query = action.substring(index + 1);
+  }
+  var params = new URLSearchParams(query);
+  params.set("smid", mid);
+  document.forms[0].action = action + "?" + params.toString();
   return true;
 }
 
