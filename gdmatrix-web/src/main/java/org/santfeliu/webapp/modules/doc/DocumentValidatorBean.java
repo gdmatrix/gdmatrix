@@ -64,6 +64,10 @@ public class DocumentValidatorBean extends WebBean implements Serializable
   public static final String FOOTER_DOCID_PROPERTY = "footer.docId";
   @CMSProperty
   public static final String FOOTER_RENDER_PROPERTY = "footer.render";
+  @CMSProperty
+  public static final String VIEW_URL_PROPERTY = "viewURL";
+  @CMSProperty
+  public static final String DOWNLOAD_URL_PROPERTY = "downloadURL";  
   
   private static final String OUTCOME = "/pages/doc/document_validator.xhtml";
   private static final String SIGID_PARAM = "sigid";  
@@ -220,10 +224,11 @@ public class DocumentValidatorBean extends WebBean implements Serializable
       return null;
     
     String url;
+    
     if (downloadable)
-      url = getProperty("downloadURL");
+      url = getProperty(DOWNLOAD_URL_PROPERTY);
     else 
-      url = getProperty("viewURL");
+      url = getProperty(VIEW_URL_PROPERTY);
         
     if (url == null)
       return null;
