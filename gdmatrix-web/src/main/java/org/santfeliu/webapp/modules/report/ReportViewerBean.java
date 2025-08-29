@@ -416,7 +416,8 @@ public class ReportViewerBean extends WebBean implements Serializable
   /* private methods */
   private String show()
   {
-    return "report_browser.xhtml";
+    String template = UserSessionBean.getCurrentInstance().getTemplate();
+    return "/templates/" + template + "/template.xhtml";
   }
 
   private void updateComponents(UIComponent panel)
