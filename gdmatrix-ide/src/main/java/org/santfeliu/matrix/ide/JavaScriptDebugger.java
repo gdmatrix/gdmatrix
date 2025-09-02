@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -105,12 +105,12 @@ public class JavaScriptDebugger extends JDialog
       initComponents();
     }
     catch(Exception e)
-    {      
+    {
     }
   }
 
   private void initComponents() throws Exception
-  {    
+  {
     this.setTitle("Javascript debugger");
     this.setSize(new Dimension(540, 450));
     this.getContentPane().setLayout(borderLayout);
@@ -156,7 +156,7 @@ public class JavaScriptDebugger extends JDialog
       });
     toolBar.add(runButton, null);
     toolBar.add(stopButton, null);
-    toolBar.add(resetButton, null);    
+    toolBar.add(resetButton, null);
     toolBar.add(clearButton, null);
     this.getContentPane().add(toolBar, BorderLayout.NORTH);
     splitPane.add(textEditor, JSplitPane.LEFT);
@@ -182,12 +182,12 @@ public class JavaScriptDebugger extends JDialog
     textEditor.getTextPane().setEditorKitForContentType("text/javascript",
       new JavaScriptEditorKit());
     textEditor.getTextPane().setContentType("text/javascript");
-    
+
     SymbolHighlighter cancelMatcher =
       new SymbolHighlighter(textEditor.getTextPane(), "({[", ")}]");
 
     textEditor.getTextPane().setSelectionColor(new Color(198, 198, 198));
-    numberIcon = 
+    numberIcon =
         new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/number_type.gif"));
 
@@ -221,7 +221,7 @@ public class JavaScriptDebugger extends JDialog
   {
     run(textEditor.getTextPane().getText());
   }
-  
+
   private void clearButton_actionPerformed(ActionEvent e)
   {
     textEditor.getTextPane().setText("");
@@ -278,7 +278,7 @@ public class JavaScriptDebugger extends JDialog
       updateButtons(true);
     }
   }
-  
+
   private void stop() throws Exception
   {
     if (runner != null)
@@ -286,16 +286,16 @@ public class JavaScriptDebugger extends JDialog
       runner.end();
     }
   }
-  
+
   private void updateButtons(boolean running)
   {
     runButton.setEnabled(!running);
     stopButton.setEnabled(running);
-    resetButton.setEnabled(!running);        
+    resetButton.setEnabled(!running);
     clearButton.setEnabled(!running);
     textEditor.setEnabled(!running);
   }
-  
+
   private void updateTable()
   {
     tableModel.setRowCount(0);
@@ -312,7 +312,7 @@ public class JavaScriptDebugger extends JDialog
       tableModel.addRow(new Object[]{variable, value});
     }
   }
-  
+
   private void showError()
   {
     String message = error.getMessage();
@@ -331,35 +331,32 @@ public class JavaScriptDebugger extends JDialog
     }
 
     JOptionPane.showMessageDialog(
-      JavaScriptDebugger.this, 
+      JavaScriptDebugger.this,
       message, "ERROR", JOptionPane.ERROR_MESSAGE);
   }
-  
+
   public class Runner extends Thread
   {
     private final String code;
-    
+
     public Runner(String code)
     {
       this.code = code;
     }
-    
+
     @Override
     public void run()
     {
       Context cx = ContextFactory.getGlobal().enterContext();
       try
       {
-        Scriptable scope = 
+        Scriptable scope =
           new ScriptableBase(cx, persistentVariables);
         result = cx.evaluateString(scope, code, "", 1, null);
       }
       catch (Exception ex)
       {
         error = ex;
-      }
-      catch (ThreadDeath d)
-      {
       }
       finally
       {
@@ -380,7 +377,7 @@ public class JavaScriptDebugger extends JDialog
         });
       }
     }
-    
+
     public void end() throws Exception
     {
       Method method = this.getClass().getMethod("stop", new Class[0]);
@@ -395,7 +392,7 @@ public class JavaScriptDebugger extends JDialog
   {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected, boolean hasFocus, int row, int column)  
+      boolean isSelected, boolean hasFocus, int row, int column)
     {
       if (isSelected)
       {
@@ -409,12 +406,12 @@ public class JavaScriptDebugger extends JDialog
       }
       setEnabled(table.isEnabled());
       setFont(table.getFont());
-      
+
       setText(String.valueOf(value));
       Object varValue = table.getValueAt(row, column + 1);
       if (varValue instanceof Number)
       {
-        setIcon(numberIcon);  
+        setIcon(numberIcon);
       }
       else if (varValue instanceof String)
       {

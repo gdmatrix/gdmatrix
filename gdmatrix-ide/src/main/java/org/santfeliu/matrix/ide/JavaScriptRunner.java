@@ -100,10 +100,6 @@ public class JavaScriptRunner extends Thread
     {
       result = ex.toString();
     }
-    catch (ThreadDeath d)
-    {
-      result = "Execution interrupted.";
-    }
     finally
     {
       LOGGER.removeHandler(handler);

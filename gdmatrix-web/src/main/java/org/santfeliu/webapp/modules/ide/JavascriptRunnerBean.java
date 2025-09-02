@@ -106,10 +106,6 @@ public class JavascriptRunnerBean implements Serializable
         result = wex.getWrappedException();
         queue.push(new Message("error", result));
       }
-      catch (ThreadDeath d)
-      {
-        queue.push(new Message("error", "Thread death"));
-      }
       catch (Throwable ex)
       {
         result = ex.toString();
