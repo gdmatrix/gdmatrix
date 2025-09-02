@@ -530,8 +530,8 @@ public class CaseCasesTabBean extends TabBean
               DictionaryConstants.CASE_CASE_TYPE : typeId;
             getCurrentTabInstance().rows = getResultsByDefault(typeId);
           }
-        getCurrentTabInstance().rowsFilterHelper.refresh();
-        getCurrentTabInstance().rowsFilterHelper2.refresh();
+          getCurrentTabInstance().rowsFilterHelper.refresh();
+          getCurrentTabInstance().rowsFilterHelper2.refresh();
           executeTabAction(POST_TAB_LOAD_ACTION, null);
         }
       }

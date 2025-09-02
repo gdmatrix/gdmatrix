@@ -43,6 +43,7 @@ import org.matrix.cases.CaseAddressView;
 import org.matrix.cases.CaseCaseView;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.TextUtils;
 
@@ -156,8 +157,7 @@ public class CaseCaseMatcher
     {
       Case relCase = casePerson.getCaseObject();
       item = createCaseCaseView(casePerson.getPersonView().getPersonId(),
-        casePerson.getStartDate(), casePerson.getEndDate(), relCase,
-        relCase.getCaseTypeId());
+        casePerson.getStartDate(), casePerson.getEndDate(), relCase);
       if (item != null)
       {
         item.setRelCase(relCase);
@@ -178,8 +178,7 @@ public class CaseCaseMatcher
       Case relCase = caseAddress.getCaseObject();
       caseCaseView
         = createCaseCaseView(caseAddress.getAddressView().getAddressId(),
-          caseAddress.getStartDate(), caseAddress.getEndDate(),
-          relCase, relCase.getCaseTypeId());
+          caseAddress.getStartDate(), caseAddress.getEndDate(), relCase);
       if (caseCaseView != null)
       {
         DictionaryUtils.setProperty(caseCaseView, "addressId", addressId);
@@ -189,7 +188,7 @@ public class CaseCaseMatcher
   }
 
   private CaseCaseView createCaseCaseView(String id, String startDate,
-    String endDate, Case relCase, String caseCaseTypeId)
+    String endDate, Case relCase)
   {
     Period p = isWithinRange(id, startDate, endDate);
     if (p != null)
@@ -199,7 +198,7 @@ public class CaseCaseMatcher
       caseCaseView.setStartDate(p.getFormattedStartDate());
       caseCaseView.setEndDate(p.getFormattedEndDate());
       caseCaseView.setRelCase(relCase);
-      caseCaseView.setCaseCaseTypeId(caseCaseTypeId);
+      caseCaseView.setCaseCaseTypeId(DictionaryConstants.CASE_CASE_TYPE);
       return caseCaseView;
     }
     return null;
