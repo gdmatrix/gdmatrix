@@ -105,7 +105,7 @@
                               yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
               </p:outputPanel>
 
-              <p:outputPanel class="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('startDate')}">
+              <p:outputPanel class="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
                 <p:outputLabel for="@next" 
                                value="#{caseBundle.casePersons_endDate}"/>
                 <p:datePicker value="#{casePersonsTabBean.editing.endDate}" 
