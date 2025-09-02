@@ -60,9 +60,11 @@ class RefreshControl
       if (this.isRefreshRequired(sourceId, auto))
       {
         let source = sources[sourceId];
-        if (source.type === "geojson" && typeof source.data === "string")
+        if (source.type === "geojson")
         {
-          let url = source.data;
+          let url = getSourceUrl(sourceId, map.getStyle());
+          if (!url) continue;
+          
           if (url.indexOf("?") === -1)
           {
             url += "?" + seed;
