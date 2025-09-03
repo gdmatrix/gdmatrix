@@ -110,8 +110,13 @@ public class DocumentCasesTabBean extends TabBean
         }
         else if ("caseTypeId".equals(columnName))
         {
-          return typeTypeBean.getDescription(
+          return typeTypeBean.getTypeDescription(
             caseDocumentView.getCaseObject().getCaseTypeId());
+        }
+        else if ("caseDocTypeId".equals(columnName))
+        {
+          return typeTypeBean.getTypeDescription(
+            caseDocumentView.getCaseDocTypeId());
         }
         else
         {

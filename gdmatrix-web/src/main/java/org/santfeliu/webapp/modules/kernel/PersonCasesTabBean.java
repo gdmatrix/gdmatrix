@@ -125,6 +125,12 @@ public class PersonCasesTabBean extends TabBean
           Item item = RowsFilterHelper.createTypeItem(typeId);
           return (item != null ? item : RowsFilterHelper.createEmptyItem());
         }
+        else if ("casePersonTypeId".equals(columnName))
+        {
+          String typeId = row.getCasePersonTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
+        }
         else if ("comments".equals(columnName))
         {
           return new Item(row.getComments());
@@ -192,6 +198,12 @@ public class PersonCasesTabBean extends TabBean
         else if ("caseTypeId".equals(columnName))
         {
           String typeId = row.getCaseObject().getCaseTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
+        }
+        else if ("casePersonTypeId".equals(columnName))
+        {
+          String typeId = row.getCasePersonTypeId();
           Item item = RowsFilterHelper.createTypeItem(typeId);
           return (item != null ? item : RowsFilterHelper.createEmptyItem());
         }
@@ -294,6 +306,11 @@ public class PersonCasesTabBean extends TabBean
           return typeTypeBean.getTypeDescription(
             casePersonView.getCaseObject().getCaseTypeId());
         }
+        else if ("casePersonTypeId".equals(columnName))
+        {
+          return typeTypeBean.getTypeDescription(
+            casePersonView.getCasePersonTypeId());
+        }        
         else if ("comments".equals(columnName))
         {
           return casePersonView.getComments();

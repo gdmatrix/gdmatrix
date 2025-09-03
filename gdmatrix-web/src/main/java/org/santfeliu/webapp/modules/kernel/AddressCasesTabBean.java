@@ -124,6 +124,12 @@ public class AddressCasesTabBean extends TabBean
           Item item = RowsFilterHelper.createTypeItem(typeId);
           return (item != null ? item : RowsFilterHelper.createEmptyItem());
         }
+        else if ("caseAddressTypeId".equals(columnName))
+        {
+          String typeId = row.getCaseAddressTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
+        }
         else if ("comments".equals(columnName))
         {
           return new Item(row.getComments());
@@ -194,6 +200,12 @@ public class AddressCasesTabBean extends TabBean
           Item item = RowsFilterHelper.createTypeItem(typeId);
           return (item != null ? item : RowsFilterHelper.createEmptyItem());
         }
+        else if ("caseAddressTypeId".equals(columnName))
+        {
+          String typeId = row.getCaseAddressTypeId();
+          Item item = RowsFilterHelper.createTypeItem(typeId);
+          return (item != null ? item : RowsFilterHelper.createEmptyItem());
+        }        
         else if ("comments".equals(columnName))
         {
           return new Item(row.getComments());
@@ -287,6 +299,11 @@ public class AddressCasesTabBean extends TabBean
         {
           return typeTypeBean.getTypeDescription(
             caseAddressView.getCaseObject().getCaseTypeId());
+        }
+        else if ("caseAddressTypeId".equals(columnName))
+        {
+          return typeTypeBean.getTypeDescription(
+            caseAddressView.getCaseAddressTypeId());
         }
         else if ("comments".equals(columnName))
         {
