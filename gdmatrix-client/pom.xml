@@ -20,8 +20,8 @@
     <jre_file>11.0.14.1_1</jre_file>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -56,7 +56,7 @@
           <execution>
             <phase>process-resources</phase>
             <configuration>
-              <tasks>
+              <target>
                 <propertyfile file="${basedir}/target/classes/org/santfeliu/matrix/client/conf/setup.properties"
                               comment="GDMatrixClient Setup">
                   <entry key="title" value="${client_title}"/>
@@ -66,7 +66,7 @@
                   <entry key="trustStoreFile" value="truststore-2.jks"/>
                   <entry key="trustStorePassword" value="matrix"/>
                 </propertyfile>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
