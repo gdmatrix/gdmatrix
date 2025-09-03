@@ -56,7 +56,6 @@ import java.time.Duration;
 import static dev.langchain4j.internal.Utils.getOrDefault;
 import static java.util.stream.Collectors.joining;
 import java.nio.charset.Charset;
-import org.apache.commons.io.input.ReaderInputStream;
 
 public class JdkHttpClient implements HttpClient
 {

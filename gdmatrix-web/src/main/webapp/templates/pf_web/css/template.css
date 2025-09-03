@@ -240,6 +240,31 @@
   position:relative;
 }
 
+.assistant_button.active
+{
+  box-shadow: 0 0 0 0.5rem var(--surface-300);
+  animation: assistantFlash 2s infinite;
+  background-color: black;
+}
+
+.assistant_button.active i
+{
+  color: white;
+}
+
+@keyframes assistantFlash 
+{
+  0% {
+    box-shadow: 0 0 0 0.4rem var(--surface-400);
+  }
+  50% {
+    box-shadow: 0 0 0 0.4rem var(--surface-300);
+  }
+  100% {
+    box-shadow: 0 0 0 0.4rem var(--surface-400);
+  }
+}
+
 .assistant_slider
 {
   position: absolute;
@@ -251,6 +276,7 @@
 .assistant_slider a
 {
   text-decoration: none;
+  color: var(--primary-color);
 }
 
 /* main menu */

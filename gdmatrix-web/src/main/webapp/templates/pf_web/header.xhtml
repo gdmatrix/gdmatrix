@@ -113,9 +113,9 @@
               <i class="pi pi-cog" />
             </p:link>
 
-            <p:link styleClass="header_button ml-2 mr-2"
+            <p:link href="#" styleClass="header_button ml-2 mr-2 assistant_button"
                     title="Assistant"
-                    onclick="toggleAssistantPanel(event);">
+                    onclick="toggleAssistantPanel(event);activateAssistantTextarea()">
               <i class="mi-outlined mi-smart-toy" />
             </p:link>
             
@@ -150,7 +150,7 @@
           var assistantPanel = document.querySelector(".assistant_panel");
           return !assistantPanel.classList.contains("hidden");          
         }
-
+        
         function toggleAssistantPanel(event)
         {
           if (isAssistantVisible())
@@ -178,10 +178,9 @@
           maxButton.classList.add("hidden");
           var minButton = document.querySelector(".assistant_min");
           minButton.classList.remove("hidden");
-          if (PrimeFaces.widgets["assistantTextarea"])
-          {
-            PF("assistantTextarea").jq.focus();
-          }
+
+          var assistantButton = document.querySelector(".assistant_button");
+          assistantButton.classList.add("active");
         }
 
         function minimizeAssistantPanel(event)
@@ -198,10 +197,19 @@
           maxButton.classList.remove("hidden");
           var minButton = document.querySelector(".assistant_min");
           minButton.classList.add("hidden");
+
+          var assistantButton = document.querySelector(".assistant_button");
+          assistantButton.classList.add("active");
+        }
+        
+        function activateAssistantTextarea()
+        {
+          console.info("activate");
           if (PrimeFaces.widgets["assistantTextarea"])
           {
+            PF("assistantTextarea").render();
             PF("assistantTextarea").jq.focus();
-          }
+          }          
         }
 
         function hideAssistantPanel(event)
@@ -214,6 +222,9 @@
           assistantPanel.classList.add("hidden");
           assistantPanel.style.width = "";
           assistantPanel.style.height = "";
+          
+          var assistantButton = document.querySelector(".assistant_button");
+          assistantButton.classList.remove("active");
         }
 
         window.addEventListener("load", () => {
