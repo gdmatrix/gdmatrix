@@ -15,10 +15,7 @@
       <c:if test="${requestScope.showBaseTag == 'true'}">
         <base href="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}" />
       </c:if>
-      <c:if test="${userSessionBean.selectedMenuItem.properties.mobile == 'true' or 
-        userSessionBean.menuModel.browserType == 'mobile'}">
-        <meta name="viewport" content="width=device-width, interactive-widget=resizes-visual" />
-      </c:if>
+      <meta name="viewport" content="width=device-width, interactive-widget=resizes-visual" />
       <title>
         <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.pageTitlePrefix} 
         #{userSessionBean.selectedMenuItem.properties.pageTitle == null ? 
