@@ -253,7 +253,12 @@ class GetFeatureInfoTool extends Tool
         [point.x + tolerance, point.y + tolerance]
       ];
 
-      const features = this.map.queryRenderedFeatures(bbox);
+      const layerForms = map.getStyle().metadata?.layerForms;
+      const hasLayerForm = (layerId) => {
+        return layerForms.some(item => item.layer === layerId);
+      };
+
+      const features = map.queryRenderedFeatures(bbox);
       for (let feat of features)
       {        
         let layer = map.getLayer(feat.layer.id);
@@ -276,7 +281,9 @@ class GetFeatureInfoTool extends Tool
           
           let params = serviceParameters[sourceId];
           let service = params?.service ? services[params.service] : null;
-          let layerName = params?.layers ? params.layers : layer.id;
+          
+          let layerName = hasLayerForm(layer.id) ? 
+            layer.id : params?.layers || layer.id;
 
           let form = new FeatureForm(feature);
           form.service = service;
