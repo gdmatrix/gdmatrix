@@ -313,7 +313,11 @@ public class ThreadsBean extends WebBean implements Serializable
         @Override
         public void onNext(String tokens)
         {
-          if (!StringUtils.isEmpty(tokens))
+          if (queue.isInterrupted())
+          {
+            throw new StreamingInterruptionError();
+          }
+          else if (!StringUtils.isEmpty(tokens))
           {
             queue.push(tokens);
           }
@@ -358,6 +362,7 @@ public class ThreadsBean extends WebBean implements Serializable
         @Override
         public void onError(Throwable t)
         {
+          queue.clear();
           pushError(queue, t);
           queue.push(0);
         }
@@ -367,6 +372,15 @@ public class ThreadsBean extends WebBean implements Serializable
     {
       queue.push(0);
       error(ex);
+    }
+  }
+
+  public void interruptStreaming()
+  {
+    StreamQueue queue = StreamQueue.getInstance(getThreadId(), false);
+    if (queue != null)
+    {
+      queue.interrupt();
     }
   }
 

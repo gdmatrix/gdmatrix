@@ -152,21 +152,30 @@
           <p:inputTextarea id="question" value="#{threadsBean.text}"
                            pt:spellcheck="false"
                            widgetVar="assistantTextarea"
-                           onkeyup="updateSendButton()"
+                           onkeyup="updateAssistantButtons()"
                            styleClass="w-full" style="max-height:100%" rows="3"
                            placeholder="#{threadsBean.inputPlaceholder}" />
           <div class="flex flex-column">
             <p:commandButton action="#{threadsBean.sendMessage()}"
                              process="assistant_panel" 
                              update="question threads_panel uploaded_file floating_bar"
-                             widgetVar="sendButton"
+                             widgetVar="assistantSendButton"
                              title="#{objectBundle.send}"
                              onclick="sendMessage()"
                              global="false"
                              oncomplete="showResponse('#{threadsBean.threadId}')"
                              icon="pi pi-send" styleClass="ui-button-outlined ml-2" />
+            <p:commandButton action="#{threadsBean.interruptStreaming()}"
+                             process="assistant_panel" 
+                             update="question threads_panel uploaded_file floating_bar"
+                             widgetVar="assistantInterruptButton"
+                             title="#{assistantBundle.interruptStreaming}"
+                             style="display:none"
+                             global="false"
+                             icon="pi pi-stop-circle" styleClass="ui-button-outlined ml-2" />
             <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
                              process="@this" update="uploaded_file"
+                             widgetVar="assistantUploadButton"
                              title="#{objectBundle.upload}"
                              oncomplete="PF('fileUpload').show()"
                              icon="pi pi-paperclip" styleClass="ui-button-outlined mt-1 ml-2" />
@@ -174,7 +183,7 @@
         </h:panelGroup>
         
         <script>
-          jQuery(document).ready(() => updateSendButton());
+          jQuery(document).ready(() => updateAssistantButtons());
         </script>
       </h:panelGroup>
       

@@ -1,20 +1,33 @@
 /* assistant.js */
 
-function updateSendButton()
+function updateAssistantButtons()
 {
   var text = PF("assistantTextarea").getJQ().val().trim();
-  var sendButton = PF("sendButton");
+  var sendButton = PF("assistantSendButton");
+  var interruptButton = PF("assistantInterruptButton");
+  var uploadButton = PF("assistantUploadButton");
 
   var dotsElem = document.querySelector(".message_list .dot-typing");
   var inProgress = dotsElem && !dotsElem.classList.contains("invisible");
 
-  if (text.length === 0 || inProgress)
+  if (inProgress)
   {
     sendButton.disable();
+    uploadButton.disable();
   }
   else
   {
-    sendButton.enable();
+    if (text.length === 0)
+    {
+      sendButton.disable();
+    }
+    else
+    {
+      sendButton.enable();
+    }
+    uploadButton.enable();
+    sendButton.jq.show();
+    interruptButton.jq.hide();
   }
 }
 
@@ -74,7 +87,7 @@ function setLinkTarget(htmlElem)
   for (let link of links)
   {
     link.target = "_blank";
-  }  
+  }
 }
 
 function sendMessage()
@@ -91,8 +104,14 @@ function sendMessage()
 
   textarea.val(text);
 
-  var sendButton = PF("sendButton");
-  sendButton.disable();
+  var sendButton = PF("assistantSendButton");
+  sendButton.jq.hide();
+
+  var interruptButton = PF("assistantInterruptButton");
+  interruptButton.jq.show();
+
+  var uploadButton = PF("assistantUploadButton");
+  uploadButton.disable();
 
   var itemElem = createMessage("USER", text);
   listElem.appendChild(itemElem);
@@ -126,9 +145,9 @@ async function showResponse(threadId)
   {
     if (item === 0)
     {
-      updateSendButton();
       end = true;
       hideDots();
+      updateAssistantButtons();
     }
     else if (typeof item === "string") // tokens from streaming
     {
@@ -179,6 +198,14 @@ async function showResponse(threadId)
         eval(item.text);
         if (!aiDebugEnabled) continue;
         text = "```json\n" + item.text + "\n```";
+      }
+      else if (type === "ERROR")
+      {
+        if (text.indexOf("StreamingInterruptionError") >= 0)
+        {
+          // do not show interrupt errors
+          continue;
+        }
       }
       var itemElem = createMessage(type, text);
       listElem.appendChild(itemElem);

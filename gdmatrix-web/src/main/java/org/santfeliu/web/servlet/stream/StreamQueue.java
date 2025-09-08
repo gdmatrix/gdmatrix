@@ -51,6 +51,7 @@ public class StreamQueue
 
   private final List<Object> items = new ArrayList<>();
   private long lastAccess;
+  private boolean interrupted;
 
   public static StreamQueue getInstance(String queueId)
   {
@@ -128,5 +129,16 @@ public class StreamQueue
   public synchronized void clear()
   {
     items.clear();
+    interrupted = false;
+  }
+
+  public void interrupt()
+  {
+    interrupted = true;
+  }
+
+  public boolean isInterrupted()
+  {
+    return interrupted;
   }
 }
