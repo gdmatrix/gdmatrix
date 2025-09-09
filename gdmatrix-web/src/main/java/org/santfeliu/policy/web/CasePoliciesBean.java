@@ -288,7 +288,7 @@ public class CasePoliciesBean extends PageBean
 
       ListHandler handler = new ListHandler();
       handler.setFilter(record ->
-        record.getLongThreadID() == Thread.currentThread().threadId());
+        record.getLongThreadID() == Thread.currentThread().getId());
       handler.setLevel(Level.ALL);
       LOGGER.addHandler(handler);
       LOGGER.setLevel(Level.ALL);
