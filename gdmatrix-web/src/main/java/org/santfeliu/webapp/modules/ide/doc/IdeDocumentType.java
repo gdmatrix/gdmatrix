@@ -145,37 +145,41 @@ public class IdeDocumentType implements Serializable
   {
     Tab metadata = new Tab("metadata_editor.xhtml", "Metadata", "pi pi-list");
     Tab acl = new Tab("acl_editor.xhtml", "ACL", "pi pi-key");
+    Tab versions = new Tab("versions.xhtml", "Versions", "pi pi-bars");
 
     registerType("javascript", "Javascript", "CODE", "workflow.js",
       "text/javascript", "fa fa-brands fa-js",
-      new Tab("javascript_editor.xhtml", "JS Editor", "fa fa-brands fa-js"),
+      new Tab("javascript_editor.xhtml", "JS Editor", "fa fa-brands fa-js", 
+        true),
       new Tab("javascript_runner.xhtml", "JS Runner", "pi pi-play"),
-      metadata, acl);
+      metadata, acl, versions);
 
     registerType("html", "HTML form", "FORM", "workflow.html",
       "text/html", "fa fa-brands fa-html5",
-      new Tab("html_editor.xhtml", "HTML Editor", "fa fa-brands fa-html5"),
+      new Tab("html_editor.xhtml", "HTML Editor", "fa fa-brands fa-html5", 
+        true),
       new Tab("html_preview.xhtml", "HTML preview", "pi pi-eye"),
-      metadata, acl);
+      metadata, acl, versions);
 
     registerType("template", "Template report", "REPORT", "report",
       "text/xml", "fa fa-file-code",
-      new Tab("html_editor.xhtml", "HTML Editor", "fa fa-file-code"),
-      metadata, acl);
+      new Tab("html_editor.xhtml", "HTML Editor", "fa fa-file-code", true),
+      metadata, acl, versions);
 
     registerType("xsl", "XSL template", "TEMPLATE", "workflow.xsl",
       "text/xml", "fa fa-code",
-      new Tab("xml_editor.xhtml", "XSL Editor", "fa fa-code"),
-      metadata, acl);
+      new Tab("xml_editor.xhtml", "XSL Editor", "fa fa-code", true),
+      metadata, acl, versions);
 
     registerType("ant", "ANT project", "ANT", "ide.ant",
       "text/xml", "fa fa-bug",
-      new Tab("xml_editor.xhtml", "ANT Editor", "fa fa-bug"),
-      metadata, acl);
+      new Tab("xml_editor.xhtml", "ANT Editor", "fa fa-bug", true),
+      metadata, acl, versions);
 
     registerType("ObjectSetup", "Object setup", "ObjectSetup", "setupName",
       "application/json", "fa fa-gear",
-      new Tab("json_editor.xhtml", "JSON Editor", "fa fa-gear"), metadata, acl);
+      new Tab("json_editor.xhtml", "JSON Editor", "fa fa-gear", true), 
+      metadata, acl, versions);
   }
 
   public static List<IdeDocumentType> getTypes()
@@ -193,14 +197,21 @@ public class IdeDocumentType implements Serializable
     private String label;
     private String icon;
     private String viewId;
+    private boolean editor;
 
     public Tab(String viewId, String label, String icon)
+    {
+      this(viewId, label, icon, false);
+    }
+
+    public Tab(String viewId, String label, String icon, boolean editor)
     {
       this.viewId = viewId;
       this.label = label;
       this.icon = icon;
-    }
-
+      this.editor = editor;
+    }    
+    
     public String getLabel()
     {
       return label;
@@ -229,6 +240,16 @@ public class IdeDocumentType implements Serializable
     public void setViewId(String viewId)
     {
       this.viewId = viewId;
+    }
+
+    public boolean isEditor() 
+    {
+      return editor;
+    }
+
+    public void setEditor(boolean editor) 
+    {
+      this.editor = editor;
     }
   }
 }

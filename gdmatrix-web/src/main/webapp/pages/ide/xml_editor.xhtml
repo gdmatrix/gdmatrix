@@ -8,7 +8,20 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
   
-    <gdm:codemirror lineNumbers="true" language="xml" 
+    <gdm:codemirror id="code_editor" lineNumbers="true" language="xml" 
                     value="#{ideBean.document.source}" />
 
+    <script>
+      var codeEditor = document.getElementById('mainform:editor:code_editor');
+      var modified = false;
+
+      codeEditor.addEventListener('keydown', function(event) {
+        if (!modified)
+        {
+          markChanged();
+          modified = true;
+        }
+      });  
+    </script>    
+    
 </ui:composition>

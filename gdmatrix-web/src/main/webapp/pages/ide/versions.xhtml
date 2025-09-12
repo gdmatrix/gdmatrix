@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <div class="flex flex-column h-full">
+    <p:dataTable id="doc_versions_table" value="#{ideBean.versions}"
+                 var="docVersion" rowIndexVar="rowIndex" 
+                 emptyMessage="#{objectBundle.no_data}">
+      <p:column headerText="#{documentBundle.document_version}">
+        <h:outputText value="#{docVersion.version}" />
+      </p:column>
+      <p:column headerText="#{documentBundle.document_title}">
+        <p:commandLink value="#{docVersion.title}"
+                       action="#{ideBean.selectDocumentVersion(rowIndex)}"
+                       process="@this"
+                       update="@form:editor @form:cnt:docs_panel"
+                       oncomplete="PF('ideTabs').select(0);"
+                       style="#{ideBean.isVersionDeleted(docVersion) ? 'text-decoration:line-through' : ''}" />                       
+      </p:column>
+      <p:column headerText="#{documentBundle.documentSearch_changeDateTime}">
+        <h:outputText value="#{docVersion.changeDateTime}">
+          <f:converter converterId="DateTimeConverter" />
+          <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+        </h:outputText>
+      </p:column>
+    </p:dataTable>         
+  </div>
+
+</ui:composition>

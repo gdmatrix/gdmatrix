@@ -49,6 +49,7 @@ public class IdeDocument implements Serializable
   int version;
   String metadata;
   List<AccessControl> accessControl;
+  boolean modified;
 
   public static String getReference(String typeName, String name)
   {
@@ -155,5 +156,15 @@ public class IdeDocument implements Serializable
   public void setAccessControl(List<AccessControl> accessControl)
   {
     this.accessControl = accessControl;
+  }
+
+  public boolean isModified()
+  {
+    return modified;
+  }
+
+  public void setModified(boolean modified)
+  {
+    this.modified = modified;
   }
 }

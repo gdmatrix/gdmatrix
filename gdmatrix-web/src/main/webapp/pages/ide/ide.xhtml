@@ -54,16 +54,31 @@
             <span class="code">#{docName}</span>
           </p:column>
         </p:autoComplete>
+        <p:splitButton value="#{objectBundle.store}" 
+                       title="#{objectBundle.store}" 
+                       action="#{ideBean.save}" 
+                       process="@form:cnt" 
+                       update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor"
+                       icon="pi pi-save" 
+                       styleClass="mini ml-2 mr-2">
+          <p:menuitem value="#{objectBundle.storeNewVersion}" 
+                      title="#{objectBundle.storeNewVersion}" 
+                      action="#{ideBean.saveNewVersion}" 
+                      process="@form:cnt" 
+                      update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor"
+                      icon="pi pi-save" styleClass="mini" />
+        </p:splitButton>          
         <div class="ui-inputgroup ml-1">
-          <p:commandButton action="#{ideBean.save}"
-                           process="@form:cnt" update="@form:cnt:docs_panel @form:cnt:ide_history"
-                           icon="pi pi-save" />
           <p:commandButton action="#{ideBean.create}"
                            process="@form:cnt" update="@form:cnt"
-                           icon="pi pi-plus-circle" />
+                           icon="pi pi-plus-circle" 
+                           alt="#{objectBundle.create}" 
+                           title="#{objectBundle.create}" />
           <p:commandButton action="#{ideBean.load}"
                            process="@form:cnt" update="@form:cnt"
-                           icon="pi pi-refresh" />
+                           icon="pi pi-refresh"
+                           alt="#{objectBundle.load}" 
+                           title="#{objectBundle.load}"/>
         </div>
         <p:button title="Documents"
                   widgetVar="docsPanelButton"
@@ -74,11 +89,14 @@
     </p:outputPanel>
     
     <div class="flex-grow-1 pt-0 flex w-full overflow-x-hidden overflow-y-hidden">
-      <p:tabView dynamic="true" styleClass="editor h-full overflow-hidden flex-grow-1" id="editor">
+      <p:tabView dynamic="true" styleClass="editor h-full overflow-hidden flex-grow-1" id="editor"
+                 widgetVar="ideTabs">
         <c:forEach items="#{ideBean.tabs}" var="tab">
           <p:tab>
             <f:facet name="title">
-              <span class="#{tab.icon} mr-2"/>#{tab.label}
+              <span class="#{tab.icon} mr-2"/>
+              <p:outputLabel styleClass="ideTabLabel" 
+                             value="#{tab.label}#{tab.editor and ideBean.document.modified ? ' *' : ''}" />
             </f:facet>
             <ui:include src="#{tab.viewId}" />
           </p:tab>
@@ -103,7 +121,7 @@
               <p:commandLink action="#{ideBean.loadCache(document.reference)}"
                              process="@form:cnt" update="@form:cnt" class="flex-grow-1 no-underline p-2">
                 <span class="#{ideBean.getDocumentIcon(document)} ml-1 mr-1" />
-                <span class="code">#{document.name}</span>                
+                <span class="code">#{document.name}#{document.modified ? ' *' : ''}</span>                
               </p:commandLink>
               
               <p:commandButton styleClass="ui-button-flat ml-3 flex-grow-0" icon="pi pi-times" 
@@ -122,6 +140,10 @@
   <p:remoteCommand action="#{ideBean.refreshSession()}" name="refreshSession" 
                    process="@none" update="@none" /> 
   
+  <p:remoteCommand id="markChangedCommand"
+                   name="markChanged" actionListener="#{ideBean.markChanged}" 
+                   update="@(.ideTabLabel) @form:cnt:docs_panel" />
+
   <p:growl for="growl" life="1500" >
     <p:autoUpdate />
   </p:growl>            

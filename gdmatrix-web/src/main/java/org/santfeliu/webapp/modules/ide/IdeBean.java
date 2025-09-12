@@ -54,8 +54,11 @@ import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
+import org.matrix.doc.DocumentConstants;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
+import org.matrix.doc.OrderByProperty;
+import org.matrix.doc.State;
 import org.matrix.security.AccessControl;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -84,6 +87,7 @@ public class IdeBean extends WebBean implements Serializable
   private String typeName = "javascript";
   private String name;
   private IdeDocument document = new IdeDocument();
+  private List<Document> versions;
   private String action = READ_ACTION;
   private String roleToAdd;
 
@@ -135,6 +139,34 @@ public class IdeBean extends WebBean implements Serializable
   public IdeDocument getDocument()
   {
     return document;
+  }
+
+  public List<Document> getVersions() 
+  {
+    if (versions == null)
+    {
+      if (document == null || document.getDocId() == null)
+      {
+        versions = new ArrayList();
+      }
+      else
+      {
+        DocumentFilter filter = new DocumentFilter();
+        filter.getDocId().add(document.getDocId());
+        filter.setVersion(-1);
+        filter.setIncludeContentMetadata(false);
+        filter.getStates().add(State.DRAFT);
+        filter.getStates().add(State.COMPLETE);
+        filter.getStates().add(State.RECORD);
+        filter.getStates().add(State.DELETED);
+        OrderByProperty order = new OrderByProperty();
+        order.setName(DocumentConstants.VERSION);
+        order.setDescending(true);
+        filter.getOrderByProperty().add(order);
+        versions = getPort().findDocuments(filter);
+      }
+    }
+    return versions;
   }
 
   public List<Tab> getTabs()
@@ -221,6 +253,7 @@ public class IdeBean extends WebBean implements Serializable
       {
         load();
       }
+      versions = null;
     }
   }
 
@@ -235,42 +268,47 @@ public class IdeBean extends WebBean implements Serializable
     name = null;
     document = new IdeDocument();
     document.setTypeName(typeName);
+    versions = null;
   }
 
   public void load()
   {
     try
     {
-      IdeDocumentType type = IdeDocumentType.getInstance(typeName);
-      DocumentManagerPort port = getPort();
-      Document doc = this.findDocumentByName(type, name);
-      if (doc != null)
+      if (!isBlank(typeName) && !isBlank(name))
       {
-        String docId = doc.getDocId();
-        int version = doc.getVersion();
-        String title = doc.getTitle();
-        int index = title.indexOf(":");
-        if (index != -1)
+        IdeDocumentType type = IdeDocumentType.getInstance(typeName);
+        DocumentManagerPort port = getPort();
+        Document doc = this.findDocumentByName(type, name);
+        if (doc != null)
         {
-          title = title.substring(index + 1).trim();
-        }
+          String docId = doc.getDocId();
+          int version = doc.getVersion();
+          String title = doc.getTitle();
+          int index = title.indexOf(":");
+          if (index != -1)
+          {
+            title = title.substring(index + 1).trim();
+          }
 
-        doc = port.loadDocument(docId, version, ContentInfo.ALL);
-        String source = IOUtils.toString(doc.getContent().getData().getInputStream(), "UTF-8");
-        document = new IdeDocument();
-        document.setTitle(title);
-        document.setTypeName(typeName);
-        document.setName(name);
-        document.setDocId(docId);
-        document.setVersion(version);
-        document.setSource(source);
-        document.setMetadata(metadataToJson(doc, type));
-        document.setAccessControl(doc.getAccessControl());
-        saveCache();
-      }
-      else
-      {
-        warn("NOT_FOUND");
+          doc = port.loadDocument(docId, version, ContentInfo.ALL);
+          String source = IOUtils.toString(doc.getContent().getData().getInputStream(), "UTF-8");
+          document = new IdeDocument();
+          document.setTitle(title);
+          document.setTypeName(typeName);
+          document.setName(name);
+          document.setDocId(docId);
+          document.setVersion(version);
+          document.setSource(source);
+          document.setMetadata(metadataToJson(doc, type));
+          document.setAccessControl(doc.getAccessControl());
+          versions = null;
+          saveCache();
+        }
+        else
+        {
+          warn("NOT_FOUND");
+        }
       }
     }
     catch (Exception ex)
@@ -281,63 +319,12 @@ public class IdeBean extends WebBean implements Serializable
 
   public void save()
   {
-    try
-    {
-      if (StringUtils.isBlank(name)) return; // do nothing
+    save(false);
+  }
 
-      Document doc;
-      IdeDocumentType type = IdeDocumentType.getInstance(typeName);
-      if (name.equals(document.getName()))
-      {
-        doc = new Document();
-        if (document.getDocId() != null)
-        {
-          doc.setDocId(document.getDocId());
-          doc.setVersion(document.getVersion());
-        }
-      }
-      else // save under another name
-      {
-        ideDocumentCacheBean.removeDocument(document.getReference());
-        doc = this.findDocumentByName(type, name);
-        if (doc == null)
-        {
-          doc = new Document();
-        }
-      }
-      if (StringUtils.isBlank(document.getTitle()))
-      {
-        document.setTitle(name);
-      }
-      doc.setTitle(name + ": " + document.getTitle());
-      doc.setDocTypeId(type.getDocTypeId());
-      this.metadataFromJson(doc, document.getMetadata());
-      Content content = new Content();
-      String source = document.getSource();
-      if (StringUtils.isBlank(source)) source = " ";
-      byte[] bytes = source.getBytes("UTF-8");
-      String contentType = type.getDocContentType();
-      content.setContentType(contentType);
-      DataSource ds = new MemoryDataSource(bytes, "source", contentType);
-      content.setData(new DataHandler(ds));
-      doc.setContent(content);
-      DictionaryUtils.setProperty(doc, type.getDocProperty(), name);
-      doc.getAccessControl().clear();
-      doc.getAccessControl().addAll(document.getAccessControl());
-      DocumentManagerPort port = getPort();
-      doc = port.storeDocument(doc);
-      document.setDocId(doc.getDocId());
-      document.setVersion(doc.getVersion());
-      document.setTypeName(typeName);
-      document.setName(name); // set new name
-
-      ideDocumentCacheBean.putDocument(document);
-      growl("STORE_OBJECT");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+  public void saveNewVersion()
+  {
+    save(true);
   }
 
   public void remove(String reference)
@@ -349,6 +336,7 @@ public class IdeBean extends WebBean implements Serializable
       {
         name = null;
         document = new IdeDocument();
+        versions = null;
         PrimeFaces.current().ajax().update("mainform:cnt");
       }
     }
@@ -435,6 +423,104 @@ public class IdeBean extends WebBean implements Serializable
     // called periodically from remoteCommand to keep session alive
   }
 
+  public boolean isVersionDeleted(Document document)
+  {
+    return document.getState().equals(State.DELETED);
+  }  
+  
+  public void selectDocumentVersion(int versionIndex)
+  {
+    try
+    {
+      Document doc = versions.get(versionIndex);
+      Content cnt = getPort().loadContent(doc.getContent().getContentId());
+      String source = IOUtils.toString(cnt.getData().getInputStream(), "UTF-8");
+      document.setSource(source);
+      document.setModified(versionIndex > 0);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public void markChanged()
+  {
+    if (document != null)
+    {
+      document.setModified(true);
+    }
+  }
+  
+  private void save(boolean newVersion)
+  {
+    try
+    {
+      if (StringUtils.isBlank(name)) return; // do nothing
+
+      Document doc;
+      IdeDocumentType type = IdeDocumentType.getInstance(typeName);
+      if (name.equals(document.getName()))
+      {
+        doc = new Document();
+        if (document.getDocId() != null)
+        {
+          doc.setDocId(document.getDocId());
+          doc.setVersion(document.getVersion());
+        }
+      }
+      else // save under another name
+      {
+        ideDocumentCacheBean.removeDocument(document.getReference());
+        doc = this.findDocumentByName(type, name);
+        if (doc == null)
+        {
+          doc = new Document();
+        }
+      }
+      if (StringUtils.isBlank(document.getTitle()))
+      {
+        document.setTitle(name);
+      }
+      doc.setTitle(name + ": " + document.getTitle());
+      doc.setDocTypeId(type.getDocTypeId());
+      this.metadataFromJson(doc, document.getMetadata());
+      Content content = new Content();
+      String source = document.getSource();
+      if (StringUtils.isBlank(source)) source = " ";
+      byte[] bytes = source.getBytes("UTF-8");
+      String contentType = type.getDocContentType();
+      content.setContentType(contentType);
+      DataSource ds = new MemoryDataSource(bytes, "source", contentType);
+      content.setData(new DataHandler(ds));
+      doc.setContent(content);
+      DictionaryUtils.setProperty(doc, type.getDocProperty(), name);
+      doc.getAccessControl().clear();
+      doc.getAccessControl().addAll(document.getAccessControl());
+      if (newVersion)
+      {
+        doc.setVersion(DocumentConstants.NEW_VERSION);
+      }
+      DocumentManagerPort port = getPort();
+      doc = port.storeDocument(doc);
+      document.setDocId(doc.getDocId());
+      document.setVersion(doc.getVersion());
+      document.setTypeName(typeName);
+      document.setName(name); // set new name
+      document.setModified(false);
+
+      ideDocumentCacheBean.putDocument(document);
+      
+      versions = null;
+      
+      growl("STORE_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+  
   private DocumentManagerPort getPort()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
