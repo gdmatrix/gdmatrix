@@ -91,6 +91,7 @@ public class ThreadsBean extends WebBean implements Serializable
   boolean editionEnabled = false;
   String attachedFilename;
   String attachedDocId;
+  String attachedContentId;
   String json;
 
   @Inject
@@ -290,6 +291,7 @@ public class ThreadsBean extends WebBean implements Serializable
     String threadId = getThreadId();
     attachedFilename = null;
     attachedDocId = null;
+    attachedContentId = null;
 
     try
     {
@@ -394,6 +396,11 @@ public class ThreadsBean extends WebBean implements Serializable
     return attachedDocId;
   }
 
+  public String getAttachedContentId()
+  {
+    return attachedContentId;
+  }
+
   public void deleteAttachedFile()
   {
     try
@@ -404,6 +411,7 @@ public class ThreadsBean extends WebBean implements Serializable
       }
       attachedFilename = null;
       attachedDocId = null;
+      attachedContentId = null;
     }
     catch (Exception ex)
     {
@@ -434,7 +442,7 @@ public class ThreadsBean extends WebBean implements Serializable
 
       Property property = new Property();
       property.setName(ATTACHMENT_THREADID_PROPERTY);
-      property.getValue().add("0");
+      property.getValue().add(getThreadId());
       document.getProperty().add(property);
 
       String contentType = MimeTypeMap.getMimeTypeMap().getContentType(attachedFile);
@@ -445,6 +453,7 @@ public class ThreadsBean extends WebBean implements Serializable
       document.setContent(content);
       document = assistantBean.getDocPort().storeDocument(document);
       attachedDocId = document.getDocId();
+      attachedContentId = document.getContent().getContentId();
 
       attachedFile.delete();
     }

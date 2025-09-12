@@ -61,7 +61,7 @@ function createMessage(role, markdown = "")
         </div>
         <div class="content mt-1">
           <div class="markdown hidden">${markdown}</div>
-          <div class="html">${markdownToHtml(markdown)}</div>
+          <div class="html">${markdownToHtml(markdown, false)}</div>
         </div>
       </div>
     </div>
@@ -97,9 +97,11 @@ function sendMessage()
   var text = textarea.val().trim();
 
   var docId = document.querySelector(".attached_docid").textContent;
-  if (docId)
+  var contentId = document.querySelector(".attached_contentid").textContent;
+  if (docId && contentId)
   {
-    text += "\n(docId: [" + docId + "](/documents/" + docId + "))";
+    const origin = document.location.origin;
+    text += "\n(docId: [" + docId + "](" + origin + "/documents/" + contentId + "))";
   }
 
   textarea.val(text);
@@ -226,7 +228,7 @@ async function showResponse(threadId)
   }
 }
 
-function markdownToHtml(text)
+function markdownToHtml(text, showThinking = true)
 {
   let html = "";
   let index = text.lastIndexOf("<think>");
@@ -245,10 +247,10 @@ function markdownToHtml(text)
     {
       think = text.substring(index + 7);
     }
-    if (think.trim().length > 0)
+    if (showThinking && think.trim().length > 0 && message.trim().length === 0)
     {
-      html = "<p class='think'><b>Thinking:</b> " + think + "</p>" +
-              markdown.render(message);
+      html = "<p class='think'><b>Thinking:</b> " + think + "</p>";
+//        markdown.render(message);
     }
     else
     {

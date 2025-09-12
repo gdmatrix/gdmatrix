@@ -124,7 +124,7 @@
         <h:panelGroup id="uploaded_file" layout="block">
           <h:panelGroup styleClass="mb-1"
                         rendered="#{threadsBean.attachedFilename != null}">
-            <a href="/documents/#{threadsBean.attachedDocId}" target="_blank" 
+            <a href="/documents/#{threadsBean.attachedContentId}" target="_blank" 
                class="no-underline">
               <span class="pi pi-file" /> #{threadsBean.attachedFilename}
             </a>
@@ -135,6 +135,7 @@
                              styleClass="rounded-button ui-button-flat" />
           </h:panelGroup>
           <div class="attached_docid hidden" aria-hidden="true">#{threadsBean.attachedDocId}</div>
+          <div class="attached_contentid hidden" aria-hidden="true">#{threadsBean.attachedContentId}</div>
         </h:panelGroup>
 
         <p:fileUpload listener="#{threadsBean.uploadFile}"
@@ -143,7 +144,7 @@
                       process="@this"
                       update="input_panel uploaded_file"
                       onstart="PF('fileUpload').getJQ().css('display','block');"
-                      oncomplete="PF('fileUpload').getJQ().css('display','none');updateSendButton();scrollMessages()"
+                      oncomplete="PF('fileUpload').getJQ().css('display','none');updateAssistantButtons();scrollMessages()"
                       global="false" />
 
         <h:panelGroup id="input_panel" layout="block"
