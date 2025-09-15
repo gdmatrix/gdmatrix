@@ -115,6 +115,13 @@
   justify-content: center;
 }
 
+.message .html img
+{
+  display: block;
+  max-width: 100%;
+  border: 1px solid var(--surface-700);
+}
+
 .message.USER .avatar
 {
   background: var(--primary-color);

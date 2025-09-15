@@ -36,14 +36,18 @@ import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.output.FinishReason;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletContext;
@@ -401,6 +405,13 @@ public class ThreadsBean extends WebBean implements Serializable
     return attachedContentId;
   }
 
+  public boolean isAttachedImage()
+  {
+    if (attachedFilename == null) return false;
+    return attachedFilename.endsWith(".png") ||
+           attachedFilename.endsWith(".jpg");
+  }
+
   public void deleteAttachedFile()
   {
     try
@@ -435,32 +446,67 @@ public class ThreadsBean extends WebBean implements Serializable
       {
         IOUtils.writeToFile(is, attachedFile);
       }
-
-      Document document = new Document();
-      document.setTitle(attachedFilename);
-      document.setDocTypeId(ATTACHMENT_DOCTYPEID_PROPERTY);
-
-      Property property = new Property();
-      property.setName(ATTACHMENT_THREADID_PROPERTY);
-      property.getValue().add(getThreadId());
-      document.getProperty().add(property);
-
-      String contentType = MimeTypeMap.getMimeTypeMap().getContentType(attachedFile);
-
-      Content content = new Content();
-      content.setData(new DataHandler(new FileDataSource(attachedFile)));
-      content.setContentType(contentType);
-      document.setContent(content);
-      document = assistantBean.getDocPort().storeDocument(document);
-      attachedDocId = document.getDocId();
-      attachedContentId = document.getContent().getContentId();
-
-      attachedFile.delete();
+      createDocument(attachedFile);
     }
     catch (IOException ex)
     {
       error(ex);
     }
+  }
+
+  public void uploadImage()
+  {
+    String base64 = FacesContext.getCurrentInstance().getExternalContext()
+      .getRequestParameterMap().get("image");
+    if (base64 != null)
+    {
+      try
+      {
+        int index = base64.indexOf(",");
+        if (index != -1)
+        {
+          String prefix = base64.substring(0, index).toLowerCase();
+          String extension = ".png";
+          if (prefix.contains("jpg") || prefix.contains("jpeg"))
+          {
+            extension = ".jpg";
+          }
+          attachedFilename = "image" + extension;
+
+          byte[] data = Base64.getDecoder().decode(base64.substring(index + 1));
+          File attachedFile = java.io.File.createTempFile("attach", extension);
+          IOUtils.writeToFile(new ByteArrayInputStream(data), attachedFile);
+          createDocument(attachedFile);
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+
+  public void createDocument(File attachedFile)
+  {
+    Document document = new Document();
+    document.setTitle(attachedFilename);
+    document.setDocTypeId(ATTACHMENT_DOCTYPEID_PROPERTY);
+
+    Property property = new Property();
+    property.setName(ATTACHMENT_THREADID_PROPERTY);
+    property.getValue().add(getThreadId());
+    document.getProperty().add(property);
+
+    String contentType = MimeTypeMap.getMimeTypeMap().getContentType(attachedFile);
+
+    Content content = new Content();
+    content.setData(new DataHandler(new FileDataSource(attachedFile)));
+    content.setContentType(contentType);
+    document.setContent(content);
+    document = assistantBean.getDocPort().storeDocument(document);
+    attachedDocId = document.getDocId();
+    attachedContentId = document.getContent().getContentId();
+    attachedFile.delete();
   }
 
   public AssistantStore getAssistantStore()

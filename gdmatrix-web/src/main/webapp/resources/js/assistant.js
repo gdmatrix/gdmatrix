@@ -90,18 +90,56 @@ function setLinkTarget(htmlElem)
   }
 }
 
+function fileToBase64(file) 
+{
+  return new Promise((resolve, reject) => 
+  {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function assistantPaste(event)
+{
+  console.info(event);
+  const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+
+  for (const item of items) 
+  {
+    if (item.type.indexOf("image") === 0)
+    {
+      const pastedFile = item.getAsFile();
+      console.info(pastedFile);
+      let base64 = await fileToBase64(pastedFile);
+      uploadImage([{ name: 'image', value: base64 }]);
+      break;
+    }
+  }
+}
+
 function sendMessage()
 {
   var listElem = getMessageList();
   var textarea = PF("assistantTextarea").getJQ();
   var text = textarea.val().trim();
 
+  var fileName = document.querySelector(".attached_filename").textContent;
   var docId = document.querySelector(".attached_docid").textContent;
   var contentId = document.querySelector(".attached_contentid").textContent;
   if (docId && contentId)
   {
     const origin = document.location.origin;
-    text += "\n(docId: [" + docId + "](" + origin + "/documents/" + contentId + "))";
+    const docUrl = origin + "/documents/" + contentId;
+    if (fileName.endsWith(".png") || fileName.endsWith(".jpg"))
+    {
+      text += "\n[![image " + docId + "](" + docUrl + ")](" + docUrl + ")";      
+    }
+    else
+    {
+      text += "\n(docId: [" + docId + "](" + docUrl + "))";
+    }
   }
 
   textarea.val(text);
@@ -218,6 +256,11 @@ async function showResponse(threadId)
         htmlElem = itemElem.querySelector(".html");
         setLinkTarget(htmlElem);
       }
+      else if (type === "USER")
+      {
+        htmlElem = itemElem.querySelector(".html");
+        setLinkTarget(htmlElem);        
+      }
       scrollMessages();
     }
   }
@@ -250,7 +293,6 @@ function markdownToHtml(text, showThinking = true)
     if (showThinking && think.trim().length > 0 && message.trim().length === 0)
     {
       html = "<p class='think'><b>Thinking:</b> " + think + "</p>";
-//        markdown.render(message);
     }
     else
     {

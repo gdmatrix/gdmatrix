@@ -121,10 +121,10 @@
 
         <div class="message_list flex-grow-1 flex-shrink-1 overflow-y-auto overflow-x-hidden" />
 
-        <h:panelGroup id="uploaded_file" layout="block">
-          <h:panelGroup styleClass="mb-1"
-                        rendered="#{threadsBean.attachedFilename != null}">
-            <a href="/documents/#{threadsBean.attachedContentId}" target="_blank" 
+        <h:panelGroup id="uploaded_file" layout="block" class="my-2">
+          <h:panelGroup rendered="#{threadsBean.attachedFilename != null}" styleClass="block">
+            <a href="/documents/#{threadsBean.attachedContentId}" 
+               target="_blank" 
                class="no-underline">
               <span class="pi pi-file" /> #{threadsBean.attachedFilename}
             </a>
@@ -134,6 +134,14 @@
                              icon="pi pi-trash"
                              styleClass="rounded-button ui-button-flat" />
           </h:panelGroup>
+          <ui:fragment rendered="#{threadsBean.isAttachedImage()}">
+            <a href="/documents/#{threadsBean.attachedContentId}/#{threadsBean.attachedFilename}" 
+               target="_blank" class="mt-2">
+              <img src="/documents/#{threadsBean.attachedContentId}/#{threadsBean.attachedFilename}" 
+                   alt="image" style="max-width:100%;border:1px solid var(--surface-700)" />
+            </a>
+          </ui:fragment>
+          <div class="attached_filename hidden" aria-hidden="true">#{threadsBean.attachedFilename}</div>
           <div class="attached_docid hidden" aria-hidden="true">#{threadsBean.attachedDocId}</div>
           <div class="attached_contentid hidden" aria-hidden="true">#{threadsBean.attachedContentId}</div>
         </h:panelGroup>
@@ -146,7 +154,10 @@
                       onstart="PF('fileUpload').getJQ().css('display','block');"
                       oncomplete="PF('fileUpload').getJQ().css('display','none');updateAssistantButtons();scrollMessages()"
                       global="false" />
-
+        <p:remoteCommand name="uploadImage" 
+                         action="#{threadsBean.uploadImage}"
+                         update="input_panel uploaded_file" />
+        
         <h:panelGroup id="input_panel" layout="block"
                       styleClass="flex-grow-0 flex-shrink-0 flex pt-0" 
                       style="max-height:40%">
@@ -154,6 +165,7 @@
                            pt:spellcheck="false"
                            widgetVar="assistantTextarea"
                            onkeyup="updateAssistantButtons()"
+                           onpaste="assistantPaste(event)"
                            styleClass="w-full" style="max-height:100%" rows="3"
                            placeholder="#{threadsBean.inputPlaceholder}" />
           <div class="flex flex-column">
@@ -186,8 +198,7 @@
         <script>
           jQuery(document).ready(() => updateAssistantButtons());
         </script>
-      </h:panelGroup>
-      
+      </h:panelGroup>      
 
       <p:panel id="threads_panel" styleClass="threads_panel flex-grow-0 v-full first_time"
                widgetVar="threadsPanel" closeSpeed="50">
