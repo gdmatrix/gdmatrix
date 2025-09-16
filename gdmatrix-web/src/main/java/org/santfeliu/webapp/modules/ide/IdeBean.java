@@ -34,15 +34,23 @@ import org.santfeliu.webapp.modules.ide.doc.IdeDocumentType;
 import org.santfeliu.webapp.modules.ide.doc.IdeDocument;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.harrel.jsonschema.Validator;
+import dev.harrel.jsonschema.ValidatorFactory;
+import dev.harrel.jsonschema.Error;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Scanner;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -72,6 +80,7 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.ide.doc.IdeDocumentType.Tab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 
 /**
  *
@@ -84,6 +93,8 @@ public class IdeBean extends WebBean implements Serializable
   public static final String TYPE_PARAMETER = "type";
   public static final String NAME_PARAMETER = "name";
 
+  private static final String CHECK_ENABLED_PROPERTY = "checkEnabled";
+  
   private String typeName = "javascript";
   private String name;
   private IdeDocument document = new IdeDocument();
@@ -437,6 +448,7 @@ public class IdeBean extends WebBean implements Serializable
       String source = IOUtils.toString(cnt.getData().getInputStream(), "UTF-8");
       document.setSource(source);
       document.setModified(versionIndex > 0);
+      document.setConfirmSave(versionIndex > 0);
     }
     catch (Exception ex)
     {
@@ -457,7 +469,28 @@ public class IdeBean extends WebBean implements Serializable
     try
     {
       if (StringUtils.isBlank(name)) return; // do nothing
-
+      
+      //Check file content
+      boolean checkEnabled = "true".equals(Objects.toString(
+        getProperty(CHECK_ENABLED_PROPERTY), "true"));
+      if (checkEnabled)
+      {
+        List<String> errors = new ArrayList<>();
+        if ("ObjectSetup".equals(typeName))
+        {
+          errors.addAll(checkObjectSetup());
+        }
+        if (!errors.isEmpty())
+        {
+          for (String error : errors)
+          {
+            getFacesContext().addMessage(null,
+              new FacesMessage(FacesMessage.SEVERITY_ERROR, error, null));               
+          }
+          return;
+        }
+      }
+      
       Document doc;
       IdeDocumentType type = IdeDocumentType.getInstance(typeName);
       if (name.equals(document.getName()))
@@ -508,6 +541,7 @@ public class IdeBean extends WebBean implements Serializable
       document.setTypeName(typeName);
       document.setName(name); // set new name
       document.setModified(false);
+      document.setConfirmSave(false);
 
       ideDocumentCacheBean.putDocument(document);
       
@@ -519,7 +553,38 @@ public class IdeBean extends WebBean implements Serializable
     {
       error(ex);
     }
-  }  
+  } 
+  
+  private List<String> checkObjectSetup()
+  {
+    List<String> errors = new ArrayList<>();
+    try (
+      InputStream is = 
+        ObjectSetup.class.getResourceAsStream("ObjectSetup.schema.json");
+      Scanner scanner = new Scanner(is, StandardCharsets.UTF_8);
+    ) 
+    {    
+      String schema = scanner.useDelimiter("\\A").next();
+      String instance = document.getSource();
+      Validator.Result result = new ValidatorFactory()
+        .validate(schema, instance);      
+      if (!result.isValid()) 
+      {
+        for (Error error : result.getErrors()) 
+        {
+          StringBuilder sbError = new StringBuilder();        
+          sbError.append(error.getInstanceLocation()).append(": ").
+            append(error.getError());
+          errors.add(sbError.toString());
+        }
+      } 
+    } 
+    catch (Exception ex)
+    {
+      errors.add(ex.toString());
+    }
+    return errors;
+  }
   
   private DocumentManagerPort getPort()
   {

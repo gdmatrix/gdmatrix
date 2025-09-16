@@ -19,7 +19,7 @@
         <p:commandLink value="#{docVersion.title}"
                        action="#{ideBean.selectDocumentVersion(rowIndex)}"
                        process="@this"
-                       update="@form:editor @form:cnt:docs_panel"
+                       update="@form:editor @form:cnt:docs_panel @form:ide_confirm"
                        oncomplete="PF('ideTabs').select(0);"
                        style="#{ideBean.isVersionDeleted(docVersion) ? 'text-decoration:line-through' : ''}" />                       
       </p:column>

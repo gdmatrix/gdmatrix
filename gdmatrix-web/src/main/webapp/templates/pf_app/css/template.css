@@ -613,7 +613,8 @@ h1
   }
   
   body .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
-  body .ui-button.ui-button-text-icon-right.mini > .ui-button-text
+  body .ui-button.ui-button-text-icon-right.mini > .ui-button-text,
+  body .ui-splitbutton.mini > .ui-button > .ui-button-text
   {
     visibility: hidden;
     width: 0;

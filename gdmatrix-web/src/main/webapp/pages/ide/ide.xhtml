@@ -58,14 +58,15 @@
                        title="#{objectBundle.store}" 
                        action="#{ideBean.save}" 
                        process="@form:cnt" 
-                       update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor"
+                       update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor ide_confirm"
+                       onstart="return checkSave();"
                        icon="pi pi-save" 
-                       styleClass="mini ml-2 mr-2">
+                       styleClass="mini ml-2 mr-2 flex flex-nowrap">
           <p:menuitem value="#{objectBundle.storeNewVersion}" 
                       title="#{objectBundle.storeNewVersion}" 
                       action="#{ideBean.saveNewVersion}" 
                       process="@form:cnt" 
-                      update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor"
+                      update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor ide_confirm"
                       icon="pi pi-save" styleClass="mini" />
         </p:splitButton>          
         <div class="ui-inputgroup ml-1">
@@ -142,7 +143,7 @@
   
   <p:remoteCommand id="markChangedCommand"
                    name="markChanged" actionListener="#{ideBean.markChanged}" 
-                   update="@(.ideTabLabel) @form:cnt:docs_panel" />
+                   update="@(.ideTabLabel) @form:cnt:docs_panel ide_confirm" />
 
   <p:growl for="growl" life="1500" >
     <p:autoUpdate />
@@ -160,4 +161,21 @@
   </script>
   </p:outputPanel>
 
+  <p:outputPanel id="ide_confirm">
+    <script>
+      function checkSave()
+      {
+        var showConfirm = '#{ideBean.document.confirmSave}';
+        if (showConfirm == 'true')
+        {
+          if (!confirm('#{documentBundle.document_version_overwrite}'))
+          {
+            return false;
+          }      
+        }
+        return true;
+      }
+    </script>
+  </p:outputPanel>
+  
 </ui:composition>

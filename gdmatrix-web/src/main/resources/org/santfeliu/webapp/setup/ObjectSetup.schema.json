@@ -1,0 +1,507 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gdmatrix.org/schema/objectsetup.schema.json",
+  "title": "ObjectSetup",
+  "description": "ObjectSetup JSON Schema",
+  "type": "object",
+  "required": ["typeId", "viewId"],
+  "properties": {      
+    "typeId": {
+      "description": "...",
+      "type": "string",
+      "examples": ["Case", "Event"]
+    },
+    "viewId": {
+      "description": "...",
+      "type": "string",
+      "examples": ["/pages/cases/case.xhtml"]
+    },
+    "label": {
+      "description": "...",
+      "type": "string"
+    },
+    "findOnFirstLoad" : {
+      "description": "...",
+      "enum": ["true", "false", true, false, "custom"]      
+    },
+    "smartSearchTipDocId" : {
+      "description": "...",      
+      "type": "integer"
+    },
+    "defaultSearchTabSelector" : {
+      "description": "...",
+      "type": "integer"
+    },
+    "defaultSearchPageSize" : {
+      "description": "...",
+      "type": "integer"
+    },
+    "mergeMode": {
+      "description": "...",      
+      "enum": ["ADD", "PRESERVE"]      
+    },
+    "searchTabs": {
+      "description": "...",
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/SearchTab" }
+    },
+    "editTabs": {
+      "description": "...",
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/EditTab" }
+    },
+    "scriptName": {
+      "description": "...",
+      "type": "string"
+    },    
+    "actions": {
+      "description": "...",
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/Action" }
+    },
+    "properties": {
+      "description": "...",
+      "type": "object",
+      "properties": {
+        "hideFinderProperties": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["classId", "searchExpression", "interventions"]
+          }
+        },
+        "sessionProperties": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["title", "p1"]
+          }
+        },
+        "publicTypeSymbol": {
+          "description": "...",
+          "type": "string"
+        },
+        "showTypeId": {
+          "description": "...",
+          "enum": ["true", "false", true, false]
+        }
+      },
+      "patternProperties": {
+        "^render.*$": {
+          "description": "...",
+          "enum": ["true", "false", true, false]
+        },
+        "^\\-.*": {}
+      },
+      "additionalProperties": false
+    }    
+  },
+  "patternProperties": {
+    "^\\-.*": {}
+  },        
+  "additionalProperties": false,
+  "$defs": {
+    "SearchTab": {
+      "description": "...",
+      "type": "object",
+      "required": ["label", "viewId"],
+      "properties": {
+        "label": {
+          "description": "...",
+          "type": "string"
+        },
+        "viewId": {
+          "description": "...",
+          "type": "string",
+          "examples": ["/pages/cases/case_list.xhtml"]
+        },
+        "tableProperties": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/TableProperty" }
+        },
+        "orderBy": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["caseId:desc", "startTime", "comments:asc"]
+          }
+        },
+        "orderByColumns": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["caseId", "startTime", "comments"]
+          }
+        },
+        "exportable" : {
+          "description": "...",          
+          "enum": ["true", "false", true, false]
+        },
+        "rowExportLimit" : {
+          "description": "...",      
+          "type": "integer",
+          "minimum": 0
+        },
+        "properties": {
+          "description": "...",
+          "type": "object",
+          "properties": {            
+          },
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "integer" },
+              { "type": "array" }, 
+              { "type": "object" },  
+              { "type": "boolean" }
+            ]
+          }
+        }
+      },
+      "patternProperties": {
+        "^\\-.*": {}
+      },      
+      "additionalProperties": false      
+    },
+    "EditTab": {
+      "description": "...",
+      "type": "object",
+      "required": ["label", "viewId"],
+      "properties": {
+        "label": {
+          "description": "...",
+          "type": "string"
+        },
+        "viewId": {
+          "description": "...",
+          "type": "string",
+          "examples": ["/pages/cases/case_cases.xhtml"]
+        },
+        "beanName": {
+          "description": "...",
+          "type": "string",
+          "examples": ["casePersonsTabBean", "caseAddressesTabBean"]
+        },
+        "icon": {
+          "description": "...",
+          "type": "string",
+          "examples": ["pi pi-clock"]
+        },
+        "subviewId": {
+          "description": "...",
+          "type": "string",
+          "examples": ["persona_professors", "persona_alumnes"]
+        },
+        "dialogViewId": {
+          "description": "...",
+          "type": "string",
+          "examples": ["/pages/cases/case_cases_dialog.xhtml"]
+        },
+        "tableProperties": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/TableProperty" }
+        },
+        "readRoles": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["ROLE_A", "ROLE_B"]
+          }
+        },
+        "writeRoles": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["ROLE_A", "ROLE_B"]
+          }
+        },
+        "orderBy": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["caseId:desc", "startTime", "comments:asc"]
+          }
+        },
+        "groupBy": {
+          "description": "...",
+          "type": "string"
+        },
+        "filterBy": {
+          "description": "...",
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "description": "...",
+              "type": "string"
+            },
+            "label": {
+              "description": "...",
+              "type": "string"
+            },
+            "linkedFilterBy": {
+              "description": "...",
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "...",
+                    "type": "string"
+                  },
+                  "label": {
+                    "description": "...",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "patternProperties": {
+            "^\\-.*": {}
+          },          
+          "additionalProperties": false
+        },
+        "typeId": {
+          "description": "...",
+          "type": "string"
+        },
+        "showAllTypes": {
+          "description": "...",
+          "enum": ["true", "false", true, false]
+        },
+        "pageSize": {
+          "description": "...",
+          "oneOf": [
+            { "type": "integer" },
+            { "enum": ["all", "ALL"] }
+          ],
+          "examples": [10, "all", "ALL"] 
+        },
+        "pageSizeOptions": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "oneOf": [
+              { "type": "integer" },
+              { "enum": ["all", "ALL"] }
+            ],
+            "examples": [10, "all", "ALL"] 
+          }
+        },
+        "exportable" : {
+          "description": "...",
+          "enum": ["true", "false", true, false]
+        },
+        "rowExportLimit" : {
+          "description": "...",      
+          "type": "integer",
+          "minimum": 0
+        },
+        "hideProperties": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "examples": ["caseTypeId", "endDate", "comments"]
+          }
+        },
+        "properties": {
+          "description": "...",
+          "type": "object",
+          "properties": {
+            "typeId": {
+              "description": "...",
+              "type": "string"
+            },
+            "hideColumnWhenGrouping": {
+              "description": "...",
+              "type": "string"
+            },
+            "importPersonsTypeId": {
+              "description": "...",
+              "type": "string"
+            },
+            "renderDirectionColumn": {
+              "description": "...",
+              "enum": ["true", "false", true, false]
+            },
+            "typeId1": {
+              "description": "...",
+              "type": "string"
+            },
+            "typeId2": {
+              "description": "...",
+              "type": "string"
+            },
+            "enableShowAllVolumes": {
+              "description": "...",
+              "enum": ["true", "false", true, false]
+            },
+            "volume": {
+              "description": "...",
+              "type": "string"
+            },
+            "casePersonTypeId": {
+              "description": "...",
+              "type": "string"
+            },
+            "importAddressesTypeId": {
+              "description": "...",
+              "type": "string"
+            },
+            "showTypeId": {
+              "description": "...",
+              "enum": ["true", "false", true, false]
+            },
+            "publicTypeSymbol": {
+              "description": "...",
+              "type": "string"
+            }            
+          },
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "integer" },
+              { "type": "array" }, 
+              { "type": "object" },  
+              { "type": "boolean" }
+            ]
+          }          
+        }
+      },
+      "patternProperties": {
+        "^\\-.*": {}
+      },      
+      "additionalProperties": false
+    },
+    "Action": {
+      "description": "...",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "description": "...",
+          "type": "string"
+        },
+        "label": {
+          "description": "...",
+          "type": "string"
+        },
+        "icon": {
+          "description": "...",
+          "type": "string",
+          "examples": ["fa fa-people-group"]
+        },
+        "parameters": {
+          "description": "...",
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "integer" },
+              { "type": "boolean" }
+            ],
+            "examples": ["aaa", 50, true]
+          }
+        }
+      },
+      "patternProperties": {
+        "^\\-.*": {}
+      },      
+      "additionalProperties": false
+    },
+    "TableProperty": {
+      "description": "...",
+      "type": "object",
+      "anyOf": [
+        { "required": ["name"] },
+        { "required": ["expression"] }
+      ],      
+      "properties": {
+        "name": {
+          "description": "...",
+          "type": "string"
+        },
+        "mode": {
+          "description": "...",
+          "enum": ["column", "row", "both"]
+        },
+        "label": {
+          "description": "...",
+          "type": "string"
+        },
+        "styleClass": {
+          "description": "...",
+          "type": "string"
+        },
+        "expression": {
+          "description": "...",
+          "type": "string"
+        },
+        "escape": {
+          "description": "...",
+          "enum": ["true", "false", true, false]
+        },
+        "icon": {
+          "description": "...",
+          "type": "string"
+        },
+        "typeId": {
+          "description": "...",
+          "type": "string"
+        },
+        "exportable": {
+          "description": "...",
+          "enum": ["true", "false", true, false]
+        },
+        "exportLabel": {
+          "description": "...",
+          "type": "string"
+        }
+      },
+      "patternProperties": {
+        "^\\-.*": {}
+      },      
+      "additionalProperties": false
+    }  
+  }
+}

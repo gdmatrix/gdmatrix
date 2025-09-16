@@ -50,6 +50,7 @@ public class IdeDocument implements Serializable
   String metadata;
   List<AccessControl> accessControl;
   boolean modified;
+  boolean confirmSave;
 
   public static String getReference(String typeName, String name)
   {
@@ -167,4 +168,15 @@ public class IdeDocument implements Serializable
   {
     this.modified = modified;
   }
+
+  public boolean isConfirmSave() 
+  {
+    return confirmSave;
+  }
+
+  public void setConfirmSave(boolean confirmSave) 
+  {
+    this.confirmSave = confirmSave;
+  }
+  
 }
