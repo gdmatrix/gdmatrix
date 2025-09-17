@@ -359,7 +359,7 @@ public class MapStore
     }
 
     document.getAccessControl().clear();
-    document.getAccessControl().addAll(mapDocument.getAccessControl());
+    document.getAccessControl().addAll(mapDocument.getFullAccessControl());
 
     Content content = new Content();
     content.setContentType("application/json");

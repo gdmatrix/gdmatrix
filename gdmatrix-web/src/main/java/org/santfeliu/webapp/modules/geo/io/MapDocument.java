@@ -284,20 +284,22 @@ public class MapDocument implements Serializable
       String roleId = ac.getRoleId();
       String action = ac.getAction();
       fullAcl.add(ac);
+
       if (WRITE_ACTION.equals(action) ||
           DELETE_ACTION.equals(action))
       {
         AccessControl nac = new AccessControl();
         nac.setRoleId(roleId);
         nac.setAction(READ_ACTION);
-        fullAcl.add(ac);
+        fullAcl.add(nac);
       }
-      else if (DELETE_ACTION.equals(action))
+
+      if (DELETE_ACTION.equals(action))
       {
         AccessControl nac = new AccessControl();
         nac.setRoleId(roleId);
         nac.setAction(WRITE_ACTION);
-        fullAcl.add(ac);
+        fullAcl.add(nac);
       }
     }
     return fullAcl;
