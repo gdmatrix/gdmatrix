@@ -464,6 +464,7 @@ public class ContextTreeBean implements Serializable
     String objectId;
     String description;
     String icon;
+    Map<String, Object> properties;
     
     public ObjectData()
     {
@@ -474,6 +475,7 @@ public class ContextTreeBean implements Serializable
     {
       this.typeId = typeId;
       this.objectId = objectId;
+      this.properties = new HashMap();
     }
     
     public String getTypeId()
@@ -534,6 +536,16 @@ public class ContextTreeBean implements Serializable
       }
     }
 
+    public Object getProperty(String name)
+    {
+      return properties.get(name);
+    }
+
+    public void setProperty(String name, Object value)
+    {
+      this.properties.put(name, value);
+    }
+    
     @Override
     public String toString()
     {
