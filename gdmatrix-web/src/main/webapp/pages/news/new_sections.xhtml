@@ -43,6 +43,16 @@
     <p:treeNode type="selectable" icon="#{section.checked ? 'pi pi-check-square' : 'pi pi-stop'}">
       <h:outputText value="#{section}" styleClass="" />
       <i class="mx-1 #{section.sticky ? 'fa fa-thumbtack' : ''}" />
+      <p:inputNumber rendered="#{section.checked}" value="#{section.prio}"                    
+                     onmousedown="event.stopPropagation()"                    
+                     onclick="event.stopPropagation()" 
+                     decimalPlaces="0" thousandSeparator="" size="5" 
+                     alt="#{newsBundle.new_sections_priority}" 
+                     title="#{newsBundle.new_sections_priority}">
+        <f:attribute name="section" value="#{section}" />
+        <p:ajax event="change" listener="#{newSectionsTabBean.onPriorityChange}"
+                process="@this" />
+      </p:inputNumber>
     </p:treeNode>
 
   </p:tree>

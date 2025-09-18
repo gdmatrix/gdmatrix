@@ -34,8 +34,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.news.NewSection;
@@ -121,6 +122,8 @@ public class NewSectionsTabBean extends TabBean
             SectionTreeData std = (SectionTreeData) node.getData();
             std.setNewSectionId(newSection.getNewSectionId());
             std.setSticky(newSection.isSticky());
+            std.setPriority(newSection.getPriority());
+            std.setReadingCount(newSection.getReadingCount());
             std.setChecked(true);
             expandParents(node);
           }
@@ -146,9 +149,14 @@ public class NewSectionsTabBean extends TabBean
 
         if (!std.isChecked())
         {
+          std.setNewSectionId(null);
+          std.setPriority(null);
+          std.setReadingCount(0);
           NewSection ns = NewsModuleBean.getPort(false).storeNewSection(std);
           if (std.getNewSectionId() == null)
             std.setNewSectionId(ns.getNewSectionId());
+          std.setPriority(ns.getPriority());
+          std.setReadingCount(ns.getReadingCount());          
           std.setChecked(true);
           growl("NEW_SECTIONS_PUBLISHED", new Object[]{node});
         }
@@ -160,6 +168,22 @@ public class NewSectionsTabBean extends TabBean
           growl("NEW_SECTIONS_UNPUBLISHED", new Object[]{node});
         }
       }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public void onPriorityChange(AjaxBehaviorEvent event)
+  {
+    try
+    {
+      UIComponent comp = event.getComponent();
+      SectionTreeData std = 
+        (SectionTreeData)comp.getAttributes().get("section");
+      NewsModuleBean.getPort(false).storeNewSection(std);
+      growl("NEW_SECTIONS_UPDATED_PRIO", new Object[]{std.getSectionId()});
     }
     catch (Exception ex)
     {
@@ -343,7 +367,7 @@ public class NewSectionsTabBean extends TabBean
     {
       return ((NewSection) getData()).isSticky();
     }
-
+  
   }
 
   public class SectionTreeData extends NewSection
@@ -365,6 +389,16 @@ public class NewSectionsTabBean extends TabBean
     public void setChecked(boolean checked)
     {
       this.checked = checked;
+    }
+
+    public Double getPrio() 
+    {
+      return (priority == null ? null : (double)priority);
+    }
+
+    public void setPrio(Double prio) 
+    {
+      this.priority = (prio == null ? null : (int)Math.round(prio));
     }
 
     @Override
