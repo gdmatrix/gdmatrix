@@ -67,6 +67,15 @@ class FeatureForm
       if (propName !== featureInfo.geometryColumn)
       {
         let input = div.querySelector("#" + propName);
+        if (!input)
+        {
+          input = div.querySelector("input[name=" + propName + "]");
+        }
+        if (!input)
+        {
+          const fieldName = featureInfo.name + "\\." + propName;
+          input = div.querySelector("input[name=" + fieldName + "]");
+        }        
         if (input)
         {
           this.feature.properties[propName] = input.value;

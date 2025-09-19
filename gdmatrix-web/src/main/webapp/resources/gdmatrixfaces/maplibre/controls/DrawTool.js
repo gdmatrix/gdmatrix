@@ -27,6 +27,7 @@ class DrawTool extends Tool
     this.centerFeatures = options?.centerFeatures || false;
     this.centerZoom = options?.centerZoom || 20;
     this.onAcceptFeature = options?.onAcceptFeature || null;
+    this.pointRadius = 4;
 
     this.operations = options?.operations;
     if (!this.operations)
@@ -105,6 +106,11 @@ class DrawTool extends Tool
 
     this.coordinates = [[]]; // array of Ring : array of [lng, lat]
 
+    this.geoLocationPoint = {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [] }
+    };
+
     this.point = {
       "type": "Feature",
       "geometry": { "type": "Point", "coordinates": [] }
@@ -144,6 +150,11 @@ class DrawTool extends Tool
 
     // sources
 
+    map.addSource("geo_location", {
+      type: 'geojson',
+      data: this.geoLocationPoint
+    });
+
     map.addSource("editing_features", {
       type: 'geojson',
       data: this.editingLayer
@@ -167,6 +178,20 @@ class DrawTool extends Tool
     });
 
     // layers
+
+    map.addLayer({
+      "id": "geo_location",
+      "type": 'circle',
+      "source": "geo_location",
+      "layout": {},
+      "paint":
+      {
+        "circle-opacity": 0,
+        "circle-radius": 16,
+        "circle-stroke-color": "#0000ff",
+        "circle-stroke-width": 2
+      }
+    });
 
     map.addLayer({
       "id": "editing_features_fill",
@@ -228,7 +253,9 @@ class DrawTool extends Tool
            "update", "#0000b0",
            "delete", "#f08000",
            "#008000"],
-        "circle-radius": 4,
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 1,
+        "circle-radius": this.pointRadius,
         "circle-opacity": ["match", ["get", "_ACTION_"],
             "delete",
             0.2,
@@ -330,6 +357,8 @@ class DrawTool extends Tool
 
     map.removeLayer("editing_point");
     map.removeSource("editing_point");
+
+    this.stopWatchPosition();
   }
 
   reactivate()
@@ -727,13 +756,13 @@ class DrawTool extends Tool
       operation.name === "edit" ? "#800000" : "#000000");
 
     map.setLayoutProperty("editing_linestring", "visibility",
-      geometryType === "Point" ? "hidden" : "visible");
+      geometryType === "Point" ? "none" : "visible");
 
     map.setLayoutProperty("editing_points", "visibility",
-      geometryType === "Point" ? "hidden" : "visible");
+      geometryType === "Point" ? "none" : "visible");
 
     map.setLayoutProperty("editing_polygon", "visibility",
-      geometryType === "Polygon" ? "visible" : "hidden");
+      geometryType === "Polygon" ? "visible" : "none");
   }
 
   findFeatureByPoint(point)
@@ -944,23 +973,31 @@ class DrawTool extends Tool
     const geometryType = this.geometryType;
     const point = [lngLat.lng, lngLat.lat];
 
-    if (ring.length === 0)
+    if (geometryType === "Point")
     {
       this.point.geometry.coordinates = point;
       map.getSource("editing_point").setData(this.point);
-    }
 
-    if (geometryType === "Point")
-    {
       if (ring.length === 0) ring.push(point);
+      else ring[0] = point;
     }
     else if (geometryType === "LineString")
     {
+      if (ring.length === 0)
+      {
+        this.point.geometry.coordinates = point;
+        map.getSource("editing_point").setData(this.point);
+      }
       ring.push(point);
       map.getSource("editing_linestring").setData(this.lineString);
     }
     else if (geometryType === "Polygon")
     {
+      if (ring.length === 0)
+      {
+        this.point.geometry.coordinates = point;
+        map.getSource("editing_point").setData(this.point);
+      }      
       if (ring.length > 0) ring.pop();
       ring.push(point);
       ring.push(ring[0]);
@@ -1500,6 +1537,10 @@ class DrawTool extends Tool
           <button class="load_features">${bundle.get("button.load")}</button>
           <button class="save_features">${bundle.get("button.save")}</button>
         </div>
+        <div class="field col-12 flex">
+          <label for="geolocate" class="mb-0">${bundle.get("DrawTool.geolocate")}</label>
+          <input id="geolocate" type="checkbox" class="geolocate" />
+        </div>
         <div class="field col-12">
           <label for="operation">${bundle.get("DrawTool.operation")}:</label>
           <select id="operation" class="w-full">
@@ -1605,6 +1646,18 @@ class DrawTool extends Tool
 
     this.panel.helpDiv = bodyDiv.querySelector(".help_message");
     this.panel.formDiv = bodyDiv.querySelector(".feature_form");
+    
+    this.panel.geoLocateInput = bodyDiv.querySelector(".geolocate");
+     this.panel.geoLocateInput.addEventListener("change", (e) => {
+       if (this.watchId)
+       {
+         this.endWatchPosition();
+       }
+       else
+       {
+         this.startWatchPosition();         
+       }
+     });
 
     this.changeOperation();
   }
@@ -1666,6 +1719,59 @@ class DrawTool extends Tool
         }
       }
     }
+  }
+  
+  startWatchPosition()
+  {
+    if (navigator.geolocation && !this.watchId)
+    {
+      const options = {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000          
+      };
+      this.watchId = navigator.geolocation.watchPosition(
+        pos => this.onLocatePosition(pos),
+        err => this.onLocateError(err),
+        options
+      );
+      console.info("Start location watching...");
+      this.map.setLayoutProperty("geo_location", "visibility", "visible");
+    }    
+  }
+  
+  endWatchPosition()
+  {
+    if (navigator.geolocation && this.watchId)
+    {
+      navigator.geolocation.clearWatch(this.watchId);
+      this.watchId = null;
+      console.info("Stop location watching.");
+      this.map.setLayoutProperty("geo_location", "visibility", "none");
+    }
+  }
+  
+  onLocatePosition(pos)
+  {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    const point = [lng, lat];
+    this.geoLocationPoint.geometry.coordinates = point;
+    this.map.getSource("geo_location").setData(this.geoLocationPoint);    
+    
+    console.info(point);
+    
+    this.map.flyTo({
+     center: point,
+     bearing: 0, 
+     pitch: 0, 
+     speed: 1.2,
+     curve: 1.42});
+  }
+  
+  onLocateError(error)
+  {
+    console.error(error);
   }
 }
 

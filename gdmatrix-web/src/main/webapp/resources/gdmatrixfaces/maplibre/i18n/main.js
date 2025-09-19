@@ -75,6 +75,7 @@ Bundle.getBundle("main").setTranslations("", {
   "DrawTool.addLineString.help": "Make successive clicks to draw the vertices of the line.",
   "DrawTool.addPolygon.help": "Make successive clicks to draw the vertices of the polygon.",
   "DrawTool.delete.help": "Click the feature to delete.",
+  "DrawTool.geolocate": "Geolocate",
   "DrawTool.totalInserted": (num) => num === 1 ? "1 feature inserted." : `${num} features inserted.`,
   "DrawTool.totalUpdated": (num) => num === 1 ? "1 feature updated." : `${num} features updated.`,
   "DrawTool.totalDeleted": (num) => num === 1 ? "1 feature deleted." : `${num} features deleted.`,  
