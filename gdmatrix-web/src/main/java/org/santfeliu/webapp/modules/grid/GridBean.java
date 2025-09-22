@@ -52,6 +52,16 @@ public class GridBean extends WebBean implements Serializable
 
   public String show()
   {
+    String clear = getExternalContext().getRequestParameterMap().get("clear");
+    if ("true".equals(clear))
+    {
+      if (UserSessionBean.getCurrentInstance().isUserInRole("CMS_ADMIN"))
+      {
+        System.out.println("Clear cards");
+        gridCacheBean.clear();
+      }
+    }
+
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
   }

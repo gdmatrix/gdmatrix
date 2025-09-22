@@ -78,6 +78,14 @@ public class GridCacheBean
     }
   }
 
+  public void clear()
+  {
+    synchronized (cards)
+    {
+      cards.clear();
+    }
+  }
+
   private List<Card> loadNewsCards() throws Exception
   {
     List<Card> newCards = new ArrayList<>();
