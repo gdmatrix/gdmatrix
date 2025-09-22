@@ -52,8 +52,10 @@ public class DBConnectionFunction extends BaseFunction
 {
   protected static final Logger logger = Logger.getLogger("DBConnection");
   public static final String CONNECTION_VAR = "_connection_";
+  public static final String MAX_ROWS_VAR = "_maxRows_";
 
   private OpenFunction openFunction = new OpenFunction();
+  private SetMaxRowsFunction setMaxRowsFunction = new SetMaxRowsFunction();
   private ExecuteFunction executeFunction = new ExecuteFunction();
   private CommitFunction commitFunction = new CommitFunction();
   private RollbackFunction rollbackFunction = new RollbackFunction();
@@ -68,6 +70,7 @@ public class DBConnectionFunction extends BaseFunction
     System.out.println("new DBConnection()");
     thisObj.put("open", thisObj, openFunction);
     thisObj.put("execute", thisObj, executeFunction);
+    thisObj.put("setMaxRows", thisObj, setMaxRowsFunction);
     thisObj.put("commit", thisObj, commitFunction);
     thisObj.put("rollback", thisObj, rollbackFunction);
     thisObj.put("close", thisObj, closeFunction);
@@ -97,7 +100,9 @@ public class DBConnectionFunction extends BaseFunction
             conn = ds.getConnection();
           }
           else
-          conn = (Connection)args[0];
+          {
+            conn = (Connection)args[0];
+          }
           conn.setAutoCommit(false);
           thisObj.put(CONNECTION_VAR, thisObj, conn);
           return true;
@@ -109,6 +114,27 @@ public class DBConnectionFunction extends BaseFunction
         }
       }
       return false;
+    }
+  }
+
+  class SetMaxRowsFunction extends BaseFunction
+  {
+    @Override
+    public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+      Object[] args)
+    {
+      if (thisObj == null) return null;
+
+      if (args.length > 0)
+      {
+        if (args[0] instanceof Number)
+        {
+          Number number = (Number)args[0];
+          int maxRows = number.intValue();
+          thisObj.put(MAX_ROWS_VAR, thisObj, maxRows);
+        }
+      }
+      return thisObj;
     }
   }
 
@@ -130,7 +156,13 @@ public class DBConnectionFunction extends BaseFunction
             parameters = (Scriptable)args[1];
           }
           Connection conn = (Connection)thisObj.get(CONNECTION_VAR , scope);
-          result = executeStatement(conn, sql, parameters, cx, scope);
+          Object value = thisObj.get(MAX_ROWS_VAR, thisObj);
+          Integer maxRows = null;
+          if (value instanceof Integer)
+          {
+            maxRows = (Integer)value;
+          }
+          result = executeStatement(conn, sql, parameters, cx, scope, maxRows);
         }
         catch (Exception ex)
         {
@@ -142,11 +174,17 @@ public class DBConnectionFunction extends BaseFunction
     }
 
     private Object executeStatement(Connection conn, String sql,
-       Scriptable parameters, Context cx, Scriptable scope) throws Exception
+       Scriptable parameters, Context cx, Scriptable scope, Integer maxRows)
+      throws Exception
     {
       logger.log(Level.INFO, "Executing {0}", sql);
       Object result = null;
+
       PreparedStatement stmt = conn.prepareStatement(sql);
+      if (maxRows != null)
+      {
+        stmt.setMaxRows(maxRows);
+      }
       if (parameters != null) setParameters(scope, stmt, parameters);
       try
       {
