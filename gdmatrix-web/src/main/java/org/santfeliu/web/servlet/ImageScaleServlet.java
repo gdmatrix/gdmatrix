@@ -247,9 +247,10 @@ public class ImageScaleServlet extends HttpServlet
       log.log(Level.INFO, "Image {0} loaded (Memory usage: {1})",
         new Object[]{reqImage.getIdentifier(), getMemoryUsage()});
 
-      if (reqImage.isHeightPercent() || reqImage.isWidthPercent() ||
+      if (srcImage.getType() != BufferedImage.TYPE_CUSTOM  && 
+        (reqImage.isHeightPercent() || reqImage.isWidthPercent() ||
         needsTransformation(srcImage.getHeight(), srcImage.getWidth(),
-          reqImage.getHeight(), reqImage.getWidth()))
+          reqImage.getHeight(), reqImage.getWidth())))
       {
         //Image transformation
         int dstWidth = reqImage.isWidthPercent() ?
@@ -376,11 +377,11 @@ public class ImageScaleServlet extends HttpServlet
     Image img =
       srcImage.getSubimage(pos.x, pos.y, dstWidth, dstHeight);
 
-    BufferedImage bufferedImage =
-      new BufferedImage(dstWidth, dstHeight, srcImage.getType());
-    bufferedImage.getGraphics().drawImage(img, 0, 0, dstWidth, dstHeight, null);
+      BufferedImage bufferedImage =
+        new BufferedImage(dstWidth, dstHeight, srcImage.getType());
+      bufferedImage.getGraphics().drawImage(img, 0, 0, dstWidth, dstHeight, null);
 
-    return bufferedImage;
+      return bufferedImage;      
   }
 
   private Position getUpperLeftCorner(String crop, int srcWidth, int srcHeight,
@@ -493,7 +494,7 @@ public class ImageScaleServlet extends HttpServlet
       formatName = contentType.substring("image/".length());
     return formatName;
   }
-
+    
   //Cache Methods
   private void saveImage(BufferedImage image, RequestedImage reqImage, String formatName)
     throws IOException
