@@ -36,27 +36,7 @@
                   rendered="#{caseCasesTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
-
-        <!-- Ref Case -->
-        <p:outputPanel styleClass="field col-12" rendered="#{caseCasesTabBean.caseCaseTypeId != null}">
-          <p:outputLabel for="@next"
-                         value="#{caseBundle.caseCases_case}"
-                         styleClass="w-full"
-                         indicateRequired="true" />
-          <emcomp:objectReference value="#{caseCasesTabBean.refCaseId}"
-                                  process="@form:cnt:search_tabs:case_cases_dialog"
-                                  type="#{caseCasesTabBean.refCaseTypeId != null ? caseCasesTabBean.refCaseTypeId : 'Case'}"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3"
-                                  oncomplete="PF('caseCasesDialog').hide();"
-                                  onselect="PF('caseCasesDialog').show();"
-                                  required="#{not empty param['mainform:search_tabs:case_cases_store']}"
-                                  requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}"
-                                  disabled="#{!caseObjectBean.editable}">
-          </emcomp:objectReference>
-        </p:outputPanel>
-
+        
         <!-- Type -->
         <p:outputPanel styleClass="field col-12" rendered="#{!caseCasesTabBean.leafBaseType and caseObjectBean.isRenderProperty('caseCaseTypeId')}">
           <p:outputLabel for="@next"
@@ -76,9 +56,31 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 process="@form:cnt:search_tabs:case_cases_dialog"
-                                update="@form:cnt:search_tabs:case_cases_dynamic_properties"
+                                update="@form:cnt:search_tabs:case_cases_dynamic_properties @form:cnt:search_tabs:case_cases_case"
                                 disabled="#{!caseObjectBean.editable}">
           </emcomp:typeReference>
+        </p:outputPanel>
+        
+        <!-- Ref Case -->
+        <p:outputPanel id="case_cases_case" styleClass="field col-12" >
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseCases_case}"
+                         styleClass="w-full"
+                         indicateRequired="true" 
+                         rendered="#{caseCasesTabBean.caseCaseTypeId != null}"/>
+          <emcomp:objectReference value="#{caseCasesTabBean.refCaseId}"
+                                  process="@form:cnt:search_tabs:case_cases_dialog"
+                                  type="#{caseCasesTabBean.refCaseTypeId != null ? caseCasesTabBean.refCaseTypeId : 'Case'}"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  oncomplete="PF('caseCasesDialog').hide();"
+                                  onselect="PF('caseCasesDialog').show();"
+                                  required="#{not empty param['mainform:search_tabs:case_cases_store']}"
+                                  requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}"
+                                  disabled="#{!caseObjectBean.editable}"
+                                  rendered="#{caseCasesTabBean.caseCaseTypeId != null}">
+          </emcomp:objectReference>
         </p:outputPanel>
 
         <!-- Dates -->
