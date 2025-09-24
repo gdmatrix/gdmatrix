@@ -18,6 +18,7 @@
         <emcomp:typeReference value="#{eventObjectBean.event.eventTypeId}"
                               type="#{eventObjectBean.baseTypeInfo.baseTypeId}"
                               showNavigatorItems="#{eventObjectBean.baseTypeInfo.baseTypeId != 'Event' ? 'false' : 'true'}"
+                              renderFavoritesButton="#{eventObjectBean.baseTypeInfo.baseTypeId == 'Event'}"
                               showNonInstantiableItems="false"
                               styleClass="w-full"
                               scrollHeight="200"

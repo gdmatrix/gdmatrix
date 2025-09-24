@@ -84,6 +84,7 @@
               <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
                                     type="#{eventObjectBean.baseTypeInfo.baseTypeId}"
                                     showNavigatorItems="#{eventObjectBean.baseTypeInfo.baseTypeId != 'Event' ? 'false' : 'true'}"                                    
+                                    renderFavoritesButton="#{eventObjectBean.baseTypeInfo.baseTypeId == 'Event'}"
                                     scrollHeight="200"
                                     queryDelay="1000"
                                     minQueryLength="3"

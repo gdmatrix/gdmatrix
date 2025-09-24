@@ -30,6 +30,7 @@
       <composite:attribute name="showNonInstantiableItems" required="false" default="true" />
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="renderShowButton" required="false" default="true" />
+      <composite:attribute name="renderFavoritesButton" required="false" default="false" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
       <composite:attribute name="formSelector" required="false" />
       <composite:attribute name="oncomplete" required="false" default="true" />
@@ -70,11 +71,11 @@
 
           <c:if test="#{cc.attrs.autoUpdate}">
             <p:ajax event="itemSelect" listener="#{typeReferenceBean.onItemSelect}" 
-                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" 
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update} @(.fav-button)" 
                     oncomplete="#{cc.attrs.onselect}" />  
             
             <p:ajax event="clear" listener="#{typeReferenceBean.onClear}"
-                    process="#{cc.attrs.process}" update="#{cc.attrs.update}"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update} @(.fav-button)"
                     oncomplete="#{cc.attrs.onselect}" />
           </c:if>
 
@@ -82,6 +83,22 @@
             <h:outputText value="#{item.label}" escape="#{item.escape}" />
           </p:column>
         </p:autoComplete>
+        <p:commandButton icon="pi pi-star"
+                         styleClass="select-button fav-button"
+                         style="#{typeReferenceBean.typeSelected and not typeReferenceBean.markedAsFavorite ? '' : 'display:none'}"
+                         action="#{typeReferenceBean.markAsFavorite}"
+                         rendered="#{cc.attrs.renderFavoritesButton}"
+                         process="@this"
+                         update="@(.fav-button)"
+                         title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}" />
+        <p:commandButton icon="pi pi-star-fill"
+                         styleClass="select-button fav-button"
+                         style="#{typeReferenceBean.typeSelected and typeReferenceBean.markedAsFavorite ? '' : 'display:none'}"
+                         action="#{typeReferenceBean.unmarkAsFavorite}"
+                         rendered="#{cc.attrs.renderFavoritesButton}"
+                         process="@this"
+                         update="@(.fav-button)"
+                         title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}" />
         <p:commandButton id="show_button"
                          icon="pi pi-arrow-circle-right"
                          styleClass="select-button"

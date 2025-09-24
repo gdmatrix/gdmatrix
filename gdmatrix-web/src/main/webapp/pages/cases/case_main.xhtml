@@ -22,6 +22,7 @@
       <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
                             type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                             showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"
+                            renderFavoritesButton="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}"
                             showNonInstantiableItems="false"
                             scrollHeight="200"
                             queryDelay="1000"

@@ -168,6 +168,7 @@
               <p:outputLabel for="@next" value="#{documentBundle.outputType}" />
               <emcomp:typeReference value="#{documentFinderBean.filter.docTypeId}"
                                     type="Document"
+                                    renderFavoritesButton="#{documentObjectBean.baseTypeInfo.baseTypeId == 'Document'}"
                                     scrollHeight="200"
                                     queryDelay="1000"
                                     minQueryLength="3"

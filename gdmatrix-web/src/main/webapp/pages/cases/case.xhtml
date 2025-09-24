@@ -97,6 +97,7 @@
               <emcomp:typeReference value="#{caseFinderBean.filter.caseTypeId}"
                                     type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                                     showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"                                    
+                                    renderFavoritesButton="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}"
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"

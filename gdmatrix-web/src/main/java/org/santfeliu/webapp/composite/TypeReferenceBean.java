@@ -46,6 +46,8 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 import org.primefaces.event.SelectEvent;
+import org.santfeliu.web.UserPreferences;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
@@ -125,6 +127,40 @@ public class TypeReferenceBean extends ObjectReferenceBean
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
     return navigatorBean.execute(new SelectTypeLeap(getTypeId()), true,
       getValueExpression().getExpressionString(), getOnSelect());
+  }
+  
+  public boolean isTypeSelected()
+  {
+    String typeId = WebUtils.getValue("#{cc.attrs.value}");
+    return (typeId != null);
+  }
+  
+  public boolean isMarkedAsFavorite()
+  {
+    String typeId = WebUtils.getValue("#{cc.attrs.value}");
+    if (typeId == null) return false;
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    NavigatorBean.BaseTypeInfo baseTypeInfo =
+      navigatorBean.getBaseTypeInfo(TYPE_TYPE);
+    return baseTypeInfo.getFavoriteObjectIdList().contains(typeId);
+  }
+
+  public void markAsFavorite()
+  {
+    String typeId = WebUtils.getValue("#{cc.attrs.value}");
+    if (typeId == null) return;
+    UserPreferences userPreferences =
+      UserSessionBean.getCurrentInstance().getUserPreferences();
+    userPreferences.storePreference("Type", typeId);
+  }
+
+  public void unmarkAsFavorite()
+  {
+    String typeId = WebUtils.getValue("#{cc.attrs.value}");
+    if (typeId == null) return;
+    UserPreferences userPreferences =
+      UserSessionBean.getCurrentInstance().getUserPreferences();
+    userPreferences.removePreference("Type", typeId);
   }
     
   @Override
