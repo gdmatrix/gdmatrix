@@ -27,7 +27,7 @@ class DrawTool extends Tool
     this.centerFeatures = options?.centerFeatures || false;
     this.centerZoom = options?.centerZoom || 20;
     this.onAcceptFeature = options?.onAcceptFeature || null;
-    this.pointRadius = 4;
+    this.pointRadius = options?.pointRadius || 4;
 
     this.operations = options?.operations;
     if (!this.operations)
@@ -75,6 +75,8 @@ class DrawTool extends Tool
         }
       ];      
     }
+    this.centerPosition = false;
+    this.rafId = null;
     this.operationIndex = 0; // index to operations array
     this.layerName = options?.layerName || null;
     this.cqlFilter = null;
@@ -180,16 +182,27 @@ class DrawTool extends Tool
     // layers
 
     map.addLayer({
-      "id": "geo_location",
+      "id": "geo_location_center",
       "type": 'circle',
       "source": "geo_location",
       "layout": {},
-      "paint":
-      {
-        "circle-opacity": 0,
-        "circle-radius": 16,
-        "circle-stroke-color": "#0000ff",
-        "circle-stroke-width": 2
+      "paint": {
+        'circle-radius': 6,
+        'circle-color': '#0000ff',
+        'circle-opacity': 1
+      }              
+    });
+
+    map.addLayer({
+      "id": "geo_location_pulse",
+      "type": 'circle',
+      "source": "geo_location",
+      "layout": {},
+      "paint": {
+        'circle-radius': 6,
+        'circle-color': '#0000ff',
+        'circle-opacity': 0.0,
+        'circle-stroke-width': 0
       }
     });
 
@@ -327,6 +340,8 @@ class DrawTool extends Tool
     {
       this.loadSelectedLayer();
     }
+    this.map.setLayoutProperty("geo_location_center", "visibility", "none");
+    this.map.setLayoutProperty("geo_location_pulse", "visibility", "none");
   }
 
   deactivate()
@@ -343,6 +358,10 @@ class DrawTool extends Tool
     map.getCanvas().style.cursor = "grab";
     this.panel.hide();
 
+    map.removeLayer("geo_location_center");
+    map.removeLayer("geo_location_pulse");
+    map.removeSource("geo_location");
+
     map.removeLayer("editing_features_fill");
     map.removeLayer("editing_features_line");
     map.removeLayer("editing_features_circle");
@@ -358,7 +377,7 @@ class DrawTool extends Tool
     map.removeLayer("editing_point");
     map.removeSource("editing_point");
 
-    this.stopWatchPosition();
+    this.endWatchPosition();
   }
 
   reactivate()
@@ -1725,6 +1744,8 @@ class DrawTool extends Tool
   {
     if (navigator.geolocation && !this.watchId)
     {
+      const map = this.map;
+      
       const options = {
         enableHighAccuracy: true,
         maximumAge: 0,
@@ -1736,8 +1757,37 @@ class DrawTool extends Tool
         options
       );
       console.info("Start location watching...");
-      this.map.setLayoutProperty("geo_location", "visibility", "visible");
-    }    
+      this.map.setLayoutProperty("geo_location_center", "visibility", "visible");
+      this.map.setLayoutProperty("geo_location_pulse", "visibility", "visible");
+      this.centerPosition = true;
+      
+      let start = null;
+      const animate = (timestamp) =>
+      {
+        const container = this.map.getContainer();
+        if (!document.body.contains(container))
+        {
+          this.endWatchPosition();
+          return;
+        }          
+        if (!start) start = timestamp;
+        const elapsed = (timestamp - start) / 1000; // seconds
+
+        const freq = 1.0;
+        const scale = (Math.sin(elapsed * Math.PI * 2 * freq) + 1) / 2;
+
+        const innerRadius = 6;
+        const maxExtra = 24;
+        const ringRadius = innerRadius + scale * maxExtra;
+        const ringOpacity = (1 - scale) * 0.7;      // 0..0.7
+
+        map.setPaintProperty('geo_location_pulse', 'circle-radius', ringRadius);
+        map.setPaintProperty('geo_location_pulse', 'circle-opacity', ringOpacity);
+
+        this.rafId = requestAnimationFrame(animate);
+      };
+      this.rafId = requestAnimationFrame(animate);
+    }
   }
   
   endWatchPosition()
@@ -1747,7 +1797,14 @@ class DrawTool extends Tool
       navigator.geolocation.clearWatch(this.watchId);
       this.watchId = null;
       console.info("Stop location watching.");
-      this.map.setLayoutProperty("geo_location", "visibility", "none");
+      this.map.setLayoutProperty("geo_location_center", "visibility", "none");
+      this.map.setLayoutProperty("geo_location_pulse", "visibility", "none");
+      if (this.rafId)
+      {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+        this.panel.geoLocateInput.checked = false;
+      }
     }
   }
   
@@ -1760,13 +1817,17 @@ class DrawTool extends Tool
     this.map.getSource("geo_location").setData(this.geoLocationPoint);    
     
     console.info(point);
-    
-    this.map.flyTo({
-     center: point,
-     bearing: 0, 
-     pitch: 0, 
-     speed: 1.2,
-     curve: 1.42});
+
+    if (this.centerPosition)
+    {
+      this.map.flyTo({
+        center: point,
+        bearing: 0, 
+        pitch: 0, 
+        speed: 1.2,
+        curve: 1.42});
+      this.centerPosition = false;
+    }
   }
   
   onLocateError(error)
