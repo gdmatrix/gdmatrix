@@ -758,6 +758,12 @@ public class NodeEditBean extends FacesBean implements Serializable
     selectMenuItem(nodeId);    
   }
 
+  public boolean isDragDropEnabled()
+  {
+    return "desktop".equals(
+      UserSessionBean.getCurrentInstance().getBrowserType());
+  }
+  
   public boolean checkDrop(TreeDragDropInfo info)
   {
     return true;
@@ -794,14 +800,12 @@ public class NodeEditBean extends FacesBean implements Serializable
           }
         }
         Node node = cloneCNode(draggedCNode, true);
-        String message = "Dragged " + draggedNodeId + " - " + "Dropped on " + 
-          parentNodeId + " - index " + dropIndex;
         node.setParentNodeId(parentNodeId);
         node.setIndex(nodeIndex);
         CMSConfigBean.getPort().storeNode(node);
         updateCache();            
         resetTree();
-        info(message);
+        info("NODE_MOVED");
       }
     }
     catch (Exception ex)

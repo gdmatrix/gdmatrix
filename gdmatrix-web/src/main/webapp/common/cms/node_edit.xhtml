@@ -40,25 +40,27 @@
                 <f:selectItems value="#{nodeEditBean.rootNodeList}" var="root" 
                                itemLabel="#{root.nodeId}: #{nodeEditBean.getNodeLabel(root)}" 
                                itemValue="#{root.nodeId}"/>
-              </p:selectOneMenu>            
-              <p:commandLink actionListener="#{nodeEditBean.createRootNode}" styleClass="imageButton"
-                             ajax="true" update="@this topPanel leftPanel :mainform:rightPanel messagesPanel">
-                <h:graphicImage url="/common/cms/images/add.png" title="#{cmsBundle.createRoot}"
-                                alt="#{cmsBundle.createRoot}" />
-              </p:commandLink>
-              <p:commandLink id="pasteAsRootNodeButton"
-                             actionListener="#{nodeEditBean.pasteAsRootNode}" styleClass="imageButton"
-                             rendered="#{nodeEditBean.pasteAsRootNodeEnabled}"
-                             update="@this topPanel leftPanel :mainform:rightPanel messagesPanel" ajax="true">
-                <h:graphicImage alt="#{cmsBundle.pasteAsRootNode}" url="/common/cms/images/asroot.png" title="#{cmsBundle.pasteAsRootNode}" />
-              </p:commandLink>              
+              </p:selectOneMenu>
+              <div class="ui-inputgroup">
+                <p:commandButton title="#{cmsBundle.createRoot}"
+                                 action="#{nodeEditBean.createRootNode}" styleClass="mini"
+                                 update="@this topPanel leftPanel :mainform:rightPanel messagesPanel" 
+                                 icon="pi pi-plus" />
+                <p:commandButton title="#{cmsBundle.pasteAsRootNode}"
+                               action="#{nodeEditBean.pasteAsRootNode}" styleClass="mini"
+                               rendered="#{nodeEditBean.pasteAsRootNodeEnabled}"
+                               update="@this topPanel leftPanel :mainform:rightPanel messagesPanel"
+                               icon="pi pi-sitemap" />
+              </div>
             </p:outputPanel>
             
             <div class="treePanel">
               <p:tree id="tree"
                       styleClass="tree" value="#{nodeEditBean.treeRoot}" var="node" dynamic="true" cache="false"
-                      selectionMode="single" selection="#{nodeEditBean.selectedNode}"
-                      draggable="true" droppable="true" onDrop="#{nodeEditBean.checkDrop}" 
+                      selectionMode="single" selection="#{nodeEditBean.selectedNode}"                       
+                      draggable="#{nodeEditBean.dragDropEnabled}" 
+                      droppable="#{nodeEditBean.dragDropEnabled}" 
+                      onDrop="#{nodeEditBean.checkDrop}" 
                       widgetVar="cmsTree">
                 <p:ajax event="expand" listener="#{nodeEditBean.onNodeExpand}" global="false" /> 
                 <p:ajax event="collapse" listener="#{nodeEditBean.onNodeCollapse}" global="false" />
@@ -71,8 +73,9 @@
                 <p:ajax event="dragdrop" 
                         update="@this :mainform:messagesPanel"
                         listener="#{nodeEditBean.onDragDrop}" global="false"
-                        onstart="return handleDragStart();" />                
-                <p:treeNode type="Node">
+                        onstart="return handleDragStart();" 
+                        rendered="#{nodeEditBean.dragDropEnabled}" />                
+                <p:treeNode type="Node">                  
                   <div class="menuItem">
                     <div class="#{node.boxStyleClass}">
                       <h:outputText value="#{node.boxText}" />
@@ -141,23 +144,22 @@
               </p:contextMenu>              
             </div>
                  
-            <div class="fastSearchPanel">              
-              <p:outputLabel value="#{cmsBundle.search}:" styleClass="fsLabel" />
-              <p:remoteCommand id="fastSearchCommand"
-                               name="fastSearch" actionListener="#{nodeEditBean.fastSearch}" 
-                               update="@this leftPanel :mainform:rightPanel"
-                               oncomplete="treeScrollToFound()"/>
-              <p:inputText value="#{nodeEditBean.inputSearch}" styleClass="fsInput" 
-                           onkeypress="if (event.keyCode == 13) { fastSearch(); return false; }">
-              </p:inputText>
-              <div class="collapseAllPanel">
-                <p:commandButton id="collapseAllButton"
-                                 actionListener="#{nodeEditBean.collapseAllNodes}" 
-                                 ajax="true" global="false"
-                                 update="@this :mainform:tree"
-                                 styleClass="collapseAllLink"
-                                 value="#{cmsBundle.collapseAll}" />
+            <div class="bottomPanel">
+              <div class="fastSearchPanel">              
+                <p:outputLabel value="#{cmsBundle.search}:" styleClass="fsLabel" />
+                <p:remoteCommand id="fastSearchCommand"
+                                 name="fastSearch" actionListener="#{nodeEditBean.fastSearch}" 
+                                 update="@this leftPanel :mainform:rightPanel"
+                                 oncomplete="treeScrollToFound()"/>
+                <p:inputText value="#{nodeEditBean.inputSearch}" styleClass="fsInput" 
+                             onkeypress="if (event.keyCode == 13) { fastSearch(); return false; }" />
               </div>
+              <p:commandButton id="collapseAllButton"
+                               actionListener="#{nodeEditBean.collapseAllNodes}" 
+                               global="false"
+                               update="@this :mainform:tree"
+                               styleClass="collapseAllButton"
+                               value="#{cmsBundle.collapseAll}" />
             </div>
             
           </p:outputPanel>
@@ -222,7 +224,7 @@
             return false;
           }
         }        
-        
+       
         function getTreePanel()
         {
           return $('.treePanel').first();

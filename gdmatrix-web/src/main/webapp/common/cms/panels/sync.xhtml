@@ -23,8 +23,9 @@
                        value="#{cmsBundle.sync}"  
                        actionListener="#{nodeEditBean.syncNode}"
                        styleClass="imageButton"
-                       ajax="true" update="@this :mainform:tree :mainform:rightPanel :mainform:messagesPanel"
-                       rendered="#{not nodeEditBean.nodeChangeItemListEmpty}" />
+                       update="@this :mainform:tree :mainform:rightPanel :mainform:messagesPanel"
+                       rendered="#{not nodeEditBean.nodeChangeItemListEmpty}" 
+                       icon="pi pi-sync" />
     </p:outputPanel>
     <p:outputPanel rendered="#{nodeEditBean.syncNodeEnabled and nodeEditBean.nodeChangeItemListEmpty}">
       <h:outputText value="#{cmsBundle.noNodesToSync}" styleClass="noNodesLabel" />      

@@ -9,25 +9,25 @@
     <p:outputPanel rendered="#{not nodeEditBean.validCSS}">
       <h:outputText value="#{cmsBundle.invalidCSS}" />
     </p:outputPanel>
-    <p:outputPanel id="cssToolsPanel" styleClass="buttonsPanel" 
-           rendered="#{nodeEditBean.validCSS}">
-      <p:commandLink actionListener="#{nodeEditBean.saveCSS}" styleClass="imageButton"
-                     rendered="#{nodeEditBean.appendNodeEnabled}"
-                     update="@this :mainform:tree cssToolsPanel :mainform:messagesPanel" ajax="true">
-        <h:graphicImage alt="#{cmsBundle.saveCSS}" url="/common/cms/images/save.png" title="#{cmsBundle.saveCSS}" />
-      </p:commandLink>
-      <p:commandLink actionListener="#{nodeEditBean.revertCSS}" styleClass="imageButton"
-                     rendered="#{nodeEditBean.appendNodeEnabled and nodeEditBean.customCSS}"
-                     update="@this cssTextPanel :mainform:messagesPanel" ajax="true" global="false">
-        <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
-      </p:commandLink>
-      <p:commandLink actionListener="#{nodeEditBean.syncCSS}" styleClass="imageButton"
-                     rendered="#{nodeEditBean.syncCssButtonRender}"
-                     update="@this :mainform:messagesPanel" ajax="true">
-        <h:graphicImage alt="#{cmsBundle.sync}" url="/common/cms/images/sync_css.png" title="#{cmsBundle.sync}" />
-      </p:commandLink>
+    <div class="flex">
+      <p:outputPanel id="cssToolsPanel" styleClass="buttonsPanel ui-inputgroup" 
+                     rendered="#{nodeEditBean.validCSS}">      
+        <p:commandButton value="#{cmsBundle.saveCSS}" action="#{nodeEditBean.saveCSS}" 
+                         icon="pi pi-save" title="#{cmsBundle.saveCSS}" styleClass="mini"
+                         update="@this :mainform:tree cssToolsPanel :mainform:messagesPanel"
+                         rendered="#{nodeEditBean.appendNodeEnabled}" />      
+        <p:commandButton value="#{cmsBundle.revert}" action="#{nodeEditBean.revertCSS}" 
+                         icon="pi pi-undo" title="#{cmsBundle.revert}" styleClass="mini"
+                         process="@this" update="@this cssTextPanel :mainform:messagesPanel"
+                         global="false"
+                         rendered="#{nodeEditBean.appendNodeEnabled and nodeEditBean.customCSS}" />
+        <p:commandButton value="#{cmsBundle.sync}" action="#{nodeEditBean.syncCSS}"
+                         icon="pi pi-sync" title="#{cmsBundle.sync}" styleClass="mini"
+                         update="@this :mainform:messagesPanel"
+                         rendered="#{nodeEditBean.syncCssButtonRender}" />
+      </p:outputPanel>
       <h:outputLabel styleClass="noCSSLabel" rendered="#{not nodeEditBean.customCSS}" value="#{cmsBundle.noCustomCSS}" />
-    </p:outputPanel>
+    </div>
     <p:outputPanel id="cssTextPanel" styleClass="cssTextPanel expand"
            rendered="#{nodeEditBean.validCSS}">
       <gdm:codemirror language="css" 

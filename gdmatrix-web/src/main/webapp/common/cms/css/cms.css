@@ -118,7 +118,7 @@ a.imageButton img:hover
   .page .cmsEditPanel
   {
     flex-wrap: wrap;
-  }
+  }  
 }
 
 .page .cmsEditPanel
@@ -148,34 +148,46 @@ a.imageButton img:hover
   margin-top: 4px;
 }
 
-.leftPanel .fastSearchPanel
+.leftPanel .bottomPanel
 {
   display: flex;
   flex-direction: row;
-  align-items: center;  
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.fastSearchPanel > *
+.leftPanel .bottomPanel > *
 {
   flex-grow: 0;
 }
 
-.fastSearchPanel .fsLabel
+.leftPanel .bottomPanel .fastSearchPanel
 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;  
+}
+
+.bottomPanel .fastSearchPanel > *
+{
+  flex-grow: 0;
+}
+
+.bottomPanel .fastSearchPanel .fsLabel
+{
+  margin-top: 4px;
   margin-right: 4px;
 }
 
-.fastSearchPanel .collapseAllPanel
+.bottomPanel .fastSearchPanel .fsInput
 {
-  flex-grow: 1;
-  text-align: right;
-  margin-left: 8px;
+  margin-top: 4px;
+  margin-right: 8px;
 }
 
-.fastSearchPanel .collapseAllPanel a
+.bottomPanel .collapseAllButton
 {
-  text-decoration: none;
+  margin-top: 4px;
 }
 
 .leftPanel .rootSelectionPanel
@@ -386,38 +398,29 @@ a.imageButton img:hover
 .rightPanel .propertyTable TR.property TD.col1
 {
   width:30%;
-  padding-right: 8px;
+  padding-right: 4px;
 }
 
 .rightPanel .propertyTable TR.property TD.col2
 {
-  max-width:99%;
+  padding-right: 4px;
 }
 
 .rightPanel .propertyTable TR.property TD.col3
 {
   width:25px;
-  padding-left:0;
-  padding-right:0;
 }
 
-.rightPanel .propertyTable TR.property TD.col4
+.rightPanel .propertyTable TR.property TD.col3 > div
 {
-  width:25px;
-  padding-left:0;
-  padding-right:0;  
-}
-
-.rightPanel .propertyTable TR.property TD.col3 img,
-.rightPanel .propertyTable TR.property TD.col4 img
-{
-  margin-top:5px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .rightPanel input.propertyName,
 .rightPanel input.propertyValue
 {
-  width:98%;
+  width:100%;
 }
 
 .rightPanel .flexRowPanel
@@ -426,7 +429,8 @@ a.imageButton img:hover
   flex-direction: row;
   align-items: center;  
   justify-content: flex-start;
-  flex-wrap: wrap;  
+  flex-wrap: wrap; 
+  gap: 8px;
 }
 
 .rightPanel .flexRowPanel.wide
@@ -435,6 +439,39 @@ a.imageButton img:hover
 }
 
 /* properties.xhtml styles */
+
+.nodePropertiesPanel
+{
+  container-type: inline-size; 
+  container-name: nodePropertiesPanel;
+}
+
+@container nodePropertiesPanel (max-width: 900px)
+{
+  .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini,
+  .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini
+  {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
+  .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-button-text,
+  .nodePropertiesPanel .buttonsPanel .ui-splitbutton.mini > .ui-button > .ui-button-text
+  {
+    visibility: hidden;
+    width: 0;
+    padding-right: 0;
+    white-space:nowrap;
+    overflow: hidden;
+  }
+
+  .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-icon,
+  .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-icon
+  {
+    left: 8px;
+  }
+}
 
 .nodePropertiesPanel .nodeNamePanel .label 
 {
@@ -507,10 +544,9 @@ a.imageButton img:hover
   margin-top: 1px;
 }
 
-.nodePropertiesPanel a.showHelpImageButton
+.nodePropertiesPanel .showHelpImageButton
 {
-  border: 0;
-  margin: 1px;
+  opacity: 0.7;
 }
 
 .nodePropertiesPanel a.showHelpImageButton img
@@ -526,7 +562,7 @@ a.imageButton img:hover
   left: 160px !important;  
 }
 
-.nodePropertiesPanel .buttonsPanel .ui-dialog .helpCaptionTable
+.nodePropertiesPanel .helpCaptionTable
 {
   width: 200px; 
 }
@@ -554,6 +590,39 @@ a.imageButton img:hover
 
 /* css.xhtml styles */
 
+.nodeCSSPanel
+{
+  container-type: inline-size; 
+  container-name: nodeCSSPanel;
+}
+
+@container nodeCSSPanel (max-width: 300px)
+{
+  .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini,
+  .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini
+  {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
+  .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-button-text,
+  .nodeCSSPanel .buttonsPanel .ui-splitbutton.mini > .ui-button > .ui-button-text
+  {
+    visibility: hidden;
+    width: 0;
+    padding-right: 0;
+    white-space:nowrap;
+    overflow: hidden;
+  }
+
+  .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-icon,
+  .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-icon
+  {
+    left: 8px;
+  }
+}
+
 .nodeCSSPanel .noCSSLabel
 {
   line-height:23px;
@@ -570,6 +639,39 @@ a.imageButton img:hover
 }
 
 /* json.xhtml styles */
+
+.nodeJsonPanel
+{
+  container-type: inline-size; 
+  container-name: nodeJsonPanel;
+}
+
+@container nodeJsonPanel (max-width: 300px)
+{
+  .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini,
+  .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini
+  {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
+  .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-button-text,
+  .nodeJsonPanel .buttonsPanel .ui-splitbutton.mini > .ui-button > .ui-button-text
+  {
+    visibility: hidden;
+    width: 0;
+    padding-right: 0;
+    white-space:nowrap;
+    overflow: hidden;
+  }
+
+  .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-icon,
+  .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-icon
+  {
+    left: 8px;
+  }
+}
 
 .nodeJsonPanel .CodeMirror
 {
@@ -668,6 +770,35 @@ a.imageButton img:hover
 .nodeSearchPanel
 {
   overflow: auto;
+  container-type: inline-size; 
+  container-name: nodeSearchPanel;
+}
+
+@container nodeSearchPanel (max-width: 400px)
+{
+  .nodeSearchPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini,
+  .nodeSearchPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini
+  {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .nodeSearchPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
+  .nodeSearchPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-button-text,
+  .nodeSearchPanel .buttonsPanel .ui-splitbutton.mini > .ui-button > .ui-button-text
+  {
+    visibility: hidden;
+    width: 0;
+    padding-right: 0;
+    white-space:nowrap;
+    overflow: hidden;
+  }
+
+  .nodeSearchPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini > .ui-icon,
+  .nodeSearchPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini > .ui-icon
+  {
+    left: 8px;
+  }
 }
 
 .nodeSearchPanel .searchPropertiesPanel .propertyTable
@@ -710,7 +841,14 @@ a.imageButton img:hover
 {
   margin-top: 10px;
   table-layout: auto;
-  width: auto;  
+  width: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.nodeSearchPanel .searchPropertiesPanel .searchModeSelect > div
+{
+  margin-bottom: 4px;
 }
 
 .nodeSearchPanel .nodeSearchTitlePanel
@@ -847,6 +985,16 @@ a.imageButton img:hover
 body .ui-inputfield
 {
   padding: 0.3rem;
+}
+
+body .ui-button.ui-button-icon-only
+{
+  width: 25px;
+}
+
+body .ui-button.ui-button-icon-only .ui-button-text
+{
+  padding: 0.3rem;  
 }
 
 body .ui-selectonemenu .ui-selectonemenu-label

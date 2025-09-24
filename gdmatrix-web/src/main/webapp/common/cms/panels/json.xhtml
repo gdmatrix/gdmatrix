@@ -7,17 +7,16 @@
   <p:outputPanel styleClass="nodeJsonPanel contentPanel"
          rendered="#{nodeEditBean.jsonTabSelected}">
 
-    <p:outputPanel id="jsonToolsPanel" styleClass="buttonsPanel">
-      <p:commandLink actionListener="#{nodeEditBean.savePropertiesFromJSON()}" styleClass="imageButton"
-                     rendered="#{nodeEditBean.appendNodeEnabled}"
-                     update="@this :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel :mainform:rightPanel :mainform:messagesPanel" ajax="true">
-        <h:graphicImage alt="#{cmsBundle.saveJSON}" url="/common/cms/images/save.png" title="#{cmsBundle.saveJSON}" />
-      </p:commandLink>
-      <p:commandLink actionListener="#{nodeEditBean.revertJSON}" styleClass="imageButton"
-                     rendered="#{nodeEditBean.appendNodeEnabled}"
-                     update="@this jsonTextPanel :mainform:messagesPanel" ajax="true" global="false">
-        <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
-      </p:commandLink>
+    <p:outputPanel id="jsonToolsPanel" styleClass="buttonsPanel ui-inputgroup">
+      <p:commandButton value="#{cmsBundle.saveJSON}" action="#{nodeEditBean.savePropertiesFromJSON}" 
+                       icon="pi pi-save" title="#{cmsBundle.saveJSON}" styleClass="mini"
+                       update="@this :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel :mainform:rightPanel :mainform:messagesPanel" 
+                       rendered="#{nodeEditBean.appendNodeEnabled}" />
+      <p:commandButton value="#{cmsBundle.revert}" action="#{nodeEditBean.revertJSON}" 
+                       icon="pi pi-undo" title="#{cmsBundle.revert}" styleClass="mini"                     
+                       process="@this" update="@this jsonTextPanel :mainform:messagesPanel"
+                       global="false"
+                       rendered="#{nodeEditBean.appendNodeEnabled}" />
     </p:outputPanel>
     <p:outputPanel id="jsonTextPanel" styleClass="jsonTextPanel expand">
       <gdm:codemirror language="json"

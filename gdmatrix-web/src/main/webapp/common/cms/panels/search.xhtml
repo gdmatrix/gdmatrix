@@ -7,13 +7,13 @@
   <p:outputPanel styleClass="nodeSearchPanel contentPanel" 
                  rendered="#{nodeEditBean.searchTabSelected}">
 
-    <div class="buttonsPanel">
-      <p:commandLink ajax="true" global="false" update="@this searchPropertiesPanel" actionListener="#{nodeEditBean.addSearchProperty}" styleClass="imageButton">
-        <h:graphicImage alt="#{cmsBundle.addSearchProperty}" url="/common/cms/images/add.png" title="#{cmsBundle.addSearchProperty}" />
-      </p:commandLink>
-      <p:commandLink ajax="true" global="false" update="@this :mainform:tree :mainform:rightPanel" actionListener="#{nodeEditBean.resetSearch}" styleClass="imageButton">
-        <h:graphicImage alt="#{cmsBundle.resetSearch}" url="/common/cms/images/revert.png" title="#{cmsBundle.resetSearch}" />
-      </p:commandLink>
+    <div class="buttonsPanel ui-inputgroup">
+      <p:commandButton value="#{cmsBundle.addSearchProperty}" action="#{nodeEditBean.addSearchProperty}"
+                       icon="pi pi-plus" title="#{cmsBundle.addSearchProperty}" styleClass="mini"
+                       update="@this searchPropertiesPanel" global="false" />
+      <p:commandButton value="#{cmsBundle.resetSearch}" action="#{nodeEditBean.resetSearch}"
+                       icon="pi pi-undo" title="#{cmsBundle.resetSearch}" styleClass="mini"
+                       update="@this :mainform:tree :mainform:rightPanel" global="false" />
     </div>
 
     <p:outputPanel id="searchPropertiesPanel" styleClass="searchPropertiesPanel">
@@ -52,24 +52,28 @@
               <h:outputText value="#{cmsBundle.orUpper}"/>
             </p:outputPanel>
           </p:dataList>
-        </p:column>
+        </p:column>        
         <p:column styleClass="col3">          
-          <p:commandLink ajax="true" global="false" update="@this @(.searchPropertiesPanel)" actionListener="#{nodeEditBean.addPropertyValue}" styleClass="imageButton">
-            <h:graphicImage alt="#{cmsBundle.addPropertyValue}" url="/common/cms/images/add_mini.png" title="#{cmsBundle.addPropertyValue}" />
-          </p:commandLink>
-        </p:column>
-        <p:column styleClass="col4">          
-          <p:commandLink ajax="true" global="false" update="@this @(.searchPropertiesPanel)" actionListener="#{nodeEditBean.removeSearchProperty}" styleClass="imageButton">
-            <h:graphicImage alt="#{cmsBundle.removeProperty}" url="/common/cms/images/close_mini.png" title="#{cmsBundle.removeProperty}" />
-          </p:commandLink>
+          <div class="flex">
+            <p:commandButton title="#{cmsBundle.addPropertyValue}"
+                             actionListener="#{nodeEditBean.addPropertyValue}" 
+                             update="@this @(.searchPropertiesPanel)"
+                             global="false"                             
+                             icon="pi pi-plus" styleClass="ui-button-flat" />
+            <p:commandButton title="#{cmsBundle.removeProperty}"
+                             actionListener="#{nodeEditBean.removeSearchProperty}"  
+                             update="@this @(.searchPropertiesPanel)"
+                             global="false"
+                             icon="pi pi-times" styleClass="ui-button-flat" />
+          </div>
         </p:column>
         <f:facet name="footer">
           <p:commandButton id="nodeSearchButton2" 
-                           value="#{cmsBundle.search}" 
+                           value="#{cmsBundle.search}" title="#{cmsBundle.search}" 
                            actionListener="#{nodeEditBean.fullSearch}" 
-                           ajax="true"
                            update="@this :mainform:tree :mainform:rightPanel"
-                           oncomplete="treeScrollToFound()" /> 
+                           oncomplete="treeScrollToFound()" 
+                           icon="pi pi-search" /> 
           <p:selectOneRadio value="#{nodeEditBean.searchMode}" styleClass="searchModeSelect">
             <p:ajax event="change" update="@this" global="false" />            
             <f:selectItem itemLabel="#{cmsBundle.inAllWorkspace}" itemValue="workspace" />            
@@ -104,7 +108,7 @@
         <p:ajax event="page" global="false" />
         <p:column styleClass="nodeId" headerText="#{cmsBundle.node}">
           <p:commandLink actionListener="#{nodeEditBean.selectSearchMenuItem(nodeSearchItem.nodeId)}" 
-                         ajax="true" global="false"
+                         global="false"
                          update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:leftPanel :mainform:rightPanel"
                          oncomplete="treeScrollToSelected()">
             <h:outputText value="#{nodeSearchItem.nodeId}" />

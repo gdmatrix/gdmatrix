@@ -8,50 +8,48 @@
          rendered="#{nodeEditBean.propertiesTabSelected}">
     <div class="flexRowPanel wide">
 
-      <div class="buttonsPanel">
-        <p:commandLink actionListener="#{nodeEditBean.addProperty}" styleClass="imageButton"
-                       rendered="#{nodeEditBean.addPropertyEnabled}"
-                       update="@this userPropertyListPanel" ajax="true" global="false">
-          <h:graphicImage alt="#{cmsBundle.addProperty}" url="/common/cms/images/add.png" title="#{cmsBundle.addProperty}" />
-        </p:commandLink>
-        <p:commandLink actionListener="#{nodeEditBean.saveProperties}" styleClass="imageButton"
-                       rendered="#{nodeEditBean.savePropertiesEnabled}" 
-                       update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel userPropertyListPanel :mainform:messagesPanel" ajax="true">
-          <h:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
-        </p:commandLink>
-        <p:commandLink actionListener="#{nodeEditBean.revertProperties}" styleClass="imageButton"
-                       rendered="#{nodeEditBean.addPropertyEnabled}"
-                       update="@this userPropertyListPanel :mainform:messagesPanel" ajax="true" global="false">
-          <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
-        </p:commandLink>
-        <p:commandLink actionListener="#{nodeEditBean.completeProperties}" styleClass="imageButton"
-                       rendered="#{nodeEditBean.completePropertiesEnabled}"
-                       update="@this userPropertyListPanel" ajax="true" global="false">
-          <h:graphicImage alt="#{cmsBundle.completeProperties}" url="/common/cms/images/complete.png" title="#{cmsBundle.completeProperties}" />
-        </p:commandLink>
-        <p:commandLink actionListener="#{nodeEditBean.switchPropertyHelp}" styleClass="#{nodeEditBean.helpButtonStyleClass}"
-                       rendered="#{nodeEditBean.completePropertiesEnabled}"
-                       update="@this userPropertyListPanel" ajax="true" global="false"
-                       onmouseover="PF('propertiesTypeDialog').show();" 
-                       onmouseout="PF('propertiesTypeDialog').hide();">
-          <h:graphicImage alt="Help" url="/common/cms/images/help.png"/>
-        </p:commandLink>
-        <p:dialog header="#{cmsBundle.propertiesType}" 
-                  widgetVar="propertiesTypeDialog"                   
-                  closable="false">
-          <div class="helpCaptionTable">
-            <div class="propertyName inheritedAnnotated">
-              <h:outputText value="#{cmsBundle.inheritedAnnotatedProperties}" />
-            </div>
-            <div class="propertyName directAnnotated">
-              <h:outputText value="#{cmsBundle.ownAnnotatedProperties}" />
-            </div>
-            <div class="propertyName">                          
-              <h:outputText value="#{cmsBundle.additionalProperties}" />
-            </div>
-          </div>          
-        </p:dialog>
-      </div>
+      <div class="buttonsPanel ui-inputgroup">
+        <p:commandButton value="#{cmsBundle.addProperty}" action="#{nodeEditBean.addProperty}"                          
+                         icon="pi pi-plus" title="#{cmsBundle.addProperty}" styleClass="mini"                         
+                         process="@this" update="@this userPropertyListPanel"
+                         global="false"
+                         rendered="#{nodeEditBean.addPropertyEnabled}" />
+        <p:commandButton value="#{cmsBundle.saveProperties}" action="#{nodeEditBean.saveProperties}"                           
+                         icon="pi pi-save" title="#{cmsBundle.saveProperties}" styleClass="mini"
+                         process="@this userPropertyListPanel nodeNameInput" update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel userPropertyListPanel :mainform:messagesPanel"
+                         rendered="#{nodeEditBean.savePropertiesEnabled}" />
+        <p:commandButton value="#{cmsBundle.revert}" action="#{nodeEditBean.revertProperties}"                           
+                         icon="pi pi-undo" title="#{cmsBundle.revert}" styleClass="mini"
+                         process="@this" update="@this userPropertyListPanel :mainform:messagesPanel"
+                         global="false"
+                         rendered="#{nodeEditBean.addPropertyEnabled}" />
+        <p:commandButton value="#{cmsBundle.completeProperties}" action="#{nodeEditBean.completeProperties}"                           
+                         icon="pi pi-bars" title="#{cmsBundle.completeProperties}" styleClass="mini"
+                         process="@this" update="@this userPropertyListPanel"
+                         global="false"
+                         rendered="#{nodeEditBean.completePropertiesEnabled}" />
+        <p:commandButton value="#{cmsBundle.help}" action="#{nodeEditBean.switchPropertyHelp}"                                                    
+                         icon="pi pi-question-circle" styleClass="#{nodeEditBean.helpButtonStyleClass} mini"
+                         process="@this" update="@this userPropertyListPanel"
+                         global="false"
+                         rendered="#{nodeEditBean.completePropertiesEnabled}"                       
+                         id="helpButton" />
+      </div>      
+      <p:overlayPanel for="helpButton" 
+                      showEvent="mouseover" hideEvent="mouseout"
+                      autoHide="false">
+        <div class="helpCaptionTable">
+          <div class="propertyName inheritedAnnotated">
+            <h:outputText value="#{cmsBundle.inheritedAnnotatedProperties}" />
+          </div>
+          <div class="propertyName directAnnotated">
+            <h:outputText value="#{cmsBundle.ownAnnotatedProperties}" />
+          </div>
+          <div class="propertyName">                          
+            <h:outputText value="#{cmsBundle.additionalProperties}" />
+          </div>
+        </div>
+      </p:overlayPanel>            
 
       <div class="nodeNamePanel">
         <p:outputLabel value="#{cmsBundle.name}:" styleClass="label" for="nodeNameInput" />
@@ -95,7 +93,7 @@
     <p:outputPanel id="userPropertyListPanel" styleClass="userPropertyListPanel expand">
       <h:dataTable styleClass="propertyTable"
                    rowClasses="property"
-                   columnClasses="col1,col2,col3,col4"
+                   columnClasses="col1,col2,col3"
                    value="#{nodeEditBean.userPropertyList}"
                    var="property"
                    rendered="#{!nodeEditBean.userPropertyListEmpty}">
@@ -111,18 +109,18 @@
                         styleClass="propertyTip"/>
         </h:column>
         <h:column>
-          <p:commandLink actionListener="#{nodeEditBean.addPropertyValue}" styleClass="imageButton"
-                         rendered="#{nodeEditBean.addPropertyValueEnabled}"
-                         update="@this @(.userPropertyListPanel)" ajax="true" global="false">
-            <h:graphicImage alt="" url="/common/cms/images/add_mini.png" title="#{cmsBundle.addPropertyValue}" />
-          </p:commandLink>
-        </h:column>
-        <h:column>
-          <p:commandLink actionListener="#{nodeEditBean.removeProperty}" styleClass="imageButton"
-                         rendered="#{nodeEditBean.removePropertyEnabled}"
-                         update="@this @(.userPropertyListPanel)" ajax="true" global="false">
-            <h:graphicImage alt="" url="/common/cms/images/close_mini.png" title="#{cmsBundle.removeProperty}" />
-          </p:commandLink>
+          <div class="flex">
+            <p:commandButton title="#{cmsBundle.addPropertyValue}"
+                             actionListener="#{nodeEditBean.addPropertyValue}" 
+                             rendered="#{nodeEditBean.addPropertyValueEnabled}"
+                             update="@this @(.userPropertyListPanel)" global="false"
+                             icon="pi pi-plus" styleClass="ui-button-flat" />
+            <p:commandButton title="#{cmsBundle.removeProperty}"
+                             actionListener="#{nodeEditBean.removeProperty}" 
+                             rendered="#{nodeEditBean.removePropertyEnabled}"
+                             update="@this @(.userPropertyListPanel)" global="false"
+                             icon="pi pi-times" styleClass="ui-button-flat" />          
+          </div>
         </h:column>
       </h:dataTable>
       <h:outputLabel styleClass="noPropertiesLabel"
