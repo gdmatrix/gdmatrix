@@ -63,22 +63,53 @@
 
         <h:panelGroup id="floating_bar" layout="block"
                       styleClass="absolute top-0 right-0 p-2 flex surface-0 border-round">
+
             <p:selectBooleanButton value="#{threadsBean.debugEnabled}" styleClass="mini white-space-nowrap"
                                    onIcon="fa fa-bug" offIcon="fa fa-bug"
-                                   onLabel="Debug on" offLabel="Debug off"
+                                   title="#{assistantBundle.debug}"
                                    onchange="changeDebugEnabled(this)"
                                    rendered="#{assistantBean.isAssistantEditable()}"> 
               <p:ajax process="@this" update="@none" />
             </p:selectBooleanButton>
-            <p:commandButton action="#{threadsBean.setEditionEnabled(true)}" 
-                             styleClass="ml-2 mini"
-                             icon="pi pi-pencil" value="#{objectBundle.edit}"
-                             process="@this" update="assistant_panel"
-                             rendered="#{assistantBean.isAssistantEditable()}" /> 
-            <p:commandButton id="info" 
+
+            <p:selectBooleanButton value="#{threadsBean.simulationEnabled}" styleClass="mini white-space-nowrap ml-2"
+                                   onIcon="fa fa-flask" offIcon="fa fa-flask"
+                                   title="#{assistantBundle.simulate}"
+                                   rendered="#{assistantBean.isAssistantEditable()}"> 
+              <p:ajax process="@this" update="@none" />
+            </p:selectBooleanButton>
+          
+            <p:commandButton value="#{assistantBundle.newThread}"
+                             title="#{assistantBundle.newThread}"
+                             action="#{threadsBean.createThread}"
+                             icon="pi pi-plus-circle"
                              rendered="#{threadsBean.thread.isPersistent()}"
-                             value="Info" type="button" icon="pi pi-info-circle" 
-                             styleClass="ml-2 mini" />
+                             styleClass="white-space-nowrap ml-2"
+                             process="assistant_panel" update="assistant_panel assistant_history" />
+            
+            <p:menuButton styleClass="ml-2" 
+                          rendered="#{threadsBean.thread.isPersistent()}">
+              <p:menuitem id="info" 
+                          value="#{assistantBundle.threadInfo}" 
+                          process="@this" update="@none"
+                          icon="pi pi-info-circle"  />
+              <p:menuitem action="#{threadsBean.setEditionEnabled(true)}"
+                          value="#{objectBundle.edit}"
+                          title="#{objectBundle.edit}"
+                          icon="pi pi-pencil" 
+                          process="@this" update="assistant_panel"
+                          rendered="#{assistantBean.isAssistantEditable()}" />
+              <p:menuitem action="#{threadsBean.deleteThread}"
+                          value="#{objectBundle.delete}" 
+                          title="#{objectBundle.delete}"
+                          icon="pi pi-trash"
+                          process="assistant_panel" update="assistant_panel assistant_history">
+                <p:confirm header="#{objectBundle.delete}"
+                           message="#{assistantBundle.deleteThread}"
+                           icon="pi pi-info-circle" />
+              </p:menuitem>
+            </p:menuButton>
+            
             <p:overlayPanel for="info" style="width:350px;" appendTo="@(body)">
               <div class="flex flex-column">
                 <p:outputLabel value="#{assistantBundle.threadId}:" for="@next" styleClass="p-1" />
@@ -92,25 +123,8 @@
                              readonly="true" styleClass="code py-2" />
                 <pe:clipboard trigger="thread_link" action="copy" target="thread_link" />
               </div>
-            </p:overlayPanel>
-            <p:commandButton value="#{assistantBundle.newThread}"
-                             title="#{assistantBundle.newThread}"
-                             action="#{threadsBean.createThread}"
-                             icon="pi pi-plus-circle"
-                             rendered="#{threadsBean.thread.isPersistent()}"
-                             styleClass="white-space-nowrap mini ml-2"
-                             process="assistant_panel" update="assistant_panel assistant_history" />
-            <p:commandButton value="#{objectBundle.delete}"
-                             title="#{objectBundle.delete}"
-                             action="#{threadsBean.deleteThread}"
-                             rendered="#{threadsBean.thread.isPersistent()}"
-                             icon="pi pi-trash"
-                             styleClass="ml-2 white-space-nowrap mini"
-                             process="assistant_panel" update="assistant_panel assistant_history">
-              <p:confirm header="#{objectBundle.delete}"
-                         message="#{assistantBundle.deleteThread}"
-                         icon="pi pi-info-circle" />
-            </p:commandButton>
+            </p:overlayPanel>            
+            
             <p:button value="#{assistantBundle.threads}"
                       title="#{assistantBundle.threads}"
                       widgetVar="threadsPanelButton"
@@ -121,8 +135,8 @@
 
         <div class="message_list flex-grow-1 flex-shrink-1 overflow-y-auto overflow-x-hidden" />
 
-        <h:panelGroup id="uploaded_file" layout="block" class="my-2">
-          <h:panelGroup rendered="#{threadsBean.attachedFilename != null}" styleClass="block">
+        <h:panelGroup id="uploaded_file" layout="block" style="max-height:30%;">
+          <h:panelGroup rendered="#{threadsBean.attachedFilename != null}" styleClass="block" style="height:32px">
             <a href="/documents/#{threadsBean.attachedContentId}" 
                target="_blank" 
                class="no-underline">
@@ -138,9 +152,10 @@
             <a href="/documents/#{threadsBean.attachedContentId}/#{threadsBean.attachedFilename}" 
                target="_blank" class="mt-2">
               <img src="/documents/#{threadsBean.attachedContentId}/#{threadsBean.attachedFilename}" 
-                   alt="image" style="max-width:100%;border:1px solid var(--surface-700)" />
+                   alt="image" style="max-height: calc(100% - 36px);max-width:100%;border:1px solid var(--surface-700)" />
             </a>
           </ui:fragment>
+          
           <div class="attached_filename hidden" aria-hidden="true">#{threadsBean.attachedFilename}</div>
           <div class="attached_docid hidden" aria-hidden="true">#{threadsBean.attachedDocId}</div>
           <div class="attached_contentid hidden" aria-hidden="true">#{threadsBean.attachedContentId}</div>

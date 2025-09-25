@@ -38,7 +38,6 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.output.FinishReason;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -92,6 +91,7 @@ public class ThreadsBean extends WebBean implements Serializable
   List<ThreadSummary> threads;
   String text;
   boolean debugEnabled = false;
+  boolean simulationEnabled = false;
   boolean editionEnabled = false;
   String attachedFilename;
   String attachedDocId;
@@ -148,6 +148,16 @@ public class ThreadsBean extends WebBean implements Serializable
   public void setDebugEnabled(boolean debugEnabled)
   {
     this.debugEnabled = debugEnabled;
+  }
+
+  public boolean isSimulationEnabled()
+  {
+    return simulationEnabled;
+  }
+
+  public void setSimulationEnabled(boolean simulationEnabled)
+  {
+    this.simulationEnabled = simulationEnabled;
   }
 
   public boolean isEditionEnabled()
@@ -343,6 +353,7 @@ public class ThreadsBean extends WebBean implements Serializable
           executor.put("userId", userId);
           executor.put("mid", mid);
           executor.put("threadId", threadId);
+          executor.put("simulation", simulationEnabled);
           String result = executor.execute(toolRequest);
           String action = executor.getAction();
           if (action != null)

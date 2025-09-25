@@ -85,7 +85,7 @@
 
       <p:tabView id="assistant_tabs" dynamic="true"
                  activeIndex="#{assistantBean.activeTabIndex}"
-                              rendered="#{assistantBean.isAssistantEditable()}">
+                 rendered="#{assistantBean.isAssistantEditable()}">
         <p:ajax event="tabChange" process="@this" update="@none" />
         <p:tab>
           <f:facet name="title">
@@ -104,9 +104,5 @@
   </div>
 
   <gdm:saveBean value="assistantToolsBean" />
-
-  <p:growl for="growl" life="1500" >
-    <p:autoUpdate />
-  </p:growl>
 
 </ui:composition>

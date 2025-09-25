@@ -60,8 +60,8 @@ import static org.santfeliu.web.UserSessionBean.ACTION;
 public class AssistantBean extends WebBean implements Serializable
 {
   public static final String THREADID_PARAMETER = "threadid";
-  public static final String ASSISTANT_VIEW_PARAMETER = "assistant_view";
   public static final String ASSISTANTID_PARAMETER = "assistantid";
+  public static final String ASSISTANT_VIEW_PARAMETER = "assistant_view";
 
   public static final String ASSISTANTID_PROPERTY = "assistantId";
   public static final String ASSISTANT_ADMIN_ROLEID = "ASSISTANT_ADMIN";
