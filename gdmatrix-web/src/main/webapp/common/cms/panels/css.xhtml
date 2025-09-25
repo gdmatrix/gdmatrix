@@ -12,18 +12,20 @@
     <div class="flex">
       <p:outputPanel id="cssToolsPanel" styleClass="buttonsPanel ui-inputgroup" 
                      rendered="#{nodeEditBean.validCSS}">      
-        <p:commandButton value="#{cmsBundle.saveCSS}" action="#{nodeEditBean.saveCSS}" 
-                         icon="pi pi-save" title="#{cmsBundle.saveCSS}" styleClass="mini"
-                         update="@this :mainform:tree cssToolsPanel :mainform:messagesPanel"
+        <p:commandButton value="#{cmsBundle.save}" action="#{nodeEditBean.saveCSS}" 
+                         icon="pi pi-save" title="#{cmsBundle.save}" styleClass="mini"
+                         process="@this cssTextPanel"
+                         update=":mainform:tree :mainform:rightPanel :mainform:messagesPanel"
                          rendered="#{nodeEditBean.appendNodeEnabled}" />      
-        <p:commandButton value="#{cmsBundle.revert}" action="#{nodeEditBean.revertCSS}" 
-                         icon="pi pi-undo" title="#{cmsBundle.revert}" styleClass="mini"
-                         process="@this" update="@this cssTextPanel :mainform:messagesPanel"
+        <p:commandButton value="#{cmsBundle.reload}" action="#{nodeEditBean.revertCSS}" 
+                         icon="pi pi-undo" title="#{cmsBundle.reload}" styleClass="mini"
+                         process="@this" update="cssTextPanel :mainform:messagesPanel"
                          global="false"
                          rendered="#{nodeEditBean.appendNodeEnabled and nodeEditBean.customCSS}" />
         <p:commandButton value="#{cmsBundle.sync}" action="#{nodeEditBean.syncCSS}"
                          icon="pi pi-sync" title="#{cmsBundle.sync}" styleClass="mini"
-                         update="@this :mainform:messagesPanel"
+                         process="@this cssTextPanel"
+                         update=":mainform:messagesPanel"
                          rendered="#{nodeEditBean.syncCssButtonRender}" />
       </p:outputPanel>
       <h:outputLabel styleClass="noCSSLabel" rendered="#{not nodeEditBean.customCSS}" value="#{cmsBundle.noCustomCSS}" />

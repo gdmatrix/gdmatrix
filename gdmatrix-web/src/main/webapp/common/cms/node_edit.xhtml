@@ -22,154 +22,171 @@
         <div class="cmsCurrentPathPanel">
           <p:breadCrumb model="#{nodeEditBean.nodePathModel}" homeDisplay="text">
           </p:breadCrumb>
-        </div>        
+        </div> 
+
+        <p:commandButton action="#{nodeEditBean.showPanel('LEFT')}"                             
+                         process="@this"
+                         update="@(.cmsEditPanel) topPanel"
+                         oncomplete="return treeScrollInit();"
+                         styleClass="showPanelButton"
+                         icon="pi pi-sitemap"
+                         rendered="#{nodeEditBean.visiblePanel == 'RIGHT'}" />                    
+
+        <p:commandButton action="#{nodeEditBean.showPanel('RIGHT')}"
+                         process="@this"
+                         update="@(.cmsEditPanel) topPanel"
+                         styleClass="showPanelButton"
+                         icon="pi pi-pencil" 
+                         rendered="#{nodeEditBean.visiblePanel == 'LEFT'}" />                         
+        
       </p:outputPanel>      
 
-      <p:splitter styleClass="cmsEditPanel">
+      <p:outputPanel styleClass="cmsEditPanel">
         
-        <p:splitterPanel size="25" styleClass="ui-widget ui-widget-content ui-corner-all">
-          
-          <p:outputPanel id="leftPanel" styleClass="leftPanel">
-          
-            <p:outputPanel id="rootSelectionPanel" styleClass="rootSelectionPanel">
-              <p:outputLabel value="#{cmsBundle.changeRoot ? cmsBundle.changeRoot : cmsBundle.root}:" 
-                             for="rootNodeSelector" />
-              <p:selectOneMenu id="rootNodeSelector" value="#{nodeEditBean.rootNodeId}">
-                <p:ajax update="@this @(.toolbarRenderingButtons) topPanel leftPanel :mainform:rightPanel" 
-                        listener="#{nodeEditBean.changeRootNode}" />
-                <f:selectItems value="#{nodeEditBean.rootNodeList}" var="root" 
-                               itemLabel="#{root.nodeId}: #{nodeEditBean.getNodeLabel(root)}" 
-                               itemValue="#{root.nodeId}"/>
-              </p:selectOneMenu>
-              <div class="ui-inputgroup">
-                <p:commandButton title="#{cmsBundle.createRoot}"
-                                 action="#{nodeEditBean.createRootNode}" styleClass="mini"
-                                 update="@this topPanel leftPanel :mainform:rightPanel messagesPanel" 
-                                 icon="pi pi-plus" />
-                <p:commandButton title="#{cmsBundle.pasteAsRootNode}"
-                               action="#{nodeEditBean.pasteAsRootNode}" styleClass="mini"
-                               rendered="#{nodeEditBean.pasteAsRootNodeEnabled}"
-                               update="@this topPanel leftPanel :mainform:rightPanel messagesPanel"
-                               icon="pi pi-sitemap" />
-              </div>
-            </p:outputPanel>
-            
-            <div class="treePanel">
-              <p:tree id="tree"
-                      styleClass="tree" value="#{nodeEditBean.treeRoot}" var="node" dynamic="true" cache="false"
-                      selectionMode="single" selection="#{nodeEditBean.selectedNode}"                       
-                      draggable="#{nodeEditBean.dragDropEnabled}" 
-                      droppable="#{nodeEditBean.dragDropEnabled}" 
-                      onDrop="#{nodeEditBean.checkDrop}" 
-                      widgetVar="cmsTree">
-                <p:ajax event="expand" listener="#{nodeEditBean.onNodeExpand}" global="false" /> 
-                <p:ajax event="collapse" listener="#{nodeEditBean.onNodeCollapse}" global="false" />
-                <p:ajax event="select" 
-                        update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:rightPanel" 
-                        listener="#{nodeEditBean.onNodeSelect}" global="false" />
-                <p:ajax event="contextMenu" 
-                        update="@this :mainform:treeContextMenu @(.toolbarRenderingButtons) :mainform:topPanel :mainform:rightPanel" 
-                        listener="#{nodeEditBean.onNodeSelect}" global="false" /> 
-                <p:ajax event="dragdrop" 
-                        update="@this :mainform:messagesPanel"
-                        listener="#{nodeEditBean.onDragDrop}" global="false"
-                        onstart="return handleDragStart();" 
-                        rendered="#{nodeEditBean.dragDropEnabled}" />                
-                <p:treeNode type="Node">                  
-                  <div class="menuItem">
-                    <div class="#{node.boxStyleClass}">
-                      <h:outputText value="#{node.boxText}" />
-                    </div>
-                    <div class="#{node.styleClass}">
-                      <h:outputText value="#{node.label}" />
-                    </div>
-                    <p:outputPanel styleClass="css" rendered="#{node.customCSS}">
-                      <h:graphicImage url="/common/cms/images/css.png" 
-                                      alt="CSS" title="CSS" />
-                    </p:outputPanel>
-                  </div>
-                </p:treeNode>
-              </p:tree>
-              
-              <p:contextMenu for="tree" id="treeContextMenu" style="width:200px">
-                <p:menuitem value="#{cmsBundle.appendNode}" 
-                            update="topPanel :mainform:tree :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.appendNode}"
-                            icon="fa fa-plus" rendered="#{nodeEditBean.appendNodeEnabled}" />
-                <p:menuitem value="#{cmsBundle.insertBeforeNode}" 
-                            update="topPanel :mainform:tree :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.insertBeforeNode}"
-                            icon="fa fa-plus" rendered="#{nodeEditBean.insertBeforeNodeEnabled}" />
-                <p:menuitem value="#{cmsBundle.insertAfterNode}" 
-                            update="topPanel :mainform:tree :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.insertAfterNode}"
-                            icon="fa fa-plus" rendered="#{nodeEditBean.insertAfterNodeEnabled}" />
-                <p:menuitem value="#{cmsBundle.moveUp}" 
-                            update=":mainform:tree :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.moveNodeUp}"
-                            icon="fa fa-up-long" rendered="#{nodeEditBean.moveNodeUpEnabled}" />
-                <p:menuitem value="#{cmsBundle.moveDown}" 
-                            update=":mainform:tree :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.moveNodeDown}"
-                            icon="fa fa-down-long" rendered="#{nodeEditBean.moveNodeDownEnabled}" />
-                <p:menuitem value="#{cmsBundle.removeNode}" 
-                            update="@(.toolbarRenderingButtons) topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel"
-                            onclick="if(!confirm('#{cmsBundle.confirmRemove} #{nodeEditBean.selectedNodeId}?')) return false;"
-                            action="#{nodeEditBean.removeNode}"
-                            icon="fa fa-trash" rendered="#{nodeEditBean.removeNodeEnabled}" />             
-                <p:menuitem value="#{cmsBundle.cutNode}" 
-                            update=":mainform:tree rootSelectionPanel messagesPanel" 
-                            action="#{nodeEditBean.cutNode}"
-                            icon="fa fa-scissors" rendered="#{nodeEditBean.cutNodeEnabled}" />
-                <p:menuitem value="#{cmsBundle.copyNode}" 
-                            update=":mainform:tree rootSelectionPanel messagesPanel" 
-                            action="#{nodeEditBean.copyNode}"
-                            icon="fa fa-copy" rendered="#{nodeEditBean.copyNodeEnabled}" />
-                <p:menuitem value="#{cmsBundle.copySingleNode}" 
-                            update=":mainform:tree rootSelectionPanel messagesPanel" 
-                            action="#{nodeEditBean.copySingleNode}"
-                            icon="fa fa-copy" rendered="#{nodeEditBean.copyNodeEnabled}" />                
-                <p:menuitem value="#{cmsBundle.pasteInsideNode}" 
-                            update="topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.pasteInsideNode}"
-                            icon="fa fa-paste" rendered="#{nodeEditBean.pasteInsideNodeEnabled}" />
-                <p:menuitem value="#{cmsBundle.pasteBeforeNode}" 
-                            update="topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.pasteBeforeNode}"
-                            icon="fa fa-paste" rendered="#{nodeEditBean.pasteBeforeNodeEnabled}" />
-                <p:menuitem value="#{cmsBundle.pasteAfterNode}" 
-                            update="topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel" 
-                            action="#{nodeEditBean.pasteAfterNode}"
-                            icon="fa fa-paste" rendered="#{nodeEditBean.pasteAfterNodeEnabled}" />
-              </p:contextMenu>              
+        <p:outputPanel id="leftPanel"
+                 styleClass="leftPanel"
+                 style="#{nodeEditBean.visiblePanel == 'LEFT' or nodeEditBean.visiblePanel == 'BOTH' ? '' : 'display: none'}">
+                    
+          <p:outputPanel id="rootSelectionPanel" styleClass="rootSelectionPanel">
+            <p:outputLabel value="#{cmsBundle.changeRoot ? cmsBundle.changeRoot : cmsBundle.root}:" 
+                           for="rootNodeSelector" />
+            <p:selectOneMenu id="rootNodeSelector" value="#{nodeEditBean.rootNodeId}">
+              <p:ajax update="@this @(.toolbarRenderingButtons) topPanel leftPanel :mainform:rightPanel" 
+                      listener="#{nodeEditBean.changeRootNode}" />
+              <f:selectItems value="#{nodeEditBean.rootNodeList}" var="root" 
+                             itemLabel="#{root.nodeId}: #{nodeEditBean.getNodeLabel(root)}" 
+                             itemValue="#{root.nodeId}"/>
+            </p:selectOneMenu>
+            <div class="ui-inputgroup">
+              <p:commandButton title="#{cmsBundle.createRoot}"
+                               action="#{nodeEditBean.createRootNode}" styleClass="mini"
+                               process="@this"
+                               update="topPanel leftPanel :mainform:rightPanel messagesPanel" 
+                               icon="pi pi-plus" />
+              <p:commandButton title="#{cmsBundle.pasteAsRootNode}"
+                             action="#{nodeEditBean.pasteAsRootNode}" styleClass="mini"
+                             rendered="#{nodeEditBean.pasteAsRootNodeEnabled}"
+                             process="@this"
+                             update="topPanel leftPanel :mainform:rightPanel messagesPanel"
+                             icon="pi pi-sitemap" />
             </div>
-                 
-            <div class="bottomPanel">
-              <div class="fastSearchPanel">              
-                <p:outputLabel value="#{cmsBundle.search}:" styleClass="fsLabel" />
-                <p:remoteCommand id="fastSearchCommand"
-                                 name="fastSearch" actionListener="#{nodeEditBean.fastSearch}" 
-                                 update="@this leftPanel :mainform:rightPanel"
-                                 oncomplete="treeScrollToFound()"/>
-                <p:inputText value="#{nodeEditBean.inputSearch}" styleClass="fsInput" 
-                             onkeypress="if (event.keyCode == 13) { fastSearch(); return false; }" />
-              </div>
-              <p:commandButton id="collapseAllButton"
-                               actionListener="#{nodeEditBean.collapseAllNodes}" 
-                               global="false"
-                               update="@this :mainform:tree"
-                               styleClass="collapseAllButton"
-                               value="#{cmsBundle.collapseAll}" />
-            </div>
-            
           </p:outputPanel>
-          
-        </p:splitterPanel>  
 
-        <p:splitterPanel size="75">
-          
-          <p:outputPanel id="rightPanel" styleClass="rightPanel">
+          <div class="treePanel">
+            <p:tree id="tree"
+                    styleClass="tree" value="#{nodeEditBean.treeRoot}" var="node" dynamic="true" cache="false"
+                    selectionMode="single" selection="#{nodeEditBean.selectedNode}"                       
+                    draggable="#{nodeEditBean.dragDropEnabled}" 
+                    droppable="#{nodeEditBean.dragDropEnabled}" 
+                    onDrop="#{nodeEditBean.checkDrop}" 
+                    widgetVar="cmsTree">
+              <p:ajax event="expand" listener="#{nodeEditBean.onNodeExpand}" global="false" /> 
+              <p:ajax event="collapse" listener="#{nodeEditBean.onNodeCollapse}" global="false" />
+              <p:ajax event="select" 
+                      update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:rightPanel" 
+                      listener="#{nodeEditBean.onNodeSelect}" global="false" />
+              <p:ajax event="contextMenu" 
+                      update="@this :mainform:treeContextMenu @(.toolbarRenderingButtons) :mainform:topPanel :mainform:rightPanel" 
+                      listener="#{nodeEditBean.onNodeSelect}" global="false" /> 
+              <p:ajax event="dragdrop" 
+                      update="@this :mainform:messagesPanel"
+                      listener="#{nodeEditBean.onDragDrop}" global="false"
+                      onstart="return handleDragStart();" 
+                      rendered="#{nodeEditBean.dragDropEnabled}" />                
+              <p:treeNode type="Node">                  
+                <div class="menuItem">
+                  <div class="#{node.boxStyleClass}">
+                    <h:outputText value="#{node.boxText}" />
+                  </div>
+                  <div class="#{node.styleClass}">
+                    <h:outputText value="#{node.label}" />
+                  </div>
+                  <p:outputPanel styleClass="css" rendered="#{node.customCSS}">
+                    <h:graphicImage url="/common/cms/images/css.png" 
+                                    alt="CSS" title="CSS" />
+                  </p:outputPanel>
+                </div>
+              </p:treeNode>
+            </p:tree>
 
+            <p:contextMenu for="tree" id="treeContextMenu" style="width:200px">
+              <p:menuitem value="#{cmsBundle.appendNode}" 
+                          update="topPanel :mainform:tree :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.appendNode}"
+                          icon="fa fa-plus" rendered="#{nodeEditBean.appendNodeEnabled}" />
+              <p:menuitem value="#{cmsBundle.insertBeforeNode}" 
+                          update="topPanel :mainform:tree :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.insertBeforeNode}"
+                          icon="fa fa-plus" rendered="#{nodeEditBean.insertBeforeNodeEnabled}" />
+              <p:menuitem value="#{cmsBundle.insertAfterNode}" 
+                          update="topPanel :mainform:tree :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.insertAfterNode}"
+                          icon="fa fa-plus" rendered="#{nodeEditBean.insertAfterNodeEnabled}" />
+              <p:menuitem value="#{cmsBundle.moveUp}" 
+                          update=":mainform:tree :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.moveNodeUp}"
+                          icon="fa fa-up-long" rendered="#{nodeEditBean.moveNodeUpEnabled}" />
+              <p:menuitem value="#{cmsBundle.moveDown}" 
+                          update=":mainform:tree :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.moveNodeDown}"
+                          icon="fa fa-down-long" rendered="#{nodeEditBean.moveNodeDownEnabled}" />
+              <p:menuitem value="#{cmsBundle.removeNode}" 
+                          update="@(.toolbarRenderingButtons) topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel"
+                          onclick="if(!confirm('#{cmsBundle.confirmRemove} #{nodeEditBean.selectedNodeId}?')) return false;"
+                          action="#{nodeEditBean.removeNode}"
+                          icon="fa fa-trash" rendered="#{nodeEditBean.removeNodeEnabled}" />             
+              <p:menuitem value="#{cmsBundle.cutNode}" 
+                          update=":mainform:tree rootSelectionPanel messagesPanel" 
+                          action="#{nodeEditBean.cutNode}"
+                          icon="fa fa-scissors" rendered="#{nodeEditBean.cutNodeEnabled}" />
+              <p:menuitem value="#{cmsBundle.copyNode}" 
+                          update=":mainform:tree rootSelectionPanel messagesPanel" 
+                          action="#{nodeEditBean.copyNode}"
+                          icon="fa fa-copy" rendered="#{nodeEditBean.copyNodeEnabled}" />
+              <p:menuitem value="#{cmsBundle.copySingleNode}" 
+                          update=":mainform:tree rootSelectionPanel messagesPanel" 
+                          action="#{nodeEditBean.copySingleNode}"
+                          icon="fa fa-copy" rendered="#{nodeEditBean.copyNodeEnabled}" />                
+              <p:menuitem value="#{cmsBundle.pasteInsideNode}" 
+                          update="topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.pasteInsideNode}"
+                          icon="fa fa-paste" rendered="#{nodeEditBean.pasteInsideNodeEnabled}" />
+              <p:menuitem value="#{cmsBundle.pasteBeforeNode}" 
+                          update="topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.pasteBeforeNode}"
+                          icon="fa fa-paste" rendered="#{nodeEditBean.pasteBeforeNodeEnabled}" />
+              <p:menuitem value="#{cmsBundle.pasteAfterNode}" 
+                          update="topPanel :mainform:tree rootSelectionPanel :mainform:rightPanel messagesPanel" 
+                          action="#{nodeEditBean.pasteAfterNode}"
+                          icon="fa fa-paste" rendered="#{nodeEditBean.pasteAfterNodeEnabled}" />
+            </p:contextMenu>              
+          </div>
+
+          <div class="bottomPanel">
+            <div class="fastSearchPanel">              
+              <p:outputLabel value="#{cmsBundle.search}:" styleClass="fsLabel" />
+              <p:remoteCommand id="fastSearchCommand"
+                               name="fastSearch" actionListener="#{nodeEditBean.fastSearch}" 
+                               update="@this leftPanel :mainform:rightPanel"
+                               oncomplete="treeScrollToFound()"/>
+              <p:inputText value="#{nodeEditBean.inputSearch}" styleClass="fsInput" 
+                           onkeypress="if (event.keyCode == 13) { fastSearch(); return false; }" />
+            </div>
+            <p:commandButton id="collapseAllButton"
+                             actionListener="#{nodeEditBean.collapseAllNodes}" 
+                             global="false"
+                             process="@this"
+                             update=":mainform:tree"
+                             styleClass="collapseAllButton"
+                             value="#{cmsBundle.collapseAll}" />
+          </div>
+                      
+        </p:outputPanel>  
+
+        <p:outputPanel id="rightPanel"
+                       styleClass="rightPanel"
+                       style="#{nodeEditBean.visiblePanel == 'RIGHT' or nodeEditBean.visiblePanel == 'BOTH' ? '' : 'display: none'}">
+            
             <p:tabView activeIndex="#{nodeEditBean.activeTabIndex}">        
               <p:ajax event="tabChange" update="@this :mainform:tree :mainform:rightPanel" />
 
@@ -193,12 +210,10 @@
               </p:tab>
               
             </p:tabView>  
-            
-          </p:outputPanel>
           
-        </p:splitterPanel>
+        </p:outputPanel>
         
-      </p:splitter>
+      </p:outputPanel>
       
       <p:ajaxStatus onstart="PF('statusDialog').show()" 
                     onsuccess="PF('statusDialog').hide()"
@@ -209,9 +224,36 @@
         <div class="p-text-center">
           <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
         </div>
-      </p:dialog>      
+      </p:dialog> 
       
+      <p:remoteCommand name="showBothPanels" 
+                       actionListener="#{nodeEditBean.showPanel('BOTH')}"
+                       process="@this"
+                       update="@(.cmsEditPanel) topPanel" />
+      <p:remoteCommand name="showLeftPanel" 
+                       actionListener="#{nodeEditBean.showPanel('LEFT')}"
+                       process="@this"
+                       update="@(.cmsEditPanel) topPanel" />
+      <p:remoteCommand name="showRightPanel" 
+                       actionListener="#{nodeEditBean.showPanel('RIGHT')}"
+                       process="@this"
+                       update="@(.cmsEditPanel) topPanel" />            
       <script>
+        var oldWidth = null;
+
+        function updatePanels()
+        {
+          if (window.innerWidth &lt; 800 &amp;&amp; (oldWidth == null || oldWidth >= 800))
+          {
+            showLeftPanel();
+          }
+          else if (window.innerWidth >= 800 &amp;&amp; (oldWidth == null || oldWidth &lt; 800))
+          {
+            showBothPanels();
+          }
+          oldWidth = window.innerWidth;
+        }
+  
         function handleDragStart() 
         {
           try
@@ -252,7 +294,7 @@
         
         function updateStoredTreeScroll()
         {
-          sessionStorage.setItem('cmsTreeScroll', getTreePanel().scrollTop());          
+          sessionStorage.setItem('cmsTreeScroll', getTreePanel().scrollTop());
         }
         
         function treeScrollInit()
@@ -265,8 +307,13 @@
           getTreePanel().scrollTop(
             sessionStorage.getItem('cmsTreeScroll'));
         }
-        
-        treeScrollInit();
+                
+        window.addEventListener('resize', updatePanels);
+        window.addEventListener('load', function() {
+          updatePanels();
+          treeScrollInit();
+        });  
+  
       </script>
             
     </ui:define>

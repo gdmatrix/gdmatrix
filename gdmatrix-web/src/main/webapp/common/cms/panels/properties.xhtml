@@ -6,26 +6,27 @@
 
   <p:outputPanel styleClass="nodePropertiesPanel contentPanel" 
          rendered="#{nodeEditBean.propertiesTabSelected}">
-    <div class="flexRowPanel wide">
+    <div class="flexRowPanel wide topRow">
 
       <div class="buttonsPanel ui-inputgroup">
-        <p:commandButton value="#{cmsBundle.addProperty}" action="#{nodeEditBean.addProperty}"                          
-                         icon="pi pi-plus" title="#{cmsBundle.addProperty}" styleClass="mini"                         
-                         process="@this" update="@this userPropertyListPanel"
+        <p:commandButton value="#{cmsBundle.add}" action="#{nodeEditBean.addProperty}"                          
+                         icon="pi pi-plus" title="#{cmsBundle.add}" styleClass="mini"                         
+                         process="@this userPropertyListPanel" update="userPropertyListPanel"
                          global="false"
                          rendered="#{nodeEditBean.addPropertyEnabled}" />
-        <p:commandButton value="#{cmsBundle.saveProperties}" action="#{nodeEditBean.saveProperties}"                           
-                         icon="pi pi-save" title="#{cmsBundle.saveProperties}" styleClass="mini"
-                         process="@this userPropertyListPanel nodeNameInput" update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel userPropertyListPanel :mainform:messagesPanel"
+        <p:commandButton value="#{cmsBundle.save}" action="#{nodeEditBean.saveProperties}"                           
+                         icon="pi pi-save" title="#{cmsBundle.save}" styleClass="mini"
+                         process="@this userPropertyListPanel nodeNameInput" 
+                         update="@(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel userPropertyListPanel :mainform:messagesPanel"
                          rendered="#{nodeEditBean.savePropertiesEnabled}" />
-        <p:commandButton value="#{cmsBundle.revert}" action="#{nodeEditBean.revertProperties}"                           
-                         icon="pi pi-undo" title="#{cmsBundle.revert}" styleClass="mini"
-                         process="@this" update="@this userPropertyListPanel :mainform:messagesPanel"
+        <p:commandButton value="#{cmsBundle.reload}" action="#{nodeEditBean.revertProperties}"                           
+                         icon="pi pi-undo" title="#{cmsBundle.reload}" styleClass="mini"
+                         process="@this" update="userPropertyListPanel nodeNamePanel nodeActionPanel :mainform:messagesPanel"
                          global="false"
                          rendered="#{nodeEditBean.addPropertyEnabled}" />
-        <p:commandButton value="#{cmsBundle.completeProperties}" action="#{nodeEditBean.completeProperties}"                           
-                         icon="pi pi-bars" title="#{cmsBundle.completeProperties}" styleClass="mini"
-                         process="@this" update="@this userPropertyListPanel"
+        <p:commandButton value="#{cmsBundle.complete}" action="#{nodeEditBean.completeProperties}"                           
+                         icon="pi pi-bars" title="#{cmsBundle.complete}" styleClass="mini"
+                         process="@this" update="userPropertyListPanel"
                          global="false"
                          rendered="#{nodeEditBean.completePropertiesEnabled}" />
         <p:commandButton value="#{cmsBundle.help}" action="#{nodeEditBean.switchPropertyHelp}"                                                    
@@ -51,15 +52,17 @@
         </div>
       </p:overlayPanel>            
 
-      <div class="nodeNamePanel">
+      <p:outputPanel id="nodeNamePanel" styleClass="nodeNamePanel">
         <p:outputLabel value="#{cmsBundle.name}:" styleClass="label" for="nodeNameInput" />
         <p:inputText id="nodeNameInput" value="#{nodeEditBean.nodeName}" styleClass="input" />
-      </div>          
+      </p:outputPanel>          
 
     </div>
     
     <p:outputPanel id="nodeActionPanel" styleClass="nodeActionPanel">
-      <h:outputText value="#{cmsBundle.nodeActionUpper}" styleClass="title" />
+      <div class="title">           
+        <h:outputText value="#{cmsBundle.nodeActionUpper}" />
+      </div>
       <div class="flexRowPanel">
         <div class="beanNamePanel">
           <p:outputLabel value="#{cmsBundle.beanName}:" 
@@ -113,12 +116,14 @@
             <p:commandButton title="#{cmsBundle.addPropertyValue}"
                              actionListener="#{nodeEditBean.addPropertyValue}" 
                              rendered="#{nodeEditBean.addPropertyValueEnabled}"
-                             update="@this @(.userPropertyListPanel)" global="false"
+                             process="@this @(.userPropertyListPanel)"
+                             update="@(.userPropertyListPanel)" global="false"
                              icon="pi pi-plus" styleClass="ui-button-flat" />
             <p:commandButton title="#{cmsBundle.removeProperty}"
                              actionListener="#{nodeEditBean.removeProperty}" 
                              rendered="#{nodeEditBean.removePropertyEnabled}"
-                             update="@this @(.userPropertyListPanel)" global="false"
+                             process="@this @(.userPropertyListPanel)"
+                             update="@(.userPropertyListPanel)" global="false"
                              icon="pi pi-times" styleClass="ui-button-flat" />          
           </div>
         </h:column>

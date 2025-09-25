@@ -70,6 +70,7 @@ a.imageButton img:hover
   flex-direction: row;
   align-items: center;  
   flex-wrap: wrap;
+  margin-right: 8px;
 }
 
 .topPanel .cmsCurrentPathPanel ul
@@ -113,11 +114,28 @@ a.imageButton img:hover
   border:none;
 }
 
+.topPanel .cmsCurrentPathPanel .ui-breadcrumb .ui-breadcrumb-items
+{
+  flex-wrap: wrap;
+}
+
+.topPanel .cmsCurrentPathPanel .ui-breadcrumb .ui-breadcrumb-items > li
+{
+  margin-top: 2px;
+}
+
+.page .showPanelButton
+{
+  aspect-ratio: 1 / 1;
+  height: 25px;
+}
+
 @media only screen and (max-width: 800px)
 {
-  .page .cmsEditPanel
+  .page .cmsEditPanel .leftPanel,
+  .page .cmsEditPanel .rightPanel
   {
-    flex-wrap: wrap;
+    width: 100%;
   }  
 }
 
@@ -127,11 +145,7 @@ a.imageButton img:hover
   display: flex;
   flex-direction: row;
   margin-top: 8px;
-}
-
-.cmsEditPanel .ui-splitter-panel:first-child
-{
-  padding: 8px;
+  gap: 8px;
 }
 
 .cmsEditPanel .leftPanel
@@ -139,7 +153,10 @@ a.imageButton img:hover
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 320px;
+  width: 400px;
+  flex-grow: 0;
+  padding: 4px;
+  background: white;
 }
 
 .leftPanel > div
@@ -154,6 +171,7 @@ a.imageButton img:hover
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 4px;
 }
 
 .leftPanel .bottomPanel > *
@@ -187,7 +205,7 @@ a.imageButton img:hover
 
 .bottomPanel .collapseAllButton
 {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .leftPanel .rootSelectionPanel
@@ -324,6 +342,7 @@ a.imageButton img:hover
   display: flex;
   flex-direction: column;
   height: 100%;
+  flex-grow: 1;
 }
 
 .rightPanel .ui-tabs
@@ -446,7 +465,7 @@ a.imageButton img:hover
   container-name: nodePropertiesPanel;
 }
 
-@container nodePropertiesPanel (max-width: 900px)
+@container nodePropertiesPanel (max-width: 700px)
 {
   .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini,
   .nodePropertiesPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini
@@ -473,15 +492,14 @@ a.imageButton img:hover
   }
 }
 
+.nodePropertiesPanel .flexRowPanel.topRow
+{
+  gap: 12px;
+}
+
 .nodePropertiesPanel .nodeNamePanel .label 
 {
   margin-right: 4px;
-}
-
-.nodePropertiesPanel .nodeActionPanel .flexRowPanel > *
-{
-  margin-right: 4px;
-  margin-top: 4px;
 }
 
 .nodePropertiesPanel .nodeActionPanel .flexRowPanel .beanNamePanel,
@@ -495,6 +513,7 @@ a.imageButton img:hover
 .nodePropertiesPanel .nodeActionPanel .title
 {
   font-weight: bold;
+  margin-bottom: 8px;  
 }
 
 .nodePropertiesPanel .nodeActionPanel .label
@@ -596,7 +615,7 @@ a.imageButton img:hover
   container-name: nodeCSSPanel;
 }
 
-@container nodeCSSPanel (max-width: 300px)
+@container nodeCSSPanel (max-width: 400px)
 {
   .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini,
   .nodeCSSPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini
@@ -646,7 +665,7 @@ a.imageButton img:hover
   container-name: nodeJsonPanel;
 }
 
-@container nodeJsonPanel (max-width: 300px)
+@container nodeJsonPanel (max-width: 250px)
 {
   .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-left.mini,
   .nodeJsonPanel .buttonsPanel .ui-button.ui-button-text-icon-right.mini
@@ -1069,3 +1088,8 @@ body .loading-icon
   font-size: 4rem;
 }
 
+body .rightPanel .ui-tabs .ui-tabs-panels
+{
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;  
+}

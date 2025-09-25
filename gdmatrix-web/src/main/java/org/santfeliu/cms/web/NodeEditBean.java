@@ -169,6 +169,14 @@ public class NodeEditBean extends FacesBean implements Serializable
   private Integer activeTabIndex;
   private org.primefaces.model.menu.MenuModel nodePathModel;
   private final CMSConfigHelper configHelper;
+  private VisiblePanel visiblePanel = VisiblePanel.BOTH;
+  
+  public enum VisiblePanel
+  {
+    LEFT,
+    RIGHT,
+    BOTH
+  }   
   
   public NodeEditBean()
   {
@@ -709,6 +717,21 @@ public class NodeEditBean extends FacesBean implements Serializable
     this.activeTabIndex = activeTabIndex;
   }
 
+  public VisiblePanel getVisiblePanel() 
+  {
+    return visiblePanel;
+  }
+
+  public void setVisiblePanel(VisiblePanel visiblePanel) 
+  {
+    this.visiblePanel = visiblePanel;
+  }
+
+  public void showPanel(String visiblePanel)
+  {
+    setVisiblePanel(VisiblePanel.valueOf(visiblePanel));
+  }
+  
   public org.primefaces.model.menu.MenuModel getNodePathModel()
   {
     analyzeWorkspaceChange();

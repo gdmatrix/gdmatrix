@@ -10,10 +10,12 @@
     <div class="buttonsPanel ui-inputgroup">
       <p:commandButton value="#{cmsBundle.addSearchProperty}" action="#{nodeEditBean.addSearchProperty}"
                        icon="pi pi-plus" title="#{cmsBundle.addSearchProperty}" styleClass="mini"
-                       update="@this searchPropertiesPanel" global="false" />
+                       process="@this searchPropertiesPanel"
+                       update="searchPropertiesPanel" global="false" />
       <p:commandButton value="#{cmsBundle.resetSearch}" action="#{nodeEditBean.resetSearch}"
                        icon="pi pi-undo" title="#{cmsBundle.resetSearch}" styleClass="mini"
-                       update="@this :mainform:tree :mainform:rightPanel" global="false" />
+                       process="@this"
+                       update=":mainform:tree :mainform:rightPanel" global="false" />
     </div>
 
     <p:outputPanel id="searchPropertiesPanel" styleClass="searchPropertiesPanel">
@@ -56,13 +58,15 @@
         <p:column styleClass="col3">          
           <div class="flex">
             <p:commandButton title="#{cmsBundle.addPropertyValue}"
-                             actionListener="#{nodeEditBean.addPropertyValue}" 
-                             update="@this @(.searchPropertiesPanel)"
+                             actionListener="#{nodeEditBean.addPropertyValue}"
+                             process="@this @(.searchPropertiesPanel)"
+                             update="@(.searchPropertiesPanel)"
                              global="false"                             
                              icon="pi pi-plus" styleClass="ui-button-flat" />
             <p:commandButton title="#{cmsBundle.removeProperty}"
-                             actionListener="#{nodeEditBean.removeSearchProperty}"  
-                             update="@this @(.searchPropertiesPanel)"
+                             actionListener="#{nodeEditBean.removeSearchProperty}"
+                             process="@this @(.searchPropertiesPanel)"
+                             update="@(.searchPropertiesPanel)"
                              global="false"
                              icon="pi pi-times" styleClass="ui-button-flat" />
           </div>
@@ -70,8 +74,9 @@
         <f:facet name="footer">
           <p:commandButton id="nodeSearchButton2" 
                            value="#{cmsBundle.search}" title="#{cmsBundle.search}" 
-                           actionListener="#{nodeEditBean.fullSearch}" 
-                           update="@this :mainform:tree :mainform:rightPanel"
+                           actionListener="#{nodeEditBean.fullSearch}"
+                           process="@this :mainform:rightPanel"
+                           update=":mainform:tree :mainform:rightPanel"
                            oncomplete="treeScrollToFound()" 
                            icon="pi pi-search" /> 
           <p:selectOneRadio value="#{nodeEditBean.searchMode}" styleClass="searchModeSelect">
@@ -109,7 +114,8 @@
         <p:column styleClass="nodeId" headerText="#{cmsBundle.node}">
           <p:commandLink actionListener="#{nodeEditBean.selectSearchMenuItem(nodeSearchItem.nodeId)}" 
                          global="false"
-                         update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:leftPanel :mainform:rightPanel"
+                         process="@this"
+                         update="@(.toolbarRenderingButtons) :mainform:topPanel :mainform:leftPanel :mainform:rightPanel"
                          oncomplete="treeScrollToSelected()">
             <h:outputText value="#{nodeSearchItem.nodeId}" />
           </p:commandLink>              

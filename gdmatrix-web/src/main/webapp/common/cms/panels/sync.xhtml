@@ -20,10 +20,11 @@
         <f:selectItems value="#{nodeEditBean.toWorkspaceItems}" />
       </p:selectOneMenu>
       <p:commandButton id="syncNodeButton"
-                       value="#{cmsBundle.sync}"  
+                       value="#{cmsBundle.sync}" title="#{cmsBundle.sync}"  
                        actionListener="#{nodeEditBean.syncNode}"
                        styleClass="imageButton"
-                       update="@this :mainform:tree :mainform:rightPanel :mainform:messagesPanel"
+                       process="@this :mainform:rightPanel"
+                       update=":mainform:tree :mainform:rightPanel :mainform:messagesPanel"
                        rendered="#{not nodeEditBean.nodeChangeItemListEmpty}" 
                        icon="pi pi-sync" />
     </p:outputPanel>
