@@ -58,15 +58,17 @@
                        title="#{objectBundle.store}" 
                        action="#{ideBean.save}" 
                        process="@form:cnt" 
-                       update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor ide_confirm"
+                       update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm"
                        onstart="return checkSave();"
+                       oncomplete="modified = false; return true;"
                        icon="pi pi-save" 
                        styleClass="mini ml-2 mr-2 flex flex-nowrap">
           <p:menuitem value="#{objectBundle.storeNewVersion}" 
                       title="#{objectBundle.storeNewVersion}" 
                       action="#{ideBean.saveNewVersion}" 
                       process="@form:cnt" 
-                      update="@form:cnt:docs_panel @form:cnt:ide_history @form:editor ide_confirm"
+                      update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm"
+                      oncomplete="modified = false; return true;"
                       icon="pi pi-save" styleClass="mini" />
         </p:splitButton>          
         <div class="ui-inputgroup ml-1">
