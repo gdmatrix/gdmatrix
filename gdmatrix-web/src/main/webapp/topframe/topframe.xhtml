@@ -78,7 +78,9 @@
           </div> 
         </header>
         
-        <ui:include src="/topframe/toolbar.xhtml" />
+        <c:if test="${userSessionBean.viewMode != 'RENDER'}">
+          <ui:include src="/topframe/toolbar.xhtml" />
+        </c:if>
 
         <t:div styleClass="bannerWrapper warnmsg" rendered="#{userSessionBean.selectedMenuItem.properties['webWarning.message'] != null}">
           <div class="webWarningMessage#{userSessionBean.selectedMenuItem.properties['webWarning.fixed'] == 'false' ? '' : ' bannerFixed'}">

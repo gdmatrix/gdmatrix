@@ -108,6 +108,14 @@
                                oncomplete="hideContainer('login_panel')"
                                update="@none" />
             </div>
+
+            <p:outputPanel styleClass="p-2 w-full" 
+                           rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}">
+              <p:commandButton value="#{webBundle.cmsEditor}"
+                               action="#{userSessionBean.showEditView}"
+                               icon="pi pi-sitemap" ajax="false" />              
+            </p:outputPanel>            
+            
           </div>
         </ui:fragment>
       </p:outputPanel>

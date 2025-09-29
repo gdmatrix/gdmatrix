@@ -321,7 +321,10 @@
           </t:div>
           <t:div rendered="#{not userSessionBean.anonymousUser}" styleClass="logoutArea">
             <t:div styleClass="welcomeMessageDiv">
-              <h:outputText value="#{webBundle.welcome}, #{userSessionBean.displayName}" />
+              <h:outputText value="#{webBundle.welcome}, #{userSessionBean.displayName}" styleClass="mr-2" />
+              <h:commandLink value="[#{webBundle.cmsEditor}]" action="#{userSessionBean.showEditView}" 
+                             immediate="true" 
+                             rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}"/>
             </t:div>
             <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
                                userSessionBean.lastSuccessLoginDateTime != null}"

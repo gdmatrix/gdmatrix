@@ -325,7 +325,13 @@
                     <h:outputText value="#{webBundle.buttonSignout}" />
                   </h:commandLink>
                 </t:div>
-              </t:div>
+              </t:div>              
+              <t:div styleClass="loginBox logout" rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}">
+                <t:div>
+                  <h:commandLink value="#{webBundle.cmsEditor}" action="#{userSessionBean.showEditView}" 
+                                 immediate="true" styleClass="loginButton" />
+                </t:div>
+              </t:div>              
             </t:div>          
           </t:div>
         </t:div>

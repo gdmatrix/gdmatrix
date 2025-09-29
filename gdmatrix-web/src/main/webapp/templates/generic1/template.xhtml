@@ -62,6 +62,10 @@
                       <h:outputText value="[#{webBundle.buttonSignout}]" />
                     </h:commandLink>
                     
+                    <h:commandLink value="[#{webBundle.cmsEditor}]" action="#{userSessionBean.showEditView}" 
+                                   immediate="true" styleClass="loginCommand no-underline"
+                                   rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}" />
+                                        
                     <h:panelGroup rendered="#{not userSessionBean.selectedMenuItem.properties.hideCertificateAuthentication}">
                       <sf:secureCommandLink
                         styleClass="loginCommand" immediate="true"

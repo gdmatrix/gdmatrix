@@ -1020,8 +1020,12 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public String showEditView()
   {
-    view = EDIT_VIEW;
-    return "node_edit";
+    if (isAdministrator() || isCmsAdministrator())
+    {
+      view = EDIT_VIEW;
+      return "node_edit";
+    }
+    return null;
   }
 
   public String showSystemInfoView()

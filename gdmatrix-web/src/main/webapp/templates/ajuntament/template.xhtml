@@ -76,6 +76,10 @@
                     <h:outputText value="[#{webBundle.buttonSignout}]" />
                   </h:commandLink>
 
+                  <h:commandLink value="[#{webBundle.cmsEditor}]" action="#{userSessionBean.showEditView}" 
+                                 immediate="true" styleClass="loginCommand"
+                                 rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}" />                  
+                  
                   <sf:secureCommandLink
                     port="#{applicationBean.clientSecurePort}"
                     styleClass="loginCommand" immediate="true"

@@ -136,6 +136,10 @@
                            styleClass="loginButton" immediate="true">
               <h:outputText value="#{webBundle.buttonSignout}" />
             </h:commandLink>
+            
+            <h:commandLink value="#{webBundle.cmsEditor}" action="#{userSessionBean.showEditView}" 
+                           immediate="true" styleClass="loginButton"
+                           rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}" />            
 
             <h:commandLink action="password" styleClass="buttonLink">
               <h:outputText value="#{webBundle.outputChangePassword}" />

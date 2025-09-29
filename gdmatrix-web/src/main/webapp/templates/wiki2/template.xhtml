@@ -55,6 +55,10 @@
          styleClass="loginCommand" immediate="true">
         <h:outputText value="[#{webBundle.buttonSignout}]" />
       </h:commandLink>
+      <h:commandLink value="[#{webBundle.cmsEditor}]" action="#{userSessionBean.showEditView}" 
+                     immediate="true"
+                     styleClass="loginCommand ml-1"
+                     rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}" />      
       <h:panelGroup rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
                                 userSessionBean.lastSuccessLoginDateTime != null}"
                     styleClass="lastSuccessLoginDateTime">

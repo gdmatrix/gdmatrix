@@ -65,6 +65,10 @@
           styleClass="loginButton" immediate="true">
           <h:outputText value="#{webBundle.buttonSignout}" />
         </h:commandLink>
+        <h:commandLink value="#{webBundle.cmsEditor}" action="#{userSessionBean.showEditView}" 
+                       immediate="true"
+                       styleClass="loginButton ml-1"
+                       rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}" />        
       </h:panelGroup>
     </t:div>
 
