@@ -456,6 +456,7 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
     }
     document = getDocumentManagerClient().storeDocument(document);
     loadRoles(document);
+    loadAuditData(document);
     persistent = true;
 
     if (refreshDocuments) queryListBean.clearDocuments();

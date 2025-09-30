@@ -16,14 +16,14 @@
                        rendered="#{queryMainBean.persistent}" />
       <p:splitButton value="#{objectBundle.store}" title="#{objectBundle.store}" 
                      action="#{queryViewBean.saveQuery}" 
-                     process="@form:cnt" 
+                     process="@form:cnt" update="@(.auditData)"                    
                      icon="pi pi-save" 
                      rendered="#{queryMainBean.saveEnabled}" 
-                     styleClass="mini splitButton">
+                     styleClass="mini splitButton flex flex-nowrap">
         <p:menuitem value="#{objectBundle.storeNewVersion}" 
                     title="#{objectBundle.storeNewVersion}" 
                     action="#{queryViewBean.saveQueryNewVersion}" 
-                    process="@form:cnt" 
+                    process="@form:cnt" update="@(.auditData)"
                     icon="pi pi-save" styleClass="mini" />
       </p:splitButton>   
     </p:outputPanel>

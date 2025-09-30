@@ -26,14 +26,14 @@
           <p:splitButton id="query_store_button"
                          value="#{objectBundle.store}" title="#{objectBundle.store}" 
                          action="#{queryEditBean.saveQuery}" 
-                         process="@form:cnt" update="query_tabs" 
+                         process="@form:cnt" update="query_tabs @(.auditData)"
                          icon="pi pi-save" 
                          rendered="#{queryMainBean.saveEnabled}" 
-                         styleClass="mini">
+                         styleClass="mini flex flex-nowrap">
             <p:menuitem value="#{objectBundle.storeNewVersion}" 
                         title="#{objectBundle.storeNewVersion}" 
                         action="#{queryEditBean.saveQueryNewVersion}" 
-                        process="@form:cnt"  update="query_tabs"  
+                        process="@form:cnt" update="query_tabs @(.auditData)"
                         icon="pi pi-save" styleClass="mini" />
           </p:splitButton>   
         </c:when>
@@ -123,13 +123,13 @@
                          style="font-size:14px" />                 
       </div>
       
-      <div class="ui-fluid formgrid grid mt-2">
+      <p:outputPanel class="ui-fluid formgrid grid mt-2 auditData">
         <emcomp:auditData creationDateTime="#{queryMainBean.query.captureDateTime}"
                           creationUserId="#{queryMainBean.query.captureUserId}"
                           changeDateTime="#{queryMainBean.query.changeDateTime}"
                           changeUserId="#{queryMainBean.query.changeUserId}"
                           rendered="#{!queryMainBean.query.captureDateTime != null}" />       
-      </div>
+      </p:outputPanel>
       
     </p:panel>
     
