@@ -27,7 +27,7 @@
         <p:commandButton action="#{nodeEditBean.showPanel('LEFT')}"                             
                          process="@this"
                          update="@(.cmsEditPanel) topPanel"
-                         oncomplete="return treeScrollInit();"
+                         oncomplete="return treeScrollRestore()"
                          styleClass="showPanelButton"
                          icon="pi pi-sitemap"
                          rendered="#{nodeEditBean.visiblePanel == 'RIGHT'}" />                    
@@ -72,7 +72,8 @@
             </div>
           </p:outputPanel>
 
-          <div class="treePanel">
+          <div class="treePanel" 
+               onscroll="updateStoredTreeScroll()">
             <p:tree id="tree"
                     styleClass="tree" value="#{nodeEditBean.treeRoot}" var="node" dynamic="true" cache="false"
                     selectionMode="single" selection="#{nodeEditBean.selectedNode}"                       
@@ -110,6 +111,10 @@
             </p:tree>
 
             <p:contextMenu for="tree" id="treeContextMenu" style="width:200px">
+              <p:menuitem value="#{cmsBundle.edit}" 
+                          process="@this" update="@(.cmsEditPanel) topPanel"                          
+                          action="#{nodeEditBean.showPanel('RIGHT')}"
+                          icon="pi pi-pencil" rendered="#{nodeEditBean.visiblePanel == 'LEFT'}" />
               <p:menuitem value="#{cmsBundle.appendNode}" 
                           update="topPanel :mainform:tree :mainform:rightPanel messagesPanel" 
                           action="#{nodeEditBean.appendNode}"
@@ -229,27 +234,38 @@
       <p:remoteCommand name="showBothPanels" 
                        actionListener="#{nodeEditBean.showPanel('BOTH')}"
                        process="@this"
-                       update="@(.cmsEditPanel) topPanel" />
+                       update="@(.cmsEditPanel) topPanel"
+                       oncomplete="return treeScrollRestore()" />
       <p:remoteCommand name="showLeftPanel" 
                        actionListener="#{nodeEditBean.showPanel('LEFT')}"
                        process="@this"
-                       update="@(.cmsEditPanel) topPanel" />
-      <p:remoteCommand name="showRightPanel" 
-                       actionListener="#{nodeEditBean.showPanel('RIGHT')}"
-                       process="@this"
-                       update="@(.cmsEditPanel) topPanel" />            
+                       update="@(.cmsEditPanel) topPanel"
+                       oncomplete="return treeScrollRestore()" />
       <script>
         var oldWidth = null;
 
         function updatePanels()
         {
-          if (window.innerWidth &lt; 800 &amp;&amp; (oldWidth == null || oldWidth >= 800))
+          if (window.innerWidth &lt; 800)
           {
-            showLeftPanel();
+            if (oldWidth == null) //load
+            {
+              if (#{nodeEditBean.visiblePanel == 'BOTH'}) //initial load
+              {
+                showLeftPanel();
+              }
+            }
+            else if (oldWidth >= 800) //resize down
+            {
+              showLeftPanel();
+            }
           }
-          else if (window.innerWidth >= 800 &amp;&amp; (oldWidth == null || oldWidth &lt; 800))
+          else if (window.innerWidth >= 800)
           {
-            showBothPanels();
+            if (oldWidth != null &amp;&amp; oldWidth &lt; 800) //resize up
+            {
+              showBothPanels();
+            }
           }
           oldWidth = window.innerWidth;
         }
@@ -299,7 +315,11 @@
         
         function treeScrollInit()
         {
-          getTreePanel().scroll(updateStoredTreeScroll);
+          sessionStorage.setItem('cmsTreeScroll', 0);
+        }
+        
+        function treeScrollRestore()
+        {
           if (sessionStorage.getItem('cmsTreeScroll') == null)
           {
             sessionStorage.setItem('cmsTreeScroll', 0);
@@ -307,13 +327,13 @@
           getTreePanel().scrollTop(
             sessionStorage.getItem('cmsTreeScroll'));
         }
-                
+
         window.addEventListener('resize', updatePanels);
         window.addEventListener('load', function() {
-          updatePanels();
           treeScrollInit();
+          updatePanels();          
         });  
-  
+
       </script>
             
     </ui:define>
