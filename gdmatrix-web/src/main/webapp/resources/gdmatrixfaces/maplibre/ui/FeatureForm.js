@@ -73,8 +73,17 @@ class FeatureForm
         }
         if (!input)
         {
+          input = div.querySelector("select[name=" + propName + "]");
+        }
+        if (!input)
+        {
           const fieldName = featureInfo.name + "\\." + propName;
           input = div.querySelector("input[name=" + fieldName + "]");
+        }        
+        if (!input)
+        {
+          const fieldName = featureInfo.name + "\\." + propName;
+          input = div.querySelector("select[name=" + fieldName + "]");
         }        
         if (input)
         {
