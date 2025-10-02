@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -126,6 +127,10 @@ public class PersonEventsTabBean extends TabBean
           Item item = RowsFilterHelper.createTypeItem(typeId);
           return (item != null ? item : RowsFilterHelper.createEmptyItem());          
         }
+        else if ("attended".equals(columnName))
+        {
+          return new Item(getAttendedLabel(row));
+        }          
         else
         {
           return null;
@@ -193,6 +198,10 @@ public class PersonEventsTabBean extends TabBean
           Item item = RowsFilterHelper.createTypeItem(typeId);
           return (item != null ? item : RowsFilterHelper.createEmptyItem());          
         }
+        else if ("attended".equals(columnName))
+        {
+          return new Item(getAttendedLabel(row));
+        }         
         else
         {
           return null;
@@ -281,6 +290,10 @@ public class PersonEventsTabBean extends TabBean
           return typeTypeBean.getTypeDescription(
             attendantView.getAttendantTypeId());
         }
+        else if ("attended".equals(columnName))
+        {
+          return attendantView.getAttended();
+        }        
         else
         {
           return null;
@@ -360,6 +373,25 @@ public class PersonEventsTabBean extends TabBean
   {
     getCurrentTabInstance().firstRow = firstRow;
   }
+  
+  public String getAttendedLabel(AttendantView row)
+  {
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.agenda.web.resources.AgendaBundle", getLocale());
+    String attended = row.getAttended();
+    if (attended == null) return "";
+    else switch (attended)
+    {
+      case "S":
+        return bundle.getString("attendants_yes");
+      case "N":
+        return bundle.getString("attendants_no");
+      case "J":
+        return bundle.getString("attendants_ea");
+      default:
+        return "";
+    }
+  }  
 
   @Override
   public void load() throws Exception

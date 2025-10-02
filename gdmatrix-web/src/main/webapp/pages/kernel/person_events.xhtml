@@ -111,7 +111,13 @@
                 rendered="#{personEventsTabBean.groupableRowsHelper.isColumnRendered('attendantTypeId')}"
                 sortBy="#{typeTypeBean.getDescription(row.attendantTypeId)}">                
         <h:outputText value="#{typeTypeBean.getDescription(row.attendantTypeId)}"/>
-      </p:column>        
+      </p:column>   
+      
+      <p:column headerText="#{kernelBundle.personEvents_attended}" styleClass="col-1 text-center"
+                rendered="#{personEventsTabBean.groupableRowsHelper.isColumnRendered('attended')}"
+                sortBy="#{personEventsTabBean.getAttendedLabel(row)}">
+        <h:outputText value="#{personEventsTabBean.getAttendedLabel(row)}"/>
+      </p:column>       
          
       <p:column styleClass="text-right white-space-nowrap" exportable="false">
         <p:commandButton icon="pi pi-arrow-circle-right"
