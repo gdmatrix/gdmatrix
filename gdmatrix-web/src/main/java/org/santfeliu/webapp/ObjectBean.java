@@ -679,7 +679,7 @@ public abstract class ObjectBean extends BaseBean
   
   public void copyObject() throws Exception
   {    
-  }
+  }  
   
   public boolean isRenderCopyButton()
   {
@@ -697,6 +697,36 @@ public abstract class ObjectBean extends BaseBean
       }
     }
     return false;    
+  }
+  
+  public String getCopyLabel()
+  {    
+    String label = "$$objectBundle.duplicate";
+    try
+    {
+      Object value = getObjectSetup().getProperties().get("copyLabel");
+      if (value != null)
+      {
+        label = value.toString();
+      }
+      else
+      {
+        String typeId = getTypeBean().getTypeId(getObject());
+        if (typeId != null)
+        {
+          Type type = TypeCache.getInstance().getType(typeId);
+          PropertyDefinition propdef = type.getPropertyDefinition("copyLabel");
+          if (propdef != null && !propdef.getValue().isEmpty())
+          {
+            label = propdef.getValue().get(0);
+          }
+        }
+      }
+    }
+    catch (Exception ex)
+    {      
+    }
+    return ApplicationBean.getCurrentInstance().translate(label);      
   }
 
   public void remove()

@@ -110,7 +110,7 @@
                         rendered="#{not empty action.label and action.isJsAction()}"/>               
           </c:forEach>
           <p:menuitem action="#{objectBean.copy}"
-                      value="#{objectBundle.copy}"
+                      value="#{objectBean.copyLabel}"
                       icon="pi pi-copy"
                       process="@form:cnt:search_tabs:obj_tabs"
                       update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
