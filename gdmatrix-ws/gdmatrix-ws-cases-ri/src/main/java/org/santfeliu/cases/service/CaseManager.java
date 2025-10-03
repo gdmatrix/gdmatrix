@@ -1051,6 +1051,10 @@ public class CaseManager implements CaseManagerPort
                 caseObject.setDescription(dbCase.getDescription());
                 caseObject.setCaseTypeId(dbCase.getCaseTypeId());
                 caseObject.setComments(dbCase.getComments());
+                caseObject.setStartDate(dbCase.getStartDate());
+                caseObject.setStartTime(dbCase.getStartTime());
+                caseObject.setEndDate(dbCase.getEndDate());
+                caseObject.setEndTime(dbCase.getEndTime());
                 caseAddressView.setCaseObject(caseObject);
               }
               caseAddressViewList.add(caseAddressView);
