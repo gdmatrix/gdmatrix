@@ -496,6 +496,10 @@
         "exportLabel": {
           "description": "...",
           "type": "string"
+        },
+        "altExpression": {
+          "description": "...",
+          "type": "string"
         }
       },
       "patternProperties": {

@@ -122,7 +122,10 @@
                  style="#{caseCasesTabBean.groupableRowsHelper.isColumnRendered(column) ? '' : 'display:none'}"
                  sortBy="#{row.values[i].sorted}" >
         <i class="#{row.values[i].icon}" jsf:rendered="#{column.icon != null}" />
-        <h:outputText value="#{row.values[i].label}" escape="#{column.escape}" />
+        <h:outputText id="column_value" value="#{row.values[i].label}" escape="#{column.escape}" />
+        <p:tooltip for="column_value" rendered="#{row.values[i].altLabel != null}">
+          <h:outputText value="#{row.values[i].altLabel}" escape="#{column.escape}" />
+        </p:tooltip>           
       </p:columns>
 
       <p:column styleClass="text-right white-space-nowrap">

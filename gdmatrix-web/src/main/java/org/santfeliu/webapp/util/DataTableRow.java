@@ -294,12 +294,13 @@ public class DataTableRow implements Serializable
   protected Value getTablePropertyValue(BaseBean baseBean,
     TableProperty tableProperty, Object row) throws Exception
   {
+    Value result;
+    ScriptClient scriptClient = null; 
+    
     if (tableProperty.getExpression() != null)
     {
-      ScriptClient scriptClient = getScriptClient(baseBean);
-      scriptClient.put("row", row);
-      scriptClient.put("baseBean", baseBean);     
-      return new DefaultValue(
+      scriptClient = getScriptClient(baseBean, row);
+      result = new DefaultValue(
         scriptClient.execute(tableProperty.getExpression()), 
           tableProperty.getIcon());
     }
@@ -312,14 +313,22 @@ public class DataTableRow implements Serializable
         List<String> value = property.getValue();
         String name = tableProperty.getName();
         String icon = tableProperty.getIcon();
-        return formatValue(typeId, name, value, icon);
+        result = formatValue(typeId, name, value, icon);
       }
       else
-        return getDefaultValue(tableProperty.getName());
+        result = getDefaultValue(tableProperty.getName());
     }
+    
+    if (tableProperty.getAltExpression() != null)
+    {
+      if (scriptClient == null)
+        scriptClient = getScriptClient(baseBean, row);
+      result.setAltLabel(scriptClient.execute(tableProperty.getAltExpression()));
+    }
+    return result;    
   }
     
-  private ScriptClient getScriptClient(BaseBean baseBean)
+  private ScriptClient getScriptClient(BaseBean baseBean, Object row)
     throws Exception
   {    
     ScriptClient scriptClient;
@@ -350,7 +359,10 @@ public class DataTableRow implements Serializable
         scriptClient = objectBean.getScriptClient(scriptName);
       else
         scriptClient = new ScriptClient();
-    }    
+    } 
+    
+    scriptClient.put("row", row);
+    scriptClient.put("baseBean", baseBean);     
     
     return scriptClient;
   }
@@ -372,6 +384,7 @@ public class DataTableRow implements Serializable
   {
     protected String label;
     protected String icon;
+    protected String altLabel;
 
     public String getLabel()
     {
@@ -391,6 +404,16 @@ public class DataTableRow implements Serializable
     public String getRawValue() //default raw value
     {
       return (String)getSorted();
+    }
+
+    public String getAltLabel()
+    {
+      return altLabel;
+    }
+
+    public void setAltLabel(Object altLabel)
+    {
+      this.altLabel = altLabel != null ? altLabel.toString() : null;
     }
   }
 

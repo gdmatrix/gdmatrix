@@ -92,6 +92,24 @@
                 sortBy="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
+      <p:column headerText="#{caseBundle.caseAddresses_startDate}" styleClass="col-1"
+                rendered="#{addressCasesTabBean.groupableRowsHelper.isColumnRendered('startDate')}"
+                sortBy="#{row.caseObject.startDate}">
+        <h:outputText id="startDateValue" value="#{row.caseObject.startDate}" converter="dateConverter"/>
+        <p:tooltip for="startDateValue" rendered="#{row.startDate != null}" >
+          <h:outputText value="#{kernelBundle.personCases_relationStartDate}: "/>
+          <h:outputText value="#{row.startDate}" converter="dateConverter"/>
+        </p:tooltip>
+      </p:column>  
+      <p:column headerText="#{caseBundle.caseAddresses_endDate}" styleClass="col-1"
+                rendered="#{addressCasesTabBean.groupableRowsHelper.isColumnRendered('endDate')}"
+                sortBy="#{row.caseObject.endDate}">
+        <h:outputText id="endDateValue" value="#{row.caseObject.endDate}" converter="dateConverter"/>
+        <p:tooltip for="endDateValue" rendered="#{row.endDate != null}" >
+          <h:outputText value="#{kernelBundle.personCases_relationEndDate}: "/>          
+          <h:outputText value="#{row.endDate}" converter="dateConverter"/>
+        </p:tooltip>        
+      </p:column>         
       <p:column headerText="#{caseBundle.caseAddresses_comments}" styleClass="col-3"
                 rendered="#{addressCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}"
                 sortBy="#{row.comments}">

@@ -50,6 +50,7 @@ public class TableProperty implements Serializable, Comparable<TableProperty>
   private boolean escape = true;
   private String exportLabel;
   private Boolean exportable;
+  private String altExpression;
   
   public TableProperty()
   {
@@ -173,6 +174,16 @@ public class TableProperty implements Serializable, Comparable<TableProperty>
   public void setExportable(Boolean exportable) 
   {
     this.exportable = exportable;
+  }
+
+  public String getAltExpression()
+  {
+    return altExpression;
+  }
+
+  public void setAltExpression(String altExpression)
+  {
+    this.altExpression = altExpression;
   }
   
   @Override

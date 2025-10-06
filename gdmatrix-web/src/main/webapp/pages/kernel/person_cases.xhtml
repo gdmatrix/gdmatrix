@@ -94,13 +94,23 @@
       </p:column>
       <p:column headerText="#{kernelBundle.personCases_startDate}" styleClass="col-1"
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('startDate')}"
-                sortBy="#{row.startDate}">
-        <h:outputText value="#{row.startDate}" converter="dateConverter"/>
+                sortBy="#{row.caseObject.startDate}">
+        <h:outputText id="startDateValue" value="#{row.caseObject.startDate}" converter="dateConverter"/>
+        <p:tooltip for="startDateValue">
+          <h:outputText value="#{kernelBundle.personCases_relationStartDate}: "/>
+          <h:outputText value="#{row.startDate}" converter="dateConverter" rendered="#{row.startDate != null}"/>
+          <h:outputText value="-" rendered="#{row.startDate == null}"/>
+        </p:tooltip>
       </p:column>  
       <p:column headerText="#{kernelBundle.personCases_endDate}" styleClass="col-1"
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('endDate')}"
-                sortBy="#{row.endDate}">
-        <h:outputText value="#{row.endDate}" converter="dateConverter"/>
+                sortBy="#{row.caseObject.endDate}">
+        <h:outputText id="endDateValue" value="#{row.caseObject.endDate}" converter="dateConverter"/>
+        <p:tooltip for="endDateValue" >
+          <h:outputText value="#{kernelBundle.personCases_relationEndDate}: "/>
+          <h:outputText value="#{row.endDate}" converter="dateConverter" rendered="#{row.endDate != null}"/>
+          <h:outputText value="-" rendered="#{row.endDate == null}"/>          
+        </p:tooltip>        
       </p:column>        
       <p:column headerText="#{kernelBundle.personCases_comments}" 
                 rendered="#{personCasesTabBean.groupableRowsHelper.isColumnRendered('comments')}"
