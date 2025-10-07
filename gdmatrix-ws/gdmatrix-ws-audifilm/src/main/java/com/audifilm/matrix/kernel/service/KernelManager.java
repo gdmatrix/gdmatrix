@@ -258,6 +258,13 @@ public class KernelManager implements KernelManagerPort
     validatePerson(person);
     checkStorePerson(person, KernelConstants.KERNEL_ADMIN_ROLE);
 
+    if (person.getName() != null)
+      person.setName(person.getName().trim());
+    if (person.getFirstSurname() != null)
+      person.setFirstSurname(person.getFirstSurname().trim());
+    if (person.getSecondSurname() != null)
+      person.setSecondSurname(person.getSecondSurname().trim());
+
     DBPerson dbPerson;
 
     if (person.getPersonId() == null) // insert new person
