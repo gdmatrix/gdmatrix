@@ -418,26 +418,36 @@ public class FormImporter
     }
     else if (Field.NUMBER.equals(fieldType))
     {
-      InputNumber inputNumber =
-        (InputNumber)application.createComponent(InputNumber.COMPONENT_TYPE);
-      inputNumber.setReadonly(field.isReadOnly());
-      inputNumber.setPadControl(false);
+      if (view instanceof HtmlSelectView)
+      {        
+        String multipleValue = String.valueOf(view.getProperty("multiple"));
+        isMultiple = "true".equals(multipleValue);
+        component = 
+          importSelectView(field, view, component, application, isMultiple);
+      }
+      else
+      {
+        InputNumber inputNumber =
+          (InputNumber)application.createComponent(InputNumber.COMPONENT_TYPE);
+        inputNumber.setReadonly(field.isReadOnly());
+        inputNumber.setPadControl(false);
 
-      //Convert value to number.
-      NumberConverter converter = new NumberConverter();
-      converter.setGroupingUsed(false);
-      converter.setLocale(Locale.US);
-      inputNumber.setConverter(converter);
+        //Convert value to number.
+        NumberConverter converter = new NumberConverter();
+        converter.setGroupingUsed(false);
+        converter.setLocale(Locale.US);
+        inputNumber.setConverter(converter);
 
-      //Set separators format
-      DecimalFormatSymbols dfs =
-        DecimalFormatSymbols.getInstance(facesContext.getViewRoot().getLocale());
-      inputNumber.setDecimalSeparator(String.valueOf(dfs.getDecimalSeparator()));
-      inputNumber.setThousandSeparator(String.valueOf(dfs.getGroupingSeparator()));
-      inputNumber.setDecimalPlaces("18");
+        //Set separators format
+        DecimalFormatSymbols dfs =
+          DecimalFormatSymbols.getInstance(facesContext.getViewRoot().getLocale());
+        inputNumber.setDecimalSeparator(String.valueOf(dfs.getDecimalSeparator()));
+        inputNumber.setThousandSeparator(String.valueOf(dfs.getGroupingSeparator()));
+        inputNumber.setDecimalPlaces("18");
 
-      if (field.getMinOccurs() > 0) setRequired(inputNumber);
-      component = inputNumber;
+        if (field.getMinOccurs() > 0) setRequired(inputNumber);
+        component = inputNumber;
+      }
     }
     else if (Field.BOOLEAN.equals(fieldType))
     {
@@ -480,77 +490,8 @@ public class FormImporter
       {        
         String multipleValue = String.valueOf(view.getProperty("multiple"));
         isMultiple = "true".equals(multipleValue);
-
-        if (isMultiple)
-        {
-          SelectCheckboxMenu select =
-            (SelectCheckboxMenu)application.createComponent(SelectCheckboxMenu.COMPONENT_TYPE);
-          select.setMultiple(true);
-          select.setReadonly(field.isReadOnly());
-          component = select;
-        }
-        else
-        {
-          SelectOneMenu select =
-            (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
-          select.setReadonly(field.isReadOnly());
-          select.setDisabled(field.isReadOnly());
-          select.setAutoWidth("false");
-          select.setTouchable(true);
-          String renderer = (String)view.getProperty("renderer");                  
-          if ("autocomplete".equals(renderer))
-          {
-            select.setFilter(true);
-            select.setFilterMatchMode("contains");
-            select.setFilterNormalize(true);
-          }
-          String onChange = (String)view.getProperty("onchange");
-          if (onChange != null)
-          {
-            onChange = onChange.trim();
-            if ("submit()".equals(onChange) || "submit();".equals(onChange))
-            {
-              AjaxBehavior ajax = new AjaxBehavior();
-              ajax.setProcess("@this");
-              ajax.setUpdate("dyn_form");
-              select.addClientBehavior("itemSelect", ajax);
-            }
-          }
-          component = select;          
-        }
-
-        String searchForm = (String) options.get(SEARCH_FORM_OPTION);
-        boolean addEmptyValue = searchForm != null && searchForm.equals("true");
-
-        List<View> children = view.getChildren();
-
-        try
-        {
-          if (addEmptyValue && !isMultiple)
-          {
-            component.getChildren().add(new UISelectItem());
-          }
-
-          for (View child : children)
-          {
-            if (View.ITEM.equals(child.getViewType()))
-            {
-              String itemValue = (String)child.getProperty("value");
-              String itemLabel = child.getChildren().isEmpty() ? "" :
-                (String)child.getChildren().get(0).getProperty("text");
-
-              if (!isBlank(itemLabel) || !addEmptyValue)
-              {
-                UISelectItem selectItem = new UISelectItem();
-                selectItem.setItemValue(itemValue);
-                selectItem.setItemLabel(itemLabel);
-                component.getChildren().add(selectItem);
-              }
-            }
-          }
-        }
-        catch (Exception exx)
-        { exx.printStackTrace(); };
+        component = 
+          importSelectView(field, view, component, application, isMultiple);
       }
       else if (view instanceof HtmlRadioView)
       {
@@ -887,7 +828,7 @@ public class FormImporter
         }
       }
 
-      if (isInspectMode() && view.getProperty("name") != null)
+      if (isInspectMode() && view != null && view.getProperty("name") != null)
       {
         HtmlOutputText varNameOutputText = (HtmlOutputText)application.
           createComponent(HtmlOutputText.COMPONENT_TYPE);
@@ -899,6 +840,92 @@ public class FormImporter
       }
     }
   }
+  
+  protected UIComponent importSelectView(Field field, View view, 
+    UIComponent component, Application application, boolean isMultiple)
+  {    
+    if (isMultiple)
+    {
+      SelectCheckboxMenu select =
+        (SelectCheckboxMenu)application
+          .createComponent(SelectCheckboxMenu.COMPONENT_TYPE);
+      select.setMultiple(true);
+      select.setReadonly(field.isReadOnly());        
+      component = select;
+    }
+    else
+    {
+      SelectOneMenu select =
+        (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
+      select.setReadonly(field.isReadOnly());
+      select.setDisabled(field.isReadOnly());
+      select.setAutoWidth("false");
+      select.setTouchable(true);
+      String renderer = (String)view.getProperty("renderer");                  
+      if ("autocomplete".equals(renderer))
+      {
+        select.setFilter(true);
+        select.setFilterMatchMode("contains");
+        select.setFilterNormalize(true);
+      }
+      String onChange = (String)view.getProperty("onchange");
+      if (onChange != null)
+      {
+        onChange = onChange.trim();
+        if ("submit()".equals(onChange) || "submit();".equals(onChange))
+        {
+          AjaxBehavior ajax = new AjaxBehavior();
+          ajax.setProcess("@this");
+          ajax.setUpdate("dyn_form");
+          select.addClientBehavior("itemSelect", ajax);
+        }
+      }
+      component = select;          
+    }
+
+    String searchForm = (String) options.get(SEARCH_FORM_OPTION);
+    boolean addEmptyValue = searchForm != null && searchForm.equals("true");
+
+    List<View> children = view.getChildren();
+
+    try
+    {
+      if (addEmptyValue && !isMultiple)
+      {
+        component.getChildren().add(new UISelectItem());
+      }
+
+      for (View child : children)
+      {
+        if (View.ITEM.equals(child.getViewType()))
+        {
+          Object rawValue = child.getProperty("value");
+          Object itemValue = rawValue;
+          if (rawValue != null) 
+          {
+            if (Field.NUMBER.equals(field.getType())) 
+              itemValue = Double.valueOf(rawValue.toString());
+          }
+          String itemLabel = child.getChildren().isEmpty() ? "" :
+            (String)child.getChildren().get(0).getProperty("text");
+
+          if (!isBlank(itemLabel) || !addEmptyValue)
+          {
+            UISelectItem selectItem = new UISelectItem();
+            selectItem.setItemValue(itemValue);
+            selectItem.setItemLabel(itemLabel);
+            component.getChildren().add(selectItem);
+          }
+        }
+      }
+    }
+    catch (Exception ex)
+    { 
+      ex.printStackTrace(); 
+    };
+
+    return component;
+  }  
 
   protected void importMapLibre(HtmlView view, UIComponent parent)
   {
@@ -976,7 +1003,8 @@ public class FormImporter
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Application application = facesContext.getApplication();
         HtmlOutputText outputText =
-          (HtmlOutputText)application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+          (HtmlOutputText)application
+            .createComponent(HtmlOutputText.COMPONENT_TYPE);
         outputText.setEscape(false);
         String styleClass = view.getProperty("class");
         if (styleClass == null) styleClass = "col-12";
