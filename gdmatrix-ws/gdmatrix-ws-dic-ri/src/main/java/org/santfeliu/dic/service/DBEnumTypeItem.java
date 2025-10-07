@@ -39,6 +39,8 @@ import org.santfeliu.jpa.JPAUtils;
  */
 public class DBEnumTypeItem extends EnumTypeItem
 {
+  private String strDisabled;
+  
   private DBEnumType enumType; //Relationship
 
   public DBEnumTypeItem()
@@ -50,6 +52,16 @@ public class DBEnumTypeItem extends EnumTypeItem
     copyFrom(enumTypeItem);
   }
 
+  public String getStrDisabled() 
+  {
+    return strDisabled;
+  }
+
+  public void setStrDisabled(String strDisabled) 
+  {
+    this.strDisabled = strDisabled;
+  }
+  
   public DBEnumType getEnumType()
   {
     return enumType;
@@ -63,6 +75,7 @@ public class DBEnumTypeItem extends EnumTypeItem
   public void copyTo(EnumTypeItem enumTypeItem)
   {
     JPAUtils.copy(this, enumTypeItem);
+    enumTypeItem.setDisabled("Y".equals(strDisabled));
   }
 
   public void copyFrom(EnumTypeItem enumTypeItem)
@@ -73,5 +86,7 @@ public class DBEnumTypeItem extends EnumTypeItem
     setIndex(enumTypeItem.getIndex());
     setLabel(enumTypeItem.getLabel());
     setDescription(enumTypeItem.getDescription());
+    setDisabled(enumTypeItem.isDisabled());
+    setStrDisabled(enumTypeItem.isDisabled() ? "Y" : "N");
   }
 }

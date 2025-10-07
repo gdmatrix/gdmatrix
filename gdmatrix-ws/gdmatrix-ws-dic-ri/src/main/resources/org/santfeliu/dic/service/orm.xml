@@ -349,6 +349,9 @@
       <basic name="description">
         <column name="DESCRIPTION" length="2000" />
       </basic>
+      <basic name="strDisabled">
+        <column name="DISABLED" length="1" />
+      </basic>
       <many-to-one name="enumType">
         <join-column name="TYPEID" referenced-column-name="TYPEID"
             insertable="false" updatable="false" />

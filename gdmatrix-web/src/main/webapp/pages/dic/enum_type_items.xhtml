@@ -16,7 +16,8 @@
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowsPerPageTemplate="5,10,25,50" 
                draggableRows="true" rowDragSelector=".drag"
-               emptyMessage="#{objectBundle.no_data}">
+               emptyMessage="#{objectBundle.no_data}" 
+               rowStyleClass="#{row.disabled ? 'line-through' : ''}">
 
     <f:facet name="header">
       <div class="flex justify-content-end col-12">
@@ -167,6 +168,14 @@
           <p:inputTextarea value="#{enumTypeItemsTabBean.editing.description}" />
         </div>
 
+        <div class="field col-12 flex">
+          <p:toggleSwitch value="#{enumTypeItemsTabBean.editing.disabled}"
+                          styleClass="mr-2" />
+          <p:outputLabel for="@previous"
+                         value="#{dicBundle.enumTypeItems_disabled}"
+                         styleClass="my-auto" />
+        </div>    
+        
       </div>
     </h:panelGroup>
 
