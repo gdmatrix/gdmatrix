@@ -7,6 +7,8 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:gdm="http://gdmatrix.org/faces">
 
+  <h:outputScript library="js" name="chips.js" />    
+  
   <div class="ui-fluid formgrid grid">
 
     <h:panelGroup id="status_icons" styleClass="w-full m-0 flex justify-content-end"> 
@@ -102,14 +104,14 @@
                                title="#{newsBundle.new_main_customUrlTargetBlank}"
                                />    
       </div>
-    </div>   
-
+    </div> 
+       
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{newsBundle.new_main_keywords}" />
-      <div class="ui-inputgroup">
-        <p:chips value="#{newObjectBean.keywords}" widgetVar="keywordsInput" separator=" " />
-        <p:selectBooleanButton styleClass="ui-button ui-button-icon-only" onIcon="pi pi-tags" offIcon="pi pi-tags"  
-                               onchange="PF('keywordsInput').toggleEditor()"  />        
+      <div class="ui-inputgroup">       
+        <p:chips value="#{newObjectBean.keywords}" widgetVar="keywordsInput" separator=";" />
+        <p:selectBooleanButton widgetVar="keywordsButton" styleClass="ui-button ui-button-icon-only" onIcon="pi pi-code" offIcon="pi pi-tags"  
+                               onchange="toggleChips('keywordsInput', 'keywordsButton')"  />        
       </div>
     </div>     
 

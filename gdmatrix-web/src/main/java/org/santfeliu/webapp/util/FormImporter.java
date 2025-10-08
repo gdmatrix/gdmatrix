@@ -68,6 +68,7 @@ import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.outputpanel.OutputPanel;
 import org.primefaces.component.password.Password;
+import org.primefaces.component.selectbooleanbutton.SelectBooleanButton;
 import org.primefaces.component.selectcheckboxmenu.SelectCheckboxMenu;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.selectoneradio.SelectOneRadio;
@@ -731,81 +732,116 @@ public class FormImporter
       HtmlPanelGroup inputgroup = null;
       if (view != null)
       {
-        Object infoIcon = view.getProperty("infoicon");
-        Object infoText = view.getProperty("infotext");
-
-        if (infoIcon != null || infoText != null)
+        if (component instanceof Chips) //Own inputgroup
         {
+          Chips chips = (Chips) component;
+          String widgetVar = view.getReference() + "Chips";
+          chips.setWidgetVar(widgetVar);
+          chips.setSeparator(";");
+          
+          String script = 
+            "<script type=\"text/javascript\" src=\"/javax.faces.resource/chips.js.faces?ln=js\"></script>";
+          
+          HtmlOutputText outputText =
+            (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+          outputText.setValue(script);
+          outputText.setEscape(false);          
+          
           inputgroup =
             (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
           inputgroup.setStyleClass("ui-inputgroup");
-
-          boolean leftIcon = false;
-          boolean leftText = false;
-          OutputPanel iconAddon = null;
-          OutputPanel textAddon = null;
-
-          if (infoIcon != null)
-          {
-            String info = String.valueOf(infoIcon);
-            if (info.startsWith("left:"))
-            {
-              leftIcon = true;
-              info = info.substring(5, info.length());
-            }
-            iconAddon =
-              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE);
-            iconAddon.setStyleClass("ui-inputgroup-addon");
-
-            HtmlPanelGroup outputPanel =
-              (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-
-            outputPanel.setStyleClass(info);
-
-            iconAddon.getChildren().add(outputPanel);
-
-            if (leftIcon)
-              inputgroup.getChildren().add(iconAddon);
-          }
-
-          if (infoText != null)
-          {
-            String info = String.valueOf(infoText);
-            if (info.startsWith("left:"))
-            {
-              leftText = true;
-              info = info.substring(5, info.length());
-            }
-
-            textAddon =
-              (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE);
-            textAddon.setStyleClass("ui-inputgroup-addon");
-
-            HtmlOutputText outputText =
-              (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
-            outputText.setValue(info);
-            outputText.setEscape(false);
-
-            textAddon.getChildren().add(outputText);
-
-            if (leftText)
-              inputgroup.getChildren().add(textAddon);
-          }
-
+          SelectBooleanButton button = 
+            (SelectBooleanButton) application.createComponent(SelectBooleanButton.COMPONENT_TYPE);
+          String buttonWidgetVar = view.getReference()+ "ChipsButton";       
+          button.setWidgetVar(buttonWidgetVar);
+          button.setOnchange("toggleChips('" + widgetVar + "', '" + buttonWidgetVar + "');");
+          button.setOnIcon("pi pi-code");
+          button.setOffIcon("pi pi-tags");
+                    
           inputgroup.getChildren().add(component);
-
-          if (infoIcon != null && !leftIcon)
-              inputgroup.getChildren().add(iconAddon);
-          if (infoText != null && !leftText)
-              inputgroup.getChildren().add(textAddon);
-
-          if (label != null)
-          {
-            int idx = inputgroup.getChildren().indexOf(component);
-            label.setFor("@next:@child(" + idx + ")");
-          }
-
+          inputgroup.getChildren().add(button);
+          
+          group.getChildren().add(outputText); 
           group.getChildren().add(inputgroup);
+        }  
+        else
+        {
+          Object infoIcon = view.getProperty("infoicon");
+          Object infoText = view.getProperty("infotext");
+
+          if (infoIcon != null || infoText != null)
+          {
+            inputgroup =
+              (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+            inputgroup.setStyleClass("ui-inputgroup");
+
+            boolean leftIcon = false;
+            boolean leftText = false;
+            OutputPanel iconAddon = null;
+            OutputPanel textAddon = null;
+
+            if (infoIcon != null)
+            {
+              String info = String.valueOf(infoIcon);
+              if (info.startsWith("left:"))
+              {
+                leftIcon = true;
+                info = info.substring(5, info.length());
+              }
+              iconAddon =
+                (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE);
+              iconAddon.setStyleClass("ui-inputgroup-addon");
+
+              HtmlPanelGroup outputPanel =
+                (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+
+              outputPanel.setStyleClass(info);
+
+              iconAddon.getChildren().add(outputPanel);
+
+              if (leftIcon)
+                inputgroup.getChildren().add(iconAddon);
+            }
+
+            if (infoText != null)
+            {
+              String info = String.valueOf(infoText);
+              if (info.startsWith("left:"))
+              {
+                leftText = true;
+                info = info.substring(5, info.length());
+              }
+
+              textAddon =
+                (OutputPanel)application.createComponent(OutputPanel.COMPONENT_TYPE);
+              textAddon.setStyleClass("ui-inputgroup-addon");
+
+              HtmlOutputText outputText =
+                (HtmlOutputText) application.createComponent(HtmlOutputText.COMPONENT_TYPE);
+              outputText.setValue(info);
+              outputText.setEscape(false);
+
+              textAddon.getChildren().add(outputText);
+
+              if (leftText)
+                inputgroup.getChildren().add(textAddon);
+            }
+
+            inputgroup.getChildren().add(component);
+
+            if (infoIcon != null && !leftIcon)
+                inputgroup.getChildren().add(iconAddon);
+            if (infoText != null && !leftText)
+                inputgroup.getChildren().add(textAddon);
+
+            if (label != null)
+            {
+              int idx = inputgroup.getChildren().indexOf(component);
+              label.setFor("@next:@child(" + idx + ")");
+            }
+
+            group.getChildren().add(inputgroup);
+          }
         }
       }
 
