@@ -78,10 +78,11 @@ public class EnumTypeDataProvider implements DataProvider
     {
       items = EnumTypeCache.getInstance().getItemsByValue(enumTypeId, value);  
     }    
-    Table table = new Table("value", "label", "title");
+    Table table = new Table("value", "label", "title", "disabled");
     for (EnumTypeItem item : items)
     {
-      table.addRow(item.getValue(), item.getLabel(), item.getDescription());
+      table.addRow(item.getValue(), item.getLabel(), item.getDescription(), 
+        item.isDisabled());
     }
     return table;
   }

@@ -931,6 +931,7 @@ public class FormImporter
         component.getChildren().add(new UISelectItem());
       }
 
+      List<UISelectItem> disabledItems = new ArrayList<>();
       for (View child : children)
       {
         if (View.ITEM.equals(child.getViewType()))
@@ -950,9 +951,23 @@ public class FormImporter
             UISelectItem selectItem = new UISelectItem();
             selectItem.setItemValue(itemValue);
             selectItem.setItemLabel(itemLabel);
-            component.getChildren().add(selectItem);
+            boolean disabled =
+              Boolean.parseBoolean((String)child.getProperty("disabled"));
+            selectItem.setItemDisabled(disabled);
+            if (disabled)
+            {
+              disabledItems.add(selectItem); //add later
+            }
+            else
+            {
+              component.getChildren().add(selectItem);
+            }
           }
         }
+      }
+      for (UISelectItem selectItem : disabledItems)
+      {
+        component.getChildren().add(selectItem);
       }
     }
     catch (Exception ex)

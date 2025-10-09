@@ -120,6 +120,10 @@ public class HtmlSelectView extends HtmlView
         for (int i = 0; i < result.getRowCount(); i++)
         {
           HtmlView option = new HtmlView();
+          if (Boolean.TRUE.equals(result.getRow(i).get("disabled")))
+          {
+            option.setProperty("disabled", "true");
+          }
           option.tag = "option";
           option.setViewType(View.ITEM);
           option.setProperty("value",
@@ -139,7 +143,7 @@ public class HtmlSelectView extends HtmlView
           optionValue.setProperty("text",
             String.valueOf(result.getElementAt(i, 1)));
           option.getChildren().add(optionValue);
-          getChildren().add(option);
+          getChildren().add(option);          
         }
       }
     }
