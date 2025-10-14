@@ -120,7 +120,8 @@ public class HtmlSelectView extends HtmlView
         for (int i = 0; i < result.getRowCount(); i++)
         {
           HtmlView option = new HtmlView();
-          if (Boolean.TRUE.equals(result.getRow(i).get("disabled")))
+          if (result.getRow(i).containsKey("disabled") &&
+            Boolean.TRUE.equals(result.getRow(i).get("disabled")))
           {
             option.setProperty("disabled", "true");
           }
