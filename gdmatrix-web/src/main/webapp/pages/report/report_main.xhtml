@@ -119,15 +119,21 @@
                    rendered="#{not empty reportObjectBean.report.reportId}">
       
       <p:submenu label="HTML">
-        <p:menuitem value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html')}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-o" />
-        <p:menuitem value="#{reportBundle.executeNewTab}" action="#{reportObjectBean.executeReport('html', true)}" target="_blank" ajax="false" icon="pi pi-external-link"/>          
+        <p:menuitem value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('html')}" 
+                    update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-o" />
+        <p:menuitem value="#{reportBundle.executeNewTab}" action="#{reportObjectBean.executeReport('html', true)}" 
+                    target="_blank" ajax="false" icon="pi pi-external-link"/> 
+        <p:menuitem value="#{reportBundle.executeNoTemplate}" action="#{reportObjectBean.executeExternal('html')}" 
+                    target="_blank" icon="pi pi-arrow-up-right" ajax="false" />
       </p:submenu>
       
       <p:submenu label="PDF" rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}">
         <p:menuitem value="#{reportBundle.execute}" action="#{reportObjectBean.executeReport('pdf')}" update="@form:cnt:search_tabs:obj_tabs @form:cnt" icon="pi pi-file-pdf" 
                     rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>
         <p:menuitem value="#{reportBundle.executeNewTab}" action="#{reportObjectBean.executeReport('pdf', true)}" target="_blank" ajax="false" icon="pi pi-external-link" 
-                    rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>           
+                    rendered="#{reportObjectBean.report.technology != 'template' and reportObjectBean.report.technology != 'script'}"/>  
+        <p:menuitem value="#{reportBundle.executeNoTemplate}" action="#{reportObjectBean.executeExternal('pdf')}" 
+                    target="_blank" icon="pi pi-arrow-up-right" ajax="false" />        
       </p:submenu>      
    
     </p:splitButton>    

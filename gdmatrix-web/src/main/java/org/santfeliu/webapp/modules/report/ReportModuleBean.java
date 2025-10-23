@@ -64,6 +64,8 @@ import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
 @ApplicationScoped
 public class ReportModuleBean implements Serializable
 {
+  public static final String REPORTS_SERVLET = "/reports/";
+  
   public static ReportManagerPort getPort(Credentials credentials)
     throws Exception
   {
@@ -133,5 +135,5 @@ public class ReportModuleBean implements Serializable
       || DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type)
       || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, type)
       || "true".equals(cursor.getProperty(ReportViewerBean.RUN_AS_ADMIN_PROPERTY));
-  }  
+  }
 }

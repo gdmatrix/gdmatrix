@@ -30,7 +30,9 @@
  */
 package org.santfeliu.webapp.modules.report;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,6 +58,7 @@ import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TypeBean;
+import static org.santfeliu.webapp.modules.report.ReportModuleBean.REPORTS_SERVLET;
 import org.santfeliu.webapp.util.ComponentUtils;
 import static org.santfeliu.webapp.util.FormImporter.ACTION_METHOD_OPTION;
 import static org.santfeliu.webapp.util.FormImporter.ACTION_UPDATE_OPTION;
@@ -144,11 +147,6 @@ public class ReportObjectBean extends ObjectBean
   {
     return parameters;
   }
-
-  public void setParameters(Map parameters)
-  {
-    this.parameters = parameters;
-  }
   
   @Override
   public Report getObject()
@@ -224,7 +222,8 @@ public class ReportObjectBean extends ObjectBean
     {
       if (outputFormat != null)
         reportViewerBean.setOutputFormat(outputFormat);
-      if (!parameters.isEmpty())
+      if (DictionaryUtils.containsProperty(report, "form") 
+        && !parameters.isEmpty())
       {
         for (ParameterDefinition pd : report.getParameterDefinition())
         {
@@ -247,6 +246,57 @@ public class ReportObjectBean extends ObjectBean
       error(ex);
     }
   }
+  
+  public void executeExternal(String outputFormat)
+  {
+    try
+    {
+      getExternalContext().redirect(getReportURL(outputFormat));
+    }
+    catch (IOException ex)
+    {
+      error(ex);
+    }
+  }
+  
+  private String getReportURL(String outputFormat)
+  {
+    String url = null;
+    if (report != null)
+    {
+      url = getContextURL() + REPORTS_SERVLET + report.getReportId() + "." +
+        outputFormat + getParametersString();
+    }
+    return url;
+  }
+  
+  private String getParametersString()
+  {
+    if (report.getParameterDefinition().isEmpty())
+      return "";
+    try
+    {
+      StringBuilder buffer = new StringBuilder();
+
+      for (ParameterDefinition pd : report.getParameterDefinition())
+      {
+        String parameter = pd.getName();
+        String value = pd.getDefaultValue();
+        if (value != null)
+        {
+          buffer.append(buffer.length() == 0 ? "?" : "&");
+          buffer.append(parameter).append("=");
+          buffer.append(URLEncoder.encode(value, "UTF-8"));
+        }
+      }
+
+      return buffer.toString();
+    }
+    catch (Exception ex)
+    {
+      throw new RuntimeException(ex);
+    }
+  }  
   
   @Override
   public boolean isEditable()

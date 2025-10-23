@@ -64,6 +64,7 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
+import static org.santfeliu.webapp.modules.report.ReportModuleBean.REPORTS_SERVLET;
 import org.santfeliu.webapp.util.ComponentUtils;
 
 /**
@@ -190,7 +191,7 @@ public class ReportViewerBean extends WebBean implements Serializable
     String url = null;
     if (reportName != null)
     {
-      url = getContextURL() + "/reports/" + reportName + "." +
+      url = getContextURL() + REPORTS_SERVLET + reportName + "." +
         getOutputFormat() + getParametersString();
       if (addCredentials)
       {
