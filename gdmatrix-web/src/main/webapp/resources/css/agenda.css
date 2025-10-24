@@ -468,3 +468,159 @@ body .fc th > .fc-scrollgrid-sync-inner
 {
   padding: 0.5rem;
 }
+
+/*** event_meeting_finder.xhtml ***/
+
+.meetingFinder
+{
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.meetingFinder .flex
+{
+  gap: 0.5rem;
+}
+
+.meetingFinder .filterPanel
+{
+}
+
+.meetingFinder .filterPanel .panel
+{
+  margin-top: 1rem;
+}
+
+.meetingFinder .filterPanel .panel .panelTitle
+{
+  font-weight: bold;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.meetingFinder .filterPanel .panel .panelTitle:first-of-type
+{
+  margin-top: 1rem;
+}
+
+.meetingFinder .filterPanel .panel .panelBody
+{
+}
+
+.meetingFinder .filterPanel .inputField
+{
+  max-width: 5rem;
+}
+
+.meetingFinder .filterPanel .inputDate input[type="text"]
+{
+  max-width: 8rem;
+}
+
+.meetingFinder .filterPanel .footer
+{
+  text-align: right;
+  margin-top: 1rem;
+}
+
+.meetingFinder .objectSelect
+{
+  margin-bottom: 0.5rem;
+}
+
+.meetingFinder .objectSelect > *
+{
+  flex-grow: 0;
+}
+
+.meetingFinder .objectSelect > div
+{
+  flex-grow: 1;
+}
+
+.meetingFinder .objectSelect > div .ui-autocomplete
+{
+  flex-grow: 1;
+}
+
+.meetingFinder .objectPanel
+{
+}
+
+.meetingFinder .objectPanel table thead
+{
+  display: none;
+}
+
+.meetingFinder .objectPanel.attPanel table td[role="gridcell"]
+{
+  padding: 0;
+}
+
+.meetingFinder .objectPanel.roomPanel table td[role="gridcell"]
+{
+  padding: 0.5rem;
+}
+
+.meetingFinder .objectPanel table th + th,
+.meetingFinder .objectPanel table td + td
+{
+  text-align: center;
+}
+
+.meetingFinder .slotsPanel table th + th + th,
+.meetingFinder .slotsPanel table td + td + td
+{
+  text-align: center;
+}
+
+.meetingFinder .slotsPanel .roomAvailable
+{
+  color: green;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.meetingFinder .slotsPanel .roomNotAvailable
+{
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.meetingFinder .slotsPanel .slotRoomSelect
+{
+  min-width: auto !important;
+}
+
+.meetingFinder .slotsPanel .slotRoomSelect .ui-selectonemenu-label
+{
+  white-space: normal !important;
+}
+
+.slotRoomSelectPanel
+{
+  max-width: 40% !important;
+}
+
+.slotRoomSelectPanel ul li
+{
+  white-space: normal !important;
+}
+
+.meetingFinder .slotAvailableRooms
+{
+}
+
+.meetingFinder .slotAvailableRooms .ui-datalist-content
+{
+  border: 0;
+  padding: 0;
+}
+
+.meetingFinder .slotAvailableRooms .ui-datalist-content ul
+{
+  padding-left: 1rem;
+  text-align: left;
+}

@@ -1,0 +1,300 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:gdm="http://gdmatrix.org/faces">
+  
+  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle" var="agendaBundle"/>
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" var="objectBundle" />
+  
+  <sf:saveScroll />    
+
+  <h:outputStylesheet library="css" name="agenda.css" />
+  
+  <p:messages showSummary="true" styleClass="messages"
+              showIcon="true" closable="false" forIgnores="growl">
+    <p:autoUpdate />
+  </p:messages>
+
+  <div class="meetingFinder">
+    
+    <p:panel id="filterPanel" styleClass="filterPanel mt-3">
+
+      <f:facet name="header">
+        <h:outputText value="#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.label)}" />
+      </f:facet>
+
+      <div class="panel">
+        <div class="panelTitle">
+          <i class="pi pi-users mr-2"></i>
+          <h:outputText value="#{agendaBundle.meetingFinder_attendants}" />
+        </div>
+        <div class="panelBody">
+          <div class="objectSelect flex flex-column">
+            <p:outputLabel for="@next:autocomplete"
+                           value="#{agendaBundle.attendants_person}:" />
+            <emcomp:objectReference value="#{eventMeetingFinderBean.selectedAttendant.personId}"
+                                    type="Person"                                      
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3"
+                                    onselect="console.log('onselect_person')"
+                                    required="false"
+                                    autoUpdate="false"
+                                    renderFindButton="false">
+              <p:ajax event="itemSelect" listener="#{eventMeetingFinderBean.addAttendant}"
+                      process="@this"
+                      update="@(.attPanel)"
+                      oncomplete="console.log('addAttendant')" />
+            </emcomp:objectReference>
+          </div>
+          <p:outputPanel styleClass="objectPanel attPanel">
+            <p:dataTable value="#{eventMeetingFinderBean.attendants}" var="att"
+                         stripedRows="true"                         
+                         rendered="#{not empty eventMeetingFinderBean.attendants}">
+              <p:column styleClass="col-11">
+                <h:outputText value="#{att.fullName}"  />
+              </p:column>
+
+              <p:column styleClass="col-1">
+                <p:commandButton icon="pi pi-trash" 
+                     alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                     styleClass="rounded-button ui-button-flat"
+                     action="#{eventMeetingFinderBean.removeAttendant}"
+                     rendered="#{att.personId != null}"
+                     process="@this"
+                     update="@(.attPanel)" />
+              </p:column>
+            </p:dataTable>
+          </p:outputPanel>
+        </div>           
+      </div>
+
+      <div class="panel">
+        <div class="panelTitle">
+          <i class="pi pi-calendar mr-2"></i>
+          <h:outputText value=" #{agendaBundle.meetingFinder_period} " />
+        </div>
+        <div class="panelBody">
+          <div class="align-items-center flex flex-wrap mt-2">
+            <p:outputLabel for="@next"
+                           value="#{agendaBundle.meetingFinder_startsOn}" />
+            <p:datePicker value="#{eventMeetingFinderBean.rangeStartDateTime}"
+                          locale="#{eventObjectBean.language}" converter="datePickerConverter"
+                          showIcon="true" showTime="false"
+                          autocomplete="off"
+                          pattern="dd/MM/yyyy"
+                          placeholder="dd/MM/yyyy"
+                          showOnFocus="false"
+                          monthNavigator="true" yearNavigator="true"
+                          styleClass="inputDate" />
+            <p:outputLabel for="@next"
+                           value="#{agendaBundle.meetingFinder_endsOn}" />
+            <p:datePicker value="#{eventMeetingFinderBean.rangeEndDateTime}"
+                          locale="#{eventObjectBean.language}" converter="datePickerConverter"
+                          showIcon="true" showTime="false"
+                          autocomplete="off"
+                          pattern="dd/MM/yyyy"
+                          placeholder="dd/MM/yyyy"
+                          showOnFocus="false"
+                          monthNavigator="true" yearNavigator="true"
+                          styleClass="inputDate" />
+          </div>
+          <div class="align-items-center flex flex-wrap mt-2">
+            <p:outputLabel for="@next"
+                           value="#{agendaBundle.meetingFinder_startHour}" />
+            <p:inputText value="#{eventMeetingFinderBean.startHour}" styleClass="inputField">
+              <f:validateRegex pattern="([0?1]?[0-9]|2[0-3])(:[0-5][0-9])?" />
+            </p:inputText>
+            <p:outputLabel for="@next"
+                           value="#{agendaBundle.meetingFinder_endHour}" />
+            <p:inputText value="#{eventMeetingFinderBean.endHour}" styleClass="inputField">
+              <f:validateRegex pattern="([0?1]?[0-9]|2[0-3])(:[0-5][0-9])?" />
+            </p:inputText>
+          </div>
+          <div class="align-items-center flex flex-wrap mt-2">
+            <p:outputLabel for="@next"
+                           value="#{agendaBundle.meetingFinder_duration}" />
+            <p:inputText value="#{eventMeetingFinderBean.duration}"
+                         styleClass="inputField">
+              <p:keyFilter mask="pint" />
+            </p:inputText>
+            <p:selectOneMenu value="#{eventMeetingFinderBean.durationSelector}"
+                             title="#{agendaBundle.meetingFinder_durationSelector}">
+              <f:selectItem itemValue="m" itemLabel="minuts" />
+              <f:selectItem itemValue="h" itemLabel="hores" />
+            </p:selectOneMenu>
+          </div>
+          <div class="align-items-center flex flex-wrap mt-2">
+            <p:outputLabel for="@next"
+                           value="#{agendaBundle.meetingFinder_step}" />
+            <p:inputText value="#{eventMeetingFinderBean.steps}"
+                         styleClass="inputField">
+              <p:keyFilter mask="pint" />
+            </p:inputText>
+            <p:outputLabel value="#{agendaBundle.meetingFinder_stepMinutes}" />
+          </div>
+          <div class="align-items-center flex flex-wrap mt-2">
+            <p:outputLabel for="@next"
+                           value="#{agendaBundle.meetingFinder_timePadding}" />
+            <p:inputText value="#{eventMeetingFinderBean.timePadding}"
+                         styleClass="inputField">
+              <p:keyFilter mask="pint" />
+            </p:inputText>
+            <p:outputLabel value="#{agendaBundle.meetingFinder_stepMinutes}" />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panelTitle">
+          <i class="pi pi-map-marker mr-2"></i>
+          <h:outputText value=" #{agendaBundle.meetingFinder_rooms} " />
+        </div>
+        <div class="panelBody">
+          <div class="objectSelect flex flex-column">
+            <p:outputLabel for="@next:autocomplete"
+                           value="#{agendaBundle.eventPlaces_room}:" />
+            <emcomp:objectReference value="#{eventMeetingFinderBean.addedRoomId}"
+                                    type="Room"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3"                                      
+                                    required="false"
+                                    autoUpdate="false"
+                                    renderFindButton="false">
+              <p:ajax event="itemSelect" listener="#{eventMeetingFinderBean.addRoom}"
+                      process="@this @(.roomPanel)"
+                      update="@(.roomPanel)"
+                      oncomplete="console.log('addRoom')" />
+            </emcomp:objectReference>
+          </div>
+          <p:outputPanel styleClass="objectPanel roomPanel">
+            <p:dataTable value="#{eventMeetingFinderBean.rooms}" var="room"
+                         stripedRows="true"
+                         styleClass="resultList roomList"
+                         rendered="#{not empty eventMeetingFinderBean.rooms}" >
+
+              <p:column styleClass="col-10">
+                <p:outputLabel for="roomSelection" value="#{room.description}" />
+              </p:column>
+
+              <p:column styleClass="col-2 text-right">
+                <p:selectBooleanCheckbox id="roomSelection" value="#{room.selected}" />
+              </p:column>
+            </p:dataTable>
+          </p:outputPanel>
+        </div>
+      </div>                   
+
+      <div class="footer">
+        <p:commandButton value="#{objectBundle.search}"
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         action="#{eventMeetingFinderBean.findFreeSlots}"
+                         styleClass="searchButton"                           
+                         process="@this filterPanel"
+                         update="slotsPanel" />
+      </div>  
+
+    </p:panel>
+
+    <p:panel id="slotsPanel" styleClass="slotsPanel mt-3">
+
+      <p:dataTable id="slotsData" value="#{eventMeetingFinderBean.freeSlots}" var="slot"
+                   styleClass="resultList" 
+                   rows="#{eventMeetingFinderBean.pageSize}" first="#{eventMeetingFinderBean.firstRowIndex}"
+                   stripedRows="true" paginator="true" pageLinks="5"
+                   paginatorPosition="bottom" size="small"
+                   rowsPerPageTemplate="5,10,25,50"
+                   paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                   currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                   rendered="#{not empty eventMeetingFinderBean.freeSlots}">
+        <p:column styleClass="col-3">
+           <f:facet name="header">
+             <h:outputText value="#{agendaBundle.event_startDate}" />
+           </f:facet>
+           <h:outputText value="#{slot.startDateTime}" />
+         </p:column>
+         <p:column styleClass="col-3">
+           <f:facet name="header">
+             <h:outputText value="#{agendaBundle.event_endDate}" />
+           </f:facet>
+           <h:outputText value="#{slot.endDateTime}" />
+         </p:column>
+        <p:column styleClass="col-3" rendered="#{eventMeetingFinderBean.anySelectedRoom}">
+          <f:facet name="header">
+            <h:outputText value="#{agendaBundle.meetingFinder_roomAvailibility}" />
+          </f:facet>
+          <p:graphicImage styleClass="pi pi-times roomNotAvailable"
+            rendered="#{empty slot.availableRooms and (eventMeetingFinderBean.editingSlot == null or eventMeetingFinderBean.editingSlot != slot)}"
+            title="#{agendaBundle.meetingFinder_roomNotAvailable}" />
+          <p:graphicImage styleClass="pi pi-check roomAvailable" id="availableRooms"
+                          rendered="#{not empty slot.availableRooms and
+                                      not(eventMeetingFinderBean.editingSlot != null and eventMeetingFinderBean.editingSlot == slot)}" />
+          <p:overlayPanel for="availableRooms"
+                          showEvent="mouseover" hideEvent="mouseout"
+                          autoHide="false" styleClass="slotAvailableRooms">
+            <p:dataList value="#{slot.availableRooms}" var="oe">
+              <h:outputText value="#{oe}" />
+            </p:dataList>
+          </p:overlayPanel>
+          <p:selectOneMenu id="slotRoomSelect" value="#{eventMeetingFinderBean.selectedRoom}"
+            rendered="#{eventMeetingFinderBean.editingSlot != null and eventMeetingFinderBean.editingSlot == slot}"
+            styleClass="slotRoomSelect" panelStyleClass="slotRoomSelectPanel">
+            <f:selectItems value="#{slot.availableRooms}" />
+          </p:selectOneMenu>
+        </p:column>
+        <p:column styleClass="col-3 text-right">
+          <f:facet name="header">
+            <h:outputText value="#{objectBundle_actions}" />
+          </f:facet>
+          <p:commandButton action="#{eventMeetingFinderBean.createEvent}"
+           rendered="#{(eventMeetingFinderBean.editingSlot == null or eventMeetingFinderBean.editingSlot != slot)
+                       and slot.getAvailableRooms() != null and slot.getAvailableRooms().size() > 1}"
+           styleClass="addButton" 
+           value="#{agendaBundle.meetingFinder_selectRoom}" title="#{agendaBundle.meetingFinder_selectRoom}"
+           process="@this" update="slotsData" />
+          <p:commandButton action="#{eventMeetingFinderBean.createEvent}"
+           rendered="#{(eventMeetingFinderBean.editingSlot == null or eventMeetingFinderBean.editingSlot != slot)
+                       and not (slot.getAvailableRooms() != null and slot.getAvailableRooms().size() > 1)}"
+           styleClass="addButton" 
+           value="#{objectBundle.store}" title="#{objectBundle.store}"
+           process="@this" update="@form:cnt"
+           onclick="var r = confirm(&quot;#{agendaBundle.confirmStoreEvent}&quot;);if (r) showOverlay();return r;" />
+          <p:outputPanel rendered="#{eventMeetingFinderBean.editingSlot != null and eventMeetingFinderBean.editingSlot == slot}"
+                         styleClass="flex flex-wrap justify-content-end">
+            <p:commandButton action="#{eventMeetingFinderBean.createEvent}"              
+             styleClass="addButton"
+             value="#{objectBundle.store}" title="#{objectBundle.store}"
+             process="@this slotRoomSelect" update="@form:cnt"
+             onclick="var r = confirm(&quot;#{agendaBundle.confirmStoreEvent}&quot;);if (r) showOverlay();return r;" />
+            <p:commandButton action="#{eventMeetingFinderBean.cancelEvent}"
+             styleClass="addButton" value="#{objectBundle.cancel}"
+             title="#{objectBundle.cancel}"
+             process="@this" update="slotsData" />
+          </p:outputPanel>
+        </p:column>
+      </p:dataTable>
+
+      <div class="resultBar" rendered="#{eventMeetingFinderBean.freeSlots != null}">
+       <h:outputText value="#{objectBundle.no_results_found}"
+                     rendered="#{empty eventMeetingFinderBean.freeSlots}" />
+      </div>
+
+    </p:panel>
+
+  </div>
+
+  <gdm:saveBean value="eventMeetingFinderBean" />
+
+  <script>
+    controlNavigationHistory({
+      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      title : "#{userSessionBean.selectedMenuItem.label}"
+    });
+  </script>
+
+</ui:composition>
