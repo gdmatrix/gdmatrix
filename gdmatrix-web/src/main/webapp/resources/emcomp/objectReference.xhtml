@@ -30,6 +30,7 @@
       <composite:attribute name="showNavigatorItems" required="false" default="true" />
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="renderShowButton" required="false" default="true" />
+      <composite:attribute name="renderFindButton" required="false" default="true" />
       <composite:attribute name="renderCreateButton" required="false" default="false" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
       <composite:attribute name="oncomplete" required="false" default="true" />
@@ -93,6 +94,7 @@
                          action="#{objectReferenceBean.find}"
                          process="#{cc.attrs.process}"
                          update="@form:cnt"
+                         rendered="#{cc.attrs.renderFindButton}"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"
                          oncomplete="#{cc.attrs.oncomplete}"
                          disabled="#{cc.attrs.disabled}" />
