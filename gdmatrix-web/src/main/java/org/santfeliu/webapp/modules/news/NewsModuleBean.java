@@ -47,6 +47,19 @@ import org.santfeliu.web.UserSessionBean;
 @ApplicationScoped
 public class NewsModuleBean
 {
+  public static final String LIST_IMAGE_TYPE =
+    "NewDocumentListImage";
+  public static final String DETAILS_IMAGE_TYPE =
+    "NewDocumentDetailsImage";
+  public static final String LIST_AND_DETAILS_IMAGE_TYPE =
+    "NewDocumentListAndDetailsImage";
+  public static final String CAROUSEL_IMAGE_TYPE =
+    "NewDocumentCarouselImage";
+  public static final String CAROUSEL_AND_DETAILS_IMAGE_TYPE =
+    "NewDocumentCarouselAndDetailsImage";
+  public static final String EXTENDED_INFO_TYPE =
+    "NewDocumentExtendedInfo";
+  
   public static NewsManagerPort getPort(String userId, String password)
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();

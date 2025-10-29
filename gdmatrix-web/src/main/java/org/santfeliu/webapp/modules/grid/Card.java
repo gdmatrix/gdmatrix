@@ -128,6 +128,10 @@ public class Card implements Serializable
     {
       params.put("instanceid", id);
     }
+    else if ("Event".equals(type))
+    {
+      params.put("eventid", id);
+    }
     return new Gson().toJson(params);
   }
 }

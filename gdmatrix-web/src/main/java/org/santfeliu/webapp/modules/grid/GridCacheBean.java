@@ -36,17 +36,29 @@ import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.CDI;
+import org.matrix.agenda.EventDocumentFilter;
+import org.matrix.agenda.EventDocumentView;
+import org.matrix.agenda.EventFilter;
+import org.matrix.agenda.EventView;
+import org.matrix.agenda.SecurityMode;
 import org.matrix.news.NewDocument;
 import org.matrix.news.NewView;
 import org.matrix.news.SectionFilter;
 import org.matrix.news.SectionView;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.modules.agenda.AgendaModuleBean;
+import static org.santfeliu.webapp.modules.agenda.AgendaModuleBean.DETAILS_IMAGE_TYPE;
 import org.santfeliu.webapp.modules.geo.io.MapFilter;
 import org.santfeliu.webapp.modules.geo.io.MapGroup;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
 import org.santfeliu.webapp.modules.geo.io.MapView;
 import org.santfeliu.webapp.modules.news.NewsModuleBean;
+import static org.santfeliu.webapp.modules.news.NewsModuleBean.CAROUSEL_AND_DETAILS_IMAGE_TYPE;
+import static org.santfeliu.webapp.modules.news.NewsModuleBean.CAROUSEL_IMAGE_TYPE;
+import static org.santfeliu.webapp.modules.news.NewsModuleBean.LIST_IMAGE_TYPE;
 
 /**
  *
@@ -70,10 +82,12 @@ public class GridCacheBean
   {
     List<Card> newCards = loadNewsCards();
     List<Card> mapCards = loadMapCards();
+    List<Card> eventCards = loadAgendaCards();
     synchronized (cards)
     {
       cards.addAll(newCards);
       cards.addAll(mapCards);
+      cards.addAll(eventCards);      
       cards.sort((card1, card2) -> card1.getPriority() - card2.getPriority());
     }
   }
@@ -89,9 +103,15 @@ public class GridCacheBean
   private List<Card> loadNewsCards() throws Exception
   {
     List<Card> newCards = new ArrayList<>();
+    
+    MenuItemCursor selectedMenuItem = 
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem();
+    List<String> sections = 
+      selectedMenuItem.getMultiValuedProperty("New.sections");
+    
     SectionFilter filter = new SectionFilter();
     filter.setStartDateTime(TextUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
-    filter.getSectionId().add("1467");
+    filter.getSectionId().addAll(sections);
     filter.getExcludeDrafts().add(Boolean.TRUE);
     filter.setMaxResults(100);
 
@@ -122,25 +142,33 @@ public class GridCacheBean
 
   private NewDocument getNewImage(List<NewDocument> documents)
   {
+    NewDocument otherImage = null;
     for (NewDocument document : documents)
     {
-      if (document.getMimeType().startsWith("image/"))
+      if (document.getNewDocTypeId().endsWith(CAROUSEL_IMAGE_TYPE) || 
+        document.getNewDocTypeId().endsWith(CAROUSEL_AND_DETAILS_IMAGE_TYPE))
       {
         return document;
       }
+      else if (document.getMimeType().startsWith("image/"))
+      {
+        otherImage = document;
+      }
     }
-    return null;
+    
+    return otherImage;
   }
 
   private String getNewAspect(NewDocument newDocument)
   {
     int aspect;
     String newDocTypeId = newDocument.getNewDocTypeId();
-    if ("sf:NewDocumentCarouselAndDetailsImage".equals(newDocTypeId))
+    if (newDocTypeId != null && 
+      newDocTypeId.endsWith(CAROUSEL_AND_DETAILS_IMAGE_TYPE))
     {
       aspect = (int)(Math.random() * 6 + 5);
     }
-    else if ("sf:NewDocumentListImage".equals(newDocTypeId))
+    else if (newDocTypeId != null && newDocTypeId.endsWith(LIST_IMAGE_TYPE))
     {
       aspect = (int)(Math.random() * 8 + 3);
     }
@@ -184,5 +212,61 @@ public class GridCacheBean
     {
       exploreMapGroup(childMapGroup, mapCards);
     }
+  }
+  
+  private List<Card> loadAgendaCards() throws Exception
+  {    
+    List<Card> eventCards = new ArrayList<>();
+    
+    MenuItemCursor selectedMenuItem = 
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem();
+    List<String> themes = 
+      selectedMenuItem.getMultiValuedProperty("Event.themes");
+    List<String> types = 
+      selectedMenuItem.getMultiValuedProperty("Event.types");    
+    
+    EventFilter filter = new EventFilter();
+    filter.setStartDateTime(TextUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
+    filter.getThemeId().addAll(themes);
+    filter.getEventTypeId().addAll(types);
+    filter.setSecurityMode(SecurityMode.FILTERED);
+    filter.setMaxResults(100);
+
+    List<EventView> eventViews =
+      AgendaModuleBean.getPort(true).findEventViews(filter);
+    int priority = 1;
+    for (EventView eventView : eventViews)
+    {
+      EventDocumentView eventDocument = getEventDocument(eventView.getEventId());        
+      if (eventDocument != null)
+      {
+        Card card = new Card();
+        card.setTitle(eventView.getSummary());
+        card.setType("Event");
+        card.setId(eventView.getEventId());
+        card.setPriority(priority++);
+        card.setImageId(eventDocument.getDocument().getContent().getContentId());
+        card.setAspect(String.valueOf((int) (Math.random() * 6) + 1));
+        eventCards.add(card);
+      }
+    }
+    return eventCards;
+  } 
+  
+  private EventDocumentView getEventDocument(String eventId) throws Exception
+  {
+    EventDocumentFilter filter = new EventDocumentFilter();
+    filter.setEventId(eventId);
+    List<EventDocumentView> eventDocuments = 
+      AgendaModuleBean.getPort(false).findEventDocumentViews(filter);
+
+    for (EventDocumentView eventDocument : eventDocuments)
+    {
+      String typeId = eventDocument.getEventDocTypeId();          
+      if (DETAILS_IMAGE_TYPE.equals(typeId))
+        return eventDocument;
+    }  
+    
+    return null;
   }
 }

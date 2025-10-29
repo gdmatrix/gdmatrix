@@ -40,6 +40,7 @@ import javax.inject.Named;
 import org.matrix.news.New;
 import org.matrix.news.NewDocument;
 import org.matrix.news.NewsManagerPort;
+import org.santfeliu.news.web.NewsConfigBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
@@ -127,11 +128,23 @@ public class NewViewerBean extends WebBean implements Serializable
         this.imageContentId = null;
         for (NewDocument newDocument : newDocuments)
         {
-          if (newDocument.getMimeType().startsWith("image/"))
+          if (newDocument.getNewDocTypeId()
+            .endsWith(NewsConfigBean.DETAILS_IMAGE_TYPE))
           {
             this.imageContentId = newDocument.getContentId();
-            break;
           }
+          else if (newDocument.getNewDocTypeId()
+            .endsWith(NewsConfigBean.CAROUSEL_AND_DETAILS_IMAGE_TYPE))
+          {
+            if (this.imageContentId == null) 
+              this.imageContentId = newDocument.getContentId();
+          }
+          else if (newDocument.getNewDocTypeId()
+            .endsWith(NewsConfigBean.LIST_AND_DETAILS_IMAGE_TYPE))
+          {
+            if (this.imageContentId == null) 
+              this.imageContentId = newDocument.getContentId();
+          }          
         }
       }
       else

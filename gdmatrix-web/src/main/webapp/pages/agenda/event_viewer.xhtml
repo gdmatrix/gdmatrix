@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+
+  <ui:fragment rendered="#{eventViewerBean.event != null}"> 
+
+    <p:outputPanel id="event-panel" styleClass="event_body w-full p-4" style="max-width: 800px;color:var(--text-color)">  
+
+      <h2 style="color:var(--primary-color)">#{eventViewerBean.event.summary}</h2>
+
+      <div class="flex justify-content-end p-2">
+        <time>#{eventViewerBean.dates}</time>
+      </div>
+
+      <div class="flex justify-content-end p-2">
+        <address>#{eventViewerBean.places[0].description}</address>
+      </div>
+
+      <div class="flex justify-content-end p-2">
+        <p:tag styleClass="" value="#{eventViewerBean.eventType}"></p:tag>
+      </div>      
+
+      <ui:fragment rendered="#{eventViewerBean.imageContentId != null}">
+        <figure>
+          <img src="/documents/#{eventViewerBean.imageContentId}" alt="" style="object-fit:contain;"/> 
+        </figure>
+      </ui:fragment>
+
+      <ui:fragment rendered="#{eventViewerBean.event.detail == null}">
+        <h:outputText value="#{eventViewerBean.event.description}" escape="false" /> 
+      </ui:fragment>
+      <div>
+        <h:outputText value="#{eventViewerBean.event.detail}" escape="false" />       
+      </div> 
+      
+      <ul>
+      <ui:repeat var="doc" value="#{eventViewerBean.documents}">
+        <li>
+          <h:outputLink value="#{eventViewerBean.getDocumentURL(doc)}" target="_blank">
+            <h:outputText value="#{doc.title}" />
+          </h:outputLink>
+        </li>
+      </ui:repeat>
+      </ul>
+      
+    </p:outputPanel>
+
+    <gdm:saveBean value="eventViewerBean" /> 
+
+    <script>
+      controlNavigationHistory({
+        url: "/pages/agenda/event_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;eventid=#{eventViewerBean.event.eventId}",
+        title: "#{userSessionBean.selectedMenuItem.label}"
+      });
+
+      document.querySelector(".content_footer").scrollTo(0, 0);
+    </script>
+
+  </ui:fragment>
+
+</ui:composition>

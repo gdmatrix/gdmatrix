@@ -50,6 +50,12 @@ import org.santfeliu.web.UserSessionBean;
 @ApplicationScoped
 public class AgendaModuleBean
 {
+
+  public static final String DETAILS_IMAGE_TYPE =
+    "EventDocumentDetailsImage";
+  public static final String EXTENDED_INFO_TYPE =
+    "EventDocumentExtendedInfo";
+  
   private static final String RUN_AS_ADMIN_FOR_PROPERTY = "runAsAdminFor";
   private static final String FIND_AS_ADMIN_FOR_PROPERTY = "findAsAdminFor";
   private static final String ALL_USERS = "%";
