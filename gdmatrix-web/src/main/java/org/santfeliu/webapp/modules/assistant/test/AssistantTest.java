@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.assistant.test;
 
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.response.StreamingHandle;
 import dev.langchain4j.model.output.FinishReason;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class AssistantTest
         assistant.generate(messages, new ChatMessageListener()
         {
           @Override
-          public void onNext(String token)
+          public void onNext(String token, StreamingHandle handle)
           {
             System.out.println(token);
           }

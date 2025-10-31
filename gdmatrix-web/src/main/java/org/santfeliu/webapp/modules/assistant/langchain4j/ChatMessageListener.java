@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.assistant.langchain4j;
 
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.model.chat.response.StreamingHandle;
 import dev.langchain4j.model.output.FinishReason;
 
 /**
@@ -40,17 +41,44 @@ import dev.langchain4j.model.output.FinishReason;
  */
 public interface ChatMessageListener
 {
-  default void onNext(String token) {};
+  /**
+   * Called when new tokens are received
+   * 
+   * @param tokens - tokens returned by the model.
+   * @param handle - handle to cancel streaming or null if this is not 
+   * a streaming response.
+   */
+  default void onNext(String tokens, StreamingHandle handle) {}  
+  
+  /**
+   * Called when a completed message is received
+   * 
+   * @param message - the AI message
+   */
+  default void onMessage(ChatMessage message) {}
 
-  default void onMessage(ChatMessage message) {};
-
+  /**
+   * Called when the model asks to execute a tool
+   * 
+   * @param toolRequest - the tool execution request
+   * @return the tool result
+   */
   default String onExecute(ToolExecutionRequest toolRequest)
   {
     return "Not implemented.";
   }
 
-  default void onError(Throwable t) {};
+  /**
+   * Called on error
+   * @param t - the error produced
+   */
+  default void onError(Throwable t) {}
 
-  default void onComplete(FinishReason reason) {};
+  /**
+   * Called when the model finish the response
+   * 
+   * @param reason - the finish reason
+   */
+  default void onComplete(FinishReason reason) {}
 }
 

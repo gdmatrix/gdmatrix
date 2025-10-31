@@ -43,10 +43,11 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.agent.tool.ToolSpecification;
-import dev.langchain4j.http.client.HttpClientBuilder;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
+import dev.langchain4j.model.chat.response.PartialResponse;
+import dev.langchain4j.model.chat.response.PartialResponseContext;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.webapp.modules.assistant.httpclient.JdkHttpClientBuilder;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OLLAMA_PROVIDER;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OPENAI_PROVIDER;
 
@@ -111,7 +111,6 @@ public class AssistantData
   {
     Duration timeout = assistant.getTimeout() == null ?
       null : Duration.ofSeconds(assistant.getTimeout());
-    HttpClientBuilder clientBuilder = new JdkHttpClientBuilder();
 
     if (OPENAI_PROVIDER.equals(assistant.getProvider()))
     {
@@ -126,7 +125,6 @@ public class AssistantData
           .timeout(timeout)
           .seed(assistant.getSeed())
           .returnThinking(false)
-          .httpClientBuilder(clientBuilder)
           .maxTokens(assistant.getMaxTokens())
           .build();
       }
@@ -141,7 +139,6 @@ public class AssistantData
           .timeout(timeout)
           .seed(assistant.getSeed())
           .returnThinking(false)
-          .httpClientBuilder(clientBuilder)
           .maxTokens(assistant.getMaxTokens())
           .build();
       }
@@ -160,7 +157,6 @@ public class AssistantData
           .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
           .returnThinking(false)
-          .httpClientBuilder(clientBuilder)
           .build();
       }
       else
@@ -175,7 +171,6 @@ public class AssistantData
           .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
           .returnThinking(false)
-          .httpClientBuilder(clientBuilder)
           .build();
       }
     }
@@ -228,9 +223,11 @@ public class AssistantData
     }
 
     @Override
-    public void onPartialResponse(String token)
+    public void onPartialResponse(PartialResponse partialResponse, 
+      PartialResponseContext context)
     {
-      listener.onNext(token);
+      String tokens = partialResponse.text();
+      listener.onNext(tokens, context.streamingHandle());
     }
 
     @Override
@@ -330,7 +327,7 @@ public class AssistantData
       {
         if (model != null)
         {
-          listener.onNext(aiMessage.text());
+          listener.onNext(aiMessage.text(), null);
         }
         listener.onComplete(chatResponse.finishReason());
       }

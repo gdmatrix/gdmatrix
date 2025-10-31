@@ -239,14 +239,6 @@ async function showResponse(threadId)
         if (!aiDebugEnabled) continue;
         text = "```json\n" + item.text + "\n```";
       }
-      else if (type === "ERROR")
-      {
-        if (text.indexOf("StreamingInterruptionError") >= 0)
-        {
-          // do not show interrupt errors
-          continue;
-        }
-      }
       var itemElem = createMessage(type, text);
       listElem.appendChild(itemElem);
       if (type === "AI")

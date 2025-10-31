@@ -16,7 +16,7 @@
   <properties>
     <maven.test.skip>true</maven.test.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <langchain4j.version>1.5.0</langchain4j.version>
+    <langchain4j.version>1.8.0</langchain4j.version>
   </properties>
   
   <repositories>

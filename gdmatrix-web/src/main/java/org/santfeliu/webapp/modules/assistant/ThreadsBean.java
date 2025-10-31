@@ -35,6 +35,7 @@ import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.response.StreamingHandle;
 import dev.langchain4j.model.output.FinishReason;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -327,11 +328,12 @@ public class ThreadsBean extends WebBean implements Serializable
       assistant.generate(getMessages(), new ChatMessageListener()
       {
         @Override
-        public void onNext(String tokens)
+        public void onNext(String tokens, StreamingHandle handle)
         {
           if (queue.isInterrupted())
           {
-            throw new StreamingInterruptionError();
+            if (handle != null) handle.cancel();
+            queue.push(0);
           }
           else if (!StringUtils.isEmpty(tokens))
           {
@@ -373,7 +375,7 @@ public class ThreadsBean extends WebBean implements Serializable
           }
           catch (Exception ex)
           {
-          }
+          }          
         }
 
         @Override
@@ -382,7 +384,7 @@ public class ThreadsBean extends WebBean implements Serializable
           queue.clear();
           pushError(queue, t);
           queue.push(0);
-        }
+        }        
       });
     }
     catch (Exception ex)
