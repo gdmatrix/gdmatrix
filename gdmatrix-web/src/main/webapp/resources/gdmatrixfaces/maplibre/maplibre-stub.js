@@ -103,6 +103,7 @@ async function loadActualImage(map, imageId)
   let url;
   let imageWidth = 32;
   let imageHeight = 32;
+  let sdf = false;
 
   if (imageId.indexOf("doc:") === 0)
   {
@@ -126,6 +127,14 @@ async function loadActualImage(map, imageId)
     }
     url = "/documents/" + docId;
   }
+  else if (imageId.indexOf("sdf:") === 0)
+  {
+    // sdf:<docId>
+    
+    let docId = imageId.substring(4);
+    url = "/documents/" + docId;
+    sdf = true;
+  }
   else
   {
     url = imageId;
@@ -135,7 +144,7 @@ async function loadActualImage(map, imageId)
   image.src = url;
   image.onload = () => {
     map.removeImage(imageId);
-    map.addImage(imageId, image);
+    map.addImage(imageId, image, { sdf: sdf });
   };
 }
 
@@ -455,7 +464,7 @@ function getSourceUrl(sourceId, style)
     "&FORMAT=" + serviceParameters.format +
     "&STYLES=" + stylesArray.join(",") +
     "&LAYER=" + layersArray.join(",") +
-    "&tileMatrixSet=EPSG:3587" +
+    "&tileMatrixSet=EPSG:3587" + // change to EPSG:3857!!!
     "&tileMatrix={z}" +
     "&tileRow={y}" +
     "&tileCol={x}";
