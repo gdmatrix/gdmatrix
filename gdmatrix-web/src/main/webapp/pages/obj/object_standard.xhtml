@@ -6,7 +6,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:p="http://primefaces.org/ui">
 
-  <p:outputPanel id="object_header" class="flex flex-wrap align-items-center card-container m-2">
+  <p:outputPanel id="object_header" class="flex flex-wrap align-items-center card-container px-2 sticky top-0 z-1">
     <p:outputPanel class="flex flex-grow-0 align-items-center justify-content-start align-self-center"
                    rendered="#{objectBean.finderBean.isScrollEnabled()}">
         <p:commandButton icon="ui-icon pi pi-step-backward"
@@ -179,7 +179,7 @@
     <ui:include src="#{dialogViewId}" />
   </c:forEach>
 
-  <div class="tab_footer text-right pt-3">
+  <div class="tab_footer text-right pt-3 sticky bottom-0">
     <p:commandButton id="store"
                      action="#{objectBean.store}"
                      value="#{objectBundle.store}"

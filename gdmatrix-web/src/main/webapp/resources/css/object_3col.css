@@ -116,6 +116,26 @@ body .side_panel .ui-panel-content
   overflow: auto;
 }
 
+body .side_panel.left .ui-tabs.ui-tabs-top > .ui-tabs-nav
+{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  transform: translate(0, -1rem);
+  padding-top: 1rem;
+}
+
+body .side_panel.left .buttons
+{
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  transform: translate(-1rem, 1rem);
+  width: calc(100% + 1rem);
+  padding: 1rem 0; 
+  background-color: var(--surface-a);
+}
+
 .central_column
 {
   width: 56%;
@@ -156,6 +176,24 @@ body .side_panel .ui-panel-content
   align-items: center;
 }
 
+.central_column .object_data .ui-tabs .ui-tabs-panel .ui-outputpanel:first-child
+{
+  background-color: var(--surface-a);
+}
+
+.central_column .object_data .ui-tabs .ui-tabs-panel .tab_footer
+{
+  background-color: var(--surface-a);
+}
+/*
+.central_column .object_data .ui-tabs.ui-tabs-top .ui-tabs-panels .ui-tabs-nav
+{
+  background-color: var(--surface-a);
+  position: sticky;
+  top: 2.2rem;
+  z-index: 1;
+}
+*/
 .side_button.display_hidden
 {
   display: none;
