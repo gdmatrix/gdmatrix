@@ -47,6 +47,7 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.FacesUtils;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
@@ -68,6 +69,8 @@ import org.santfeliu.webapp.util.ComponentUtils;
 public abstract class ObjectBean extends BaseBean
 {
   public static final String OBJECT_SETUP_PROPERTY = "objectSetup";
+  public static final String SEARCH_TAB_LABEL_PROPERTY = "searchTabLabel";
+  public static final String EDIT_TAB_LABEL_PROPERTY = "editTabLabel";
 
   protected String objectId = NEW_OBJECT_ID;
   private int searchTabSelector;
@@ -253,6 +256,41 @@ public abstract class ObjectBean extends BaseBean
   public String getObjectTypeId()
   {
     return (isNew() ? null : getTypeBean().getTypeId(getObject()));
+  }
+
+  public String getSearchTabLabel(int index)
+  {
+    String val;
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    List<String> values = 
+      menuItem.getMultiValuedProperty(SEARCH_TAB_LABEL_PROPERTY);
+    if (values != null && index < values.size())
+    {
+      val = values.get(index);
+    }
+    else
+    {
+      try
+      {
+        val = getSearchTabs().get(index).getLabel();
+      }
+      catch (Exception ex)
+      {
+        val = "$$objectBundle.list";
+      }
+    }
+    return ApplicationBean.getCurrentInstance().translate(val);
+  }
+
+  public String getEditTabLabel()
+  {
+    String val = getProperty(EDIT_TAB_LABEL_PROPERTY);
+    if (val == null)
+    {
+      val = "$$objectBundle.edition";
+    }
+    return ApplicationBean.getCurrentInstance().translate(val);
   }
 
   public BaseTypeInfo getBaseTypeInfo()

@@ -136,7 +136,7 @@
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
-          <h:outputText value="#{objectBundle.list}"/>
+          <h:outputText value="#{userObjectBean.getSearchTabLabel(0)}"/>
         </f:facet>
         <h:panelGroup id="result_list">
           <ui:include src="user_list.xhtml" />
@@ -146,7 +146,7 @@
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
-          <h:outputText value="#{objectBundle.edition}"/>
+          <h:outputText value="#{userObjectBean.editTabLabel}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
           <ui:include src="/pages/obj/object_standard.xhtml" />

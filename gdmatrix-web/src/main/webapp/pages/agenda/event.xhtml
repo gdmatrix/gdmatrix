@@ -243,11 +243,11 @@
 
       <p:ajax event="tabChange" oncomplete="updateScheduleEventStyles()" />
 
-      <c:forEach items="#{eventObjectBean.searchTabs}" var="tab" varStatus="loop">
+      <c:forEach items="#{eventObjectBean.searchTabs}" var="tab" varStatus="loop">        
         <p:tab>
           <f:facet name="title">
             <i class="pi pi-list mr-2"></i>
-            <h:outputText value="#{applicationBean.translate(tab.label, userSessionBean.translationGroup)}"/>
+            <h:outputText value="#{eventObjectBean.getSearchTabLabel(loop.index)}"/>
           </f:facet>
           <h:panelGroup id="result_list_#{loop.index}" styleClass="searchTabContent">
             <ui:include src="#{tab.viewId}" />
@@ -258,7 +258,7 @@
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
-          <h:outputText value="#{objectBundle.edition}"/>
+          <h:outputText value="#{eventObjectBean.editTabLabel}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
           <ui:include src="/pages/obj/object_standard.xhtml" />
