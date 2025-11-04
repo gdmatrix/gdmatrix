@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -252,7 +253,7 @@ public class PdfboxSigner extends PDFSigner
   } 
   
   @Override
-  protected void doPreserve(InputStream is, OutputStream os) 
+  protected boolean doPreserve(InputStream is, OutputStream os) 
     throws Exception
   {
     File pFile = File.createTempFile("preserve", ".pdf");    
@@ -265,20 +266,28 @@ public class PdfboxSigner extends PDFSigner
         timestamp(fis, os, true);
       }
     }
+    catch(Exception ex)
+    {
+      os.write(ex.getMessage().getBytes(StandardCharsets.UTF_8));
+      return false;
+    }
     finally
     {
       pFile.delete();
     }
+    return true;
   }  
   
   private void addValidationInformation(PDDocument document, OutputStream os) 
     throws IOException
   {
     File vFile = File.createTempFile("sigval", ".pdf");
-    try (FileOutputStream fos = new FileOutputStream(vFile))
+    try
     {
-      document.saveIncremental(fos);
-      fos.close();
+      try (FileOutputStream fos = new FileOutputStream(vFile))
+      {
+        document.saveIncremental(fos);
+      }
 
       AddValidationInformation avi = new AddValidationInformation();  
       avi.validateSignature(vFile, os);   
@@ -286,7 +295,7 @@ public class PdfboxSigner extends PDFSigner
     finally
     {
       vFile.delete();
-    }    
+    }
   }
 
 

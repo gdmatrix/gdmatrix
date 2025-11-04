@@ -127,18 +127,18 @@ public class AddValidationInformation
       throw new FileNotFoundException(err);
     }
 
-    PDDocument doc = PDDocument.load(inFile);
-    int accessPermissions = SigUtils.getMDPPermission(doc);
-    if (accessPermissions == 1)
+    try (PDDocument doc = PDDocument.load(inFile))
     {
-      System.out.println("PDF is certified to forbid changes, "
-        + "some readers may report the document as invalid despite that "
-        + "the PDF specification allows DSS additions");
+      int accessPermissions = SigUtils.getMDPPermission(doc);
+      if (accessPermissions == 1)
+      {
+          System.out.println("PDF is certified to forbid changes, "
+                      + "some readers may report the document as invalid despite that "
+                      + "the PDF specification allows DSS additions");
+      }
+      document = doc;
+      doValidation(inFile.getAbsolutePath(), os);
     }
-    document = doc;
-    doValidation(inFile.getAbsolutePath(), os);
-    os.close();
-    doc.close();
   }
 
   /**

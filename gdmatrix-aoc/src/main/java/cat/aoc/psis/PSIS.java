@@ -521,8 +521,14 @@ public class PSIS implements SecurityProvider
           }
         }
       }
+      else
+      {
+        if (out != null)
+          JAXB.marshal(response.getResult(), out);        
+      }          
       return valid;
     }
+
     return false;
   }
 

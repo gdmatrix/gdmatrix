@@ -159,13 +159,13 @@ public abstract class PDFSigner
     doTimestamp(is, os, ltvEnabled);    
   }  
   
-  public void preserve(InputStream is, OutputStream os)
+  public boolean preserve(InputStream is, OutputStream os)
     throws Exception
   {
     if (tsaUrl == null)
       throw new Exception("No TSA defined");
            
-    doPreserve(is, os);
+    return doPreserve(is, os);
   }
   
   public boolean validate(InputStream is, OutputStream os)
@@ -192,7 +192,7 @@ public abstract class PDFSigner
   protected abstract void doTimestamp(InputStream is, OutputStream os,
     boolean ltvEnabled) throws Exception;
 
-  protected abstract void doPreserve(InputStream is, OutputStream os)
+  protected abstract boolean doPreserve(InputStream is, OutputStream os)
     throws Exception;
 }
     
