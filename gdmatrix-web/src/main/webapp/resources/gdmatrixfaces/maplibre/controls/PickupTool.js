@@ -96,6 +96,7 @@ class PickupTool extends Tool
   {
     const map = this.map;
     const codeSelection = this.codeSelection;
+    this.resultDiv.innerHTML =  `<span class="pi pi-spin pi-spinner p-2" />`;
     
     let reference = this.referenceInput.value;
     if (!reference) return;
@@ -125,6 +126,8 @@ class PickupTool extends Tool
   {
     let reference = this.referenceInput.value;
     if (!reference) return;
+
+    this.resultDiv.innerHTML =  `<span class="pi pi-spin pi-spinner p-2" />`;
     
     let codes = Array.from(this.codeSelection);
 
@@ -133,7 +136,7 @@ class PickupTool extends Tool
       headers: { "Content-Type": "application/json;charset=UTF-8" },
       body: JSON.stringify(codes)
     });
-    this.resultDiv.textContent = JSON.stringify(await response.json(), null, 2);
+    this.resultDiv.innerHTML = JSON.stringify(await response.json(), null, 2);
     
     if (this.sourceIdsToUpdate.length > 0)
     {
@@ -144,9 +147,11 @@ class PickupTool extends Tool
       for (let sourceId of this.sourceIdsToUpdate)
       {
         let source = sources[sourceId];
-        if (source.type === "geojson" && typeof source.data === "string")
+        if (source.type === "geojson")
         {
-          let url = source.data;
+          let url = getSourceUrl(sourceId, map.getStyle());
+          if (!url) continue;
+          
           if (url.indexOf("?") === -1)
           {
             url += "?" + seed;
@@ -166,6 +171,7 @@ class PickupTool extends Tool
   {
     this.codeSelection.clear();
     this.updateHighlight();
+    this.resultDiv.innerHTML = "";
   }
 
   updateHighlight(center = false)
