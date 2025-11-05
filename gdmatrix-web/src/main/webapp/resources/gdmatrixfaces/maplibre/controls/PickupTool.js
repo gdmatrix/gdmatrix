@@ -96,14 +96,19 @@ class PickupTool extends Tool
   {
     const map = this.map;
     const codeSelection = this.codeSelection;
-    this.resultDiv.innerHTML =  `<span class="pi pi-spin pi-spinner p-2" />`;
     
     let reference = this.referenceInput.value;
-    if (!reference) return;
+    if (!reference)
+    {
+      this.resultDiv.innerHTML = "";    
+      return;
+    }
+
+    this.resultDiv.innerHTML =  `<span class="pi pi-spin pi-spinner p-2" />`;
 
     let response = await fetch(this.restServiceUrl + "?ref=" + reference);
     let codes = await response.json();
-    this.resultDiv.textContent = JSON.stringify(codes, null, 2);
+    this.resultDiv.innerHTML = JSON.stringify(codes, null, 2);
 
     codeSelection.clear();
     for (let code of codes)
