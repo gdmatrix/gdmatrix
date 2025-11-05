@@ -727,10 +727,13 @@ public abstract class ObjectBean extends BaseBean
       if (typeId != null)
       {
         Type type = TypeCache.getInstance().getType(typeId);
-        PropertyDefinition propdef = type.getPropertyDefinition("copyEnabled");
-        if (propdef != null && !propdef.getValue().isEmpty())
+        if (type != null)
         {
-          return "true".equals(propdef.getValue().get(0));
+          PropertyDefinition propdef = type.getPropertyDefinition("copyEnabled");
+          if (propdef != null && !propdef.getValue().isEmpty())
+          {
+            return "true".equals(propdef.getValue().get(0));
+          }
         }
       }
     }
