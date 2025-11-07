@@ -179,7 +179,7 @@
           <p:inputTextarea id="question" value="#{threadsBean.text}"
                            pt:spellcheck="false"
                            widgetVar="assistantTextarea"
-                           onkeyup="updateAssistantButtons()"
+                           onkeyup="onAssistantKeyUp(event)"
                            onpaste="assistantPaste(event)"
                            styleClass="w-full" style="max-height:100%" rows="3"
                            placeholder="#{threadsBean.inputPlaceholder}" />
@@ -226,22 +226,34 @@
             <span class="ui-icon ui-icon-closethick"></span>
           </p:commandLink>
         </f:facet>
-        <ul>
-          <ui:repeat value="#{threadsBean.threads}" var="thread">
-            <li class="p-2 #{threadsBean.threadId == thread.threadId ? 'current' : ''}">
-              <p:commandLink action="#{threadsBean.changeThread(thread.threadId)}"
-                             process="@this"
-                             update="@parent:@parent:assistant_panel @parent:@parent:assistant_history"
-                             styleClass="flex flex-column no-underline"
-                             oncomplete="endThreadsPanel();">
-                
-                <h:outputText value="#{thread.dateTime}" styleClass="time"
-                              converter="DateTimeConverter" /> 
-                <div>#{thread.description}</div>                
-              </p:commandLink>
-            </li>
-          </ui:repeat>
-        </ul>
+        <h:panelGroup layout="block" class="ui-inputgroup thread_filter" rendered="#{threadsBean.totalThreads gt 5}">
+          <p:inputText value="#{threadsBean.threadFilter}" class="flex-grow-1" placeholder="#{assistantBundle.filterThreads}" />
+          <p:commandButton id="filter_threads" action="#{threadsBean.updateThreads(true)}" 
+                           icon="pi pi-search" title="#{objectBundle.search}"
+                           process="@parent" update="thread_list" />
+          <p:commandButton action="#{threadsBean.resetThreadFilter()}" 
+                           icon="pi pi-times" title="#{objectBundle.clear}"
+                           process="@form" update="threads_panel" />
+          <p:defaultCommand target="filter_threads" />
+        </h:panelGroup>
+        <h:panelGroup id="thread_list" layout="block">
+          <ul>
+            <ui:repeat value="#{threadsBean.threads}" var="thread">
+              <li class="p-2 #{threadsBean.threadId == thread.threadId ? 'current' : ''}">
+                <p:commandLink action="#{threadsBean.changeThread(thread.threadId)}"
+                               process="@this"
+                               update="@parent:@parent:assistant_panel @parent:@parent:assistant_history"
+                               styleClass="flex flex-column no-underline"
+                               oncomplete="endThreadsPanel();">
+
+                  <h:outputText value="#{thread.dateTime}" styleClass="time"
+                                converter="DateTimeConverter" /> 
+                  <div>#{thread.description}</div>                
+                </p:commandLink>
+              </li>
+            </ui:repeat>
+          </ul>
+        </h:panelGroup>
       </p:panel>
 
     </div>
@@ -250,6 +262,7 @@
   <script>
     var aiLabel = "#{assistantBundle.assistant}";
     var userLabel = "#{assistantBundle.you}";
+    var thinkingLabel = "#{assistantBundle.thinking}";
     var aiDebugEnabled = #{threadsBean.debugEnabled};
     
     function changeDebugEnabled(elem)

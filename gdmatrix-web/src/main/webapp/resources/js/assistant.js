@@ -1,5 +1,18 @@
 /* assistant.js */
 
+function onAssistantKeyUp(event)
+{
+  if (event.key === "Enter" && !event.shiftKey)
+  {
+    var sendButton = PF("assistantSendButton");
+    sendButton.jq.click();
+  }
+  else
+  {
+    updateAssistantButtons();
+  }
+}
+
 function updateAssistantButtons()
 {
   var text = PF("assistantTextarea").getJQ().val().trim();
@@ -200,7 +213,7 @@ async function showResponse(threadId)
         htmlElem = itemElem.querySelector(".html");
       }
       markdownElem.textContent += item;
-      htmlElem.innerHTML = markdownToHtml(markdownElem.textContent);
+      htmlElem.innerHTML = markdownToHtml(markdownElem.textContent, true);
       setLinkTarget(htmlElem);
       scrollMessages();
     }
@@ -284,7 +297,13 @@ function markdownToHtml(text, showThinking = true)
     }
     if (showThinking && think.trim().length > 0 && message.trim().length === 0)
     {
-      html = "<p class='think'><b>Thinking:</b> " + think + "</p>";
+      if (!aiDebugEnabled) 
+      {
+        // show only last word
+        index = think.lastIndexOf(" ");
+        think = index !== -1 ? think.substring(index + 1) : think;
+      }
+      html = `<p class='think'><b>${thinkingLabel}:</b> ${think}</p>`;
     }
     else
     {

@@ -17,6 +17,14 @@
   padding-left:0;
 }
 
+.ui-panel.threads_panel .thread_filter
+{
+  position:sticky;
+  top:0;
+  padding: 4px;
+  background-color: var(--surface-0); 
+}
+
 .ui-panel.threads_panel .time
 {
   color: var(--surface-500);

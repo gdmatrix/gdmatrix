@@ -91,6 +91,8 @@ public class ThreadsBean extends WebBean implements Serializable
   Thread thread;
   List<ThreadSummary> threads;
   String text;
+  String threadFilter;
+  int totalThreads = -1;
   boolean debugEnabled = false;
   boolean simulationEnabled = false;
   boolean editionEnabled = false;
@@ -125,6 +127,16 @@ public class ThreadsBean extends WebBean implements Serializable
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     return "https://" + host + "/" + contextPath + "go.faces?xmid=" +
       userSessionBean.getSelectedMid() + "&threadid=" + getThreadId();
+  }
+
+  public String getThreadFilter()
+  {
+    return threadFilter;
+  }
+
+  public void setThreadFilter(String threadFilter)
+  {
+    this.threadFilter = threadFilter;
   }
 
   public List<ChatMessage> getMessages()
@@ -244,6 +256,15 @@ public class ThreadsBean extends WebBean implements Serializable
     queue.push(0);
     PrimeFaces.current().executeScript("showResponse('" + threadId + "')");
   }
+  
+  public int getTotalThreads()
+  {
+    if (totalThreads == -1)
+    {
+      updateThreads(true);
+    }    
+    return totalThreads;
+  }
 
   public void createThread()
   {
@@ -263,12 +284,27 @@ public class ThreadsBean extends WebBean implements Serializable
       error(ex);
     }
   }
+  
+  public void resetThreadFilter()
+  {
+    this.threadFilter = null;
+    updateThreads(true);
+  }
 
   public void updateThreads(boolean reload)
   {
     if (reload)
     {
-      threads = getThreadStore().getThreads();
+      ThreadStore store = getThreadStore();
+      threads = store.findThreads(threadFilter);
+      if (StringUtils.isBlank(threadFilter))
+      {
+        totalThreads = threads.size();
+      }
+      else
+      {
+        totalThreads = store.countThreads();
+      }
     }
     else
     {

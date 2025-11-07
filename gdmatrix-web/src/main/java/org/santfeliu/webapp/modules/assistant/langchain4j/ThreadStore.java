@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import javax.activation.DataHandler;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
@@ -81,8 +82,8 @@ public class ThreadStore
   {
     return userId;
   }
-
-  public List<ThreadSummary> getThreads()
+  
+  public int countThreads()
   {
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(THREAD_TYPEID);
@@ -90,6 +91,24 @@ public class ThreadStore
     property.setName("userId");
     property.getValue().add(userId);
     filter.getProperty().add(property);
+    return getPort().countDocuments(filter);
+  }
+  
+  public List<ThreadSummary> findThreads(String key)
+  {
+    DocumentFilter filter = new DocumentFilter();
+    filter.setDocTypeId(THREAD_TYPEID);
+    Property property = new Property();
+    property.setName("userId");
+    property.getValue().add(userId);
+    filter.getProperty().add(property);
+    if (!StringUtils.isBlank(key))
+    {
+      property = new Property();
+      property.setName("description");
+      property.getValue().add("%" + key + "%");
+      filter.getProperty().add(property);
+    }
     filter.getOutputProperty().add("threadId");
     filter.getOutputProperty().add("description");
     OrderByProperty orderBy = new OrderByProperty();
