@@ -2,7 +2,8 @@
 
 function onAssistantKeyUp(event)
 {
-  if (event.key === "Enter" && !event.shiftKey)
+  var text = PF("assistantTextarea").getJQ().val().trim();
+  if (event.key === "Enter" && !event.shiftKey && text.length > 0)
   {
     var sendButton = PF("assistantSendButton");
     sendButton.jq.click();
@@ -15,13 +16,13 @@ function onAssistantKeyUp(event)
 
 function updateAssistantButtons()
 {
-  var text = PF("assistantTextarea").getJQ().val().trim();
-  var sendButton = PF("assistantSendButton");
-  var interruptButton = PF("assistantInterruptButton");
-  var uploadButton = PF("assistantUploadButton");
+  let text = PF("assistantTextarea").getJQ().val().trim();
+  let sendButton = PF("assistantSendButton");
+  let interruptButton = PF("assistantInterruptButton");
+  let uploadButton = PF("assistantUploadButton");
 
-  var dotsElem = document.querySelector(".message_list .dot-typing");
-  var inProgress = dotsElem && !dotsElem.classList.contains("invisible");
+  let dotsElem = document.querySelector(".message_list .dot-typing");
+  let inProgress = dotsElem && !dotsElem.classList.contains("invisible");
 
   if (inProgress)
   {
@@ -134,13 +135,13 @@ async function assistantPaste(event)
 
 function sendMessage()
 {
-  var listElem = getMessageList();
-  var textarea = PF("assistantTextarea").getJQ();
-  var text = textarea.val().trim();
+  let listElem = getMessageList();
+  let textarea = PF("assistantTextarea").getJQ();
+  let text = textarea.val().trim();
 
-  var fileName = document.querySelector(".attached_filename").textContent;
-  var docId = document.querySelector(".attached_docid").textContent;
-  var contentId = document.querySelector(".attached_contentid").textContent;
+  let fileName = document.querySelector(".attached_filename").textContent;
+  let docId = document.querySelector(".attached_docid").textContent;
+  let contentId = document.querySelector(".attached_contentid").textContent;
   if (docId && contentId)
   {
     const origin = document.location.origin;
@@ -157,16 +158,16 @@ function sendMessage()
 
   textarea.val(text);
 
-  var sendButton = PF("assistantSendButton");
+  let sendButton = PF("assistantSendButton");
   sendButton.jq.hide();
 
-  var interruptButton = PF("assistantInterruptButton");
+  let interruptButton = PF("assistantInterruptButton");
   interruptButton.jq.show();
 
-  var uploadButton = PF("assistantUploadButton");
+  let uploadButton = PF("assistantUploadButton");
   uploadButton.disable();
 
-  var itemElem = createMessage("USER", text);
+  let itemElem = createMessage("USER", text);
   listElem.appendChild(itemElem);
 
   showDots();
@@ -180,9 +181,9 @@ async function showResponse(threadId)
   const listElem = getMessageList();
   if (!listElem) return;
 
-  var response = await fetch("/stream/" + threadId);
-  var queue = await response.json();
-  var end = false;
+  let response = await fetch("/stream/" + threadId);
+  let queue = await response.json();
+  let end = false;
 
   let markdownElem;
   let htmlElem;
@@ -223,7 +224,7 @@ async function showResponse(threadId)
       if (htmlElem && htmlElem.textContent?.length === 0)
       {
         // previous AI message is empty, remove it.
-        var itemElem = aiMessageElem.parentElement;
+        let itemElem = aiMessageElem.parentElement;
         if (itemElem?.parentElement) itemElem.parentElement.removeChild(itemElem);
       }
       const type = item.type;
@@ -319,12 +320,12 @@ function markdownToHtml(text, showThinking = true)
 
 function showThreadsPanel()
 {
-  var threadsPanel = PF("threadsPanel");
+  let threadsPanel = PF("threadsPanel");
   threadsPanel.show();
   threadsPanel.getJQ().css("display", "flex");
   threadsPanel.getJQ().removeClass("first_time");
 
-  var threadsPanelButton = PF("threadsPanelButton");
+  let threadsPanelButton = PF("threadsPanelButton");
   threadsPanelButton.getJQ().css("display", "none");
   threadsPanelButton.getJQ().removeClass("first_time");
 
@@ -333,10 +334,10 @@ function showThreadsPanel()
 
 function closeThreadsPanel()
 {
-  var threadsPanel = PF("threadsPanel");
+  let threadsPanel = PF("threadsPanel");
   threadsPanel.close();
 
-  var threadsPanelButton = PF("threadsPanelButton");
+  let threadsPanelButton = PF("threadsPanelButton");
   threadsPanelButton.getJQ().css("display", "inline");
 
   return false;
@@ -352,9 +353,9 @@ function endThreadsPanel()
 
 function getMessageList()
 {
-  var messageList = document.querySelector(".message_list");
+  let messageList = document.querySelector(".message_list");
   if (!messageList) return;
-  var listElem = messageList.firstElementChild;
+  let listElem = messageList.firstElementChild;
   if (!listElem)
   {
     listElem = document.createElement("ul");
@@ -370,7 +371,7 @@ function getMessageList()
 
 function scrollMessages()
 {
-  var elem = document.querySelector(".message_list");
+  let elem = document.querySelector(".message_list");
   if (elem)
   {
     elem.scrollTop = elem.scrollHeight;

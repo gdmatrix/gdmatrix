@@ -51,8 +51,10 @@ import org.matrix.doc.OrderByProperty;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MemoryDataSource;
+import org.santfeliu.util.TextUtils;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import static org.matrix.doc.DocumentConstants.UNIVERSAL_LANGUAGE;
+import java.util.Date;
 
 /**
  *
@@ -112,7 +114,7 @@ public class ThreadStore
     filter.getOutputProperty().add("threadId");
     filter.getOutputProperty().add("description");
     OrderByProperty orderBy = new OrderByProperty();
-    orderBy.setName("captureDateTime");
+    orderBy.setName("changeDateTime");
     orderBy.setDescending(true);
     filter.getOrderByProperty().add(orderBy);
 
@@ -145,6 +147,7 @@ public class ThreadStore
     Thread thread = new Thread(threadId);
     thread.setDocId(document.getDocId());
     thread.setDateTime(document.getCaptureDateTime());
+    thread.setChangeDateTime(document.getChangeDateTime());
     String description =
       DictionaryUtils.getPropertyValue(document.getProperty(), "description");
     thread.setDescription(description);
@@ -164,6 +167,7 @@ public class ThreadStore
     Map<String, Object> map = new HashMap<>();
     map.put("threadId", thread.getThreadId());
     map.put("dateTime", thread.getDateTime());
+    map.put("changeDateTime", TextUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
     map.put("description", thread.getDescription());
     map.put("messages", messages);
     for (ChatMessage message : thread.getMessages())

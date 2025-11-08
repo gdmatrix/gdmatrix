@@ -53,6 +53,8 @@ public class Thread implements Serializable
 
   private String dateTime;
 
+  private String changeDateTime;  
+  
   private String userId;
 
   private List<ChatMessage> messages = new ArrayList<>();
@@ -85,6 +87,16 @@ public class Thread implements Serializable
   public void setDateTime(String dateTime)
   {
     this.dateTime = dateTime;
+  }
+
+  public String getChangeDateTime()
+  {
+    return changeDateTime == null ? dateTime : changeDateTime;
+  }
+
+  public void setChangeDateTime(String changeDateTime)
+  {
+    this.changeDateTime = changeDateTime;
   }
 
   public String getDocId()

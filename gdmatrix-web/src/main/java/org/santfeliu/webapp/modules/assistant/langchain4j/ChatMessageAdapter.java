@@ -43,6 +43,7 @@ import java.util.Map;
 import static dev.langchain4j.data.message.ChatMessageType.AI;
 import static dev.langchain4j.data.message.ChatMessageType.USER;
 import static dev.langchain4j.data.message.ChatMessageType.TOOL_EXECUTION_RESULT;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -93,7 +94,7 @@ public class ChatMessageAdapter
     {
       List<Map<String, String>> list =
         (List<Map<String, String>>)map.get("toolExecutionRequests");
-      if (list != null)
+      if (list != null && !list.isEmpty())
       {
         List<ToolExecutionRequest> toolRequests = new ArrayList<>();
         for (Map<String, String> item : list)
@@ -109,7 +110,7 @@ public class ChatMessageAdapter
           AiMessage.from(toolRequests) :
           AiMessage.from(text, toolRequests);
       }
-      else return AiMessage.from(text);
+      else return AiMessage.from(isBlank(text) ? "?" : text);
     }
     else if (TOOL_EXECUTION_RESULT.name().equals(type))
     {

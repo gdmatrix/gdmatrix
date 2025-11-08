@@ -123,6 +123,21 @@
                              readonly="true" styleClass="code py-2" />
                 <pe:clipboard trigger="thread_link" action="copy" target="thread_link" />
               </div>
+              <div class="flex flex-column mt-2">
+                <div class="py-2">
+                  <h:outputText value="#{objectBundle.creationDateTime}: " /> 
+                  <h:outputText value="#{threadsBean.thread.dateTime}">
+                    <f:converter converterId="DateTimeConverter" />
+                  </h:outputText>
+                </div>
+                <div class="py-2">
+                  <h:outputText value="#{objectBundle.changeDateTime}: " /> 
+                  <h:outputText value="#{threadsBean.thread.changeDateTime}">
+                    <f:converter converterId="DateTimeConverter" />
+                  </h:outputText>
+                </div>
+              </div>
+
             </p:overlayPanel>            
             
             <p:button value="#{assistantBundle.threads}"
@@ -226,15 +241,17 @@
             <span class="ui-icon ui-icon-closethick"></span>
           </p:commandLink>
         </f:facet>
-        <h:panelGroup layout="block" class="ui-inputgroup thread_filter" rendered="#{threadsBean.totalThreads gt 5}">
+        <h:panelGroup id="thread_filter" layout="block" 
+                      class="ui-inputgroup thread_filter" 
+                      rendered="#{threadsBean.totalThreads gt 5}">
           <p:inputText value="#{threadsBean.threadFilter}" class="flex-grow-1" placeholder="#{assistantBundle.filterThreads}" />
-          <p:commandButton id="filter_threads" action="#{threadsBean.updateThreads(true)}" 
+          <p:commandButton id="thread_search" action="#{threadsBean.updateThreads(true)}" 
                            icon="pi pi-search" title="#{objectBundle.search}"
                            process="@parent" update="thread_list" />
           <p:commandButton action="#{threadsBean.resetThreadFilter()}" 
                            icon="pi pi-times" title="#{objectBundle.clear}"
-                           process="@form" update="threads_panel" />
-          <p:defaultCommand target="filter_threads" />
+                           process="@this" update="thread_filter thread_list" />
+          <p:defaultCommand target="thread_search" />
         </h:panelGroup>
         <h:panelGroup id="thread_list" layout="block">
           <ul>
