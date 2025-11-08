@@ -96,6 +96,7 @@ public class ThreadsBean extends WebBean implements Serializable
   boolean debugEnabled = false;
   boolean simulationEnabled = false;
   boolean editionEnabled = false;
+  boolean infoEnabled = false;
   String attachedFilename;
   String attachedDocId;
   String attachedContentId;
@@ -183,6 +184,16 @@ public class ThreadsBean extends WebBean implements Serializable
     this.editionEnabled = editionEnabled;
   }
 
+  public boolean isInfoEnabled()
+  {
+    return infoEnabled;
+  }
+
+  public void setInfoEnabled(boolean infoEnabled)
+  {
+    this.infoEnabled = infoEnabled;
+  }
+
   public String getText()
   {
     return text;
@@ -234,6 +245,7 @@ public class ThreadsBean extends WebBean implements Serializable
   {
     try
     {
+      interruptStreaming();      
       thread = getThreadStore().loadThread(threadId);
       repaintThread();
       editionEnabled = false;
@@ -289,6 +301,21 @@ public class ThreadsBean extends WebBean implements Serializable
   {
     this.threadFilter = null;
     updateThreads(true);
+  }
+  
+  public void saveThreadInfo()
+  {
+    try
+    {
+      infoEnabled = false;
+      thread.setEdited(true);
+      getThreadStore().saveThread(thread, false);
+      updateThreads(true);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void updateThreads(boolean reload)

@@ -55,6 +55,8 @@ import org.santfeliu.util.TextUtils;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import static org.matrix.doc.DocumentConstants.UNIVERSAL_LANGUAGE;
 import java.util.Date;
+import org.matrix.doc.ContentInfo;
+import org.matrix.doc.DocumentConstants;
 
 /**
  *
@@ -117,6 +119,7 @@ public class ThreadStore
     orderBy.setName("changeDateTime");
     orderBy.setDescending(true);
     filter.getOrderByProperty().add(orderBy);
+    filter.setMaxResults(100);
 
     List<ThreadSummary> threads = new ArrayList<>();
     List<Document> documents = getPort().findDocuments(filter);
@@ -136,21 +139,31 @@ public class ThreadStore
   {
     Document document = findDocumentByThreadId(threadId);
     if (document == null) throw new Exception("Thread not found: " + threadId);
+    
+    document = getPort().loadDocument(document.getDocId(), 
+      DocumentConstants.LAST_VERSION, ContentInfo.ALL);
 
-    String contentId = document.getContent().getContentId();
-    Content content = getPort().loadContent(contentId);
+    Content content = document.getContent();
     InputStream is = content.getData().getInputStream();
     String json = IOUtils.toString(is, "UTF-8");
     Gson gson = new Gson();
     Map map = gson.fromJson(json, Map.class);
     List<Map<String, Object>> messages = (List<Map<String, Object>>)map.get("messages");
+
     Thread thread = new Thread(threadId);
     thread.setDocId(document.getDocId());
     thread.setDateTime(document.getCaptureDateTime());
-    thread.setChangeDateTime(document.getChangeDateTime());
+    thread.setChangeDateTime(document.getChangeDateTime());    
+    thread.setUserId(userId);
+
     String description =
       DictionaryUtils.getPropertyValue(document.getProperty(), "description");
     thread.setDescription(description);
+
+    String edited = 
+      DictionaryUtils.getPropertyValue(document.getProperty(), "edited");
+    thread.setEdited("true".equals(edited));
+
     for (Map<String, Object> message : messages)
     {
       ChatMessage chatMessage = ChatMessageAdapter.fromMap(message);
@@ -161,30 +174,20 @@ public class ThreadStore
 
   public Thread saveThread(Thread thread) throws Exception
   {
-    boolean descriptionUpdated = updateDescription(thread);
-
-    List<Map<String, Object>> messages = new ArrayList<>();
-    Map<String, Object> map = new HashMap<>();
-    map.put("threadId", thread.getThreadId());
-    map.put("dateTime", thread.getDateTime());
-    map.put("changeDateTime", TextUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
-    map.put("description", thread.getDescription());
-    map.put("messages", messages);
-    for (ChatMessage message : thread.getMessages())
-    {
-      messages.add(ChatMessageAdapter.toMap(message));
-    }
-    Gson gson  = new GsonBuilder().disableHtmlEscaping().create();
-    String json = gson.toJson(map);
-
+    return saveThread(thread, true);    
+  }
+  
+  public Thread saveThread(Thread thread, boolean withMessages) throws Exception
+  {
     Document document = new Document();
     document.setDocId(thread.getDocId());
     document.setDocTypeId(THREAD_TYPEID);
     document.setTitle("Assistant thread: " + thread.getThreadId());
+    Property property;
 
     if (thread.getDocId() == null)
     {
-      Property property = new Property();
+      property = new Property();
       property.setName("threadId");
       property.getValue().add(thread.getThreadId());
       document.getProperty().add(property);
@@ -192,31 +195,55 @@ public class ThreadStore
 
     if (userId != null)
     {
-      Property property = new Property();
+      property = new Property();
       property.setName("userId");
       property.getValue().add(userId);
       document.getProperty().add(property);
     }
+    
+    property = new Property();
+    property.setName("edited");
+    property.getValue().add(String.valueOf(thread.isEdited()));
+    document.getProperty().add(property);      
 
-    if (descriptionUpdated)
+    updateDescription(thread);    
+    property = new Property();
+    property.setName("description");
+    property.getValue().add(thread.getDescription());
+    document.getProperty().add(property);
+
+    if (withMessages)
     {
-      Property property = new Property();
-      property.setName("description");
-      property.getValue().add(thread.getDescription());
-      document.getProperty().add(property);
-    }
+      List<Map<String, Object>> messages = new ArrayList<>();
+      Map<String, Object> map = new HashMap<>();
+      map.put("threadId", thread.getThreadId());
+      map.put("dateTime", thread.getDateTime());
+      map.put("changeDateTime", TextUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
+      map.put("description", thread.getDescription());
+      map.put("messages", messages);
+      for (ChatMessage message : thread.getMessages())
+      {
+        messages.add(ChatMessageAdapter.toMap(message));
+      }
+      Gson gson  = new GsonBuilder().disableHtmlEscaping().create();
+      String json = gson.toJson(map);
 
+      MemoryDataSource ds =
+        new MemoryDataSource(json.getBytes("UTF-8"), "thread", "application/json");
+      DataHandler dh = new DataHandler(ds);
+      Content content = new Content();
+      content.setData(dh);
+      content.setContentType("application/json");
+      content.setLanguage(UNIVERSAL_LANGUAGE);
+      document.setContent(content);
+    }
+    
     document.setIncremental(true);
-    MemoryDataSource ds =
-      new MemoryDataSource(json.getBytes("UTF-8"), "thread", "application/json");
-    DataHandler dh = new DataHandler(ds);
-    Content content = new Content();
-    content.setData(dh);
-    content.setContentType("application/json");
-    content.setLanguage(UNIVERSAL_LANGUAGE);
-    document.setContent(content);
     document = getPort().storeDocument(document);
+
     thread.setDocId(document.getDocId());
+    thread.setDateTime(document.getCaptureDateTime());
+    thread.setChangeDateTime(document.getChangeDateTime());
 
     return thread;
   }
@@ -258,7 +285,11 @@ public class ThreadStore
   private boolean updateDescription(Thread thread)
   {
     String description = thread.getDescription();
-    if (description != null && description.length() > THREAD_DESCRIPTION_LENGTH)
+    if (description == null) description = "";
+
+    if (thread.isEdited() && description.length() > 0) return false;
+    
+    if (description.length() > THREAD_DESCRIPTION_LENGTH)
       return false;
 
     StringBuilder buffer = new StringBuilder();
@@ -278,9 +309,7 @@ public class ThreadStore
         }
       }
     }
-
     thread.setDescription(buffer.toString());
-
     return true;
   }
 }

@@ -89,9 +89,10 @@
             
             <p:menuButton styleClass="ml-2" 
                           rendered="#{threadsBean.thread.isPersistent()}">
-              <p:menuitem id="info" 
+              <p:menuitem action='#{threadsBean.setInfoEnabled(true)}'
                           value="#{assistantBundle.threadInfo}" 
-                          process="@this" update="@none"
+                          process="@this" update="@parent:@parent:thread_dialog"
+                          oncomplete="PF('threadDialog').show()"
                           icon="pi pi-info-circle"  />
               <p:menuitem action="#{threadsBean.setEditionEnabled(true)}"
                           value="#{objectBundle.edit}"
@@ -109,37 +110,7 @@
                            icon="pi pi-info-circle" />
               </p:menuitem>
             </p:menuButton>
-            
-            <p:overlayPanel for="info" style="width:350px;" appendTo="@(body)">
-              <div class="flex flex-column">
-                <p:outputLabel value="#{assistantBundle.threadId}:" for="@next" styleClass="p-1" />
-                <p:inputText id="thread_id" value="#{threadsBean.threadId}" size="36" 
-                             readonly="true" styleClass="code py-2" />
-                <pe:clipboard trigger="thread_id" action="copy" target="thread_id" />
-              </div>
-              <div class="flex flex-column mt-2">
-                <p:outputLabel value="#{assistantBundle.threadLink}:" for="@next" styleClass="p-1" />
-                <p:inputText id="thread_link" value="#{threadsBean.threadLink}" size="36" 
-                             readonly="true" styleClass="code py-2" />
-                <pe:clipboard trigger="thread_link" action="copy" target="thread_link" />
-              </div>
-              <div class="flex flex-column mt-2">
-                <div class="py-2">
-                  <h:outputText value="#{objectBundle.creationDateTime}: " /> 
-                  <h:outputText value="#{threadsBean.thread.dateTime}">
-                    <f:converter converterId="DateTimeConverter" />
-                  </h:outputText>
-                </div>
-                <div class="py-2">
-                  <h:outputText value="#{objectBundle.changeDateTime}: " /> 
-                  <h:outputText value="#{threadsBean.thread.changeDateTime}">
-                    <f:converter converterId="DateTimeConverter" />
-                  </h:outputText>
-                </div>
-              </div>
-
-            </p:overlayPanel>            
-            
+                        
             <p:button value="#{assistantBundle.threads}"
                       title="#{assistantBundle.threads}"
                       widgetVar="threadsPanelButton"
@@ -244,12 +215,16 @@
         <h:panelGroup id="thread_filter" layout="block" 
                       class="ui-inputgroup thread_filter" 
                       rendered="#{threadsBean.totalThreads gt 5}">
-          <p:inputText value="#{threadsBean.threadFilter}" class="flex-grow-1" placeholder="#{assistantBundle.filterThreads}" />
+          <p:inputText value="#{threadsBean.threadFilter}" 
+                       class="flex-grow-1 flex-shrink-1" style="min-width: 10px;" 
+                       placeholder="#{assistantBundle.filterThreads}" />
           <p:commandButton id="thread_search" action="#{threadsBean.updateThreads(true)}" 
-                           icon="pi pi-search" title="#{objectBundle.search}"
+                           icon="pi pi-search" title="#{objectBundle.search}" 
+                           class="flex-shrink-0 flex-grow-0"
                            process="@parent" update="thread_list" />
           <p:commandButton action="#{threadsBean.resetThreadFilter()}" 
-                           icon="pi pi-times" title="#{objectBundle.clear}"
+                           icon="pi pi-times" title="#{objectBundle.clear}" 
+                           class="flex-shrink-0 flex-grow-0"
                            process="@this" update="thread_filter thread_list" />
           <p:defaultCommand target="thread_search" />
         </h:panelGroup>
@@ -276,6 +251,76 @@
     </div>
   </div>
 
+  <p:dialog id="thread_dialog"
+            widgetVar="threadDialog"
+            modal="true"
+            height="auto"
+            styleClass="mw_600"
+            resizable="false"
+            closable="false"
+            closeOnEscape="false">
+
+    <f:facet name="header">
+      #{assistantBundle.threadInfo}
+    </f:facet>
+    
+    <ui:fragment rendered="#{threadsBean.infoEnabled}">
+    
+      <div class="flex flex-column">
+        <p:outputLabel value="#{assistantBundle.threadId}:" for="@next" styleClass="p-1" />
+        <p:inputText id="thread_id" value="#{threadsBean.threadId}" size="36" 
+                     readonly="true" styleClass="code py-2" />
+        <pe:clipboard trigger="thread_id" action="copy" target="thread_id" />
+      </div>
+
+      <div class="flex flex-column mt-2">
+        <p:outputLabel value="#{assistantBundle.threadLink}:" for="@next" styleClass="p-1" />
+        <p:inputText id="thread_link" value="#{threadsBean.threadLink}" size="36" 
+                     readonly="true" styleClass="code py-2" />
+        <pe:clipboard trigger="thread_link" action="copy" target="thread_link" />
+      </div>
+
+      <div class="flex flex-column mt-2">
+        <p:outputLabel value="#{assistantBundle.description}:" for="@next" styleClass="p-1" />
+        <p:inputTextarea id="thread_description" value="#{threadsBean.thread.description}" />
+      </div>
+
+      <div class="flex flex-column mt-2">
+        <div class="py-2">
+          <h:outputText value="#{objectBundle.creationDateTime}: " /> 
+          <h:outputText value="#{threadsBean.thread.dateTime}">
+            <f:converter converterId="DateTimeConverter" />
+          </h:outputText>
+        </div>
+        <div class="py-2">
+          <h:outputText value="#{objectBundle.changeDateTime}: " /> 
+          <h:outputText value="#{threadsBean.thread.changeDateTime}">
+            <f:converter converterId="DateTimeConverter" />
+          </h:outputText>
+        </div>
+      </div>
+    
+    </ui:fragment>
+    
+    <f:facet name="footer">
+      <div class="text-center">
+        <p:commandButton value="#{objectBundle.store}" 
+                         action="#{threadsBean.saveThreadInfo}"
+                         icon="pi pi-save" 
+                         process="thread_dialog" 
+                         update="thread_list thread_dialog" 
+                         oncomplete="PF('threadDialog').hide()" />
+        <p:commandButton value="#{objectBundle.cancel}" 
+                         action="#{threadsBean.setInfoEnabled(false)}"
+                         icon="pi pi-times" 
+                         process="@this" 
+                         update="thread_dialog" 
+                         oncomplete="PF('threadDialog').hide()" />
+      </div>
+    </f:facet>
+    
+  </p:dialog>    
+    
   <script>
     var aiLabel = "#{assistantBundle.assistant}";
     var userLabel = "#{assistantBundle.you}";

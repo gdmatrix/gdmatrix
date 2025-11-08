@@ -35,9 +35,11 @@ import com.google.gson.GsonBuilder;
 import dev.langchain4j.data.message.ChatMessage;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.santfeliu.util.TextUtils;
 
 /**
  *
@@ -50,6 +52,8 @@ public class Thread implements Serializable
   private String docId;
 
   private String description;
+  
+  private boolean edited;
 
   private String dateTime;
 
@@ -62,6 +66,7 @@ public class Thread implements Serializable
   public Thread()
   {
     this(UUID.randomUUID().toString());
+    dateTime = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
   }
 
   public Thread(String threadId)
@@ -124,6 +129,16 @@ public class Thread implements Serializable
     this.description = description;
   }
 
+  public boolean isEdited()
+  {
+    return edited;
+  }
+
+  public void setEdited(boolean edited)
+  {
+    this.edited = edited;
+  }
+  
   public String getUserId()
   {
     return userId;
@@ -170,5 +185,5 @@ public class Thread implements Serializable
       .setPrettyPrinting()
       .create();
     return gson.toJson(list);
-  }
+  }  
 }
