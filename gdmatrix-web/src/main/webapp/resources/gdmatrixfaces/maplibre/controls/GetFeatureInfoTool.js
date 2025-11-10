@@ -253,7 +253,7 @@ class GetFeatureInfoTool extends Tool
         [point.x + tolerance, point.y + tolerance]
       ];
 
-      const layerForms = map.getStyle().metadata?.layerForms;
+      const layerForms = map.getStyle().metadata?.layerForms || [];
       const hasLayerForm = (layerId) => {
         return layerForms.some(item => item.layer === layerId);
       };

@@ -1013,8 +1013,8 @@ public class GeoMapBean extends WebBean implements Serializable
       GeoServiceBean geoServiceBean =
         CDI.current().select(GeoServiceBean.class).get();
 
-      ServiceCapabilities capabilities =
-        geoServiceBean.getServiceCapabilities(serviceUrl, false);
+      ServiceCapabilities capabilities = geoServiceBean.getServiceCapabilities(
+        service.getType(), serviceUrl, false);
 
       List<ServiceCapabilities.Layer> layers = capabilities.getLayers();
       List<String> layerNames = new ArrayList<>();

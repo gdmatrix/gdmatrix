@@ -49,13 +49,20 @@ public class GeoServiceBean implements Serializable
 {
   private final HashMap<String, ServiceCapabilities> cache = new HashMap<>();
 
-  public ServiceCapabilities getServiceCapabilities(String serviceUrl,
-    boolean refresh) throws Exception
+  public ServiceCapabilities getServiceCapabilities(
+    String serviceUrl, boolean refresh) throws Exception
+  {
+    return getServiceCapabilities("WMS", serviceUrl, refresh);
+  }  
+  
+  public ServiceCapabilities getServiceCapabilities(String serviceType, 
+    String serviceUrl, boolean refresh) throws Exception
   {
     ServiceCapabilities capabilities = cache.get(serviceUrl);
     if (capabilities == null || refresh)
     {
-      String requestUrl = serviceUrl + "?SERVICE=WMS&REQUEST=GetCapabilities";
+      String requestUrl = serviceUrl + "?SERVICE=" + serviceType + 
+        "&REQUEST=GetCapabilities";
 
       URL url = new URL(requestUrl);
       URLConnection conn = url.openConnection();

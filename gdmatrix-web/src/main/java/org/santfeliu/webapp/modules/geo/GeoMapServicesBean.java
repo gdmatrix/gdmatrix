@@ -97,8 +97,8 @@ public class GeoMapServicesBean extends WebBean implements Serializable
       GeoServiceBean geoServiceBean =
         CDI.current().select(GeoServiceBean.class).get();
 
-      serviceCapabilities =
-        geoServiceBean.getServiceCapabilities(service.getUrl(), true);
+      serviceCapabilities = geoServiceBean.getServiceCapabilities(
+        service.getType(), service.getUrl(), true);
     }
     catch (Exception ex)
     {
