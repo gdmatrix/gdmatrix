@@ -68,30 +68,7 @@ public class DocumentManagerSource implements Source
     return getDocument(xmlSigId, XMLSIGID);
   }
   
-  private Document getDocument(String sigId, String sigIdPropName) 
-    throws Exception 
-  {
-    String username = MatrixConfig.getProperty("adminCredentials.userId");
-    String password = MatrixConfig.getProperty("adminCredentials.password");    
-    CachedDocumentManagerClient client = 
-      new CachedDocumentManagerClient(username, password);
-    if (document == null)
-    {
-      DocumentFilter filter = new DocumentFilter();
-      DictionaryUtils.setProperty(filter, sigIdPropName, sigId);
-      List<org.matrix.doc.Document> documents = client.findDocuments(filter);
-      if (documents != null && !documents.isEmpty())
-      {
-        org.matrix.doc.Document doc = 
-          client.loadDocument(documents.get(0).getDocId(), 0, ContentInfo.ALL);
-        document = createAuthcopyDocument(doc);
-      }
-    }
-
-    return document;
-  }
-  
-  private Document createAuthcopyDocument(org.matrix.doc.Document doc) 
+  public Document getSignedDocument(org.matrix.doc.Document doc) 
     throws Exception
   {
     Document result = new Document();
@@ -115,6 +92,28 @@ public class DocumentManagerSource implements Source
     result.getProperties().addAll(doc.getProperty());
     result.extractSignatures();
     return result;
+  }  
+  
+  public Document getDocument(String sigId, String sigIdPropName) 
+    throws Exception 
+  {
+    String username = MatrixConfig.getProperty("adminCredentials.userId");
+    String password = MatrixConfig.getProperty("adminCredentials.password");    
+    CachedDocumentManagerClient client = 
+      new CachedDocumentManagerClient(username, password);
+    if (document == null)
+    {
+      DocumentFilter filter = new DocumentFilter();
+      DictionaryUtils.setProperty(filter, sigIdPropName, sigId);
+      List<org.matrix.doc.Document> documents = client.findDocuments(filter);
+      if (documents != null && !documents.isEmpty())
+      {
+        org.matrix.doc.Document doc = 
+          client.loadDocument(documents.get(0).getDocId(), 0, ContentInfo.ALL);
+        document = getSignedDocument(doc);
+      }
+    }
+
+    return document;
   }
- 
 }
