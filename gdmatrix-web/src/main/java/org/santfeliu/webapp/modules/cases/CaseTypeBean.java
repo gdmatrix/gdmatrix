@@ -109,7 +109,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
         
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab = 
-      new SearchTab("Llistat", "/pages/cases/case_list.xhtml");
+      new SearchTab("$$objectBundle.list", "/pages/cases/case_list.xhtml");
     searchTab.getTableProperties().add(new TableProperty("caseId", 
       BUNDLE_PREFIX + "case_caseId", "col-1"));
     searchTab.getTableProperties().add(new TableProperty("caseTypeId", 

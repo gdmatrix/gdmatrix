@@ -113,8 +113,8 @@ public class TranslationTypeBean extends TypeBean<Translation, TranslationFilter
     objectSetup.setViewId("/pages/translation/translation.xhtml");
 
     List<SearchTab> searchTabs = new ArrayList();
-    SearchTab searchTab =
-      new SearchTab("List", "/pages/translation/translation_list.xhtml");
+    SearchTab searchTab = new SearchTab("$$objectBundle.list",
+      "/pages/translation/translation_list.xhtml");
 
     searchTabs.add(searchTab);
 

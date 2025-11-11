@@ -99,7 +99,7 @@ public class PolicyTypeBean extends TypeBean<Policy, PolicyFilter>
 
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab =
-      new SearchTab("List", "/pages/policy/policy_list.xhtml");
+      new SearchTab("$$objectBundle.list", "/pages/policy/policy_list.xhtml");
 //    searchTab.getColumns().add(new Column("policyId",
 //      BUNDLE_PREFIX + "policySearch_policyId", "col-1"));
 //    searchTab.getColumns().add(new Column("policyTypeId",

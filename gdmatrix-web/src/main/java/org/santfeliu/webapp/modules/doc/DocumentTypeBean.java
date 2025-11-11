@@ -102,7 +102,7 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
 
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab =
-      new SearchTab("List", "/pages/doc/document_list.xhtml");
+      new SearchTab("$$objectBundle.list", "/pages/doc/document_list.xhtml");
     searchTab.getTableProperties().add(new TableProperty("docId",
       BUNDLE_PREFIX + "documentSearch_docId", "col-1"));
     searchTab.getTableProperties().add(new TableProperty("docTypeId",

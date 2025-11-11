@@ -104,7 +104,7 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
 
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab =
-      new SearchTab("Llistat", "/pages/agenda/event_list.xhtml");
+      new SearchTab("$$objectBundle.list", "/pages/agenda/event_list.xhtml");
     searchTab.getTableProperties().add(new TableProperty("eventId",
       BUNDLE_PREFIX + "event_id", "col-1"));
     searchTab.getTableProperties().add(new TableProperty("eventTypeId",
