@@ -32,7 +32,8 @@
               <emcomp:tipInputText id="smartFilter"
                                    value="#{documentFinderBean.smartFilter}"
                                    tipContent="#{documentFinderBean.smartSearchTip}"
-                                   required="#{not empty param['mainform:find_selector:smart_search_button']}" 
+                                   required="#{not empty param['mainform:find_selector:smart_search_button']
+                                               and documentFinderBean.filter.docTypeId == 'Document'}"
                                    requiredMessage="#{messageBundle.FILTER_IS_EMPTY}" />              
             </div>
           </div>
