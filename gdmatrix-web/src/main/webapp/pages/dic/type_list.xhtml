@@ -38,14 +38,14 @@
                        action="#{typeFinderBean.view(rowIndex)}"
                        resetValues="true"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
+                       oncomplete="PF('searchTabs').select(2);"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        />     
       <p:commandButton icon="ui-icon pi pi-sitemap"
                        styleClass="rounded-button ui-button-flat"
                        action="#{typeFinderBean.viewNodeInTree(row.typeId)}"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       oncomplete="PF('searchTabs').select(1);"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        title="Tree" alt="Tree"
                        />      

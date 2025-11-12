@@ -68,7 +68,7 @@
                        action="#{eventFinderBean.view(rowIndex)}"
                        resetValues="true"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
+                       oncomplete="PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}"
                        rendered="#{row.summary != '???'}" />

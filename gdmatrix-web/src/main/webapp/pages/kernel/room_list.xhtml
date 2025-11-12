@@ -36,7 +36,7 @@
                        action="#{roomFinderBean.view(rowIndex)}"
                        resetValues="true"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       oncomplete="PF('searchTabs').select(1);"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}" />
     </p:column>
