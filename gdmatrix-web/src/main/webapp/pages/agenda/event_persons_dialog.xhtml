@@ -41,7 +41,7 @@
           <emcomp:objectReference value="#{eventPersonsTabBean.editing.personId}"
                                   type="Person"
                                   process="@form:cnt:search_tabs:event_persons_dialog"
-                                  update="@form:cnt:search_tabs:event_persons_panel"
+                                  update="@form:cnt:search_tabs:event_persons_panel:updatable_components"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
@@ -54,11 +54,11 @@
                                   autoUpdate="false">
             <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
                     process="@form:cnt:search_tabs:event_persons_dialog"
-                    update="@form:cnt:search_tabs:event_persons_panel"
+                    update="@form:cnt:search_tabs:event_persons_panel:updatable_components"
                     oncomplete="PF('eventPersonsDialog').resetPosition();" />
             <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
                     process="@form:cnt:search_tabs:event_persons_dialog"
-                    update="@form:cnt:search_tabs:event_persons_panel"
+                    update="@form:cnt:search_tabs:event_persons_panel:updatable_components"
                     oncomplete="PF('eventPersonsDialog').resetPosition();" />
           </emcomp:objectReference>
         </div>
@@ -70,7 +70,7 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventPersonsTabBean.attendantTypeId}"
                                 process="@form:cnt:search_tabs:event_persons_dialog"
-                                update="@form:cnt:search_tabs:event_persons_panel"
+                                update="@form:cnt:search_tabs:event_persons_panel:updatable_components"
                                 oncomplete="PF('eventPersonsDialog').hide();"
                                 onselect="PF('eventPersonsDialog').show();"
                                 type="#{eventPersonsTabBean.tabBaseTypeId != null ? eventPersonsTabBean.tabBaseTypeId : 'Attendant'}"
@@ -86,41 +86,43 @@
           </emcomp:typeReference>
         </p:outputPanel>
 
-        <p:outputPanel styleClass="field-checkbox col-12"
-                       rendered="#{eventPersonsTabBean.editing.personId != null}">
-          <p:selectBooleanCheckbox value="#{eventPersonsTabBean.hidden}"
-                                   itemLabel="#{agendaBundle.attendants_hidden}"
-                                   disabled="#{!eventObjectBean.editable}" />
-        </p:outputPanel>
+        <h:panelGroup id="updatable_components" layout="block" style="display:contents">
+          <p:outputPanel styleClass="field-checkbox col-12"
+                         rendered="#{eventPersonsTabBean.editing.personId != null}">
+            <p:selectBooleanCheckbox value="#{eventPersonsTabBean.hidden}"
+                                     itemLabel="#{agendaBundle.attendants_hidden}"
+                                     disabled="#{!eventObjectBean.editable}" />
+          </p:outputPanel>
 
-        <div class="field col-12 md:col-6">
-          <p:outputLabel for="attended"
-                         value="#{agendaBundle.attendants_attended}" />
-          <p:selectOneMenu id="attended"
-                           value="#{eventPersonsTabBean.editing.attended}"
-                           disabled="#{!eventObjectBean.editable}" autoWidth="false"
-                           touchable="true" var="itemValue">
-            <f:selectItem itemLabel=" " itemValue="" />
-            <f:selectItems value="#{['S','N','J']}"
-                           var="item"
-                           itemValue="#{item}"
-                           itemLabel="#{agendaBundle['attendants_' += item]}" />
-            <p:column>
-              <h:outputText value="#{itemValue != '' ? agendaBundle['attendants_' += itemValue] : ' '}" />
-            </p:column>
-          </p:selectOneMenu>
-        </div>
 
-        <p:outputPanel styleClass="field col-12"
-                       rendered="#{eventPersonsTabBean.editing.personId != null}">
-          <p:outputLabel for="comments"
-                         value="#{agendaBundle.attendants_comments}"/>
-          <p:inputTextarea id="comments" value="#{eventPersonsTabBean.editing.comments}"
-                           autoResize="false"
-                           onkeypress="checkMaxLength(this, #{attendantsBean.propertySize.comments})"
-                           readonly="#{not eventObjectBean.editable}" />
-        </p:outputPanel>
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="attended"
+                           value="#{agendaBundle.attendants_attended}" />
+            <p:selectOneMenu id="attended"
+                             value="#{eventPersonsTabBean.editing.attended}"
+                             disabled="#{!eventObjectBean.editable}" autoWidth="false"
+                             touchable="true" var="itemValue">
+              <f:selectItem itemLabel=" " itemValue="" />
+              <f:selectItems value="#{['S','N','J']}"
+                             var="item"
+                             itemValue="#{item}"
+                             itemLabel="#{agendaBundle['attendants_' += item]}" />
+              <p:column>
+                <h:outputText value="#{itemValue != '' ? agendaBundle['attendants_' += itemValue] : ' '}" />
+              </p:column>
+            </p:selectOneMenu>
+          </div>
 
+          <p:outputPanel styleClass="field col-12"
+                         rendered="#{eventPersonsTabBean.editing.personId != null}">
+            <p:outputLabel for="comments"
+                           value="#{agendaBundle.attendants_comments}"/>
+            <p:inputTextarea id="comments" value="#{eventPersonsTabBean.editing.comments}"
+                             autoResize="false"
+                             onkeypress="checkMaxLength(this, #{attendantsBean.propertySize.comments})"
+                             readonly="#{not eventObjectBean.editable}" />
+          </p:outputPanel>
+        </h:panelGroup>
       </div>
 
     </h:panelGroup>

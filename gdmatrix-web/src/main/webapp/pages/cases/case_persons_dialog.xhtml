@@ -6,13 +6,13 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-  
+
   <p:dialog id="case_persons_dialog" widgetVar="casePersonsDialog" 
             styleClass="edit_data_dialog mw_800"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false" 
             onShow="PF('casePersonsDialog').resetPosition();">
-    
+
     <f:facet name="header">
       <p:outputPanel>
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
@@ -28,69 +28,71 @@
                 showIcon="true" closable="false" forIgnores="growl">
       <p:autoUpdate />
     </p:messages>    
-    
+
     <h:panelGroup styleClass="mt-2" id="case_persons_panel"
                   layout="block"
                   rendered="#{casePersonsTabBean.editing != null}">
- 
-      <p:tabView activeIndex="#{casePersonsTabBean.tabIndex}">
+
+      <p:tabView id="persons_dialog_tabs" activeIndex="#{casePersonsTabBean.tabIndex}">
         <p:tab title="#{caseBundle.casePersons_person}">
-          <h:panelGroup id="person_data_panel">
-            <div class="ui-fluid formgrid grid" >
 
-              <!-- Person -->              
-              <div class="field col-12">  
-                <p:outputLabel for="@next"
-                               value="#{caseBundle.casePersons_person}"
-                               styleClass="w-full" 
-                               indicateRequired="true" />
-                <emcomp:objectReference value="#{casePersonsTabBean.personId}"
-                                        process="@form:cnt:search_tabs:case_persons_dialog"
-                                        update="@form:cnt:search_tabs:case_persons_panel"
-                                        type="Person"
-                                        styleClass="w-full"
-                                        scrollHeight="200"
-                                        queryDelay="1000"
-                                        oncomplete="PF('casePersonsDialog').hide();"
-                                        onselect="PF('casePersonsDialog').show();"
-                                        required="#{not empty param['mainform:search_tabs:case_persons_store']}"
-                                        requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
-                                        minQueryLength="3"
-                                        autoUpdate="false"
-                                        disabled="#{!caseObjectBean.editable}">
-                  <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
-                          process="@form:cnt:search_tabs:case_persons_dialog" 
-                          update="@form:cnt:search_tabs:case_persons_panel" 
-                          oncomplete="PF('casePersonsDialog').resetPosition();" />
-                  <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
-                          process="@form:cnt:search_tabs:case_persons_dialog" 
-                          update="@form:cnt:search_tabs:case_persons_panel"
-                          oncomplete="PF('casePersonsDialog').resetPosition();" />                  
-                </emcomp:objectReference>
-              </div>              
+          <div class="ui-fluid formgrid grid" >
 
-              <!-- Type -->
-              <p:outputPanel styleClass="field col-12 md:col-6" 
-                             rendered="#{!casePersonsTabBean.leafBaseType and caseObjectBean.isRenderProperty('casePersonTypeId')}">
-                <p:outputLabel for="@next" 
-                               value="#{caseBundle.casePersons_type}"
-                               indicateRequired="true" />
-                <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
+            <!-- Person -->              
+            <div class="field col-12">  
+              <p:outputLabel for="@next"
+                             value="#{caseBundle.casePersons_person}"
+                             styleClass="w-full" 
+                             indicateRequired="true" />
+              <emcomp:objectReference value="#{casePersonsTabBean.personId}"
                                       process="@form:cnt:search_tabs:case_persons_dialog"
-                                      update="@form:cnt:search_tabs:case_persons_panel"
-                                      oncomplete="PF('casePersonsDialog').hide();"
-                                      onselect="PF('casePersonsDialog').show();"
-                                      type="#{casePersonsTabBean.tabBaseTypeId != null ? casePersonsTabBean.tabBaseTypeId : 'CasePerson'}"
-                                      showNavigatorItems="#{casePersonsTabBean.tabBaseTypeId != 'CasePerson' ? 'false' : 'true'}"
-                                      showNonInstantiableItems="false"
+                                      update="@form:cnt:search_tabs:persons_dialog_tabs:updatable_components"
+                                      type="Person"
+                                      styleClass="w-full"
                                       scrollHeight="200"
                                       queryDelay="1000"
-                                      minQueryLength="3" 
+                                      oncomplete="PF('casePersonsDialog').hide();"
+                                      onselect="PF('casePersonsDialog').show();"
                                       required="#{not empty param['mainform:search_tabs:case_persons_store']}"
-                                      requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
-                                      disabled="#{!caseObjectBean.editable}">            
-                </emcomp:typeReference>
-              </p:outputPanel>
+                                      requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
+                                      minQueryLength="3"
+                                      autoUpdate="false"
+                                      disabled="#{!caseObjectBean.editable}">
+                <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
+                        process="@form:cnt:search_tabs:case_persons_dialog" 
+                        update="@form:cnt:search_tabs:persons_dialog_tabs:updatable_components" 
+                        oncomplete="PF('casePersonsDialog').resetPosition();" />
+                <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
+                        process="@form:cnt:search_tabs:case_persons_dialog" 
+                        update="@form:cnt:search_tabs:persons_dialog_tabs:updatable_components"
+                        oncomplete="PF('casePersonsDialog').resetPosition();" />                  
+              </emcomp:objectReference>
+            </div>              
+
+            <!-- Type -->
+            <p:outputPanel styleClass="field col-12 md:col-6" 
+                           rendered="#{!casePersonsTabBean.leafBaseType and caseObjectBean.isRenderProperty('casePersonTypeId')}">
+              <p:outputLabel for="@next" 
+                             value="#{caseBundle.casePersons_type}"
+                             indicateRequired="true" />
+              <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
+                                    process="@form:cnt:search_tabs:case_persons_dialog"
+                                    update="@form:cnt:search_tabs:persons_dialog_tabs:updatable_components"
+                                    oncomplete="PF('casePersonsDialog').hide();"
+                                    onselect="PF('casePersonsDialog').show();"
+                                    type="#{casePersonsTabBean.tabBaseTypeId != null ? casePersonsTabBean.tabBaseTypeId : 'CasePerson'}"
+                                    showNavigatorItems="#{casePersonsTabBean.tabBaseTypeId != 'CasePerson' ? 'false' : 'true'}"
+                                    showNonInstantiableItems="false"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3" 
+                                    required="#{not empty param['mainform:search_tabs:case_persons_store']}"
+                                    requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                    disabled="#{!caseObjectBean.editable}">            
+              </emcomp:typeReference>
+            </p:outputPanel>
+
+            <h:panelGroup id="updatable_components" layout="block" style="display:contents">
 
               <!-- Dates -->
               <p:outputPanel styleClass="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('startDate')}">
@@ -132,92 +134,92 @@
                                         disabled="#{!caseObjectBean.editable}">
                 </emcomp:objectReference>
               </p:outputPanel> 
-            </div>
+              
+              <!-- Contacts --> 
+              <h:panelGroup id="contacts_panel" styleClass="ui-fluid formgrid grid col-12" 
+                            rendered="#{casePersonsTabBean.editing.personId != null and caseObjectBean.isRenderProperty('contacts')}">
 
-            <!-- Contacts -->     
-            <h:panelGroup id="contacts_panel" styleClass="ui-fluid formgrid grid" 
-                          rendered="#{casePersonsTabBean.editing.personId != null and caseObjectBean.isRenderProperty('contacts')}">
+                <div class="field col-12"> 
 
-              <div class="field col-12"> 
+                  <p:outputLabel for="@next" value="#{caseBundle.casePersons_personContacts}"/>
 
-                <p:outputLabel for="@next" value="#{caseBundle.casePersons_personContacts}"/>
+                  <p:dataTable id="selected_contacts_table" 
+                               var="sc" value="#{casePersonsTabBean.selectedContacts}" 
+                               size="small" rowIndexVar="i" emptyMessage="#{objectBundle.no_data}"
+                               styleClass="invisible_header_table">   
+                    <p:column styleClass="col-10">
+                      <h:outputText value="#{sc.contactTypeLabel}: #{sc.value}"/>
+                    </p:column> 
+                    <p:column styleClass="col-2 text-center">
+                      <p:commandButton icon="pi pi-minus-circle" styleClass="rounded-button ui-button-flat"
+                                       action="#{casePersonsTabBean.unselectContact(sc)}"
+                                       update="@parent:@parent:@parent:contacts_panel" process="@this"
+                                       alt="#{objectBundle.remove}" title="#{objectBundle.remove}" 
+                                       disabled="#{!caseObjectBean.editable}" />
+                      <p:commandButton icon="pi pi-arrow-circle-down" styleClass="rounded-button ui-button-flat"
+                                       action="#{casePersonsTabBean.moveContactDown(i)}"
+                                       update="@parent:@parent:@parent:contacts_panel" process="@this"
+                                       alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}" 
+                                       disabled="#{!caseObjectBean.editable}" />              
+                    </p:column>
 
-                <p:dataTable id="selected_contacts_table" 
-                             var="sc" value="#{casePersonsTabBean.selectedContacts}" 
-                             size="small" rowIndexVar="i" emptyMessage="#{objectBundle.no_data}"
-                             styleClass="invisible_header_table">   
-                  <p:column styleClass="col-10">
-                    <h:outputText value="#{sc.contactTypeLabel}: #{sc.value}"/>
-                  </p:column> 
-                  <p:column styleClass="col-2 text-center">
-                    <p:commandButton icon="pi pi-minus-circle" styleClass="rounded-button ui-button-flat"
-                                     action="#{casePersonsTabBean.unselectContact(sc)}"
-                                     update="@parent:@parent:@parent:contacts_panel" process="@this"
-                                     alt="#{objectBundle.remove}" title="#{objectBundle.remove}" 
-                                     disabled="#{!caseObjectBean.editable}" />
-                    <p:commandButton icon="pi pi-arrow-circle-down" styleClass="rounded-button ui-button-flat"
-                                     action="#{casePersonsTabBean.moveContactDown(i)}"
-                                     update="@parent:@parent:@parent:contacts_panel" process="@this"
-                                     alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}" 
-                                     disabled="#{!caseObjectBean.editable}" />              
-                  </p:column>
+                  </p:dataTable> 
 
-                </p:dataTable> 
+                  <p:commandButton id="add_contacts_button" type="button" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
+                                   rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}"
+                                   disabled="#{!caseObjectBean.editable}"/>
 
-                <p:commandButton id="add_contacts_button" type="button" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
-                                 rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}"
-                                 disabled="#{!caseObjectBean.editable}"/>
+                  <p:overlayPanel for="add_contacts_button" styleClass="col-8 md:col-3" appendTo="@(form)"
+                                  showEvent="mouseover" autoHide="false">
 
-                <p:overlayPanel for="add_contacts_button" styleClass="col-8 md:col-3" appendTo="@(form)"
-                                showEvent="mouseover" autoHide="false">
+                    <h:panelGroup id="person_contacts_table">
+                      <c:forEach var="pc" items="#{casePersonsTabBean.personContacts}">
+                        <div class="block p-2">
+                          <p:commandLink value="#{pc.contactTypeLabel}: #{pc.value}" 
+                                         action="#{casePersonsTabBean.selectContact(pc)}" 
+                                         update="@parent:@parent:@parent:contacts_panel" 
+                                         process="@this"/>
+                        </div>                
+                      </c:forEach>
+                    </h:panelGroup>
 
-                  <h:panelGroup id="person_contacts_table">
-                    <c:forEach var="pc" items="#{casePersonsTabBean.personContacts}">
-                      <div class="block p-2">
-                        <p:commandLink value="#{pc.contactTypeLabel}: #{pc.value}" 
-                                       action="#{casePersonsTabBean.selectContact(pc)}" 
-                                       update="@parent:@parent:@parent:contacts_panel" 
-                                       process="@this"/>
-                      </div>                
-                    </c:forEach>
-                  </h:panelGroup>
+                  </p:overlayPanel>           
+                </div>
 
-                </p:overlayPanel>           
-              </div>
+                <p:outputPanel styleClass="field col-12 md:col-6" 
+                               rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">
+                  <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
+                  <p:selectOneMenu id="new_contact_type_id" value="#{casePersonsTabBean.contactTypeId}"
+                                   autoWidth="false" touchable="true" var="itemValue"
+                                   disabled="#{!caseObjectBean.editable}">
+                    <f:selectItems value="#{casePersonsTabBean.contactTypeSelectItems}" />
+                    <p:column>
+                      <h:outputText value="#{applicationBean.getItemLabel(casePersonsTabBean.contactTypeSelectItems, itemValue)}"/>
+                    </p:column>                  
+                  </p:selectOneMenu>
 
-              <p:outputPanel styleClass="field col-12 md:col-6" 
-                             rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">
-                <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
-                <p:selectOneMenu id="new_contact_type_id" value="#{casePersonsTabBean.contactTypeId}"
-                                 autoWidth="false" touchable="true" var="itemValue"
-                                 disabled="#{!caseObjectBean.editable}">
-                  <f:selectItems value="#{casePersonsTabBean.contactTypeSelectItems}" />
-                  <p:column>
-                    <h:outputText value="#{applicationBean.getItemLabel(casePersonsTabBean.contactTypeSelectItems, itemValue)}"/>
-                  </p:column>                  
-                </p:selectOneMenu>
+                </p:outputPanel>
 
-              </p:outputPanel>
+                <p:outputPanel styleClass="field col-12 md:col-6"
+                               rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">   
+                  <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />            
+                  <div class="ui-inputgroup">
+                    <p:inputText id="new_contact_value" value="#{casePersonsTabBean.contactValue}"
+                                 readonly="#{!caseObjectBean.editable}" />  
 
-              <p:outputPanel styleClass="field col-12 md:col-6"
-                             rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">   
-                <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />            
-                <div class="ui-inputgroup">
-                  <p:inputText id="new_contact_value" value="#{casePersonsTabBean.contactValue}"
-                               readonly="#{!caseObjectBean.editable}" />  
+                    <p:commandButton icon="pi pi-plus-circle" 
+                                     action="#{casePersonsTabBean.addNewContact}"
+                                     process="@this new_contact_type_id new_contact_value" 
+                                     update="@parent:@parent:@parent:contacts_panel"
+                                     alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                                     disabled="#{!caseObjectBean.editable}" /> 
+                  </div>   
+                </p:outputPanel>
 
-                  <p:commandButton icon="pi pi-plus-circle" 
-                                   action="#{casePersonsTabBean.addNewContact}"
-                                   process="@this new_contact_type_id new_contact_value" 
-                                   update="@parent:@parent:@parent:contacts_panel"
-                                   alt="#{objectBundle.add}" title="#{objectBundle.add}"
-                                   disabled="#{!caseObjectBean.editable}" /> 
-                </div>   
-              </p:outputPanel>
-
+              </h:panelGroup>
             </h:panelGroup>
+          </div>
 
-          </h:panelGroup>
         </p:tab>
 
         <!-- Representant -->
@@ -365,7 +367,7 @@
 
         <p:tab title="#{objectBundle.auditory}">
           <div class="ui-fluid formgrid grid">
-            
+
             <emcomp:auditData creationUserId="#{casePersonsTabBean.editing.creationUserId}" 
                               creationDateTime="#{casePersonsTabBean.editing.creationDateTime}"      
                               changeUserId="#{casePersonsTabBean.editing.changeUserId}" 
@@ -374,7 +376,7 @@
         </p:tab>
 
       </p:tabView>
-    
+
     </h:panelGroup> 
 
 
