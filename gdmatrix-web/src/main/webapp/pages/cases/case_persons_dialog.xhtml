@@ -61,11 +61,10 @@
                 <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
                         process="@form:cnt:search_tabs:case_persons_dialog" 
                         update="@form:cnt:search_tabs:persons_dialog_tabs:updatable_components" 
-                        oncomplete="PF('casePersonsDialog').resetPosition();" />
+                        oncomplete="PF('casePersonsDialog').resetPosition();" />  
                 <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
                         process="@form:cnt:search_tabs:case_persons_dialog" 
-                        update="@form:cnt:search_tabs:persons_dialog_tabs:updatable_components"
-                        oncomplete="PF('casePersonsDialog').resetPosition();" />                  
+                        update="@form:cnt:search_tabs:persons_dialog_tabs:updatable_components" />                  
               </emcomp:objectReference>
             </div>              
 
