@@ -1,5 +1,55 @@
 /* obj.css */
 
+.side_panel.left 
+{         
+  display: flex;
+  flex-direction: column;
+  min-height: 0;          
+  overflow: hidden;    
+}
+
+.side_panel.left .ui-panel-content,
+.side_panel.left .ui-tabs,                   
+.side_panel.left .ui-tabs .ui-tabs-panels,      
+.side_panel.left .ui-tabs .ui-tabs-panel 
+{      
+  height: 100%;
+  min-height: 0;               
+  overflow: hidden;
+}
+
+.side_panel.left .find_selector
+{
+    display: flex;
+    flex-direction: column;
+    height: 100%;     
+    min-height: 0;
+}
+
+.scrollable_panel 
+{
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.scrollable_panel_header,
+.scrollable_panel_footer
+{
+    flex: 0 0 auto;
+}
+
+.scrollable_panel_body 
+{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 1rem;
+}
+
 tr.current,
 td.current { font-weight: bold; }    
 
@@ -116,24 +166,10 @@ body .side_panel .ui-panel-content
   overflow: auto;
 }
 
-body .side_panel.left .ui-tabs.ui-tabs-top > .ui-tabs-nav
+body .left_column.side_panel .ui-panel-content
 {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  transform: translate(0, -1rem);
-  padding-top: 1rem;
-}
-
-body .side_panel.left .buttons
-{
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-  transform: translate(-1rem, 1rem);
-  width: calc(100% + 1rem);
-  padding: 1rem 0; 
-  background-color: var(--surface-a);
+  flex-grow: 0;
+  overflow: hidden;
 }
 
 .central_column
@@ -176,24 +212,6 @@ body .side_panel.left .buttons
   align-items: center;
 }
 
-.central_column .object_data .ui-tabs .ui-tabs-panel .ui-outputpanel:first-child
-{
-  background-color: var(--surface-a);
-}
-
-.central_column .object_data .ui-tabs .ui-tabs-panel .tab_footer
-{
-  background-color: var(--surface-a);
-}
-/*
-.central_column .object_data .ui-tabs.ui-tabs-top .ui-tabs-panels .ui-tabs-nav
-{
-  background-color: var(--surface-a);
-  position: sticky;
-  top: 2.2rem;
-  z-index: 1;
-}
-*/
 .side_button.display_hidden
 {
   display: none;

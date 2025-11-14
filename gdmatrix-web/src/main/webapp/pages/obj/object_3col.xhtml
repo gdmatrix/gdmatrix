@@ -35,7 +35,7 @@
 
         <!-- Central column -->
         <p:outputPanel id="central_column"
-                       class="central_column flex-grow-1 m-1">
+                       class="central_column m-1">
           <div class="object_header">
             <h1 class="object_label">
               <h:outputText value="" styleClass="#{userSessionBean.menuModel.selectedMenuItem.properties.icon} ml-2" />
@@ -81,7 +81,7 @@
             <p:autoUpdate />
           </p:messages>
 
-          <div class="object_data">
+          <div class="object_data overflow-hidden">
             <script>
               function onTabShow(editModeSelector, ...activeIndexFunctions)
               {
