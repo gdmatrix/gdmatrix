@@ -1,11 +1,12 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
   <script>
-    
-    function onMoveComplete(args) 
+
+    function onMoveComplete(args)
     {
       if (!args.moved) //error
       {
@@ -16,9 +17,10 @@
         if (updateScheduleEventStyles) updateScheduleEventStyles();
       }
       window.currentEventDrop = null;
+      PF('eventDialog').hide();
     }
     
-    function onResizeComplete(args) 
+    function onResizeComplete(args)
     {
       if (!args.resized) //error
       {
@@ -29,22 +31,62 @@
         if (updateScheduleEventStyles) updateScheduleEventStyles();
       }
       window.currentEventResize = null;
+      PF('eventDialog').hide();
     }
 
     function initSchedule() 
     {
       window.currentEventDrop = null;
       window.currentEventResize = null;
-      this.cfg.options.eventClick = function(e) {
-        if (e.event.title !== '???')
+
+      this.cfg.options.eventClick = function(info)
+      {
+        var el = info.el || info.jsEvent &amp;&amp; info.jsEvent.target;
+        if (!el) return true;
+        if (el._pfClickTimer)
         {
-          selectEvent([
-            {name:'eventId', value:e.event.id}, 
-            {name:'eventStartStr', value:e.event.startStr}]);            
+          clearTimeout(el._pfClickTimer);
+          el._pfClickTimer = null;
         }
+        el._pfClickTimer = setTimeout(function() {
+
+          if (info.event.title !== '???')
+          {
+            selectEvent([
+              {name:'eventId', value: info.event.id},
+              {name:'eventStartStr', value: info.event.startStr}
+            ]);
+          }
+          el._pfClickTimer = null;
+        }, 250);
         return true;
       };
-      this.cfg.options.eventDrop = function(e) {
+
+      this.cfg.options.eventDidMount = function(info)
+      {
+        info.el.removeEventListener('dblclick', info.el._pfDblClick || function(){});
+        info.el._pfDblClick = function(ev)
+        {
+          if (info.el._pfClickTimer)
+          {
+            clearTimeout(info.el._pfClickTimer);
+            info.el._pfClickTimer = null;
+          }
+          if (info.event.title !== '???')
+          {
+            showEvent([
+              {name:'eventId', value: info.event.id}
+            ]);
+          }
+          ev.stopPropagation();
+          ev.preventDefault();
+        };
+        info.el.addEventListener('dblclick', info.el._pfDblClick);
+        return false;
+      };
+
+      this.cfg.options.eventDrop = function(e)
+      {
         if (e.event.title !== '???') 
         {
           window.currentEventDrop = e;
@@ -57,8 +99,10 @@
         {
           e.revert();
         }
-      };      
-      this.cfg.options.eventResize = function(e) {
+      };
+
+      this.cfg.options.eventResize = function(e)
+      {
         if (e.event.title !== '???') 
         {
           window.currentEventResize = e;
@@ -70,7 +114,18 @@
         {
           e.revert();
         }
-      };      
+      };
+
+      this.cfg.options.datesSet = function(info)
+      {
+        /*
+        On date change and view change
+        (The p:ajax "viewChange" event does not work when clicking the
+        next/previous date buttons)
+        */
+        PF('eventDialog').hide();
+      };
+
     }
 
     function removeFocus()
@@ -83,7 +138,8 @@
       document.removeEventListener("sidePanelChange", document.scheduleRefresh);
     }
     
-    document.scheduleRefresh = () => {
+    document.scheduleRefresh = () =>
+    {
       var scheduleWidget = PrimeFaces.widgets['schedule'];
       if (scheduleWidget)
       {
@@ -107,17 +163,46 @@
               clientTimeZone="#{eventFinderBean.serverTimeZone}"
               view="#{eventFinderBean.scheduleView}"
               initialDate="#{eventFinderBean.scheduleInitialDate}"
-              tooltip="#{userSessionBean.menuModel.browserType == 'desktop' ? 'true' : 'false'}">
+              tooltip="false">
     <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}"
             process="@this"
             delay="500" />
     <p:ajax event="dateDblSelect" listener="#{eventFinderBean.onDateDblSelect}"
             process="@this"
-            update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
-    <p:ajax event="viewChange" 
-            process="@this" />    
+            update="@form:cnt"
+            oncomplete="PF('eventDialog').hide();PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
+    <p:ajax event="viewChange"
+            process="@this" />
   </p:schedule>
+
+  <p:dialog id="event_dialog" widgetVar="eventDialog" showEffect="fade" hideEffect="fade"
+            header="#{eventFinderBean.selectedEvent.title}" resizable="false" responsive="true"
+            styleClass="scheduleEventDialog" closeOnEscape="true">
+    <p:outputPanel rendered="#{eventFinderBean.selectedEventDate != null}"
+                   styleClass="eventDates">
+      <p:outputLabel value="#{agendaBundle.eventSearch_date}" styleClass="title" />
+      <h:outputText value="#{eventFinderBean.selectedEventDate}" styleClass="content" />
+    </p:outputPanel>
+    <p:outputPanel rendered="#{eventFinderBean.selectedEventPlace != null}"
+                   styleClass="eventPlace">
+      <p:outputLabel value="#{agendaBundle.event_place}" styleClass="title" />
+      <h:outputText value="#{eventFinderBean.selectedEventPlace}" styleClass="content" />
+    </p:outputPanel>    
+    <p:outputPanel rendered="#{eventFinderBean.selectedEventAttendants != null and 
+                               not empty eventFinderBean.selectedEventAttendants}"
+                   styleClass="eventAttendants">
+      <p:outputLabel value="#{agendaBundle.attendants}" styleClass="title" />
+      <p:dataList value="#{eventFinderBean.selectedEventAttendants}" styleClass="content"
+                  var="attendant">
+        <h:outputText value="#{attendant}" styleClass="item" />
+      </p:dataList>
+    </p:outputPanel>
+    <f:facet name="footer">
+      <p:commandButton id="editEventButton" value="#{objectBundle.edit}" action="#{eventFinderBean.onEventShow}"
+                       process="@this"
+                       update="@form:cnt" />
+    </f:facet>
+  </p:dialog>
 
   <h:outputText value="#{agendaBundle.insufficientFilter}"
                 rendered="#{not eventFinderBean.renderSchedule}"
@@ -128,20 +213,25 @@
   <p:remoteCommand id="selectEventCommand"
                    name="selectEvent" actionListener="#{eventFinderBean.onEventSelect}" 
                    process="@this"
-                   update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                   oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />  
+                   update="event_dialog"
+                   oncomplete="PF('eventDialog').show();" />
+
+  <p:remoteCommand id="showEventCommand"
+                   name="showEvent" actionListener="#{eventFinderBean.onEventShow}"
+                   process="@this"
+                   update="@form:cnt" />
 
   <p:remoteCommand id="moveEventCommand"
                    name="moveEvent" actionListener="#{eventFinderBean.onEventMove}" 
                    process="@this"
                    update="@form:cnt:search_tabs:obj_tabs"
-                   oncomplete="onMoveComplete(args)" />    
+                   oncomplete="onMoveComplete(args)" />
 
   <p:remoteCommand id="resizeEventCommand"
                    name="resizeEvent" actionListener="#{eventFinderBean.onEventResize}" 
                    process="@this"
                    update="@form:cnt:search_tabs:obj_tabs"
-                   oncomplete="onResizeComplete(args)" />    
+                   oncomplete="onResizeComplete(args)" />
   
 </ui:composition>
 

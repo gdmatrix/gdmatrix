@@ -36,19 +36,24 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.agenda.AttendantView;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
+import org.matrix.agenda.EventPlaceView;
+import org.matrix.agenda.EventView;
 import org.matrix.agenda.OrderByProperty;
 import org.matrix.agenda.SecurityMode;
 import org.matrix.dic.DictionaryConstants;
@@ -57,11 +62,13 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
+import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -93,6 +100,10 @@ public class EventFinderBean extends FinderBean
     "renderOnlyAttendantsIcon"; 
 
   private static final String SECURITY_MODE_PROPERTY = "securityMode";
+  private static final String RENDER_SCHEDULE_EVENT_PLACE_PROPERTY =
+    "renderScheduleEventPlace";
+  private static final String RENDER_SCHEDULE_EVENT_ATTENDANTS_PROPERTY =
+    "renderScheduleEventAttendants";
   
   private String smartFilter;
   private EventFilter filter = new EventFilter();
@@ -106,12 +117,13 @@ public class EventFinderBean extends FinderBean
 
   //Schedule
   private ScheduleModel eventModel;
+  private ScheduleEvent selectedEvent;
   private String serverTimeZone = ZoneId.systemDefault().toString();
   private String scheduleView;
   private LocalDate scheduleInitialDate;
   private boolean scheduleEdit = false;
   private boolean dateDblClick = false;
-
+  
   @Inject
   NavigatorBean navigatorBean;
 
@@ -273,6 +285,16 @@ public class EventFinderBean extends FinderBean
     return eventModel;
   }
 
+  public ScheduleEvent getSelectedEvent()
+  {
+    return selectedEvent;
+  }
+
+  public void setSelectedEvent(ScheduleEvent selectedEvent)
+  {
+    this.selectedEvent = selectedEvent;
+  }
+
   public String getServerTimeZone()
   {
     return serverTimeZone;
@@ -313,6 +335,55 @@ public class EventFinderBean extends FinderBean
   public void setScheduleInitialDate(LocalDate scheduleInitialDate)
   {
     this.scheduleInitialDate = scheduleInitialDate;
+  }
+
+  public String getSelectedEventDate()
+  {
+    ScheduleEvent event = getSelectedEvent();
+    if (event != null)
+    {
+      Locale locale = UserSessionBean.getCurrentInstance().getViewLocale();
+      DateTimeFormatter dayFmt =
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale);
+      DateTimeFormatter hourFmt  = DateTimeFormatter.ofPattern("HH:mm");
+      LocalDateTime start = event.getStartDate();
+      LocalDateTime end = event.getEndDate();
+      if (start.toLocalDate().equals(end.toLocalDate()))
+      {
+        String day = dayFmt.format(start);
+        String hours = hourFmt.format(start) + "-" + hourFmt.format(end);
+        return day + " " + hours;
+      }
+      else
+      {
+        String day1 = dayFmt.format(start);
+        String hour1 = hourFmt.format(start);
+        String day2 = dayFmt.format(end);
+        String hour2 = hourFmt.format(end);
+        return day1 + " " + hour1 + " a " + day2 + " " + hour2;
+      }
+    }
+    return null;
+  }
+
+  public String getSelectedEventPlace()
+  {
+    ScheduleEvent event = getSelectedEvent();
+    if (event != null && event.getDynamicProperties() != null)
+    {
+      return (String)event.getDynamicProperties().get("place");
+    }
+    return null;
+  }
+
+  public List<String> getSelectedEventAttendants()
+  {
+    ScheduleEvent event = getSelectedEvent();
+    if (event != null && event.getDynamicProperties() != null)
+    {
+      return (List<String>)event.getDynamicProperties().get("attendants");
+    }
+    return null;
   }
 
   @Override
@@ -371,15 +442,35 @@ public class EventFinderBean extends FinderBean
       filter.getEventId().addAll(eventIds);
   }
 
-  public void onEventSelect()
+  public void onEventShow()
+  {
+    ScheduleEvent event;
+    String eventId = getFacesContext().
+      getExternalContext().getRequestParameterMap().get("eventId");
+    if (eventId != null) //by dblclick
+    {
+      event = getEventModel().getEvent(eventId);
+    }
+    else //by dialog Edit button
+    {
+      event = getSelectedEvent();
+    }
+    if (event != null)
+    {
+      setScheduleInitialDate(event.getStartDate().toLocalDate());
+      navigatorBean.view(event.getId());
+    }
+  }
+
+  public void onEventSelect() 
   {
     String eventId = getFacesContext().
       getExternalContext().getRequestParameterMap().get("eventId");
-    Date startDate = getDateFromScheduleParam("eventStartStr");
-    LocalDate startLocalDate = 
-      startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();        
-    setScheduleInitialDate(startLocalDate);
-    navigatorBean.view(eventId);
+    if (eventId != null)
+    {
+      ScheduleEvent event = getEventModel().getEvent(eventId);
+      setSelectedEvent(event);
+    }
   }
 
   public void onDateSelect(SelectEvent<LocalDateTime> selectEvent)
@@ -424,7 +515,7 @@ public class EventFinderBean extends FinderBean
       Date endDate = getDateFromScheduleParam("eventEndStr");      
       String startDateTime = TextUtils.formatDate(startDate, "yyyyMMddHHmmss");
       String endDateTime = TextUtils.formatDate(endDate, "yyyyMMddHHmmss");
-      updateEvent(eventId, startDateTime, endDateTime);
+      updateEventDates(eventId, startDateTime, endDateTime);
       scheduleEdit = true;
       growl("EVENT_MOVED");      
     }
@@ -447,7 +538,7 @@ public class EventFinderBean extends FinderBean
         getExternalContext().getRequestParameterMap().get("eventId");
       Date endDate = getDateFromScheduleParam("eventEndStr");
       String endDateTime = TextUtils.formatDate(endDate, "yyyyMMddHHmmss");    
-      updateEvent(eventId, null, endDateTime);
+      updateEventDates(eventId, null, endDateTime);
       scheduleEdit = true;
       growl("EVENT_RESIZED");
     }
@@ -701,7 +792,8 @@ public class EventFinderBean extends FinderBean
     return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView, formSelector, rows,
-      searchEventTypeId, outdated, scheduleEdit, getPageSize(), eventModel };
+      searchEventTypeId, outdated, scheduleEdit, getPageSize(), eventModel,
+      selectedEvent };
   }
 
   @Override
@@ -731,6 +823,7 @@ public class EventFinderBean extends FinderBean
       }
       setPageSize((Integer)stateArray[13]);
       eventModel = (ScheduleModel)stateArray[14];
+      selectedEvent = (ScheduleEvent)stateArray[15];
     }
     catch (Exception ex)
     {
@@ -873,6 +966,8 @@ public class EventFinderBean extends FinderBean
 
   private ScheduleModel loadEventModel()
   {
+    boolean renderEventPlace = isRenderScheduleEventPlace();
+    boolean renderEventAttendants = isRenderScheduleEventAttendants();
     filter.setSecurityMode(getSecurityMode());
     eventModel = new LazyScheduleModel()
     {
@@ -884,30 +979,54 @@ public class EventFinderBean extends FinderBean
         scheduleFilter.setMaxResults(Integer.MAX_VALUE);
         scheduleFilter.setStartDateTime(toDateString(start));
         scheduleFilter.setEndDateTime(toDateString(end));
+        if (!renderEventPlace && !renderEventAttendants)
+          scheduleFilter.setReducedInfo(true);
         try
         {
-          List<Event> events = AgendaModuleBean.getClient().
-            findEventsFromCache(scheduleFilter);
-          for (Event row : events)
+          List<EventView> events = AgendaModuleBean.getClient().
+            findEventViewsFromCache(scheduleFilter);
+          for (EventView row : events)
           {
-            if (mustIncludeEvent(row, filter.getStartDateTime(),
-              filter.getEndDateTime()))
+            boolean currentEvent = row.getEventId().equals(
+              eventObjectBean.getEvent().getEventId());
+            DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
+              .id(row.getEventId())
+              .title(row.getSummary())
+              .startDate(toLocalDateTime(row.getStartDateTime()))
+              .endDate(toLocalDateTime(row.getEndDateTime()))
+              .description(row.getSummary())
+              .overlapAllowed(true)            
+              .styleClass(getEventStyleClass(row.getEventId()) + " " +
+                getEventTypeStyleClass(row.getEventTypeId()) +
+                (currentEvent ? " current" : ""))
+              .build();
+            if (renderEventPlace && !row.getPlaces().isEmpty())
             {
-              boolean currentEvent = row.getEventId().equals(
-                eventObjectBean.getEvent().getEventId());
-              DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
-                .id(row.getEventId())
-                .title(row.getSummary())
-                .startDate(toLocalDateTime(row.getStartDateTime()))
-                .endDate(toLocalDateTime(row.getEndDateTime()))
-                .description(row.getSummary())
-                .overlapAllowed(true)
-                .styleClass(getEventStyleClass(row.getEventId()) + " " +
-                  getEventTypeStyleClass(row.getEventTypeId()) +
-                  (currentEvent ? " current" : ""))
-                .build();
-              addEvent(event);
+              String placeDescription = null;
+              EventPlaceView place = row.getPlaces().get(0);
+              if (place.getRoomView() != null)
+              {
+                placeDescription = place.getRoomView().getDescription();
+              }
+              else if (place.getAddressView() != null)
+              {
+                placeDescription = place.getAddressView().getDescription();
+              }
+              if (placeDescription != null)
+              {
+                event.setDynamicProperty("place", placeDescription);
+              }
             }
+            if (renderEventAttendants && !row.getAttendants().isEmpty())
+            {
+              List<String> attendants = new ArrayList<>();
+              for (AttendantView attendant : row.getAttendants())
+              {
+                attendants.add(attendant.getPersonView().getFullName());
+              }
+              event.setDynamicProperty("attendants", attendants);
+            }
+            addEvent(event);
           }
         }
         catch (Exception ex)
@@ -948,7 +1067,7 @@ public class EventFinderBean extends FinderBean
     return localDateTime.format(formatter);
   }
 
-  private void updateEvent(String eventId, String startDateTime,
+  private void updateEventDates(String eventId, String startDateTime,
     String endDateTime)
   {
     Event event = AgendaModuleBean.getClient(true).loadEvent(eventId);
@@ -966,19 +1085,23 @@ public class EventFinderBean extends FinderBean
       }
       catch (Exception ex) { }
     }
-  }
-
-  private boolean mustIncludeEvent(Event event,
-    String filterStartDateTime, String filterEndDateTime)
-  {
-    Date eventStartDate = TextUtils.parseInternalDate(event.getStartDateTime());
-    Date eventEndDate = TextUtils.parseInternalDate(event.getEndDateTime());
-    Date viewStartDate = TextUtils.parseInternalDate(
-      StringUtils.defaultString(filterStartDateTime, "19000101000000"));
-    Date viewEndDate = TextUtils.parseInternalDate(
-      StringUtils.defaultString(filterEndDateTime, "99991231000000"));
-    return (!eventStartDate.after(viewEndDate) &&
-      eventEndDate.after(viewStartDate));
+    //Update event in schedule model
+    ScheduleEvent modelEvent = getEventModel().getEvent(eventId);
+    if (modelEvent != null)
+    {
+      DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+      if (startDateTime != null)
+      {
+        LocalDateTime ldt = LocalDateTime.parse(startDateTime, formatter);
+        modelEvent.setStartDate(ldt);
+      }
+      if (endDateTime != null)
+      {
+        LocalDateTime ldt = LocalDateTime.parse(endDateTime, formatter);
+        modelEvent.setEndDate(ldt);
+      }
+    }
   }
 
   private boolean isRender(String name, boolean defValue)
@@ -1050,6 +1173,18 @@ public class EventFinderBean extends FinderBean
       return SecurityMode.valueOf(securityMode.toUpperCase());      
     }
     else return SecurityMode.FILTERED;
+  }
+
+  private boolean isRenderScheduleEventPlace()
+  {
+    String value = getProperty(RENDER_SCHEDULE_EVENT_PLACE_PROPERTY);
+    return (value != null ? Boolean.parseBoolean(value) : true);
+  }
+
+  private boolean isRenderScheduleEventAttendants()
+  {
+    String value = getProperty(RENDER_SCHEDULE_EVENT_ATTENDANTS_PROPERTY);
+    return (value != null ? Boolean.parseBoolean(value) : true);
   }
 
   public class EventDataTableRow extends DataTableRow

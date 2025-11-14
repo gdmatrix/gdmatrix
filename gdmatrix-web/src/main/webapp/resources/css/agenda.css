@@ -469,6 +469,58 @@ body .fc th > .fc-scrollgrid-sync-inner
   padding: 0.5rem;
 }
 
+.scheduleEventDialog
+{
+}
+
+.scheduleEventDialog.ui-dialog .ui-dialog-titlebar
+{
+}
+
+.scheduleEventDialog .eventDates
+{
+  margin-bottom: 1rem;
+}
+
+.scheduleEventDialog .eventPlace
+{
+  margin-bottom: 1rem;
+}
+
+.scheduleEventDialog .eventAttendants
+{
+  margin-bottom: 1rem;
+}
+
+.scheduleEventDialog .eventAttendants .ui-datalist .ui-datalist-content
+{
+  border: 0;
+  padding: 0;
+}
+
+.scheduleEventDialog .eventAttendants ul
+{
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.scheduleEventDialog .eventAttendants ul li
+{
+  line-height: 1.5rem;
+}
+
+.scheduleEventDialog * .title
+{
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.scheduleEventDialog * .content
+{
+}
+
 /*** event_meeting_finder.xhtml ***/
 
 .meetingFinder
