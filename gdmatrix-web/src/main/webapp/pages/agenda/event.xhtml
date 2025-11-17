@@ -13,7 +13,7 @@
 
   <ui:define name="filter">
 
-    <p:outputPanel id="filter_panel">
+    <p:outputPanel id="filter_panel" styleClass="h-full">
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{eventFinderBean.filterTabSelector}">
@@ -57,155 +57,159 @@
         </p:tab>
 
         <p:tab id="advanced_search">
-          <f:facet name="title">
-            <span class="pi pi-cog mr-2"/>
-            <h:outputText value="#{objectBundle.advanced}" />
-          </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
-
-          <div class="ui-fluid formgrid grid">
-
-            <!-- EventId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{agendaBundle.event_id}" />
-              <p:chips id="eventId" value="#{eventFinderBean.eventId}"
-                       addOnPaste="true" separator="," />
+          <div class="sticky_container"> 
+            <div class="sticky_content">          
+              <f:facet name="title">
+                <span class="pi pi-cog mr-2"/>
+                <h:outputText value="#{objectBundle.advanced}" />
+              </f:facet>
+              <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
             </div>
+            <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
 
-            <!-- Content -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{agendaBundle.event_content}" />
-              <p:inputText id="content" value="#{eventFinderBean.filter.content}" />
+                <!-- EventId -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{agendaBundle.event_id}" />
+                  <p:chips id="eventId" value="#{eventFinderBean.eventId}"
+                           addOnPaste="true" separator="," />
+                </div>
+
+                <!-- Content -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{agendaBundle.event_content}" />
+                  <p:inputText id="content" value="#{eventFinderBean.filter.content}" />
+                </div>
+
+                <!-- TypeId -->
+                <p:outputPanel styleClass="field col-12" rendered="#{eventObjectBean.renderTypeId}">
+                  <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
+                  <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
+                                        type="#{eventObjectBean.baseTypeInfo.baseTypeId}"
+                                        showNavigatorItems="#{eventObjectBean.baseTypeInfo.baseTypeId != 'Event' ? 'false' : 'true'}"                                    
+                                        renderFavoritesButton="#{eventObjectBean.baseTypeInfo.baseTypeId == 'Event'}"
+                                        scrollHeight="200"
+                                        queryDelay="1000"
+                                        minQueryLength="3"
+                                        renderShowButton="false"
+                                        formSelector="#{eventFinderBean.formSelector}"
+                                        onselect="showPanel('leftPanel')"
+                                        process="@form:cnt:find_selector"
+                                        update="@form:cnt:find_selector:event_dynamic_properties">
+                  </emcomp:typeReference>
+                </p:outputPanel>
+
+                <!-- Dates -->
+                <div class="field col-12">
+                  <p:fieldset legend="#{agendaBundle.eventSearch_date}"
+                              toggleable="true" collapsed="true">
+
+                    <div class="field col-12">
+                      <p:selectOneMenu id="dateComparator"
+                                       value="#{eventFinderBean.filter.dateComparator}"
+                                       style="vertical-align:middle" touchable="true">
+                        <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="S" />
+                        <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="E" />
+                        <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="R" />
+                      </p:selectOneMenu>
+                    </div>
+
+                    <div class="field col-12">
+                      <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from}" />
+                      <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
+                                    locale="#{eventFinderBean.language}" inputStyleClass="w-12"
+                                    showIcon="true"
+                                    autocomplete="off"
+                                    pattern="dd/MM/yyyy"
+                                    placeholder="dd/MM/yyyy"
+                                    showOnFocus="false"
+                                    monthNavigator="true" yearNavigator="true" />
+                    </div>
+
+                    <div class="field col-12">
+                      <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to}" />
+                      <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
+                                    locale="#{eventFinderBean.language}" inputStyleClass="w-12"
+                                    showIcon="true"
+                                    autocomplete="off"
+                                    pattern="dd/MM/yyyy"
+                                    placeholder="dd/MM/yyyy"
+                                    showOnFocus="false"
+                                    monthNavigator="true" yearNavigator="true" />
+                    </div>
+
+                  </p:fieldset>
+                </div>
+
+                <!-- ThemeId -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}" />
+                  <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"
+                                   style="min-width:inherit !important"
+                                   filter="true"
+                                   filterMatchMode="contains">
+                    <f:selectItem itemValue="" itemLabel="#{agendaBundle.eventSearch_all}" />
+                    <f:selectItems value="#{themeTypeBean.selectItems}" />
+                  </p:selectOneMenu>
+                </div>
+
+                <!-- PersonId -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{agendaBundle.event_personId}" />
+                  <emcomp:objectReference value="#{eventFinderBean.filter.personId}"
+                                          type="Person"
+                                          scrollHeight="200"
+                                          queryDelay="1000"
+                                          minQueryLength="3"
+                                          renderShowButton="false"
+                                          onselect="showPanel('leftPanel')"
+                                          process="@form:cnt:find_selector"
+                                          update="@form:cnt:find_selector">
+                  </emcomp:objectReference>
+                </div>
+
+                <!-- Room -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{agendaBundle.event_place}" />
+                  <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
+                                          type="Room"
+                                          scrollHeight="200"
+                                          queryDelay="1000"
+                                          minQueryLength="3"
+                                          renderShowButton="false"
+                                          onselect="showPanel('leftPanel')"
+                                          process="@form:cnt:find_selector"
+                                          update="@form:cnt:find_selector">
+                  </emcomp:objectReference>
+                </div>
+
+              </div>
+
+              <emcomp:dynamicProperties id="event_dynamic_properties" typeId="#{eventFinderBean.searchEventTypeId}"
+                                        formSelector="#{eventFinderBean.formSelector}"
+                                        formBuilderPrefix="searchtype@flex"
+                                        options="#{dynamicPropertiesBean.filterOptions}"
+                                        properties="#{eventFinderBean.filter.property}" />
             </div>
-
-            <!-- TypeId -->
-            <p:outputPanel styleClass="field col-12" rendered="#{eventObjectBean.renderTypeId}">
-              <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
-              <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
-                                    type="#{eventObjectBean.baseTypeInfo.baseTypeId}"
-                                    showNavigatorItems="#{eventObjectBean.baseTypeInfo.baseTypeId != 'Event' ? 'false' : 'true'}"                                    
-                                    renderFavoritesButton="#{eventObjectBean.baseTypeInfo.baseTypeId == 'Event'}"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3"
-                                    renderShowButton="false"
-                                    formSelector="#{eventFinderBean.formSelector}"
-                                    onselect="showPanel('leftPanel')"
-                                    process="@form:cnt:find_selector"
-                                    update="@form:cnt:find_selector:event_dynamic_properties">
-              </emcomp:typeReference>
-            </p:outputPanel>
-
-            <!-- Dates -->
-            <div class="field col-12">
-              <p:fieldset legend="#{agendaBundle.eventSearch_date}"
-                          toggleable="true" collapsed="true">
-
-                  <div class="field col-12">
-                    <p:selectOneMenu id="dateComparator"
-                                     value="#{eventFinderBean.filter.dateComparator}"
-                                     style="vertical-align:middle" touchable="true">
-                      <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="S" />
-                      <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="E" />
-                      <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="R" />
-                    </p:selectOneMenu>
-                  </div>
-
-                  <div class="field col-12">
-                    <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from}" />
-                    <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
-                                  locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                                  showIcon="true"
-                                  autocomplete="off"
-                                  pattern="dd/MM/yyyy"
-                                  placeholder="dd/MM/yyyy"
-                                  showOnFocus="false"
-                                  monthNavigator="true" yearNavigator="true" />
-                  </div>
-
-                  <div class="field col-12">
-                    <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to}" />
-                    <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
-                                  locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                                  showIcon="true"
-                                  autocomplete="off"
-                                  pattern="dd/MM/yyyy"
-                                  placeholder="dd/MM/yyyy"
-                                  showOnFocus="false"
-                                  monthNavigator="true" yearNavigator="true" />
-                  </div>
-
-              </p:fieldset>
+            <div class="sticky-content buttons text-right">
+              <p:commandButton value="#{objectBundle.clear}"
+                               action="#{eventFinderBean.clear}"
+                               styleClass="m-1"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:filter_panel @(.searchTabContent)"
+                               resetValues="true"
+                               oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventFinderBean.defaultSearchTabSelector});"
+                               icon="fa fa-broom" />
+              <p:commandButton id="advanced_search_button"
+                               value="#{objectBundle.search}"
+                               action="#{eventFinderBean.find}"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
+                               styleClass="m-1"
+                               resetValues="true"
+                               oncomplete="endPanel('leftPanel');"
+                               icon="pi pi-search" />
             </div>
-
-            <!-- ThemeId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}" />
-              <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"
-                               style="min-width:inherit !important"
-                               filter="true"
-                               filterMatchMode="contains">
-                <f:selectItem itemValue="" itemLabel="#{agendaBundle.eventSearch_all}" />
-                <f:selectItems value="#{themeTypeBean.selectItems}" />
-              </p:selectOneMenu>
-            </div>
-
-            <!-- PersonId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{agendaBundle.event_personId}" />
-              <emcomp:objectReference value="#{eventFinderBean.filter.personId}"
-                                      type="Person"
-                                      scrollHeight="200"
-                                      queryDelay="1000"
-                                      minQueryLength="3"
-                                      renderShowButton="false"
-                                      onselect="showPanel('leftPanel')"
-                                      process="@form:cnt:find_selector"
-                                      update="@form:cnt:find_selector">
-              </emcomp:objectReference>
-            </div>
-
-            <!-- Room -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{agendaBundle.event_place}" />
-              <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
-                                      type="Room"
-                                      scrollHeight="200"
-                                      queryDelay="1000"
-                                      minQueryLength="3"
-                                      renderShowButton="false"
-                                      onselect="showPanel('leftPanel')"
-                                      process="@form:cnt:find_selector"
-                                      update="@form:cnt:find_selector">
-              </emcomp:objectReference>
-            </div>
-
-          </div>
-
-          <emcomp:dynamicProperties id="event_dynamic_properties" typeId="#{eventFinderBean.searchEventTypeId}"
-                                    formSelector="#{eventFinderBean.formSelector}"
-                                    formBuilderPrefix="searchtype@flex"
-                                    options="#{dynamicPropertiesBean.filterOptions}"
-                                    properties="#{eventFinderBean.filter.property}" />
-
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{eventFinderBean.clear}"
-                             styleClass="m-1"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @(.searchTabContent)"
-                             resetValues="true"
-                             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventFinderBean.defaultSearchTabSelector});"
-                             icon="fa fa-broom" />
-            <p:commandButton id="advanced_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{eventFinderBean.find}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
-                             styleClass="m-1"
-                             resetValues="true"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search" />
           </div>
         </p:tab>
 
