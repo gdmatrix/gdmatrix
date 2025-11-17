@@ -758,6 +758,11 @@ a.imageButton img:hover
   text-align: left;
 }
 
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable .syncCol
+{
+  word-break: break-word;
+}
+
 .nodeSyncPanel .syncNodeListPanel .syncNodeTable .colChecked
 {
   width: 20px;
@@ -766,22 +771,22 @@ a.imageButton img:hover
 
 .nodeSyncPanel .syncNodeListPanel .syncNodeTable .colNodeId
 {
-  width: 3rem;
+  width: 4rem;
 }
 
 .nodeSyncPanel .syncNodeListPanel .syncNodeTable .colLabel
 {
-  width: 30%;
+  width: 35%;
 }
 
 .nodeSyncPanel .syncNodeListPanel .syncNodeTable .colType
 {
-  width: 6rem;
+  width: 8rem;
 }
 
 .nodeSyncPanel .syncNodeListPanel .syncNodeTable .colFields
 {
-  width: auto;
+  width: 65%;
 }
 
 /* search.xhtml styles */

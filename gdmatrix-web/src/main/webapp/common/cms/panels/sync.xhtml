@@ -9,6 +9,10 @@
     <p:outputPanel styleClass="noWorkspacesPanel" rendered="#{!nodeEditBean.syncNodeEnabled}">
       <h:outputLabel value="#{cmsBundle.noWorkspacesToSync}" />
     </p:outputPanel>
+    <p:outputPanel>
+      <h:outputLabel value="#{nodeEditBean.syncNodeLabel}"
+                     styleClass="font-bold" />
+    </p:outputPanel>
     <p:outputPanel id="workspaceSelectionPanel" 
            styleClass="workspaceSelectionPanel flexRowPanel" 
            rendered="#{nodeEditBean.syncNodeEnabled}">
@@ -19,16 +23,25 @@
         <p:ajax update="@this :mainform:tree :mainform:rightPanel" listener="#{nodeEditBean.switchToWorkspace}" />                
         <f:selectItems value="#{nodeEditBean.toWorkspaceItems}" />
       </p:selectOneMenu>
+      <p:commandButton id="searchNodesToSync"
+                       value="#{cmsBundle.search}" title="#{cmsBundle.search}"
+                       actionListener="#{nodeEditBean.searchSyncNodes}"
+                       styleClass="imageButton"
+                       process="@this @(.nodeSyncPanel)"
+                       update=":mainform:tree @(.nodeSyncPanel)"
+                       icon="pi pi-search" />
       <p:commandButton id="syncNodeButton"
                        value="#{cmsBundle.sync}" title="#{cmsBundle.sync}"  
                        actionListener="#{nodeEditBean.syncNode}"
-                       styleClass="imageButton"
+                       styleClass="imageButton syncNodeButton"
                        process="@this :mainform:rightPanel"
                        update=":mainform:tree :mainform:rightPanel :mainform:messagesPanel"
-                       rendered="#{not nodeEditBean.nodeChangeItemListEmpty}" 
+                       rendered="#{not nodeEditBean.nodeChangeItemListEmpty}"
+                       disabled="#{empty nodeEditBean.selectedNodeChangeItemList}"
                        icon="pi pi-sync" />
     </p:outputPanel>
-    <p:outputPanel rendered="#{nodeEditBean.syncNodeEnabled and nodeEditBean.nodeChangeItemListEmpty}">
+    <p:outputPanel rendered="#{nodeEditBean.syncNodeEnabled and nodeEditBean.nodeChangeItemListEmpty
+                               and nodeEditBean.syncSearchNodeId != null}">
       <h:outputText value="#{cmsBundle.noNodesToSync}" styleClass="noNodesLabel" />      
     </p:outputPanel>
     <p:outputPanel styleClass="nodeSyncTitlePanel flexRowPanel" 
@@ -55,18 +68,27 @@
                    rowKey="#{nodeChangeRow.id}"
                    selectionPageOnly="false"
                    selection="#{nodeEditBean.selectedNodeChangeItemList}">
-        <p:ajax event="page" global="false" />        
-        <p:column styleClass="colChecked" selectionMode="multiple" />        
-        <p:column styleClass="colNodeId" headerText="#{cmsBundle.node}">
+        <p:ajax event="page" global="false" />
+        <p:ajax event="rowSelectCheckbox" global="false"
+                process="@this"
+                update="@(.syncNodeButton)" />
+        <p:ajax event="rowUnselectCheckbox" global="false"
+                process="@this"
+                update="@(.syncNodeButton)" />
+        <p:ajax event="toggleSelect" global="false"
+                process="@this"
+                update="@(.syncNodeButton)" />
+        <p:column styleClass="syncCol colChecked" selectionMode="multiple" />
+        <p:column styleClass="syncCol colNodeId" headerText="#{cmsBundle.node}">
           <h:outputText value="#{nodeChangeRow.nodeId}" styleClass="nodeId" />
         </p:column>
-        <p:column styleClass="colLabel" headerText="#{cmsBundle.label}">
+        <p:column styleClass="syncCol colLabel" headerText="#{cmsBundle.label}">
           <h:outputText value="#{nodeChangeRow.label}" styleClass="nodeLabel" />
         </p:column>
-        <p:column styleClass="colType" headerText="#{cmsBundle.type}">
+        <p:column styleClass="syncCol colType" headerText="#{cmsBundle.type}">
           <h:outputText value="#{nodeChangeRow.type}" styleClass="nodeChangeType" />
         </p:column>
-        <p:column styleClass="colFields" headerText="#{cmsBundle.fields}">
+        <p:column styleClass="syncCol colFields" headerText="#{cmsBundle.fields}">
           <h:outputText value="#{nodeChangeRow.changedPropertiesText}" styleClass="nodeLabel" />
         </p:column>
       </p:dataTable>        

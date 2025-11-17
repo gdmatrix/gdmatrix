@@ -111,7 +111,6 @@ public class NodeEditBean extends FacesBean implements Serializable
   private static final Integer CSS_TAB_INDEX = 1;
   private static final Integer SYNC_TAB_INDEX = 2;
   private static final Integer SEARCH_TAB_INDEX = 3;
-  //private static final Integer FORMS_TAB_INDEX = 4;
   private static final Integer JSON_TAB_INDEX = 4;
 
   //Tree edit & selection
@@ -153,13 +152,13 @@ public class NodeEditBean extends FacesBean implements Serializable
   private String jsonText;
 
   //Sync
-  private List<NodeChangeItem> fullNodeChangeItemList;
   private Map<String, NodeChange> nodeChangeMap;
   private List<NodeChangeItem> nodeChangeItemList;
   private List<NodeChangeItem> selectedNodeChangeItemList;
   private String toWorkspaceId;
   private SelectItem[] toWorkspaceItems;
   private Integer syncFirstRowIndex;
+  private String syncSearchNodeId;
 
   //Tree
   private TreeNode treeRoot;
@@ -185,28 +184,11 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   //********** setters/getters *********
 
-  public List<NodeChangeItem> getFullNodeChangeItemList()
-  {
-    analyzeWorkspaceChange();
-    if (fullNodeChangeItemList == null)
-    {
-      loadFullNodeChangeItemList(currentWorkspaceId, getToWorkspaceId());
-    }
-    return fullNodeChangeItemList;
-  }
-
-  public void setFullNodeChangeItemList(List<NodeChangeItem>
-    fullNodeChangeItemList)
-  {
-    this.fullNodeChangeItemList = fullNodeChangeItemList;
-  }
-
   public Map<String, NodeChange> getNodeChangeMap()
   {
-    analyzeWorkspaceChange();
     if (nodeChangeMap == null)
     {
-      loadFullNodeChangeItemList(currentWorkspaceId, getToWorkspaceId());
+      nodeChangeMap = new HashMap<>();
     }
     return nodeChangeMap;
   }
@@ -218,10 +200,9 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   public List<NodeChangeItem> getNodeChangeItemList()
   {
-    analyzeWorkspaceChange();
     if (nodeChangeItemList == null)
     {
-      loadNodeChangeItemList();
+      nodeChangeItemList = new ArrayList<>();
     }
     return nodeChangeItemList;
   }
@@ -277,6 +258,16 @@ public class NodeEditBean extends FacesBean implements Serializable
     this.syncFirstRowIndex = syncFirstRowIndex;
   }
 
+  public String getSyncSearchNodeId()
+  {
+    return syncSearchNodeId;
+  }
+
+  public void setSyncSearchNodeId(String syncSearchNodeId)
+  {
+    this.syncSearchNodeId = syncSearchNodeId;
+  }
+
   public String getUndefinedLabel()
   {
     if (undefinedLabel == null)
@@ -307,9 +298,24 @@ public class NodeEditBean extends FacesBean implements Serializable
     return mandatoryPropertyLabel;
   }
 
+  public String getSyncNodeLabel()
+  {
+    String cmsBundlePath = "org.santfeliu.cms.web.resources.CMSBundle";
+    ResourceBundle bundle = getBundle(cmsBundlePath);
+    if (syncSearchNodeId == null)
+    {
+      return getBundleValue(bundle, "nodeToSyncNotSelected");
+    }
+    else
+    {
+      return getBundleValue(bundle, "nodeToSync", syncSearchNodeId);
+    }
+  }
+
   public void switchToWorkspace()
   {
     resetSyncPanel();
+    syncSearchNodeId = UserSessionBean.getCurrentInstance().getSelectedMid();
   }
 
   public SelectItem[] getToWorkspaceItems()
@@ -828,6 +834,7 @@ public class NodeEditBean extends FacesBean implements Serializable
         CMSConfigBean.getPort().storeNode(node);
         updateCache();            
         resetTree();
+        resetSyncPanel();
         info("NODE_MOVED");
       }
     }
@@ -1550,6 +1557,16 @@ public class NodeEditBean extends FacesBean implements Serializable
     }
   }
 
+  public void searchSyncNodes()
+  {
+    loadNodeChangeItemList(currentWorkspaceId, getToWorkspaceId());
+    for (String nodeId : getNodeChangeMap().keySet())
+    {
+      expandNodeId(nodeId, false);
+    }
+    syncSearchNodeId = UserSessionBean.getCurrentInstance().getSelectedMid();
+  }
+
   public void syncNode()
   {
     try
@@ -1572,6 +1589,7 @@ public class NodeEditBean extends FacesBean implements Serializable
           getToWorkspaceId(), finalNodeChangeList);
         updateCache(getToWorkspaceId());
         resetSyncPanel();
+        searchSyncNodes();
         info("NODE_SYNCHRONIZED");
       }
     }
@@ -1826,8 +1844,6 @@ public class NodeEditBean extends FacesBean implements Serializable
     if (!rootNodeId.equals(newRootNodeId))
     {
       rootNodeId = newRootNodeId;
-      nodeChangeMap = null;
-      fullNodeChangeItemList = null;
       resetTree();
     }
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -1836,7 +1852,6 @@ public class NodeEditBean extends FacesBean implements Serializable
     resetPropertiesPanel();
     resetCssPanel();
     resetJsonPanel();
-    resetSyncPanel(false);
   }
 
   public void selectSearchMenuItem(String nodeId)
@@ -2084,13 +2099,6 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     return SEARCH_TAB_INDEX.equals(getActiveTabIndex());
   }
-
-  /*
-  public boolean isFormsTabSelected()
-  {
-    return FORMS_TAB_INDEX.equals(getActiveTabIndex());
-  }
-  */
 
   public boolean isJsonTabSelected()
   {
@@ -2794,40 +2802,18 @@ public class NodeEditBean extends FacesBean implements Serializable
     return result;
   }
 
-  private void loadNodeChangeItemList()
-  {
-    try
-    {
-      nodeChangeItemList = new ArrayList();
-      String selectedNodeId =
-        UserSessionBean.getCurrentInstance().getSelectedMid();
-      List<NodeChangeItem> auxFullList = getFullNodeChangeItemList();
-      for (NodeChangeItem item : auxFullList)
-      {
-        if (item.getPath().contains("/" + selectedNodeId + "/"))
-        {
-          nodeChangeItemList.add(item);
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  private void loadFullNodeChangeItemList(String fromWorkspaceId,
+  private void loadNodeChangeItemList(String fromWorkspaceId,
     String toWorkspaceId)
   {
     try
     {
-      fullNodeChangeItemList = new ArrayList();
+      nodeChangeItemList = new ArrayList();
       nodeChangeMap = new HashMap();
       if (toWorkspaceId != null)
       {
         CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();
         List<NodeChange> nodeChangeList = getNodeChangeList(fromWorkspaceId,
-          toWorkspaceId, getRootNodeId());
+          toWorkspaceId, UserSessionBean.getCurrentInstance().getSelectedMid());
         List<String> nodeIdList = new ArrayList();
         for (NodeChange nodeChange : nodeChangeList)
         {
@@ -2902,7 +2888,7 @@ public class NodeEditBean extends FacesBean implements Serializable
             }
             row.setPath(getNodeIdStringPath(toCNode.getNodeIdPath()));
           }
-          fullNodeChangeItemList.add(row);
+          nodeChangeItemList.add(row);
         }
       }
     }
@@ -3161,13 +3147,13 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   private void resetSyncPanel(boolean updateSyncCache)
   {
-    nodeChangeItemList = null;
     selectedNodeChangeItemList = null;
     syncFirstRowIndex = null;
     if (updateSyncCache)
     {
+      syncSearchNodeId = null;
       nodeChangeMap = null;
-      fullNodeChangeItemList = null;
+      nodeChangeItemList = null;
     }
   }
 
