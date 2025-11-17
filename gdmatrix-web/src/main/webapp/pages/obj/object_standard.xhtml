@@ -6,172 +6,172 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:p="http://primefaces.org/ui">
 
-  <div class="flex flex-column min-h-screen">
-    <p:outputPanel id="object_header" class="flex flex-wrap align-items-center card-container m-2 flex-shrink-0">
-      <p:outputPanel class="flex flex-grow-0 align-items-center justify-content-start align-self-center"
-                     rendered="#{objectBean.finderBean.isScrollEnabled()}">
-          <p:commandButton icon="ui-icon pi pi-step-backward"
-                           styleClass="rounded-button ui-button-flat mr-2"
-                           action="#{objectBean.finderBean.viewPrevious}"
-                           process="@this"
-                           update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
-                           resetValues="true"
-                           disabled="#{not objectBean.finderBean.hasPrevious()}"
-                           title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
-                           />
-          <span class="align-self-center">
-            <h:outputText value="#{objectBean.finderBean.objectPosition + 1}">
-              <f:convertNumber type="number"
-                               groupingUsed="true" />
-            </h:outputText> /
-            <h:outputText value="#{objectBean.finderBean.objectCount}">
-              <f:convertNumber type="number"
-                               groupingUsed="true" />
-            </h:outputText>
-          </span>
-          <p:commandButton icon="ui-icon pi pi-step-forward"
-                           styleClass="rounded-button ui-button-flat ml-2 mr-2"
-                           action="#{objectBean.finderBean.viewNext}"
-                           process="@this"
-                           update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
-                           resetValues="true"
-                           disabled="#{not objectBean.finderBean.hasNext()}"
-                           title="#{objectBundle.next}" alt="#{objectBundle.next}"
-                           />
-      </p:outputPanel>
-      <h:outputText value="#{objectBean.objectId}" styleClass="main_object_id mr-2 pt-2 pb-2" />
-      <span class="font-bold pt-2 pb-2">#{objectBean.description}</span>
-
-      <div class="flex flex-grow-1 justify-content-end">
-        <p:commandButton icon="ui-icon fa fa-reply"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.select}"
+  <div class="sticky_container">
+  <p:outputPanel id="object_header" class="sticky_content flex flex-wrap align-items-center card-container m-2">
+    <p:outputPanel class="flex flex-grow-0 align-items-center justify-content-start align-self-center"
+                   rendered="#{objectBean.finderBean.isScrollEnabled()}">
+        <p:commandButton icon="ui-icon pi pi-step-backward"
+                         styleClass="rounded-button ui-button-flat mr-2"
+                         action="#{objectBean.finderBean.viewPrevious}"
                          process="@this"
-                         update="@form:cnt"
-                         rendered="#{navigatorBean.selectable}"
-                         title="#{objectBundle.select}" alt="#{objectBundle.select}"
-                         />
-        <p:commandButton icon="ui-icon pi pi-star"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
-                         rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         process="@this"
-                         update="object_header @form:cnt:context_panel"
-                         partialSubmit="true"
-                         title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
-                         />
-        <p:commandButton icon="ui-icon pi pi-star-fill"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
-                         rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         process="@this"
-                         update="object_header @form:cnt:context_panel"
-                         partialSubmit="true"
-                         title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
-                         />
-        <p:commandButton icon="ui-icon pi pi-trash"
-                         styleClass="rounded-button ui-button-flat"
-                         action="#{objectBean.remove}"
-                         rendered="#{not objectBean.isNew()}"
-                         process="@this"
-                         update="@form:cnt:search_tabs @form:cnt:context_panel"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
                          resetValues="true"
-                         title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
-                         disabled="#{!objectBean.editable}">
-            <p:confirm header="#{objectBundle.confirm_remove_header}"
-                       message="#{objectBundle.confirm_remove_message}"
-                       icon="pi pi-info-circle" />
-        </p:commandButton>
-        <p:commandButton id="object_actions"
-                         action="#{objectBean.loadActions}"
-                         process="@this" update="@none"
-                         icon="ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
-                         rendered="#{not objectBean.isNew()}" />
-        <p:overlayPanel for="object_actions" appendTo="@(body)"
-                        dynamic="true" cache="true" styleClass="context"
-                        widgetVar="objectActions">
-          <p:menu style="width:100%">
-            <c:forEach items="#{objectBean.actions}" var="action">
-              <p:menuitem icon="#{action.icon}"
-                          value="#{action.label}" action="#{objectBean.callAction(action.name)}"
-                          rendered="#{not empty action.label and not action.isUrlAction() and not action.isJsAction()}"
-                          process="@this"
-                          onclick="setTimeout(()=>PF('objectActions').hide(),200)"
-                          update="@form:cnt:search_tabs:tabs object_header"/>
-              <p:menuitem icon="#{action.icon}"
-                          value="#{action.label}"
-                          onclick="setTimeout(()=>PF('objectActions').hide(),200)"
-                          url="#{action.url}" target="#{action.urlTarget}"
-                          rendered="#{not empty action.label and action.isUrlAction()}" />
-              <p:menuitem icon="#{action.icon}"
-                          value="#{action.label}"
-                          onclick="setTimeout(()=>PF('objectActions').hide(),200); #{action.getJsAction()}"
-                          process="@this"
-                          update="#{action.getJsUpdate()}" 
-                          rendered="#{not empty action.label and action.isJsAction()}"/>               
-            </c:forEach>
-            <p:menuitem action="#{objectBean.copy}"
-                        value="#{objectBean.copyLabel}"
-                        icon="pi pi-copy"
-                        process="@form:cnt:search_tabs:obj_tabs"
-                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                        onclick="setTimeout(()=>PF('objectActions').hide(),200)"                      
-                        disabled="#{!objectBean.editable}"
-                        rendered="#{objectBean.renderCopyButton}"
-                        oncomplete="if (isFacesError()) objectScrollUp()" />          
-            <p:menuitem action="#{objectBean.store}"
-                        value="#{objectBundle.store}"
-                        icon="pi pi-save"
-                        process="@form:cnt:search_tabs:obj_tabs"
-                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                        onclick="setTimeout(()=>PF('objectActions').hide(),200)"
-                        disabled="#{!objectBean.editable}"
-                        oncomplete="if (isFacesError()) objectScrollUp()" />
-            <p:menuitem action="#{objectBean.cancel}"
-                        value="#{objectBundle.reload}"
-                        icon="pi pi-undo"
+                         disabled="#{not objectBean.finderBean.hasPrevious()}"
+                         title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
+                         />
+        <span class="align-self-center">
+          <h:outputText value="#{objectBean.finderBean.objectPosition + 1}">
+            <f:convertNumber type="number"
+                             groupingUsed="true" />
+          </h:outputText> /
+          <h:outputText value="#{objectBean.finderBean.objectCount}">
+            <f:convertNumber type="number"
+                             groupingUsed="true" />
+          </h:outputText>
+        </span>
+        <p:commandButton icon="ui-icon pi pi-step-forward"
+                         styleClass="rounded-button ui-button-flat ml-2 mr-2"
+                         action="#{objectBean.finderBean.viewNext}"
+                         process="@this"
+                         update="@form:cnt:context_panel @form:cnt:search_tabs:obj_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasNext()}"
+                         title="#{objectBundle.next}" alt="#{objectBundle.next}"
+                         />
+    </p:outputPanel>
+    <h:outputText value="#{objectBean.objectId}" styleClass="main_object_id mr-2 pt-2 pb-2" />
+    <span class="font-bold pt-2 pb-2">#{objectBean.description}</span>
+
+    <div class="flex flex-grow-1 justify-content-end">
+      <p:commandButton icon="ui-icon fa fa-reply"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select}"
+                       process="@this"
+                       update="@form:cnt"
+                       rendered="#{navigatorBean.selectable}"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-star"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
+                       rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-star-fill"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
+                       rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       process="@this"
+                       update="object_header @form:cnt:context_panel"
+                       partialSubmit="true"
+                       title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
+                       />
+      <p:commandButton icon="ui-icon pi pi-trash"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{objectBean.remove}"
+                       rendered="#{not objectBean.isNew()}"
+                       process="@this"
+                       update="@form:cnt:search_tabs @form:cnt:context_panel"
+                       resetValues="true"
+                       title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
+                       disabled="#{!objectBean.editable}">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+      </p:commandButton>
+      <p:commandButton id="object_actions"
+                       action="#{objectBean.loadActions}"
+                       process="@this" update="@none"
+                       icon="ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
+                       rendered="#{not objectBean.isNew()}" />
+      <p:overlayPanel for="object_actions" appendTo="@(body)"
+                      dynamic="true" cache="true" styleClass="context"
+                      widgetVar="objectActions">
+        <p:menu style="width:100%">
+          <c:forEach items="#{objectBean.actions}" var="action">
+            <p:menuitem icon="#{action.icon}"
+                        value="#{action.label}" action="#{objectBean.callAction(action.name)}"
+                        rendered="#{not empty action.label and not action.isUrlAction() and not action.isJsAction()}"
                         process="@this"
                         onclick="setTimeout(()=>PF('objectActions').hide(),200)"
-                        update="@form:cnt:search_tabs:obj_tabs"
-                        resetValues="true"
-                        global="false" />  
-          </p:menu>
-        </p:overlayPanel>
-      </div>
-    </p:outputPanel>
-
-    <div class="flex-1 overflow-y-auto">
-      <p:tabView dynamic="true"
-                 cache="true"
-                 id="tabs"
-                 widgetVar="objectTabs"
-                 touchable="false"
-                 activeIndex="#{objectBean.editTabSelector}">
-        <p:ajax event="tabChange" process="@this" update="@none" 
-                listener="#{objectBean.loadActiveEditTab}" />
-        <f:event type="postValidate" 
-                 listener="#{objectBean.selectTabWithErrors}" />
-
-        <c:forEach items="#{objectBean.editTabs}" var="tab" >
-          <p:tab disabled="#{objectBean.isDisabledEditTab(tab)}"
-                 rendered="#{objectBean.isRenderedEditTab(tab)}">
-            <f:facet name="title">
-              <ui:fragment rendered="#{tab.icon != null}">
-                <span class="#{tab.icon} mr-2"/>
-              </ui:fragment>
-              #{applicationBean.translate(tab.label, userSessionBean.translationGroup)}
-            </f:facet>
-            <ui:include src="#{tab.viewId}" />
-          </p:tab>
-        </c:forEach>
-      </p:tabView>
-
-      <c:forEach items="#{objectBean.dialogViewIds}" var="dialogViewId" >
-        <ui:include src="#{dialogViewId}" />
-      </c:forEach>
+                        update="@form:cnt:search_tabs:tabs object_header"/>
+            <p:menuitem icon="#{action.icon}"
+                        value="#{action.label}"
+                        onclick="setTimeout(()=>PF('objectActions').hide(),200)"
+                        url="#{action.url}" target="#{action.urlTarget}"
+                        rendered="#{not empty action.label and action.isUrlAction()}" />
+            <p:menuitem icon="#{action.icon}"
+                        value="#{action.label}"
+                        onclick="setTimeout(()=>PF('objectActions').hide(),200); #{action.getJsAction()}"
+                        process="@this"
+                        update="#{action.getJsUpdate()}" 
+                        rendered="#{not empty action.label and action.isJsAction()}"/>               
+          </c:forEach>
+          <p:menuitem action="#{objectBean.copy}"
+                      value="#{objectBean.copyLabel}"
+                      icon="pi pi-copy"
+                      process="@form:cnt:search_tabs:obj_tabs"
+                      update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                      onclick="setTimeout(()=>PF('objectActions').hide(),200)"                      
+                      disabled="#{!objectBean.editable}"
+                      rendered="#{objectBean.renderCopyButton}"
+                      oncomplete="if (isFacesError()) objectScrollUp()" />          
+          <p:menuitem action="#{objectBean.store}"
+                      value="#{objectBundle.store}"
+                      icon="pi pi-save"
+                      process="@form:cnt:search_tabs:obj_tabs"
+                      update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
+                      onclick="setTimeout(()=>PF('objectActions').hide(),200)"
+                      disabled="#{!objectBean.editable}"
+                      oncomplete="if (isFacesError()) objectScrollUp()" />
+          <p:menuitem action="#{objectBean.cancel}"
+                      value="#{objectBundle.reload}"
+                      icon="pi pi-undo"
+                      process="@this"
+                      onclick="setTimeout(()=>PF('objectActions').hide(),200)"
+                      update="@form:cnt:search_tabs:obj_tabs"
+                      resetValues="true"
+                      global="false" />  
+        </p:menu>
+      </p:overlayPanel>
     </div>
-    
-    <div class="tab_footer text-right pt-3 flex-shrink-0">
+  </p:outputPanel>
+  
+    <div class="scrollable_content">
+    <p:tabView dynamic="true"
+             cache="true"
+             id="tabs"
+             widgetVar="objectTabs"
+             touchable="false"
+             activeIndex="#{objectBean.editTabSelector}">
+    <p:ajax event="tabChange" process="@this" update="@none" 
+            listener="#{objectBean.loadActiveEditTab}" />
+    <f:event type="postValidate" 
+             listener="#{objectBean.selectTabWithErrors}" />
+
+    <c:forEach items="#{objectBean.editTabs}" var="tab" >
+      <p:tab disabled="#{objectBean.isDisabledEditTab(tab)}"
+             rendered="#{objectBean.isRenderedEditTab(tab)}">
+        <f:facet name="title">
+          <ui:fragment rendered="#{tab.icon != null}">
+            <span class="#{tab.icon} mr-2"/>
+          </ui:fragment>
+          #{applicationBean.translate(tab.label, userSessionBean.translationGroup)}
+        </f:facet>
+        <ui:include src="#{tab.viewId}" />
+      </p:tab>
+    </c:forEach>
+  </p:tabView>
+    </div>
+
+  <c:forEach items="#{objectBean.dialogViewIds}" var="dialogViewId" >
+    <ui:include src="#{dialogViewId}" />
+  </c:forEach>
+
+  <div class="sticky_content tab_footer text-right pt-3">
     <p:commandButton id="store"
                      action="#{objectBean.store}"
                      value="#{objectBundle.store}"
@@ -192,7 +192,6 @@
     <p:defaultCommand scope="tabs" target="store" />
   </div>
   </div>
-
   <script>    
     function objectScrollUp()
     {

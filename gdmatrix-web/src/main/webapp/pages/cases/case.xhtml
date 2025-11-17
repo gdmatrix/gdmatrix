@@ -57,11 +57,9 @@
 
         </p:tab>
 
-        <p:tab id="advanced_search">
-          
-          <div id="advanced_search_panel" class="scrollable_panel">
-            
-            <div class="scrollable_panel_header">
+        <p:tab id="advanced_search">         
+          <div class="sticky_container">           
+            <div class="sticky_content">
               <f:facet name="title">
                 <span class="pi pi-cog mr-2"/>
                 <h:outputText value="#{objectBundle.advanced}" />
@@ -69,7 +67,7 @@
               <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
             </div>
 
-            <div class="scrollable_panel_body">
+            <div class="scrollable_content">
               <div class="ui-fluid formgrid grid">
 
                 <!-- CaseId -->
@@ -258,7 +256,7 @@
                                         properties="#{caseFinderBean.filter.property}" />
             </div>
 
-            <div class="buttons text-right scrollable_panel_footer" >
+            <div class="sticky_content buttons text-right" >
               <p:commandButton value="#{objectBundle.clear}"
                                action="#{caseFinderBean.clear}"
                                process="@form:cnt:find_selector"
