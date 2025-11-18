@@ -364,7 +364,8 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
         "d.docId = #.docId and d.version = #.version and #.propname = ?" +
         tablePrefix + "_pname and ");
       parameters.put(tablePrefix + "_pname", name);
-      appendLikeOperator(aux, "#.value", "?", name, values);
+      //appendLikeOperator(aux, "#.value", "?", name, values);
+      appendOperator(aux, "#.value", "?", name, values);
       aux.append(")");
 
       String sAux = aux.toString();
