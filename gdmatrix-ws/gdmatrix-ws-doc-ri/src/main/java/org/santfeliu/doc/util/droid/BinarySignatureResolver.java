@@ -90,14 +90,17 @@ public class BinarySignatureResolver implements Resolver
     return idenResult;
   }
   
-  private IdentificationResult matchBinarySignatures(
+  protected IdentificationResult matchBinarySignatures(
     IdentificationRequest request) throws IOException
   {
     IdentificationResultCollection results = 
       droidCore.matchBinarySignatures(request);
     
-    if (results.getResults().isEmpty())
+    if (!"tmp".equalsIgnoreCase(request.getExtension()) 
+      && results.getResults().isEmpty())
+    {
       results = droidCore.matchExtensions(request, true);
+    }
     
     droidCore.removeLowerPriorityHits(results);
     if (!results.getResults().isEmpty())
@@ -106,7 +109,7 @@ public class BinarySignatureResolver implements Resolver
       return null;     
   }
 
-  private FileSystemIdentificationRequest 
+  protected FileSystemIdentificationRequest 
     setUpIdentificationRequest(String filename) throws IOException
   {
     File file = new File(filename);

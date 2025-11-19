@@ -37,5 +37,6 @@ package org.santfeliu.doc.util.droid;
 public enum ResolverType
 { 
   BINARY, 
-  CONTAINER
+  CONTAINER,
+  CUSTOM
 }

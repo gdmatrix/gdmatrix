@@ -30,44 +30,37 @@
  */
 package org.santfeliu.doc.util.droid;
 
-import java.util.Collection;
-import java.util.TreeMap;
+import java.nio.file.Path;
 
 /**
  *
  * @author blanquepa
  */
-public class SignatureFileManagers
-{  
-  private final TreeMap<ResolverType, DroidSignatureFileManager> 
-    managers;
+public class CustomSignatureFileManager extends AbstractSignatureFileManager
+{
+  private static final String FILENAME = 
+    "DROID_CustomFile.xml";
   
-  private SignatureFileManagers()
+  @Override
+  public Path downloadFile(Path baseDir) throws Exception
   {
-    managers = new TreeMap<ResolverType, DroidSignatureFileManager>();
+    //TODO: Get from URL
+    return null;
+  }
+
+  @Override
+  public Path getCurrentFile(Path baseDir) throws Exception
+  {
+    if (this.file != null)
+      return this.file;
+    else
+      return getDefaultFile(baseDir, FILENAME);
   }
   
-  public DroidSignatureFileManager get(ResolverType type)
+  @Override
+  public ResolverType getResolverType()
   {
-    return managers.get(type);
+    return ResolverType.CUSTOM;
   }
   
-  public Collection<DroidSignatureFileManager> getList()
-  {
-    return managers.values();
-  }
-  
-  private void put(ResolverType type, DroidSignatureFileManager manager)
-  {
-    managers.put(type, manager);
-  }
-  
-  public static SignatureFileManagers createInstance()
-  {
-    SignatureFileManagers instance = new SignatureFileManagers();
-    instance.put(ResolverType.BINARY, new BinarySignatureFileManager());
-    instance.put(ResolverType.CONTAINER, new ContainerSignatureFileManager());
-    instance.put(ResolverType.CUSTOM, new CustomSignatureFileManager());
-    return instance;
-  }
 }

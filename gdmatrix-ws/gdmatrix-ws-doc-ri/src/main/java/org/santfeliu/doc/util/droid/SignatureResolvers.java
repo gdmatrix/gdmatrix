@@ -51,11 +51,11 @@ public class SignatureResolvers
     return resolvers.get(type);
   }
   
-  public BinarySignatureResolver getBinaryResolver()
+  public BinarySignatureResolver getMainResolver()
   {
     return (BinarySignatureResolver) resolvers.get(ResolverType.BINARY);
   }
-  
+    
   public Collection<Resolver> getList()
   {
     return resolvers.values();
@@ -72,6 +72,7 @@ public class SignatureResolvers
     BinarySignatureResolver binary = new BinarySignatureResolver();
     resolvers.put(ResolverType.BINARY, binary);
     resolvers.put(ResolverType.CONTAINER, binary.getContainerResolver());
+    resolvers.put(ResolverType.CUSTOM, new CustomSignatureResolver());
     return resolvers;
   }
 }

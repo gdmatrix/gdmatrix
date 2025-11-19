@@ -83,7 +83,7 @@ public class Droid
    */
   public void readSignatureFile(File signatureFile) throws Exception
   {
-    resolvers.getBinaryResolver().readSignatureFile(signatureFile);
+    resolvers.getMainResolver().readSignatureFile(signatureFile);
   }
 
   /**
@@ -104,7 +104,7 @@ public class Droid
    */
   public FFSignatureFile getSignatureFile()
   {
-    return resolvers.getBinaryResolver().getDroidCore().getSigFile();
+    return resolvers.getMainResolver().getDroidCore().getSigFile();
   }
 
   /**
@@ -116,7 +116,7 @@ public class Droid
   public FileFormat getFileFormat(String PUID)
   {
     FileFormat format = null;
-    BinarySignatureResolver bResolver = resolvers.getBinaryResolver();
+    BinarySignatureResolver bResolver = resolvers.getMainResolver();
     ContainerSignaturesResolver cResolver = bResolver.getContainerResolver();
     if (!cResolver.isContainerFormat(PUID))
     {
@@ -144,8 +144,13 @@ public class Droid
     FileFormat result = null;
     try
     {
-      BinarySignatureResolver resolver = resolvers.getBinaryResolver();
-      IdentificationResult idenResult = resolver.identify(filename);
+      BinarySignatureResolver resolver = resolvers.getMainResolver();
+      IdentificationResult idenResult = resolver.identify(filename);  
+      if (idenResult == null)
+      {
+        resolver = (BinarySignatureResolver) resolvers.get(ResolverType.CUSTOM);
+        idenResult = resolver.identify(filename);
+      }
 
       if (idenResult != null)
       {

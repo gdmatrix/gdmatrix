@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FFSignatureFile xmlns="http://www.nationalarchives.gov.uk/pronom/SignatureFile" DateCreated="2023-11-16T14:45:29" Version="116">
+    <InternalSignatureCollection>
+        <InternalSignature ID="10001" Specificity="Specific">
+            <ByteSequence Reference="BOFoffset">
+                <SubSequence Position="1" SubSeqMinOffset="0" SubSeqMaxOffset="0">
+                    <Sequence>3C</Sequence>
+                </SubSequence>
+            </ByteSequence>
+            <ByteSequence Reference="BOFoffset">
+                <SubSequence Position="1" SubSeqMinOffset="1" SubSeqMaxOffset="200">
+                    <Sequence>3E</Sequence>
+                </SubSequence>
+            </ByteSequence>
+            <ByteSequence Reference="BOFoffset">
+                <SubSequence Position="1" SubSeqMinOffset="1" SubSeqMaxOffset="200000">
+                    <Sequence>3C2F</Sequence>
+                </SubSequence>
+                <SubSequence Position="2" SubSeqMinOffset="1" SubSeqMaxOffset="201000">
+                    <Sequence>3E</Sequence>
+                </SubSequence>
+            </ByteSequence>
+        </InternalSignature>
+    </InternalSignatureCollection>
+    <FileFormatCollection>
+        <FileFormat ID="638" MIMEType="application/xml, text/xml" Name="Extensible Markup Language" PUID="fmt/101" Version="1.0">
+            <InternalSignatureID>10001</InternalSignatureID>
+            <Extension>xml</Extension>
+        </FileFormat>
+    </FileFormatCollection>
+</FFSignatureFile>
+
