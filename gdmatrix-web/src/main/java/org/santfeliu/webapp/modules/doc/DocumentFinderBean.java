@@ -48,8 +48,8 @@ import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.OrderByProperty;
 import org.matrix.doc.State;
 import org.santfeliu.classif.ClassCache;
+import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.util.BigList;
-import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.FinderBean;
@@ -665,6 +665,8 @@ public class DocumentFinderBean extends FinderBean
   {
     private String contentId;
     private String contentType;
+    private String docViewUrl;
+    private String docDownloadUrl;
 
     public DocumentDataTableRow(String rowId, String typeId)
     {
@@ -683,6 +685,8 @@ public class DocumentFinderBean extends FinderBean
         contentId = content.getContentId();
         contentType = content.getContentType();
       }
+      docViewUrl = DocumentUrlBuilder.getDocumentUrl(document, false);
+      docDownloadUrl = DocumentUrlBuilder.getDocumentUrl(document, true);
     }
 
     @Override
@@ -712,22 +716,12 @@ public class DocumentFinderBean extends FinderBean
 
     public String getViewURL()
     {
-      if (contentType == null) return null;
-
-      String extension =
-        MimeTypeMap.getMimeTypeMap().getExtension(contentType);
-
-      return "/documents/" + contentId + "/" + rowId + "." + extension;
+      return docViewUrl;
     }
 
     public String getDownloadURL()
     {
-      if (contentType == null) return null;
-
-      String extension =
-        MimeTypeMap.getMimeTypeMap().getExtension(contentType);
-
-      return "/documents/" + contentId + "?saveas="  + rowId + "." + extension;
+      return docDownloadUrl;
     }
   }
 }
