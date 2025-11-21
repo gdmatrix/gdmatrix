@@ -78,8 +78,9 @@ public class SignatureNode extends org.santfeliu.workflow.node.SignatureNode
     }
     else if (operation.equals("addSystemSignature"))
     {
+      String keyAliasValue = Template.create(keyAlias).merge(instance);      
       String sigId = String.valueOf(instance.get(documentVariable));
-      port.addSystemSignature(sigId, keyAlias);
+      port.addSystemSignature(sigId, keyAliasValue);
     }
     else if (operation.equals("endDocument"))
     {
