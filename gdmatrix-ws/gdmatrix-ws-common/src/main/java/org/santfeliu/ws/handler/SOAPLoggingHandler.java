@@ -53,16 +53,26 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext>
 {
   public static final String LOG_CONFIG = "org.santfeliu.ws.logConfig";
 
-  protected static CSVLogger logger;
-
-  static
+  protected static volatile CSVLogger logger;
+  
+  protected static CSVLogger getLogger()
   {
-    String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
-    if (logConfig != null)
+    if (logger == null)
     {
-      logger = CSVLogger.getInstance(logConfig);
+      synchronized (SOAPLoggingHandler.class)
+      {
+        if (logger == null)
+        {
+          String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
+          if (logConfig != null)
+          {
+            logger = CSVLogger.getInstance(logConfig);
+          }
+        }
+      }
     }
-  }
+    return logger;
+  }  
 
   public Set<QName> getHeaders()
   {
@@ -73,7 +83,7 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext>
   {
     try
     {
-      if (logger != null)
+      if (getLogger() != null)
       {
         SOAPMessage message = context.getMessage();
         String operation = getOperation(message);
@@ -104,7 +114,7 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext>
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
         String dateTime = df.format(new Date());
 
-        logger.log(dateTime, userId, ip, url,
+        getLogger().log(dateTime, userId, ip, url,
           operation, messageType, messageString);
       }
     }
@@ -119,7 +129,7 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext>
   {
     try
     {
-      if (logger != null)
+      if (getLogger() != null)
       {
         SOAPMessage message = context.getMessage();
         String operation = getOperation(message);
@@ -145,7 +155,7 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext>
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy-HH:mm:ss");
         String dateTime = df.format(new Date());
 
-        logger.log(dateTime, userId, ip, url,
+        getLogger().log(dateTime, userId, ip, url,
           operation, messageType, messageString);
       }
     }
