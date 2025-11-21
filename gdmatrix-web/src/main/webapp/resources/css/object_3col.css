@@ -293,6 +293,12 @@ body .ui-tabs.context_tabs .ui-tree
   overflow: hidden;    
 }
 
+.side_panel.left .sticky_container
+{
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+
 .side_panel.left .ui-panel-content,
 .side_panel.left .ui-tabs,                   
 .side_panel.left .ui-tabs .ui-tabs-panels,      
@@ -313,7 +319,7 @@ body .ui-tabs.context_tabs .ui-tree
 
 .side_panel.left .scrollable_content 
 {
-  padding: 0.5rem;
+  padding: 0 0.5rem;
 }
 
 .central_column .ui-panel-content,
