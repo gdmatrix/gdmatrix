@@ -313,7 +313,7 @@ body .ui-tabs.context_tabs .ui-tree
 
 .side_panel.left .scrollable_content 
 {
-  padding-right: 1rem;  
+  padding: 0.5rem;
 }
 
 .central_column .ui-panel-content,
@@ -330,6 +330,7 @@ body .ui-tabs.context_tabs .ui-tree
 {
   overflow-y: auto;
 }
+
 .side_panel.left .ui-tabs,
 .central_column .object_data .ui-tabs
 {
