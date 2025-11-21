@@ -110,7 +110,7 @@ public class ThreadStore
     {
       property = new Property();
       property.setName("description");
-      property.getValue().add("%" + key + "%");
+      property.getValue().add("low(%" + key.toLowerCase() + "%)");
       filter.getProperty().add(property);
     }
     filter.getOutputProperty().add("threadId");
