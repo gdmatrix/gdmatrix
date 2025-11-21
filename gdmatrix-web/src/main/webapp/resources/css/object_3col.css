@@ -89,6 +89,12 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   {
     display: inline;
   }
+  
+  .central_column .sticky_container
+  {
+    height: inherit;
+    overflow: auto;
+  }  
 }
 
 .side_panel
