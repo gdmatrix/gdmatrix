@@ -103,6 +103,8 @@ public class CaseDocumentsTabBean extends TabBean
   public static final String REMOVE_ALL = "removeAll";
 
   public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";
+
+  private static final String UPLOAD_TYPEID_PROPERTY = "uploadTypeId";
   
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
@@ -904,10 +906,13 @@ public class CaseDocumentsTabBean extends TabBean
         caseDocument.setDocId(docId);
         String currentVolume = getCurrentVolume();
         if (currentVolume != null && !"".equals(currentVolume) 
-            && !CaseConstants.UNDEFINED_VOLUME.equals(currentVolume))
+          && !CaseConstants.UNDEFINED_VOLUME.equals(currentVolume)
+          && !CaseConstants.SHOW_ALL_VOLUMES.equals(currentVolume))
+        {
           caseDocument.setVolume(currentVolume);
+        }
         
-        String caseDocTypeId = getCreationTypeId();
+        String caseDocTypeId = getUploadTypeId();
         if (caseDocTypeId == null) 
           caseDocTypeId = DictionaryConstants.CASE_DOCUMENT_TYPE;
         caseDocument.setCaseDocTypeId(caseDocTypeId);
@@ -924,7 +929,7 @@ public class CaseDocumentsTabBean extends TabBean
     }
 
     return null;
-  }  
+  }
 
   public CaseDocumentsDataTableRow getCaseDocumentToRemove()
   {
@@ -1081,6 +1086,13 @@ public class CaseDocumentsTabBean extends TabBean
       }
     }
     return spreadRoles;
+  }
+
+  private String getUploadTypeId()
+  {
+    EditTab tab = caseObjectBean.getActiveEditTab();
+    String uploadTypeId = tab.getProperties().getString(UPLOAD_TYPEID_PROPERTY);
+    return (uploadTypeId != null ? uploadTypeId : getCreationTypeId());
   }
 
   private boolean containsAC(List<AccessControl> acl, AccessControl ac)
