@@ -471,10 +471,23 @@ body .fc th > .fc-scrollgrid-sync-inner
 
 .scheduleEventDialog
 {
+  max-width: min(600px, 95vw) !important;
 }
 
 .scheduleEventDialog.ui-dialog .ui-dialog-titlebar
 {
+  display: flex;
+}
+
+.scheduleEventDialog.ui-dialog .ui-dialog-titlebar .ui-dialog-title
+{
+  flex-grow: 1;
+}
+
+.scheduleEventDialog.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close
+{
+  flex-grow: 0;
+  min-width: 24px;
 }
 
 .scheduleEventDialog .eventDates
