@@ -5,8 +5,12 @@ function onAssistantKeyUp(event)
   var text = PF("assistantTextarea").getJQ().val().trim();
   if (event.key === "Enter" && !event.shiftKey && text.length > 0)
   {
-    var sendButton = PF("assistantSendButton");
-    sendButton.jq.click();
+    let inProgress = isInProgress();
+    if (!inProgress)
+    {
+      var sendButton = PF("assistantSendButton");
+      sendButton.jq.click();
+    }
   }
   else
   {
@@ -21,8 +25,7 @@ function updateAssistantButtons()
   let interruptButton = PF("assistantInterruptButton");
   let uploadButton = PF("assistantUploadButton");
 
-  let dotsElem = document.querySelector(".message_list .dot-typing");
-  let inProgress = dotsElem && !dotsElem.classList.contains("invisible");
+  let inProgress = isInProgress();
 
   if (inProgress)
   {
@@ -93,6 +96,13 @@ function hideDots()
 {
   const dotsElem = document.querySelector(".message_list .dot-typing");
   if (dotsElem) dotsElem.classList.add("invisible");
+}
+
+function isInProgress()
+{
+  let dotsElem = document.querySelector(".message_list .dot-typing");
+  let inProgress = dotsElem && !dotsElem.classList.contains("invisible");
+  return inProgress;
 }
 
 function setLinkTarget(htmlElem)
