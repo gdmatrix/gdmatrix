@@ -3128,11 +3128,6 @@ public class CaseManager implements CaseManagerPort
       SecurityConstants.SELF_ROLE_SUFFIX);
     ac.setAction(DictionaryConstants.WRITE_ACTION);
     caseObject.getAccessControl().add(ac);
-    ac = new AccessControl();
-    ac.setRoleId(SecurityConstants.SELF_ROLE_PREFIX + user.getUserId().trim() +
-      SecurityConstants.SELF_ROLE_SUFFIX);
-    ac.setAction(DictionaryConstants.DELETE_ACTION);
-    caseObject.getAccessControl().add(ac);
   }
 
   /**
