@@ -1788,11 +1788,12 @@ public class NodeEditBean extends FacesBean implements Serializable
     inputSearch = null;
   }
 
-  public void saveCSS()
+  public void saveCSS(boolean storeNewVersion)
   {
     try
     {
-      Document cssDoc = saveCSS(currentWorkspaceId, getSelectedNodeId());
+      Document cssDoc = saveCSS(currentWorkspaceId, getSelectedNodeId(),
+        storeNewVersion);
       String message = "Document " +
         (cssDoc.getVersion() == 1 ? "creat" : "actualitzat");
       message = UserSessionBean.getCurrentInstance().translate(message, "cms") +
@@ -1824,7 +1825,7 @@ public class NodeEditBean extends FacesBean implements Serializable
       String refWorkspaceId = getRefWorkspaceId();
       if (refWorkspaceId != null)
       {
-        Document cssDoc = saveCSS(refWorkspaceId, getSelectedNodeId());
+        Document cssDoc = saveCSS(refWorkspaceId, getSelectedNodeId(), true);
         String message = "Document " +
           (cssDoc.getVersion() == 1 ? "creat" : "actualitzat");
         message = UserSessionBean.getCurrentInstance().translate(message,
@@ -2335,7 +2336,8 @@ public class NodeEditBean extends FacesBean implements Serializable
     return getTreeRoot().getChildren().get(0);
   }
 
-  private Document saveCSS(String workspaceId, String nodeId) throws Exception
+  private Document saveCSS(String workspaceId, String nodeId,
+    boolean storeNewVersion) throws Exception
   {
     Document document = null;
     if (cssText != null)
@@ -2355,7 +2357,8 @@ public class NodeEditBean extends FacesBean implements Serializable
         document = prepareCSSDocument();
         document.setDocId(docId);
         document.setIncremental(true);
-        document.setVersion(DocumentConstants.NEW_VERSION);
+        document.setVersion(storeNewVersion ? DocumentConstants.NEW_VERSION :
+          DocumentConstants.LAST_VERSION);
         document = docClient.storeDocument(document);
       }
       else // new CSS

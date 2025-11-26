@@ -657,6 +657,12 @@ a.imageButton img:hover
   height: 98%;
 }
 
+.nodeCSSPanel .buttonsPanel .ui-splitbutton .ui-button:last-child
+{
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
 /* json.xhtml styles */
 
 .nodeJsonPanel

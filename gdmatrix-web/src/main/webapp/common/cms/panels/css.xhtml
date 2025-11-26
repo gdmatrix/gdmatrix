@@ -11,12 +11,27 @@
     </p:outputPanel>
     <div class="flex">
       <p:outputPanel id="cssToolsPanel" styleClass="buttonsPanel ui-inputgroup" 
-                     rendered="#{nodeEditBean.validCSS}">      
-        <p:commandButton value="#{cmsBundle.save}" action="#{nodeEditBean.saveCSS}" 
+                     rendered="#{nodeEditBean.validCSS}">
+        <p:splitButton id="save_css_button"
+                       value="#{cmsBundle.save}" title="#{cmsBundle.save}"
+                       action="#{nodeEditBean.saveCSS(false)}"
+                       process="@this cssTextPanel"
+                       update=":mainform:tree :mainform:rightPanel :mainform:messagesPanel"
+                       icon="pi pi-save"
+                       rendered="#{nodeEditBean.appendNodeEnabled and nodeEditBean.customCSS}"
+                       styleClass="mini flex flex-nowrap">
+          <p:menuitem value="#{cmsBundle.saveNewVersion}"
+                      title="#{cmsBundle.saveNewVersion}"
+                      action="#{nodeEditBean.saveCSS(true)}"
+                      process="@this cssTextPanel"
+                      update=":mainform:tree :mainform:rightPanel :mainform:messagesPanel"
+                      icon="pi pi-save" styleClass="mini" />
+        </p:splitButton>
+        <p:commandButton value="#{cmsBundle.save}" action="#{nodeEditBean.saveCSS(true)}"
                          icon="pi pi-save" title="#{cmsBundle.save}" styleClass="mini"
                          process="@this cssTextPanel"
                          update=":mainform:tree :mainform:rightPanel :mainform:messagesPanel"
-                         rendered="#{nodeEditBean.appendNodeEnabled}" />      
+                         rendered="#{nodeEditBean.appendNodeEnabled and not nodeEditBean.customCSS}" />
         <p:commandButton value="#{cmsBundle.reload}" action="#{nodeEditBean.revertCSS}" 
                          icon="pi pi-undo" title="#{cmsBundle.reload}" styleClass="mini"
                          process="@this" update="cssTextPanel :mainform:messagesPanel"
