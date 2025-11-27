@@ -69,7 +69,8 @@
                                    title="#{assistantBundle.debug}"
                                    onchange="changeDebugEnabled(this)"
                                    rendered="#{assistantBean.isAssistantEditable()}"> 
-              <p:ajax process="@this" update="@none" />
+              <p:ajax process="@this" update="@parent:@parent:assistant_panel" 
+                      listener="#{threadsBean.repaintThread()}" />              
             </p:selectBooleanButton>
 
             <p:selectBooleanButton value="#{threadsBean.simulationEnabled}" styleClass="mini white-space-nowrap ml-2"
@@ -286,6 +287,10 @@
       </div>
 
       <div class="flex flex-column mt-2">
+        <div class="py-2">
+          <h:outputText value="#{objectBundle.createdBy}: " /> 
+          <h:outputText value="#{threadsBean.thread.userId}" />
+        </div>
         <div class="py-2">
           <h:outputText value="#{objectBundle.creationDateTime}: " /> 
           <h:outputText value="#{threadsBean.thread.dateTime}">
