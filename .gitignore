@@ -34,3 +34,5 @@
 /gdmatrix-faces2/target/
 /gdmatrix-client/target/
 /conf/certificates/
+/gdmatrix-aoc/target/
+/gdmatrix-web/target/

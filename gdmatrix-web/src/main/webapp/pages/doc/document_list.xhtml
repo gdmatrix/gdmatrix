@@ -83,11 +83,31 @@
                     rendered="#{row.contentType != null}"
                     styleClass="rounded-button ui-button-flat"
                     target="_blank" />
-      <p:linkButton href="#{row.downloadURL}" 
-                    icon="pi pi-download"
-                    title="#{objectBundle.download}"
+      
+      <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                    menuStyleClass="w200"
                     rendered="#{row.contentType != null}"
-                    styleClass="rounded-button ui-button-flat" />
+                    title="#{objectBundle.actions}">
+        <p:menuitem value="#{objectBundle.download}"
+                    icon="pi pi-download"
+                    url="#{row.downloadURL}"
+                    rendered="#{row.contentType != null}"
+                    styleClass="rounded-button ui-button-flat w200"
+                    target="_blank" />
+        <p:menuitem value="#{documentBundle.online_read}"
+                    icon="pi pi-file"
+                    styleClass="rounded-button ui-button-flat w200"
+                    rendered="#{onlyOfficeBean.isOfficeButtonVisible(row.contentType)}"
+                    onclick="showPage('Office', {docId:'#{row.rowId}', accessMode:'read'}); return false;"
+                    process="@this"/>
+        <p:menuitem value="#{documentBundle.online_edit}"
+                    icon="pi pi-file-edit"
+                    styleClass="rounded-button ui-button-flat w200"
+                    rendered="#{onlyOfficeBean.isOfficeButtonVisible(row.contentType)}"
+                    onclick="showPage('Office', {docId:'#{row.rowId}', accessMode:'edit'}); return false;"
+                    process="@this"/>
+      </p:menuButton>
+      
       <p:commandButton icon="pi pi-arrow-circle-right" 
                        styleClass="rounded-button ui-button-flat"  
                        action="#{documentFinderBean.view(rowIndex)}"

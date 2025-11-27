@@ -711,6 +711,19 @@
         <param-name>agenda.maxRecurrences</param-name>
         <param-value>100</param-value>
     </context-param>
+    <!-- OnlyOffice integration -->
+    <context-param>
+      <param-name>org.santfeliu.onlyOffice.enabled</param-name>
+      <param-value>false</param-value> 
+    </context-param>
+    <context-param>
+      <param-name>org.santfeliu.onlyOffice.JwtSecret</param-name>
+      <param-value>super-secure-secret</param-value> <!-- Change for another secret -->
+    </context-param>
+    <context-param>
+      <param-name>org.santfeliu.onlyOffice.url</param-name>
+      <param-value>http://localhost:8080</param-value>
+    </context-param>
     <!-- listeners -->
     <listener>
         <listener-class>org.santfeliu.web.MatrixServletContextListener</listener-class>
@@ -951,7 +964,15 @@
         <servlet-name>WorkServlet</servlet-name>
         <url-pattern>/work/*</url-pattern>
     </servlet-mapping>
-
+    <servlet>
+        <description>OnlyOffice integration serverlet. Save the document after modifications</description>
+        <servlet-name>OnlyOfficeServlet</servlet-name>
+        <servlet-class>org.santfeliu.web.servlet.OnlyOfficeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OnlyOfficeServlet</servlet-name>
+        <url-pattern>/onlyoffice/*</url-pattern>
+    </servlet-mapping>
     <!-- Filters -->
     <filter>
         <description>Set UTF-8 character encoding</description>

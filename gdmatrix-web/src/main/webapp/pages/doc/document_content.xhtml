@@ -130,8 +130,28 @@
            onclick="javascript:editDocument({docId:'#{documentObjectBean.document.docId}'});return false"
            process="@this" update="@form:cnt:search_tabs"
            icon="pi pi-pencil" style="width:auto"
+           styleClass="mr-2"
            rendered="#{documentObjectBean.content.contentId != null}"
            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+           disabled="#{!documentObjectBean.editable}" />
+        
+        <!-- OnlyOffice Buttons -->
+        <!-- READ -->
+        <p:commandButton value="#{documentBundle.online_read}"
+           styleClass="mr-2 mt-2"
+           onclick="javascript:showPage('Office', {docId:'#{documentObjectBean.document.docId}', accessMode:'read'});return false"
+           process="@this" update="@form:cnt:search_tabs"
+           icon="pi pi-file" style="width:auto"
+           rendered="#{documentObjectBean.content.contentId != null and onlyOfficeBean.isOfficeButtonVisible(documentObjectBean.content.contentType)}"
+           alt="#{documentBundle.online_read}" title="#{documentBundle.online_read}"/>
+        <!-- EDIT -->
+        <p:commandButton value="#{documentBundle.online_edit}"
+           styleClass="mr-2 mt-2"
+           onclick="javascript:showPage('Office', {docId:'#{documentObjectBean.document.docId}', accessMode:'edit'});return false"
+           process="@this" update="@form:cnt:search_tabs"
+           icon="pi pi-file-edit" style="width:auto"
+           rendered="#{documentObjectBean.content.contentId != null and onlyOfficeBean.isOfficeButtonVisible(documentObjectBean.content.contentType)}"
+           alt="#{documentBundle.online_edit}" title="#{documentBundle.online_edit}"
            disabled="#{!documentObjectBean.editable}" />
        
         <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
