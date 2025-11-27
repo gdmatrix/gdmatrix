@@ -24,6 +24,8 @@ Bundle.getBundle("main").setTranslations("es", {
   "FindFeatureControl.clearMarkers": "Limpiar marcadores anteriores",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} entitad encontrada` : `${count} entitades encontradas`,
 
+  "FilterControl.title": "Filtro de capas",  
+
   "GetFeatureInfoTool.title": "Obtener información",
   "GetFeatureInfoTool.help": "Pulsa sobre el mapa para obtener información de las entitades.",
   "GetFeatureInfoTool.noDataFound": "Datos no encontrados.",

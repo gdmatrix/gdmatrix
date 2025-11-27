@@ -24,6 +24,8 @@ Bundle.getBundle("main").setTranslations("", {
   "FindFeatureControl.clearMarkers": "Clear previous markers",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} feature found:` : `${count} features found:`,
 
+  "FilterControl.title": "Filter layers",
+
   "GetFeatureInfoTool.title": "Get feature information",
   "GetFeatureInfoTool.help": "Press on the map to obtain information about the features.",
   "GetFeatureInfoTool.noDataFound": "No data found.",

@@ -24,6 +24,8 @@ Bundle.getBundle("main").setTranslations("ca", {
   "FindFeatureControl.clearMarkers": "Neteja marcadors anteriors",
   "FindFeatureControl.featureCount": (count) => count === 1 ? `${count} entitat trobada` : `${count} entitats trobades`,
   
+  "FilterControl.title": "Filtre de capes",  
+  
   "GetFeatureInfoTool.title": "Obtenir informació",
   "GetFeatureInfoTool.help": "Prem sobre el mapa per obtenir informació de les entitats.",
   "GetFeatureInfoTool.noDataFound": "No s'han trobat dades.",
