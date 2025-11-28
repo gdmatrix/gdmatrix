@@ -22,29 +22,28 @@
         <p:commandButton id="switch_sql_button" 
                          type="button" icon="pi pi-eye" 
                          onclick="switchSql();this.blur();"                         
-                         styleClass="rounded-button ui-button-flat"                         
-                         rendered="#{sqlwebBean.deferredExecution}"
+                         styleClass="rounded-button ui-button-flat"                                                  
                          title="#{sqlWebBundle.change_view}" />
       </f:facet>
-      
+
       <h:panelGroup id="sqlweb_edit_panel">
-        <h:panelGroup rendered="#{sqlwebBean.editMode}" 
+        <h:panelGroup rendered="#{sqlwebBean.editMode}"
                       styleClass="ui-fluid formgrid grid">
           <p:outputPanel styleClass="field col-12 md:col-4 xl:col-2">
             <p:outputLabel value="#{sqlWebBundle.dsn}:" for="@next" />
             <p:inputText value="#{sqlwebBean.dsn}"
                          disabled="#{!sqlwebBean.dsnEnabled}"
-                         pt:spellcheck="false" styleClass="code" />    
+                         pt:spellcheck="false" styleClass="code" />
           </p:outputPanel>
           <div class="field col-12 md:col-4 xl:col-3">
             <p:outputLabel value="#{sqlWebBundle.driver}:" for="@next" />
-            <p:inputText value="#{sqlwebBean.driver}" 
-                         pt:spellcheck="false" styleClass="code" />    
+            <p:inputText value="#{sqlwebBean.driver}"
+                         pt:spellcheck="false" styleClass="code" />
           </div>
           <div class="field col-12 md:col-4 xl:col-3">
             <p:outputLabel value="#{sqlWebBundle.url}:" for="@next" />
-            <p:inputText value="#{sqlwebBean.url}" 
-                         pt:spellcheck="false" styleClass="code" />    
+            <p:inputText value="#{sqlwebBean.url}"
+                         pt:spellcheck="false" styleClass="code" />
           </div>
           <div class="field col-12 md:col-4 xl:col-2">
             <p:outputLabel value="#{sqlWebBundle.username}:" for="@next" />
@@ -52,7 +51,7 @@
           </div>
           <div class="field col-12 md:col-4 xl:col-2">
             <p:outputLabel value="#{sqlWebBundle.password}:" for="@next" />
-            <p:password value="#{sqlwebBean.password}" redisplay="true" />    
+            <p:password value="#{sqlwebBean.password}" redisplay="true" />
           </div>
           <div class="field col-12">
             <p:outputLabel value="#{sqlWebBundle.sql_statement}:" for="@next" />
@@ -64,24 +63,23 @@
         </h:panelGroup>
 
         <h:panelGroup rendered="#{!sqlwebBean.editMode}">
-          <h:outputText value="#{sqlwebBean.htmlDescription}" escape="false" />            
+          <h:outputText value="#{sqlwebBean.htmlDescription}" escape="false" />
         </h:panelGroup>
       </h:panelGroup>
-      
-      <div class="flex flex-wrap">
-        <div class="flex-grow-1">
-          <p:outputLabel value="#{sqlWebBundle.max_rows}:" for="@next" styleClass="mr-2 mb-2" />
-          <p:spinner value="#{sqlwebBean.maxRows}" styleClass="mr-2 mb-2 mt-2 w-auto" size="5" />
-        </div>
-        <div class="flex-grow-0">
-          <p:commandButton value="#{sqlWebBundle.execute}"
-                           action="#{sqlwebBean.execute}"
-                           process="@form"
-                           icon="pi pi-play"
-                           update="result_container"
-                           widgetVar="executeButton" 
-                           styleClass="w-auto mb-2 mt-2" />
-        </div>
+
+      <div class="flex flex-wrap align-items-center gap-2">
+        <p:outputLabel value="#{sqlWebBundle.max_rows}:" styleClass="long" for="maxRows" />
+        <p:outputLabel value="#{sqlWebBundle.max_rows_short}:" styleClass="short" for="maxRows" />
+        <p:spinner id="maxRows" value="#{sqlwebBean.maxRows}" styleClass="w-auto" size="5" />
+        <div class="flex-grow-1" />
+        <p:commandButton value="#{sqlWebBundle.execute}"
+                         action="#{sqlwebBean.execute}"
+                         process="@form"
+                         icon="pi pi-play"
+                         update="result_container"
+                         widgetVar="executeButton"
+                         styleClass="w-auto minisql"
+                         oncomplete="switchSql(false)" />
       </div>
 
     </p:panel>
@@ -89,79 +87,86 @@
     <p:messages globalOnly="true">
       <p:autoUpdate />
     </p:messages>
-        
-    <h:panelGroup id="result_container"> 
+
+    <h:panelGroup id="result_container" styleClass="result_container">
       <p:outputPanel rendered="#{sqlwebBean.updateCount != -1}" 
-                     styleClass="mt-2 message">
+                     styleClass="message">
         <h:outputText value="#{sqlWebBundle.rows_updated}: #{sqlwebBean.updateCount}." />
         <h:outputText value="#{sqlWebBundle.ellapsed_time}: #{sqlwebBean.duration} ms." 
-                      rendered="#{sqlwebBean.duration gt 0}" styleClass="ml-2"/>                          
+                      rendered="#{sqlwebBean.duration gt 0}" />                          
       </p:outputPanel>      
-      <p:dataTable id="result_table"
+      <p:dataTable id="result_table" styleClass="result_table"
                    rendered="#{sqlwebBean.rows != null}"
                    value="#{sqlwebBean.rows}"
                    touchable="false" showGridlines="true"
-                   paginatorPosition="bottom" size="small" pageLinks="10" stripedRows="true"
+                   paginatorPosition="bottom" size="small" pageLinks="5" stripedRows="true"
                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                   paginator="true" rows="10" rowsPerPageTemplate="10, 50, 100"
+                   paginator="true" rows="25" rowsPerPageTemplate="10, 25, 50, 100, {ShowAll|'#{objectBundle.all}'}"
                    var="row" rowIndexVar="rowIndex" widgetVar="dataTable" first="#{sqlwebBean.firstRow}"
                    emptyMessage="#{objectBundle.no_data}">
         <f:facet name="header">
-          <div class="flex flex-wrap justify-content-between">
-            <div class="mr-4 flex-grow-1 flex flex-wrap">
-              <p:outputPanel rendered="#{sqlwebBean.exception == null}" 
-                             styleClass="mr-3 mt-2 mb-2 message">
-                <h:outputText value="#{sqlWebBundle.rows_selected}: #{sqlwebBean.rowCount}." 
-                              rendered="#{sqlwebBean.rows != null}" />
-                <h:outputText value="#{sqlWebBundle.ellapsed_time}: #{sqlwebBean.duration} ms." 
-                              rendered="#{sqlwebBean.duration gt 0}" styleClass="ml-2"/>                  
-              </p:outputPanel>
-              <p:menuButton value="#{sqlWebBundle.export}" 
-                            icon="pi pi-download"
-                            styleClass="mb-2">
-                <p:menuitem value="CSV" icon="pi pi-file-excel">
-                  <p:dataExporter type="csv" target="result_table" fileName="results_#{sqlwebBean.timeStamp}"
-                                  options="#{sqlwebBean.csvOptions}" />
-                </p:menuitem>
-                <p:menuitem value="CSV (no quote)" icon="pi pi-file-excel">
-                  <p:dataExporter type="csvnq" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
-                </p:menuitem>
-                <p:menuitem value="XML" icon="pi pi-file">
-                  <p:dataExporter type="xml" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
-                </p:menuitem>
-                <p:menuitem value="PDF" icon="pi pi-file-pdf">
-                  <p:dataExporter type="pdf" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
-                </p:menuitem>
-                <p:menuitem value="TXT" icon="pi pi-file">
-                  <p:dataExporter type="txt" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
-                </p:menuitem>
-              </p:menuButton>
-            </div>            
-            <div class="flex flex-wrap justify-content-start flex-grow-0">
-              <div class="mr-4">              
-                <p:toggleSwitch value="#{sqlwebBean.showRowNumbers}" 
-                              styleClass="mr-2 vertical-align-middle">
-                  <p:ajax process="@this" update="result_table" />            
-                </p:toggleSwitch>
-                <p:outputLabel for="@previous" value="#{sqlWebBundle.show_row_numbers}"
-                               styleClass="switchLabel" />
-              </div>
-              <div class="mr-4">
-                <p:toggleSwitch value="#{sqlwebBean.showLobValues}" 
-                                styleClass="mr-2 vertical-align-middle">
-                  <p:ajax process="@this" update="result_table" />
-                </p:toggleSwitch>
-                <p:outputLabel for="@previous" value="#{sqlWebBundle.show_lob_content}"
-                               styleClass="switchLabel" />
-              </div>
-              <div>              
-                <p:toggleSwitch value="#{sqlwebBean.showNullAsEmpty}" 
-                              styleClass="mr-2 vertical-align-middle">
-                  <p:ajax process="@this" update="result_table" />            
-                </p:toggleSwitch>
-                <p:outputLabel for="@previous" value="#{sqlWebBundle.show_null_as_empty}"
-                               styleClass="switchLabel" />
-              </div>
+          <div class="flex flex-wrap align-items-center gap-2">
+            <p:outputPanel rendered="#{sqlwebBean.exception == null}"
+                           styleClass="message">
+              <h:outputText value="#{sqlWebBundle.rows_selected}: #{sqlwebBean.rowCount}."
+                            rendered="#{sqlwebBean.rows != null}" styleClass="long mr-2" />
+              <h:outputText value="#{sqlWebBundle.rows_selected_short}: #{sqlwebBean.rowCount}."
+                            rendered="#{sqlwebBean.rows != null}" styleClass="short mr-2" />
+              <h:outputText value="#{sqlWebBundle.ellapsed_time}: #{sqlwebBean.duration} ms."
+                            rendered="#{sqlwebBean.duration gt 0}" styleClass="long mr-2"/>
+              <h:outputText value="#{sqlWebBundle.ellapsed_time_short}: #{sqlwebBean.duration} ms."
+                            rendered="#{sqlwebBean.duration gt 0}" styleClass="short mr-2"/>
+            </p:outputPanel>
+            <p:menuButton value="#{sqlWebBundle.export}"
+                          icon="pi pi-download"
+                          buttonStyleClass="minisql">
+              <p:menuitem value="CSV" icon="pi pi-file-excel">
+                <p:dataExporter type="csv" target="result_table" fileName="results_#{sqlwebBean.timeStamp}"
+                                options="#{sqlwebBean.csvOptions}" />
+              </p:menuitem>
+              <p:menuitem value="CSV (no quote)" icon="pi pi-file-excel">
+                <p:dataExporter type="csvnq" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+              </p:menuitem>
+              <p:menuitem value="XML" icon="pi pi-file">
+                <p:dataExporter type="xml" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+              </p:menuitem>
+              <p:menuitem value="PDF" icon="pi pi-file-pdf">
+                <p:dataExporter type="pdf" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+              </p:menuitem>
+              <p:menuitem value="TXT" icon="pi pi-file">
+                <p:dataExporter type="txt" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+              </p:menuitem>
+            </p:menuButton>
+            <div class="flex-grow-1" />
+            <div>
+              <p:toggleSwitch id="showRowNumbers" value="#{sqlwebBean.showRowNumbers}"
+                            styleClass="vertical-align-middle mr-2">
+                <p:ajax process="@this" update="@(.result_table)" />
+              </p:toggleSwitch>
+              <p:outputLabel for="showRowNumbers" value="#{sqlWebBundle.show_row_numbers}"
+                             styleClass="switchLabel long" />
+              <p:outputLabel for="showRowNumbers" value="#{sqlWebBundle.show_row_numbers_short}"
+                             styleClass="switchLabel short" />
+            </div>
+            <div>
+              <p:toggleSwitch id="showLobValues" value="#{sqlwebBean.showLobValues}"
+                              styleClass="vertical-align-middle mr-2">
+                <p:ajax process="@this" update="@(.result_table)" />
+              </p:toggleSwitch>
+              <p:outputLabel for="showLobValues" value="#{sqlWebBundle.show_lob_content}"
+                             styleClass="switchLabel long" />
+              <p:outputLabel for="showLobValues" value="#{sqlWebBundle.show_lob_content_short}"
+                             styleClass="switchLabel short" />
+            </div>
+            <div>
+              <p:toggleSwitch id="showNullAsEmpty" value="#{sqlwebBean.showNullAsEmpty}"
+                            styleClass="vertical-align-middle mr-2">
+                <p:ajax process="@this" update="@(.result_table)" />
+              </p:toggleSwitch>
+              <p:outputLabel for="showNullAsEmpty" value="#{sqlWebBundle.show_null_as_empty}"
+                             styleClass="switchLabel long" />
+              <p:outputLabel for="showNullAsEmpty" value="#{sqlWebBundle.show_null_as_empty_short}"
+                             styleClass="switchLabel short" />
             </div>
           </div>
         </f:facet>
@@ -221,14 +226,17 @@
     var renderSql = (#{sqlwebBean.deferredExecution});    
     switchSql();
     
-    function switchSql()
+    function switchSql(forcedRenderSql)
     {
+      if (forcedRenderSql === undefined) forcedRenderSql = !renderSql;
+      var mainPanel = $(".sqlweb");
       var icon = $("#mainform\\:switch_sql_button span:first-child");
-      if (renderSql) //hide
+      if (forcedRenderSql === false) //hide
       {
         $("#mainform\\:sqlweb_edit_panel").hide();
         icon.removeClass('pi-eye');
         icon.addClass('pi-eye-slash');
+        mainPanel.addClass('flexed');
         renderSql = false;        
       }
       else //show
@@ -236,6 +244,7 @@
         $("#mainform\\:sqlweb_edit_panel").show();
         icon.removeClass('pi-eye-slash');
         icon.addClass('pi-eye');
+        mainPanel.removeClass('flexed');
         renderSql = true;
       }
     }

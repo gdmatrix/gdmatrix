@@ -17,8 +17,99 @@
   font-weight: bold;
 }
 
+.sqlweb > .result_container > .ui-datatable .ui-datatable-header
+{
+  padding: 1rem;
+}
+
+.sqlweb > .result_container > .ui-datatable .ui-datatable-data
+{
+  font-family: monospace !important;
+}
+
+@media only screen and (max-width: 500px) 
+{
+  
+  .sqlweb .ui-button.ui-button-text-icon-left.minisql,
+  .sqlweb .ui-button.ui-button-text-icon-right.minisql
+  {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  
+  .sqlweb .ui-button.ui-button-text-icon-left.minisql > .ui-button-text,
+  .sqlweb .ui-button.ui-button-text-icon-right.minisql > .ui-button-text,
+  .sqlweb .ui-splitbutton.minisql > .ui-button > .ui-button-text
+  {
+    visibility: hidden;
+    width: 0;
+    padding-right: 0;
+    white-space:nowrap;
+    overflow: hidden;
+  }
+
+  .sqlweb .ui-button.ui-button-text-icon-left.minisql > .ui-icon,
+  .sqlweb .ui-button.ui-button-text-icon-right.minisql > .ui-icon
+  {
+    left: 8px;
+  }
+}
+
 .code,
 .code > .ui-inputfield
 {
   font-family: monospace !important;
+}
+
+/* Fixed panels */
+
+.sqlweb.flexed
+{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sqlweb.flexed > *
+{
+  flex-grow: 0;
+}
+
+.sqlweb.flexed > .result_container
+{
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.sqlweb.flexed > .result_container > .ui-datatable
+{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sqlweb.flexed > .result_container > .ui-datatable > .ui-datatable-header
+{
+  position: sticky;
+}
+
+.sqlweb.flexed > .result_container > .ui-datatable > .ui-paginator
+{
+  position: sticky;
+}
+
+@media only screen and (width <= 700px)
+{
+  .sqlweb .long
+  {
+    display: none;
+  }
+}
+
+@media only screen and (width > 700px)
+{
+  .sqlweb .short
+  {
+    display: none;
+  }
 }
