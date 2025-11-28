@@ -86,7 +86,8 @@
                        action="#{objectBean.loadActions}"
                        process="@this" update="@none"
                        icon="ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
-                       rendered="#{not objectBean.isNew()}" />
+                       rendered="#{not objectBean.isNew()}" 
+                       title="#{objectBundle.actions}" alt="#{objectBundle.actions}" />
       <p:overlayPanel for="object_actions" appendTo="@(body)"
                       dynamic="true" cache="true" styleClass="context"
                       widgetVar="objectActions">
