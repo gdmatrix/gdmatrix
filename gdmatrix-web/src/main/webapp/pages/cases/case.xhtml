@@ -21,51 +21,52 @@
                  styleClass="find_selector">
 
         <p:tab id="smart_search">
-          <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/>
-            <h:outputText value="#{objectBundle.quick}" />
-          </f:facet>
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />
-
-          <div class="ui-fluid formgrid grid">
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <emcomp:tipInputText id="smartFilter"
-                                   value="#{caseFinderBean.smartFilter}"
-                                   tipContent="#{caseFinderBean.smartSearchTip}" />
+          <div class="sticky_container"> 
+            <f:facet name="title">
+              <span class="pi pi-bolt mr-2"/>
+              <h:outputText value="#{objectBundle.quick}" />
+            </f:facet>
+            <p:defaultCommand target="smart_search_button" scope="smart_search" />
+            <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{objectBundle.value}" />
+                  <emcomp:tipInputText id="smartFilter"
+                                       value="#{caseFinderBean.smartFilter}"
+                                       tipContent="#{caseFinderBean.smartSearchTip}" />
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{caseFinderBean.clear}"
-                             styleClass="m-1"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"
-                             icon="fa fa-broom" />
-            <p:commandButton id="smart_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{caseFinderBean.smartFind}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
-                             resetValues="true"
-                             styleClass="m-1"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search" />
-          </div>
-
+            <div class="buttons text-right">
+              <p:commandButton value="#{objectBundle.clear}"
+                               action="#{caseFinderBean.clear}"
+                               styleClass="m-1"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                               resetValues="true"
+                               icon="fa fa-broom" />
+              <p:commandButton id="smart_search_button"
+                               value="#{objectBundle.search}"
+                               action="#{caseFinderBean.smartFind}"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                               resetValues="true"
+                               styleClass="m-1"
+                               oncomplete="endPanel('leftPanel');"
+                               icon="pi pi-search" />
+            </div>
+          </div> 
         </p:tab>
 
         <p:tab id="advanced_search">         
           <div class="sticky_container">           
-            <div class="sticky_content">
+            
               <f:facet name="title">
                 <span class="pi pi-cog mr-2"/>
                 <h:outputText value="#{objectBundle.advanced}" />
               </f:facet>        
               <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
-            </div>
+     
 
             <div class="scrollable_content">
               <div class="ui-fluid formgrid grid">
@@ -196,15 +197,15 @@
                     <div class="field col-12">
                       <p:outputLabel for="@next" value="#{caseBundle.caseInterventions_type}" />
                       <emcomp:typeReference value="#{caseFinderBean.interventionFilter.intTypeId}"
-                            type="Intervention"
-                            showNavigatorItems="true"                                    
-                            styleClass="w-full"
-                            scrollHeight="200"
-                            queryDelay="1000"
-                            minQueryLength="3"
-                            renderShowButton="false"
-                            process="@form:cnt:find_selector"
-                            update="@form:find_selector:interventions_filter">
+                                            type="Intervention"
+                                            showNavigatorItems="true"                                    
+                                            styleClass="w-full"
+                                            scrollHeight="200"
+                                            queryDelay="1000"
+                                            minQueryLength="3"
+                                            renderShowButton="false"
+                                            process="@form:cnt:find_selector"
+                                            update="@form:find_selector:interventions_filter">
                       </emcomp:typeReference>
                     </div> 
                     <p:outputPanel styleClass="field col-12" 

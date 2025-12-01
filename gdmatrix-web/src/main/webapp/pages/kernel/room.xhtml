@@ -12,132 +12,139 @@
 
   <ui:define name="filter">
 
-    <p:outputPanel id="filter_panel">
+    <p:outputPanel id="filter_panel" styleClass="h-full">
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{roomFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
-          <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/>
-            <h:outputText value="#{objectBundle.quick}" />
-          </f:facet>
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+          <div class="sticky_container">
+            <f:facet name="title">
+              <span class="pi pi-bolt mr-2"/>
+              <h:outputText value="#{objectBundle.quick}" />
+            </f:facet>
+            <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="ui-fluid formgrid grid">
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <emcomp:tipInputText id="smartFilter"
-                                   value="#{roomFinderBean.smartFilter}"
-                                   tipContent="#{roomFinderBean.smartSearchTip}" />
+            <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{objectBundle.value}" />
+                  <emcomp:tipInputText id="smartFilter"
+                                       value="#{roomFinderBean.smartFilter}"
+                                       tipContent="#{roomFinderBean.smartSearchTip}" />
+                </div>
+              </div>
+            </div>
+
+            <div class="buttons text-right">
+              <p:commandButton value="#{objectBundle.clear}"
+                               action="#{roomFinderBean.clear}"
+                               styleClass="m-1"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                               resetValues="true"
+                               icon="fa fa-broom" />
+              <p:commandButton id="smart_search_button"
+                               value="#{objectBundle.search}"
+                               action="#{roomFinderBean.smartFind}"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
+                               resetValues="true"
+                               styleClass="m-1"
+                               oncomplete="endPanel('leftPanel');"
+                               icon="pi pi-search" />
             </div>
           </div>
-
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{roomFinderBean.clear}"
-                             styleClass="m-1"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"
-                             icon="fa fa-broom" />
-            <p:commandButton id="smart_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{roomFinderBean.smartFind}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
-                             resetValues="true"
-                             styleClass="m-1"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search" />
-          </div>
-
         </p:tab>
 
         <p:tab id="advanced_search">
-          <f:facet name="title">
-            <span class="pi pi-cog mr-2"/>
-            <h:outputText value="#{objectBundle.advanced}" />
-          </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+          <div class="sticky_container"> 
 
-          <div class="ui-fluid formgrid grid">
+            <f:facet name="title">
+              <span class="pi pi-cog mr-2"/>
+              <h:outputText value="#{objectBundle.advanced}" />
+            </f:facet>
+            <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-            <!-- RoomId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
-              <p:chips value="#{roomFinderBean.roomId}"
-                       addOnPaste="true" separator="," />
+            <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
+
+                <!-- RoomId -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
+                  <p:chips value="#{roomFinderBean.roomId}"
+                           addOnPaste="true" separator="," />
+                </div>
+
+                <!-- Name -->
+                <div Class="field col-12">
+                  <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
+                  <p:inputText value="#{roomFinderBean.filter.roomName}" />
+                </div>
+
+                <!-- TypeId -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
+                  <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"
+                                   style="min-width:inherit !important"
+                                   filter="false" touchable="true">
+                    <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />
+                    <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" />
+                  </p:selectOneMenu>
+                </div>
+
+                <!-- AddressId -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{kernelBundle.room_address}" />
+                  <emcomp:objectReference value="#{roomFinderBean.filter.addressId}"
+                                          type="Address"
+                                          scrollHeight="200"
+                                          queryDelay="1000"
+                                          minQueryLength="3"
+                                          renderShowButton="false"
+                                          onselect="showPanel('leftPanel')"
+                                          process="@form:cnt:find_selector">
+                  </emcomp:objectReference>
+                </div>
+
+                <!-- Capacity -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
+                  <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}" />
+                </div>
+
+                <!-- SpaceId -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
+                  <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}" />
+                </div>
+
+                <!-- Comments -->
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
+                  <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}" />
+                </div>
+
+              </div>
             </div>
-
-            <!-- Name -->
-            <div Class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
-              <p:inputText value="#{roomFinderBean.filter.roomName}" />
+            <div class="buttons text-right">
+              <p:commandButton value="#{objectBundle.clear}"
+                               action="#{roomFinderBean.clear}"
+                               process="@form:cnt:find_selector"
+                               styleClass="m-1"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                               resetValues="true"
+                               icon="fa fa-broom" />
+              <p:commandButton id="advanced_search_button"
+                               value="#{objectBundle.search}"
+                               action="#{roomFinderBean.find}"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
+                               styleClass="m-1"
+                               resetValues="true"
+                               oncomplete="endPanel('leftPanel');"
+                               icon="pi pi-search" />
             </div>
-
-            <!-- TypeId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
-              <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"
-                               style="min-width:inherit !important"
-                               filter="false" touchable="true">
-                <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />
-                <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" />
-              </p:selectOneMenu>
-            </div>
-
-            <!-- AddressId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.room_address}" />
-              <emcomp:objectReference value="#{roomFinderBean.filter.addressId}"
-                                      type="Address"
-                                      scrollHeight="200"
-                                      queryDelay="1000"
-                                      minQueryLength="3"
-                                      renderShowButton="false"
-                                      onselect="showPanel('leftPanel')"
-                                      process="@form:cnt:find_selector">
-              </emcomp:objectReference>
-            </div>
-
-            <!-- Capacity -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
-              <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}" />
-            </div>
-
-            <!-- SpaceId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
-              <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}" />
-            </div>
-
-            <!-- Comments -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
-              <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}" />
-            </div>
-
-          </div>
-
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{roomFinderBean.clear}"
-                             process="@form:cnt:find_selector"
-                             styleClass="m-1"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"
-                             icon="fa fa-broom" />
-            <p:commandButton id="advanced_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{roomFinderBean.find}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
-                             styleClass="m-1"
-                             resetValues="true"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search" />
           </div>
         </p:tab>
 

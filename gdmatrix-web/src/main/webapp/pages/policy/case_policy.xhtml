@@ -13,9 +13,10 @@
   <ui:param name="searchLabel" value="#{policyBundle.policySearch_searchLabel}" />
 
   <ui:define name="filter">
-    <p:outputPanel id="filter_panel">
+    <p:outputPanel id="filter_panel" styleClass="h-full">
 
-      <div class="ui-fluid formgrid grid">
+      <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
 
         <div class="field col-12">
           <p:outputLabel for="@next" value="CaseId" />
@@ -151,7 +152,7 @@
         </div>
 
       </div>
-
+      </div>
       <div class="buttons text-right">
         <p:commandButton value="#{objectBundle.clear}"
                          action="#{casePolicyFinderBean.clear}"

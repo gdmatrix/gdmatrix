@@ -11,117 +11,122 @@
 
   <ui:param name="objectBean" value="#{translationObjectBean}" />
   <ui:param name="searchLabel" value="#{translationBundle.search_title}" />
-  
+
   <ui:define name="filter">
 
-    <p:outputPanel id="filter_panel">
+    <p:outputPanel id="filter_panel" styleClass="h-full">
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{translationFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
-          <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/>
-            <h:outputText value="#{objectBundle.quick}" />
-          </f:facet>
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+          <div class="sticky_container">
+            <f:facet name="title">
+              <span class="pi pi-bolt mr-2"/>
+              <h:outputText value="#{objectBundle.quick}" />
+            </f:facet>
+            <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="ui-fluid formgrid grid">
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <emcomp:tipInputText id="smartFilter"
-                                   value="#{translationFinderBean.smartFilter}"
-                                   tipContent="#{translationFinderBean.smartSearchTip}" />              
+            <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{objectBundle.value}" />
+                  <emcomp:tipInputText id="smartFilter"
+                                       value="#{translationFinderBean.smartFilter}"
+                                       tipContent="#{translationFinderBean.smartSearchTip}" />              
+                </div>
+              </div>
+            </div>
+
+            <div class="buttons text-right">
+              <p:commandButton value="#{objectBundle.clear}"
+                               action="#{translationFinderBean.clear}"
+                               styleClass="m-1"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                               resetValues="true"
+                               icon="fa fa-broom" />
+              <p:commandButton id="smart_search_button"
+                               value="#{objectBundle.search}"
+                               action="#{translationFinderBean.smartFind}"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                               resetValues="true"
+                               styleClass="m-1"
+                               oncomplete="endPanel('leftPanel');"
+                               icon="pi pi-search"/>
             </div>
           </div>
-
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{translationFinderBean.clear}"
-                             styleClass="m-1"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"
-                             icon="fa fa-broom" />
-            <p:commandButton id="smart_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{translationFinderBean.smartFind}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
-                             resetValues="true"
-                             styleClass="m-1"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search"/>
-          </div>
-
         </p:tab>
 
         <p:tab id="advanced_search">
-          <f:facet name="title">
-            <span class="pi pi-cog mr-2"/>
-            <h:outputText value="#{objectBundle.advanced}" />
-          </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+          <div class="sticky_container"> 
 
-          <div class="ui-fluid formgrid grid">
+            <f:facet name="title">
+              <span class="pi pi-cog mr-2"/>
+              <h:outputText value="#{objectBundle.advanced}" />
+            </f:facet>
+            <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-  
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{translationBundle.language}" />
-              <p:selectOneMenu value="#{translationFinderBean.filter.language}">
-                <f:selectItem itemLabel="" itemValue="" />
-                <f:selectItems value="#{translationObjectBean.languageSelectItems}" />
-              </p:selectOneMenu>
+            <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{translationBundle.language}" />
+                  <p:selectOneMenu value="#{translationFinderBean.filter.language}">
+                    <f:selectItem itemLabel="" itemValue="" />
+                    <f:selectItems value="#{translationObjectBean.languageSelectItems}" />
+                  </p:selectOneMenu>
+                </div>
+
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{translationBundle.search_state}" />
+                  <p:selectOneMenu value="#{translationFinderBean.filter.state}">
+                    <f:selectItem itemLabel="" itemValue="" />
+                    <f:selectItems value="#{translationObjectBean.stateSelectItems}" />
+                  </p:selectOneMenu>
+                </div>            
+
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{translationBundle.text}" />
+                  <p:inputTextarea value="#{translationFinderBean.filter.text}" />
+                </div>
+
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{translationBundle.translation}" />
+                  <p:inputTextarea value="#{translationFinderBean.filter.translation}" />
+                </div>
+
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{translationBundle.group}" />
+                  <p:inputText value="#{translationFinderBean.filter.group}"/>
+                </div>
+
+              </div>
             </div>
-            
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{translationBundle.search_state}" />
-              <p:selectOneMenu value="#{translationFinderBean.filter.state}">
-                <f:selectItem itemLabel="" itemValue="" />
-                <f:selectItems value="#{translationObjectBean.stateSelectItems}" />
-              </p:selectOneMenu>
-            </div>            
-
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{translationBundle.text}" />
-              <p:inputTextarea value="#{translationFinderBean.filter.text}" />
+            <div class="buttons text-right">
+              <p:commandButton value="#{objectBundle.clear}"
+                               action="#{translationFinderBean.clear}"
+                               process="@form:cnt:find_selector"
+                               styleClass="m-1"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                               resetValues="true"
+                               icon="fa fa-broom" />
+              <p:commandButton id="advanced_search_button"
+                               value="#{objectBundle.search}"
+                               action="#{translationFinderBean.find}"
+                               process="@form:cnt:find_selector"
+                               update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                               styleClass="m-1"
+                               resetValues="true"
+                               oncomplete="endPanel('leftPanel');"
+                               icon="pi pi-search" />
             </div>
-
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{translationBundle.translation}" />
-              <p:inputTextarea value="#{translationFinderBean.filter.translation}" />
-            </div>
-
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{translationBundle.group}" />
-              <p:inputText value="#{translationFinderBean.filter.group}"/>
-            </div>
-
-          </div>
-
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{translationFinderBean.clear}"
-                             process="@form:cnt:find_selector"
-                             styleClass="m-1"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"
-                             icon="fa fa-broom" />
-            <p:commandButton id="advanced_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{translationFinderBean.find}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
-                             styleClass="m-1"
-                             resetValues="true"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search" />
           </div>
         </p:tab>
 
       </p:tabView>
     </p:outputPanel>
-    
+
   </ui:define>
 
   <ui:define name="object">
@@ -162,5 +167,5 @@
     <gdm:saveBean value="translationFinderBean" />
 
   </ui:define>
-  
+
 </ui:composition>

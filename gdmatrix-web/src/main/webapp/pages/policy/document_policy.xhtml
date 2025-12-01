@@ -13,145 +13,146 @@
   <ui:param name="searchLabel" value="#{policyBundle.policySearch_searchLabel}" />
 
   <ui:define name="filter">
-    <p:outputPanel id="filter_panel">
+    <p:outputPanel id="filter_panel" styleClass="h-full">
 
-      <div class="ui-fluid formgrid grid">
+      <div class="scrollable_content">
+        <div class="ui-fluid formgrid grid">
 
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="DocId" />
-          <p:inputText value="#{documentPolicyFinderBean.filter.docId}" />
-        </div>
+          <div class="field col-12">
+            <p:outputLabel for="@next" value="DocId" />
+            <p:inputText value="#{documentPolicyFinderBean.filter.docId}" />
+          </div>
 
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicies_policy}" />
-          <emcomp:objectReference value="#{documentPolicyFinderBean.filter.policyId}"
+          <div class="field col-12">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicies_policy}" />
+            <emcomp:objectReference value="#{documentPolicyFinderBean.filter.policyId}"
+                                    type="Policy"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3"
+                                    renderShowButton="false"
+                                    onselect="showPanel('leftPanel')"
+                                    process="@form:cnt:filter_panel">
+            </emcomp:objectReference>
+          </div>
+
+          <div class="field col-12">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicies_type}" />
+            <emcomp:typeReference value="#{documentPolicyFinderBean.filter.policyTypeId}"
                                   type="Policy"
+                                  showNonInstantiableItems="false"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   renderShowButton="false"
                                   onselect="showPanel('leftPanel')"
-                                  process="@form:cnt:filter_panel">
-          </emcomp:objectReference>
-        </div>
+                                  process="@form:cnt:filter_panel"
+                                  update="@form:cnt:filter_panel">
+            </emcomp:typeReference>
+          </div>
 
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicies_type}" />
-          <emcomp:typeReference value="#{documentPolicyFinderBean.filter.policyTypeId}"
-                                type="Policy"
-                                showNonInstantiableItems="false"
-                                scrollHeight="200"
-                                queryDelay="1000"
-                                minQueryLength="3"
-                                renderShowButton="false"
-                                onselect="showPanel('leftPanel')"
-                                process="@form:cnt:filter_panel"
-                                update="@form:cnt:filter_panel">
-          </emcomp:typeReference>
-        </div>
+          <div class="field col-12">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_state}" />
+            <p:selectOneMenu value="#{documentPolicyFinderBean.filter.state}">
+              <f:selectItem itemLabel=" " itemValue="" />
+              <f:selectItems value="#{documentPoliciesTabBean.policyStateSelectItems}" />
+            </p:selectOneMenu>
+          </div>
 
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_state}" />
-          <p:selectOneMenu value="#{documentPolicyFinderBean.filter.state}">
-            <f:selectItem itemLabel=" " itemValue="" />
-            <f:selectItems value="#{documentPoliciesTabBean.policyStateSelectItems}" />
-          </p:selectOneMenu>
-        </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_creationDates}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.startCreationDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.endCreationDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
 
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_creationDates}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.startCreationDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
-        </div>
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.endCreationDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
-        </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_approvalDates}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.startApprovalDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.endApprovalDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
 
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_approvalDates}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.startApprovalDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
-        </div>
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.endApprovalDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
-        </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_activationDates}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.startActivationDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.endActivationDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
 
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_activationDates}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.startActivationDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
-        </div>
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.endActivationDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
-        </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_executionDates}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.startExecutionDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
+          <div class="field col-12 xl:col-6">
+            <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
+            <p:datePicker value="#{documentPolicyFinderBean.filter.endExecutionDate}"
+                          autocomplete="off"
+                          placeholder="dd/MM/yyyy"
+                          locale="#{documentPolicyFinderBean.language}"
+                          showOnFocus="false"
+                          converter="datePickerConverter" pattern="dd/MM/yyyy"
+                          showIcon="true" showTime="false"
+                          monthNavigator="true" yearNavigator="true" />
+          </div>
 
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_executionDates}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.startExecutionDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
         </div>
-        <div class="field col-12 xl:col-6">
-          <p:outputLabel for="@next" value="#{policyBundle.documentPolicySearch_and}" />
-          <p:datePicker value="#{documentPolicyFinderBean.filter.endExecutionDate}"
-                        autocomplete="off"
-                        placeholder="dd/MM/yyyy"
-                        locale="#{documentPolicyFinderBean.language}"
-                        showOnFocus="false"
-                        converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"
-                        monthNavigator="true" yearNavigator="true" />
-        </div>
-
       </div>
-
       <div class="buttons text-right">
         <p:commandButton value="#{objectBundle.clear}"
                          action="#{documentPolicyFinderBean.clear}"
@@ -199,8 +200,8 @@
 
     <script>
       controlNavigationHistory({
-        url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
-        title : "#{userSessionBean.selectedMenuItem.label}"
+        url: "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+        title: "#{userSessionBean.selectedMenuItem.label}"
       });
     </script>
 

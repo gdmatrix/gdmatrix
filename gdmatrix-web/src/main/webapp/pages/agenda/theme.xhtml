@@ -9,93 +9,100 @@
 
   <ui:param name="objectBean" value="#{themeObjectBean}" />
   <ui:param name="searchLabel" value="#{agendaBundle.theme_searchLabel}" />  
-  
+
   <ui:define name="filter">
 
-    <p:outputPanel id="filter_panel">
+    <p:outputPanel id="filter_panel" styleClass="h-full">
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{themeFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
-          <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/>
-            <h:outputText value="#{objectBundle.quick}" />
-          </f:facet>
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+            <div class="sticky_container">
+              <f:facet name="title">
+                <span class="pi pi-bolt mr-2"/>
+                <h:outputText value="#{objectBundle.quick}" />
+              </f:facet>
+              <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="ui-fluid formgrid grid">
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{objectBundle.value}" />              
-              <emcomp:tipInputText id="smartFilter"
-                                   value="#{themeFinderBean.smartFilter}"
-                                   tipContent="#{themeFinderBean.smartSearchTip}" />
+              <div class="scrollable_content">
+                <div class="ui-fluid formgrid grid">
+                  <div class="field col-12">
+                    <p:outputLabel for="@next" value="#{objectBundle.value}" />              
+                    <emcomp:tipInputText id="smartFilter"
+                                         value="#{themeFinderBean.smartFilter}"
+                                         tipContent="#{themeFinderBean.smartSearchTip}" />
+                  </div>
+                </div>
+              </div>  
+
+              <div class="buttons text-right">
+                <p:commandButton value="#{objectBundle.clear}"
+                                 action="#{themeFinderBean.clear}"
+                                 styleClass="m-1"
+                                 process="@form:cnt:find_selector"
+                                 update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                                 resetValues="true"
+                                 icon="fa fa-broom" />
+                <p:commandButton id="smart_search_button"
+                                 value="#{objectBundle.search}"
+                                 action="#{themeFinderBean.smartFind}"
+                                 process="@form:cnt:find_selector"
+                                 update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
+                                 resetValues="true"
+                                 styleClass="m-1"
+                                 oncomplete="endPanel('leftPanel');"
+                                 icon="pi pi-search" />
+              </div>
             </div>
-          </div>  
+          </p:tab>
 
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{themeFinderBean.clear}"
-                             styleClass="m-1"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"
-                             icon="fa fa-broom" />
-            <p:commandButton id="smart_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{themeFinderBean.smartFind}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
-                             resetValues="true"
-                             styleClass="m-1"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search" />
-          </div>
+          <p:tab id="advanced_search">
+            <div class="sticky_container"> 
 
-        </p:tab>
+              <f:facet name="title">
+                <span class="pi pi-cog mr-2"/>
+                <h:outputText value="#{objectBundle.advanced}" />
+              </f:facet>
+              <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-        <p:tab id="advanced_search">
-          <f:facet name="title">
-            <span class="pi pi-cog mr-2"/>
-            <h:outputText value="#{objectBundle.advanced}" />
-          </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+              <div class="scrollable_content">
+                <div class="ui-fluid formgrid grid">         
 
-          <div class="ui-fluid formgrid grid">          
-          
-            <!-- ThemeId -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{agendaBundle.theme_id}" />
-              <p:inputText id="themeId" value="#{themeFinderBean.filter.themeId}" />
+                  <!-- ThemeId -->
+                  <div class="field col-12">
+                    <p:outputLabel for="@next" value="#{agendaBundle.theme_id}" />
+                    <p:inputText id="themeId" value="#{themeFinderBean.filter.themeId}" />
+                  </div>
+
+                  <!-- Description -->
+                  <div class="field col-12">
+                    <p:outputLabel for="@next" value="#{agendaBundle.theme_description}" />
+                    <p:inputText id="description" value="#{themeFinderBean.filter.description}" />
+                  </div>
+
+                </div>
+              </div>
+              <div class="buttons text-right">
+                <p:commandButton value="#{objectBundle.clear}"
+                                 action="#{themeFinderBean.clear}"
+                                 styleClass="m-1"
+                                 process="@form:cnt:find_selector"
+                                 update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
+                                 resetValues="true"
+                                 icon="fa fa-broom" />
+                <p:commandButton id="advanced_search_button"
+                                 value="#{objectBundle.search}"
+                                 action="#{themeFinderBean.find}"
+                                 process="@form:cnt:find_selector"
+                                 update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
+                                 styleClass="m-1"
+                                 resetValues="true"
+                                 oncomplete="endPanel('leftPanel');"
+                                 icon="pi pi-search" />
+              </div>
             </div>
-
-            <!-- Description -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{agendaBundle.theme_description}" />
-              <p:inputText id="description" value="#{themeFinderBean.filter.description}" />
-            </div>
-
-          </div>
-          
-          <div class="buttons text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{themeFinderBean.clear}"
-                             styleClass="m-1"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs:result_list"
-                             resetValues="true"
-                             icon="fa fa-broom" />
-            <p:commandButton id="advanced_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{themeFinderBean.find}"
-                             process="@form:cnt:find_selector"
-                             update="@form:cnt:search_tabs @form:cnt:context_panel @form:cnt:filter_panel"
-                             styleClass="m-1"
-                             resetValues="true"
-                             oncomplete="endPanel('leftPanel');"
-                             icon="pi pi-search" />
-          </div>
-        </p:tab>
+          </p:tab>
 
       </p:tabView>
     </p:outputPanel>
@@ -137,7 +144,7 @@
 
     <gdm:saveBean value="themeObjectBean" />
     <gdm:saveBean value="themeFinderBean" />
-    
+
   </ui:define>
 
 </ui:composition>

@@ -13,25 +13,28 @@
 
   <ui:define name="filter">
 
-    <p:outputPanel id="filter_panel">
+    <p:outputPanel id="filter_panel" styleClass="h-full">
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{personFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
+          <div class="sticky_container">
           <f:facet name="title">
             <span class="pi pi-bolt mr-2"/>
             <h:outputText value="#{objectBundle.quick}" />
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="ui-fluid formgrid grid">
+          <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
               <emcomp:tipInputText id="smartFilter"
                                    value="#{personFinderBean.smartFilter}"
                                    tipContent="#{personFinderBean.smartSearchTip}" />
             </div>
+          </div>
           </div>
 
           <div class="buttons text-right">
@@ -54,9 +57,12 @@
                              disableOnAjax="true"
                              icon="pi pi-search" />
           </div>
+          </div>
         </p:tab>
 
         <p:tab id="advanced_search">
+          <div class="sticky_container"> 
+            
           <f:facet name="title">
             <span class="pi pi-cog mr-2"/>
             <h:outputText value="#{objectBundle.advanced}" />
@@ -64,7 +70,8 @@
 
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-          <div class="ui-fluid formgrid grid">
+          <div class="scrollable_content">
+              <div class="ui-fluid formgrid grid">
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_id}" />
@@ -109,7 +116,8 @@
                            />
             </div>
           </div>
-          <div class="text-right">
+          </div>
+          <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{personFinderBean.clear}"
                              process="@form:cnt:find_selector"
@@ -126,6 +134,7 @@
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"
                              icon="pi pi-search" />
+          </div>
           </div>
         </p:tab>
 

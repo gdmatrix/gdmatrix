@@ -5,36 +5,38 @@
                 xmlns:p="http://primefaces.org/ui">
 
   <p:tab>
-    <f:facet name="title">
-      <span class="pi pi-history mr-2"/>
-      <h:outputText value="#{objectBundle.recent}" />
-    </f:facet>    
-    <p:tree value="#{recentObjectsBean.treeNode}"
-            var="data" nodeVar="node"
-            animate="true"
-            styleClass="recents_tree" >
-      <p:ajax event="expand" listener="#{recentObjectsBean.onNodeExpand}" />
-      <p:ajax event="collapse" listener="#{recentObjectsBean.onNodeCollapse}" />
-      <p:treeNode type="group">
-        <h:outputText value="#{data.description}" />
-      </p:treeNode>
-      <p:treeNode icon="#{node.parent.data.icon}"
-                  styleClass="#{recentObjectsBean.isSelectedNode(node) ? 'current' : ''}">
-        <p:commandLink action="#{navigatorBean.show(node.parent.data.baseTypeId, data.objectId)}"
-                       rendered="#{not recentObjectsBean.isCurrentBaseType(node)}"
-                       process="@this" update="@form:cnt">
+    <div class="sticky_container">     
+      <f:facet name="title">
+        <span class="pi pi-history mr-2"/>
+        <h:outputText value="#{objectBundle.recent}" />
+      </f:facet>    
+      <p:tree value="#{recentObjectsBean.treeNode}"
+              var="data" nodeVar="node"
+              animate="true"
+              styleClass="recents_tree scrollable_content" >
+        <p:ajax event="expand" listener="#{recentObjectsBean.onNodeExpand}" />
+        <p:ajax event="collapse" listener="#{recentObjectsBean.onNodeCollapse}" />
+        <p:treeNode type="group">
           <h:outputText value="#{data.description}" />
-        </p:commandLink>
-        <p:commandLink action="#{navigatorBean.view(data.objectId, 0, true)}"
-                       rendered="#{recentObjectsBean.isCurrentBaseType(node)}"
-                       process="@form:cnt:context_panel"
-                       resetValues="true"
-                       oncomplete="endPanel('rightPanel');"
-                       update="@form:cnt:central_column @form:cnt:context_panel">
-          <h:outputText value="#{data.description}" />
-        </p:commandLink>
-      </p:treeNode>
-    </p:tree>
+        </p:treeNode>
+        <p:treeNode icon="#{node.parent.data.icon}"
+                    styleClass="#{recentObjectsBean.isSelectedNode(node) ? 'current' : ''}">
+          <p:commandLink action="#{navigatorBean.show(node.parent.data.baseTypeId, data.objectId)}"
+                         rendered="#{not recentObjectsBean.isCurrentBaseType(node)}"
+                         process="@this" update="@form:cnt">
+            <h:outputText value="#{data.description}" />
+          </p:commandLink>
+          <p:commandLink action="#{navigatorBean.view(data.objectId, 0, true)}"
+                         rendered="#{recentObjectsBean.isCurrentBaseType(node)}"
+                         process="@form:cnt:context_panel"
+                         resetValues="true"
+                         oncomplete="endPanel('rightPanel');"
+                         update="@form:cnt:central_column @form:cnt:context_panel">
+            <h:outputText value="#{data.description}" />
+          </p:commandLink>
+        </p:treeNode>
+      </p:tree>
+    </div>
   </p:tab>
 
 </ui:composition>

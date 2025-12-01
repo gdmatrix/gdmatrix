@@ -5,31 +5,33 @@
                 xmlns:p="http://primefaces.org/ui">
 
   <p:tab title="#{objectBundle.history}">
-    <f:facet name="title">
-      <span class="fa fa-layer-group mr-2"/>
-      <h:outputText value="#{objectBundle.history}" />
-    </f:facet>
-    <div class="history">
-      <ui:repeat value="#{historyBean.entries}"
-                 var="leap">
-        <div class="return_info">
-          <p:commandLink action="#{historyBean.show(leap)}"
-                         rendered="#{not historyBean.isCurrentBaseType(leap)}"
-                         process="@this" update="@form:cnt">
-            <span class="#{historyBean.getIcon(leap)}" />
-            <h:outputText value="#{historyBean.getDescription(leap)}" />
-          </p:commandLink>
-          <p:commandLink action="#{historyBean.view(leap)}"
-                         process="@this"
-                         rendered="#{historyBean.isCurrentBaseType(leap)}"
-                         resetValues="true"
-                         oncomplete="endPanel('rightPanel');"
-                         update="@form:cnt:central_column @form:cnt:context_panel">
-            <span class="#{historyBean.getIcon(leap)}" />
-            <h:outputText value="#{historyBean.getDescription(leap)}" />
-          </p:commandLink>
-        </div>
-      </ui:repeat>
+    <div class="sticky_container">    
+      <f:facet name="title">
+        <span class="fa fa-layer-group mr-2"/>
+        <h:outputText value="#{objectBundle.history}" />
+      </f:facet>
+      <div class="history scrollable_content">
+        <ui:repeat value="#{historyBean.entries}"
+                   var="leap">
+          <div class="return_info">
+            <p:commandLink action="#{historyBean.show(leap)}"
+                           rendered="#{not historyBean.isCurrentBaseType(leap)}"
+                           process="@this" update="@form:cnt">
+              <span class="#{historyBean.getIcon(leap)}" />
+              <h:outputText value="#{historyBean.getDescription(leap)}" />
+            </p:commandLink>
+            <p:commandLink action="#{historyBean.view(leap)}"
+                           process="@this"
+                           rendered="#{historyBean.isCurrentBaseType(leap)}"
+                           resetValues="true"
+                           oncomplete="endPanel('rightPanel');"
+                           update="@form:cnt:central_column @form:cnt:context_panel">
+              <span class="#{historyBean.getIcon(leap)}" />
+              <h:outputText value="#{historyBean.getDescription(leap)}" />
+            </p:commandLink>
+          </div>
+        </ui:repeat>
+      </div>
     </div>
   </p:tab>
 

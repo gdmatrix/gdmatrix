@@ -6,41 +6,42 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     
   <p:tab>
-    <f:facet name="title">
-      <span class="material-icons material-icons-round mi-account-tree mr-2 relative" style="top:1px" />
-      <h:outputText value="#{objectBundle.tree}" />
-    </f:facet>     
-    <p:tree value="#{contextTreeBean.treeNode}" id="context_tree"
-            var="data" nodeVar="node" dynamic="true" cache="false"
-            animate="true" styleClass="mt-4 context_tree"
-            selectionMode="single" widgetVar="contextTree"
-            selection="#{contextTreeBean.selectedNode}">
-      
-      <p:ajax event="expand"
-              onstart="if (_pointerSource.classList.contains('ui-tree-toggler')) {_pointerSource.classList.remove('ui-icon-triangle-1-e');_pointerSource.classList.add('pi', 'pi-spinner', 'pi-spin');}"
-              oncomplete="if (_pointerSource.classList.contains('ui-tree-toggler')) {_pointerSource.classList.remove('pi', 'pi-spinner', 'pi-spin');}"
-              global="false" />
+    <div class="sticky_container">  
+      <f:facet name="title">
+        <span class="material-icons material-icons-round mi-account-tree mr-2 relative" style="top:1px" />
+        <h:outputText value="#{objectBundle.tree}" />
+      </f:facet>     
+      <p:tree value="#{contextTreeBean.treeNode}" id="context_tree"
+              var="data" nodeVar="node" dynamic="true" cache="false"
+              animate="true" styleClass="mt-4 context_tree scrollable_content"
+              selectionMode="single" widgetVar="contextTree"
+              selection="#{contextTreeBean.selectedNode}">
 
-      <p:ajax event="collapse" />
-      
-      <p:ajax event="contextMenu"
-              update="@parent:context_tree_menu" />  
-      
-      <p:ajax event="select" listener="#{contextTreeBean.onNodeSelect}" 
-              update="#{contextTreeBean.isCurrentBaseType(node) ? '@form:cnt:central_column @form:cnt:context_panel' : '@form:cnt'}" 
-              oncomplete="endPanel('rightPanel');" />
-      
-      <p:treeNode icon="#{data.icon}" type="GROUP">
-        <h:outputText value="#{data.description}" escape="false"/>
-      </p:treeNode>
-      
-      <p:treeNode icon="#{data.icon}" type="OBJECT"
-                  styleClass="#{contextTreeBean.isEditingNode(data.objectId) ? 'current' : ''}">
-        <h:outputText value="#{data.description}" escape="false"/>
-      </p:treeNode>
-      
-    </p:tree>
-    
+        <p:ajax event="expand"
+                onstart="if (_pointerSource.classList.contains('ui-tree-toggler')) {_pointerSource.classList.remove('ui-icon-triangle-1-e');_pointerSource.classList.add('pi', 'pi-spinner', 'pi-spin');}"
+                oncomplete="if (_pointerSource.classList.contains('ui-tree-toggler')) {_pointerSource.classList.remove('pi', 'pi-spinner', 'pi-spin');}"
+                global="false" />
+
+        <p:ajax event="collapse" />
+
+        <p:ajax event="contextMenu"
+                update="@parent:context_tree_menu" />  
+
+        <p:ajax event="select" listener="#{contextTreeBean.onNodeSelect}" 
+                update="#{contextTreeBean.isCurrentBaseType(node) ? '@form:cnt:central_column @form:cnt:context_panel' : '@form:cnt'}" 
+                oncomplete="endPanel('rightPanel');" />
+
+        <p:treeNode icon="#{data.icon}" type="GROUP">
+          <h:outputText value="#{data.description}" escape="false"/>
+        </p:treeNode>
+
+        <p:treeNode icon="#{data.icon}" type="OBJECT"
+                    styleClass="#{contextTreeBean.isEditingNode(data.objectId) ? 'current' : ''}">
+          <h:outputText value="#{data.description}" escape="false"/>
+        </p:treeNode>
+
+      </p:tree>
+    </div>
     <p:contextMenu for="context_tree" id="context_tree_menu" 
                    rendered="#{not empty contextTreeBean.contextActions}">
       <c:forEach items="#{contextTreeBean.contextActions}" var="contextAction" >
