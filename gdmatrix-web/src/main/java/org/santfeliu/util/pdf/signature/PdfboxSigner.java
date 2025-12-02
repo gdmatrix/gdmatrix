@@ -247,7 +247,6 @@ public class PdfboxSigner extends PDFSigner
       else
       {
         creator.signDetached(doc, os);
-        doc.saveIncremental(os);
       }        
     }
   } 
