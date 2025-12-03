@@ -58,65 +58,100 @@ public class SecurityUtils
   private static SecurityProvider defaultSecurityProvider;
   private static TimeStampService defaultTimeStampService;
   private static URLCredentialsCipher urlCredentialsCipher;
-  private static boolean timeStampServicePreferred;
+  private static Boolean timeStampServicePreferred;
   public static final String REPRESENTANT_PATTERN = "\\(R: (\\w+)\\)";
-
-  static
-  {
-    try
-    {
-      String providerClassName = MatrixConfig.getProperty(
-        "org.santfeliu.security.provider.className");
-      Class cls = Class.forName(providerClassName);
-
-      defaultSecurityProvider =
-        (SecurityProvider)cls.getConstructor().newInstance();
-      String secret = MatrixConfig.getProperty(
-        "org.santfeliu.security.urlCredentialsCipher.secret");
-
-      urlCredentialsCipher = new URLCredentialsCipher(secret);
-
-      String tspPreferred =
-        MatrixConfig.getProperty("org.santfeliu.security.tspPreferred");
-
-      timeStampServicePreferred = "true".equals(tspPreferred);
-
-      String tspUrl = MatrixConfig.getProperty("org.santfeliu.security.tspURL");
-      if (!StringUtils.isBlank(tspUrl))
-      {
-        String tspUsername = MatrixConfig.getProperty(
-        "org.santfeliu.security.tspUsername");
-
-        String tspPassword = MatrixConfig.getProperty(
-        "org.santfeliu.security.tspPassword");
-
-        defaultTimeStampService = new TimeStampService(tspUrl,
-          tspUsername, tspPassword);
-      }
-    }
-    catch (Exception ex)
-    {
-      throw new RuntimeException(ex);
-    }
-  }
-
+  
   public static boolean isTimeStampServicePreferred()
   {
+    if (timeStampServicePreferred == null)
+    {
+      synchronized (SecurityUtils.class)
+      {
+        if (timeStampServicePreferred == null)
+        {        
+          String tspPreferred =
+            MatrixConfig.getProperty("org.santfeliu.security.tspPreferred");
+          timeStampServicePreferred = "true".equals(tspPreferred);
+        }
+      }
+    }
     return timeStampServicePreferred;
   }
 
   public static SecurityProvider getSecurityProvider()
   {
+    if (defaultSecurityProvider == null)
+    {
+      synchronized (SecurityUtils.class)
+      {
+        if (defaultSecurityProvider == null)
+        {
+          try 
+          {
+            String providerClassName = MatrixConfig.getProperty(
+              "org.santfeliu.security.provider.className");
+            Class cls = Class.forName(providerClassName);
+            defaultSecurityProvider =
+              (SecurityProvider)cls.getConstructor().newInstance();
+          }
+          catch (Exception ex) 
+          {
+            throw new RuntimeException(ex);
+          }
+        }
+      }      
+    }
     return defaultSecurityProvider;
   }
 
   public static TimeStampService getTimeStampService()
   {
+    if (defaultTimeStampService == null)
+    {
+      synchronized (SecurityUtils.class)
+      {
+        if (defaultTimeStampService == null)
+        {      
+          String tspUrl = 
+            MatrixConfig.getProperty("org.santfeliu.security.tspURL");
+          if (!StringUtils.isBlank(tspUrl))
+          {
+            String tspUsername = MatrixConfig.getProperty(
+            "org.santfeliu.security.tspUsername");
+
+            String tspPassword = MatrixConfig.getProperty(
+            "org.santfeliu.security.tspPassword");
+
+            defaultTimeStampService = new TimeStampService(tspUrl,
+              tspUsername, tspPassword);
+          } 
+        }
+      }
+    }
     return defaultTimeStampService;
   }
 
   public static URLCredentialsCipher getURLCredentialsCipher()
   {
+    if (urlCredentialsCipher == null)
+    {
+      synchronized (SecurityUtils.class)
+      {
+        if (urlCredentialsCipher == null)
+        {
+          try 
+          {
+            String secret = MatrixConfig.getProperty(
+              "org.santfeliu.security.urlCredentialsCipher.secret");
+            urlCredentialsCipher = new URLCredentialsCipher(secret);
+          }
+          catch (Exception ex) 
+          {
+            throw new RuntimeException(ex);
+          }
+        }
+      }       
+    }
     return urlCredentialsCipher;
   }
 
