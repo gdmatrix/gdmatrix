@@ -14,7 +14,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   vertical-align: middle;
 }
 
-@media only screen and (min-width: 700px) 
+@media only screen and (min-width: 768px) 
 {
   .central_column
   {
@@ -42,7 +42,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   }
 }
 
-@media only screen and (max-width: 700px) 
+@media only screen and (max-width: 768px) 
 {
   .side_panel
   {
