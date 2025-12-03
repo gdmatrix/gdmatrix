@@ -41,14 +41,12 @@
                                     scrollHeight="200"
                                     queryDelay="1000"
                                     minQueryLength="3"
-                                    onselect="console.log('onselect_person')"
                                     required="false"
                                     autoUpdate="false"
                                     renderFindButton="false">
               <p:ajax event="itemSelect" listener="#{eventMeetingFinderBean.addAttendant}"
                       process="@this"
-                      update="@(.attPanel)"
-                      oncomplete="console.log('addAttendant')" />
+                      update="@(.attPanel) @(.slotsPanel)" />
             </emcomp:objectReference>
           </div>
           <p:outputPanel styleClass="objectPanel attPanel">
@@ -66,7 +64,7 @@
                      action="#{eventMeetingFinderBean.removeAttendant}"
                      rendered="#{att.personId != null}"
                      process="@this"
-                     update="@(.attPanel)" />
+                     update="@(.attPanel) @(.slotsPanel)" />
               </p:column>
             </p:dataTable>
           </p:outputPanel>
@@ -168,8 +166,7 @@
                                     renderFindButton="false">
               <p:ajax event="itemSelect" listener="#{eventMeetingFinderBean.addRoom}"
                       process="@this @(.roomPanel)"
-                      update="@(.roomPanel)"
-                      oncomplete="console.log('addRoom')" />
+                      update="@(.roomPanel)" />
             </emcomp:objectReference>
           </div>
           <p:outputPanel styleClass="objectPanel roomPanel">
