@@ -940,8 +940,15 @@ public class FormImporter
           Object itemValue = rawValue;
           if (rawValue != null) 
           {
-            if (Field.NUMBER.equals(field.getType())) 
+            if (Field.NUMBER.equals(field.getType()))
+            try
+            {
               itemValue = Double.valueOf(rawValue.toString());
+            }
+            catch (NumberFormatException ex)
+            {
+              itemValue = rawValue;
+            }
           }
           String itemLabel = child.getChildren().isEmpty() ? "" :
             (String)child.getChildren().get(0).getProperty("text");
