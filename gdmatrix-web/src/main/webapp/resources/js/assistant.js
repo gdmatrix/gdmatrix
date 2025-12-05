@@ -207,11 +207,15 @@ async function showResponse(threadId)
 
   for (var item of queue)
   {
-    if (item === 0)
+    if (item === 0) // end streaming
     {
       end = true;
       hideDots();
       updateAssistantButtons();
+    }
+    else if (item === 1) // clear messages
+    {
+      listElem.innerHTML = "";
     }
     else if (typeof item === "string") // tokens from streaming
     {

@@ -261,6 +261,7 @@ public class ThreadsBean extends WebBean implements Serializable
   {
     String threadId = getThreadId();
     StreamQueue queue = StreamQueue.getInstance(threadId, true);
+    queue.push(1); // clear message list
     for (ChatMessage message : thread.getMessages())
     {
       pushMessage(queue, message, true);

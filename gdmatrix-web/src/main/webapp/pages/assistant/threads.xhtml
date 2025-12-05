@@ -69,7 +69,7 @@
                                    title="#{assistantBundle.debug}"
                                    onchange="changeDebugEnabled(this)"
                                    rendered="#{assistantBean.isAssistantEditable()}"> 
-              <p:ajax process="@this" update="@parent:@parent:assistant_panel" 
+              <p:ajax process="@this" update="@none"  
                       listener="#{threadsBean.repaintThread()}" />              
             </p:selectBooleanButton>
 

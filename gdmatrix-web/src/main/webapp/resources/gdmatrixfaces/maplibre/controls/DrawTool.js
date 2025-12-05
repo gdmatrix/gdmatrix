@@ -26,8 +26,9 @@ class DrawTool extends Tool
     this.directEditing = options?.directEditing || false;
     this.centerFeatures = options?.centerFeatures || false;
     this.centerZoom = options?.centerZoom || 20;
-    this.onAcceptFeature = options?.onAcceptFeature || null;
     this.pointRadius = options?.pointRadius || 4;
+    this.onAcceptFeature = options?.onAcceptFeature || null;
+    this.onInsertFeature = options?.onInsertFeature || null;
 
     this.operations = options?.operations;
     if (!this.operations)
@@ -1299,6 +1300,7 @@ class DrawTool extends Tool
     const geometryColumn = this.featureInfo.geometryColumn;
 
     let array = [];
+    let insertCount = 0;
     for (let feature of this.editingLayer.features)
     {
       let action = feature.properties._ACTION_;
@@ -1317,6 +1319,7 @@ class DrawTool extends Tool
           </wfs:Insert>
         `;
         array.push(block);
+        insertCount++;
       }
       else if (action === "update")
       {
@@ -1384,6 +1387,13 @@ class DrawTool extends Tool
     await this.loadFeatures();
     
     this.updateSources(typeName);
+
+    if (result.inserted.length === 1 && 
+        typeof this.onInsertFeature === "function")
+    {
+      let fid = result.inserted[0];
+      this.onInsertFeature(this, fid);
+    }
   }
 
   insertPropertiesToGML(properties)
@@ -1515,6 +1525,7 @@ class DrawTool extends Tool
     const xmlDoc = parser.parseFromString(responseText, "application/xml");
     const owsNS = "http://www.opengis.net/ows";
     const wfsNS = "http://www.opengis.net/wfs";
+    const ogcNS = "http://www.opengis.net/ogc";
 
     let nodes;
 
@@ -1539,6 +1550,27 @@ class DrawTool extends Tool
     {
       result.totalDeleted = parseInt(nodes[0].textContent);
     }
+    result.inserted = [];
+
+    nodes = xmlDoc.getElementsByTagNameNS(wfsNS, "InsertResults");
+    if (nodes.length > 0)
+    {
+      let node = nodes[0];
+      let featureNodes = node.getElementsByTagNameNS(wfsNS, "Feature");
+      for (let featureNode of featureNodes)
+      {
+        let fidNode = featureNode.getElementsByTagNameNS(ogcNS, "FeatureId")[0];
+        if (fidNode)
+        {
+          let fid = fidNode.getAttribute("fid");
+          if (fid !== "none")
+          {
+            result.inserted.push(fid);
+          }
+        }
+      }
+    }
+    
     return result;
   }
 
