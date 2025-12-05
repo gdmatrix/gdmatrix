@@ -464,7 +464,7 @@ function getSourceUrl(sourceId, style)
     "&FORMAT=" + serviceParameters.format +
     "&STYLES=" + stylesArray.join(",") +
     "&LAYER=" + layersArray.join(",") +
-    "&tileMatrixSet=EPSG:3587" + // change to EPSG:3857!!!
+    "&tileMatrixSet=WebMercatorQuad" +
     "&tileMatrix={z}" +
     "&tileRow={y}" +
     "&tileCol={x}";
