@@ -41,7 +41,16 @@
         </p:treeNode>
 
       </p:tree>
+      
+      <div class="text-right px-3">
+        <p:commandButton action="#{contextTreeBean.update}"
+                         styleClass="mt-4"
+                         value="#{objectBundle.refresh}"
+                         process="@this"
+                         update="@form:cnt:context_panel" />  
+      </div>
     </div>
+    
     <p:contextMenu for="context_tree" id="context_tree_menu" 
                    rendered="#{not empty contextTreeBean.contextActions}">
       <c:forEach items="#{contextTreeBean.contextActions}" var="contextAction" >
@@ -65,11 +74,6 @@
                        icon="pi pi-check"/>
     </p:confirmPopup>    
     
-    <p:commandButton action="#{contextTreeBean.update}"
-                     styleClass="mt-4"
-                     value="Refresh"
-                     process="@this"
-                     update="@form:cnt:context_panel" />
   </p:tab>
 
 </ui:composition>
