@@ -55,7 +55,7 @@ import org.santfeliu.util.MatrixConfig;
 public class EnumTypeCache
 {
   private static EnumTypeCache cache;
-  private static final long CLEAR_MILLIS = 60 * 60 * 1000; // 1 hour
+  private static final long CLEAR_MILLIS = 10 * 60 * 1000; // 10 minutes
   private static final int MAX_SIZE = 300; // 300 types  
   
   //Map of enumTypeId -> List<EnumTypeItem>
