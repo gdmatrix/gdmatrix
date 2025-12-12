@@ -14,6 +14,8 @@ Bundle.getBundle("main").setTranslations("", {
   "button.print": "Print",
   "button.load": "Load",
   "button.save": "Save",
+  "button.select": "Select",
+  "button.unselect": "Unselect",
 
   "ExportAreaTool.title": "Export area",
   "ExportAreaTool.help": "Draw the vertices of the export area and press the Export button.",

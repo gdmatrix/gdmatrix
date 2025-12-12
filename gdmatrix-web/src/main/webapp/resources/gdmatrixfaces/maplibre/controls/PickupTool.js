@@ -27,15 +27,94 @@ class PickupTool extends Tool
 
     this.codeSelection = new Set();
 
-    this._onMapClick = (event) => this.pickup(event.point);
+    this._onMapClick = (event) => {
+      if (this.polygon.geometry.coordinates[0].length > 0)
+      {
+        this.addPolygonVertex(event.lngLat);      
+      }
+      else
+      {
+        this.pickup(event.point);
+      }
+    };
+    this._onMapDblClick = (event) => this.startPolygon(event);
     this._onMouseMove = (event) => this.onMouseMove(event);
+
+    this.points = {
+      "type": "Feature",
+      "geometry": { "type": "MultiPoint", "coordinates": [] }
+    };
+
+    this.linestring = {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [] }
+    };  
+
+    this.polygon = {
+      "type": "Feature",
+      "geometry": { "type": "Polygon", "coordinates": [[]] }
+    };  
   }
 
   activate()
   {
     const map = this.map;
     map.on("click", this._onMapClick);
+    map.on("dblclick", this._onMapDblClick);
     map.on("mousemove", this._onMouseMove);
+
+    map.addSource("pickup_polygon", {
+      type: 'geojson',
+      data: this.polygon
+    });
+
+    map.addSource("pickup_linestring", {
+      type: 'geojson',
+      data: this.linestring
+    });
+
+    map.addSource("pickup_points", {
+      type: 'geojson',
+      data: this.points
+    });
+
+    map.addLayer({
+      "id": "pickup_polygon",
+      "type": 'fill',
+      "source": "pickup_polygon",
+      "layout": {},
+      "paint":
+      {
+        "fill-color": "#0000ff",
+        "fill-opacity": 0.1
+      }
+    });
+
+    map.addLayer({
+      "id": "pickup_linestring",
+      "type": 'line',
+      "source": "pickup_linestring",
+      "layout": {},
+      "paint":
+      {
+        "line-color": "#0000ff",
+        "line-width": 2
+      }
+    });
+
+    map.addLayer({
+      "id": "pickup_points",
+      "type": 'circle',
+      "source": "pickup_points",
+      "layout": {},
+      "paint":
+      {
+        "circle-color": "#ffffff",
+        "circle-radius": 2,
+        "circle-stroke-color" : "#000000",
+        "circle-stroke-width" : 2
+      }
+    });
 
     map.getCanvas().style.cursor = "crosshair";
     this.panel.show();
@@ -45,7 +124,16 @@ class PickupTool extends Tool
   {
     const map = this.map;
     map.off("click", this._onMapClick);
+    map.off("dblclick", this._onMapDblClick);
     map.off("mousemove", this._onMouseMove);
+
+    map.removeLayer("pickup_polygon");
+    map.removeLayer("pickup_linestring");
+    map.removeLayer("pickup_points");
+    
+    map.removeSource("pickup_linestring");  
+    map.removeSource("pickup_polygon");  
+    map.removeSource("pickup_points");  
 
     map.getCanvas().style.cursor = "grab";
     this.panel.hide();
@@ -53,6 +141,7 @@ class PickupTool extends Tool
 
   reactivate()
   {
+    const map = this.map;    
     this.panel.show();
   }
 
@@ -69,6 +158,7 @@ class PickupTool extends Tool
     ];
 
     let features = this.map.queryRenderedFeatures(bbox, { layers: [this.layerId] });
+
     const boxSelection = new Set();
     for (let feat of features)
     {
@@ -77,7 +167,7 @@ class PickupTool extends Tool
     }
     
     // invert/add codeSelection
-    const codeSelection = this.codeSelection;
+    const codeSelection = this.codeSelection;    
     for (let code of boxSelection)
     {
       if (codeSelection.has(code))
@@ -91,7 +181,76 @@ class PickupTool extends Tool
     }
     this.updateHighlight();
   }
+
+  startPolygon(event)
+  {
+    event.preventDefault();
+    this.addPolygonVertex(event.lngLat);
+  };
   
+  addPolygonVertex(lngLat)
+  {
+    const map = this.map;
+
+    let geomPoint = [lngLat.lng, lngLat.lat];
+    let coordinates = this.polygon.geometry.coordinates[0];
+    if (coordinates.length === 0)
+    {
+      coordinates.push(geomPoint);
+      coordinates.push(geomPoint);
+    }
+    else
+    {
+      let p = coordinates.pop();
+      coordinates.push(geomPoint);
+      coordinates.push(p);
+    }
+    this.linestring.geometry.coordinates = coordinates;
+    this.points.geometry.coordinates = coordinates;
+    map.getSource("pickup_polygon").setData(this.polygon);
+    map.getSource("pickup_linestring").setData(this.linestring);    
+    map.getSource("pickup_points").setData(this.points);
+
+    if (this.polygon.geometry.coordinates[0].length === 4)
+    {
+      this.polygonBar.style.display = "";
+    }
+  }
+  
+  selectByPolygon(add = true)
+  {
+    const geomSel = turf.getGeom(this.polygon.geometry);
+
+    const map = this.map;
+    const codeSelection = this.codeSelection;
+
+    let features = map.querySourceFeatures(this.sourceId);
+    for (let feat of features)
+    {
+      let geom = turf.getGeom(feat.geometry);
+      if (turf.intersect(geomSel, geom))
+      {
+        let code = String(feat.properties[this.propertyName]);
+        if (code !== undefined)
+        {
+          if (add)
+          {
+            codeSelection.add(code);
+            map.setFeatureState({ source : this.sourceId, id: feat.id },
+             { "highlighted" : true });
+          }
+          else
+          {
+            codeSelection.delete(code);
+            map.setFeatureState({ source : this.sourceId, id: feat.id },
+             { "highlighted" : false });            
+          }           
+        }
+      }
+    }
+    this.clearPolygon();
+  }
+    
   async loadPickup()
   {
     const map = this.map;
@@ -135,13 +294,19 @@ class PickupTool extends Tool
     this.resultDiv.innerHTML =  `<span class="pi pi-spin pi-spinner p-2" />`;
     
     let codes = Array.from(this.codeSelection);
+    
+    if (!this.restServiceUrl)
+    {
+      this.resultDiv.innerHTML = JSON.stringify(codes, null, 2);
+      return;
+    }
 
     let response = await fetch(this.restServiceUrl + "?ref=" + reference, {
       method: "POST",
       headers: { "Content-Type": "application/json;charset=UTF-8" },
       body: JSON.stringify(codes)
     });
-    this.resultDiv.innerHTML = JSON.stringify(await response.json(), null, 2);
+    this.resultDiv.innerHTML = await response.text();
     
     if (this.sourceIdsToUpdate.length > 0)
     {
@@ -172,11 +337,26 @@ class PickupTool extends Tool
     }
   }
   
+  clearPolygon()
+  {
+    this.polygonBar.style.display = "none";
+    this.polygon.geometry.coordinates = [[]];
+    this.linestring.geometry.coordinates = [];
+    this.points.geometry.coordinates = [];
+    map.getSource("pickup_polygon").setData(this.polygon);  
+    map.getSource("pickup_linestring").setData(this.linestring);  
+    map.getSource("pickup_points").setData(this.points);      
+  }
+  
   clearPickup()
   {
+    const map = this.map;
+    
     this.codeSelection.clear();
     this.updateHighlight();
     this.resultDiv.innerHTML = "";
+    
+    this.clearPolygon();
   }
 
   updateHighlight(center = false)
@@ -295,6 +475,36 @@ class PickupTool extends Tool
       this.clearPickup();
     });
     buttonBar.appendChild(clearButton);
+    
+    const polygonBar = document.createElement("div");
+    polygonBar.className = "button_bar p-1 text-center";
+    bodyDiv.appendChild(polygonBar);
+    this.polygonBar = polygonBar;
+    
+    const selectButton = document.createElement("button");
+    selectButton.textContent = bundle.get("button.select");
+    selectButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.selectByPolygon(true);
+    });
+    polygonBar.appendChild(selectButton);
+    
+    const deselectButton = document.createElement("button");
+    deselectButton.textContent = bundle.get("button.unselect");
+    deselectButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.selectByPolygon(false);
+    });
+    polygonBar.appendChild(deselectButton);
+
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = bundle.get("button.cancel");
+    cancelButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.clearPolygon();
+    });
+    polygonBar.appendChild(cancelButton);
+    polygonBar.style.display = "none";
 
     this.resultDiv = document.createElement("pre");
     bodyDiv.appendChild(this.resultDiv);

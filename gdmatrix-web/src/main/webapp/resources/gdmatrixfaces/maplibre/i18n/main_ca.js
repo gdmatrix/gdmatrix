@@ -14,6 +14,8 @@ Bundle.getBundle("main").setTranslations("ca", {
   "button.print": "Imprimir",
   "button.load": "Carrega",
   "button.save": "Desa",
+  "button.select": "Selecciona",
+  "button.unselect": "Deselecciona",
 
   "ExportAreaTool.title": "Exporta àrea",
   "ExportAreaTool.help": "Dibuixa els vèrtexs de l'àrea d'exportació i prem el botó Exporta.",
