@@ -26,9 +26,10 @@ class PickupTool extends Tool
     this.sourceIdsToUpdate = options.sourceIdsToUpdate || [];
 
     this.codeSelection = new Set();
+    this.drawingPolygon = false;
 
     this._onMapClick = (event) => {
-      if (this.polygon.geometry.coordinates[0].length > 0)
+      if (this.drawingPolygon)
       {
         this.addPolygonVertex(event.lngLat);      
       }
@@ -37,7 +38,6 @@ class PickupTool extends Tool
         this.pickup(event.point);
       }
     };
-    this._onMapDblClick = (event) => this.startPolygon(event);
     this._onMouseMove = (event) => this.onMouseMove(event);
 
     this.points = {
@@ -60,7 +60,6 @@ class PickupTool extends Tool
   {
     const map = this.map;
     map.on("click", this._onMapClick);
-    map.on("dblclick", this._onMapDblClick);
     map.on("mousemove", this._onMouseMove);
 
     map.addSource("pickup_polygon", {
@@ -124,7 +123,6 @@ class PickupTool extends Tool
   {
     const map = this.map;
     map.off("click", this._onMapClick);
-    map.off("dblclick", this._onMapDblClick);
     map.off("mousemove", this._onMouseMove);
 
     map.removeLayer("pickup_polygon");
@@ -157,7 +155,7 @@ class PickupTool extends Tool
       [point.x + tolerance, point.y + tolerance]
     ];
 
-    let features = this.map.queryRenderedFeatures(bbox, { layers: [this.layerId] });
+    let features = map.queryRenderedFeatures(bbox, { layers: [this.layerId] });
 
     const boxSelection = new Set();
     for (let feat of features)
@@ -181,12 +179,6 @@ class PickupTool extends Tool
     }
     this.updateHighlight();
   }
-
-  startPolygon(event)
-  {
-    event.preventDefault();
-    this.addPolygonVertex(event.lngLat);
-  };
   
   addPolygonVertex(lngLat)
   {
@@ -224,7 +216,7 @@ class PickupTool extends Tool
     const map = this.map;
     const codeSelection = this.codeSelection;
 
-    let features = map.querySourceFeatures(this.sourceId);
+    let features = map.queryRenderedFeatures({ layers: [this.layerId] });
     for (let feat of features)
     {
       let geom = turf.getGeom(feat.geometry);
@@ -339,13 +331,17 @@ class PickupTool extends Tool
   
   clearPolygon()
   {
+    this.drawingPolygon = false;
     this.polygonBar.style.display = "none";
     this.polygon.geometry.coordinates = [[]];
     this.linestring.geometry.coordinates = [];
     this.points.geometry.coordinates = [];
+    const map = this.map;
     map.getSource("pickup_polygon").setData(this.polygon);  
     map.getSource("pickup_linestring").setData(this.linestring);  
     map.getSource("pickup_points").setData(this.points);      
+    this.polygonButton.style.display = "";
+    this.resultDiv.innerHTML = "";
   }
   
   clearPickup()
@@ -475,6 +471,17 @@ class PickupTool extends Tool
       this.clearPickup();
     });
     buttonBar.appendChild(clearButton);
+
+    const polygonButton = document.createElement("button");
+    this.polygonButton = polygonButton;
+    polygonButton.textContent = bundle.get("button.selectByPolygon");
+    polygonButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      polygonButton.style.display = "none";
+      this.drawingPolygon = true;
+      this.resultDiv.innerHTML = `<div class="text-center">${bundle.get("PickupTool.drawPolygon")}</div>`;
+    });
+    buttonBar.appendChild(polygonButton);        
     
     const polygonBar = document.createElement("div");
     polygonBar.className = "button_bar p-1 text-center";

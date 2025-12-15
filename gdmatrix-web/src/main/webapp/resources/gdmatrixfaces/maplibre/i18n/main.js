@@ -16,6 +16,7 @@ Bundle.getBundle("main").setTranslations("", {
   "button.save": "Save",
   "button.select": "Select",
   "button.unselect": "Unselect",
+  "button.selectByPolygon" : "Select by polygon",
 
   "ExportAreaTool.title": "Export area",
   "ExportAreaTool.help": "Draw the vertices of the export area and press the Export button.",
@@ -111,7 +112,8 @@ Bundle.getBundle("main").setTranslations("", {
 
   "SnapshotControl.title": "Take map snapshot",
   
-  "PickupTool.title": "Pickup elements"
+  "PickupTool.title": "Pickup elements",
+  "PickupTool.drawPolygon": "Draw the polygon vertices"
 
 });
 

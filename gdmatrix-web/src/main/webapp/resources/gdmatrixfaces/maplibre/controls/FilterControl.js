@@ -34,7 +34,7 @@ class FilterControl
       `<div class="form flex flex-column p-1">
        </div>
        <div class="button_bar text-right">
-        <button>Aplica</button>
+        <button class="accept">${bundle.get("button.accept")}</button>
       </div>`;
     this.formDiv = bodyDiv.querySelector(".form");
     
@@ -51,8 +51,8 @@ class FilterControl
           class="outline-none border-radius mt-3 mb-2">{}</textarea>
       `;        
     }
-    const button = bodyDiv.querySelector("button");
-    button.addEventListener("click", event => 
+    const acceptButton = bodyDiv.querySelector("button.accept");
+    acceptButton.addEventListener("click", event => 
     {
       event.preventDefault();
       this.updateSourcesAndLayers();
@@ -148,20 +148,14 @@ class FilterControl
     for (const input of inputs)
     {
       let value = input.value;
-      if (value)
-      {
-        params[input.id] = value;
-      }
+      params[input.id] = value;
     }
 
     const selects = this.formDiv.querySelectorAll("select");
     for (const select of selects)
     {
       let value = select.value;
-      if (value)
-      {
-        params[select.id] = value;
-      }
+      params[select.id] = value;
     }
   }
   

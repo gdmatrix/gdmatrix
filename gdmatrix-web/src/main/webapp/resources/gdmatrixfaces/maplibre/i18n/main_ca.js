@@ -16,6 +16,7 @@ Bundle.getBundle("main").setTranslations("ca", {
   "button.save": "Desa",
   "button.select": "Selecciona",
   "button.unselect": "Deselecciona",
+  "button.selectByPolygon" : "Selecció per polígon",
 
   "ExportAreaTool.title": "Exporta àrea",
   "ExportAreaTool.help": "Dibuixa els vèrtexs de l'àrea d'exportació i prem el botó Exporta.",
@@ -111,6 +112,7 @@ Bundle.getBundle("main").setTranslations("ca", {
   
   "SnapshotControl.title": "Crea captura del mapa",
   
-  "PickupTool.title": "Recollida d'elements"
+  "PickupTool.title": "Recollida d'elements",
+  "PickupTool.drawPolygon": "Dibuixa els vèrtexs del polígon"
 
 });

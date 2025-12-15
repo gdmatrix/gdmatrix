@@ -16,6 +16,7 @@ Bundle.getBundle("main").setTranslations("es", {
   "button.save": "Guardar",
   "button.select": "Seleccionar",
   "button.unselect": "Deseleccionar",
+  "button.selectByPolygon" : "Selección por polígono",
 
   "ExportAreaTool.title": "Exportar area",
   "ExportAreaTool.help": "Dibuja los vértices del area de exportación i pulsa el botón Exportar.",
@@ -111,6 +112,7 @@ Bundle.getBundle("main").setTranslations("es", {
   
   "SnapshotControl.title": "Crear captura del mapa",
   
-  "PickupTool.title": "Recogida de elementos"
+  "PickupTool.title": "Recogida de elementos",
+  "PickupTool.drawPolygon": "Dibuja los vértices del polígono"  
 
 });
