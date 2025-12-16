@@ -46,6 +46,8 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 import org.primefaces.event.SelectEvent;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -133,6 +135,20 @@ public class TypeReferenceBean extends ObjectReferenceBean
   {
     String typeId = WebUtils.getValue("#{cc.attrs.value}");
     return (typeId != null);
+  }
+
+  public boolean isRootType()
+  {
+    String typeId = getTypeId();
+    if (typeId != null)
+    {
+      Type type = TypeCache.getInstance().getType(typeId);
+      if (type != null)
+      {
+        return type.isRootType();
+      }
+    }
+    return false;
   }
   
   public boolean isMarkedAsFavorite()

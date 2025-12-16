@@ -115,7 +115,8 @@
                          update="@form:cnt"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"
                          oncomplete="#{cc.attrs.oncomplete}"
-                         disabled="#{cc.attrs.disabled}" />
+                         disabled="#{cc.attrs.disabled}"
+                         rendered="#{typeReferenceBean.rootType}" />
       </div>
     </composite:implementation>
   </h:body>
