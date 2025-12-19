@@ -8,11 +8,13 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
                 template="/pages/obj/object_3col.xhtml">
   
+
+   
   <ui:param name="objectBean" value="#{newObjectBean}" />
   <ui:param name="searchLabel" value="#{newsBundle.new_search_newsSearch}" />  
-  
+
   <ui:define name="filter"> 
-    
+    <h:outputStylesheet library="css" name="news.css" />
     <p:outputPanel id="filter_panel" styleClass="h-full">
 
       <p:tabView id="find_selector" dynamic="true"
@@ -112,6 +114,25 @@
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{newsBundle.new_search_user}" />
               <p:inputText id="userId" value="#{newFinderBean.filter.userId}" />
+            </div>  
+            
+            <!-- Sections -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{newsBundle.new_search_section}" />
+<!--              
+              <p:selectCheckboxMenu value="#{newFinderBean.filterSectionId}" 
+                multiple="true">
+                <f:selectItems value="#{newFinderBean.getSectionSelectItems(null)}" />
+              </p:selectCheckboxMenu>
+-->              
+              <p:autoComplete value="#{newFinderBean.filterSectionId}"
+                              completeMethod="#{newFinderBean.complete}"
+                              converter="selectItemConverter"
+                              var="section" itemValue="#{section}" itemLabel="#{section.label}"
+                              forceSelection="true"
+                              escape="false" scrollHeight="400"
+                              groupBy="#{section.description}"
+                              dropdown="true"/>              
             </div>            
            
           </div>

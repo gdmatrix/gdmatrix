@@ -63,7 +63,7 @@ public class NewSectionsTabBean extends TabBean
   private static final String SELECTABLE = "selectable";
   private static final String UNSELECTABLE = "unselectable";
 
-  private static final String SECTIONID_PROPERTY = "sectionId";
+  public static final String SECTIONID_PROPERTY = "sectionId";
 
   private SectionTreeNode root;
   private Map<String, SectionTreeNode> nodeMap;

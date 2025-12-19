@@ -1,0 +1,10 @@
+/***** NEWS MODULE CSS *****/
+body .ui-autocomplete-panel .ui-autocomplete-list-item
+{
+  height: auto;
+}
+
+.ui-autocomplete-panel .ui-autocomplete-list-item
+{
+  font-family: var(--font-family);
+}

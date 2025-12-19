@@ -238,8 +238,14 @@ public class NewObjectBean extends ObjectBean
   {
     return DictionaryConstants.NEW_TYPE;
   }
-
+  
   List<MenuItemCursor> getSectionNodes() throws Exception
+  {
+    return getSectionNodes(null);
+  }
+  
+  List<MenuItemCursor> getSectionNodes(String name) 
+    throws Exception
   {
     List<String> nodeIds = new ArrayList<>();
 
@@ -248,23 +254,37 @@ public class NewObjectBean extends ObjectBean
 
     nodeFilter.getWorkspaceId().add(workspaceId);
 
-    //Search for legacy sections
-    nodeFilter = new NodeFilter();
-    nodeFilter.getWorkspaceId().add(workspaceId);
-
     Property property = new Property();
-    property.setName(LEGACY_SECTION_PROPERTY);
-    property.getValue().add(LEGACY_SECTION_VALUE);
-    nodeFilter.getProperty().add(property);
-    List<Node> nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
-
-    nodeFilter.getProperty().clear();
-    property = new Property();
     property.setName(NEWSECTION_PROPERTY);
     property.getValue().add("%");
     nodeFilter.getProperty().add(property);
-    nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
+    
+    if (name != null)
+    {
+      property = new Property();
+      property.setName("label");
+      property.getValue().add("%" + name + "%");
+      nodeFilter.getProperty().add(property);
+    } 
+    
+    List<Node> nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
+    nodeFilter.getProperty().clear();
+    
+    //Search for legacy sections   
+    property = new Property();
+    property.setName(LEGACY_SECTION_PROPERTY);
+    property.getValue().add(LEGACY_SECTION_VALUE);
+    nodeFilter.getProperty().add(property);
 
+    if (name != null)
+    {
+      property = new Property();
+      property.setName("label");
+      property.getValue().add("%" + name + "%");
+      nodeFilter.getProperty().add(property);
+    }   
+    nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
+    
     nodeList.stream().forEach(node -> nodeIds.add(node.getNodeId()));
 
     return UserSessionBean.getCurrentInstance()
