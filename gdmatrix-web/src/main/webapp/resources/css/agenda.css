@@ -13,6 +13,7 @@
 {
   container-type: inline-size; 
   container-name: eventList; 
+  padding: 0 1rem;
 }
 
 .eventList .ui-dataview-header
@@ -375,6 +376,10 @@
 }
 
 /***** event_schedule.xhtml *****/
+.eventSchedule
+{
+  padding: 0 1rem;
+}
 
 body .fc .fc-header-toolbar
 {

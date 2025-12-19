@@ -163,7 +163,8 @@
               clientTimeZone="#{eventFinderBean.serverTimeZone}"
               view="#{eventFinderBean.scheduleView}"
               initialDate="#{eventFinderBean.scheduleInitialDate}"
-              tooltip="false">
+              tooltip="false"
+              styleClass="eventSchedule">
     <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}"
             process="@this"
             delay="500" />
