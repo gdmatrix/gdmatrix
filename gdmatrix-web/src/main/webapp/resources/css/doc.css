@@ -1,4 +1,11 @@
+/***** DOC MODULE CSS *****/
+
 .ui-datatable tr.deleted
 {
   color: var(--surface-500) !important;  
+}
+
+.document_cases_panel div.field:last-of-type
+{
+  margin-bottom: 0;
 }

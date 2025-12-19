@@ -102,17 +102,12 @@
                              alt="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
                              title="#{caseDocumentsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
                              rendered="#{caseDocumentsTabBean.groupableRowsHelper.groupedViewEnabled}" />
-            <p:commandButton icon="pi pi-upload" styleClass="ui-button-flat"
-                             onclick="javascript:sendDocument();return false"
-                             process="@this" update="@none"
-                             alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
-                             disabled="#{!caseObjectBean.editable}" />          
             <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                              action="#{caseDocumentsTabBean.create}"
                              process="@this"
                              update="@form:cnt:search_tabs:case_documents_dialog"
                              resetValues="true"
-                             oncomplete="PF('caseDocumentsDialog').show()"
+                             oncomplete="PF('caseDocTabView').select(0);PF('caseDocumentsDialog').show();"
                              alt="#{objectBundle.add}" title="#{objectBundle.add}"
                              disabled="#{!caseObjectBean.editable}"/>
           </div>
@@ -166,20 +161,13 @@
                       process="@this"
                       update="@form:cnt:search_tabs:case_documents_dialog"
                       resetValues="true"
-                      oncomplete="PF('caseDocumentsDialog').show()"
+                      oncomplete="PF('caseDocTabView').select(2);PF('caseDocumentsDialog').show();"
                       disabled="#{!caseObjectBean.isRowEditable(row.typeId)}" />
           <p:menuitem value="#{caseBundle.caseDocuments_edit_content}"
                       onclick="javascript:editDocument({docId:'#{row.docId}'});return false"
                       process="@this" update="case_documents_table"
                       styleClass="rounded-button ui-button-flat w200"
                       icon="fa fa-pen-to-square"
-                      disabled="#{row.docLockUserId != null}"
-                      rendered="#{row.docViewUrl != null}" />
-          <p:menuitem value="#{caseBundle.caseDocuments_update_content}"
-                      onclick="javascript:updateDocument({docId:'#{row.docId}'});return false"
-                      process="@this" update="@none"
-                      styleClass="rounded-button ui-button-flat w200"
-                      icon="pi pi-paperclip"
                       disabled="#{row.docLockUserId != null}"
                       rendered="#{row.docViewUrl != null}" />
           <p:menuitem value="#{objectBundle.delete}"
@@ -213,17 +201,6 @@
       model="#{caseDocumentsTabBean.sendClientModel}"
       function="editDocument"
       helpUrl="#{matrixClientBean.helpUrl}" />
-    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.UpdateDocumentCommand"
-      action="#{caseDocumentsTabBean.documentEdited}"
-      model="#{caseDocumentsTabBean.clientModel}"
-      function="updateDocument"
-      helpUrl="#{matrixClientBean.helpUrl}"/>
-    <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
-      action="#{caseDocumentsTabBean.documentSent}"
-      model="#{caseDocumentsTabBean.clientModel}"                   
-      function="sendDocument"
-      helpUrl="#{matrixClientBean.helpUrl}"/>    
-
     <gdm:saveBean value="caseDocumentsTabBean" />
 
   </f:subview>

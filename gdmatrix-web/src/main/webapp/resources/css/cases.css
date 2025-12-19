@@ -1,1 +1,7 @@
 /***** CASES MODULE CSS *****/
+
+.case_documents_panel div.field:last-of-type
+{
+  margin-bottom: 0;
+}
+

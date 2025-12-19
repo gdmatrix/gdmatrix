@@ -30,12 +30,16 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -51,17 +55,23 @@ import org.matrix.cases.CaseDocumentView;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
+import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
 import org.matrix.security.AccessControl;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
 import static org.santfeliu.faces.matrixclient.model.DocMatrixClientModels.DOCTYPES_PARAMETER;
+import org.santfeliu.util.FileDataSource;
+import org.santfeliu.util.IOUtils;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.DataTableRowExportable;
@@ -74,7 +84,6 @@ import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.helpers.RowsExportHelper;
 import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
-import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
@@ -105,6 +114,9 @@ public class CaseDocumentsTabBean extends TabBean
   public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";
 
   private static final String UPLOAD_TYPEID_PROPERTY = "uploadTypeId";
+  private static final int CREATE_NEW_DOCUMENT_TAB_INDEX = 0;
+  private static final int EXISTING_DOCUMENT_TAB_INDEX = 1;
+  private static final int UPDATE_CONTENT_TAB_INDEX = 2;
   
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
@@ -115,6 +127,15 @@ public class CaseDocumentsTabBean extends TabBean
   private final List<SelectItem> volumeSelectItems = new ArrayList<>();
   private GroupableRowsHelper groupableRowsHelper;
   private DefaultMatrixClientModel clientModel;
+  private TempFile tempFile = new TempFile();
+  private int activeTabIndex = 0;
+  private Integer enabledTabIndex = null;
+
+  public enum UploadOperation
+  {
+    CREATE,
+    UPDATE
+  }
 
   public class TabInstance
   {
@@ -248,9 +269,6 @@ public class CaseDocumentsTabBean extends TabBean
   @Inject
   DocumentTypeBean documentTypeBean;
 
-  @Inject
-  TypeTypeBean typeTypeBean;
-
   @PostConstruct
   public void init()
   {
@@ -315,6 +333,36 @@ public class CaseDocumentsTabBean extends TabBean
   public void setGroupableRowsHelper(GroupableRowsHelper groupableRowsHelper)
   {
     this.groupableRowsHelper = groupableRowsHelper;
+  }
+
+  public TempFile getTempFile()
+  {
+    return tempFile;
+  }
+
+  public void setTempFile(TempFile tempFile)
+  {
+    this.tempFile = tempFile;
+  }
+
+  public int getActiveTabIndex()
+  {
+    return activeTabIndex;
+  }
+
+  public void setActiveTabIndex(int activeTabIndex)
+  {
+    this.activeTabIndex = activeTabIndex;
+  }
+
+  public Integer getEnabledTabIndex()
+  {
+    return enabledTabIndex;
+  }
+
+  public void setEnabledTabIndex(Integer enabledTabIndex)
+  {
+    this.enabledTabIndex = enabledTabIndex;
   }
 
   @Override
@@ -416,7 +464,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   public void setDocId(String docId)
   {
-    if (editing != null)
+    if (editing != null && docId != null && !NEW_OBJECT_ID.equals(docId))
     {
       editing.setDocId(docId);
     }
@@ -636,6 +684,37 @@ public class CaseDocumentsTabBean extends TabBean
   {
     try
     {
+      if (isDocumentUploaded())
+      {
+        FileDataSource ds = new FileDataSource(tempFile.getFile());
+        DataHandler dh = new DataHandler(ds);
+        Content content = new Content();
+        content.setData(dh);
+        String contentType = dh.getContentType();
+        if ("application/octet-stream".equals(contentType))
+          contentType = null;
+        content.setContentType(contentType);
+        Document document;
+        if (UploadOperation.CREATE.equals(tempFile.getUploadOperation()))
+        {
+          document = new Document();
+          document.setTitle(!StringUtils.isBlank(tempFile.getDocTitle()) ?
+            tempFile.getDocTitle() : tempFile.getFileName());
+          document.setDocTypeId(tempFile.getDocTypeId() != null ?
+            tempFile.getDocTypeId() : "Document");
+        }
+        else //UPDATE
+        {
+          document = DocModuleBean.getPort(false).loadDocument(
+            editing.getDocId(), 0, ContentInfo.METADATA);
+        }
+        document.setIncremental(true);
+        document.setVersion(DocumentConstants.NEW_VERSION);
+        document.setContent(content);
+        document = DocModuleBean.getPort(false).storeDocument(document);
+        editing.setDocId(document.getDocId());
+        tempFile.reset();
+      }
       editing.setCaseId(getObjectId());
       if (editing.getCaseDocTypeId() == null)
       {
@@ -673,6 +752,7 @@ public class CaseDocumentsTabBean extends TabBean
   public void cancel()
   {
     editing = null;
+    tempFile.reset();
   }
 
   @Override
@@ -685,7 +765,19 @@ public class CaseDocumentsTabBean extends TabBean
   {
     executeTabAction(PRE_TAB_EDIT_ACTION, null);
     editing = new CaseDocument();
-    editing.setCaseDocTypeId(getCreationTypeId());
+    setActiveTabIndex(CREATE_NEW_DOCUMENT_TAB_INDEX);
+    setEnabledTabIndex(null);
+    //Default CaseDocument values
+    String currentVolume = getCurrentVolume();
+    if (currentVolume != null && !"".equals(currentVolume)
+      && !CaseConstants.UNDEFINED_VOLUME.equals(currentVolume)
+      && !CaseConstants.SHOW_ALL_VOLUMES.equals(currentVolume))
+    {
+      editing.setVolume(currentVolume);
+    }
+    String caseDocTypeId = getUploadTypeId();
+    if (caseDocTypeId == null) caseDocTypeId = getCreationTypeId();
+    editing.setCaseDocTypeId(caseDocTypeId);
     executeTabAction(POST_TAB_EDIT_ACTION, editing);
   }
 
@@ -733,6 +825,8 @@ public class CaseDocumentsTabBean extends TabBean
         executeTabAction(PRE_TAB_EDIT_ACTION, row);
         editing =
           CasesModuleBean.getPort(false).loadCaseDocument(row.getRowId());
+        setActiveTabIndex(UPDATE_CONTENT_TAB_INDEX);
+        setEnabledTabIndex(null);
         executeTabAction(POST_TAB_EDIT_ACTION, editing);
       }
       catch (Exception ex)
@@ -857,6 +951,13 @@ public class CaseDocumentsTabBean extends TabBean
     tabInstances.clear();
   }
   
+  public void enableTab()
+  {
+    String tabIndex =
+      getExternalContext().getRequestParameterMap().get("tabIndex");
+    setEnabledTabIndex(Integer.valueOf(tabIndex));
+  }
+
   public DefaultMatrixClientModel getSendClientModel()
   {
     clientModel = getClientModel();
@@ -893,44 +994,6 @@ public class CaseDocumentsTabBean extends TabBean
     }
   }
   
-  public String documentSent()
-  {   
-    try
-    {
-      String docId = (String) clientModel.parseResult();
-      if (docId != null)
-      {
-        spreadDocumentRoles(docId);
-        CaseDocument caseDocument = new CaseDocument();
-        caseDocument.setCaseId(getObjectId());
-        caseDocument.setDocId(docId);
-        String currentVolume = getCurrentVolume();
-        if (currentVolume != null && !"".equals(currentVolume) 
-          && !CaseConstants.UNDEFINED_VOLUME.equals(currentVolume)
-          && !CaseConstants.SHOW_ALL_VOLUMES.equals(currentVolume))
-        {
-          caseDocument.setVolume(currentVolume);
-        }
-        
-        String caseDocTypeId = getUploadTypeId();
-        if (caseDocTypeId == null) 
-          caseDocTypeId = DictionaryConstants.CASE_DOCUMENT_TYPE;
-        caseDocument.setCaseDocTypeId(caseDocTypeId);
-        
-        CasesModuleBean.getPort(false).storeCaseDocument(caseDocument);
-        
-        this.load();
-      }
-    }
-    catch (Exception ex)
-    {
-      if (!"NO_FILE".equals(ex.getMessage()))
-        error(ex);
-    }
-
-    return null;
-  }
-
   public CaseDocumentsDataTableRow getCaseDocumentToRemove()
   {
     return caseDocumentToRemove;
@@ -958,10 +1021,27 @@ public class CaseDocumentsTabBean extends TabBean
     return !getRealVolumeSelectItems().isEmpty();
   }
 
+  public String getActiveTabClientId()
+  {
+    String parentClientId = ":mainform:search_tabs:caseDocTabView:";
+    switch (activeTabIndex)
+    {
+      case CREATE_NEW_DOCUMENT_TAB_INDEX:
+        return parentClientId + "newDocTab";
+      case EXISTING_DOCUMENT_TAB_INDEX:
+        return parentClientId + "chooseDocTab";
+      case UPDATE_CONTENT_TAB_INDEX:
+        return parentClientId + "updateContentTab";
+      default:
+        return null;
+    }
+  }
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing, getCurrentVolume() };
+    return new Object[]{ editing, getCurrentVolume(), tempFile,
+      activeTabIndex, enabledTabIndex };
   }
 
   @Override
@@ -972,7 +1052,9 @@ public class CaseDocumentsTabBean extends TabBean
       Object[] stateArray = (Object[])state;
       editing = (CaseDocument)stateArray[0];
       setCurrentVolume((String)stateArray[1]);
-
+      tempFile = (TempFile)stateArray[2];
+      activeTabIndex = (int)stateArray[3];
+      enabledTabIndex = (Integer)stateArray[4];
       load();
     }
     catch (Exception ex)
@@ -1088,6 +1170,88 @@ public class CaseDocumentsTabBean extends TabBean
     return spreadRoles;
   }
 
+  public void handleFileCreate(FileUploadEvent event)
+  {
+    handleFileUpload(event);
+    tempFile.setUploadOperation(UploadOperation.CREATE);
+  }
+
+  public void handleFileUpdate(FileUploadEvent event)
+  {
+    handleFileUpload(event);
+    tempFile.setUploadOperation(UploadOperation.UPDATE);
+  }
+
+  private void handleFileUpload(FileUploadEvent event)
+  {
+    try
+    {
+      UploadedFile uploadedFile = event.getFile();
+      long fileSize = uploadedFile.getSize();
+      if (fileSize > this.getFileUploadMaxSize())
+      {
+        uploadedFile.delete();
+        throw new Exception(getFileSizeErrorMessage(fileSize));
+      }
+      String uploadedFileName = uploadedFile.getFileName();
+      String baseName;
+      String extension;
+      int index = uploadedFileName.lastIndexOf(".");
+      if (index != -1) //with extension
+      {
+        baseName = uploadedFileName.substring(0, index);
+        extension = uploadedFileName.substring(index);
+      }
+      else //no extension
+      {
+        baseName = uploadedFileName;
+        extension = ".bin";
+      }
+      tempFile.setFile(File.createTempFile(baseName + "_", extension));
+      tempFile.setDocTitle(baseName);
+      tempFile.setFileName(uploadedFileName);
+      try (InputStream is = uploadedFile.getInputStream())
+      {
+        IOUtils.writeToFile(is, tempFile.getFile());
+      }
+      uploadedFile.delete();
+    }
+    catch (Exception ex)
+    {
+      tempFile.reset();
+      error(ex);
+    }
+  }
+
+  private String getFileSizeErrorMessage(long fileSize)
+  {
+    return ApplicationBean.getCurrentInstance().translate(
+      "$$documentBundle.invalidFileSize") + ": " + fileSize +
+      " bytes (" + ApplicationBean.getCurrentInstance().translate(
+      "$$documentBundle.maxSize") + ": " + getFileUploadMaxSizeLabel() + ")";
+  }
+
+  private long getFileUploadMaxSize()
+  {
+    try
+    {
+      return Long.parseLong(
+        MatrixConfig.getProperty("org.santfeliu.doc.fileUploadMaxSize"));
+    }
+    catch (NumberFormatException ex)
+    {
+      return 200000000; //default value (200 MB)
+    }
+  }
+
+  private String getFileUploadMaxSizeLabel()
+  {
+    long size = getFileUploadMaxSize();
+    double mb = (double)size / 1000000.0;
+    DecimalFormat df = new DecimalFormat("#,##0.##");
+    return df.format(mb) + " MB";
+  }
+
   private String getUploadTypeId()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
@@ -1114,7 +1278,84 @@ public class CaseDocumentsTabBean extends TabBean
     }
     return false;
   }
-  
+
+  public boolean isDocumentUploaded()
+  {
+    return (tempFile.getFile() != null);
+  }
+
+  public class TempFile implements Serializable
+  {
+    private File file;
+    private String fileName;
+    private String docTitle;
+    private String docTypeId;
+    private UploadOperation uploadOperation;
+
+    public File getFile()
+    {
+      return file;
+    }
+
+    public void setFile(File file)
+    {
+      this.file = file;
+    }
+
+    public String getFileName()
+    {
+      return fileName;
+    }
+
+    public void setFileName(String fileName)
+    {
+      this.fileName = fileName;
+    }
+
+    public String getDocTitle()
+    {
+      return docTitle;
+    }
+
+    public void setDocTitle(String docTitle)
+    {
+      this.docTitle = docTitle;
+    }
+
+    public String getDocTypeId()
+    {
+      return docTypeId;
+    }
+
+    public void setDocTypeId(String docTypeId)
+    {
+      this.docTypeId = docTypeId;
+    }
+
+    public UploadOperation getUploadOperation()
+    {
+      return uploadOperation;
+    }
+
+    public void setUploadOperation(UploadOperation uploadOperation)
+    {
+      this.uploadOperation = uploadOperation;
+    }
+
+    public void reset()
+    {
+      if (file != null)
+      {
+        file.delete();
+        file = null;
+      }
+      fileName = null;
+      docTitle = null;
+      docTypeId = null;
+      uploadOperation = null;
+    }
+  }
+
   public class CaseDocumentsDataTableRow extends DataTableRow
   {
     private String docId;

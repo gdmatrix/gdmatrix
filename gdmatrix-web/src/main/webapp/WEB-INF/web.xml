@@ -711,10 +711,14 @@
         <param-name>agenda.maxRecurrences</param-name>
         <param-value>100</param-value>
     </context-param>
+    <context-param>
+        <param-name>org.santfeliu.doc.fileUploadMaxSize</param-name>
+        <param-value>200000000</param-value>
+    </context-param>
     <!-- OnlyOffice integration -->
     <context-param>
       <param-name>org.santfeliu.onlyOffice.enabled</param-name>
-      <param-value>false</param-value> 
+      <param-value>false</param-value>
     </context-param>
     <context-param>
       <param-name>org.santfeliu.onlyOffice.JwtSecret</param-name>

@@ -119,14 +119,15 @@
       <p:autoUpdate />
     </p:messages>        
     
-    <h:panelGroup styleClass="mt-2" id="document_cases_panel" layout="block"
+    <h:panelGroup styleClass="document_cases_panel mt-2" id="document_cases_panel" layout="block"
              rendered="#{documentCasesTabBean.editing != null}">
       
       <div class="ui-fluid formgrid grid" >
-
+        
+        <!-- Case -->
         <div class="field col-12">  
           <p:outputLabel for="@next"
-                         value="Expedient"
+                         value="#{documentBundle.documentCases_case}"
                          indicateRequired="true"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{documentCasesTabBean.caseId}"
@@ -138,16 +139,41 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   required="#{not empty param['mainform:search_tabs:tabs:document_cases_store']}"
+                                  requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}"
                                   minQueryLength="3"
                                   disabled="#{!documentObjectBean.editable}">
           </emcomp:objectReference>
         </div>              
 
+        <!-- Type -->        
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseDocuments_type}"
+                         indicateRequired="true"
+                         styleClass="w-full" />
+          <emcomp:typeReference value="#{documentCasesTabBean.editing.caseDocTypeId}"
+                                styleClass="w-full"
+                                process="@form:cnt:search_tabs:tabs:document_cases_dialog"
+                                update="@form:cnt:search_tabs:tabs:document_cases_dialog"
+                                oncomplete="PF('documentCasesDialog').hide();"
+                                onselect="PF('documentCasesDialog').show();"
+                                type="#{documentCasesTabBean.tabBaseTypeId != null ? documentCasesTabBean.tabBaseTypeId : 'CaseDocument'}"
+                                showNavigatorItems="#{documentCasesTabBean.tabBaseTypeId != 'CaseDocument' ? 'false' : 'true'}"
+                                showNonInstantiableItems="false"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="#{not empty param['mainform:search_tabs:tabs:document_cases_store']}"
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                disabled="#{!documentObjectBean.editable}">
+          </emcomp:typeReference>
+        </div>
+
         <!-- Volume -->
 
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Volume" />
+                         value="#{caseBundle.caseDocuments_volume}" />
           <p:inputText value="#{documentCasesTabBean.editing.volume}"
                        readonly="#{!documentObjectBean.editable}"/>
         </div>
@@ -155,7 +181,7 @@
         <!-- Comments -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Comments" />
+                         value="#{caseBundle.caseDocuments_comments}" />
           <p:inputTextarea 
             value="#{documentCasesTabBean.editing.comments}"
             readonly="#{!documentObjectBean.editable}"/>

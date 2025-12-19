@@ -28,39 +28,142 @@
       <p:autoUpdate />
     </p:messages>     
     
-    <h:panelGroup styleClass="mt-2" id="case_documents_panel"
+    <h:panelGroup styleClass="case_documents_panel mt-2" id="case_documents_panel"
                   layout="block"
                   rendered="#{caseDocumentsTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
         <!-- Document -->
-        <div class="field col-12">
-          <p:outputLabel for="@next"
-                         value="#{caseBundle.caseDocuments_document}"
-                         styleClass="w-full"
-                         indicateRequired="true" />
-          <emcomp:objectReference value="#{caseDocumentsTabBean.docId}"
-                                  process="@form:cnt:search_tabs:case_documents_dialog"
-                                  type="Document"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  renderCreateButton="true"
-                                  oncomplete="PF('caseDocumentsDialog').hide();"
-                                  onselect="PF('caseDocumentsDialog').show();"
-                                  required="#{not empty param['mainform:search_tabs:case_documents_store']}"
-                                  requiredMessage="#{messageBundle.DOCUMENT_MUST_BE_SELECTED}"
-                                  minQueryLength="3"
-                                  disabled="#{!caseObjectBean.editable}">
-          </emcomp:objectReference>
-        </div>
+        <p:panel styleClass="w-full p-2">          
+          <p:tabView id="caseDocTabView" widgetVar="caseDocTabView"
+                     activeIndex="#{caseDocumentsTabBean.activeTabIndex}"
+                     dynamic="true">
+            <p:ajax event="tabChange" process="@this" update="mainform:search_tabs:case_documents_store" />
+
+            <p:tab id="newDocTab"  
+                   title="#{documentBundle.createNewDocument}"
+                   disabled="#{caseDocumentsTabBean.enabledTabIndex != null and caseDocumentsTabBean.enabledTabIndex != 0}">
+              <p:outputPanel styleClass="newDocTab">
+                <p:outputPanel rendered="#{!caseDocumentsTabBean.documentUploaded}">
+                  <div class="field col-12">
+                    <p:fileUpload id="file_upload_create"
+                                  listener="#{caseDocumentsTabBean.handleFileCreate}"
+                                  mode="simple" skinSimple="true" auto="true"
+                                  label="#{documentBundle.chooseFile}"
+                                  chooseButtonTitle="#{documentBundle.chooseFile}"
+                                  process="@this"
+                                  messageTemplate=" "
+                                  global="false"
+                                  disabled="#{!caseObjectBean.editable}"
+                                  oncomplete="if (!isFacesError()) enableTab([{'name': 'tabIndex', 'value': 0}])">
+                    </p:fileUpload>
+
+                  </div>
+                </p:outputPanel>
+                <p:outputPanel rendered="#{caseDocumentsTabBean.documentUploaded}">
+                  <div class="field col-12">
+                    <h:outputFormat value="#{documentBundle.fileToStore}">
+                      <f:param value="#{caseDocumentsTabBean.tempFile.fileName}" />
+                      <f:param value="#{caseDocumentsTabBean.tempFile.file.length()}" />
+                    </h:outputFormat>
+                  </div>
+                  <p:outputPanel class="field col-12">
+                    <p:outputLabel value="#{caseBundle.caseDocuments_title}" for="@next" />
+                    <p:inputText value="#{caseDocumentsTabBean.tempFile.docTitle}"
+                                 disabled="#{!caseObjectBean.editable}" />
+                  </p:outputPanel>
+                  <p:outputPanel class="field col-12">
+                    <p:outputLabel value="#{documentBundle.docType}" for="@next" />
+                    <emcomp:typeReference value="#{caseDocumentsTabBean.tempFile.docTypeId}"
+                                          process="@(.case_documents_panel)" update="@this"
+                                          oncomplete="PF('caseDocumentsDialog').hide();"
+                                          onselect="PF('caseDocumentsDialog').show();"
+                                          type="Document"
+                                          showNavigatorItems="true"
+                                          showNonInstantiableItems="false"
+                                          scrollHeight="200"
+                                          queryDelay="1000"
+                                          minQueryLength="3"
+                                          required="false"
+                                          disabled="#{!caseObjectBean.editable}">
+                    </emcomp:typeReference>
+                  </p:outputPanel>
+                </p:outputPanel>
+              </p:outputPanel>
+            </p:tab>
+
+            <p:tab id="chooseDocTab"
+                   title="#{documentBundle.existingDocument}"
+                   disabled="#{caseDocumentsTabBean.enabledTabIndex != null and caseDocumentsTabBean.enabledTabIndex != 1}">
+              <p:outputPanel styleClass="chooseDocTab">
+                <div class="field col-12">
+                  <p:outputLabel for="@next"
+                                 value="#{caseBundle.caseDocuments_document}"
+                                 styleClass="w-full"
+                                 indicateRequired="true" />
+                  <emcomp:objectReference value="#{caseDocumentsTabBean.docId}"
+                                          process="@form:cnt:search_tabs:case_documents_dialog"
+                                          type="Document"
+                                          styleClass="w-full"
+                                          scrollHeight="200"
+                                          queryDelay="1000"
+                                          renderCreateButton="true"
+                                          oncomplete="PF('caseDocumentsDialog').hide();"
+                                          onselect="PF('caseDocumentsDialog').show();enableTab([{'name': 'tabIndex', 'value': 1}]);"
+                                          required="#{not empty param['mainform:search_tabs:case_documents_store']
+                                                      and !caseDocumentsTabBean.documentUploaded}"
+                                          requiredMessage="#{messageBundle.DOCUMENT_MUST_BE_SELECTED}"
+                                          minQueryLength="3"
+                                          disabled="#{!caseObjectBean.editable}">
+                    <p:ajax event="itemSelect" oncomplete="enableTab([{'name': 'tabIndex', 'value': 1}])" />
+                  </emcomp:objectReference>
+                </div>
+              </p:outputPanel>
+            </p:tab>
+
+            <p:tab id="updateContentTab"
+                   title="#{documentBundle.updateContent}"
+                   disabled="#{caseDocumentsTabBean.enabledTabIndex != null and caseDocumentsTabBean.enabledTabIndex != 2}"
+                   rendered="#{caseDocumentsTabBean.editing.caseDocId != null}">
+              <p:outputPanel styleClass="updateContentTab">
+                <p:outputPanel rendered="#{!caseDocumentsTabBean.documentUploaded}"
+                               styleClass="field col-12">
+                  <p:fileUpload id="file_upload_update"
+                                listener="#{caseDocumentsTabBean.handleFileUpdate}"
+                                mode="simple" skinSimple="true" auto="true"
+                                label="#{documentBundle.chooseFile}"
+                                chooseButtonTitle="#{documentBundle.chooseFile}"
+                                process="@this"
+                                messageTemplate=" "
+                                global="false"
+                                disabled="#{!caseObjectBean.editable}"
+                                oncomplete="if (!isFacesError()) enableTab([{'name': 'tabIndex', 'value': 2}])">
+                  </p:fileUpload>
+                </p:outputPanel>
+                <p:outputPanel rendered="#{caseDocumentsTabBean.documentUploaded}"
+                               styleClass="field col-12">
+                  <h:outputFormat value="#{documentBundle.fileToStore}">
+                    <f:param value="#{caseDocumentsTabBean.tempFile.fileName}" />
+                    <f:param value="#{caseDocumentsTabBean.tempFile.file.length()}" />
+                  </h:outputFormat>
+                </p:outputPanel>
+              </p:outputPanel>
+            </p:tab>
+
+          </p:tabView>
+        </p:panel>
+
+        <p:remoteCommand name="enableTab"
+                         actionListener="#{caseDocumentsTabBean.enableTab}"
+                         process="@this"
+                         update="caseDocTabView" />
 
         <!-- Type -->
-        <p:outputPanel styleClass="field col-12" 
+        <p:outputPanel styleClass="field col-12 common_input"
                        rendered="#{!caseDocumentsTabBean.leafBaseType}">
           <p:outputLabel for="@next"
-                         value="#{caseBundle.caseDocuments_type}"
+                         value="#{documentBundle.docsCollection}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseDocumentsTabBean.caseDocTypeId}"
                                 process="@form:cnt:search_tabs:case_documents_dialog"
@@ -69,44 +172,44 @@
                                 onselect="PF('caseDocumentsDialog').show();"
                                 type="#{caseDocumentsTabBean.tabBaseTypeId != null ? caseDocumentsTabBean.tabBaseTypeId : 'CaseDocument'}"
                                 showNavigatorItems="#{caseDocumentsTabBean.tabBaseTypeId != 'CaseDocument' ? 'false' : 'true'}"
-                                showNonInstantiableItems="false"                                
+                                showNonInstantiableItems="false"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_documents_store']}"
-                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                requiredMessage="#{messageBundle.COLLECTION_MUST_BE_SELECTED}"
                                 disabled="#{!caseObjectBean.editable}">
           </emcomp:typeReference>
         </p:outputPanel>
 
         <!-- Volume -->
-        <p:outputPanel class="field col-12 md:col-6" rendered="#{caseObjectBean.isRenderProperty('volume')}">
+        <p:outputPanel class="field col-12 md:col-6 common_input" rendered="#{caseObjectBean.isRenderProperty('volume')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_volume}" />
-          <p:selectOneMenu value="#{caseDocumentsTabBean.editing.volume}" 
+          <p:selectOneMenu value="#{caseDocumentsTabBean.editing.volume}"
                            editable="true" var="itemValue"
                            disabled="#{!caseObjectBean.editable}">
             <f:selectItems value="#{caseDocumentsTabBean.realVolumeSelectItems}" />
             <p:column>
               <h:outputText value="#{itemValue == 'UNDEFINED_VOLUME' ? '' : itemValue}" />
-            </p:column>            
+            </p:column>
           </p:selectOneMenu>
         </p:outputPanel>
 
         <!-- Comments -->
-        <p:outputPanel class="field col-12" rendered="#{caseObjectBean.isRenderProperty('comments')}">
+        <p:outputPanel class="field col-12 common_input" rendered="#{caseObjectBean.isRenderProperty('comments')}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_comments}" />
-          <p:inputTextarea value="#{caseDocumentsTabBean.editing.comments}" 
+          <p:inputTextarea value="#{caseDocumentsTabBean.editing.comments}"
                            readonly="#{!caseObjectBean.editable}"/>
         </p:outputPanel>
-        
-        <emcomp:auditData creationUserId="#{caseDocumentsTabBean.editing.creationUserId}" 
-                          creationDateTime="#{caseDocumentsTabBean.editing.creationDateTime}"      
-                          changeUserId="#{caseDocumentsTabBean.editing.changeUserId}" 
-                          changeDateTime="#{caseDocumentsTabBean.editing.changeDateTime}" />          
-      </div>
 
+        <emcomp:auditData creationUserId="#{caseDocumentsTabBean.editing.creationUserId}"
+                          creationDateTime="#{caseDocumentsTabBean.editing.creationDateTime}"
+                          changeUserId="#{caseDocumentsTabBean.editing.changeUserId}"
+                          changeDateTime="#{caseDocumentsTabBean.editing.changeDateTime}" />
+
+      </div>
       
     </h:panelGroup>
 
@@ -116,7 +219,7 @@
         <p:commandButton id="case_documents_store"
                          action="#{caseDocumentsTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"
-                         process="case_documents_dialog"
+                         process="@this #{caseDocumentsTabBean.activeTabClientId} @(.common_input)"
                          update="@form:cnt:search_tabs:tabs case_documents_panel"
                          oncomplete="closePFDialog('caseDocumentsDialog')"
                          disabled="#{!caseObjectBean.editable}"
