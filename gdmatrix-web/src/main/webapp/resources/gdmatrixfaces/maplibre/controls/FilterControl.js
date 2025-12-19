@@ -73,6 +73,7 @@ class FilterControl
       this.paramsFromForm(params);
     }
     console.info(params);
+    this.setGlobalParameters(params);
 
     let sources = map.getStyle().sources;
     for (let sourceId in sources)
@@ -156,6 +157,18 @@ class FilterControl
     {
       let value = select.value;
       params[select.id] = value;
+    }
+  }
+  
+  setGlobalParameters(params)
+  {
+    const map = this.map;
+  
+    for (let param in params)
+    {
+      let value = params[param];
+      map.setGlobalStateProperty(param, value);
+      console.info(`set global ${param} = ${value}`);
     }
   }
   
