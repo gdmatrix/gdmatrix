@@ -64,20 +64,8 @@ public class EnumTypeDataProvider implements DataProvider
   @Override
   public Table getData(Map context)
   {
-    List<EnumTypeItem> items;
-    String value = null;
-    if (context != null && !context.isEmpty())
-    {
-      value = (String)context.get("value");
-    }
-    if (value == null)
-    {
-      items = EnumTypeCache.getInstance().getItems(enumTypeId);
-    }
-    else
-    {
-      items = EnumTypeCache.getInstance().getItemsByValue(enumTypeId, value);  
-    }    
+    List<EnumTypeItem> items = EnumTypeCache.getInstance().getItems(enumTypeId);
+
     Table table = new Table("value", "label", "title", "disabled");
     for (EnumTypeItem item : items)
     {
