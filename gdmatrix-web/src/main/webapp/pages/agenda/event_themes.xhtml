@@ -43,7 +43,7 @@
       <p:column styleClass="text-right white-space-nowrap" exportable="false">
         <p:commandButton action="#{eventThemesTabBean.remove(row)}"
                          process="@this"
-                         update="event_themes_table"
+                         update="@form:search_tabs:tabs:event_main_dynamic_properties event_themes_table"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
@@ -112,7 +112,7 @@
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_themes_dialog"
-                         update="@form:cnt:search_tabs:tabs event_themes_panel"
+                         update="@form:search_tabs:tabs:event_main_dynamic_properties event_themes_table event_themes_panel"
                          oncomplete="closePFDialog('eventThemesDialog')" />
         <p:commandButton action="#{eventThemesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
