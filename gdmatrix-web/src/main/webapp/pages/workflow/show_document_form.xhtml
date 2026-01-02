@@ -9,7 +9,8 @@
 
   <ui:define name="form">
 
-    <h:outputText value="#{workflowInstanceBean.translate(showDocumentWorkflowBean.message)}" />
+    <h:outputText value="#{workflowInstanceBean.translate(showDocumentWorkflowBean.message)}" 
+                  escape="false" />
 
     <sf:printableGroup name="printDocument">
       <sf:browser url="#{showDocumentWorkflowBean.url}"

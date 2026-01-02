@@ -9,7 +9,7 @@
   <ui:define name="form">
 
     <h:outputText value="#{workflowInstanceBean.translate(uploadDocumentsWorkflowBean.message)}" 
-                  styleClass="workflowMessage" />
+                  styleClass="workflowMessage" escape="false" />
 
     <p:dataTable value="#{uploadDocumentsWorkflowBean.documents}" 
                  var="document" emptyMessage="#{objectBundle.no_data}">

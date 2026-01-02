@@ -10,7 +10,7 @@
   <ui:define name="form">
 
     <h:outputText value="#{workflowInstanceBean.translate(signatureWorkflowBean.message)}"
-                  styleClass="workflowMessage" />
+                  styleClass="workflowMessage" escape="false" />
 
     <sf:browser binding="#{signatureWorkflowBean.browser}"
                 port="#{applicationBean.defaultPort}"

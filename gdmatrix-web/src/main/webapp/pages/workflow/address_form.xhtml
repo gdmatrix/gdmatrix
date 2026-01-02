@@ -10,7 +10,7 @@
   <ui:define name="form">
 
     <h:outputText value="#{workflowInstanceBean.translate(addressWorkflowBean.message)}"
-                  styleClass="workflowMessage" />
+                  styleClass="workflowMessage" escape="false" />
 
     <t:div>
       <h:outputText value="Carrer*:" style="display:inline-block;width:20%" />

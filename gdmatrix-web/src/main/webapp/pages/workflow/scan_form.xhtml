@@ -10,7 +10,7 @@
   <ui:define name="form">
 
     <h:outputText value="#{workflowInstanceBean.translate(scanDocumentWorkflowBean.message)}"
-                  styleClass="workflowMessage" />
+                  styleClass="workflowMessage" escape="false" />
 
     <div style="text-align: center">
       <p:linkButton href="#"

@@ -16,7 +16,7 @@
     <f:loadBundle basename="org.santfeliu.web.resources.MessageBundle" 
                   var="messageBundle" />
     <h:outputText value="#{workflowInstanceBean.translate(identificationWorkflowBean.message)}" 
-                  styleClass="workflowMessage" />
+                  styleClass="workflowMessage" escape="false" />
 
     <h:panelGrid columns="1" headerClass="formSection" width="100%" >
       <f:facet name="header">

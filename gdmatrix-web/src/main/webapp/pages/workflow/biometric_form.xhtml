@@ -10,7 +10,7 @@
   <ui:define name="form">
 
     <h:outputText value="#{workflowInstanceBean.translate(biometricWorkflowBean.message)}"
-                  styleClass="workflowMessage" />
+                  styleClass="workflowMessage" escape="false" />
 
     <div class="text-right">
       <p:commandButton value="#{workflowBundle.continue}"

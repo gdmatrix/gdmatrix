@@ -9,7 +9,10 @@
 
   <ui:define name="form">  
 
-    <div class="mb-4">#{workflowInstanceBean.translate(loginWorkflowBean.message)}</div>
+    <div class="mb-4">
+      <h:outputText value="#{workflowInstanceBean.translate(loginWorkflowBean.message)}"
+                    escape="false" />    
+    </div>
 
     <h:panelGroup layout="block" styleClass="mt-4 mb-4"
            rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true'

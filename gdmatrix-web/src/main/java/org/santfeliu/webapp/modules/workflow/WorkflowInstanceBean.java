@@ -426,10 +426,30 @@ public class WorkflowInstanceBean extends FacesBean implements Serializable
 
   public String translate(String text, String group)
   {
-    if (!isTranslationEnabled()) return text;
+    boolean isHtml = text.contains("</") || text.contains("<br>");
 
     ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
-    return applicationBean.translate(text, group);
+
+    String translation;
+    if (!isTranslationEnabled())
+    {
+      translation = text;
+    }
+    else if (isHtml)
+    {
+      translation = applicationBean.translateHtml(text, group);
+    }
+    else // plain text
+    {
+      translation = applicationBean.translate(text, group);
+    }
+
+    if (!isHtml)
+    {
+      // convert LineBreaks to <br> tag.
+      translation = translation.replaceAll("\n", "<br>");
+    }
+    return translation;
   }
 
   public boolean isTranslationEnabled()

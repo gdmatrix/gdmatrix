@@ -11,7 +11,7 @@
   <ui:define name="form">
 
     <h:outputText value="#{workflowInstanceBean.translate(personWorkflowBean.message)}"
-                  styleClass="workflowMessage" />
+                  styleClass="workflowMessage" escape="false" />
 
     <t:subform id="subForm1">
       <t:div>

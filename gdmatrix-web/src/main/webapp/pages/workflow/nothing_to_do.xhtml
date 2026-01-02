@@ -14,7 +14,8 @@
     <h:panelGroup layout="block"
                   rendered="#{workflowInstanceBean.instanceUserState != null}" 
                   styleClass="mt-0 mb-4 ml-2 mr-2">
-      <h:outputText value="#{workflowBundle.currentState}: #{workflowInstanceBean.translate(workflowInstanceBean.instanceUserState)}" />
+      <h:outputText value="#{workflowBundle.currentState}: #{workflowInstanceBean.translate(workflowInstanceBean.instanceUserState)}" 
+                    escape="false" />
     </h:panelGroup>
 
   </ui:define>

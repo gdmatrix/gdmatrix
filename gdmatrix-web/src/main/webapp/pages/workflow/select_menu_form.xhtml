@@ -20,7 +20,8 @@
       </div>        
     </c:if>     
 
-    <h:outputText value="#{workflowInstanceBean.translate(selectMenuWorkflowBean.message)}" />
+    <h:outputText value="#{workflowInstanceBean.translate(selectMenuWorkflowBean.message)}" 
+                  escape="false" />
 
     <c:if test="${selectMenuWorkflowBean.cssCustom != null}">
       <style>

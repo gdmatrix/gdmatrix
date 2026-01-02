@@ -15,13 +15,14 @@
                   styleClass="m-2">
 
       <div class="m-2">
-        <h:outputText value="#{workflowInstanceBean.translate(monitorWorkflowBean.message)}" />
+        <h:outputText value="#{workflowInstanceBean.translate(monitorWorkflowBean.message)}" 
+                      escape="false"/>
       </div>
 
       <div class="mt-2">
         <h:outputText value="#{monitorWorkflowBean.progress}" />
       </div>
-      
+
       <i class="pi pi-spin pi-spinner m-4" style="font-size: 2rem"></i>
         
     </h:panelGroup>
