@@ -42,17 +42,21 @@ import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
+import javax.faces.event.PhaseId;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
+import org.primefaces.PF;
+import org.primefaces.PrimeFaces;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.santfeliu.dic.Type;
@@ -461,6 +465,7 @@ public class DynamicPropertiesBean implements Serializable
             "dynamicPropertiesBean.propertyHelper.values",
             getOptions());
           panelAttributes.put(FORM_ID, form.getId());
+          PrimeFaces.current().ajax().update(panel.getClientId());
         }
       }
     }
