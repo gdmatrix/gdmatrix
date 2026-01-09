@@ -195,6 +195,7 @@ public class ReportObjectBean extends ObjectBean
   {
     formSelector = null;
     parameters.clear();
+    reportViewerBean.setReportName(null); //Reset current report in viewer
     if (!NEW_OBJECT_ID.equals(objectId))
     {
       report = ReportModuleBean.getPort().loadReport(objectId, false);
