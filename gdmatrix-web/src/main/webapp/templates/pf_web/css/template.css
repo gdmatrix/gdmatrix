@@ -393,26 +393,34 @@
   -webkit-user-drag: none;
   flex-grow: 1;
   padding: var(--menuitem-padding);
+  border: 1px solid transparent;
+  margin: 1px;
 }
 
-.main_menu ul li > .menuitem a.caret
+.main_menu .menuitem a:focus
+{
+  outline: none;
+  border: 1px solid var(--surface-900); 
+}
+
+.main_menu ul li > .menuitem .caret i
 {
   transform: rotate(90deg);
   transition: transform var(--menu-transition-duration1) ease-in-out;
   color: var(--text-color);
 }
 
-.main_menu ul li.drop > .menuitem a.caret
+.main_menu ul li.drop > .menuitem .caret i
 {
   transform: rotate(270deg);
 }
 
-.main_menu ul ul > li > .menuitem a.caret
+.main_menu ul ul > li > .menuitem .caret i
 {
   transform: rotate(0deg);
 }
 
-.main_menu ul ul > li.drop > .menuitem a.caret
+.main_menu ul ul > li.drop > .menuitem .caret i
 {
   transform: rotate(180deg);
 }
@@ -466,7 +474,8 @@
   background-color: var(--menuitem-hover-background) !important;
 }
 
-.main_menu .menuitem:hover a
+.main_menu .menuitem:hover a,
+.main_menu .menuitem:hover a i
 {
   color: var(--menuitem-hover-color) !important;
 }
@@ -897,16 +906,20 @@
   .main_menu ul li > ul
   {
     max-height: 0;
+    visibility: hidden;
     overflow: hidden;
     display: block;
     padding: 0 var(--menu-padding-left);
     padding-right: 0;
-    transition: max-height var(--menu-transition-duration2) ease-in-out;    
+    transition: max-height var(--menu-transition-duration2) ease-in-out, 
+      visibility var(--menu-transition-duration2) step-end;
   }
   
   .main_menu ul li.drop > ul
   {
-    transition: max-height var(--menu-transition-duration2) ease-in-out;
+    visibility: visible;
+    transition: max-height var(--menu-transition-duration2) ease-in-out, 
+      visibility 0s;
   }  
   
   .main_menu ul li,
@@ -941,23 +954,23 @@
     animation: none;
   }
     
-  .main_menu ul > li > .menuitem .caret
+  .main_menu ul > li > .menuitem .caret i
   {
     transform: rotate(90deg);
     transition: transform var(--menu-transition-duration2) ease-in-out;
   }
   
-  .main_menu ul > li.drop > .menuitem .caret
+  .main_menu ul > li.drop > .menuitem .caret i
   {
     transform: rotate(270deg);
   }  
 
-  .main_menu ul ul > li > .menuitem a.caret
+  .main_menu ul ul > li > .menuitem .caret i
   {
     transform: rotate(90deg);
   }
 
-  .main_menu ul ul > li.drop > .menuitem a.caret
+  .main_menu ul ul > li.drop > .menuitem .caret i
   {
     transform: rotate(270deg);
   }

@@ -237,6 +237,11 @@ function toggleSubMenu(elem)
       if (ancestorElem.classList.contains("drop"))
       {
         ancestorElem.classList.remove("drop");
+        const childDrops = [...ancestorElem.querySelectorAll(":scope li.drop")];
+        for (let child of childDrops)
+        {
+          child.classList.remove("drop");
+        }
         updateMenuLayout();
       }
       else
