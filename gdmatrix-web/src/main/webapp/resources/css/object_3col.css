@@ -311,12 +311,14 @@ body .ui-tabs.context_tabs .ui-tree
   min-height: 0; 
 }
 
-.side_panel.left .scrollable_content
+.side_panel.left .scrollable_content,
+.side_panel.left .sticky_content
 {
  padding: 1rem 0 0 0;
 }
 
-.side_panel.right .scrollable_content
+.side_panel.right .scrollable_content,
+.side_panel.right .sticky_content
 {
  padding: 1rem;
 }
