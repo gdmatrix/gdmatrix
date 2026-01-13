@@ -250,6 +250,7 @@ public class WorkerCalendarBean extends WebBean implements Savable
   {
     year--;
     months = null;
+    absences = null;
     absenceCounters = null;
   }
 
@@ -257,6 +258,7 @@ public class WorkerCalendarBean extends WebBean implements Savable
   {
     year = Calendar.getInstance().get(Calendar.YEAR);
     months = null;
+    absences = null;
     absenceCounters = null;
   }
 
@@ -264,12 +266,14 @@ public class WorkerCalendarBean extends WebBean implements Savable
   {
     year++;
     months = null;
+    absences = null;
     absenceCounters = null;
   }
 
   public String update()
   {
     months = null;
+    absences = null;
     absenceCounters = null;
     return show();
   }
