@@ -126,6 +126,10 @@ public class EventPlacesTabBean extends TabBean
         String addressId = room.getAddressId();
         editing.setAddressId(addressId);
       }
+      else
+      {
+        editing.setAddressId(null);
+      }
     }
     catch (Exception ex)
     {
@@ -166,6 +170,16 @@ public class EventPlacesTabBean extends TabBean
       }
     }
     return null;
+  }
+
+  public void onClearAddress()
+  {
+    setAddressId(null);
+  }
+
+  public void onClearRoom()
+  {
+    setRoomId(null);
   }
 
   public String edit(EventPlaceView row)
@@ -232,13 +246,6 @@ public class EventPlacesTabBean extends TabBean
     {
       if (editing != null)
       {
-        //Person must be selected
-        if ((editing.getAddressId() == null || editing.getAddressId().isEmpty())
-          && (editing.getRoomId() == null || editing.getRoomId().isEmpty()))
-        {
-          throw new Exception("PLACE_MUST_BE_SELECTED");
-        }
-
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
         editing = (EventPlace) executeTabAction(PRE_TAB_STORE_ACTION, editing);

@@ -119,7 +119,7 @@
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{agendaBundle.eventPlaces_address}"
-                         styleClass="w-full" indicateRequired="true" />
+                         styleClass="w-full" />
           <emcomp:objectReference id="objRefAddress"
                                   value="#{eventPlacesTabBean.addressId}"
                                   type="Address"
@@ -130,13 +130,12 @@
                                   minQueryLength="3"
                                   oncomplete="PF('eventPlacesDialog').hide();"
                                   onselect="PF('eventPlacesDialog').show();"                                  
-                                  required="#{not empty param['mainform:search_tabs:tabs:event_places_store']}"
-                                  requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
                                   widgetVar="objRefAddressAutocomplete"
                                   autoUpdate="false"
                                   disabled="#{!eventObjectBean.editable}">
             <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefRoom):autocomplete" />
-            <p:ajax event="clear" process="@none" oncomplete="PF('objRefRoomAutocomplete').clear()" />
+            <p:ajax event="clear" process="@this" oncomplete="PF('objRefRoomAutocomplete').clear()"
+                    listener="#{eventPlacesTabBean.onClearAddress()}" />
           </emcomp:objectReference>
         </div>
 
@@ -159,7 +158,8 @@
                                   onselect="PF('eventPlacesDialog').show();"
                                   disabled="#{!eventObjectBean.editable}">
             <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefAddress):autocomplete" />
-            <p:ajax event="clear" process="@none" oncomplete="PF('objRefAddressAutocomplete').clear()" />
+            <p:ajax event="clear" process="@this" oncomplete="PF('objRefAddressAutocomplete').clear()"
+                    listener="#{eventPlacesTabBean.onClearRoom()}" />
           </emcomp:objectReference>
         </div>
 
