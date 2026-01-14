@@ -29,8 +29,9 @@
                                 parameter.getName() : 
                                 parameter.getDescription()}"
                        size="#{parameter.size}" 
-                       decimalPlaces="0"
-                       thousandSeparator="" />          
+                       decimalPlaces="18" decimalSeparator="."
+                       padControl="false"
+                       thousandSeparator="" />
         </c:when>        
         <c:otherwise> <!-- text -->         
           <p:inputText value="#{valuesMap[parameter.getName()]}"
