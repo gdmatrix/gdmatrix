@@ -71,7 +71,7 @@
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" /> 
    
           <div class="scrollable_content">
-              <div class="ui-fluid formgrid grid"> 
+            <div class="ui-fluid formgrid grid"> 
             
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{newsBundle.new_search_id}" />
@@ -118,23 +118,28 @@
             
             <!-- Sections -->
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{newsBundle.new_search_section}" />
-<!--              
-              <p:selectCheckboxMenu value="#{newFinderBean.filterSectionId}" 
-                multiple="true">
-                <f:selectItems value="#{newFinderBean.getSectionSelectItems(null)}" />
-              </p:selectCheckboxMenu>
--->              
-              <p:autoComplete value="#{newFinderBean.filterSectionId}"
+              <p:outputLabel for="@next" value="#{newsBundle.new_search_section}" />             
+              <p:autoComplete id="sections" value="#{newFinderBean.filterSectionId}"
                               completeMethod="#{newFinderBean.complete}"
                               converter="selectItemConverter"
                               var="section" itemValue="#{section}" itemLabel="#{section.label}"
                               forceSelection="true"
                               escape="false" scrollHeight="400"
                               groupBy="#{section.description}"
-                              dropdown="true"/>              
-            </div>            
-           
+                              dropdown="true">   
+                 <p:ajax event="itemSelect" listener="#{newFinderBean.setShowOnlyNotPublished(false)}" update="showOnlyPublished" />               
+              </p:autoComplete>
+            </div> 
+            
+            <!-- Published -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{newsBundle.new_search_showOnlyNotPublished}" />   
+              <p:toggleSwitch id="showOnlyPublished" value="#{newFinderBean.showOnlyNotPublished}" 
+                              styleClass="ml-2 vertical-align-middle"  
+                              ariaLabel="#{newsBundle.new_search_published}"> 
+                <p:ajax listener="#{newFinderBean.clearSelectedSection}" update="sections"/>
+              </p:toggleSwitch>
+            </div>          
           </div>
           </div>
           <div class="buttons text-right col-12">
@@ -203,3 +208,4 @@
   </ui:define>
 
 </ui:composition>
+

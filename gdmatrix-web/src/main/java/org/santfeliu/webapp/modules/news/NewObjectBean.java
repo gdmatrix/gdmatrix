@@ -256,17 +256,12 @@ public class NewObjectBean extends ObjectBean
 
     Property property = new Property();
     property.setName(NEWSECTION_PROPERTY);
-    property.getValue().add("%");
-    nodeFilter.getProperty().add(property);
-    
     if (name != null)
-    {
-      property = new Property();
-      property.setName("label");
       property.getValue().add("%" + name + "%");
-      nodeFilter.getProperty().add(property);
-    } 
-    
+    else
+      property.getValue().add("%");
+    nodeFilter.getProperty().add(property);
+        
     List<Node> nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
     nodeFilter.getProperty().clear();
     

@@ -69,7 +69,8 @@ public class NewFinderBean extends FinderBean
   private List<NewView> rows;
   private int firstRow;
   private boolean outdated; 
-  private String sectionId;
+  private String filterSectionId;
+  private boolean showOnlyNotPublished;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -144,10 +145,10 @@ public class NewFinderBean extends FinderBean
   {
     SelectItem sectionSelectItem = null;
     
-    if (sectionId != null)
+    if (filterSectionId != null)
     {
       MenuItemCursor node = UserSessionBean.getCurrentInstance()
-        .getMenuModel().getMenuItem(sectionId);
+        .getMenuModel().getMenuItem(filterSectionId);
       sectionSelectItem = getSectionSelectItem(node);      
     }
     
@@ -156,9 +157,25 @@ public class NewFinderBean extends FinderBean
 
   public void setFilterSectionId(SelectItem sectionSelectItem)
   {
-    sectionId = sectionSelectItem != null ? 
+    filterSectionId = sectionSelectItem != null ? 
       (String) sectionSelectItem.getValue() : null;
-  }  
+  }
+  
+  public void clearSelectedSection()
+  {
+    if (isShowOnlyNotPublished())
+      filterSectionId = null;
+  }
+  
+  public boolean isShowOnlyNotPublished()
+  {
+    return showOnlyNotPublished;
+  }
+
+  public void setShowOnlyNotPublished(boolean showOnlyNotPublished)
+  {
+    this.showOnlyNotPublished = showOnlyNotPublished;
+  }
   
   @Override
   public String getObjectId(int position)
@@ -314,15 +331,25 @@ public class NewFinderBean extends FinderBean
             {
               String content = filter.getContent();
               filter.setContent(setWildcards(content));
-              filter.getSectionId().clear();              
-              if (sectionId != null)
-                filter.getSectionId().add(sectionId);
+              filter.getSectionId().clear();
+              
+              if (isShowOnlyNotPublished())
+                filter.setExcludeNotPublished(false);  
               else
               {
-                sections = getEditSections();
-                sections.stream().forEach(section -> 
-                  filter.getSectionId().add((String) section.getValue()));                
+                if (filterSectionId == null)
+                {
+                  sections = getEditSections();
+                  sections.stream().forEach(section -> 
+                    filter.getSectionId().add((String) section.getValue())); 
+                }
+                else
+                {
+                  filter.getSectionId().add(filterSectionId);
+                  filter.setExcludeNotPublished(true);  
+                }
               }
+                  
               int count = NewsModuleBean.getPort(false).countNews(filter);
               resetWildcards(filter);
               return count;
@@ -342,14 +369,23 @@ public class NewFinderBean extends FinderBean
               String content = filter.getContent();
               filter.setContent(setWildcards(content));
               filter.getSectionId().clear();
-              if (sectionId != null)
-                filter.getSectionId().add(sectionId);
+              if (isShowOnlyNotPublished())
+                filter.setExcludeNotPublished(false);  
               else
               {
-                sections = getEditSections();
-                sections.stream().forEach(section -> 
-                  filter.getSectionId().add((String) section.getValue()));                
-              }
+                if (filterSectionId == null)
+                {
+                  sections = getEditSections();
+                  sections.stream().forEach(section -> 
+                    filter.getSectionId().add((String) section.getValue())); 
+                }
+                else
+                {
+                  filter.getSectionId().add(filterSectionId);
+                  filter.setExcludeNotPublished(true);  
+                }
+              }           
+                            
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               List<NewView> results =
@@ -495,6 +531,6 @@ public class NewFinderBean extends FinderBean
     }
     
     return sections;
-  }  
-  
+  } 
+    
 }
