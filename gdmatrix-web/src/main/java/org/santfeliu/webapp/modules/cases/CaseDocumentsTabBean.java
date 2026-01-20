@@ -37,8 +37,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -124,7 +126,6 @@ public class CaseDocumentsTabBean extends TabBean
   String removeMode;
 
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
-  private final List<SelectItem> volumeSelectItems = new ArrayList<>();
   private GroupableRowsHelper groupableRowsHelper;
   private DefaultMatrixClientModel clientModel;
   private TempFile tempFile = new TempFile();
@@ -143,6 +144,7 @@ public class CaseDocumentsTabBean extends TabBean
     List<CaseDocumentsDataTableRow> rows;
     int firstRow = 0;
     String currentVolume;
+    List<SelectItem> volumeSelectItems = new ArrayList<>();
     RowsFilterHelper rowsFilterHelper = RowsFilterHelper.create(null, prev -> 
       new RowsFilterHelper<CaseDocumentsDataTableRow>(prev)
     {
@@ -553,105 +555,54 @@ public class CaseDocumentsTabBean extends TabBean
     {
       try
       {
-        List<CaseDocumentView> result;
-        volumeSelectItems.clear();        
+        List<CaseDocumentView> result = new ArrayList<>();
         CaseManagerPort port = CasesModuleBean.getPort(false);
-        List<String> volumes = port.findCaseVolumes(objectId);
-        if (volumes != null && !volumes.isEmpty())
+        EditTab tab = caseObjectBean.getActiveEditTab();
+        CaseDocumentFilter filter = new CaseDocumentFilter();
+        filter.setCaseId(objectId);
+        List<CaseDocumentView> allCaseDocs =
+          port.findCaseDocumentViews(filter);
+
+        //Show only rows with document
+        List<CaseDocumentView> auxList = new ArrayList();
+        for (CaseDocumentView cdv : allCaseDocs)
         {
-          Collections.sort(volumes, (s1, s2) ->
-          {
-            if (s1 == null) s1 = "";
-            if (s2 == null) s2 = "";
-              return s1.compareTo(s2);
-          });
-          boolean addUndefined = false;
-          for (String value : volumes)
-          {
-            SelectItem selectItem;
-            if (!StringUtils.isBlank(value))
-            {
-              selectItem = new SelectItem(value, value);
-              volumeSelectItems.add(selectItem);
-            }
-            else //null or whitespaces
-            {
-              addUndefined = true;
-            }
-          }
+          if (cdv.getDocument() != null) auxList.add(cdv);
+        }
+        //Show only tab rows
+        List<CaseDocumentView> tabRows = filterTabRows(tab, auxList);
+        //Load volumes from tab rows
+        getVolumeSelectItems().clear();
+        getVolumeSelectItems().addAll(generateVolumeSelectItems(tab, tabRows));
 
-          if (addUndefined)
+        if (!existsSelectItem(getVolumeSelectItems(), getCurrentVolume()))
+        {
+          String volume = tab.getProperties().getString("volume");
+          if (volume != null &&
+            existsSelectItem(getVolumeSelectItems(), volume))
           {
-            volumeSelectItems.add(0, new SelectItem(
-              CaseConstants.UNDEFINED_VOLUME, ""));          
-          }
-          EditTab tab = caseObjectBean.getActiveEditTab();
-          if ("true".equals(tab.getProperties().getString(
-            "enableShowAllVolumes")))
-          {
-            volumeSelectItems.add(0, new SelectItem(
-              CaseConstants.SHOW_ALL_VOLUMES, 
-              ApplicationBean.getCurrentInstance().translate(
-                "$$objectBundle.showAll")));                 
-          }
-
-          if (!existsSelectItem(volumeSelectItems, getCurrentVolume())) 
-          {
-            String volume = tab.getProperties().getString("volume");
-            if (volume != null && existsSelectItem(volumeSelectItems, volume))
-            {
-              setCurrentVolume(volume); //default value
-            }
-            else
-            {
-              setCurrentVolume((String)volumeSelectItems.get(0).getValue());
-            }
-          }
-
-          String filterVolume = (CaseConstants.SHOW_ALL_VOLUMES.equals(
-            getCurrentVolume()) ? null : getCurrentVolume());
-          CaseDocumentFilter filter = new CaseDocumentFilter();
-          filter.setVolume(filterVolume);
-          filter.setCaseId(objectId);
-          List<CaseDocumentView> auxListPre = port.findCaseDocumentViews(filter);
-
-          //Show only rows with document
-          List<CaseDocumentView> auxList = new ArrayList();
-          for (CaseDocumentView cdv : auxListPre)
-          {
-            if (cdv.getDocument() != null) auxList.add(cdv);
-          }
-
-          String typeId = getTabBaseTypeId();
-          if (typeId == null || tab.isShowAllTypes())
-          {
-            result = auxList;
+            setCurrentVolume(volume); //default value
           }
           else
           {
-            result = new ArrayList();
-            for (CaseDocumentView item : auxList)
-            {
-              try
-              {
-                Type caseDocType =
-                  TypeCache.getInstance().getType(item.getCaseDocTypeId());
-                if (caseDocType.isDerivedFrom(typeId))
-                {
-                  result.add(item);
-                }
-              }
-              catch (Exception ex)
-              {
-                // ignore: bad type?
-              }
-            }
+            setCurrentVolume((String)getVolumeSelectItems().get(0).getValue());
           }
         }
-        else
+
+        //Filter by volume
+        String filterVolume = (CaseConstants.SHOW_ALL_VOLUMES.equals(
+          getCurrentVolume()) ? null : getCurrentVolume());
+        for (CaseDocumentView tabRow : tabRows)
         {
-          result = Collections.EMPTY_LIST;
+          if (filterVolume == null ||
+            (CaseConstants.UNDEFINED_VOLUME.equals(filterVolume) &&
+            tabRow.getVolume() == null) ||
+            filterVolume.equals(tabRow.getVolume()))
+          {
+            result.add(tabRow);
+          }
         }
+
         List<CaseDocumentsDataTableRow> auxList2 = toDataTableRows(result);
         if (getOrderBy() != null)
         {
@@ -793,13 +744,13 @@ public class CaseDocumentsTabBean extends TabBean
 
   public List<SelectItem> getVolumeSelectItems() 
   {
-    return volumeSelectItems;
+    return getCurrentTabInstance().volumeSelectItems;
   }
 
   public List<SelectItem> getRealVolumeSelectItems()
   {
     List<SelectItem> list = new ArrayList<>();
-    for (SelectItem item : volumeSelectItems)
+    for (SelectItem item : getVolumeSelectItems())
     {
       if (!item.getValue().equals(CaseConstants.SHOW_ALL_VOLUMES)) //real value
       {
@@ -1018,7 +969,18 @@ public class CaseDocumentsTabBean extends TabBean
 
   public boolean isRenderVolumeSelector()
   {
-    return !getRealVolumeSelectItems().isEmpty();
+    return
+    getRealVolumeSelectItems().size() > 1
+    ||
+    (
+      getVolumeSelectItems().size() == 1
+      &&
+      !CaseConstants.UNDEFINED_VOLUME.equals(
+        getVolumeSelectItems().get(0).getValue())
+      &&
+      !CaseConstants.SHOW_ALL_VOLUMES.equals(
+        getVolumeSelectItems().get(0).getValue())
+    );
   }
 
   public String getActiveTabClientId()
@@ -1077,6 +1039,86 @@ public class CaseDocumentsTabBean extends TabBean
         tabInstance.objectId = NEW_OBJECT_ID;
       }
     }
+  }
+
+  private List<CaseDocumentView> filterTabRows(EditTab tab,
+    List<CaseDocumentView> rows)
+  {
+    List<CaseDocumentView> tabRows = new ArrayList();
+    String typeId = getTabBaseTypeId();
+    boolean showAllTypes = (typeId == null || tab.isShowAllTypes());
+    for (CaseDocumentView item : rows)
+    {
+      if (showAllTypes)
+      {
+        tabRows.add(item);
+      }
+      else
+      {
+        try
+        {
+          Type caseDocType =
+            TypeCache.getInstance().getType(item.getCaseDocTypeId());
+          if (caseDocType.isDerivedFrom(typeId))
+          {
+            tabRows.add(item);
+          }
+        }
+        catch (Exception ex)
+        {
+          // ignore: bad type?
+        }
+      }
+    }
+    return tabRows;
+  }
+
+  private List<SelectItem> generateVolumeSelectItems(EditTab tab,
+    List<CaseDocumentView> rows)
+  {
+    List<SelectItem> result = new ArrayList<>();
+    Set<String> volumeSet = new HashSet();
+    for (CaseDocumentView row : rows)
+    {
+      volumeSet.add(row.getVolume());
+    }
+
+    List<String> volumes = new ArrayList(volumeSet);
+    Collections.sort(volumes, (s1, s2) ->
+    {
+      if (s1 == null) s1 = "";
+      if (s2 == null) s2 = "";
+        return s1.compareTo(s2);
+    });
+    boolean addUndefined = false;
+    for (String value : volumes)
+    {
+      SelectItem selectItem;
+      if (!StringUtils.isBlank(value))
+      {
+        selectItem = new SelectItem(value, value);
+        result.add(selectItem);
+      }
+      else //null or whitespaces
+      {
+        addUndefined = true;
+      }
+    }
+    if (addUndefined)
+    {
+      result.add(0, new SelectItem(
+        CaseConstants.UNDEFINED_VOLUME, ""));
+    }
+
+    if (result.isEmpty() ||
+      "true".equals(tab.getProperties().getString("enableShowAllVolumes")))
+    {
+      result.add(0, new SelectItem(
+        CaseConstants.SHOW_ALL_VOLUMES,
+        ApplicationBean.getCurrentInstance().translate(
+          "$$objectBundle.showAll")));
+    }
+    return result;
   }
 
   private List<CaseDocumentsDataTableRow> toDataTableRows(
