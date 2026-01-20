@@ -17,7 +17,7 @@
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{addressFinderBean.filterTabSelector}">
-
+        <p:ajax event="tabChange" update="@this"/>
         <p:tab id="smart_search">
           <div class="sticky_container">
             <f:facet name="title">
@@ -50,7 +50,7 @@
                                action="#{addressFinderBean.smartFind}"
                                resetValues="true"
                                process="@form:cnt:find_selector"
-                               update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                               update="@form:cnt:search_tabs @form:cnt:context_panel"
                                styleClass="m-1"
                                oncomplete="endPanel('leftPanel');"
                                icon="pi pi-search" />
@@ -155,7 +155,7 @@
                                value="#{objectBundle.search}"
                                action="#{addressFinderBean.find}"
                                process="@form:cnt:find_selector"
-                               update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                               update="@form:cnt:search_tabs @form:cnt:context_panel"
                                styleClass="m-1"
                                resetValues="true"
                                oncomplete="endPanel('leftPanel');"

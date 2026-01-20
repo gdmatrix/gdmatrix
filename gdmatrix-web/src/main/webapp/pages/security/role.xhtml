@@ -17,7 +17,7 @@
     <p:outputPanel id="filter_panel" styleClass="h-full">
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{roleFinderBean.filterTabSelector}">
-
+        <p:ajax event="tabChange" update="@this"/>
         <p:tab id="smart_search">
           <div class="sticky_container">
             <f:facet name="title">
@@ -49,7 +49,7 @@
                              value="#{objectBundle.search}"
                              action="#{roleFinderBean.smartFind}"
                              process="@form:cnt:find_selector"
-                             update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                             update="@form:cnt:search_tabs @form:cnt:context_panel"
                              resetValues="true"
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
@@ -127,7 +127,7 @@
                                value="#{objectBundle.search}"
                                action="#{roleFinderBean.find}"
                                process="@form:cnt:find_selector"
-                               update="@form:cnt:filter_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                               update="@form:cnt:search_tabs @form:cnt:context_panel"
                                resetValues="true"
                                styleClass="m-1"
                                oncomplete="endPanel('leftPanel');"
