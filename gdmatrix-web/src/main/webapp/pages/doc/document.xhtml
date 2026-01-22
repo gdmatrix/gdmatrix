@@ -16,7 +16,6 @@
     <p:outputPanel id="filter_panel" styleClass="h-full">
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{documentFinderBean.filterTabSelector}">
-        <p:ajax event="tabChange" update="@this"/>
         <p:tab id="smart_search">
           <div class="sticky_container">
             <f:facet name="title">
@@ -24,7 +23,7 @@
               <h:outputText value="#{objectBundle.quick}" />
             </f:facet>
             <p:defaultCommand target="smart_search_button" scope="smart_search" />
-            <div class="sticky_content">
+            <h:panelGroup id="smart_search_panel" styleClass="sticky_content" layout="block">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" 
@@ -38,7 +37,7 @@
                                        requiredMessage="#{messageBundle.FILTER_IS_EMPTY}" />              
                 </div>
               </div>
-            </div>
+            </h:panelGroup>
             <div class="buttons text-right">
               <p:commandButton value="#{objectBundle.clear}"
                                action="#{documentFinderBean.clear}"
@@ -51,7 +50,7 @@
                                value="#{objectBundle.search}"
                                action="#{documentFinderBean.smartFind}"
                                process="@form:cnt:find_selector"
-                               update="@form:cnt:search_tabs @form:cnt:context_panel"
+                               update="@form:cnt:find_selector:advanced_search_panel @form:cnt:search_tabs @form:cnt:context_panel"
                                resetValues="true"
                                styleClass="m-1"
                                oncomplete="endPanel('leftPanel');"
@@ -68,7 +67,7 @@
               </f:facet>
               <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
  
-            <div class="scrollable_content">
+            <h:panelGroup id="advanced_search_panel" styleClass="scrollable_content" layout="block">
               <div class="ui-fluid formgrid grid">
 
                 <div class="field col-12">
@@ -192,7 +191,7 @@
                                         formBuilderPrefix="searchtype@flex"
                                         options="#{dynamicPropertiesBean.filterOptions}"
                                         properties="#{documentFinderBean.filter.property}" />
-            </div>
+            </h:panelGroup>
             <div class="sticky_content buttons text-right">
               <p:commandButton value="#{objectBundle.clear}"
                                action="#{documentFinderBean.clear}"
@@ -205,7 +204,7 @@
                                value="#{objectBundle.search}"
                                action="#{documentFinderBean.find}"
                                process="@form:cnt:find_selector"
-                               update="@form:cnt:search_tabs @form:cnt:context_panel"
+                               update="@form:cnt:find_selector:smart_search_panel @form:cnt:search_tabs @form:cnt:context_panel"
                                resetValues="true"
                                styleClass="m-1"
                                oncomplete="endPanel('leftPanel');"

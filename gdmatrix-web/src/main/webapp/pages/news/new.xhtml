@@ -19,7 +19,6 @@
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{newFinderBean.filterTabSelector}">
-        <p:ajax event="tabChange" update="@this"/>
         <p:tab id="smart_search">
           <div class="sticky_container">
           <f:facet name="title">
@@ -28,7 +27,7 @@
           </f:facet>  
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
           
-          <div class="sticky_content">
+          <h:panelGroup id="smart_search_panel" styleClass="sticky_content" layout="block">
             <div class="ui-fluid formgrid grid"> 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{newsBundle.new_search_content}" />
@@ -37,7 +36,7 @@
                                    tipContent="#{newFinderBean.smartSearchTip}" />
             </div>
           </div>
-          </div>
+          </h:panelGroup>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -52,7 +51,7 @@
                              action="#{newFinderBean.smartFind}"                         
                              resetValues="true"
                              process="@form:cnt:find_selector"
-                             update="@form:cnt:search_tabs @form:cnt:context_panel"
+                             update="@form:cnt:find_selector:advanced_search_panel @form:cnt:search_tabs @form:cnt:context_panel"
                              styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
                              icon="pi pi-search" />
@@ -70,7 +69,7 @@
 
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" /> 
    
-          <div class="scrollable_content">
+          <h:panelGroup id="advanced_search_panel" styleClass="scrollable_content" layout="block">
             <div class="ui-fluid formgrid grid"> 
             
             <div class="field col-12">
@@ -141,7 +140,7 @@
               </p:toggleSwitch>
             </div>          
           </div>
-          </div>
+          </h:panelGroup>
           <div class="buttons text-right col-12">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{newFinderBean.clear}"
@@ -155,7 +154,7 @@
                              value="#{objectBundle.search}"
                              action="#{newFinderBean.find}"
                              process="@form:cnt:find_selector"
-                             update="@form:cnt:search_tabs @form:cnt:context_panel"
+                             update="@form:cnt:find_selector:smart_search_panel @form:cnt:search_tabs @form:cnt:context_panel"
                              styleClass="m-1"
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"

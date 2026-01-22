@@ -17,56 +17,55 @@
 
       <p:tabView id="find_selector" dynamic="true"
                  activeIndex="#{eventFinderBean.filterTabSelector}">
-        <p:ajax event="tabChange" update="@this"/>
         <p:tab id="smart_search">
           <div class="sticky_container">           
-            <f:facet name="title">
-              <span class="pi pi-bolt mr-2"/>
-              <h:outputText value="#{objectBundle.quick}" />
-            </f:facet>
-            <p:defaultCommand target="smart_search_button" scope="smart_search" />
-            <div class="sticky_content">
-              <div class="ui-fluid formgrid grid">
-                <div class="field col-12">
-                  <p:outputLabel for="@next" value="#{objectBundle.value}" />
-                  <emcomp:tipInputText id="smartFilter"
-                                       value="#{eventFinderBean.smartFilter}"
-                                       tipContent="#{eventFinderBean.smartSearchTip}" />
-                </div>
+          <f:facet name="title">
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+          <h:panelGroup id="smart_search_panel" class="sticky_content" layout="block">
+            <div class="ui-fluid formgrid grid">
+              <div class="field col-12">
+                <p:outputLabel for="@next" value="#{objectBundle.value}" />
+                <emcomp:tipInputText id="smartFilter"
+                                     value="#{eventFinderBean.smartFilter}"
+                                     tipContent="#{eventFinderBean.smartSearchTip}" />
               </div>
             </div>
-            <div class="buttons text-right">
-              <p:commandButton value="#{objectBundle.clear}"
-                               action="#{eventFinderBean.clear}"
-                               styleClass="m-1"
-                               process="@form:cnt:find_selector"
-                               update="@form:cnt:filter_panel @(.searchTabContent)"
-                               resetValues="true"
-                               oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventFinderBean.defaultSearchTabSelector});"
-                               icon="fa fa-broom" />
-              <p:commandButton id="smart_search_button"
-                               value="#{objectBundle.search}"
-                               action="#{eventFinderBean.smartFind}"
-                               process="@form:cnt:find_selector"
-                               update="@form:cnt:search_tabs @form:cnt:context_panel"
-                               resetValues="true"
-                               styleClass="m-1"
-                               oncomplete="endPanel('leftPanel');"
-                               icon="pi pi-search" />
-            </div>                
+          </h:panelGroup>
+          <div class="buttons text-right">
+            <p:commandButton value="#{objectBundle.clear}"
+                             action="#{eventFinderBean.clear}"
+                             styleClass="m-1"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:filter_panel @(.searchTabContent)"
+                             resetValues="true"
+                             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventFinderBean.defaultSearchTabSelector});"
+                             icon="fa fa-broom" />
+            <p:commandButton id="smart_search_button"
+                             value="#{objectBundle.search}"
+                             action="#{eventFinderBean.smartFind}"
+                             process="@form:cnt:find_selector"
+                             update="@form:cnt:find_selector:advanced_search_panel @form:cnt:search_tabs @form:cnt:context_panel"
+                             resetValues="true"
+                             styleClass="m-1"
+                             oncomplete="endPanel('leftPanel');"
+                             icon="pi pi-search" />
+          </div>                
           </div>
         </p:tab>
 
         <p:tab id="advanced_search">
           <div class="sticky_container"> 
-                      
-              <f:facet name="title">
-                <span class="pi pi-cog mr-2"/>
-                <h:outputText value="#{objectBundle.advanced}" />
-              </f:facet>
-              <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-            <div class="scrollable_content">
+            <f:facet name="title">
+              <span class="pi pi-cog mr-2"/>
+              <h:outputText value="#{objectBundle.advanced}" />
+            </f:facet>
+            <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+
+            <h:panelGroup id="advanced_search_panel" class="scrollable_content" layout="block"> 
               <div class="ui-fluid formgrid grid">
 
                 <!-- EventId -->
@@ -189,7 +188,7 @@
                                         formBuilderPrefix="searchtype@flex"
                                         options="#{dynamicPropertiesBean.filterOptions}"
                                         properties="#{eventFinderBean.filter.property}" />
-            </div>
+            </h:panelGroup>
             <div class="sticky-content buttons text-right">
               <p:commandButton value="#{objectBundle.clear}"
                                action="#{eventFinderBean.clear}"
@@ -203,7 +202,7 @@
                                value="#{objectBundle.search}"
                                action="#{eventFinderBean.find}"
                                process="@form:cnt:find_selector"
-                               update="@form:cnt:search_tabs @form:cnt:context_panel"
+                               update="@form:cnt:find_selector:smart_search_panel @form:cnt:search_tabs @form:cnt:context_panel"
                                styleClass="m-1"
                                resetValues="true"
                                oncomplete="endPanel('leftPanel');"

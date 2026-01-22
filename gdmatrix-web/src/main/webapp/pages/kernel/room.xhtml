@@ -25,7 +25,7 @@
             </f:facet>
             <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-            <div class="sticky_content">
+            <h:panelGroup id="smart_search_panel" styleClass="sticky_content" layout="block">
               <div class="ui-fluid formgrid grid">
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="#{objectBundle.value}" />
@@ -34,7 +34,7 @@
                                        tipContent="#{roomFinderBean.smartSearchTip}" />
                 </div>
               </div>
-            </div>
+            </h:panelGroup>
 
             <div class="buttons text-right">
               <p:commandButton value="#{objectBundle.clear}"
@@ -66,7 +66,7 @@
             </f:facet>
             <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-            <div class="scrollable_content">
+            <h:panelGroup id="advanced_search_panel" styleClass="scrollable_content" layout="block">
               <div class="ui-fluid formgrid grid">
 
                 <!-- RoomId -->
@@ -126,7 +126,7 @@
                 </div>
 
               </div>
-            </div>
+            </h:panelGroup>
             <div class="buttons text-right">
               <p:commandButton value="#{objectBundle.clear}"
                                action="#{roomFinderBean.clear}"
