@@ -443,8 +443,12 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       if (filter.isReducedInfo() == null || 
         (filter.isReducedInfo() != null && !filter.isReducedInfo().booleanValue()))
       {
+        boolean reduced;
         //Attendants
-        List<AttendantView> attendantViews = findAttendantViews(eventIdSet);
+        reduced = (filter.isReducedAttendantInfo() != null &&
+          filter.isReducedAttendantInfo());
+        List<AttendantView> attendantViews = findAttendantViews(eventIdSet,
+          reduced);
         for (AttendantView attendantView : attendantViews)
         {
           EventView eventView = eventsMap.get(attendantView.getEvent().getEventId());
@@ -452,13 +456,24 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
             eventView.getAttendants().add(attendantView);
         }
         //EventPlaces
-        List<EventPlaceView> eventPlaceViews = findEventPlaceViews(eventIdSet);
+        reduced = (filter.isReducedEventPlaceInfo() != null &&
+          filter.isReducedEventPlaceInfo());
+        List<EventPlaceView> eventPlaceViews = findEventPlaceViews(eventIdSet,
+          reduced);
         for (EventPlaceView eventPlaceView : eventPlaceViews)
         {
           EventView eventView =
             eventsMap.get(eventPlaceView.getEvent().getEventId());
           if (!isEventViewHidden(eventView))
-          eventView.getPlaces().add(eventPlaceView);
+            eventView.getPlaces().add(eventPlaceView);
+        }
+        //EventThemes
+        List<EventThemeView> eventThemeViews = findEventThemeViews(eventIdSet);
+        for (EventThemeView eventThemeView : eventThemeViews)
+        {
+          EventView eventView = eventsMap.get(eventThemeView.getEventId());
+          if (!isEventViewHidden(eventView))
+            eventView.getThemes().add(eventThemeView);
         }
       }
 
@@ -1018,7 +1033,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
 
     if (dbEventPlaces != null && !dbEventPlaces.isEmpty())
     {
-      eventPlaces = createEventPlaceViews(dbEventPlaces);
+      eventPlaces = createEventPlaceViews(dbEventPlaces, false);
     }
 
     return eventPlaces;
@@ -1181,7 +1196,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       List<DBAttendant> dbAttendants = query.getResultList();
       if (dbAttendants != null && !dbAttendants.isEmpty())
       {
-        attendants = createAttendantViews(dbAttendants, eventId != null);
+        attendants = createAttendantViews(dbAttendants, eventId != null, false);
       }
     }
     else
@@ -1700,7 +1715,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
 //  }  
 
   private List<EventPlaceView> createEventPlaceViews(
-    List<DBEventPlace> dbEventPlaces)
+    List<DBEventPlace> dbEventPlaces, boolean reduced)
   {
     List<EventPlaceView> viewList = new ArrayList<EventPlaceView>();
     Map<String, List<EventPlaceView>> addressMap = new HashMap();
@@ -1720,23 +1735,41 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
 
       if (dbEventPlace.isRoom())
       {
-        String roomId = dbEventPlace.getRoomId();
-        List list = roomMap.get(roomId);
-        if (list == null)
-          list = new ArrayList();
-        list.add(view);
-        roomMap.put(roomId, list);
-      }
-      else if (dbEventPlace.isAddress())
-      {
-        String addressId = dbEventPlace.getAddressId();
-        if (addressId != null)
+        if (!reduced)
         {
-          List list = addressMap.get(addressId);
+          String roomId = dbEventPlace.getRoomId();
+          List list = roomMap.get(roomId);
           if (list == null)
             list = new ArrayList();
           list.add(view);
-          addressMap.put(addressId, list);
+          roomMap.put(roomId, list);
+        }
+        else
+        {
+          RoomView roomView = new RoomView();
+          roomView.setRoomId(dbEventPlace.getRoomId());
+          view.setRoomView(roomView);
+        }
+      }
+      else if (dbEventPlace.isAddress())
+      {
+        if (!reduced)
+        {
+          String addressId = dbEventPlace.getAddressId();
+          if (addressId != null)
+          {
+            List list = addressMap.get(addressId);
+            if (list == null)
+              list = new ArrayList();
+            list.add(view);
+            addressMap.put(addressId, list);
+          }
+        }
+        else
+        {
+          AddressView addressView = new AddressView();
+          addressView.setAddressId(dbEventPlace.getAddressId());
+          view.setAddressView(addressView);
         }
       }
       else if (dbEventPlace.isStreet()) //set as comment
@@ -1746,13 +1779,21 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
         String comments = dbEventPlace.getComments();
         if (streetId != null)
         {
-          Street street = getKernelManagerPort().loadStreet(streetId);
-          if (street != null)
+          if (!reduced)
           {
-            String streetDesc =
-              street.getStreetTypeId() + " " +
-              street.getName() + (number != null ? ", " + number : "");
-            comments =  streetDesc  + (comments != null ? " " + comments : "");
+            Street street = getKernelManagerPort().loadStreet(streetId);
+            if (street != null)
+            {
+              String streetDesc =
+                street.getStreetTypeId() + " " +
+                street.getName() + (number != null ? ", " + number : "");
+              comments =  streetDesc  + (comments != null ? " " + comments : "");
+              view.setComments(comments);
+            }
+          }
+          else
+          {
+            comments = streetId + (comments != null ? " " + comments : "");
             view.setComments(comments);
           }
         }
@@ -1761,42 +1802,44 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       viewList.add(view);
     }
 
-    //Set kernel data (AddressView and RoomView) to EventPlaceView. Get mapped
-    //views and set with kernel data.
-    KernelManagerPort port = getKernelManagerPort();
-    //Addresses
-    Set<String> addressIdSet = addressMap.keySet();
-    if (addressIdSet != null && addressIdSet.size() > 0)
+    if (!reduced)
     {
-      AddressFilter addressFilter = new AddressFilter();
-      addressFilter.getAddressIdList().addAll(addressIdSet);
-      List<AddressView> addressViewList = port.findAddressViews(addressFilter);
-      for (AddressView addressView : addressViewList)
+      //Set kernel data (AddressView and RoomView) to EventPlaceView. Get mapped
+      //views and set with kernel data.
+      KernelManagerPort port = getKernelManagerPort();
+      //Addresses
+      Set<String> addressIdSet = addressMap.keySet();
+      if (addressIdSet != null && addressIdSet.size() > 0)
       {
-        List<EventPlaceView> eventPlaceViewList = addressMap.get(addressView.getAddressId());
-        for (EventPlaceView eventPlaceView : eventPlaceViewList)
+        AddressFilter addressFilter = new AddressFilter();
+        addressFilter.getAddressIdList().addAll(addressIdSet);
+        List<AddressView> addressViewList = port.findAddressViews(addressFilter);
+        for (AddressView addressView : addressViewList)
         {
-          eventPlaceView.setAddressView(addressView);
+          List<EventPlaceView> eventPlaceViewList = addressMap.get(addressView.getAddressId());
+          for (EventPlaceView eventPlaceView : eventPlaceViewList)
+          {
+            eventPlaceView.setAddressView(addressView);
+          }
+        }
+      }
+      //Rooms
+      Set<String> roomIdSet = roomMap.keySet();
+      if (roomIdSet != null && roomIdSet.size() > 0)
+      {
+        RoomFilter roomFilter = new RoomFilter();
+        roomFilter.getRoomIdList().addAll(roomIdSet);
+        List<RoomView> roomViewList = port.findRoomViews(roomFilter);
+        for (RoomView roomView : roomViewList)
+        {
+          List<EventPlaceView> eventPlaceViewList = roomMap.get(roomView.getRoomId());
+          for (EventPlaceView eventPlaceView : eventPlaceViewList)
+          {
+            eventPlaceView.setRoomView(roomView);
+          }
         }
       }
     }
-    //Rooms
-    Set<String> roomIdSet = roomMap.keySet();
-    if (roomIdSet != null && roomIdSet.size() > 0)
-    {
-      RoomFilter roomFilter = new RoomFilter();
-      roomFilter.getRoomIdList().addAll(roomIdSet);
-      List<RoomView> roomViewList = port.findRoomViews(roomFilter);
-      for (RoomView roomView : roomViewList)
-      {
-        List<EventPlaceView> eventPlaceViewList = roomMap.get(roomView.getRoomId());
-        for (EventPlaceView eventPlaceView : eventPlaceViewList)
-        {
-          eventPlaceView.setRoomView(roomView);
-        }
-      }
-    }
-
     return viewList;
   }
 
@@ -1831,45 +1874,84 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
     return map;
   }
 
-  private List<AttendantView> findAttendantViews(Set<String> eventIds)
-    throws Exception
+  private List<AttendantView> findAttendantViews(Set<String> eventIds, 
+    boolean reduced) throws Exception
   {
-    List<AttendantView> attendants = new ArrayList<AttendantView>();
-    List<String> eventIdList = new ArrayList();
-    eventIdList.addAll(eventIds);
-    JPAQuery query = new JPAQuery(entityManager.createNamedQuery("findPersonsFromEvents"));
-    query.setIdParameter("eventId", eventIdList);
-
-    List<DBAttendant> dbAttendants = query.getResultList();
-    if (dbAttendants != null && !dbAttendants.isEmpty())
+    List<AttendantView> attendants = new ArrayList<>();
+    if (!eventIds.isEmpty())
     {
-      attendants = createAttendantViews(dbAttendants, true);
+      List<String> eventIdList = new ArrayList(eventIds);
+      FindPersonsFromEventsQueryBuilder queryBuilder =
+        new FindPersonsFromEventsQueryBuilder();
+      queryBuilder.setEventIdList(eventIdList);
+      List<DBAttendant> dbAttendants = 
+        queryBuilder.getResultList(entityManager);
+      if (dbAttendants != null && !dbAttendants.isEmpty())
+      {
+        attendants = createAttendantViews(dbAttendants, true, reduced);
+      }
     }
-
     return attendants;
   }
 
-  private List<EventPlaceView> findEventPlaceViews(Set<String> eventIds)
-    throws Exception
+  private List<EventPlaceView> findEventPlaceViews(Set<String> eventIds,
+    boolean reduced) throws Exception
   {
-    List<EventPlaceView> eventPlaceViews = new ArrayList<EventPlaceView>();
-    List<String> eventIdList = new ArrayList();
-    eventIdList.addAll(eventIds);
-    JPAQuery query =
-      new JPAQuery(entityManager.createNamedQuery("findPlacesFromEvents"));
-    query.setIdParameter("eventId", eventIdList);
-
-    List<DBEventPlace> dbEventPlaces = query.getResultList();
-    if (dbEventPlaces != null && !dbEventPlaces.isEmpty())
+    List<EventPlaceView> eventPlaceViews = new ArrayList<>();
+    if (!eventIds.isEmpty())
     {
-      eventPlaceViews = createEventPlaceViews(dbEventPlaces);
+      List<String> eventIdList = new ArrayList(eventIds);
+      FindPlacesFromEventsQueryBuilder queryBuilder =
+        new FindPlacesFromEventsQueryBuilder();
+      queryBuilder.setEventIdList(eventIdList);
+      List<DBEventPlace> dbEventPlaces = 
+        queryBuilder.getResultList(entityManager);
+      if (dbEventPlaces != null && !dbEventPlaces.isEmpty())
+      {
+        eventPlaceViews = createEventPlaceViews(dbEventPlaces, reduced);
+      }
     }
-
     return eventPlaceViews;
   }
 
+  private List<EventThemeView> findEventThemeViews(Set<String> eventIds)
+    throws Exception
+  {
+    List<EventThemeView> eventThemeViews = new ArrayList<>();
+    if (!eventIds.isEmpty())
+    {
+      List<String> eventIdList = new ArrayList(eventIds);
+      FindThemesFromEventsQueryBuilder queryBuilder =
+        new FindThemesFromEventsQueryBuilder();
+      queryBuilder.setEventIdList(eventIdList);
+      List<DBEventTheme> dbEventThemes = 
+        queryBuilder.getResultList(entityManager);
+      if (dbEventThemes != null && !dbEventThemes.isEmpty())
+      {
+        eventThemeViews = createEventThemeViews(dbEventThemes);
+      }
+    }
+    return eventThemeViews;
+  }
+
+  private List<EventThemeView> createEventThemeViews(
+    List<DBEventTheme> dbEventThemes)
+  {
+    List<EventThemeView> eventThemeViews = new ArrayList<>();
+    for (DBEventTheme dbEventTheme : dbEventThemes)
+    {
+      EventThemeView eventThemeView = new EventThemeView();
+      eventThemeView.setEventThemeId(dbEventTheme.getEventThemeId());
+      eventThemeView.setEventId(dbEventTheme.getEventId());
+      eventThemeView.setThemeId(dbEventTheme.getThemeId());
+      eventThemeView.setDescription(dbEventTheme.getComments());
+      eventThemeViews.add(eventThemeView);
+    }
+    return eventThemeViews;
+  }
+
   private List<AttendantView> createAttendantViews(List<DBAttendant> dbAttendants,
-    boolean personsData)
+    boolean personsData, boolean reduced)
   {
     List<AttendantView> attendantViews = new ArrayList<AttendantView>();
 
@@ -1889,7 +1971,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       attendantView.setEvent(event);
       attendantViews.add(attendantView);
 
-      if (personsData) //Prepares find persons to kernel (only if filtering by eventId)
+      if (personsData && !reduced) //Prepares find persons to kernel (only if filtering by eventId)
       {
         String pId = dbAttendant.getPersonId();
         if (pId != null) //Set PersonView
@@ -1902,7 +1984,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       }
     }
 
-    if (personsData) //Only find persons if filtering by eventId
+    if (personsData && !reduced) //Only find persons if filtering by eventId
     {
       //Invokes kernel WS findPersons
       try
