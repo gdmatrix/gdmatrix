@@ -389,39 +389,42 @@
                     toggleable="true" collapsed="false" 
                     rendered="#{geoMapSourcesBean.editingSource.type == 'geojson'}">
           <div class="ui-fluid formgrid grid">
-            <div class="field col-12 md:col-4">
-              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.generateId}" 
-                              styleClass="vertical-align-middle" />
-              <p:outputLabel value="GenerateId" for="@previous" styleClass="ml-2" />
+            <div class="field col-6 md:col-3">
+              <p:outputLabel value="GenerateId" for="@next" styleClass="w-full" />
+              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.generateId}" />
             </div>
 
-            <div class="field col-12 md:col-4">
-              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.lineMetrics}" 
-                              styleClass="vertical-align-middle" />
-              <p:outputLabel value="Line metrics" for="@previous" styleClass="ml-2" />
+            <div class="field col-6 md:col-3">
+              <p:outputLabel value="Line metrics" for="@next" styleClass="w-full" />
+              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.lineMetrics}" />
             </div>
-
-            <div class="field col-12 md:col-4">
-              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.cluster}" 
-                              styleClass="vertical-align-middle">
+            
+            <div class="field col-12 md:col-6">
+              <p:outputLabel for="@next" value="Tolerance" />
+              <p:spinner value="#{geoMapSourcesBean.editingSource.tolerance}" 
+                         decimalPlaces="3" />
+            </div>
+                        
+            <div class="field col-12 md:col-3">
+              <p:outputLabel value="Cluster" for="@next" styleClass="w-full" />
+              <p:toggleSwitch value="#{geoMapSourcesBean.editingSource.cluster}">
                 <p:ajax update="cluster_max_zoom cluster_min_points cluster_radius" />
               </p:toggleSwitch>
-              <p:outputLabel value="Cluster" for="@previous" styleClass="ml-2" />
             </div>            
             
-            <div class="field col-12 md:col-4">
+            <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Cluster max zoom" />
               <p:spinner id="cluster_max_zoom" value="#{geoMapSourcesBean.editingSource.clusterMaxZoom}"
                          disabled="#{not geoMapSourcesBean.editingSource.cluster}" />
             </div>
 
-            <div class="field col-12 md:col-4">
+            <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Cluster min points" />
               <p:spinner id="cluster_min_points" value="#{geoMapSourcesBean.editingSource.clusterMinPoints}"
                          disabled="#{not geoMapSourcesBean.editingSource.cluster}" />
             </div>
 
-            <div class="field col-12 md:col-4">
+            <div class="field col-12 md:col-3">
               <p:outputLabel for="@next" value="Cluster radius" />
               <p:spinner id="cluster_radius" value="#{geoMapSourcesBean.editingSource.clusterRadius}" 
                          disabled="#{not geoMapSourcesBean.editingSource.cluster}" />

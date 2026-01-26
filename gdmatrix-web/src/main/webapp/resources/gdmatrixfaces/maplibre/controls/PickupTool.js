@@ -220,7 +220,7 @@ class PickupTool extends Tool
     for (let feat of features)
     {
       let geom = turf.getGeom(feat.geometry);
-      if (turf.intersect(geomSel, geom))
+      if (turf.booleanIntersects(geomSel, geom))
       {
         let code = String(feat.properties[this.propertyName]);
         if (code !== undefined)
