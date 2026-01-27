@@ -30,21 +30,55 @@
  */
 package org.santfeliu.webapp.modules.agenda;
 
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
+import org.matrix.agenda.Attendant;
+import org.matrix.agenda.AttendantFilter;
+import org.matrix.agenda.AttendantView;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
+import org.matrix.agenda.EventPlace;
+import org.matrix.agenda.EventPlaceFilter;
+import org.matrix.agenda.EventPlaceView;
+import org.matrix.agenda.EventTheme;
+import org.matrix.agenda.EventThemeFilter;
+import org.matrix.agenda.EventThemeView;
+import org.matrix.agenda.EventView;
 import org.matrix.dic.Property;
+import org.matrix.dic.PropertyDefinition;
+import org.matrix.dic.Type;
+import org.matrix.dic.TypeFilter;
+import org.matrix.kernel.Room;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.PojoUtils;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.webapp.NavigatorBean;
+import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.modules.dic.DicModuleBean;
+import org.santfeliu.webapp.modules.kernel.AddressTypeBean;
+import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
+import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
+import org.santfeliu.webapp.modules.kernel.RoomTypeBean;
 
 /**
  *
@@ -57,13 +91,34 @@ public class EventRecurrencesTabBean extends TabBean
   public static final String MASTER_EVENTID_PROPERTY = "masterEventId";
   public static final String FIRST_AVAILABLE_DATE = "00010102000000";
 
-  private List<Event> rows;
-  private List<Event> selectedRows;
+  private List<EventView> rows;
+  private List<EventView> selectedRows;
 
   private int firstRow;
 
   private String deleteDateTime;
   private String deleteMode = "0";
+
+  private int activeTabIndex = 0;
+  private String operationMode = "FUTURE";
+
+  //Added att
+  private String addedAttPersonId;
+  private String addedAttTypeId;
+
+  //Removed att
+  private String removedAttPersonId;
+
+  //Added theme
+  private String addedThemeId;
+
+  //Removed theme
+  private String removedThemeId;
+
+  //Changed place
+  private String changedPlaceAddressId;
+  private String changedPlaceRoomId;
+  private String changedPlaceComments;
 
   private boolean dialogVisible = false;
 
@@ -76,10 +131,33 @@ public class EventRecurrencesTabBean extends TabBean
   @Inject
   EventFinderBean eventFinderBean;
 
+  @Inject
+  EventPersonsTabBean eventPersonsTabBean;
+
+  @Inject
+  EventThemesTabBean eventThemesTabBean;
+
+  @Inject
+  EventPlacesTabBean eventPlacesTabBean;
+
+  @Inject
+  PersonTypeBean personTypeBean;
+
+  @Inject
+  ThemeTypeBean themeTypeBean;
+
+  @Inject
+  RoomTypeBean roomTypeBean;
+
+  @Inject
+  AddressTypeBean addressTypeBean;
+  
+  @Inject
+  NavigatorBean navigatorBean;
+
   @PostConstruct
   public void init()
   {
-    load();
   }
 
   @Override
@@ -88,22 +166,78 @@ public class EventRecurrencesTabBean extends TabBean
     return eventObjectBean;
   }
 
-  public List<Event> getRows()
+  public List<EventView> getRows()
   {
+    if (rows == null)
+    {
+      rows = new ArrayList();
+      try
+      {
+        String masterEventId;
+        if (!isMasterEvent()) //Is a recurring event
+        {
+          masterEventId = getMasterEventId();
+        }
+        else
+          masterEventId = getEvent().getEventId();
+
+        if (!StringUtils.isBlank(masterEventId))
+        {
+          //Include master event
+          EventFilter filter = new EventFilter();
+          filter.getEventId().add(masterEventId);
+          filter.setStartDateTime(FIRST_AVAILABLE_DATE);
+          filter.setReducedAttendantInfo(true);
+          filter.setReducedEventPlaceInfo(true);
+          List<EventView> masterEvents =
+            AgendaModuleBean.getClient().findEventViewsFromCache(filter);
+          if (masterEvents != null && !masterEvents.isEmpty())
+          {
+            rows.add(masterEvents.get(0));
+          }
+
+          //Include events with master event property
+          filter = new EventFilter();
+          Property p = new Property();
+          p.setName(MASTER_EVENTID_PROPERTY);
+          p.getValue().add(masterEventId);
+          filter.getProperty().add(p);
+          filter.setStartDateTime(FIRST_AVAILABLE_DATE);
+          filter.setReducedAttendantInfo(true);
+          filter.setReducedEventPlaceInfo(true);
+          List<EventView> relatedEvents =
+            AgendaModuleBean.getClient().findEventViewsFromCache(filter);
+          if (relatedEvents != null)
+          {
+            for (EventView relatedEvent : relatedEvents)
+            {
+              if (!relatedEvent.getEventId().equals(masterEventId))
+              {
+                rows.add(relatedEvent);
+              }
+            }
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
     return rows;
   }
 
-  public void setRows(List<Event> rows)
+  public void setRows(List<EventView> rows)
   {
     this.rows = rows;
   }
 
-  public List<Event> getSelectedRows()
+  public List<EventView> getSelectedRows()
   {
     return selectedRows;
   }
 
-  public void setSelectedRows(List<Event> selectedRows)
+  public void setSelectedRows(List<EventView> selectedRows)
   {
     this.selectedRows = selectedRows;
   }
@@ -138,6 +272,184 @@ public class EventRecurrencesTabBean extends TabBean
     this.deleteDateTime = deleteDateTime;
   }
 
+  public int getActiveTabIndex()
+  {
+    return activeTabIndex;
+  }
+
+  public void setActiveTabIndex(int activeTabIndex)
+  {
+    this.activeTabIndex = activeTabIndex;
+  }
+
+  public String getOperationMode()
+  {
+    return operationMode;
+  }
+
+  public void setOperationMode(String operationMode)
+  {
+    this.operationMode = operationMode;
+  }
+
+  public String getAddedAttPersonId()
+  {
+    return addedAttPersonId;
+  }
+
+  public void setAddedAttPersonId(String addedAttPersonId)
+  {
+    this.addedAttPersonId = addedAttPersonId;
+  }
+
+  public String getAddedAttTypeId()
+  {
+    return addedAttTypeId;
+  }
+
+  public void setAddedAttTypeId(String addedAttTypeId)
+  {
+    this.addedAttTypeId = addedAttTypeId;
+  }
+
+  public String getRemovedAttPersonId()
+  {
+    return removedAttPersonId;
+  }
+
+  public void setRemovedAttPersonId(String removedAttPersonId)
+  {
+    this.removedAttPersonId = removedAttPersonId;
+  }
+
+  public String getAddedThemeId()
+  {
+    return addedThemeId;
+  }
+
+  public void setAddedThemeId(String addedThemeId)
+  {
+    this.addedThemeId = addedThemeId;
+  }
+
+  public String getRemovedThemeId()
+  {
+    return removedThemeId;
+  }
+
+  public void setRemovedThemeId(String removedThemeId)
+  {
+    this.removedThemeId = removedThemeId;
+  }
+
+  public String getChangedPlaceAddressId()
+  {
+    return changedPlaceAddressId;
+  }
+
+  public void setChangedPlaceAddressId(String changedPlaceAddressId)
+  {
+    this.changedPlaceAddressId = changedPlaceAddressId;
+    this.changedPlaceRoomId = null;
+  }
+
+  public String getChangedPlaceRoomId()
+  {
+    return changedPlaceRoomId;
+  }
+
+  public void setChangedPlaceRoomId(String changedPlaceRoomId)
+  {
+    try
+    {
+      this.changedPlaceRoomId = changedPlaceRoomId;
+      if (!StringUtils.isBlank(changedPlaceRoomId))
+      {
+        Room room =
+          KernelModuleBean.getPort(false).loadRoom(changedPlaceRoomId);
+        String addressId = room.getAddressId();
+        this.changedPlaceAddressId = addressId;
+      }
+      else
+      {
+        this.changedPlaceAddressId = null;
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public String getChangedPlaceComments()
+  {
+    return changedPlaceComments;
+  }
+
+  public void setChangedPlaceComments(String changedPlaceComments)
+  {
+    this.changedPlaceComments = changedPlaceComments;
+  }
+
+  public void onClearChangedPlaceAddress()
+  {
+    setChangedPlaceAddressId(null);
+  }
+
+  public void onClearChangedPlaceRoom()
+  {
+    setChangedPlaceRoomId(null);
+  }
+
+  public List<SelectItem> getAllowedAttendantTypes()
+  {
+    List<SelectItem> result = new ArrayList<>();
+    Set<String> typeIds = getAllowedAttendantTypeIds();
+    for (String typeId : typeIds)
+    {
+      Type type = TypeCache.getInstance().getType(typeId);
+      if (type != null)
+      {
+        String value = type.getTypeId();
+        String label = type.getDescription();
+        SelectItem selectItem = new SelectItem(value, label);
+        result.add(selectItem);
+      }
+    }
+    sortSelectItems(result);
+    return result;
+  }
+
+  public List<SelectItem> getExistingAttendants()
+  {
+    List<SelectItem> result = new ArrayList<>();
+    Set<String> personIds = getExistingAttendantPersonIds();
+    for (String personId : personIds)
+    {
+      String value = personId;
+      String label = personTypeBean.getDescription(personId);
+      SelectItem selectItem = new SelectItem(value, label);
+      result.add(selectItem);
+    }
+    sortSelectItems(result);
+    return result;
+  }
+
+  public List<SelectItem> getExistingThemes()
+  {
+    List<SelectItem> result = new ArrayList<>();
+    Set<String> themeIds = getExistingThemeIds();
+    for (String themeId : themeIds)
+    {
+      String value = themeId;
+      String label = themeTypeBean.getDescription(themeId);
+      SelectItem selectItem = new SelectItem(value, label);
+      result.add(selectItem);
+    }
+    sortSelectItems(result);
+    return result;
+  }
+
   @Override
   public boolean isDialogVisible()
   {
@@ -156,9 +468,223 @@ public class EventRecurrencesTabBean extends TabBean
     dialogVisible = false;
   }
 
+  public void addAttendant()
+  {
+    if (addedAttPersonId == null)
+    {
+      error("PERSON_MUST_BE_SELECTED");
+      return;
+    }
+    int count = 0;
+    List<String> eventIdList = getOperationEventIds();
+    for (String eventId : eventIdList)
+    {
+      try
+      {
+        Attendant editing = new Attendant();
+        editing.setEventId(eventId);
+        editing.setPersonId(addedAttPersonId);
+        editing.setAttendantTypeId(addedAttTypeId);
+        AgendaModuleBean.getClient().storeAttendant(editing);
+        count++;
+      }
+      catch (Exception ex)
+      {
+      }
+    }
+    eventPersonsTabBean.clear();
+    rows = null;
+    growl("ADDED_ATTENDANTS", new Object[]{count});
+  }
+
+  public String getAddAttendantMessage()
+  {
+    return getBundleValue(getAgendaBundlePath(),
+      "eventRecurrences_confirmAddAttendant",
+      String.valueOf(getOperationEventIds().size()));
+  }
+
+  public void removeAttendant()
+  {
+    int removedCount = 0;
+    List<String> eventIdList = getOperationEventIds();
+    for (String eventId : eventIdList)
+    {
+      try
+      {
+        if (!StringUtils.isBlank(eventId) &&
+          !StringUtils.isBlank(removedAttPersonId))
+        {
+          AttendantFilter attFilter = new AttendantFilter();
+          attFilter.setEventId(eventId);
+          attFilter.setPersonId(removedAttPersonId);
+          List<Attendant> attList = AgendaModuleBean.getClient().
+            findAttendantsFromCache(attFilter);
+          for (Attendant att : attList)
+          {
+            AgendaModuleBean.getClient().removeAttendant(att.getAttendantId());
+            removedCount++;
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    eventPersonsTabBean.clear();
+    rows = null;
+    if (getExistingAttendants().isEmpty())
+    {
+      activeTabIndex = 0;
+    }
+    growl("REMOVED_ATTENDANTS", new Object[]{removedCount});
+  }
+
+  public String getRemoveAttendantMessage()
+  {
+    return getBundleValue(getAgendaBundlePath(),
+      "eventRecurrences_confirmRemoveAttendant",
+      String.valueOf(getOperationEventIds().size()));
+  }
+
+  public void addTheme()
+  {
+    if (addedThemeId == null)
+    {
+      error("THEME_MUST_BE_SELECTED");
+      return;
+    }
+    int count = 0;
+    List<String> eventIdList = getOperationEventIds();
+    for (String eventId : eventIdList)
+    {
+      try
+      {
+        EventTheme editing = new EventTheme();
+        editing.setEventId(eventId);
+        editing.setThemeId(addedThemeId);
+        AgendaModuleBean.getClient().storeEventTheme(editing);
+        count++;
+      }
+      catch (Exception ex)
+      {
+      }
+    }
+    eventThemesTabBean.clear();
+    rows = null;
+    growl("ADDED_THEMES", new Object[]{count});
+  }
+
+  public String getAddThemeMessage()
+  {
+    return getBundleValue(getAgendaBundlePath(),
+      "eventRecurrences_confirmAddTheme",
+      String.valueOf(getOperationEventIds().size()));
+  }
+
+  public void removeTheme()
+  {
+    int count = 0;
+    List<String> eventIdList = getOperationEventIds();
+    for (String eventId : eventIdList)
+    {
+      try
+      {
+        if (!StringUtils.isBlank(eventId) &&
+          !StringUtils.isBlank(removedThemeId))
+        {
+          EventThemeFilter eventThemeFilter = new EventThemeFilter();
+          eventThemeFilter.setEventId(eventId);
+          eventThemeFilter.setThemeId(removedThemeId);
+          List<EventThemeView> eventThemeList = AgendaModuleBean.getClient().
+            findEventThemeViewsFromCache(eventThemeFilter);
+          for (EventThemeView eventTheme : eventThemeList)
+          {
+            AgendaModuleBean.getClient().removeEventTheme(
+              eventTheme.getEventThemeId());
+            count++;
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    eventThemesTabBean.clear();
+    rows = null;
+    if (getExistingThemes().isEmpty())
+    {
+      activeTabIndex = 0;
+    }
+    growl("REMOVED_THEMES", new Object[]{count});
+  }
+
+  public String getRemoveThemeMessage()
+  {
+    return getBundleValue(getAgendaBundlePath(),
+      "eventRecurrences_confirmRemoveTheme",
+      String.valueOf(getOperationEventIds().size()));
+  }
+
+  public void changePlace()
+  {
+    int changedCount = 0;
+    int errorCount = 0;
+    List<String> eventIdList = getOperationEventIds();
+    for (String eventId : eventIdList)
+    {
+      try
+      {
+        if (!StringUtils.isBlank(eventId))
+        {
+          EventPlaceFilter filter = new EventPlaceFilter();
+          filter.setEventId(eventId);
+          List<EventPlace> oldEventPlaces =
+            AgendaModuleBean.getClient().findEventPlacesFromCache(filter);
+          //Add new place
+          EventPlace eventPlace = new EventPlace();
+          eventPlace.setEventId(eventId);
+          eventPlace.setAddressId(changedPlaceAddressId);
+          eventPlace.setRoomId(changedPlaceRoomId);
+          eventPlace.setComments(changedPlaceComments);
+          eventPlace.setEventPlaceTypeId(null);
+          AgendaModuleBean.getClient().storeEventPlace(eventPlace);
+          //Remove old places
+          for (EventPlace oldEventPlace : oldEventPlaces)
+          {
+            AgendaModuleBean.getClient().removeEventPlace(
+              oldEventPlace.getEventPlaceId());
+          }
+          changedCount++;
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+        errorCount++;
+      }
+    }
+    eventPlacesTabBean.clear();
+    rows = null;
+    growl("EVENTS_PLACE_MODIFIED", new Object[]{changedCount});
+    if (errorCount > 0)
+    {
+      growl("EVENTS_PLACE_NOT_MODIFIED", new Object[]{errorCount});
+    }
+  }
+  
+  public String getChangePlaceMessage()
+  {
+    return getBundleValue(getAgendaBundlePath(),
+      "eventRecurrences_confirmChangePlace",
+      String.valueOf(getOperationEventIds().size()));
+  }
+
   public Date getStartDateTime()
   {
-    Event row = (Event) getValue("#{row}");
+    EventView row = (EventView)getValue("#{row}");
     if (row != null)
     {
       String startDateTime = row.getStartDateTime();
@@ -175,7 +701,7 @@ public class EventRecurrencesTabBean extends TabBean
 
   public Date getEndDateTime()
   {
-    Event row = (Event) getValue("#{row}");
+    EventView row = (EventView)getValue("#{row}");
     if (row != null)
     {
       String endDateTime = row.getEndDateTime();
@@ -188,6 +714,39 @@ public class EventRecurrencesTabBean extends TabBean
       }
     }
     return null;
+  }
+
+  public String getEventPlace()
+  {
+    String roomDescription = null;
+    EventView row = (EventView)getValue("#{row}");
+    if (row != null)
+    {
+      if (!row.getPlaces().isEmpty())
+      {
+        EventPlaceView eventPlace = row.getPlaces().get(0);
+        if (eventPlace.getRoomView() != null)
+        {
+          roomDescription =
+            roomTypeBean.getDescription(
+              eventPlace.getRoomView().getRoomId());
+        }
+        else
+        {
+          if (eventPlace.getAddressView() != null)
+          {
+            roomDescription =
+              addressTypeBean.getDescription(
+                eventPlace.getAddressView().getAddressId());
+          }
+          else
+          {
+            roomDescription = eventPlace.getComments();
+          }
+        }
+      }
+    }
+    return roomDescription;
   }
 
   public void deleteRecurrences()
@@ -232,60 +791,16 @@ public class EventRecurrencesTabBean extends TabBean
     {
       if (!isNew())
       {
-        String filterEventId = null;
-        Event masterEvent = null;
-        if (!isMasterEvent()) //Is a recurring event
-        {
-          filterEventId = getMasterEventId();
-          if (filterEventId != null)
-          {
-            try
-            {
-              EventFilter filter = new EventFilter();
-              filter.getEventId().add(filterEventId);
-              filter.setStartDateTime(FIRST_AVAILABLE_DATE);
-              List<Event> events =
-                AgendaModuleBean.getClient().findEventsFromCache(filter);
-              if (events != null && events.size() > 0)
-                masterEvent = events.get(0);
-            }
-            catch(Exception ex)
-            {
-              masterEvent = null;
-            }
-          }
-        }
-        else
-          filterEventId = getEvent().getEventId();
-
-        rows = new ArrayList();
-        if (masterEvent != null)
-          rows.add(masterEvent);
+        rows = null; //reload
         selectedRows = new ArrayList();
 
-        if (filterEventId != null)
-        {
-          EventFilter filter = new EventFilter();
-          Property masterEventProperty = new Property();
-          masterEventProperty.setName(MASTER_EVENTID_PROPERTY);
-          masterEventProperty.getValue().add(filterEventId);
-          filter.getProperty().add(masterEventProperty);
-          filter.setStartDateTime(FIRST_AVAILABLE_DATE);
-
-          List<Event> events =
-            AgendaModuleBean.getClient().findEventsFromCache(filter);
-          for (Event e : events)
-          {
-            if (!e.getEventId().equals(getObjectId()) &&
-              !e.getEventId().equals(filterEventId))
-              rows.add(e);
-          }
-        }
         //Start a new recurrences schedule
         newSchedule();
 
         if (deleteDateTime == null)
           deleteDateTime = getEvent().getStartDateTime();
+
+        resetOperationsPanel();
       }
     }
     catch (Exception ex)
@@ -319,6 +834,167 @@ public class EventRecurrencesTabBean extends TabBean
     {
       error(ex);
     }
+  }
+
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ activeTabIndex, addedAttPersonId, addedAttTypeId,
+      operationMode, changedPlaceAddressId, changedPlaceRoomId,
+      changedPlaceComments, removedAttPersonId, addedThemeId, removedThemeId };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      load();
+      Object[] stateArray = (Object[])state;
+      activeTabIndex = (int)stateArray[0];
+      addedAttPersonId = (String)stateArray[1];
+      addedAttTypeId = (String)stateArray[2];
+      operationMode = (String)stateArray[3];
+      changedPlaceAddressId = (String)stateArray[4];
+      changedPlaceRoomId = (String)stateArray[5];
+      changedPlaceComments = (String)stateArray[6];
+      removedAttPersonId = (String)stateArray[7];
+      addedThemeId = (String)stateArray[8];
+      removedThemeId = (String)stateArray[9];      
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  private void resetOperationsPanel()
+  {
+    addedAttPersonId = null;
+    addedAttTypeId = null;
+    removedAttPersonId = null;
+    addedThemeId = null;
+    removedThemeId = null;
+    changedPlaceAddressId = null;
+    changedPlaceRoomId = null;
+    changedPlaceComments = null;
+    activeTabIndex = 0;
+    operationMode = "FUTURE";
+  }
+
+  private Set<String> getAllowedAttendantTypeIds()
+  {
+    Set<String> allowedAttendantTypeIds = new HashSet<>();
+    Set<String> baseTypeIds = new HashSet<>();
+    for (EditTab editTab : getObjectBean().getEditTabs())
+    {
+      if ("eventPersonsTabBean".equals(editTab.getBeanName()))
+      {
+        String tabBaseTypeId = getTabBaseTypeId(editTab);
+        if (tabBaseTypeId == null ||
+          tabBaseTypeId.equals("Attendant") ||
+          tabBaseTypeId.equals("sf:Attendant")) //only root type allowed
+        {
+
+          org.santfeliu.dic.Type dicType =
+            TypeCache.getInstance().getType("sf:Attendant");
+          if (dicType != null)
+          {
+            allowedAttendantTypeIds.add(dicType.getTypeId());
+            return allowedAttendantTypeIds;
+          }
+        }
+        else
+        {
+          baseTypeIds.add(tabBaseTypeId);
+        }
+      }
+    }
+    for (String baseTypeId : baseTypeIds)
+    {
+      TypeFilter typeFilter = new TypeFilter();
+      typeFilter.setTypePath("%/" + baseTypeId + "/%");
+      try
+      {
+        List<Type> typeList =
+          DicModuleBean.getPort(true).findTypes(typeFilter);
+        for (Type type : typeList)
+        {
+          if (type.isInstantiable())
+          {
+            allowedAttendantTypeIds.add(type.getTypeId());
+          }
+        }
+      }
+      catch (Exception ex) { }
+    }
+    return allowedAttendantTypeIds;
+  }
+
+  private Set<String> getExistingAttendantPersonIds()
+  {
+    Set<String> existingAttendantPersonIds = new HashSet<>();
+    for (EventView eventView : getRows())
+    {
+      for (AttendantView att : eventView.getAttendants())
+      {
+        existingAttendantPersonIds.add(att.getPersonId());
+      }
+    }
+    return existingAttendantPersonIds;
+  }
+
+  private Set<String> getExistingThemeIds()
+  {
+    Set<String> existingThemeIds = new HashSet<>();
+    for (EventView eventView : getRows())
+    {
+      for (EventThemeView eventThemeView : eventView.getThemes())
+      {
+        existingThemeIds.add(eventThemeView.getThemeId());
+      }
+    }
+    return existingThemeIds;
+  }
+
+  private String getTabBaseTypeId(EditTab editTab)
+  {
+    String tabBaseTypeId = editTab.getBaseTypeId();
+    if (tabBaseTypeId == null)
+    {
+      Event event = eventObjectBean.getObject();
+      if (event != null)
+      {
+        String typeId = event.getEventTypeId();
+        if (typeId != null)
+        {
+          org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
+          if (type != null)
+          {
+            PropertyDefinition propdef =
+              type.getPropertyDefinition("_attendantTypeId");
+            if (propdef != null && !propdef.getValue().isEmpty())
+            {
+              tabBaseTypeId = propdef.getValue().get(0);
+            }
+          }
+        }
+      }
+    }
+    return tabBaseTypeId;
+  }
+
+  private void sortSelectItems(List<SelectItem> selectItems)
+  {
+    Collections.sort(selectItems, new Comparator<SelectItem>()
+      {
+        @Override
+        public int compare(SelectItem o1, SelectItem o2)
+        {
+          return o1.getLabel().compareTo(o2.getLabel());
+        }
+      }
+    );
   }
 
   private int deleteFutureRecurrences(String deleteDateTime)
@@ -362,17 +1038,19 @@ public class EventRecurrencesTabBean extends TabBean
     return deleteCount;
   }
 
-  private int deleteRecurrences(List<Event> events)
+  private int deleteRecurrences(List<EventView> events)
     throws Exception
   {
     return deleteRecurrences(events, null);
   }
 
-  private int deleteRecurrences(List<Event> events, String sdt)
+  private int deleteRecurrences(List<EventView> events, String sdt)
     throws Exception
   {
     int deleteCount = 0;
-    for (Event event : events)
+    BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
+
+    for (EventView event : events)
     {
       if (!event.getEventId().equals(getObjectId()))
       {
@@ -389,6 +1067,7 @@ public class EventRecurrencesTabBean extends TabBean
         {
           AgendaModuleBean.getClient().removeEvent(event.getEventId());
           deleteCount++;
+          if (baseTypeInfo != null) baseTypeInfo.remove(event.getEventId());
         }
       }
     }
@@ -442,6 +1121,58 @@ public class EventRecurrencesTabBean extends TabBean
       }
 
       return event.getEventId();
+    }
+    return null;
+  }
+
+  private List<String> getOperationEventIds()
+  {
+    List<String> result = new ArrayList<>();
+    if ("ALL".equals(getOperationMode()))
+    {
+      for (EventView eventView : getRows())
+      {
+        result.add(eventView.getEventId());
+      }
+    }
+    else //FUTURE
+    {
+      DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+      LocalDateTime currentEventDateTime =
+        LocalDateTime.parse(getEvent().getStartDateTime(), formatter);
+      for (EventView eventView : getRows())
+      {
+        LocalDateTime eventDateTime =
+          LocalDateTime.parse(eventView.getStartDateTime(), formatter);
+        if (eventDateTime.isAfter(currentEventDateTime))
+        {
+          result.add(eventView.getEventId());
+        }
+      }
+    }
+    return result;
+  }
+  
+  private String getAgendaBundlePath()
+  {
+    return "org.santfeliu.agenda.web.resources.AgendaBundle";
+  }
+
+  private String getBundleValue(String bundlePath, String key,
+    String paramValue)
+  {
+    try
+    {
+      ResourceBundle bundle = ResourceBundle.getBundle(bundlePath, getLocale());
+      String pattern = bundle.getString(key);
+      if (pattern != null)
+      {
+        return MessageFormat.format(pattern, paramValue);
+      }
+    }
+    catch (Exception ex)
+    {
     }
     return null;
   }

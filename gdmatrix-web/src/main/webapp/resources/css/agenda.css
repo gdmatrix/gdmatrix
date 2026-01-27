@@ -375,6 +375,60 @@
   font-weight: bold;
 }
 
+.eventRecurrences .operations
+{
+  container-type: inline-size;
+  container-name: operations;
+}
+
+.eventRecurrences .operations .field
+{
+  padding: 0.5rem;
+  margin-bottom: 0;
+}
+
+.eventRecurrences .operations .button
+{
+  padding: 0.5rem;
+  margin-top: 1rem;
+}
+
+@container operations (max-width: 699px)
+{
+  .full
+  {    
+    width: 100%;
+  }
+  
+  .half
+  {
+    width: 100%;   
+  } 
+}
+
+@container operations (min-width: 700px)
+{
+  .full
+  {
+    width: 100%;
+  }
+  
+  .half
+  {
+    width: 50%;   
+  } 
+}
+
+.eventRecurrences .selectBox
+{
+  min-width: 200px !important;
+}
+
+.eventRecurrences .selectBox .ui-selectonemenu-label
+{
+  white-space: normal !important;
+}
+
 /***** event_schedule.xhtml *****/
 .eventSchedule
 {

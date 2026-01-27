@@ -73,7 +73,7 @@
                          oncomplete="PF('eventPlacesDialog').show()" />
         <p:commandButton action="#{eventPlacesTabBean.remove(row)}"
                          process="@this"
-                         update="@form:search_tabs:tabs:event_main_dynamic_properties event_places_table"
+                         update="@form:search_tabs:tabs:event_main_dynamic_properties event_places_table @(.eventRecurrencesTable)"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
@@ -185,7 +185,7 @@
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_places_dialog"
-                         update="@form:search_tabs:tabs:event_main_dynamic_properties event_places_table event_places_panel"
+                         update="@form:search_tabs:tabs:event_main_dynamic_properties event_places_table event_places_panel @(.eventRecurrencesTable)"
                          oncomplete="closePFDialog('eventPlacesDialog')" />
         <p:commandButton action="#{eventPlacesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"

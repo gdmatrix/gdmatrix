@@ -100,6 +100,9 @@ public class EventPersonsTabBean extends TabBean
   @Inject
   TypeTypeBean typeTypeBean;
 
+  @Inject
+  EventRecurrencesTabBean eventRecurrencesTabBean;
+  
   @PostConstruct
   public void init()
   {
@@ -454,6 +457,7 @@ public class EventPersonsTabBean extends TabBean
         executeTabAction(POST_TAB_STORE_ACTION, editing);
         refreshHiddenTabInstances();
         load();
+        eventRecurrencesTabBean.load();
         editing = null;
         growl("STORE_OBJECT");
       }
@@ -475,6 +479,7 @@ public class EventPersonsTabBean extends TabBean
         executeTabAction(POST_TAB_REMOVE_ACTION, row);
         refreshHiddenTabInstances();
         load();
+        eventRecurrencesTabBean.load();
         growl("REMOVE_OBJECT");
       }
       catch (Exception ex)

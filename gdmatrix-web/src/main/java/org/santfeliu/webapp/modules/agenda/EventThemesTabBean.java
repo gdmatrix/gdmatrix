@@ -71,6 +71,9 @@ public class EventThemesTabBean extends TabBean
   @Inject
   ThemeObjectBean themeObjectBean;
 
+  @Inject
+  EventRecurrencesTabBean eventRecurrencesTabBean;
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -181,6 +184,7 @@ public class EventThemesTabBean extends TabBean
         executeTabAction(POST_TAB_STORE_ACTION, editing);
         editing = null;
         load();
+        eventRecurrencesTabBean.load();
         growl("STORE_OBJECT");
       }
     }
@@ -206,8 +210,8 @@ public class EventThemesTabBean extends TabBean
       row = (EventThemeView)executeTabAction(PRE_TAB_REMOVE_ACTION, row);
       AgendaModuleBean.getClient(false).removeEventTheme(rowEventThemeId);
       executeTabAction(POST_TAB_REMOVE_ACTION, row);
-      
       load();
+      eventRecurrencesTabBean.load();
       growl("REMOVE_OBJECT");
     }
     catch (Exception ex)

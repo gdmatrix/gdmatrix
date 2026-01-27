@@ -78,6 +78,9 @@ public class EventPlacesTabBean extends TabBean
   @Inject
   RoomObjectBean roomObjectBean;
 
+  @Inject
+  EventRecurrencesTabBean eventRecurrencesTabBean;
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -253,6 +256,7 @@ public class EventPlacesTabBean extends TabBean
         executeTabAction(POST_TAB_STORE_ACTION, editing);
         editing = null;
         load();
+        eventRecurrencesTabBean.load();
         growl("STORE_OBJECT");
       }
     }
@@ -280,8 +284,8 @@ public class EventPlacesTabBean extends TabBean
       row = (EventPlaceView)executeTabAction(PRE_TAB_REMOVE_ACTION, row);
       AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
       executeTabAction(POST_TAB_REMOVE_ACTION, row);
-
       load();
+      eventRecurrencesTabBean.load();
       growl("REMOVE_OBJECT");
     }
     catch (Exception ex)

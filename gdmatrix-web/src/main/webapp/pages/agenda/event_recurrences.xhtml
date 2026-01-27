@@ -3,7 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:gdm="http://gdmatrix.org/faces"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <h:outputStylesheet library="css" name="agenda.css" />
 
@@ -34,17 +35,17 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
-
-      <p:column selectionMode="multiple" styleClass="eventSelected" selectRow="false" />      
+     
+      <p:column selectionMode="multiple" styleClass="eventSelected" selectRow="false" />
       
-      <p:column headerText="#{agendaBundle.event_id}" styleClass="col-1 eventId"
-                rendered="#{row.eventId != eventObjectBean.objectId}"
+      <p:column headerText="#{agendaBundle.event_id}" 
+                styleClass="col-1 eventId#{row.eventId == eventObjectBean.objectId ? ' current' : ''}"
                 selectRow="false">
         <h:outputText value="#{row.eventId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.event_summary}" styleClass="col-11 eventSummary"
-                rendered="#{row.eventId != eventObjectBean.objectId}"
+      <p:column headerText="#{agendaBundle.event_summary}" 
+                styleClass="col-6 eventSummary#{row.eventId == eventObjectBean.objectId ? ' current' : ''}"
                 selectRow="false">
         <div>
           <h:outputText value="#{eventRecurrencesTabBean.startDateTime}">
@@ -60,9 +61,14 @@
         </div>
       </p:column>
 
-      <p:column styleClass="eventActions text-right white-space-nowrap" exportable="false"
-                rendered="#{row.eventId != eventObjectBean.objectId}"
+      <p:column headerText="#{agendaBundle.event_place}" 
+                styleClass="col-5 eventPlace#{row.eventId == eventObjectBean.objectId ? ' current' : ''}"
                 selectRow="false">
+        <h:outputText value="#{eventRecurrencesTabBean.eventPlace}" />
+      </p:column>
+
+      <p:column styleClass="eventActions text-right white-space-nowrap"                
+                exportable="false" selectRow="false">
         <p:commandButton icon="pi pi-arrow-circle-right"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.view(row.eventId)}"
@@ -71,62 +77,410 @@
                          process="@this"
                          oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
                          update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
-                         title="#{objectBundle.show}" alt="#{objectBundle.show}" />
+                         title="#{objectBundle.show}" alt="#{objectBundle.show}"
+                         rendered="#{row.eventId != eventObjectBean.objectId}" />
       </p:column>
 
     </p:dataTable>
 
-    <p:outputPanel id="delete_recurrences_panel"
-                   rendered="#{!empty eventRecurrencesTabBean.rows and eventObjectBean.editable}"
-                   styleClass="eventRecurrencesDeletePanel">
-      <div class="containerTitle">
-        <p:outputLabel value="#{agendaBundle.eventRecurrences_deleteTitle}"/>
-      </div>
-      <p:outputPanel id="customPanel" styleClass="actionsContainer">
-        <p:selectOneRadio id="deleteRecurrencesRadio" value="#{eventRecurrencesTabBean.deleteMode}"
-                          layout="custom" converter="#{Integer}">
-          <f:selectItem itemValue="0" />
-          <f:selectItem itemValue="1" />
-          <f:selectItem itemValue="2" />
-          <f:facet name="custom">
-            <span class="field-radiobutton flex" role="radio">
-              <p:radioButton for="deleteRecurrencesRadio" itemIndex="0"/>
-              <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}:" />
-              <p:datePicker value="#{eventRecurrencesTabBean.deleteDateTime}"
-                            locale="#{eventRecurrencesTabBean.language}" converter="datePickerConverter"
-                            showIcon="true" showTime="false"
-                            autocomplete="off"
-                            pattern="dd/MM/yyyy"
-                            placeholder="dd/MM/yyyy"
-                            showOnFocus="false"
-                            monthNavigator="true" yearNavigator="true"
-                            styleClass="inputDate" />
-            </span>
-            <span class="field-radiobutton" role="radio">
-              <p:radioButton for="deleteRecurrencesRadio" itemIndex="1"/>
-              <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteAllRecurrences}" />
-            </span>
-            <span class="field-radiobutton" role="radio">
-              <p:radioButton for="deleteRecurrencesRadio" itemIndex="2"/>
-              <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteSelectedRecurrences}" />
-            </span>
-          </f:facet>
-        </p:selectOneRadio>
-      </p:outputPanel>
-      <p:outputPanel>
-        <p:commandButton action="#{eventRecurrencesTabBean.deleteRecurrences}"
-                         alt="#{agendaBundle.eventRecurrences_deleteRecurrences}"
-                         title="#{agendaBundle.eventRecurrences_deleteRecurrences}"
-                         value="#{agendaBundle.eventRecurrences_deleteRecurrences}"
-                         styleClass="removeButton"
-                         process="event_recurrences_table delete_recurrences_panel"
-                         update="event_recurrences_panel">
-          <p:confirm header="#{objectBundle.confirm_remove_header}"
-                     message="#{agendaBundle.eventRecurrences_confirmDeleteRecurrences}"
-                     icon="pi pi-info-circle" />
-        </p:commandButton>
-      </p:outputPanel>
-    </p:outputPanel>
+    <p:accordionPanel id="recurrences_accordion"
+                      styleClass="mt-2 top_rounded_panel operations">
+
+      <p:tab title="#{agendaBundle.eventRecurrences_recurrencesOperations}">
+
+        <p:tabView id="recurrences_tabview" styleClass="recurrences_tabview"
+                   activeIndex="#{eventRecurrencesTabBean.activeTabIndex}">
+
+          <p:ajax event="tabChange" process="@this" />
+
+          <p:tab title="#{agendaBundle.eventRecurrences_addAttendant}"
+                 disabled="#{empty eventRecurrencesTabBean.allowedAttendantTypes}">
+
+            <p:outputPanel id="add_attendant_panel" styleClass="flex add_attendant_panel">
+
+              <div class="field half">
+                <p:outputLabel for="@next"
+                               value="#{agendaBundle.eventRecurrences_person}"
+                               styleClass="w-full" indicateRequired="true" />
+                <emcomp:objectReference value="#{eventRecurrencesTabBean.addedAttPersonId}"
+                                        type="Person"
+                                        process="@(.add_attendant_panel)"
+                                        update="@(.add_attendant_panel)"
+                                        styleClass="w-full"
+                                        scrollHeight="200"
+                                        queryDelay="1000"
+                                        minQueryLength="3"
+                                        autoUpdate="false">
+                </emcomp:objectReference>
+              </div>
+
+              <div class="field half">
+                <p:outputLabel  for="@next"
+                                value="#{agendaBundle.eventRecurrences_type}"
+                                styleClass="w-full" indicateRequired="true" />
+                <p:selectOneMenu value="#{eventRecurrencesTabBean.addedAttTypeId}"
+                                 styleClass="inputfield selectBox"
+                                 required="#{not empty param['mainform:search_tabs:tabs:recurrences_accordion:recurrences_tabview:add_attendant_button']}"
+                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
+                  <f:selectItems value="#{eventRecurrencesTabBean.allowedAttendantTypes}" />
+                </p:selectOneMenu>
+              </div>
+
+              <p:outputPanel styleClass="field full"
+                             rendered="#{not empty eventRecurrencesTabBean.rows}">
+
+                <p:selectOneRadio value="#{eventRecurrencesTabBean.operationMode}"
+                                  layout="lineDirection" styleClass="flex flex-wrap" columnClasses="mr-4 mt-2">
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_fromCurrentEvent}"
+                                itemValue="FUTURE" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
+                                itemValue="ALL" />
+                  <p:ajax event="change"
+                          process="@this" update="add_attendant_dialog" />
+                </p:selectOneRadio>
+              </p:outputPanel>
+
+              <div class="text-left button">
+                <p:commandButton id="add_attendant_button"
+                                 value="#{agendaBundle.eventRecurrences_add}"
+                                 onclick="PF('addAttendantConfirm').show(); return false;"
+                                 process="@none" />
+                <p:confirmDialog id="add_attendant_dialog"
+                                 showEffect="fade" hideEffect="fade" responsive="true" width="350"
+                                 widgetVar="addAttendantConfirm"
+                                 appendTo="@(form)"
+                                 header="#{agendaBundle.eventRecurrences_addAttendant}"
+                                 message="#{eventRecurrencesTabBean.addAttendantMessage}">
+                  <p:commandButton value="#{objectBundle.cancel}"
+                                   icon="pi pi-times"
+                                   onclick="PF('addAttendantConfirm').hide();"
+                                   type="button" styleClass="ui-confirmdialog-no" />
+                  <p:commandButton value="#{objectBundle.add}"
+                                   icon="pi pi-save"
+                                   styleClass="ui-confirmdialog-yes ui-button-success"
+                                   action="#{eventRecurrencesTabBean.addAttendant}"
+                                   process="@this add_attendant_panel"
+                                   update="@form:cnt"
+                                   oncomplete="PF('addAttendantConfirm').hide();" />
+                </p:confirmDialog>
+              </div>
+
+            </p:outputPanel>
+
+          </p:tab>
+
+          <p:tab title="#{agendaBundle.eventRecurrences_removeAttendant}"
+                 disabled="#{empty eventRecurrencesTabBean.existingAttendants}">
+
+            <p:outputPanel id="remove_attendant_panel" styleClass="flex remove_attendant_panel">
+
+              <div class="field full">
+                <p:outputLabel for="@next"
+                               value="#{agendaBundle.eventRecurrences_person}"
+                               styleClass="w-full" indicateRequired="true" />
+                <p:selectOneMenu value="#{eventRecurrencesTabBean.removedAttPersonId}"
+                                 styleClass="inputfield selectBox"
+                                 required="#{not empty param['mainform:search_tabs:tabs:recurrences_accordion:recurrences_tabview:remove_attendant_button']}"
+                                 requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}">
+                  <f:selectItems value="#{eventRecurrencesTabBean.existingAttendants}" />
+                </p:selectOneMenu>
+              </div>
+
+              <p:outputPanel styleClass="field full"
+                             rendered="#{not empty eventRecurrencesTabBean.rows}">
+                <p:selectOneRadio value="#{eventRecurrencesTabBean.operationMode}"
+                                  layout="lineDirection" styleClass="flex flex-wrap" columnClasses="mr-4 mt-2">
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_fromCurrentEvent}"
+                                itemValue="FUTURE" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
+                                itemValue="ALL" />
+                  <p:ajax event="change"
+                          process="@this" update="remove_attendant_button" />
+                </p:selectOneRadio>
+              </p:outputPanel>
+
+              <div class="text-left button">
+                <p:commandButton id="remove_attendant_button"
+                                 action="#{eventRecurrencesTabBean.removeAttendant}"
+                                 value="#{agendaBundle.eventRecurrences_remove}"
+                                 process="@this remove_attendant_panel"
+                                 update="@form:cnt">
+                  <p:confirm header="#{agendaBundle.eventRecurrences_removeAttendant}"
+                             message="#{eventRecurrencesTabBean.removeAttendantMessage}"
+                             icon="pi pi-info-circle" />
+                </p:commandButton>
+              </div>
+
+            </p:outputPanel>
+
+          </p:tab>
+
+          <p:tab title="#{agendaBundle.eventRecurrences_addTheme}">
+
+            <p:outputPanel id="add_theme_panel" styleClass="flex add_theme_panel">
+
+              <div class="field full">
+                <p:outputLabel for="@next"
+                               value="#{agendaBundle.eventRecurrences_theme}"
+                               styleClass="w-full" indicateRequired="true" />
+                <p:selectOneMenu value="#{eventRecurrencesTabBean.addedThemeId}"
+                                 styleClass="inputfield selectBox"
+                                 filter="true" filterMatchMode="contains">
+                  <f:selectItem itemLabel="" itemValue="" />
+                  <f:selectItems value="#{themeTypeBean.selectItems}" />
+                </p:selectOneMenu>
+
+              </div>
+
+              <p:outputPanel styleClass="field full"
+                             rendered="#{not empty eventRecurrencesTabBean.rows}">
+                <p:selectOneRadio value="#{eventRecurrencesTabBean.operationMode}"
+                                  layout="lineDirection" styleClass="flex flex-wrap" columnClasses="mr-4 mt-2">
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_fromCurrentEvent}"
+                                itemValue="FUTURE" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
+                                itemValue="ALL" />
+                  <p:ajax event="change"
+                          process="@this" update="add_theme_dialog" />
+                </p:selectOneRadio>
+              </p:outputPanel>
+
+              <div class="text-left button">
+                <p:commandButton id="add_theme_button"
+                                 value="#{agendaBundle.eventRecurrences_add}"
+                                 onclick="PF('addThemeConfirm').show(); return false;"
+                                 process="@none" />
+                <p:confirmDialog id="add_theme_dialog"
+                                 showEffect="fade" hideEffect="fade" responsive="true" width="350"
+                                 widgetVar="addThemeConfirm"
+                                 appendTo="@(form)"
+                                 header="#{agendaBundle.eventRecurrences_addTheme}"
+                                 message="#{eventRecurrencesTabBean.addThemeMessage}">
+                  <p:commandButton value="#{objectBundle.cancel}"
+                                   icon="pi pi-times"
+                                   onclick="PF('addThemeConfirm').hide();"
+                                   type="button" styleClass="ui-confirmdialog-no" />
+                  <p:commandButton value="#{objectBundle.add}"
+                                   icon="pi pi-save"
+                                   styleClass="ui-confirmdialog-yes ui-button-success"
+                                   action="#{eventRecurrencesTabBean.addTheme}"
+                                   process="@this add_theme_panel"
+                                   update="@form:cnt"
+                                   oncomplete="PF('addThemeConfirm').hide();" />
+                </p:confirmDialog>
+              </div>
+
+            </p:outputPanel>
+
+          </p:tab>
+
+          <p:tab title="#{agendaBundle.eventRecurrences_removeTheme}"
+                 disabled="#{empty eventRecurrencesTabBean.existingThemes}">
+
+            <p:outputPanel id="remove_theme_panel" styleClass="flex remove_theme_panel">
+
+              <div class="field full">
+                <p:outputLabel  for="@next"
+                                value="#{agendaBundle.eventRecurrences_theme}"
+                                styleClass="w-full" indicateRequired="true" />
+                <p:selectOneMenu value="#{eventRecurrencesTabBean.removedThemeId}"
+                                 styleClass="inputfield selectBox"
+                                 required="#{not empty param['mainform:search_tabs:tabs:recurrences_accordion:recurrences_tabview:remove_theme_button']}"
+                                 requiredMessage="#{messageBundle.THEME_MUST_BE_SELECTED}">
+                  <f:selectItems value="#{eventRecurrencesTabBean.existingThemes}" />
+                </p:selectOneMenu>
+              </div>
+
+              <p:outputPanel styleClass="field full"
+                             rendered="#{not empty eventRecurrencesTabBean.rows}">
+                <p:selectOneRadio value="#{eventRecurrencesTabBean.operationMode}"
+                                  layout="lineDirection" styleClass="flex flex-wrap" columnClasses="mr-4 mt-2">
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_fromCurrentEvent}"
+                                itemValue="FUTURE" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
+                                itemValue="ALL" />
+                  <p:ajax event="change"
+                          process="@this" update="remove_theme_button" />
+                </p:selectOneRadio>
+              </p:outputPanel>
+
+              <div class="text-left button">
+                <p:commandButton id="remove_theme_button"
+                                 action="#{eventRecurrencesTabBean.removeTheme}"
+                                 value="#{agendaBundle.eventRecurrences_remove}"
+                                 process="@this remove_theme_panel"
+                                 update="@form:cnt">
+                  <p:confirm header="#{agendaBundle.eventRecurrences_removeTheme}"
+                             message="#{eventRecurrencesTabBean.removeThemeMessage}"
+                             icon="pi pi-info-circle" />
+                </p:commandButton>
+
+              </div>
+
+            </p:outputPanel>
+
+          </p:tab>
+
+          <p:tab title="#{agendaBundle.eventRecurrences_changePlace}">
+
+            <p:outputPanel id="change_place_panel" styleClass="flex change_place_panel">
+
+              <!-- Address -->
+              <div class="field half">
+                <p:outputLabel for="@next"
+                               value="#{agendaBundle.eventPlaces_address}"
+                               styleClass="w-full" />
+                <emcomp:objectReference id="changedAddress"
+                                        value="#{eventRecurrencesTabBean.changedPlaceAddressId}"
+                                        type="Address"
+                                        process="@(.change_place_panel)"
+                                        update="@(.change_place_panel)"
+                                        styleClass="w-full"
+                                        scrollHeight="200"
+                                        queryDelay="1000"
+                                        minQueryLength="3"
+                                        widgetVar="changedAddressAutocomplete"
+                                        autoUpdate="false">
+                  <p:ajax event="itemSelect" process="@this" update="@root:@id(changedRoom):autocomplete" />
+                  <p:ajax event="clear" process="@this" oncomplete="PF('changedRoomAutocomplete').clear()"
+                          listener="#{eventRecurrencesTabBean.onClearChangedPlaceAddress()}" />
+                </emcomp:objectReference>
+              </div>
+
+              <!-- Room -->
+              <div class="field half">
+                <p:outputLabel for="@next"
+                               value="#{agendaBundle.eventPlaces_room}"
+                               styleClass="w-full"/>
+                <emcomp:objectReference id="changedRoom"
+                                        value="#{eventRecurrencesTabBean.changedPlaceRoomId}"
+                                        type="Room"
+                                        process="@(.change_place_panel)"
+                                        styleClass="w-full"
+                                        scrollHeight="200"
+                                        queryDelay="1000"
+                                        minQueryLength="3"
+                                        widgetVar="changedRoomAutocomplete"
+                                        autoUpdate="false">
+                  <p:ajax event="itemSelect" process="@this" update="@root:@id(changedAddress):autocomplete" />
+                  <p:ajax event="clear" process="@this" oncomplete="PF('changedAddressAutocomplete').clear()"
+                          listener="#{eventRecurrencesTabBean.onClearChangedPlaceRoom()}" />
+                </emcomp:objectReference>
+              </div>
+
+              <!-- Comments -->
+              <div class="field full">
+                <p:outputLabel for="comments"
+                               value="#{agendaBundle.eventPlaces_comments}"/>
+                <p:inputTextarea id="comments" value="#{eventRecurrencesTabBean.changedPlaceComments}"
+                                 styleClass="inputfield w-full" autoResize="false" />
+              </div>
+
+              <p:outputPanel styleClass="field full"
+                             rendered="#{not empty eventRecurrencesTabBean.rows}">
+                <p:selectOneRadio value="#{eventRecurrencesTabBean.operationMode}"
+                                  layout="lineDirection" styleClass="flex flex-wrap" columnClasses="mr-4 mt-2">
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_fromCurrentEvent}"
+                                itemValue="FUTURE" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
+                                itemValue="ALL" />
+                  <p:ajax event="change"
+                          process="@this" update="change_place_dialog" />
+                </p:selectOneRadio>
+              </p:outputPanel>
+
+              <div class="text-left button">
+                <p:commandButton id="change_place_button"
+                                 value="#{agendaBundle.eventRecurrences_change}"
+                                 onclick="PF('changePlaceConfirm').show(); return false;"
+                                 process="@none" />
+                <p:confirmDialog id="change_place_dialog"
+                                 showEffect="fade" hideEffect="fade" responsive="true" width="350"
+                                 widgetVar="changePlaceConfirm"
+                                 appendTo="@(form)"
+                                 header="#{agendaBundle.eventRecurrences_changePlace}"
+                                 message="#{eventRecurrencesTabBean.changePlaceMessage}">
+                  <p:commandButton value="#{objectBundle.cancel}"
+                                   icon="pi pi-times"
+                                   onclick="PF('changePlaceConfirm').hide();"
+                                   type="button" styleClass="ui-confirmdialog-no" />
+                  <p:commandButton value="#{objectBundle.change}"
+                                   icon="pi pi-save"
+                                   styleClass="ui-confirmdialog-yes ui-button-success"
+                                   action="#{eventRecurrencesTabBean.changePlace}"
+                                   process="@this change_place_panel"
+                                   update="@form:cnt"
+                                   oncomplete="PF('changePlaceConfirm').hide();" />
+                </p:confirmDialog>
+              </div>
+
+            </p:outputPanel>
+
+          </p:tab>
+
+          <p:tab title="#{agendaBundle.eventRecurrences_deleteRecurrences}">
+
+            <p:outputPanel id="delete_recurrences_panel"
+                           rendered="#{!empty eventRecurrencesTabBean.rows and eventObjectBean.editable}"
+                           styleClass="eventRecurrencesDeletePanel">
+              <div class="containerTitle">
+                <p:outputLabel value="#{agendaBundle.eventRecurrences_deleteTitle}"/>
+              </div>
+              <p:outputPanel id="customPanel" styleClass="actionsContainer">
+                <p:selectOneRadio id="deleteRecurrencesRadio" value="#{eventRecurrencesTabBean.deleteMode}"
+                                  layout="custom" converter="#{Integer}">
+                  <f:selectItem itemValue="0" />
+                  <f:selectItem itemValue="1" />
+                  <f:selectItem itemValue="2" />
+                  <f:facet name="custom">
+                    <span class="field-radiobutton flex" role="radio">
+                      <p:radioButton for="deleteRecurrencesRadio" itemIndex="0"/>
+                      <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}:" />
+                      <p:datePicker value="#{eventRecurrencesTabBean.deleteDateTime}"
+                                    locale="#{eventRecurrencesTabBean.language}" converter="datePickerConverter"
+                                    showIcon="true" showTime="false"
+                                    autocomplete="off"
+                                    pattern="dd/MM/yyyy"
+                                    placeholder="dd/MM/yyyy"
+                                    showOnFocus="false"
+                                    monthNavigator="true" yearNavigator="true"
+                                    styleClass="inputDate" />
+                    </span>
+                    <span class="field-radiobutton" role="radio">
+                      <p:radioButton for="deleteRecurrencesRadio" itemIndex="1"/>
+                      <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteAllRecurrences}" />
+                    </span>
+                    <span class="field-radiobutton" role="radio">
+                      <p:radioButton for="deleteRecurrencesRadio" itemIndex="2"/>
+                      <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteSelectedRecurrences}" />
+                    </span>
+                  </f:facet>
+                </p:selectOneRadio>
+              </p:outputPanel>
+              <div class="button">
+                <p:commandButton action="#{eventRecurrencesTabBean.deleteRecurrences}"
+                                 alt="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                                 title="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                                 value="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                                 styleClass="removeButton"
+                                 process="@(.eventRecurrencesTable) delete_recurrences_panel"
+                                 update="@(.eventRecurrences) @form:cnt:context_panel">
+                  <p:confirm header="#{objectBundle.confirm_remove_header}"
+                             message="#{agendaBundle.eventRecurrences_confirmDeleteRecurrences}"
+                             icon="pi pi-info-circle" />
+                </p:commandButton>
+              </div>
+            </p:outputPanel>
+
+          </p:tab>
+
+        </p:tabView>
+
+      </p:tab>
+
+      <p:ajax event="tabChange" />
+
+    </p:accordionPanel>
 
     <p:dialog id="event_copy_dialog" widgetVar="eventCopyDialog"
               styleClass="eventRecurrences dialog"
