@@ -328,7 +328,9 @@ public class HttpClient
     if (content == null) return null;
 
     String contentType = getContentType();
-    if (contentType != null && !contentType.startsWith("text/xml")) return null;
+    if (contentType != null && 
+        !contentType.startsWith("text/xml") && 
+        !contentType.startsWith("application/xml")) return null;
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
@@ -412,9 +414,9 @@ public class HttpClient
     String contentType = getHeaderProperty("Content-Type");
     if (contentType == null || downloadContentType == null) return true;
     
-    if (!contentType.startsWith(downloadContentType)) return false;
-    
-    return true;
+    if (contentType.startsWith("application/json")) return true;
+    if (contentType.startsWith("application/xml")) return true;
+    return contentType.startsWith(downloadContentType);
   }
   
   private void setRequestProperties(URLConnection conn)
