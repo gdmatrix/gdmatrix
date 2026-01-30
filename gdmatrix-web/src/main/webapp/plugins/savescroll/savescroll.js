@@ -1,5 +1,7 @@
 function saveScroll()
 {
+  if (!document.getElementById('__SAVESCROLL')) return;
+  
   var sScroll;
   if (document.documentElement && document.documentElement.scrollTop)
     sScroll = document.documentElement.scrollTop;
@@ -14,6 +16,8 @@ function saveScroll()
 
 function restoreScroll()
 {
+  if (!document.getElementById('__SAVESCROLL')) return;
+
   var sScroll = document.getElementById('__SAVESCROLL').value;
   if (sScroll > 0)
   {
