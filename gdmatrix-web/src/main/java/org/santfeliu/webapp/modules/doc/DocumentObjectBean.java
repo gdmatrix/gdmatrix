@@ -588,6 +588,8 @@ public class DocumentObjectBean extends ObjectBean
       {
         document = getPort(false).loadDocument(
           objectId, version, ContentInfo.METADATA);
+        
+        clear();
       }
       catch (Exception ex)
       {
