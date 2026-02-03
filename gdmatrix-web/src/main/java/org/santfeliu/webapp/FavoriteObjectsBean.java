@@ -37,6 +37,7 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -128,7 +129,8 @@ public class FavoriteObjectsBean implements Serializable
       if (o instanceof FavoriteObject)
       {
         FavoriteObject other = (FavoriteObject)o;
-        return description.compareTo(other.description);
+        return StringUtils.defaultString(description).compareTo(
+          StringUtils.defaultString(other.description));
       }
       return -1;
     }
