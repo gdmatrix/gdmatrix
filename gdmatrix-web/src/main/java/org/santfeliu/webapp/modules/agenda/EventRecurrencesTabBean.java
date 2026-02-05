@@ -101,6 +101,7 @@ public class EventRecurrencesTabBean extends TabBean
 
   private int activeTabIndex = 0;
   private String operationMode = "FUTURE";
+  private Set<String> allowedAttendantTypeIds = null;
 
   //Added att
   private String addedAttPersonId;
@@ -476,7 +477,7 @@ public class EventRecurrencesTabBean extends TabBean
       return;
     }
     int count = 0;
-    List<String> eventIdList = getOperationEventIds();
+    List<String> eventIdList = getAddAttendantEventIds(addedAttPersonId);
     for (String eventId : eventIdList)
     {
       try
@@ -499,15 +500,37 @@ public class EventRecurrencesTabBean extends TabBean
 
   public String getAddAttendantMessage()
   {
-    return getBundleValue(getAgendaBundlePath(),
-      "eventRecurrences_confirmAddAttendant",
-      String.valueOf(getOperationEventIds().size()));
+    if (addedAttPersonId == null)
+    {
+      return getBundleValue(getAgendaBundlePath(),
+        "eventRecurrences_noPersonSelected");
+    }
+    else
+    {
+      int changes = getAddAttendantEventIds(addedAttPersonId).size();
+      if (changes == 0)
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_noChangesToBeMade");
+      }
+      else
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_confirmAddAttendant", String.valueOf(changes));
+      }
+    }
+  }
+
+  public boolean isAddAttendantAvailable()
+  {
+    return (addedAttPersonId != null &&
+      !getAddAttendantEventIds(addedAttPersonId).isEmpty());
   }
 
   public void removeAttendant()
   {
-    int removedCount = 0;
-    List<String> eventIdList = getOperationEventIds();
+    int count = 0;
+    List<String> eventIdList = getRemoveAttendantEventIds(removedAttPersonId);
     for (String eventId : eventIdList)
     {
       try
@@ -523,7 +546,7 @@ public class EventRecurrencesTabBean extends TabBean
           for (Attendant att : attList)
           {
             AgendaModuleBean.getClient().removeAttendant(att.getAttendantId());
-            removedCount++;
+            count++;
           }
         }
       }
@@ -538,14 +561,36 @@ public class EventRecurrencesTabBean extends TabBean
     {
       activeTabIndex = 0;
     }
-    growl("REMOVED_ATTENDANTS", new Object[]{removedCount});
+    growl("REMOVED_ATTENDANTS", new Object[]{count});
   }
 
   public String getRemoveAttendantMessage()
   {
-    return getBundleValue(getAgendaBundlePath(),
-      "eventRecurrences_confirmRemoveAttendant",
-      String.valueOf(getOperationEventIds().size()));
+    if (removedAttPersonId == null)
+    {
+      return getBundleValue(getAgendaBundlePath(),
+        "eventRecurrences_noPersonSelected");
+    }
+    else
+    {
+      int changes = getRemoveAttendantEventIds(removedAttPersonId).size();
+      if (changes == 0)
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_noChangesToBeMade");
+      }
+      else
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_confirmRemoveAttendant", String.valueOf(changes));
+      }
+    }
+  }
+
+  public boolean isRemoveAttendantAvailable()
+  {
+    return (removedAttPersonId != null &&
+      !getRemoveAttendantEventIds(removedAttPersonId).isEmpty());
   }
 
   public void addTheme()
@@ -556,7 +601,7 @@ public class EventRecurrencesTabBean extends TabBean
       return;
     }
     int count = 0;
-    List<String> eventIdList = getOperationEventIds();
+    List<String> eventIdList = getAddThemeEventIds(addedThemeId);
     for (String eventId : eventIdList)
     {
       try
@@ -578,15 +623,37 @@ public class EventRecurrencesTabBean extends TabBean
 
   public String getAddThemeMessage()
   {
-    return getBundleValue(getAgendaBundlePath(),
-      "eventRecurrences_confirmAddTheme",
-      String.valueOf(getOperationEventIds().size()));
+    if (addedThemeId == null)
+    {
+      return getBundleValue(getAgendaBundlePath(),
+        "eventRecurrences_noThemeSelected");
+    }
+    else
+    {
+      int changes = getAddThemeEventIds(addedThemeId).size();
+      if (changes == 0)
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_noChangesToBeMade");
+      }
+      else
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_confirmAddTheme", String.valueOf(changes));
+      }
+    }
   }
 
+  public boolean isAddThemeAvailable()
+  {
+    return (addedThemeId != null &&
+      !getAddThemeEventIds(addedThemeId).isEmpty());
+  }
+  
   public void removeTheme()
   {
     int count = 0;
-    List<String> eventIdList = getOperationEventIds();
+    List<String> eventIdList = getRemoveThemeEventIds(removedThemeId);
     for (String eventId : eventIdList)
     {
       try
@@ -623,16 +690,38 @@ public class EventRecurrencesTabBean extends TabBean
 
   public String getRemoveThemeMessage()
   {
-    return getBundleValue(getAgendaBundlePath(),
-      "eventRecurrences_confirmRemoveTheme",
-      String.valueOf(getOperationEventIds().size()));
+    if (removedThemeId == null)
+    {
+      return getBundleValue(getAgendaBundlePath(),
+        "eventRecurrences_noThemeSelected");
+    }
+    else
+    {
+      int changes = getRemoveThemeEventIds(removedThemeId).size();
+      if (changes == 0)
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_noChangesToBeMade");
+      }
+      else
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_confirmRemoveTheme", String.valueOf(changes));
+      }
+    }
+  }
+
+  public boolean isRemoveThemeAvailable()
+  {
+    return (removedThemeId != null &&
+      !getRemoveThemeEventIds(removedThemeId).isEmpty());
   }
 
   public void changePlace()
   {
     int changedCount = 0;
     int errorCount = 0;
-    List<String> eventIdList = getOperationEventIds();
+    List<String> eventIdList = getChangePlaceEventIds();
     for (String eventId : eventIdList)
     {
       try
@@ -677,9 +766,39 @@ public class EventRecurrencesTabBean extends TabBean
   
   public String getChangePlaceMessage()
   {
-    return getBundleValue(getAgendaBundlePath(),
-      "eventRecurrences_confirmChangePlace",
-      String.valueOf(getOperationEventIds().size()));
+    if (StringUtils.isBlank(changedPlaceAddressId) &&
+      StringUtils.isBlank(changedPlaceRoomId) &&
+      StringUtils.isBlank(changedPlaceComments))
+    {
+      return getBundleValue(getAgendaBundlePath(),
+        "eventRecurrences_noValidPlaceSelected");
+    }
+    else
+    {
+      int changes = getChangePlaceEventIds().size();
+      if (changes == 0)
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_noChangesToBeMade");
+      }
+      else
+      {
+        return getBundleValue(getAgendaBundlePath(),
+          "eventRecurrences_confirmChangePlace", String.valueOf(changes));
+      }
+    }
+  }
+
+  public boolean isChangePlaceAvailable()
+  {
+    return (
+      (
+        !StringUtils.isBlank(changedPlaceAddressId) ||
+        !StringUtils.isBlank(changedPlaceRoomId) ||
+        !StringUtils.isBlank(changedPlaceComments)
+      ) &&
+      !getChangePlaceEventIds().isEmpty()
+    );
   }
 
   public Date getStartDateTime()
@@ -841,7 +960,8 @@ public class EventRecurrencesTabBean extends TabBean
   {
     return new Object[]{ activeTabIndex, addedAttPersonId, addedAttTypeId,
       operationMode, changedPlaceAddressId, changedPlaceRoomId,
-      changedPlaceComments, removedAttPersonId, addedThemeId, removedThemeId };
+      changedPlaceComments, removedAttPersonId, addedThemeId, removedThemeId,
+      allowedAttendantTypeIds };
   }
 
   @Override
@@ -860,7 +980,8 @@ public class EventRecurrencesTabBean extends TabBean
       changedPlaceComments = (String)stateArray[6];
       removedAttPersonId = (String)stateArray[7];
       addedThemeId = (String)stateArray[8];
-      removedThemeId = (String)stateArray[9];      
+      removedThemeId = (String)stateArray[9];
+      allowedAttendantTypeIds = (Set<String>)stateArray[10];
     }
     catch (Exception ex)
     {
@@ -880,53 +1001,56 @@ public class EventRecurrencesTabBean extends TabBean
     changedPlaceComments = null;
     activeTabIndex = 0;
     operationMode = "FUTURE";
+    allowedAttendantTypeIds = null;
   }
 
   private Set<String> getAllowedAttendantTypeIds()
   {
-    Set<String> allowedAttendantTypeIds = new HashSet<>();
-    Set<String> baseTypeIds = new HashSet<>();
-    for (EditTab editTab : getObjectBean().getEditTabs())
+    if (allowedAttendantTypeIds == null)
     {
-      if ("eventPersonsTabBean".equals(editTab.getBeanName()))
+      allowedAttendantTypeIds = new HashSet<>();
+      Set<String> baseTypeIds = new HashSet<>();
+      for (EditTab editTab : getObjectBean().getEditTabs())
       {
-        String tabBaseTypeId = getTabBaseTypeId(editTab);
-        if (tabBaseTypeId == null ||
-          tabBaseTypeId.equals("Attendant") ||
-          tabBaseTypeId.equals("sf:Attendant")) //only root type allowed
+        if ("eventPersonsTabBean".equals(editTab.getBeanName()))
         {
-
-          org.santfeliu.dic.Type dicType =
-            TypeCache.getInstance().getType("sf:Attendant");
-          if (dicType != null)
+          String tabBaseTypeId = getTabBaseTypeId(editTab);
+          if (tabBaseTypeId == null ||
+            tabBaseTypeId.equals("Attendant") ||
+            tabBaseTypeId.equals("sf:Attendant")) //only root type allowed
           {
-            allowedAttendantTypeIds.add(dicType.getTypeId());
-            return allowedAttendantTypeIds;
+            org.santfeliu.dic.Type dicType =
+              TypeCache.getInstance().getType("sf:Attendant");
+            if (dicType != null)
+            {
+              allowedAttendantTypeIds.add(dicType.getTypeId());
+              return allowedAttendantTypeIds;
+            }
           }
-        }
-        else
-        {
-          baseTypeIds.add(tabBaseTypeId);
-        }
-      }
-    }
-    for (String baseTypeId : baseTypeIds)
-    {
-      TypeFilter typeFilter = new TypeFilter();
-      typeFilter.setTypePath("%/" + baseTypeId + "/%");
-      try
-      {
-        List<Type> typeList =
-          DicModuleBean.getPort(true).findTypes(typeFilter);
-        for (Type type : typeList)
-        {
-          if (type.isInstantiable())
+          else
           {
-            allowedAttendantTypeIds.add(type.getTypeId());
+            baseTypeIds.add(tabBaseTypeId);
           }
         }
       }
-      catch (Exception ex) { }
+      for (String baseTypeId : baseTypeIds)
+      {
+        TypeFilter typeFilter = new TypeFilter();
+        typeFilter.setTypePath("%/" + baseTypeId + "/%");
+        try
+        {
+          List<Type> typeList =
+            DicModuleBean.getPort(true).findTypes(typeFilter);
+          for (Type type : typeList)
+          {
+            if (type.isInstantiable())
+            {
+              allowedAttendantTypeIds.add(type.getTypeId());
+            }
+          }
+        }
+        catch (Exception ex) { }
+      }
     }
     return allowedAttendantTypeIds;
   }
@@ -1125,15 +1249,16 @@ public class EventRecurrencesTabBean extends TabBean
     return null;
   }
 
-  private List<String> getOperationEventIds()
+  private List<EventView> getTargetRows()
   {
-    List<String> result = new ArrayList<>();
+    List<EventView> result = new ArrayList<>();
     if ("ALL".equals(getOperationMode()))
     {
-      for (EventView eventView : getRows())
-      {
-        result.add(eventView.getEventId());
-      }
+      result.addAll(getRows());
+    }
+    else if ("SELECTED".equals(getOperationMode()))
+    {
+      result.addAll(getSelectedRows());
     }
     else //FUTURE
     {
@@ -1145,20 +1270,162 @@ public class EventRecurrencesTabBean extends TabBean
       {
         LocalDateTime eventDateTime =
           LocalDateTime.parse(eventView.getStartDateTime(), formatter);
-        if (eventDateTime.isAfter(currentEventDateTime))
+        if (!eventDateTime.isBefore(currentEventDateTime))
         {
-          result.add(eventView.getEventId());
+          result.add(eventView);
         }
       }
     }
     return result;
   }
-  
+
+  private List<String> getAddAttendantEventIds(String personId)
+  {
+    List<String> result = new ArrayList<>();
+    List<EventView> targetRows = getTargetRows();
+    for (EventView eventView : targetRows)
+    {
+      if (!isPersonInEvent(eventView, personId))
+      {
+        result.add(eventView.getEventId());
+      }
+    }
+    return result;
+  }
+
+  private List<String> getRemoveAttendantEventIds(String personId)
+  {
+    List<String> result = new ArrayList<>();
+    List<EventView> targetRows = getTargetRows();
+    for (EventView eventView : targetRows)
+    {
+      if (isPersonInEvent(eventView, personId))
+      {
+        result.add(eventView.getEventId());
+      }
+    }
+    return result;
+  }
+
+  private List<String> getAddThemeEventIds(String themeId)
+  {
+    List<String> result = new ArrayList<>();
+    List<EventView> targetRows = getTargetRows();
+    for (EventView eventView : targetRows)
+    {
+      if (!isThemeInEvent(eventView, themeId))
+      {
+        result.add(eventView.getEventId());
+      }
+    }
+    return result;
+  }
+
+  private List<String> getRemoveThemeEventIds(String themeId)
+  {
+    List<String> result = new ArrayList<>();
+    List<EventView> targetRows = getTargetRows();
+    for (EventView eventView : targetRows)
+    {
+      if (isThemeInEvent(eventView, themeId))
+      {
+        result.add(eventView.getEventId());
+      }
+    }
+    return result;
+  }
+
+  private List<String> getChangePlaceEventIds()
+  {
+    List<String> result = new ArrayList<>();
+    List<EventView> targetRows = getTargetRows();
+    for (EventView eventView : targetRows)
+    {
+      if (!isPlaceInEvent(eventView, changedPlaceRoomId, changedPlaceAddressId,
+        changedPlaceComments))
+      {
+        result.add(eventView.getEventId());
+      }
+    }
+    return result;
+  }
+
+  private boolean isPersonInEvent(EventView eventView, String personId)
+  {
+    for (AttendantView att : eventView.getAttendants())
+    {
+      if (att.getPersonId().equals(personId))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isThemeInEvent(EventView eventView, String themeId)
+  {
+    for (EventThemeView theme : eventView.getThemes())
+    {
+      if (theme.getThemeId().equals(themeId))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isPlaceInEvent(EventView eventView, String roomId,
+    String addressId, String comments)
+  {
+    String inputHash;
+    if (roomId != null)
+    {
+      inputHash = "room:" + roomId;
+    }
+    else if (addressId != null)
+    {
+      inputHash = "address:" + addressId;
+    }
+    else 
+    {
+      inputHash = "comments:" + StringUtils.defaultString(comments);
+    }
+    for (EventPlaceView place : eventView.getPlaces())
+    {
+      String placeHash;
+      if (place.getRoomView() != null)
+      {
+        placeHash = "room:" +
+          StringUtils.defaultString(place.getRoomView().getRoomId());
+      }
+      else if (place.getAddressView() != null)
+      {
+        placeHash = "address:" +
+          StringUtils.defaultString(place.getAddressView().getAddressId());
+      }
+      else
+      {
+        placeHash = "comments:" +
+          StringUtils.defaultString(place.getComments());
+      }
+      if (inputHash.equals(placeHash))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private String getAgendaBundlePath()
   {
     return "org.santfeliu.agenda.web.resources.AgendaBundle";
   }
 
+  private String getBundleValue(String bundlePath, String key)
+  {
+    return getBundleValue(bundlePath, key, null);
+  }
+  
   private String getBundleValue(String bundlePath, String key,
     String paramValue)
   {

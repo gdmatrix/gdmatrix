@@ -419,12 +419,12 @@
   } 
 }
 
-.eventRecurrences .selectBox
+.eventRecurrences .recurrencesSelectBox
 {
   min-width: 200px !important;
 }
 
-.eventRecurrences .selectBox .ui-selectonemenu-label
+.eventRecurrences .recurrencesSelectBox .ui-selectonemenu-label
 {
   white-space: normal !important;
 }

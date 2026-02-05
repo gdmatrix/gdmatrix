@@ -110,16 +110,16 @@
                                         scrollHeight="200"
                                         queryDelay="1000"
                                         minQueryLength="3"
-                                        autoUpdate="false">
+                                        autoUpdate="true">
                 </emcomp:objectReference>
               </div>
 
               <div class="field half">
-                <p:outputLabel  for="@next"
-                                value="#{agendaBundle.eventRecurrences_type}"
-                                styleClass="w-full" indicateRequired="true" />
+                <p:outputLabel for="@next"
+                               value="#{agendaBundle.eventRecurrences_type}"
+                               styleClass="w-full" indicateRequired="true" />
                 <p:selectOneMenu value="#{eventRecurrencesTabBean.addedAttTypeId}"
-                                 styleClass="inputfield selectBox"
+                                 styleClass="inputfield recurrencesSelectBox"
                                  required="#{not empty param['mainform:search_tabs:tabs:recurrences_accordion:recurrences_tabview:add_attendant_button']}"
                                  requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
                   <f:selectItems value="#{eventRecurrencesTabBean.allowedAttendantTypes}" />
@@ -135,17 +135,18 @@
                                 itemValue="FUTURE" />
                   <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
                                 itemValue="ALL" />
-                  <p:ajax event="change"
-                          process="@this" update="add_attendant_dialog" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inSelectedEvents}"
+                                itemValue="SELECTED" />
                 </p:selectOneRadio>
               </p:outputPanel>
 
               <div class="text-left button">
                 <p:commandButton id="add_attendant_button"
                                  value="#{agendaBundle.eventRecurrences_add}"
-                                 onclick="PF('addAttendantConfirm').show(); return false;"
-                                 process="@none" />
-                <p:confirmDialog id="add_attendant_dialog"
+                                 oncomplete="PF('addAttendantConfirm').show(); return false;"
+                                 process="@this add_attendant_panel @(.eventRecurrencesTable)"
+                                 update="add_attendant_dialog" />
+                <p:confirmDialog id="add_attendant_dialog" closable="false"
                                  showEffect="fade" hideEffect="fade" responsive="true" width="350"
                                  widgetVar="addAttendantConfirm"
                                  appendTo="@(form)"
@@ -154,14 +155,15 @@
                   <p:commandButton value="#{objectBundle.cancel}"
                                    icon="pi pi-times"
                                    onclick="PF('addAttendantConfirm').hide();"
-                                   type="button" styleClass="ui-confirmdialog-no" />
+                                   type="button" />
                   <p:commandButton value="#{objectBundle.add}"
                                    icon="pi pi-save"
-                                   styleClass="ui-confirmdialog-yes ui-button-success"
+                                   styleClass="ui-button-success"
                                    action="#{eventRecurrencesTabBean.addAttendant}"
-                                   process="@this add_attendant_panel"
+                                   process="@this add_attendant_panel @(.eventRecurrencesTable)"
                                    update="@form:cnt"
-                                   oncomplete="PF('addAttendantConfirm').hide();" />
+                                   oncomplete="PF('addAttendantConfirm').hide();"
+                                   rendered="#{eventRecurrencesTabBean.addAttendantAvailable}" />
                 </p:confirmDialog>
               </div>
 
@@ -179,7 +181,7 @@
                                value="#{agendaBundle.eventRecurrences_person}"
                                styleClass="w-full" indicateRequired="true" />
                 <p:selectOneMenu value="#{eventRecurrencesTabBean.removedAttPersonId}"
-                                 styleClass="inputfield selectBox"
+                                 styleClass="inputfield recurrencesSelectBox"
                                  required="#{not empty param['mainform:search_tabs:tabs:recurrences_accordion:recurrences_tabview:remove_attendant_button']}"
                                  requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}">
                   <f:selectItems value="#{eventRecurrencesTabBean.existingAttendants}" />
@@ -194,21 +196,36 @@
                                 itemValue="FUTURE" />
                   <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
                                 itemValue="ALL" />
-                  <p:ajax event="change"
-                          process="@this" update="remove_attendant_button" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inSelectedEvents}"
+                                itemValue="SELECTED" />
                 </p:selectOneRadio>
               </p:outputPanel>
 
               <div class="text-left button">
                 <p:commandButton id="remove_attendant_button"
-                                 action="#{eventRecurrencesTabBean.removeAttendant}"
                                  value="#{agendaBundle.eventRecurrences_remove}"
-                                 process="@this remove_attendant_panel"
-                                 update="@form:cnt">
-                  <p:confirm header="#{agendaBundle.eventRecurrences_removeAttendant}"
-                             message="#{eventRecurrencesTabBean.removeAttendantMessage}"
-                             icon="pi pi-info-circle" />
-                </p:commandButton>
+                                 oncomplete="PF('removeAttendantConfirm').show(); return false;"
+                                 process="@this remove_attendant_panel @(.eventRecurrencesTable)"
+                                 update="remove_attendant_dialog" />
+                <p:confirmDialog id="remove_attendant_dialog" closable="false"
+                                 showEffect="fade" hideEffect="fade" responsive="true" width="350"
+                                 widgetVar="removeAttendantConfirm"
+                                 appendTo="@(form)"
+                                 header="#{agendaBundle.eventRecurrences_removeAttendant}"
+                                 message="#{eventRecurrencesTabBean.removeAttendantMessage}">
+                  <p:commandButton value="#{objectBundle.cancel}"
+                                   icon="pi pi-times"
+                                   onclick="PF('removeAttendantConfirm').hide();"
+                                   type="button" />
+                  <p:commandButton value="#{objectBundle.delete}"
+                                   icon="pi pi-trash"
+                                   styleClass="ui-button-danger"
+                                   action="#{eventRecurrencesTabBean.removeAttendant}"
+                                   process="@this remove_attendant_panel @(.eventRecurrencesTable)"
+                                   update="@form:cnt"
+                                   oncomplete="PF('removeAttendantConfirm').hide();"
+                                   rendered="#{eventRecurrencesTabBean.removeAttendantAvailable}" />
+                </p:confirmDialog>
               </div>
 
             </p:outputPanel>
@@ -224,7 +241,7 @@
                                value="#{agendaBundle.eventRecurrences_theme}"
                                styleClass="w-full" indicateRequired="true" />
                 <p:selectOneMenu value="#{eventRecurrencesTabBean.addedThemeId}"
-                                 styleClass="inputfield selectBox"
+                                 styleClass="inputfield recurrencesSelectBox"
                                  filter="true" filterMatchMode="contains">
                   <f:selectItem itemLabel="" itemValue="" />
                   <f:selectItems value="#{themeTypeBean.selectItems}" />
@@ -240,17 +257,18 @@
                                 itemValue="FUTURE" />
                   <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
                                 itemValue="ALL" />
-                  <p:ajax event="change"
-                          process="@this" update="add_theme_dialog" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inSelectedEvents}"
+                                itemValue="SELECTED" />
                 </p:selectOneRadio>
               </p:outputPanel>
 
               <div class="text-left button">
                 <p:commandButton id="add_theme_button"
                                  value="#{agendaBundle.eventRecurrences_add}"
-                                 onclick="PF('addThemeConfirm').show(); return false;"
-                                 process="@none" />
-                <p:confirmDialog id="add_theme_dialog"
+                                 oncomplete="PF('addThemeConfirm').show(); return false;"
+                                 process="@this add_theme_panel @(.eventRecurrencesTable)"
+                                 update="add_theme_dialog" />
+                <p:confirmDialog id="add_theme_dialog" closable="false"
                                  showEffect="fade" hideEffect="fade" responsive="true" width="350"
                                  widgetVar="addThemeConfirm"
                                  appendTo="@(form)"
@@ -259,14 +277,15 @@
                   <p:commandButton value="#{objectBundle.cancel}"
                                    icon="pi pi-times"
                                    onclick="PF('addThemeConfirm').hide();"
-                                   type="button" styleClass="ui-confirmdialog-no" />
+                                   type="button" />
                   <p:commandButton value="#{objectBundle.add}"
                                    icon="pi pi-save"
-                                   styleClass="ui-confirmdialog-yes ui-button-success"
+                                   styleClass="ui-button-success"
                                    action="#{eventRecurrencesTabBean.addTheme}"
-                                   process="@this add_theme_panel"
+                                   process="@this add_theme_panel @(.eventRecurrencesTable)"
                                    update="@form:cnt"
-                                   oncomplete="PF('addThemeConfirm').hide();" />
+                                   oncomplete="PF('addThemeConfirm').hide();"
+                                   rendered="#{eventRecurrencesTabBean.addThemeAvailable}" />
                 </p:confirmDialog>
               </div>
 
@@ -284,7 +303,7 @@
                                 value="#{agendaBundle.eventRecurrences_theme}"
                                 styleClass="w-full" indicateRequired="true" />
                 <p:selectOneMenu value="#{eventRecurrencesTabBean.removedThemeId}"
-                                 styleClass="inputfield selectBox"
+                                 styleClass="inputfield recurrencesSelectBox"
                                  required="#{not empty param['mainform:search_tabs:tabs:recurrences_accordion:recurrences_tabview:remove_theme_button']}"
                                  requiredMessage="#{messageBundle.THEME_MUST_BE_SELECTED}">
                   <f:selectItems value="#{eventRecurrencesTabBean.existingThemes}" />
@@ -299,22 +318,36 @@
                                 itemValue="FUTURE" />
                   <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
                                 itemValue="ALL" />
-                  <p:ajax event="change"
-                          process="@this" update="remove_theme_button" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inSelectedEvents}"
+                                itemValue="SELECTED" />
                 </p:selectOneRadio>
               </p:outputPanel>
 
               <div class="text-left button">
                 <p:commandButton id="remove_theme_button"
-                                 action="#{eventRecurrencesTabBean.removeTheme}"
                                  value="#{agendaBundle.eventRecurrences_remove}"
-                                 process="@this remove_theme_panel"
-                                 update="@form:cnt">
-                  <p:confirm header="#{agendaBundle.eventRecurrences_removeTheme}"
-                             message="#{eventRecurrencesTabBean.removeThemeMessage}"
-                             icon="pi pi-info-circle" />
-                </p:commandButton>
-
+                                 oncomplete="PF('removeThemeConfirm').show(); return false;"
+                                 process="@this remove_theme_panel @(.eventRecurrencesTable)"
+                                 update="remove_theme_dialog" />
+                <p:confirmDialog id="remove_theme_dialog" closable="false"
+                                 showEffect="fade" hideEffect="fade" responsive="true" width="350"
+                                 widgetVar="removeThemeConfirm"
+                                 appendTo="@(form)"
+                                 header="#{agendaBundle.eventRecurrences_removeTheme}"
+                                 message="#{eventRecurrencesTabBean.removeThemeMessage}">
+                  <p:commandButton value="#{objectBundle.cancel}"
+                                   icon="pi pi-times"
+                                   onclick="PF('removeThemeConfirm').hide();"
+                                   type="button" />
+                  <p:commandButton value="#{objectBundle.delete}"
+                                   icon="pi pi-trash"
+                                   styleClass="ui-button-danger"
+                                   action="#{eventRecurrencesTabBean.removeTheme}"
+                                   process="@this remove_theme_panel @(.eventRecurrencesTable)"
+                                   update="@form:cnt"
+                                   oncomplete="PF('removeThemeConfirm').hide();"
+                                   rendered="#{eventRecurrencesTabBean.removeThemeAvailable}" />
+                </p:confirmDialog>
               </div>
 
             </p:outputPanel>
@@ -384,17 +417,18 @@
                                 itemValue="FUTURE" />
                   <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inAllEvents}"
                                 itemValue="ALL" />
-                  <p:ajax event="change"
-                          process="@this" update="change_place_dialog" />
+                  <f:selectItem itemLabel="#{agendaBundle.eventRecurrences_inSelectedEvents}"
+                                itemValue="SELECTED" />
                 </p:selectOneRadio>
               </p:outputPanel>
 
               <div class="text-left button">
                 <p:commandButton id="change_place_button"
                                  value="#{agendaBundle.eventRecurrences_change}"
-                                 onclick="PF('changePlaceConfirm').show(); return false;"
-                                 process="@none" />
-                <p:confirmDialog id="change_place_dialog"
+                                 oncomplete="PF('changePlaceConfirm').show(); return false;"
+                                 process="@this change_place_panel @(.eventRecurrencesTable)"
+                                 update="change_place_dialog" />
+                <p:confirmDialog id="change_place_dialog" closable="false"
                                  showEffect="fade" hideEffect="fade" responsive="true" width="350"
                                  widgetVar="changePlaceConfirm"
                                  appendTo="@(form)"
@@ -403,14 +437,15 @@
                   <p:commandButton value="#{objectBundle.cancel}"
                                    icon="pi pi-times"
                                    onclick="PF('changePlaceConfirm').hide();"
-                                   type="button" styleClass="ui-confirmdialog-no" />
+                                   type="button" />
                   <p:commandButton value="#{objectBundle.change}"
                                    icon="pi pi-save"
-                                   styleClass="ui-confirmdialog-yes ui-button-success"
+                                   styleClass="ui-button-success"
                                    action="#{eventRecurrencesTabBean.changePlace}"
-                                   process="@this change_place_panel"
+                                   process="@this change_place_panel @(.eventRecurrencesTable)"
                                    update="@form:cnt"
-                                   oncomplete="PF('changePlaceConfirm').hide();" />
+                                   oncomplete="PF('changePlaceConfirm').hide();"               
+                                   rendered="#{eventRecurrencesTabBean.changePlaceAvailable}" />
                 </p:confirmDialog>
               </div>
 
