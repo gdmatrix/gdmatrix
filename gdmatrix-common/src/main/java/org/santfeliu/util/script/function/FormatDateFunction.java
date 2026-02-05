@@ -32,6 +32,7 @@ package org.santfeliu.util.script.function;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
@@ -45,7 +46,7 @@ import org.santfeliu.util.TextUtils;
 
 /*
  * Usage: formatDate(String internalDate (yyyyMMdd[HHmmss]),
-                     String outputPattern)
+                     String outputPattern, String languageTag)
  *
  * returns: a String representing internalDate in outputPattern
  *   (see SimpleDateFormat)
@@ -64,7 +65,7 @@ public class FormatDateFunction extends BaseFunction
         Date date = TextUtils.parseInternalDate(Context.toString(args[0]));
         if (date != null)
         {
-          SimpleDateFormat df = new SimpleDateFormat(getPattern(args));
+          SimpleDateFormat df = new SimpleDateFormat(getPattern(args), getLocale(args));
           dateString = df.format(date);
         }
       }
@@ -84,5 +85,19 @@ public class FormatDateFunction extends BaseFunction
       }
     }
     return pattern;
+  }
+  
+  private Locale getLocale(Object[] args)
+  {
+    if (args.length >= 3)
+    {
+      Object arg = args[2];
+      if (arg instanceof String || arg instanceof ConsString)
+      {
+        String langTag = String.valueOf(arg);
+        return Locale.forLanguageTag(langTag);
+      }      
+    }
+    return Locale.getDefault();
   }
 }
