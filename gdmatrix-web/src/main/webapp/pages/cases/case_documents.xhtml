@@ -170,6 +170,19 @@
                       icon="fa fa-pen-to-square"
                       disabled="#{row.docLockUserId != null}"
                       rendered="#{row.docViewUrl != null}" />
+          <!-- OnlyOffice buttons -->
+          <p:menuitem value="#{documentBundle.online_read}"
+                      icon="pi pi-file"
+                      styleClass="rounded-button ui-button-flat w200"
+                      rendered="#{onlyOfficeBean.isOfficeButtonVisible(row.docContentType)}"
+                      onclick="showPage('Office', {docId:'#{row.docId}', accessMode:'read'}); return false;"
+                      process="@this"/>
+          <p:menuitem value="#{documentBundle.online_edit}"
+                      icon="pi pi-file-edit"
+                      styleClass="rounded-button ui-button-flat w200"
+                      rendered="#{onlyOfficeBean.isOfficeButtonVisible(row.docContentType)}"
+                      onclick="showPage('Office', {docId:'#{row.docId}', accessMode:'edit'}); return false;"
+                      process="@this"/>
           <p:menuitem value="#{objectBundle.delete}"
                       icon="pi pi-trash"
                       action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"

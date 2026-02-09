@@ -153,9 +153,9 @@ public class JWTUtils
   }
 
   /**
-   * Convierte un Map a JSON string
+   * Convert a Map into a Json string
    *
-   * @param map Map a convertir
+   * @param map map to convert
    * @return JSON string
    */
   public String toJson(Map<String, Object> map)
@@ -164,10 +164,10 @@ public class JWTUtils
   }
 
   /**
-   * Convierte un JSON string a Map
+   * Convert a Json string into a Map
    *
    * @param json JSON string
-   * @return Map con los datos
+   * @return Map with the data
    */
   @SuppressWarnings("unchecked")
   public Map<String, Object> fromJson(String json)

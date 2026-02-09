@@ -38,11 +38,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import static java.util.Map.entry;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -115,7 +113,7 @@ public class OnlyOfficeBean extends WebBean
       String fileType = mime.getExtension(document.getContent().getContentType());
 
       //Check if the type of document is supported
-      if (isSupportedType(fileType) == null)
+      if (!isSupportedType(fileType))
       {
         return;
       }
@@ -256,18 +254,18 @@ public class OnlyOfficeBean extends WebBean
   );
 
   /**
-   * Return the document type like OnlyOffice needs
+   * Return if the documentType is accepted
    *
    * @param extension Document extension
-   * @return Document type, required by OnlyOffice
+   * @return boolean
    */
-  private String isSupportedType(String extension)
+  private boolean isSupportedType(String extension)
   {
     
     if (extension == null || extension.isEmpty())
     {
       error("DOCUMENT_NULL_EXTENSION");
-      return null;
+      return false;
     }
 
     String docType = EXTENSION_TO_DOCUMENT_TYPE.get(extension.toLowerCase());
@@ -275,10 +273,10 @@ public class OnlyOfficeBean extends WebBean
     if (docType == null)
     {
       error("DOCUMENT_INVALID_EXTENSION");
-      return null;
+      return false;
     }
-
-    return docType;
+    
+    return true;
   }
 
   /**
@@ -383,7 +381,7 @@ public class OnlyOfficeBean extends WebBean
   {
     return MatrixConfig.getProperty("org.santfeliu.onlyOffice.url");
   }
-
+  
   public boolean isOfficeButtonVisible(String contentType)
   {
     if (contentType == null || contentType.isEmpty())
@@ -398,7 +396,7 @@ public class OnlyOfficeBean extends WebBean
     {
       return false;
     }
-
+    
     boolean supported = EXTENSION_TO_DOCUMENT_TYPE.containsKey(ext.toLowerCase());
     return supported && getOnlyOfficeEnabled();
   }

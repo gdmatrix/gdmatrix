@@ -1414,6 +1414,7 @@ public class CaseDocumentsTabBean extends TabBean
     private String docChangeDateTime;
     private String docChangeUserId;
     private String docViewUrl;
+    private String docContentType;
 
     public CaseDocumentsDataTableRow(CaseDocumentView row)
     {
@@ -1438,6 +1439,7 @@ public class CaseDocumentsTabBean extends TabBean
         docChangeDateTime = doc.getChangeDateTime();
         docChangeUserId = doc.getChangeUserId();
         docViewUrl = DocumentUrlBuilder.getDocumentUrl(doc);
+        docContentType = doc.getContent().getContentType();
       }
     }
 
@@ -1581,6 +1583,15 @@ public class CaseDocumentsTabBean extends TabBean
       this.docViewUrl = docViewUrl;
     }
     
+    public String getDocContentType()
+    {
+      return docContentType;
+    }
+    
+    public void setDocContentType(String docContentType){
+      this.docContentType = docContentType;
+    }
+    
     @Override
     protected Value getTablePropertyValue(BaseBean baseBean, 
       TableProperty tableProperty, Object row) throws Exception
@@ -1631,6 +1642,8 @@ public class CaseDocumentsTabBean extends TabBean
             return new DefaultValue(getDocChangeUserId());
           case "docViewUrl":
             return new DefaultValue(getDocViewUrl());
+          case "docContentType":
+            return new DefaultValue(getDocContentType());
           default:
             break;
         }

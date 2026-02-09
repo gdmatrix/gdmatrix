@@ -36,3 +36,5 @@
 /conf/certificates/
 /gdmatrix-aoc/target/
 /gdmatrix-web/target/
+/gdmatrix-web/nbproject/
+jshell.history
