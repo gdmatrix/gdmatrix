@@ -79,6 +79,10 @@ import org.santfeliu.webapp.modules.kernel.AddressTypeBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import org.santfeliu.webapp.modules.kernel.RoomTypeBean;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 
 /**
  *
@@ -943,8 +947,11 @@ public class EventRecurrencesTabBean extends TabBean
   {
     try
     {
+      EventView currentEventView = getCurrentEventView();
+      executeTabAction(PRE_TAB_STORE_ACTION, currentEventView);
       if (eventCopyTabBean != null)
         eventCopyTabBean.copy();
+      executeTabAction(POST_TAB_STORE_ACTION, currentEventView);
       load();
       eventFinderBean.outdate();
       dialogVisible = false;
@@ -1171,6 +1178,7 @@ public class EventRecurrencesTabBean extends TabBean
   private int deleteRecurrences(List<EventView> events, String sdt)
     throws Exception
   {
+    List<EventView> deletedEvents = new ArrayList<>();
     int deleteCount = 0;
     BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
 
@@ -1186,15 +1194,20 @@ public class EventRecurrencesTabBean extends TabBean
           Date startDate = TextUtils.parseInternalDate(sdt);
           delete = startDate.before(eventDate);
         }
-
         if (delete)
         {
-          AgendaModuleBean.getClient().removeEvent(event.getEventId());
-          deleteCount++;
-          if (baseTypeInfo != null) baseTypeInfo.remove(event.getEventId());
+          deletedEvents.add(event);
         }
       }
     }
+    executeTabAction(PRE_TAB_REMOVE_ACTION, deletedEvents);
+    for (EventView event : deletedEvents)
+    {
+      AgendaModuleBean.getClient().removeEvent(event.getEventId());
+      deleteCount++;
+      if (baseTypeInfo != null) baseTypeInfo.remove(event.getEventId());
+    }
+    executeTabAction(POST_TAB_REMOVE_ACTION, deletedEvents);
     return deleteCount;
   }
 
@@ -1440,6 +1453,18 @@ public class EventRecurrencesTabBean extends TabBean
     }
     catch (Exception ex)
     {
+    }
+    return null;
+  }
+
+  private EventView getCurrentEventView()
+  {
+    for (EventView row : getRows())
+    {
+      if (row.getEventId().equals(getEvent().getEventId()))
+      {
+        return row;
+      }
     }
     return null;
   }
