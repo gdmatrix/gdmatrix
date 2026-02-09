@@ -76,7 +76,7 @@ public class HtmlPrinter
         printDocType(writer);
         writer.println("<html>");
         printHeadSection(writer);
-        printView(rootView, writer, indentSize);
+        printView(rootView, writer, indentSize, false);
         writer.println("</html>");
       }
     }
@@ -85,14 +85,22 @@ public class HtmlPrinter
       writer.close();
     }
   }
-
-  private void printView(HtmlView view, PrintWriter writer, int indent)
+private void printView(HtmlView view, PrintWriter writer, int indent, boolean isRawContext)
   {
+    // Case 1: Pure text node
     if (View.TEXT.equals(view.getViewType()))
     {
       String text = (String)view.getProperty("text");
-      if (text != null) writer.println(HtmlEncoder.encode(text));
+      if (text != null) 
+      {
+          if (isRawContext) {
+              writer.print(text); // Write without encoder
+          } else {
+              writer.println(HtmlEncoder.encode(text));
+          }
+      }
     }
+    // Case 2: Item with 1 child (text). E.g. label
     else if (view.getChildren().size() == 1 &&
       View.TEXT.equals(view.getChildren().get(0).getViewType()))
     {
@@ -101,15 +109,41 @@ public class HtmlPrinter
       writer.print("<" + view.getNativeViewType());
       printAttributes(view, writer);
       writer.print(">");
+      
       String text = (String)label.getProperty("text");
-      if (text != null) writer.print(HtmlEncoder.encode(text));
-      writer.println("</" + view.getNativeViewType() + ">");
+      
+      boolean currentIsRaw = isRawTag(view.getNativeViewType());
+      
+      if (text != null) 
+      {
+          if (currentIsRaw || isRawContext) {
+              if (currentIsRaw && !text.startsWith("\n") && !text.startsWith("\r")) {
+                  writer.println(); 
+              }
+              writer.print(text); 
+          } else {
+              writer.print(HtmlEncoder.encode(text));
+          }
+      }
+      
+      // If it is raw, we ensure the closing of the key in the following line
+      if (currentIsRaw && text != null && !text.endsWith("\n") && !text.endsWith("\r")) {
+          writer.println();
+          printIndent(writer, indent); 
+      }
+      
+      // Not RAW, the closure goes on the same line
+      if (!currentIsRaw) {
+          writer.println("</" + view.getNativeViewType() + ">");
+      } else {
+          writer.println("</" + view.getNativeViewType() + ">");
+      }
     }
+    // Case 3: Empty element. Eg input
     else if (view.getChildren().isEmpty())
     {
       if ("textarea".equalsIgnoreCase(view.getNativeViewType()))
       {
-        // special case
         printIndent(writer, indent);
         writer.print("<textarea");
         printAttributes(view, writer);
@@ -123,21 +157,31 @@ public class HtmlPrinter
         writer.println("/>");
       }
     }
+    // Case 4: Container with several children
     else
     {
       printIndent(writer, indent);
       writer.print("<" + view.getNativeViewType());
       printAttributes(view, writer);
       writer.println(">");
+      
+      boolean currentIsRaw = isRawTag(view.getNativeViewType());
+      
       for (View child : view.getChildren())
       {
-        printView((HtmlView)child, writer, indent + indentSize);
+        printView((HtmlView)child, writer, indent + indentSize, isRawContext || currentIsRaw);
       }
+      
       printIndent(writer, indent);
       writer.println("</" + view.getNativeViewType() + ">");
     }
   }
 
+  private boolean isRawTag(String tagName) {
+      if (tagName == null) return false;
+      return "script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName);
+  }
+  
   private void printIndent(PrintWriter writer, int indent)
   {
     for (int i = 0; i < indent; i++)
