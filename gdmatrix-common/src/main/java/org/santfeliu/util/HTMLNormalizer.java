@@ -118,7 +118,7 @@ public class HTMLNormalizer
     org.w3c.dom.Document document = tidy.parseDOM(bi, null);
     return document;
   }
-
+  
   private static void writeNode(Node node, StringBuffer buffer, boolean fullClean)
     throws IOException
   {
@@ -132,7 +132,7 @@ public class HTMLNormalizer
         {
           buffer.append(" ");
         }
-        buffer.append(node.getNodeValue());
+        buffer.append(HTMLCharTranslator.toHTMLText(node.getNodeValue()));
       }
       else
       {
