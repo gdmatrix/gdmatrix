@@ -82,7 +82,7 @@
         </p:selectOneListbox>        
       </h:panelGroup>
 
-      <div class="body">
+      <div class="body workflow_form">
         <ui:insert name="form"></ui:insert>
         <h:panelGroup layout="block" styleClass="curtain" rendered="#{not workflowInstanceBean.formEnabled}" />
       </div>
@@ -302,11 +302,33 @@
   <gdm:saveBean value="workflowInstanceBean" />
   <gdm:saveBean value="workflowInstanceListBean" />
 
+  <p:remoteCommand action="#{templateBean.refreshSession()}" name="refreshSession" 
+                   process="@none" update="@none" /> 
+  
   <script>
     controlNavigationHistory({
       url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;instanceid=#{workflowInstanceBean.instanceId}",
       title : "#{workflowBundle.instance} #{workflowInstanceBean.instanceId}"
     });
+    
+    if (!window._refreshSessionTimerId)
+    {
+      const minutes = 10; // refresh session interval
+      window._refreshSessionTimerId = setInterval(() => 
+      {
+        const elems = document.body.getElementsByClassName("workflow_form");
+        console.info(elems.length);
+        if (elems.length === 0)
+        {
+          clearInterval(window._refreshSessionTimerId);
+          window._refreshSessionTimerId = null;
+        }
+        else
+        {
+          refreshSession();
+        }
+      }, minutes * 60 * 1000);
+    }
   </script>
   
   

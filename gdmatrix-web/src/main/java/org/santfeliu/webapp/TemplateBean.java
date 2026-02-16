@@ -391,6 +391,11 @@ public class TemplateBean extends WebBean implements Serializable
     contextMid = mid;
   }
 
+  public void refreshSession()
+  {
+    // called periodically from remoteCommand to keep session alive
+  }  
+  
   /* private methods */
 
   private MenuItemCursor getContextMenuItem()
