@@ -40,6 +40,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.matrix.util.WSDirectory;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.webapp.util.ServiceLogger;
 
 /**
  *
@@ -52,6 +53,7 @@ public class MatrixServletContextListener implements ServletContextListener
 
   static final Logger logger = Logger.getLogger("Matrix");
 
+  @Override
   public void contextInitialized(ServletContextEvent sce)
   {
     // setting properties into MatrixConfig
@@ -70,6 +72,8 @@ public class MatrixServletContextListener implements ServletContextListener
     // set automatic properties
     MatrixConfig.setProperty(CONTEXT_NAME, servletContext.getServletContextName());
     MatrixConfig.setProperty(CONTEXT_PATH, servletContext.getContextPath());
+
+    ServiceLogger.start();
     
     // set default WSDirectory instance
     try
@@ -84,11 +88,14 @@ public class MatrixServletContextListener implements ServletContextListener
     }
   }
 
+  @Override
   public void contextDestroyed(ServletContextEvent sce)
   {
     ServletContext servletContext = sce.getServletContext();
     log(servletContext, Level.INFO, "Destroying MATRIX on context \"{0}\"",
       servletContext.getContextPath());
+    
+    ServiceLogger.stop();
   }
 
   protected void log(ServletContext servletContext, Level level,
