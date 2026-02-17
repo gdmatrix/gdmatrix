@@ -34,6 +34,7 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.Context;
@@ -50,18 +51,9 @@ import org.santfeliu.util.TextUtils;
 public class ServiceLogger
 {
   static final Logger LOGGER = Logger.getLogger("ServiceLogger");
+  static final String ID = UUID.randomUUID().toString();
 
   public static void start()
-  {    
-    register("start");
-  }
-  
-  public static void stop()
-  {    
-    register("stop");
-  }
-  
-  public static void register(String action)
   {
     String value =
       MatrixConfig.getProperty("org.santfeliu.ServiceLogger.enabled");
@@ -71,20 +63,21 @@ public class ServiceLogger
     try
     {
       Context initContext = new InitialContext();
-      Context envContext  = (Context)initContext.lookup("java:/comp/env");
+      Context envContext = (Context)initContext.lookup("java:/comp/env");
       DataSource ds = (DataSource)envContext.lookup("jdbc/matrix");
       try (Connection conn = ds.getConnection())
       {
         String dateTime = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
         try (PreparedStatement stmt = conn.prepareStatement(
-          "insert into gdmatrix_service(datetime, host, action, version, revision) " +
-            "values (?,?,?,?,?)"))
+          "insert into gdmatrix_service(id, host, startdt, version, revision, ipaddress) " +
+            "values (?,?,?,?,?,?)"))
         {
-          stmt.setString(1, dateTime);
+          stmt.setString(1, ID);
           stmt.setString(2, getHostname());
-          stmt.setString(3, action);
+          stmt.setString(3, dateTime);
           stmt.setString(4, MatrixInfo.getFullVersion());
           stmt.setString(5, MatrixInfo.getRevision());
+          stmt.setString(6, getIpAddress());
           stmt.executeUpdate();
           conn.commit();
         }
@@ -96,6 +89,37 @@ public class ServiceLogger
     }
   }
   
+  public static void stop()
+  {    
+    String value =
+      MatrixConfig.getProperty("org.santfeliu.ServiceLogger.enabled");
+
+    if (!"true".equals(value)) return;
+
+    try
+    {
+      Context initContext = new InitialContext();
+      Context envContext = (Context)initContext.lookup("java:/comp/env");
+      DataSource ds = (DataSource)envContext.lookup("jdbc/matrix");
+      try (Connection conn = ds.getConnection())
+      {
+        String dateTime = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
+        try (PreparedStatement stmt = conn.prepareStatement(
+          "update gdmatrix_service set enddt=? where id=?"))
+        {
+          stmt.setString(1, dateTime);
+          stmt.setString(2, ID);
+          stmt.executeUpdate();
+          conn.commit();
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, ex.toString());
+    }
+  }
+    
   static String getHostname()
   {
     String host = System.getProperty("host");
@@ -112,5 +136,18 @@ public class ServiceLogger
       }
     }
     return host;
+  }
+
+  static String getIpAddress()
+  {
+    try
+    {
+      InetAddress ip = InetAddress.getLocalHost();
+      return ip.getHostAddress();
+    }
+    catch (Exception ex)
+    {        
+      return null;
+    }
   }
 }
