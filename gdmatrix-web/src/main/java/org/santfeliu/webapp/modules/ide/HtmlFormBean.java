@@ -33,21 +33,25 @@ package org.santfeliu.webapp.modules.ide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.santfeliu.faces.FacesBean;
-import org.santfeliu.form.Form;
 import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlParser;
+import org.santfeliu.form.type.html.HtmlView;
+import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.util.ComponentUtils;
-import static org.santfeliu.webapp.util.FormImporter.ACTION_METHOD_OPTION;
 import static org.santfeliu.webapp.util.FormImporter.ACTION_UPDATE_OPTION;
+import static org.santfeliu.webapp.util.FormImporter.SUBMIT_BUTTON_OPTION;
 
 /**
  *
@@ -55,11 +59,46 @@ import static org.santfeliu.webapp.util.FormImporter.ACTION_UPDATE_OPTION;
  */
 @Named("htmlFormBean")
 @RequestScoped
-public class HtmlFormBean extends FacesBean
+public class HtmlFormBean extends WebBean
 {
-  @Inject IdeBean ideBean;
+  private static final String CONTAINER_ID = "panel";
+  
+  @Inject
+  IdeBean ideBean;
+  
   Map<String, Object> data = new HashMap();
   boolean update = true;
+  private boolean previewVisible = true;
+  private boolean sourceModified;
+
+  private boolean aiPanelVisible = false;
+  private String userPrompt;
+
+  
+  public boolean isAiPanelVisible()
+  {
+    return aiPanelVisible;
+  }
+
+  public void setAiPanelVisible(boolean aiPanelVisible)
+  {
+    this.aiPanelVisible = aiPanelVisible;
+  }
+
+  public String getUserPrompt()
+  {
+    return userPrompt;
+  }
+
+  public void setUserPrompt(String userPrompt)
+  {
+    this.userPrompt = userPrompt;
+  }
+
+  public boolean isSourceModified()
+  {
+    return sourceModified;
+  }
 
   public Map<String, Object> getData()
   {
@@ -77,9 +116,19 @@ public class HtmlFormBean extends FacesBean
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
     UIComponent panel = ComponentUtils.postAddToView(event);
+
     if (panel != null && update)
     {
-      updateComponents(panel);
+      panel.getChildren().clear();
+
+      if (previewVisible)
+      {
+        updateComponents(panel);
+      }
+      else
+      {
+        System.out.println("PREVIEW HIDDEN");
+      }
       update = false;
     }
   }
@@ -88,6 +137,7 @@ public class HtmlFormBean extends FacesBean
   {
     try
     {
+      System.out.println("UPDATE COMPONENTS");
       panel.getChildren().clear();
 
       String source = ideBean.getDocument().getSource();
@@ -99,9 +149,14 @@ public class HtmlFormBean extends FacesBean
 
         Map<String, Object> options = new HashMap<>();
         options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
+        options.put(SUBMIT_BUTTON_OPTION, "mainform:editor:submit_form"); //Only required fields are validated if the submit button is used.
 
         ComponentUtils.includeFormComponents(panel, form,
-           "htmlFormBean.data", "htmlFormBean.data", options);
+          "htmlFormBean.data", "htmlFormBean.data", options);
+      }
+      else
+      {
+        System.out.println("SOURCE IS BLANK");
       }
     }
     catch (Exception ex)
@@ -113,7 +168,147 @@ public class HtmlFormBean extends FacesBean
 
   public void update()
   {
+    this.previewVisible = true;
     this.update = true;
     this.data.clear();
+  }
+
+  public void clear()
+  {
+    previewVisible = false;
+    this.update = true;
+    this.data.clear();
+  }
+
+  private HtmlForm loadForm() throws Exception
+  {
+    String source = ideBean.getDocument().getSource();
+    if (source == null || source.trim().isEmpty())
+    {
+      return null;
+    }
+    HtmlForm form = new HtmlForm();
+    HtmlParser parser = new HtmlParser(form);
+    parser.parse(new StringReader(source));
+    return form;
+  }
+
+  private void showForm(HtmlForm form, List<HtmlView> views, Boolean assignOrder) throws Exception
+  {
+    if (views.isEmpty())
+    {
+      return;
+    }
+    RepairUtils repairUtils = new RepairUtils();
+    // Rebuild container with the new view    
+    repairUtils.rebuildHtml(form, CONTAINER_ID, views, assignOrder);
+    // Transform to String
+    StringWriter sw = new StringWriter();
+    form.write(new WriterOutputStream(sw, StandardCharsets.UTF_8), null);
+    ideBean.getDocument().setSource(sw.toString());
+    this.update = true;
+    // Mark the check
+    sourceModified = true;
+    ideBean.markChanged();
+  }
+
+  public void repairViewOrder()
+  {
+    try
+    {
+      HtmlForm form = loadForm();
+      if (form == null)
+      {
+        return;
+      }
+      RepairUtils repairUtils = new RepairUtils();
+      List<HtmlView> views = repairUtils.extractViews(form, CONTAINER_ID);
+      // Sorting
+      repairUtils.performSort(views);
+      showForm(form, views, true);
+
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+      error(ex);
+    }
+  }
+
+  public void repairLabelsAndGroups()
+  {
+    try
+    {
+      HtmlForm form = loadForm();
+      if (form == null)
+      {
+        return;
+      }
+      RepairUtils repairUtils = new RepairUtils();
+      List<HtmlView> views = repairUtils.extractViews(form, CONTAINER_ID);
+      repairUtils.performLabelsAndGroupsRepair(views);
+      showForm(form, views, false);
+
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+      error(ex);
+    }
+  }
+
+  public void repairAll()
+  {
+    try
+    {
+      HtmlForm form = loadForm();
+      if (form == null)
+      {
+        return;
+      }
+      RepairUtils repairUtils = new RepairUtils();
+      List<HtmlView> views = repairUtils.extractViews(form, CONTAINER_ID);
+      repairUtils.performSort(views);
+      repairUtils.performLabelsAndGroupsRepair(views);
+      showForm(form, views, true);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void repairAI()
+  {
+    try
+    {
+      String systemPrompt = this.getProperty("ia_prompt");
+      String oldForm = ideBean.getDocument().getSource();
+
+      String newForm = AiRepairUtils.processForm(oldForm, systemPrompt, userPrompt);
+      ideBean.getDocument().setSource(newForm);
+
+      this.update = true;
+      // Mark the check in the front
+      sourceModified = true;
+      ideBean.markChanged();
+      
+      // If no errors, hide the Ai panel
+      closeAiPanel();
+      
+    }catch(Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public void openAiPanel()
+  {
+    aiPanelVisible = true;
+  }
+  
+  public void closeAiPanel()
+  {
+    aiPanelVisible = false;
   }
 }

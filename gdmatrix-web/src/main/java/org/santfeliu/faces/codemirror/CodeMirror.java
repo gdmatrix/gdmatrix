@@ -57,6 +57,8 @@ public class CodeMirror extends UIInput
   private String _styleClass;
   private Boolean _lineNumbers;
   private String _completion;
+  private String _changeListener;
+  
 
   @Override
   public String getFamily()
@@ -142,6 +144,20 @@ public class CodeMirror extends UIInput
       (String)ve.getValue(getFacesContext().getELContext()) : null;
   }
 
+  
+  public void setChangeListener(String changeListener)
+  {
+    this._changeListener = changeListener;
+  }
+
+  public String getChangeListener()
+  {
+    if (_changeListener != null) return _changeListener;
+    ValueExpression ve = getValueExpression("changeListener");
+    return ve != null ?
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }  
+  
   @Override
   public void decode(FacesContext context)
   {
@@ -205,20 +221,22 @@ public class CodeMirror extends UIInput
     if (lineNumbers == null) lineNumbers = false;
 
     String completion = getCompletion();
+    
+    String changeListener = getChangeListener();
 
     // encode script
     writer.startElement("script", this);
     writer.writeAttribute("type", "module", null);
     writer.writeText("import '/resources/gdmatrixfaces/codemirror/codemirror-stub.js';\n", null);
     writer.writeText("codemirrorInit('" + clientId + "'," + readonly +
-      ",'" + language + "', " + lineNumbers + ", " + completion + ");", null);
+      ",'" + language + "', " + lineNumbers + ", " + completion + ", " + changeListener + ");", null);
     writer.endElement("script");
   }
 
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[7];
+    Object values[] = new Object[8];
     values[0] = super.saveState(context);
     values[1] = _language;
     values[2] = _readonly;
@@ -226,6 +244,7 @@ public class CodeMirror extends UIInput
     values[4] = _styleClass;
     values[5] = _lineNumbers;
     values[6] = _completion;
+    values[7] = _changeListener;
     return values;
   }
 
@@ -240,5 +259,6 @@ public class CodeMirror extends UIInput
     _styleClass = (String)values[4];
     _lineNumbers = (Boolean)values[5];
     _completion = (String)values[6];
+    _changeListener = (String)values[7];
   }
 }

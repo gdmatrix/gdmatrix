@@ -116,6 +116,11 @@
       <type>java.lang.String</type>
       <description>javascript completion function</description>
     </attribute>
+    <attribute>
+      <name>changeListener</name>
+      <type>java.lang.String</type>
+      <description>javascript function(EditorView, doc) that is called when editor content changes.</description>
+    </attribute>
   </tag>  
 
   <tag>

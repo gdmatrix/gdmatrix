@@ -10,17 +10,29 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <h:outputStylesheet library="css" name="ide.css" />
-  
+
   <h:outputScript library="js" name="ide.js" />
-  
+
   <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
                 var="documentBundle"/>
 
-  <p:messages showSummary="true" styleClass="messages ml-3 mr-3" 
+  <p:messages id="ideMessages" showSummary="true" styleClass="messages ml-3 mr-3" 
               showIcon="true" closable="true" forIgnores="growl login_messages">
     <p:autoUpdate />
   </p:messages>
   
+    <script>
+    var cmChanged = false;
+    function cmOnChange(editorView, doc)
+    {
+      if (!cmChanged)
+      {
+        onDocumentChange();
+        cmChanged = true;
+      }
+    }
+  </script>
+
   <div class="ide_body p-0 flex flex-column h-full">
 
     <p:outputPanel id="header" class="header flex-grow-0 flex p-2">
@@ -31,6 +43,7 @@
           <p:ajax event="valueChange"
                   listener="#{ideBean.onTypeChange}"
                   update="@form:cnt:editor @form:cnt:name @form:cnt:ide_history"
+                  onstart="cmChanged = false;"
                   process="@this editor" />
         </p:selectOneMenu>
       </div>
@@ -49,6 +62,7 @@
           <p:ajax event="itemSelect"
                   listener="#{ideBean.onNameSelect}"
                   update="editor docs_panel @form:cnt:ide_history"
+                  onstart="cmChanged = false;"
                   process="@this editor" />
           <p:column>
             <span class="code">#{docName}</span>
@@ -58,17 +72,17 @@
                        title="#{objectBundle.store}" 
                        action="#{ideBean.save}" 
                        process="@form:cnt" 
-                       update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm"
+                       update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm @form:cnt:ideMessages"
                        onstart="return checkSave();"
-                       oncomplete="modified = false; return true;"
+                       oncomplete="cmChanged = false;"
                        icon="pi pi-save" 
                        styleClass="mini ml-2 mr-2 flex flex-nowrap">
           <p:menuitem value="#{objectBundle.storeNewVersion}" 
                       title="#{objectBundle.storeNewVersion}" 
                       action="#{ideBean.saveNewVersion}" 
                       process="@form:cnt" 
-                      update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm"
-                      oncomplete="modified = false; return true;"
+                      oncomplete="cmChanged = false;"
+                      update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm @form:cnt:ideMessages"
                       icon="pi pi-save" styleClass="mini" />
         </p:splitButton>          
         <div class="ui-inputgroup ml-1">
@@ -90,26 +104,26 @@
                   styleClass="ml-2 mini white-space-nowrap docs_panel_button first_time" />
       </div>
     </p:outputPanel>
-    
+
     <div class="flex-grow-1 pt-0 flex w-full overflow-x-hidden overflow-y-hidden">
-      <p:tabView dynamic="true" styleClass="editor h-full overflow-hidden flex-grow-1" id="editor"
-                 widgetVar="ideTabs">
-        <c:forEach items="#{ideBean.tabs}" var="tab">
-          <p:tab>
-            <f:facet name="title">
-              <span class="#{tab.icon} mr-2"/>
-              <p:outputLabel styleClass="ideTabLabel" 
-                             value="#{tab.label}#{tab.editor and ideBean.document.modified ? ' *' : ''}" />
-            </f:facet>
-            <ui:include src="#{tab.viewId}" />
-          </p:tab>
-        </c:forEach>
-      </p:tabView>
+        <p:tabView dynamic="true" styleClass="editor h-full overflow-hidden flex-grow-1" id="editor" 
+                   widgetVar="ideTabs">
+          <c:forEach items="#{ideBean.tabs}" var="tab">
+            <p:tab>
+              <f:facet name="title">
+                <span class="#{tab.icon} mr-2"/>
+                <p:outputLabel styleClass="ideTabLabel" 
+                               value="#{tab.label}#{tab.editor and ideBean.document.modified ? ' *' : ''}" />
+              </f:facet>
+              <ui:include src="#{tab.viewId}" />
+            </p:tab>
+          </c:forEach>
+        </p:tabView>
 
       <p:panel id="docs_panel" styleClass="docs_panel flex-grow-0 v-full first_time h-full"
                widgetVar="docsPanel" closeSpeed="50" style="min-width:300px;">
-        <f:facet name="header">
-          <i class="pi pi-copy vertical-align-middle m-1"></i>
+        <f:facet name="header"> 
+         <i class="pi pi-copy vertical-align-middle m-1"></i>
 
           <span>Documents</span>
           <p:commandLink onclick="return closePanel();"
@@ -117,19 +131,20 @@
             <span class="ui-icon ui-icon-closethick"></span>
           </p:commandLink>
         </f:facet>
-        
+
         <ul>
           <ui:repeat value="#{ideDocumentCacheBean.documents}" var="document">
             <li class="flex w-full align-items-center">
               <p:commandLink action="#{ideBean.loadCache(document.reference)}"
-                             process="@form:cnt" update="@form:cnt" class="flex-grow-1 no-underline p-2">
+                             process="@form:cnt"   update="@form:cnt @form:cnt:docs_panel @form:cnt:ideMessages" 
+                             class="flex-grow-1 no-underline p-2">
                 <span class="#{ideBean.getDocumentIcon(document)} ml-1 mr-1" />
                 <span class="code">#{document.name}#{document.modified ? ' *' : ''}</span>                
               </p:commandLink>
-              
+
               <p:commandButton styleClass="ui-button-flat ml-3 flex-grow-0" icon="pi pi-times" 
                                action="#{ideBean.remove(document.reference)}"
-                               process="@form:cnt" update="@form:cnt:docs_panel" />
+                               process="@form:cnt" update="@form:cnt:docs_panel @form:cnt:ideMessages" />
             </li>
           </ui:repeat>
         </ul>        
@@ -139,20 +154,20 @@
   </div>
 
   <gdm:saveBean value="ideBean" /> 
-  
+
   <p:remoteCommand action="#{ideBean.refreshSession()}" name="refreshSession" 
                    process="@none" update="@none" /> 
-  
+
   <p:remoteCommand id="markChangedCommand"
-                   name="markChanged" actionListener="#{ideBean.markChanged}" 
-                   update="@(.ideTabLabel) @form:cnt:docs_panel ide_confirm" />
+                   name="onDocumentChange" actionListener="#{ideBean.markChanged}" 
+                   update="@(.ideTabLabel) @form:cnt:docs_panel @form:cnt:ideMessages ide_confirm" />
 
   <p:growl for="growl" life="1500" >
     <p:autoUpdate />
   </p:growl>            
 
   <p:outputPanel id="ide_history">
-  <script>
+    <script>
     controlNavigationHistory(#{ideBean.jsonPageState});
 
     if (!window._refreshSessionTimerId)
@@ -160,7 +175,7 @@
       const minutes = 10; // refresh session interval
       window._refreshSessionTimerId = setInterval(() => refreshSession(), minutes * 60 * 1000);
     }
-  </script>
+    </script>
   </p:outputPanel>
 
   <p:outputPanel id="ide_confirm">
@@ -173,11 +188,29 @@
           if (!confirm('#{documentBundle.document_version_overwrite}'))
           {
             return false;
-          }      
+          }
         }
         return true;
       }
     </script>
   </p:outputPanel>
   
+  <!-- Confirm save with errors dialog-->
+  <p:dialog id="dialogSaveWithErrors" widgetVar="confirmSaveDialog" modal="true" header="Errores detectados" closable="false" closeOnEscape="true">
+    <h:outputText value="Se detectaron errores en el documento. ¿Desea guardar de todos modos?" />
+    <p:messages id="dialogErrors" showDetail="true" showSummary="false" globalOnly="true" />
+    <p:separator/>
+    <div class="flex justify-content-end mt-2">
+      <p:commandButton value="Si" 
+                       actionListener="#{ideBean.confirmSaveYes}" 
+                       update="@form:cnt @form:cnt:ideMessages ide_history docs_panel dialogErrors" 
+                       oncomplete="PF('confirmSaveDialog').hide();" 
+                       icon="pi pi-check" styleClass="mr-2"/>
+      <p:commandButton value="No" 
+                       actionListener="#{ideBean.confirmSaveNo}" 
+                       type="button"
+                       onclick="PF('confirmSaveDialog').hide();" 
+                       icon="pi pi-times"/>
+    </div>
+  </p:dialog>
 </ui:composition>

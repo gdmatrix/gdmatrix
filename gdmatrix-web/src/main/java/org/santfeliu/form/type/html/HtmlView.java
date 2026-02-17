@@ -115,6 +115,11 @@ public class HtmlView implements View, Cloneable
   {
     properties.put(name, value);
   }
+  
+  public void removeProperty(String name)
+  {
+    properties.remove(name);
+  }
 
   @Override
   public String getProperty(String name)

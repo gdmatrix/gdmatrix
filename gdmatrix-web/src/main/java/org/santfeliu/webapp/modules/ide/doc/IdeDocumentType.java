@@ -40,9 +40,16 @@ import java.util.Map;
  *
  * @author realor
  */
-public class IdeDocumentType implements Serializable
+public abstract class IdeDocumentType implements Serializable
 {
+
+  // Common tabs
+  protected static final Tab METADATA = new Tab("metadata_editor.xhtml", "Metadata", "pi pi-list");
+  protected static final Tab ACL = new Tab("acl_editor.xhtml", "ACL", "pi pi-key");
+  protected static final Tab VERSIONS = new Tab("versions.xhtml", "Versions", "pi pi-bars");
+  
   static final Map<String, IdeDocumentType> typeCache = new HashMap<>();
+  
 
   String typeName;
   String label;
@@ -54,7 +61,7 @@ public class IdeDocumentType implements Serializable
 
   public IdeDocumentType(String typeName, String label,
     String docTypeId, String docProperty, String docContentType,
-    String icon, Tab ...tabs)
+    String icon, Tab... tabs)
   {
     this.typeName = typeName;
     this.label = label;
@@ -62,6 +69,8 @@ public class IdeDocumentType implements Serializable
     this.docProperty = docProperty;
     this.docContentType = docContentType;
     this.icon = icon;
+    
+    //Add specific tables according to the IdeDocumenType
     for (Tab tab : tabs)
     {
       this.tabs.add(tab);
@@ -133,53 +142,25 @@ public class IdeDocumentType implements Serializable
     return tabs;
   }
 
-  static void registerType(String typeName, String label,
-    String docType, String docProperty, String docContentType,
-    String icon, Tab ...tabs)
-  {
-    typeCache.put(typeName, new IdeDocumentType(typeName, label, docType,
-      docProperty, docContentType, icon, tabs));
-  }
+  public abstract String getTemplate();
+    //return "";
 
+  public abstract List<String> validate(String source);
+    //return Collections.EMPTY_LIST;
+
+  static void registerType(IdeDocumentType docTypeInstance)
+  {
+    typeCache.put(docTypeInstance.getTypeName(), docTypeInstance);
+  }
   static
   {
-    Tab metadata = new Tab("metadata_editor.xhtml", "Metadata", "pi pi-list");
-    Tab acl = new Tab("acl_editor.xhtml", "ACL", "pi pi-key");
-    Tab versions = new Tab("versions.xhtml", "Versions", "pi pi-bars");
-
-    registerType("javascript", "Javascript", "CODE", "workflow.js",
-      "text/javascript", "fa fa-brands fa-js",
-      new Tab("javascript_editor.xhtml", "JS Editor", "fa fa-brands fa-js", 
-        true),
-      new Tab("javascript_runner.xhtml", "JS Runner", "pi pi-play"),
-      metadata, acl, versions);
-
-    registerType("html", "HTML form", "FORM", "workflow.html",
-      "text/html", "fa fa-brands fa-html5",
-      new Tab("html_editor.xhtml", "HTML Editor", "fa fa-brands fa-html5", 
-        true),
-      new Tab("html_preview.xhtml", "HTML preview", "pi pi-eye"),
-      metadata, acl, versions);
-
-    registerType("template", "Template report", "REPORT", "report",
-      "text/xml", "fa fa-file-code",
-      new Tab("html_editor.xhtml", "HTML Editor", "fa fa-file-code", true),
-      metadata, acl, versions);
-
-    registerType("xsl", "XSL template", "TEMPLATE", "workflow.xsl",
-      "text/xml", "fa fa-code",
-      new Tab("xml_editor.xhtml", "XSL Editor", "fa fa-code", true),
-      metadata, acl, versions);
-
-    registerType("ant", "ANT project", "ANT", "ide.ant",
-      "text/xml", "fa fa-bug",
-      new Tab("xml_editor.xhtml", "ANT Editor", "fa fa-bug", true),
-      metadata, acl, versions);
-
-    registerType("ObjectSetup", "Object setup", "ObjectSetup", "setupName",
-      "application/json", "fa fa-gear",
-      new Tab("json_editor.xhtml", "JSON Editor", "fa fa-gear", true), 
-      metadata, acl, versions);
+    registerType(new JavascriptDocumentType());
+    registerType(new HtmlFormDocumentType());
+    registerType(new VisualFormDocumentType());
+    registerType(new TemplateReportDocumentType());
+    registerType(new XslTemplateDocumentType());
+    registerType(new AntTemplateDocumentType());
+    registerType(new ObjectSetupDocumentType());
   }
 
   public static List<IdeDocumentType> getTypes()
@@ -192,6 +173,13 @@ public class IdeDocumentType implements Serializable
     return typeCache.get(typeName);
   }
 
+  protected void registerCommonTabs()
+  {
+    this.tabs.add(METADATA);
+    this.tabs.add(ACL);
+    this.tabs.add(VERSIONS);    
+  }
+  
   public static class Tab implements Serializable
   {
     private String label;
@@ -210,8 +198,8 @@ public class IdeDocumentType implements Serializable
       this.label = label;
       this.icon = icon;
       this.editor = editor;
-    }    
-    
+    }
+
     public String getLabel()
     {
       return label;
@@ -242,12 +230,12 @@ public class IdeDocumentType implements Serializable
       this.viewId = viewId;
     }
 
-    public boolean isEditor() 
+    public boolean isEditor()
     {
       return editor;
     }
 
-    public void setEditor(boolean editor) 
+    public void setEditor(boolean editor)
     {
       this.editor = editor;
     }

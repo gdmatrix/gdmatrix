@@ -9,19 +9,5 @@
                 xmlns:gdm="http://gdmatrix.org/faces">
 
     <gdm:codemirror id="code_editor" lineNumbers="true" language="javascript"
-                    value="#{ideBean.document.source}" />
-
-    <script>
-      var codeEditor = document.getElementById('mainform:editor:code_editor');
-      var modified = false;
-
-      codeEditor.addEventListener('keydown', function(event) {
-        if (!modified)
-        {
-          markChanged();
-          modified = true;
-        }
-      });  
-    </script>    
-
+                    value="#{ideBean.document.source}" changeListener="cmOnChange"/>
 </ui:composition>

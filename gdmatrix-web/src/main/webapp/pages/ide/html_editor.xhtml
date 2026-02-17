@@ -7,21 +7,65 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
-  
+
+  <div class="flex flex-column h-full overflow-x-hidden p-2">
+    <p:outputPanel id="html_editor_toolbar" class="flex-grow-0 pt-2 pb-2 text-left"
+                   rendered="#{ideBean.document.typeName eq 'form'}">
+      <p:commandButton value="Repair All" 
+                       icon="pi pi-cog"
+                       process="@this code_editor" 
+                       update="code_editor @(.ideTabLabel)"
+                       onclick="cmChanged = true;"
+                       action="#{htmlFormBean.repairAll()}" class="mini mr-1" /> 
+      <p:commandButton value="Repair View Order" 
+                       icon="pi pi-align-justify"
+                       process="@this code_editor"
+                       update="code_editor @(.ideTabLabel)"
+                       onclick="cmChanged = true;"
+                       action="#{htmlFormBean.repairViewOrder()}" class="mini mr-1" /> 
+      <p:commandButton 
+                      value="Repair Labels" 
+                      icon="pi pi-tags"
+                      process="@this code_editor"
+                      update="code_editor @(.ideTabLabel)"
+                      onclick="cmChanged = true;"
+                      action="#{htmlFormBean.repairLabelsAndGroups()}" class="mini mr-1" />
+      <p:commandButton 
+                      value="Repair with AI" 
+                      icon="mi-outlined mi-smart-toy"
+                      update="ai_panel"
+                      action="#{htmlFormBean.openAiPanel()}" class="mini mt-1" />
+    </p:outputPanel>
+
+    <!--AI PANEL TOOLS--> 
+    <p:outputPanel id="ai_panel" 
+                   style="#{htmlFormBean.aiPanelVisible ? 'display:block;' : 'display:none;'}">
+
+      <p:panel header="AI Tools" styleClass="p-shadow-2">
+        <p:outputLabel for="userPrompt" value="Additional AI promp:" />
+        <p:inputTextarea id="userPrompt"
+                         value="#{htmlFormBean.userPrompt}"
+                         rows="4"
+                         autoResize="true"
+                         styleClass="w-full mt-2"/>
+        <div class="flex justify-content-end mt-2">
+          <p:commandButton value="Cancelar"
+                           icon="pi pi-times"
+                           process="@this"
+                           update="ai_panel"
+                           action="#{htmlFormBean.closeAiPanel()}"
+                           styleClass="p-button-text mr-2"/>
+          <p:commandButton value="Aceptar"
+                           icon="pi pi-check"
+                           process="@this userPrompt code_editor"
+                           update="code_editor ai_panel @(.ideTabLabel)"
+                           onclick="cmChanged = true;"
+                           action="#{htmlFormBean.repairAI()}" />
+        </div>
+      </p:panel>
+    </p:outputPanel>
+
     <gdm:codemirror id="code_editor" lineNumbers="true" language="html" 
-                    value="#{ideBean.document.source}" />
-
-    <script>
-      var codeEditor = document.getElementById('mainform:editor:code_editor');
-      var modified = false;
-
-      codeEditor.addEventListener('keydown', function(event) {
-        if (!modified)
-        {
-          markChanged();
-          modified = true;
-        }
-      });  
-    </script>    
-    
+                    value="#{ideBean.document.source}" changeListener="cmOnChange" />
+  </div>
 </ui:composition>

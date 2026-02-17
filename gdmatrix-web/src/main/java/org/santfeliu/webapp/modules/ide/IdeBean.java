@@ -34,24 +34,19 @@ import org.santfeliu.webapp.modules.ide.doc.IdeDocumentType;
 import org.santfeliu.webapp.modules.ide.doc.IdeDocument;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.harrel.jsonschema.Validator;
-import dev.harrel.jsonschema.ValidatorFactory;
-import dev.harrel.jsonschema.Error;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Scanner;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
@@ -80,7 +75,6 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.ide.doc.IdeDocumentType.Tab;
-import org.santfeliu.webapp.setup.ObjectSetup;
 
 /**
  *
@@ -90,11 +84,12 @@ import org.santfeliu.webapp.setup.ObjectSetup;
 @RequestScoped
 public class IdeBean extends WebBean implements Serializable
 {
+
   public static final String TYPE_PARAMETER = "type";
   public static final String NAME_PARAMETER = "name";
 
   private static final String CHECK_ENABLED_PROPERTY = "checkEnabled";
-  
+
   private String typeName = "javascript";
   private String name;
   private IdeDocument document = new IdeDocument();
@@ -106,6 +101,12 @@ public class IdeBean extends WebBean implements Serializable
   IdeDocumentCacheBean ideDocumentCacheBean;
 
   static List<SelectItem> typeSelectItems;
+  
+  @Inject
+  HtmlFormBean htmlFormBean;
+  private boolean pendingSaveWithErrors = false;
+  private List<String> lastErrors = new ArrayList<>();
+  private boolean confirmSaveNewVersion = false;
 
   public String getTypeName()
   {
@@ -152,7 +153,7 @@ public class IdeBean extends WebBean implements Serializable
     return document;
   }
 
-  public List<Document> getVersions() 
+  public List<Document> getVersions()
   {
     if (versions == null)
     {
@@ -234,11 +235,13 @@ public class IdeBean extends WebBean implements Serializable
 
   public void onTypeChange()
   {
+    htmlFormBean.clear();
     create();
   }
 
   public void onNameSelect(SelectEvent<String> event)
   {
+    htmlFormBean.clear();
     loadCache();
   }
 
@@ -279,6 +282,12 @@ public class IdeBean extends WebBean implements Serializable
     name = null;
     document = new IdeDocument();
     document.setTypeName(typeName);
+    IdeDocumentType type = IdeDocumentType.getInstance(typeName);
+    //Load specific template according to IdeDocumentType
+    if (type != null)
+    {
+      document.setSource(type.getTemplate());
+    }
     versions = null;
   }
 
@@ -313,6 +322,7 @@ public class IdeBean extends WebBean implements Serializable
           document.setSource(source);
           document.setMetadata(metadataToJson(doc, type));
           document.setAccessControl(doc.getAccessControl());
+          document.setModified(false);
           versions = null;
           saveCache();
         }
@@ -358,8 +368,8 @@ public class IdeBean extends WebBean implements Serializable
     if (!StringUtils.isBlank(roleToAdd))
     {
       boolean found = document.getAccessControl().stream().anyMatch(
-        ac -> ac.getRoleId().equals(roleToAdd) &&
-              ac.getAction().equals(action));
+        ac -> ac.getRoleId().equals(roleToAdd)
+        && ac.getAction().equals(action));
       if (!found)
       {
         AccessControl ac = new AccessControl();
@@ -437,8 +447,8 @@ public class IdeBean extends WebBean implements Serializable
   public boolean isVersionDeleted(Document document)
   {
     return document.getState().equals(State.DELETED);
-  }  
-  
+  }
+
   public void selectDocumentVersion(int versionIndex)
   {
     try
@@ -455,137 +465,148 @@ public class IdeBean extends WebBean implements Serializable
       error(ex);
     }
   }
-  
+
   public void markChanged()
   {
+    this.getFacesContext().getExternalContext().getRequestParameterMap().get("cmClientId");
+    System.out.println("MARKCHANGED");
     if (document != null)
     {
       document.setModified(true);
     }
   }
-  
+
+  // Confirm save
+  public void confirmSaveYes()
+  {
+    try
+    {
+      if (pendingSaveWithErrors)
+      {
+        performSave(confirmSaveNewVersion);
+      }
+    }
+    catch (Exception e)
+    {
+      error(e);
+    }
+  }
+
+  // Deny save (only closes the dialog)
+  public void confirmSaveNo()
+  {
+    pendingSaveWithErrors = false;
+    lastErrors.clear();
+  }
+
   private void save(boolean newVersion)
   {
     try
     {
-      if (StringUtils.isBlank(name)) return; // do nothing
-      
-      //Check file content
-      boolean checkEnabled = "true".equals(Objects.toString(
-        getProperty(CHECK_ENABLED_PROPERTY), "true"));
+      if (StringUtils.isBlank(name))
+      {
+        return;
+      }
+      boolean checkEnabled = "true".equals(Objects.toString(getProperty(CHECK_ENABLED_PROPERTY), "true"));
       if (checkEnabled)
       {
-        List<String> errors = new ArrayList<>();
-        if ("ObjectSetup".equals(typeName))
-        {
-          errors.addAll(checkObjectSetup());
-        }
+        IdeDocumentType docType = IdeDocumentType.getInstance(typeName);
+        List<String> errors = docType.validate(getDocument().getSource());
         if (!errors.isEmpty())
         {
+          lastErrors = errors;
           for (String error : errors)
           {
             getFacesContext().addMessage(null,
-              new FacesMessage(FacesMessage.SEVERITY_ERROR, error, null));               
+              new FacesMessage(FacesMessage.SEVERITY_ERROR, error, null));
           }
+          pendingSaveWithErrors = true;
+          confirmSaveNewVersion = newVersion;  
+          PrimeFaces.current().ajax().update("mainform:dialogSaveWithErrors");
+          // Shows dialog with confirmation message
+          PrimeFaces.current().executeScript("PF('confirmSaveDialog').show();");
+          // Stops the execution until user specific confirmation
           return;
         }
       }
-      
-      Document doc;
-      IdeDocumentType type = IdeDocumentType.getInstance(typeName);
-      if (name.equals(document.getName()))
-      {
-        doc = new Document();
-        if (document.getDocId() != null)
-        {
-          doc.setDocId(document.getDocId());
-          doc.setVersion(document.getVersion());
-        }
-      }
-      else // save under another name
-      {
-        ideDocumentCacheBean.removeDocument(document.getReference());
-        doc = this.findDocumentByName(type, name);
-        if (doc == null)
-        {
-          doc = new Document();
-        }
-      }
-      if (StringUtils.isBlank(document.getTitle()))
-      {
-        document.setTitle(name);
-      }
-      doc.setTitle(name + ": " + document.getTitle());
-      doc.setDocTypeId(type.getDocTypeId());
-      this.metadataFromJson(doc, document.getMetadata());
-      Content content = new Content();
-      String source = document.getSource();
-      if (StringUtils.isBlank(source)) source = " ";
-      byte[] bytes = source.getBytes("UTF-8");
-      String contentType = type.getDocContentType();
-      content.setContentType(contentType);
-      DataSource ds = new MemoryDataSource(bytes, "source", contentType);
-      content.setData(new DataHandler(ds));
-      doc.setContent(content);
-      DictionaryUtils.setProperty(doc, type.getDocProperty(), name);
-      doc.getAccessControl().clear();
-      doc.getAccessControl().addAll(document.getAccessControl());
-      if (newVersion)
-      {
-        doc.setVersion(DocumentConstants.NEW_VERSION);
-      }
-      DocumentManagerPort port = getPort();
-      doc = port.storeDocument(doc);
-      document.setDocId(doc.getDocId());
-      document.setVersion(doc.getVersion());
-      document.setTypeName(typeName);
-      document.setName(name); // set new name
-      document.setModified(false);
-      document.setConfirmSave(false);
-
-      ideDocumentCacheBean.putDocument(document);
-      
-      versions = null;
-      
-      growl("STORE_OBJECT");
+      // If there are no errors, it saves
+      performSave(newVersion);
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  } 
-  
-  private List<String> checkObjectSetup()
-  {
-    List<String> errors = new ArrayList<>();
-    try (
-      InputStream is = 
-        ObjectSetup.class.getResourceAsStream("ObjectSetup.schema.json");
-      Scanner scanner = new Scanner(is, StandardCharsets.UTF_8);
-    ) 
-    {    
-      String schema = scanner.useDelimiter("\\A").next();
-      String instance = document.getSource();
-      Validator.Result result = new ValidatorFactory()
-        .validate(schema, instance);      
-      if (!result.isValid()) 
-      {
-        for (Error error : result.getErrors()) 
-        {
-          StringBuilder sbError = new StringBuilder();        
-          sbError.append(error.getInstanceLocation()).append(": ").
-            append(error.getError());
-          errors.add(sbError.toString());
-        }
-      } 
-    } 
-    catch (Exception ex)
-    {
-      errors.add(ex.toString());
-    }
-    return errors;
   }
   
+  // Save logic
+  private void performSave(boolean newVersion) throws Exception
+  {
+    Document doc;
+    IdeDocumentType type = IdeDocumentType.getInstance(typeName);
+    if (name.equals(document.getName()))
+    {
+      doc = new Document();
+      if (document.getDocId() != null)
+      {
+        doc.setDocId(document.getDocId());
+        doc.setVersion(document.getVersion());
+      }
+    }
+    else
+    {
+      ideDocumentCacheBean.removeDocument(document.getReference());
+      doc = findDocumentByName(type, name);
+      if (doc == null)
+      {
+        doc = new Document();
+      }
+    }
+    if (StringUtils.isBlank(document.getTitle()))
+    {
+      document.setTitle(name);
+    }
+    doc.setTitle(name + ": " + document.getTitle());
+    doc.setDocTypeId(type.getDocTypeId());
+    metadataFromJson(doc, document.getMetadata());
+
+    Content content = new Content();
+    String source = document.getSource();
+    if (StringUtils.isBlank(source))
+    {
+      source = " ";
+    }
+    byte[] bytes = source.getBytes("UTF-8");
+    String contentType = type.getDocContentType();
+    content.setContentType(contentType);
+    DataSource ds = new MemoryDataSource(bytes, "source", contentType);
+    content.setData(new DataHandler(ds));
+    doc.setContent(content);
+    DictionaryUtils.setProperty(doc, type.getDocProperty(), name);
+    doc.getAccessControl().clear();
+    doc.getAccessControl().addAll(document.getAccessControl());
+    if (newVersion)
+    {
+      doc.setVersion(DocumentConstants.NEW_VERSION);
+    }
+    DocumentManagerPort port = getPort();
+    doc = port.storeDocument(doc);
+    document.setDocId(doc.getDocId());
+    document.setVersion(doc.getVersion());
+    document.setTypeName(typeName);
+    document.setName(name);
+    document.setModified(false);
+    document.setConfirmSave(false);
+
+    ideDocumentCacheBean.putDocument(document);
+    versions = null;
+
+    growl("STORE_OBJECT");
+
+    // Reset estado de confirmación
+    pendingSaveWithErrors = false;
+    lastErrors.clear();
+  }
+
   private DocumentManagerPort getPort()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -624,8 +645,8 @@ public class IdeBean extends WebBean implements Serializable
   private String metadataToJson(Document doc, IdeDocumentType type)
   {
     Type docType = TypeCache.getInstance().getType(type.getDocTypeId());
-    Map<String, Object> map =
-      DictionaryUtils.getMapFromProperties(doc.getProperty(), docType);
+    Map<String, Object> map
+      = DictionaryUtils.getMapFromProperties(doc.getProperty(), docType);
     map.remove(type.getDocProperty());
 
     Gson gson = new GsonBuilder()

@@ -17,13 +17,19 @@
                listener="#{htmlFormBean.loadDynamicComponents}" />
     </h:panelGroup>
 
-    <p:outputPanel id="html_toolbar" class="flex-grow-0 pt-2 pb-2 text-left">
+    <p:outputPanel id="html_editor_toolbar" class="flex-grow-0 pt-2 pb-2 text-left">
       <p:commandButton value="Update" 
                        icon="pi pi-refresh"
-                       process="@form"
-                       update="html_form html_data" 
-                       action="#{htmlFormBean.update}" />    
-      <p:commandButton value="Submit" 
+                       process="@this html_data code_editor" 
+                       update="html_form html_data"
+                       action="#{htmlFormBean.update}" />
+       <p:commandButton value="Clear" 
+                       icon="pi pi-eraser"
+                       process="@this"
+                       action="#{htmlFormBean.clear}"
+                       update="html_form html_data" class="ml-1" /> 
+      <p:commandButton id="submit_form"
+                       value="Submit" 
                        icon="pi pi-play"
                        process="@form"
                        update="html_form html_data" class="ml-1" />
@@ -35,6 +41,6 @@
     </p:outputPanel>
   </div>  
   
-  <gdm:saveBean value="htmlFormBean" />
+  <gdm:saveBean value="htmlFormBean"/>
   
 </ui:composition>
