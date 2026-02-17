@@ -76,7 +76,9 @@ public class CSVNoQuoteExporter
     {
       OutputStreamWriter osw = new OutputStreamWriter(os(),
         exportConfiguration.getEncodingType());
-      return new PrintWriter(osw);
+      PrintWriter writer = new PrintWriter(osw);
+      writer.write('\uFEFF');
+      return writer;
     }
     catch (UnsupportedEncodingException e)
     {
