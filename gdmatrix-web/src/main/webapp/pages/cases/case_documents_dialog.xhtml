@@ -86,7 +86,7 @@
                                           queryDelay="1000"
                                           minQueryLength="3"
                                           required="false"
-                                          disabled="#{!caseObjectBean.editable}">
+                                          disabled="#{!caseObjectBean.editable or caseDocumentsTabBean.refTypeId != null}">
                     </emcomp:typeReference>
                   </p:outputPanel>
                 </p:outputPanel>
@@ -99,12 +99,12 @@
               <p:outputPanel styleClass="chooseDocTab">
                 <div class="field col-12">
                   <p:outputLabel for="@next"
-                                 value="#{caseBundle.caseDocuments_document}"
+                                 value="#{caseDocumentsTabBean.refTypeId != null ? caseDocumentsTabBean.refTypeDescription : caseBundle.caseDocuments_document}"
                                  styleClass="w-full"
                                  indicateRequired="true" />
                   <emcomp:objectReference value="#{caseDocumentsTabBean.docId}"
                                           process="@form:cnt:search_tabs:case_documents_dialog"
-                                          type="Document"
+                                          type="#{caseDocumentsTabBean.refTypeId != null ? caseDocumentsTabBean.refTypeId : 'Document'}"
                                           styleClass="w-full"
                                           scrollHeight="200"
                                           queryDelay="1000"

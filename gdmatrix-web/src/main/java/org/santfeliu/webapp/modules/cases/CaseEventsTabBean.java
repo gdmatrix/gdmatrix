@@ -45,6 +45,8 @@ import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
 import org.matrix.dic.DictionaryConstants;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.DataTableRowExportable;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -54,7 +56,6 @@ import org.santfeliu.webapp.helpers.RowsExportHelper;
 import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.agenda.EventTypeBean;
-import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
@@ -78,6 +79,9 @@ import org.santfeliu.webapp.util.WebUtils;
 public class CaseEventsTabBean extends TabBean  
   implements DataTableRowExportable
 {
+  private static final String REF_TYPEID_PROPERTY = "refTypeId";
+  private static final String SHOW_ALL_REF_TYPES_PROPERTY = "showAllRefTypes";
+
   private CaseEvent editing;
   Map<String, TabInstance> tabInstances = new HashMap();
   private String formSelector;
@@ -215,9 +219,6 @@ public class CaseEventsTabBean extends TabBean
 
   @Inject
   EventTypeBean eventTypeBean;
-
-  @Inject
-  TypeTypeBean typeTypeBean;
 
   @PostConstruct
   public void init()
@@ -476,7 +477,35 @@ public class CaseEventsTabBean extends TabBean
         filter.setExcludeMetadata(false);
         List<CaseEventView> events =
           CasesModuleBean.getPort(false).findCaseEventViews(filter);
-        List<CaseEventsDataTableRow> auxList = toDataTableRows(events);
+
+        //Check refType
+        List<CaseEventView> events2 = new ArrayList<>();
+        if (!isShowAllRefTypes(tab))
+        {
+          String refTypeId = getRefTypeId(tab);
+          if (refTypeId != null)
+          {
+            for (CaseEventView item : events)
+            {
+              Type eventType = TypeCache.getInstance().getType(
+                item.getEvent().getEventTypeId());
+              if (eventType.isDerivedFrom(refTypeId))
+              {
+                events2.add(item);
+              }
+            }
+          }
+          else
+          {
+             events2.addAll(events);
+          }
+        }
+        else
+        {
+          events2.addAll(events);
+        }
+
+        List<CaseEventsDataTableRow> auxList = toDataTableRows(events2);        
         if (getOrderBy() != null)
         {
           Collections.sort(auxList,
@@ -573,6 +602,24 @@ public class CaseEventsTabBean extends TabBean
     tabInstances.clear();
   }
 
+  public String getRefTypeId()
+  {
+    return getRefTypeId(caseObjectBean.getActiveEditTab());
+  }
+
+  public String getRefTypeDescription()
+  {
+    if (getRefTypeId() != null)
+    {
+      Type type = TypeCache.getInstance().getType(getRefTypeId());
+      if (type != null)
+      {
+        return type.getDescription();
+      }
+    }
+    return null;
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -593,6 +640,27 @@ public class CaseEventsTabBean extends TabBean
     {
       error(ex);
     }
+  }
+
+  private boolean isShowAllRefTypes(EditTab tab)
+  {
+    String showAllRefTypes = 
+      (String)tab.getProperties().get(SHOW_ALL_REF_TYPES_PROPERTY);
+    return Boolean.parseBoolean(showAllRefTypes);
+  }
+
+  private String getRefTypeId(EditTab tab)
+  {
+    String refTypeId = (String)tab.getProperties().get(REF_TYPEID_PROPERTY);
+    if (refTypeId != null)
+    {
+      Type refType = TypeCache.getInstance().getType(refTypeId);
+      if (refType != null)
+      {
+        return refType.getTypeId();
+      }
+    }
+    return null;
   }
 
   private boolean isNew(CaseEvent attendant)

@@ -116,6 +116,8 @@ public class CaseDocumentsTabBean extends TabBean
   public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";
 
   private static final String UPLOAD_TYPEID_PROPERTY = "uploadTypeId";
+  private static final String REF_TYPEID_PROPERTY = "refTypeId";
+  private static final String SHOW_ALL_REF_TYPES_PROPERTY = "showAllRefTypes";
   private static final int CREATE_NEW_DOCUMENT_TAB_INDEX = 0;
   private static final int EXISTING_DOCUMENT_TAB_INDEX = 1;
   private static final int UPDATE_CONTENT_TAB_INDEX = 2;
@@ -901,7 +903,25 @@ public class CaseDocumentsTabBean extends TabBean
   {
     tabInstances.clear();
   }
-  
+
+  public String getRefTypeId()
+  {
+    return getRefTypeId(caseObjectBean.getActiveEditTab());
+  }
+
+  public String getRefTypeDescription()
+  {
+    if (getRefTypeId() != null)
+    {
+      Type type = TypeCache.getInstance().getType(getRefTypeId());
+      if (type != null)
+      {
+        return type.getDescription();
+      }
+    }
+    return null;
+  }
+
   public void enableTab()
   {
     String tabIndex =
@@ -1046,6 +1066,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     List<CaseDocumentView> tabRows = new ArrayList();
     String typeId = getTabBaseTypeId();
+    //Filter by caseDocTypeId
     boolean showAllTypes = (typeId == null || tab.isShowAllTypes());
     for (CaseDocumentView item : rows)
     {
@@ -1070,7 +1091,35 @@ public class CaseDocumentsTabBean extends TabBean
         }
       }
     }
-    return tabRows;
+
+    //Check refType
+    List<CaseDocumentView> tabRows2 = new ArrayList();
+    if (!isShowAllRefTypes(tab))
+    {
+      String refTypeId = getRefTypeId(tab);
+      if (refTypeId != null)
+      {
+        for (CaseDocumentView item : tabRows)
+        {
+          Type docType = TypeCache.getInstance().getType((
+            item.getDocument().getDocTypeId()));
+          if (docType.isDerivedFrom(refTypeId))
+          {
+            tabRows2.add(item);
+          }
+        }
+      }
+      else
+      {
+        tabRows2.addAll(tabRows);
+      }
+    }
+    else
+    {
+      tabRows2.addAll(tabRows);
+    }
+    
+    return tabRows2;
   }
 
   private List<SelectItem> generateVolumeSelectItems(EditTab tab,
@@ -1252,6 +1301,11 @@ public class CaseDocumentsTabBean extends TabBean
       tempFile.setFile(File.createTempFile(baseName + "_", extension));
       tempFile.setDocTitle(baseName);
       tempFile.setFileName(uploadedFileName);
+      String refTypeId = getRefTypeId();
+      if (refTypeId != null)
+      {
+        tempFile.setDocTypeId(refTypeId);
+      }
       try (InputStream is = uploadedFile.getInputStream())
       {
         IOUtils.writeToFile(is, tempFile.getFile());
@@ -1299,6 +1353,27 @@ public class CaseDocumentsTabBean extends TabBean
     EditTab tab = caseObjectBean.getActiveEditTab();
     String uploadTypeId = tab.getProperties().getString(UPLOAD_TYPEID_PROPERTY);
     return (uploadTypeId != null ? uploadTypeId : getCreationTypeId());
+  }
+
+  private boolean isShowAllRefTypes(EditTab tab)
+  {
+    String showAllRefTypes = 
+      (String)tab.getProperties().get(SHOW_ALL_REF_TYPES_PROPERTY);
+    return Boolean.parseBoolean(showAllRefTypes);
+  }
+
+  private String getRefTypeId(EditTab tab)
+  {
+    String refTypeId = (String)tab.getProperties().get(REF_TYPEID_PROPERTY);
+    if (refTypeId != null)
+    {
+      Type refType = TypeCache.getInstance().getType(refTypeId);
+      if (refType != null)
+      {
+        return refType.getTypeId();
+      }
+    }
+    return null;
   }
 
   private boolean containsAC(List<AccessControl> acl, AccessControl ac)

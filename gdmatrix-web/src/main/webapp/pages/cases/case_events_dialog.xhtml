@@ -38,12 +38,12 @@
         <!-- Event -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="#{caseBundle.caseEvents_event}"
+                         value="#{caseEventsTabBean.refTypeId != null ? caseEventsTabBean.refTypeDescription : caseBundle.caseEvents_event}"
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseEventsTabBean.editing.eventId}"
                                   process="@form:cnt:search_tabs:case_events_dialog"
-                                  type="Event"
+                                  type="#{caseEventsTabBean.refTypeId != null ? caseEventsTabBean.refTypeId : 'Event'}"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
