@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class HtmlFormDocumentType extends IdeDocumentType
 {
-  //Constructor
+
   public HtmlFormDocumentType()
   {
     super("html", 
@@ -82,7 +82,7 @@ public class HtmlFormDocumentType extends IdeDocumentType
     List<String> errors = new ArrayList<>();
     
     if (source == null || source.trim().isEmpty()) {
-        errors.add("El contenido HTML no puede estar vacío.");
+        errors.add("The HTML content cannot be empty.");
         return errors;
     }
     // Html validation here if required

@@ -45,6 +45,8 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -105,7 +107,6 @@ public class IdeBean extends WebBean implements Serializable
   @Inject
   HtmlFormBean htmlFormBean;
   private boolean pendingSaveWithErrors = false;
-  private List<String> lastErrors = new ArrayList<>();
   private boolean confirmSaveNewVersion = false;
 
   public String getTypeName()
@@ -486,9 +487,9 @@ public class IdeBean extends WebBean implements Serializable
         performSave(confirmSaveNewVersion);
       }
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      error(e);
+      error(ex);
     }
   }
 
@@ -496,13 +497,17 @@ public class IdeBean extends WebBean implements Serializable
   public void confirmSaveNo()
   {
     pendingSaveWithErrors = false;
-    lastErrors.clear();
+  }
+  
+  private UIComponent getDialogErrorsUIComponent()
+  {
+    return getFacesContext().getViewRoot().findComponent(":mainform:dialogErrors");
   }
 
   private void save(boolean newVersion)
   {
     try
-    {
+    {  
       if (StringUtils.isBlank(name))
       {
         return;
@@ -514,14 +519,19 @@ public class IdeBean extends WebBean implements Serializable
         List<String> errors = docType.validate(getDocument().getSource());
         if (!errors.isEmpty())
         {
-          lastErrors = errors;
+          UIComponent msgComponent = getDialogErrorsUIComponent();
+          
+          // Se pinta dos veces por eso, seguramente SI ES ASI USAR SOlo errors.getFirst() y solo muestas el primer error
+          System.out.println("ERRORS SIZE: " + errors.size());
           for (String error : errors)
           {
-            getFacesContext().addMessage(null,
-              new FacesMessage(FacesMessage.SEVERITY_ERROR, error, null));
+            error(msgComponent, error);
           }
+          //error(msgComponent, errors.getFirst());
+
           pendingSaveWithErrors = true;
           confirmSaveNewVersion = newVersion;  
+          
           PrimeFaces.current().ajax().update("mainform:dialogSaveWithErrors");
           // Shows dialog with confirmation message
           PrimeFaces.current().executeScript("PF('confirmSaveDialog').show();");
@@ -602,9 +612,8 @@ public class IdeBean extends WebBean implements Serializable
 
     growl("STORE_OBJECT");
 
-    // Reset estado de confirmación
+    // Reset confirm state
     pendingSaveWithErrors = false;
-    lastErrors.clear();
   }
 
   private DocumentManagerPort getPort()

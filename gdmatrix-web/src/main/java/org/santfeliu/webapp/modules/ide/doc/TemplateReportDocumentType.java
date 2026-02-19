@@ -40,7 +40,7 @@ import org.santfeliu.webapp.validators.XmlValidator;
  */
 public class TemplateReportDocumentType extends IdeDocumentType
 { 
-  // Constructor
+
   public TemplateReportDocumentType()
   {
     super("template", 
@@ -59,13 +59,15 @@ public class TemplateReportDocumentType extends IdeDocumentType
   public String getTemplate()
   {
     // Basic report template
-    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-           "<report>\n" +
-           "    <title>Nuevo Reporte</title>\n" +
-           "    <content>\n" +
-           "        \n" +
-           "    </content>\n" +
-           "</report>";
+    return "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
+      + "<html>\n"
+      + "  <head>\n"
+      + "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n"
+      + "    <title>Nou Template Report</title>\n" // Added to comply with the standard
+      + "  </head>\n"
+      + "  <body>\n"
+      + "  </body>\n"
+      + "</html>";
   }
 
   // No validation
@@ -76,7 +78,7 @@ public class TemplateReportDocumentType extends IdeDocumentType
 
     if (source == null || source.trim().isEmpty())
     {
-      errors.add("El contenido del REPORT no puede estar vacío.");
+      errors.add("The content of the REPORT cannot be empty.");
       return errors;
     }
     // Validation here if required

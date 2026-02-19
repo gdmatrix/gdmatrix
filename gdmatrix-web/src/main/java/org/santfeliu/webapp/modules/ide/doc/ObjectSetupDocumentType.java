@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import org.santfeliu.webapp.setup.ObjectSetup;
-import org.xml.sax.SAXParseException;
 
 /**
  *
@@ -47,7 +46,6 @@ import org.xml.sax.SAXParseException;
 public class ObjectSetupDocumentType extends IdeDocumentType
 {
 
-  //Constructor
   public ObjectSetupDocumentType()
   {
     super("ObjectSetup",
@@ -96,7 +94,7 @@ public class ObjectSetupDocumentType extends IdeDocumentType
     }
     catch (Exception ex)
     {
-      errors.add("Error validando JSON Schema: " + ex.toString());
+      errors.add("Error validating JSON Schema: " + ex.toString());
     }
     return errors;
   }

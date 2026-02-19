@@ -41,7 +41,6 @@ import org.santfeliu.webapp.validators.XmlValidator;
 public class XslTemplateDocumentType extends IdeDocumentType
 {
 
-  // Constructor
   public XslTemplateDocumentType()
   {
     super("xsl",
@@ -76,7 +75,7 @@ public class XslTemplateDocumentType extends IdeDocumentType
 
     if (source == null || source.trim().isEmpty())
     {
-      errors.add("El contenido XSL no puede estar vacío.");
+      errors.add("The XSL content cannot be empty.");
       return errors;
     }
     // XML basic sintax validation

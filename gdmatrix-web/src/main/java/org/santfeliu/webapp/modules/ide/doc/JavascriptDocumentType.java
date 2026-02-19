@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class JavascriptDocumentType extends IdeDocumentType
 {
-  // Constructor
+
   public JavascriptDocumentType()
   {
     super("javascript",
@@ -69,7 +69,7 @@ public class JavascriptDocumentType extends IdeDocumentType
     List<String> errors = new ArrayList<>();
     if (source == null || source.trim().isEmpty())
     {
-      errors.add("El código no puede estar vacío.");
+      errors.add("The code cannot be empty.");
     }
 
     // JS validation here if required

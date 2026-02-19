@@ -17,7 +17,8 @@
                 var="documentBundle"/>
 
   <p:messages id="ideMessages" showSummary="true" styleClass="messages ml-3 mr-3" 
-              showIcon="true" closable="true" forIgnores="growl login_messages">
+              showIcon="true" closable="true" globalOnly="true"
+              forIgnores="growl login_messages dialogErrors">
     <p:autoUpdate />
   </p:messages>
   
@@ -196,9 +197,13 @@
   </p:outputPanel>
   
   <!-- Confirm save with errors dialog-->
-  <p:dialog id="dialogSaveWithErrors" widgetVar="confirmSaveDialog" modal="true" header="Errores detectados" closable="false" closeOnEscape="true">
-    <h:outputText value="Se detectaron errores en el documento. ¿Desea guardar de todos modos?" />
-    <p:messages id="dialogErrors" showDetail="true" showSummary="false" globalOnly="true" />
+  <p:dialog id="dialogSaveWithErrors" widgetVar="confirmSaveDialog" styleClass="edit_data_dialog mw_600"
+            header="#{documentBundle.ide_errorsDetected}" modal="true" responsive="true" 
+            closable="false" position="center center" resizable="false"
+            onShow="PF('confirmSaveDialog').resetPosition();" >
+        
+    <h:outputText value="#{documentBundle.ide_errorsDetected_message}"  />
+    <p:messages id="dialogErrors" showDetail="true" showSummary="false" />
     <p:separator/>
     <div class="flex justify-content-end mt-2">
       <p:commandButton value="Si" 

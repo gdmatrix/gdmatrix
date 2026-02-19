@@ -30,15 +30,8 @@
  */
 package org.santfeliu.webapp.modules.ide.doc;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXParseException;
 
 /**
  *
@@ -47,7 +40,6 @@ import org.xml.sax.SAXParseException;
 public class AntTemplateDocumentType extends IdeDocumentType
 {
 
-  //Constructor
   public AntTemplateDocumentType()
   {
     super("ant",
@@ -90,7 +82,7 @@ public class AntTemplateDocumentType extends IdeDocumentType
     // Basic HTML validation
     List<String> errors = new ArrayList<>();
     if (source == null || source.trim().isEmpty()) {
-        errors.add("El contenido del ANT no puede estar vacío.");
+        errors.add("The contents of the ANT cannot be empty.");
         return errors;
     }
     // ANT validation here if required

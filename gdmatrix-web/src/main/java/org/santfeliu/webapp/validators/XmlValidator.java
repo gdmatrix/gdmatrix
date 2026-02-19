@@ -39,55 +39,83 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author granadogj
  */
 public class XmlValidator
-{  
+{
+
   public static List<String> validateXML(String xmlSource)
   {
     List<String> errors = new ArrayList<>();
-    
+
     try
     {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setNamespaceAware(true);
       factory.setValidating(false); // No DTD/XSD, only basic sintax
       //factory.setSchema(schema); // Add DTD/XSD if necessary
-      
+
+      // XXE Protection
+      try
+      {
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      }
+      catch (ParserConfigurationException e)
+      {
+        throw new RuntimeException("Error configuring XML parser security", e);
+      }
+
+      factory.setXIncludeAware(false);
+      factory.setExpandEntityReferences(false);
+
       DocumentBuilder builder = factory.newDocumentBuilder();
-      
+
       // Capture parsing errors according to SAX (abstract methods implementation)
-      builder.setErrorHandler(new ErrorHandler(){
+      builder.setErrorHandler(new ErrorHandler()
+      {
         @Override
-        public void warning(SAXParseException ex)
+        public void warning(SAXParseException ex) throws SAXException
         {
           errors.add(String.format("Warning (line %d): %s", ex.getLineNumber(), ex.getMessage()));
         }
 
         @Override
-        public void error(SAXParseException ex)
+        public void error(SAXParseException ex) throws SAXException
         {
           errors.add(String.format("Error (line %d): %s", ex.getLineNumber(), ex.getMessage()));
         }
 
         @Override
-        public void fatalError(SAXParseException ex)
+        public void fatalError(SAXParseException ex) throws SAXException
         {
           errors.add(String.format("FatalError (line %d): %s", ex.getLineNumber(), ex.getMessage()));
+          throw ex;
         }
       });
-      
+
       // Parsing XML from String
       builder.parse(new InputSource(new StringReader(xmlSource)));
     }
-    catch(Exception ex)
+    catch (SAXException ex) 
     {
-      errors.add("Unexpected error: " +ex.getMessage());
+    // Already catched
     }
-    
+    catch (Exception ex)
+    {
+      errors.add("Unexpected error: " + ex.getMessage());
+    }
+
     return errors;
   }
 }

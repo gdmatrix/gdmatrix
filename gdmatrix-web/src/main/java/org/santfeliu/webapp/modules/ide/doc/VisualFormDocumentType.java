@@ -33,14 +33,13 @@ package org.santfeliu.webapp.modules.ide.doc;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  *
  * @author granadogj
  */
 public class VisualFormDocumentType extends IdeDocumentType
 {
-  //Constructor
+
   public VisualFormDocumentType()
   {
     super("form", 
@@ -63,7 +62,7 @@ public class VisualFormDocumentType extends IdeDocumentType
       + "<html>\n"
       + "  <head>\n"
       + "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n"
-      + "    <title>Nuevo Formulario</title>\n" // Added to comply with the standard
+      + "    <title>Nou Formulari</title>\n" // Added to comply with the standard
       + "  </head>\n"
       + "  <body>\n"
       + "    <div id=\"panel\">\n"
@@ -83,7 +82,7 @@ public class VisualFormDocumentType extends IdeDocumentType
     List<String> errors = new ArrayList<>();
     
     if (source == null || source.trim().isEmpty()) {
-        errors.add("El contenido HTML no puede estar vacío.");
+        errors.add("The HTML content cannot be empty.");
         return errors;
     }
     
