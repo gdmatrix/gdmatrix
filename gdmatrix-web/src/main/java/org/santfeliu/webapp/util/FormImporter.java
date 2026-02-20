@@ -75,6 +75,7 @@ import org.primefaces.component.selectoneradio.SelectOneRadio;
 import org.primefaces.component.toggleswitch.ToggleSwitch;
 import org.santfeliu.faces.codemirror.CodeMirror;
 import org.santfeliu.faces.maplibre.MapLibre;
+import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.faces.quill.Quill;
 import org.santfeliu.faces.tinymce.TinyMCE;
 import org.santfeliu.form.Field;
@@ -88,6 +89,7 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.converters.SpecialCharsConverter;
 import org.santfeliu.webapp.modules.geo.io.MapDocument;
 import org.santfeliu.webapp.modules.geo.io.MapStore;
+import org.santfeliu.webapp.modules.geo.metadata.StyleMetadata;
 
 
 /**
@@ -1038,8 +1040,20 @@ public class FormImporter
       String password = userSessionBean.getPassword();
       mapStore.setCredentials(userId, password);
       MapDocument mapDocument = mapStore.loadMap(mapName);
+      String baseMapName = mapDocument.getBaseMapName();
+      Style mapStyle = mapDocument.getStyle();
+      if (!isBlank(baseMapName))
+      {
+        StyleMetadata styleMetadata = new StyleMetadata(mapStyle);
 
-      mapLibre.setValue(mapDocument.getStyle());
+        MapDocument baseMapDocument = mapStore.loadMap(baseMapName);
+        Style baseStyle = baseMapDocument.getStyle();
+        StyleMetadata baseStyleMetadata = new StyleMetadata(baseStyle);
+
+        styleMetadata.importStyle(baseStyleMetadata);
+        mapStyle = styleMetadata.getStyle();
+      }
+      mapLibre.setValue(mapStyle);
 
       parent.getChildren().add(mapLibre);
     }

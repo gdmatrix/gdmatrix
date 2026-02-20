@@ -111,6 +111,7 @@ if (window.ogcLoaded === undefined)
               type === "LineString" ||
               type === "Surface" ||
               type === "MultiPoint" || 
+              type === "MultiPolygon" || 
               type === "MultiLineString" ||
               type === "MultiSurface" ||              
               type === "Geometry")
