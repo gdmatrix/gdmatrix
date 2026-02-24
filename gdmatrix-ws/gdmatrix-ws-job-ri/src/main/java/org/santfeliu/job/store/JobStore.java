@@ -89,9 +89,11 @@ public interface JobStore extends Serializable
   public List<JobFiring> findJobFirings(String jobId, String fromDate, 
     String endDateTime) throws JobException;
      
-  public JobFiring loadJobFiring(String jobFiringId) throws JobException;
+  public JobFiring loadJobFiring(String jobFiringId, boolean getLogFile) 
+    throws JobException;
   
-  public JobFiring getLastJobFiring(String jobId) throws JobException;
+  public JobFiring getLastJobFiring(String jobId, boolean getLogFile) 
+    throws JobException;
   
 
 }

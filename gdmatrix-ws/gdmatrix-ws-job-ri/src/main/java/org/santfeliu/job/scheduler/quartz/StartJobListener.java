@@ -129,7 +129,7 @@ public class StartJobListener implements TriggerListener
     File logFile = null;
     if (LogType.CONTINUOUS.equals(logType) || LogType.LAST.equals(logType))
     {
-      JobFiring jobFiring = jobStore.getLastJobFiring(jobId);
+      JobFiring jobFiring = jobStore.getLastJobFiring(jobId, true);
       if (jobFiring != null)
         logFile = jobFiring.getLogFile();
     }

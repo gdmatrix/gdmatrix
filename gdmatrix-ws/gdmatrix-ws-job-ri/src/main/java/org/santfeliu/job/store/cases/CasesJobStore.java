@@ -286,7 +286,7 @@ public class CasesJobStore implements JobStore
       
       if (logType.equals(LogType.LAST))
       {
-        JobFiring last = getLastJobFiring(jobFiring.getJobId());
+        JobFiring last = getLastJobFiring(jobFiring.getJobId(), false);
         if (last != null)
         {
           last.setStartDateTime(jobFiring.getStartDateTime());
@@ -335,7 +335,7 @@ public class CasesJobStore implements JobStore
   }
    
   @Override
-  public JobFiring loadJobFiring(String jobFiringId) throws JobException
+  public JobFiring loadJobFiring(String jobFiringId, boolean getLogFile) throws JobException
   {
     JobFiring jobFiring = null;
     try
@@ -343,19 +343,21 @@ public class CasesJobStore implements JobStore
       CaseManagerPort port = getCaseManagerPort();
       Intervention inv = port.loadIntervention(jobFiringId);
       
-      jobFiring = JobFiringConverter.intToJobFiring(inv);      
-      
-      String logDocId = jobFiring.getLogId();
-      if (logDocId != null)
-      {
-        DocumentManagerClient client = getDocumentManagerClient();
-        Document doc = client.loadDocument(logDocId, 0, ContentInfo.ALL);
-        if (doc != null)
+      jobFiring = JobFiringConverter.intToJobFiring(inv);
+      if (getLogFile)
+      {      
+        String logDocId = jobFiring.getLogId();
+        if (logDocId != null)
         {
-          DataHandler dh = doc.getContent().getData();
-          jobFiring.setLogFile(IOUtils.writeToFile(dh));
-        }        
-      }      
+          DocumentManagerClient client = getDocumentManagerClient();
+          Document doc = client.loadDocument(logDocId, 0, ContentInfo.ALL);
+          if (doc != null)
+          {
+            DataHandler dh = doc.getContent().getData();
+            jobFiring.setLogFile(IOUtils.writeToFile(dh));
+          }        
+        }         
+      }
     } 
     catch (IOException ex)
     {
@@ -366,7 +368,7 @@ public class CasesJobStore implements JobStore
   }
   
   @Override
-  public JobFiring getLastJobFiring(String jobId) throws JobException
+  public JobFiring getLastJobFiring(String jobId, boolean getLogFile) throws JobException
   {
     try
     {
@@ -374,8 +376,8 @@ public class CasesJobStore implements JobStore
       if (firings != null && !firings.isEmpty())
       {
         JobFiring lastFiring = firings.get(0);
-        return loadJobFiring(lastFiring.getJobFiringId());
-      }
+        return loadJobFiring(lastFiring.getJobFiringId(), getLogFile);
+      }        
       else
         return null;
     }
