@@ -2,8 +2,14 @@
 
 import "./codemirror.js";
 
-function codemirrorInit(clientId, readonly, language, showLineNumbers, completion, changeListener)
+// Object used to store all instances indexed by ID.
+window.cmInstances = window.cmInstances || {};
+
+function codemirrorInit(clientId, readonly, language, showLineNumbers, completion, changeListener, activeExtensions)
 {
+  
+  console.log("Extensiones que llegan desde Java:", activeExtensions);
+  
   const editorId = clientId + "_editor";
   const inputId = clientId + "_input";
 
@@ -15,16 +21,22 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
   const {keymap, highlightSpecialChars, drawSelection,
     highlightActiveLine, dropCursor,
     rectangularSelection, crosshairCursor, EditorView,
-    lineNumbers, highlightActiveLineGutter} = CM["@codemirror/view"];
+    lineNumbers, highlightActiveLineGutter, lineWrapping} = CM["@codemirror/view"];
   const {Extension, EditorState} = CM["@codemirror/state"];
   const {defaultHighlightStyle, syntaxHighlighting, indentOnInput,
-    bracketMatching, foldGutter, foldKeymap} = CM["@codemirror/language"]
-  const {defaultKeymap, history, historyKeymap /*,indentWithTab*/} = CM["@codemirror/commands"];
+    bracketMatching, foldGutter, foldKeymap, indentUnit} = CM["@codemirror/language"]
+  const {defaultKeymap, history, historyKeymap, indentWithTab} = CM["@codemirror/commands"];
   const {searchKeymap, highlightSelectionMatches} = CM["@codemirror/search"];
   const {autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap} =
           CM["@codemirror/autocomplete"];
   const {lintKeymap} = CM["@codemirror/lint"];
-
+  
+  const EXTENSION_REGISTRY = {
+    "indentWithTab": keymap.of([indentWithTab]),
+    "lineWrapping": EditorView.lineWrapping
+    // Add optional extensions here; they must also be imported as constants above.
+  };
+  
   let theme = EditorView.theme({
     "&.cm-focused .cm-cursor": {
       borderLeftColor: "var(--text-color)",
@@ -84,9 +96,9 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
   });
 
   let editorView = new EditorView(
-  {
-    parent: editorElem
-  });
+          {
+            parent: editorElem
+          });
 
   let updateListenerExtension = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
@@ -115,8 +127,8 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     crosshairCursor(),
     highlightActiveLine(),
     highlightSelectionMatches(),
+    indentUnit.of("  "),
     keymap.of([
-//      indentWithTab,
       ...closeBracketsKeymap,
       ...defaultKeymap,
       ...searchKeymap,
@@ -127,7 +139,30 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     ]),
     updateListenerExtension,
     theme];
-
+  
+  let extsToLoad = [];
+  if (Array.isArray(activeExtensions)) {
+    extsToLoad = activeExtensions;
+  }else if (typeof activeExtensions == 'string') {
+    try {
+      extsToLoad = JSON.parse(activeExtensions);
+    }catch(e){
+      console.warn("ERROR al parsear extensiones", e);
+    }
+  }
+  
+  // Load dynamic extensions
+  extsToLoad.forEach(extName => {
+    const ext = EXTENSION_REGISTRY[extName];
+    if (ext) {
+      if(Array.isArray(ext)){
+        extensions.push(...ext);
+      }else{
+        extensions.push(ext);
+      }
+    }
+  });
+  
   switch (language)
   {
     case "html":
@@ -178,11 +213,11 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
   }
 
   let editorState = EditorState.create(
-  {
-    doc: inputElem.value,
-    extensions: extensions
-  });
-
+          {
+            doc: inputElem.value,
+            extensions: extensions
+          });
+          
   editorView.setState(editorState);
 }
 

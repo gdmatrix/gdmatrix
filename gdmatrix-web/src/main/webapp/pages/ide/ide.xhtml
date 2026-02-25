@@ -21,8 +21,8 @@
               forIgnores="growl login_messages dialogErrors">
     <p:autoUpdate />
   </p:messages>
-  
-    <script>
+
+  <script>
     var cmChanged = false;
     function cmOnChange(editorView, doc)
     {
@@ -97,7 +97,59 @@
                            icon="pi pi-refresh"
                            alt="#{objectBundle.load}" 
                            title="#{objectBundle.load}"/>
+        </div> 
+            
+        <!-- Ide config -->
+        <div class="flex align-items-center ml-5">
+          <p:commandButton id="ideConfigBtn" icon="pi pi-cog" 
+                           styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only"
+                           title="#{webBundle.ideConfig}"
+                           process="@this"
+                           update="configDialogContent"
+                           oncomplete="PF('configDialog').show();">
+             <p:resetInput target="configDialogContent" />
+          </p:commandButton>
+
+          <p:dialog id="configDialog" widgetVar="configDialog" header="#{webBundle.ideConfig}" 
+                    modal="true" responsive="true" resizable="false" width="350" 
+                    closable="false" closeOnEscape="false" appendTo="@(form)">
+            
+            <p:outputPanel id="configDialogContent">
+              <div class="flex flex-column gap-3 p-2">
+                
+                <div class="flex align-items-center justify-content-between">
+                  <p:outputLabel for="tabSwitch" value="Indent with Tab:" />
+                  <p:toggleSwitch id="tabSwitch" value="#{ideBean.ideConfig['indentWithTab']}" />
+                </div>
+                
+                <div class="flex align-items-center justify-content-between">
+                  <p:outputLabel for="lineWrappingSwitch" value="Line Wrapping:"/>
+                  <p:toggleSwitch id="lineWrappingSwitch" value="#{ideBean.ideConfig['lineWrapping']}"/>               
+                </div>
+                <!-- Add here the rest of configurable extensions -->
+
+                <div class="flex justify-content-end mt-2 gap-2"> 
+                  <p:commandButton value="#{objectBundle.cancel}" icon="pi pi-times" 
+                                   process="@this" 
+                                   update="configDialogContent" 
+                                   oncomplete="PF('configDialog').hide();" 
+                                   styleClass="ui-button-sm mini">
+                      <p:resetInput target="configDialogContent" />
+                  </p:commandButton>                              
+                  <p:commandButton value="#{objectBundle.store}" icon="pi pi-save" 
+                                   actionListener="#{ideBean.saveIdeConfig}" 
+                                   process="configDialogContent @form:cnt:editor" 
+                                   update="@form:cnt:editor" 
+                                   oncomplete="PF('configDialog').hide();" 
+                                   styleClass="ui-button-sm mini" />
+                </div>        
+              </div>
+            </p:outputPanel>
+          </p:dialog>
         </div>
+        
+        
+        <!-- Add here the rest of configurable extensions  -->
         <p:button title="Documents"
                   widgetVar="docsPanelButton"
                   onclick="return showPanel()"
@@ -107,24 +159,24 @@
     </p:outputPanel>
 
     <div class="flex-grow-1 pt-0 flex w-full overflow-x-hidden overflow-y-hidden">
-        <p:tabView dynamic="true" styleClass="editor h-full overflow-hidden flex-grow-1" id="editor" 
-                   widgetVar="ideTabs">
-          <c:forEach items="#{ideBean.tabs}" var="tab">
-            <p:tab>
-              <f:facet name="title">
-                <span class="#{tab.icon} mr-2"/>
-                <p:outputLabel styleClass="ideTabLabel" 
-                               value="#{tab.label}#{tab.editor and ideBean.document.modified ? ' *' : ''}" />
-              </f:facet>
-              <ui:include src="#{tab.viewId}" />
-            </p:tab>
-          </c:forEach>
-        </p:tabView>
+      <p:tabView dynamic="true" styleClass="editor h-full overflow-hidden flex-grow-1" id="editor" 
+                 widgetVar="ideTabs">
+        <c:forEach items="#{ideBean.tabs}" var="tab">
+          <p:tab>
+            <f:facet name="title">
+              <span class="#{tab.icon} mr-2"/>
+              <p:outputLabel styleClass="ideTabLabel" 
+                             value="#{tab.label}#{tab.editor and ideBean.document.modified ? ' *' : ''}" />
+            </f:facet>
+            <ui:include src="#{tab.viewId}" />
+          </p:tab>
+        </c:forEach>
+      </p:tabView>
 
       <p:panel id="docs_panel" styleClass="docs_panel flex-grow-0 v-full first_time h-full"
                widgetVar="docsPanel" closeSpeed="50" style="min-width:300px;">
         <f:facet name="header"> 
-         <i class="pi pi-copy vertical-align-middle m-1"></i>
+          <i class="pi pi-copy vertical-align-middle m-1"></i>
 
           <span>Documents</span>
           <p:commandLink onclick="return closePanel();"
@@ -161,6 +213,7 @@
 
   <p:remoteCommand id="markChangedCommand"
                    name="onDocumentChange" actionListener="#{ideBean.markChanged}" 
+                   process="@this"
                    update="@(.ideTabLabel) @form:cnt:docs_panel @form:cnt:ideMessages ide_confirm" />
 
   <p:growl for="growl" life="1500" >
@@ -169,13 +222,13 @@
 
   <p:outputPanel id="ide_history">
     <script>
-    controlNavigationHistory(#{ideBean.jsonPageState});
+      controlNavigationHistory(#{ideBean.jsonPageState});
 
-    if (!window._refreshSessionTimerId)
-    {
-      const minutes = 10; // refresh session interval
-      window._refreshSessionTimerId = setInterval(() => refreshSession(), minutes * 60 * 1000);
-    }
+      if (!window._refreshSessionTimerId)
+      {
+        const minutes = 10; // refresh session interval
+        window._refreshSessionTimerId = setInterval(() => refreshSession(), minutes * 60 * 1000);
+      }
     </script>
   </p:outputPanel>
 
@@ -195,13 +248,13 @@
       }
     </script>
   </p:outputPanel>
-  
-  <!-- Confirm save with errors dialog-->
+
+  <!-- Confirm save with errors dialog -->
   <p:dialog id="dialogSaveWithErrors" widgetVar="confirmSaveDialog" styleClass="edit_data_dialog mw_600"
             header="#{documentBundle.ide_errorsDetected}" modal="true" responsive="true" 
             closable="false" position="center center" resizable="false"
             onShow="PF('confirmSaveDialog').resetPosition();" >
-        
+
     <h:outputText value="#{documentBundle.ide_errorsDetected_message}"  />
     <p:messages id="dialogErrors" showDetail="true" showSummary="false" />
     <p:separator/>

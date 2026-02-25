@@ -52,7 +52,7 @@ public class UserPreferences implements Serializable
   public static String PRIMEFACES_THEME_PROPERTY = "primefacesTheme";
   public static String FONT_SIZE_PROPERTY = "fontSize";
   public static String RECENT_PAGES_SIZE_PROPERTY = "recentPagesSize";
-
+  
   private final static float PURGE_PROBABILITY = 0.05f;
 
   private Boolean purgePreferences;
@@ -102,6 +102,12 @@ public class UserPreferences implements Serializable
     propertyList.add(property);
     getSecurityPort().storeUserProperties(userId, propertyList, incremental);
     preferencesMap = null;
+  }
+  
+  public void storePreferences(ArrayList<Property> propertyList) 
+  {
+   getSecurityPort().storeUserProperties(userId, propertyList, true);
+   preferencesMap = null;
   }
 
   public void removePreference(String name)

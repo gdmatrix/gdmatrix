@@ -58,6 +58,7 @@ public class CodeMirror extends UIInput
   private Boolean _lineNumbers;
   private String _completion;
   private String _changeListener;
+  private String _activeExtensions;
   
 
   @Override
@@ -156,7 +157,20 @@ public class CodeMirror extends UIInput
     ValueExpression ve = getValueExpression("changeListener");
     return ve != null ?
       (String)ve.getValue(getFacesContext().getELContext()) : null;
-  }  
+  }
+
+  public void setActiveExtensions(String activeExtensions)
+  {
+    this._activeExtensions = activeExtensions;
+  }
+
+  public String getActiveExtensions()
+  {
+    if (_activeExtensions != null) return _activeExtensions;
+    ValueExpression ve = getValueExpression("activeExtensions");
+    return ve != null ?
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
   
   @Override
   public void decode(FacesContext context)
@@ -223,20 +237,26 @@ public class CodeMirror extends UIInput
     String completion = getCompletion();
     
     String changeListener = getChangeListener();
+    
+    String activeExtensions = getActiveExtensions();
+    if (activeExtensions == null || activeExtensions.trim().isEmpty())
+    {
+      activeExtensions = "[]"; // Default value for JSON
+    }
 
     // encode script
     writer.startElement("script", this);
     writer.writeAttribute("type", "module", null);
     writer.writeText("import '/resources/gdmatrixfaces/codemirror/codemirror-stub.js';\n", null);
     writer.writeText("codemirrorInit('" + clientId + "'," + readonly +
-      ",'" + language + "', " + lineNumbers + ", " + completion + ", " + changeListener + ");", null);
+      ",'" + language + "', " + lineNumbers + ", " + completion + ", " + changeListener + ", " + activeExtensions + ");", null);
     writer.endElement("script");
   }
 
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[8];
+    Object values[] = new Object[9];
     values[0] = super.saveState(context);
     values[1] = _language;
     values[2] = _readonly;
@@ -245,6 +265,7 @@ public class CodeMirror extends UIInput
     values[5] = _lineNumbers;
     values[6] = _completion;
     values[7] = _changeListener;
+    values[8] = _activeExtensions;
     return values;
   }
 
@@ -260,5 +281,6 @@ public class CodeMirror extends UIInput
     _lineNumbers = (Boolean)values[5];
     _completion = (String)values[6];
     _changeListener = (String)values[7];
+    _activeExtensions = (String)values[8];
   }
 }

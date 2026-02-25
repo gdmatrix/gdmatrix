@@ -121,6 +121,11 @@
       <type>java.lang.String</type>
       <description>javascript function(EditorView, doc) that is called when editor content changes.</description>
     </attribute>
+    <attribute>
+      <name>activeExtensions</name>
+      <type>java.lang.String</type>
+     <description>A JSON configuration string containing the extensions enabled for the current user.</description>
+    </attribute>
   </tag>  
 
   <tag>

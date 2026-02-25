@@ -44,11 +44,8 @@ import java.util.Objects;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
@@ -72,6 +69,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.MemoryDataSource;
+import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
@@ -91,7 +89,15 @@ public class IdeBean extends WebBean implements Serializable
   public static final String NAME_PARAMETER = "name";
 
   private static final String CHECK_ENABLED_PROPERTY = "checkEnabled";
+  
+  // Register configurable extensions here
+  public static final String[] IDE_EXTENSIONS = {
+    "indentWithTab",
+    "lineWrapping"
+  };
 
+  private Map<String, Boolean> ideConfig = null;
+  
   private String typeName = "javascript";
   private String name;
   private IdeDocument document = new IdeDocument();
@@ -103,12 +109,12 @@ public class IdeBean extends WebBean implements Serializable
   IdeDocumentCacheBean ideDocumentCacheBean;
 
   static List<SelectItem> typeSelectItems;
-  
+
   @Inject
   HtmlFormBean htmlFormBean;
   private boolean pendingSaveWithErrors = false;
   private boolean confirmSaveNewVersion = false;
-
+  
   public String getTypeName()
   {
     return typeName;
@@ -205,7 +211,46 @@ public class IdeBean extends WebBean implements Serializable
     }
     return typeSelectItems;
   }
+  
+  public Map<String, Boolean> getIdeConfig()
+  {
+    if(ideConfig == null)
+    {
+      System.out.println("Loading ideConfig from the database");
+      ideConfig = new HashMap<>();
+      for(String extName : IDE_EXTENSIONS)
+      {
+        try
+        {
+          String pref = getUserPreferences().getPreference(extName);
+          // Apply .trim() in case the database returns values like "true " or " true"
+          boolean isTrue = pref != null && "true".equalsIgnoreCase(pref.trim());
+          ideConfig.put(extName, isTrue);    
+        }
+        catch (Exception ex)
+        {
+          System.out.println(">>> INFO: Preference '" + extName + "' not found. Setting default value to false.");
+          ideConfig.put(extName, false);
+        }
+      }
+    }
 
+    return ideConfig;
+  }
+  
+  public String getActiveExtensionsJson()
+  {
+    List<String> active = new ArrayList<>();
+    for (String extName : IDE_EXTENSIONS)
+    {
+      if(getIdeConfig().getOrDefault(extName, false))
+      {
+        active.add("'" + extName + "'");
+      }
+    }
+    return "[" + String.join(",", active) + "]";
+  }
+  
   public List<String> completeDocumentName(String docName)
   {
     List<String> results = new ArrayList<>();
@@ -498,7 +543,7 @@ public class IdeBean extends WebBean implements Serializable
   {
     pendingSaveWithErrors = false;
   }
-  
+
   private UIComponent getDialogErrorsUIComponent()
   {
     return getFacesContext().getViewRoot().findComponent(":mainform:dialogErrors");
@@ -507,7 +552,7 @@ public class IdeBean extends WebBean implements Serializable
   private void save(boolean newVersion)
   {
     try
-    {  
+    {
       if (StringUtils.isBlank(name))
       {
         return;
@@ -520,18 +565,15 @@ public class IdeBean extends WebBean implements Serializable
         if (!errors.isEmpty())
         {
           UIComponent msgComponent = getDialogErrorsUIComponent();
-          
-          // Se pinta dos veces por eso, seguramente SI ES ASI USAR SOlo errors.getFirst() y solo muestas el primer error
-          System.out.println("ERRORS SIZE: " + errors.size());
+
           for (String error : errors)
           {
             error(msgComponent, error);
           }
-          //error(msgComponent, errors.getFirst());
-
-          pendingSaveWithErrors = true;
-          confirmSaveNewVersion = newVersion;  
           
+          pendingSaveWithErrors = true;
+          confirmSaveNewVersion = newVersion;
+
           PrimeFaces.current().ajax().update("mainform:dialogSaveWithErrors");
           // Shows dialog with confirmation message
           PrimeFaces.current().executeScript("PF('confirmSaveDialog').show();");
@@ -547,7 +589,7 @@ public class IdeBean extends WebBean implements Serializable
       error(ex);
     }
   }
-  
+
   // Save logic
   private void performSave(boolean newVersion) throws Exception
   {
@@ -663,4 +705,47 @@ public class IdeBean extends WebBean implements Serializable
       .disableHtmlEscaping().create();
     return gson.toJson(map);
   }
+  
+  private UserPreferences getUserPreferences()
+  {
+    return UserSessionBean.getCurrentInstance().getUserPreferences();
+  }
+  
+  public void saveIdeConfig()
+  {
+    try
+    {
+      ArrayList<Property> propertiesToSave = new ArrayList<>();
+      
+      for (String extName : IDE_EXTENSIONS)
+      {
+        Object rawVal = ideConfig.get(extName);
+        String valueToStore = String.valueOf(rawVal);
+        
+        // Remove old preference
+        try {
+            getUserPreferences().removePreference(extName);
+        } catch (Exception ignored) {}
+        
+        Property p = new Property();
+        p.setName(extName);
+        p.getValue().add(valueToStore);
+  
+        propertiesToSave.add(p);
+      }
+      
+      // Save all preferences 
+      if (!propertiesToSave.isEmpty()) 
+      {
+          getUserPreferences().storePreferences(propertiesToSave);
+          System.out.println("IDE configuration saved successfully."); 
+          info("IDE configuration updated successfully.");
+      }
+    }
+    catch (Exception ex)
+    {
+      error("Failed to update user configuration:", ex.getMessage());
+    }
+  }
+  
 }

@@ -9,5 +9,6 @@
                 xmlns:gdm="http://gdmatrix.org/faces">
   
     <gdm:codemirror id="code_editor" lineNumbers="true" language="xml" 
-                    value="#{ideBean.document.source}" changeListener="cmOnChange"/>
+                    value="#{ideBean.document.source}" changeListener="cmOnChange"
+                    activeExtensions="#{ideBean.activeExtensionsJson}"/>
 </ui:composition>
