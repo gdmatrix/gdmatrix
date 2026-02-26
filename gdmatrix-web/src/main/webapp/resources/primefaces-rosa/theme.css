@@ -65,6 +65,16 @@ body .ui-widget{
   background: var(--primary-color);
 }
 
+.codemirror-container::selection 
+{
+  color: black;
+}
+
+/*.ͼ2 .cm-selectionBackground 
+{
+  background-color: var(--primary-color) !important;  
+}*/
+
 body .ui-icon{
   font-size:1rem;
   display:inline-block;

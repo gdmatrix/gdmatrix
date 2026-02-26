@@ -64,6 +64,18 @@ body .ui-widget{
   background: var(--primary-color);
 }
 
+.codemirror-container::selection 
+{
+  color: white;
+}
+
+
+.ͼ2 .cm-selectionBackground 
+{
+  background-color: #CF3863 !important;  
+}
+
+
 body .ui-icon{
   font-size:1rem;
   display:inline-block;
