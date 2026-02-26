@@ -73,6 +73,7 @@ import org.primefaces.component.selectcheckboxmenu.SelectCheckboxMenu;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.selectoneradio.SelectOneRadio;
 import org.primefaces.component.toggleswitch.ToggleSwitch;
+import org.primefaces.component.fieldset.Fieldset;
 import org.santfeliu.faces.codemirror.CodeMirror;
 import org.santfeliu.faces.maplibre.MapLibre;
 import org.santfeliu.faces.maplibre.model.Style;
@@ -185,6 +186,15 @@ public class FormImporter
     else if (View.TEXT.equals(view.getViewType()))
     {
       importText(view, parent);
+    }
+    else if (tag.equals("fieldset"))
+    {
+      Fieldset fieldset = importFieldset(view, parent);
+      importChildren(view, fieldset);
+    }
+    else if (tag.equals("legend"))
+    {
+      //skip
     }
     else if (tag.equals("div") && !
       "body".equals(view.getParent().getNativeViewType()))
@@ -361,6 +371,31 @@ public class FormImporter
     graphicImage.setStyle(style);
 
     parent.getChildren().add(graphicImage);
+  }
+
+  protected Fieldset importFieldset(HtmlView view, UIComponent parent)
+  {
+    FacesContext facesContext = FacesContext.getCurrentInstance();
+    Application application = facesContext.getApplication();
+
+    HtmlPanelGroup group = (HtmlPanelGroup)application.createComponent(
+      HtmlPanelGroup.COMPONENT_TYPE);
+
+    String styleClass = view.getProperty("class");
+    if (styleClass == null)
+    {
+      styleClass = "col-12 md:col-6";
+    }
+    group.setStyleClass("field " + styleClass);
+    group.setLayout("block");
+    parent.getChildren().add(group);
+
+    Fieldset fieldset =
+      (Fieldset)application.createComponent(Fieldset.COMPONENT_TYPE);
+    fieldset.setLegend(getLegend(view));
+    group.getChildren().add(fieldset);
+
+    return fieldset;
   }
 
   protected void importFields()
@@ -762,8 +797,8 @@ public class FormImporter
                     
           inputgroup.getChildren().add(component);
           inputgroup.getChildren().add(button);
-          
-          group.getChildren().add(outputText); 
+
+          group.getChildren().add(outputText);
           group.getChildren().add(inputgroup);
         }  
         else
@@ -982,7 +1017,7 @@ public class FormImporter
     catch (Exception ex)
     { 
       ex.printStackTrace(); 
-    };
+    }
 
     return component;
   }  
@@ -1166,6 +1201,22 @@ public class FormImporter
     Map<String, Object> panelAttributes = formRoot.getPassThroughAttributes();
     Boolean inspectMode = (Boolean)panelAttributes.get(INSPECT_OPTION);
     return (inspectMode == null ? false : inspectMode);
+  }
+  
+  private String getLegend(HtmlView fieldsetView)
+  {
+    for (View child : fieldsetView.getChildren())
+    {
+      HtmlView htmlChild = (HtmlView)child;
+      if (htmlChild.getNativeViewType().equals("legend"))
+      {
+        if (!htmlChild.getChildren().isEmpty())
+        {
+          return (String)htmlChild.getChildren().get(0).getProperty("text");
+        }
+      }
+    }
+    return null;
   }
 
 }
