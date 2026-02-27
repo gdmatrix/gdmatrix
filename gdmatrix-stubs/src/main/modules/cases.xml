@@ -289,10 +289,22 @@
       <property name="description" type="xs:string" minOccurs="0">
       </property>
       <property name="fromDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data inicial del període de cerca.
+        </documentation> 
       </property>
       <property name="toDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data final del període de cerca.
+        </documentation> 
       </property>
       <property name="dateComparator" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Criteri de cerca per dates,
+          1: Cerca per data d'obertura (startDate),
+          2: Cerca per data de tancament (endDate),
+          3: Cerca per vigència (actius en el període).
+        </documentation> 
       </property>
       <property name="caseTypeId" type="xs:string" minOccurs="0" references="dic:Type">
       </property>

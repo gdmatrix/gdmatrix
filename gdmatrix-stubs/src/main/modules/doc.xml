@@ -364,7 +364,10 @@
       </property>
       <property name="dateComparator" type="xs:string" minOccurs="0">
         <documentation language="ca">
-          Selector de camp de data.
+          Criteri de cerca per dates,
+          1: Cerca per data de modificació (changeDateTime),
+          2: Cerca per data de captura (captureDateTime),
+          3: Cerca per data de creació (creationDate)
         </documentation>        
       </property>
       <property name="startDate" type="mx:date" minOccurs="0">
