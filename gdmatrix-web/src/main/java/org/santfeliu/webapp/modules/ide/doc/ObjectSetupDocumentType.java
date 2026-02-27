@@ -30,13 +30,14 @@
  */
 package org.santfeliu.webapp.modules.ide.doc;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.harrel.jsonschema.Validator;
 import dev.harrel.jsonschema.ValidatorFactory;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import org.santfeliu.webapp.setup.ObjectSetup;
 
 /**
@@ -71,14 +72,23 @@ public class ObjectSetupDocumentType extends IdeDocumentType
       return errors;
     }
 
-    try (InputStream is = ObjectSetup.class.getResourceAsStream("ObjectSetup.schema.json"); 
-      Scanner scanner = new Scanner(is, StandardCharsets.UTF_8))
-    {
-      // Read the schema
-      String schema = scanner.useDelimiter("\\A").next();
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+    mapper.configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true);
 
-      // Validate the 'source' input by parameter
-      Validator.Result result = new ValidatorFactory().validate(schema, source);
+    try (InputStream is =
+      ObjectSetup.class.getResourceAsStream("ObjectSetup.schema.json"))
+    {
+      if (is == null) {
+        errors.add("Resource ObjectSetup.schema.json not found");
+        return errors;
+      }
+
+      JsonNode schemaNode = mapper.readTree(is);
+      JsonNode sourceNode = mapper.readTree(source);
+
+      Validator.Result result = new ValidatorFactory().validate(schemaNode,
+        sourceNode);
 
       if (!result.isValid())
       {
@@ -86,8 +96,8 @@ public class ObjectSetupDocumentType extends IdeDocumentType
         {
           StringBuilder sbError = new StringBuilder();
           sbError.append(error.getInstanceLocation())
-            .append(": ")
-            .append(error.getError());
+                 .append(": ")
+                 .append(error.getError());
           errors.add(sbError.toString());
         }
       }

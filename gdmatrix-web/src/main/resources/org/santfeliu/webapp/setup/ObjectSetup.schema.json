@@ -134,6 +134,13 @@
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/TableProperty" }
         },
+        "columns": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/TableProperty" }
+        },
         "orderBy": {
           "description": "...",
           "type": "array",
@@ -179,6 +186,10 @@
           }
         }
       },
+      "dependentSchemas": {
+        "tableProperties": { "not": { "required": ["columns"] } },
+        "columns": { "not": { "required": ["tableProperties"] } }
+      },
       "patternProperties": {
         "^\\-.*": {}
       },      
@@ -219,6 +230,13 @@
           "examples": ["/pages/cases/case_cases_dialog.xhtml"]
         },
         "tableProperties": {
+          "description": "...",
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/TableProperty" }
+        },
+        "columns": {
           "description": "...",
           "type": "array",
           "minItems": 0,
@@ -407,6 +425,10 @@
             ]
           }          
         }
+      },
+      "dependentSchemas": {
+        "tableProperties": { "not": { "required": ["columns"] } },
+        "columns": { "not": { "required": ["tableProperties"] } }
       },
       "patternProperties": {
         "^\\-.*": {}
