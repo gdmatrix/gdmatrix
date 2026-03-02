@@ -23,7 +23,12 @@
                        process="@this html_data code_editor" 
                        update="html_form html_data"
                        action="#{htmlFormBean.update}" />
-       <p:commandButton value="Clear" 
+      <p:commandButton value="Evaluate"
+                       icon="pi pi-check"
+                       process="@this html_data code_editor" 
+                       update="html_form html_data"
+                       action="#{htmlFormBean.evaluate}" class="ml-1" />
+      <p:commandButton value="Clear" 
                        icon="pi pi-eraser"
                        process="@this"
                        action="#{htmlFormBean.clear}"

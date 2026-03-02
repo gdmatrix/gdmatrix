@@ -45,6 +45,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.commons.lang.StringUtils;
+import org.santfeliu.form.Form;
 import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlParser;
 import org.santfeliu.form.type.html.HtmlView;
@@ -62,10 +63,10 @@ import static org.santfeliu.webapp.util.FormImporter.SUBMIT_BUTTON_OPTION;
 public class HtmlFormBean extends WebBean
 {
   private static final String CONTAINER_ID = "panel";
-  
+
   @Inject
   IdeBean ideBean;
-  
+
   Map<String, Object> data = new HashMap();
   boolean update = true;
   private boolean previewVisible = true;
@@ -73,8 +74,8 @@ public class HtmlFormBean extends WebBean
 
   private boolean aiPanelVisible = false;
   private String userPrompt;
+  private boolean evaluateForm = false;
 
-  
   public boolean isAiPanelVisible()
   {
     return aiPanelVisible;
@@ -147,11 +148,17 @@ public class HtmlFormBean extends WebBean
         HtmlParser parser = new HtmlParser(form);
         parser.parse(new StringReader(source));
 
+        Form finalForm = form;
+        if (evaluateForm)
+        {
+          finalForm = form.evaluate(data);
+        }
+
         Map<String, Object> options = new HashMap<>();
         options.put(ACTION_UPDATE_OPTION, ":mainform:cnt");
         options.put(SUBMIT_BUTTON_OPTION, "mainform:editor:submit_form"); //Only required fields are validated if the submit button is used.
 
-        ComponentUtils.includeFormComponents(panel, form,
+        ComponentUtils.includeFormComponents(panel, finalForm,
           "htmlFormBean.data", "htmlFormBean.data", options);
       }
       else
@@ -168,6 +175,15 @@ public class HtmlFormBean extends WebBean
 
   public void update()
   {
+    this.evaluateForm = false;
+    this.previewVisible = true;
+    this.update = true;
+    this.data.clear();
+  }
+
+  public void evaluate()
+  {
+    this.evaluateForm = true;
     this.previewVisible = true;
     this.update = true;
     this.data.clear();
@@ -292,21 +308,22 @@ public class HtmlFormBean extends WebBean
       // Mark the check in the front
       sourceModified = true;
       ideBean.markChanged();
-      
+
       // If no errors, hide the Ai panel
       closeAiPanel();
-      
-    }catch(Exception ex)
+
+    }
+    catch (Exception ex)
     {
       error(ex);
     }
   }
-  
+
   public void openAiPanel()
   {
     aiPanelVisible = true;
   }
-  
+
   public void closeAiPanel()
   {
     aiPanelVisible = false;
