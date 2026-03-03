@@ -86,7 +86,7 @@
                       update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm @form:cnt:ideMessages"
                       icon="pi pi-save" styleClass="mini" />
         </p:splitButton>          
-        <div class="ui-inputgroup ml-1">
+        <div class="ui-inputgroup ml-1 mr-2">
           <p:commandButton action="#{ideBean.create}"
                            process="@form:cnt" update="@form:cnt"
                            icon="pi pi-plus-circle" 
@@ -100,7 +100,7 @@
         </div> 
             
         <!-- Ide config -->
-        <div class="flex align-items-center ml-5">
+        <div class="flex align-items-center ml-1">
           <p:commandButton id="ideConfigBtn" icon="pi pi-cog" 
                            styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only"
                            title="#{webBundle.ideConfig}"

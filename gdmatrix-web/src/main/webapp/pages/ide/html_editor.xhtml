@@ -30,43 +30,85 @@
                       update="code_editor @(.ideTabLabel)"
                       onclick="cmChanged = true;"
                       action="#{htmlFormBean.repairLabelsAndGroups()}" class="mini mr-1" />
-      <p:commandButton 
-                      value="Repair with AI" 
-                      icon="mi-outlined mi-smart-toy"
-                      update="ai_panel"
-                      action="#{htmlFormBean.openAiPanel()}" class="mini mt-1" />
+      <p:commandButton value="Repair with AI" 
+                             icon="mi-outlined mi-smart-toy"
+                             type="button"
+                             onclick="toggleAiPanel(); return false;" class="mini mt-1" />
     </p:outputPanel>
 
-    <!--AI PANEL TOOLS--> 
-    <p:outputPanel id="ai_panel" 
-                   style="#{htmlFormBean.aiPanelVisible ? 'display:block;' : 'display:none;'}">
-
-      <p:panel header="AI Tools" styleClass="p-shadow-2">
-        <p:outputLabel for="userPrompt" value="Additional AI promp:" />
-        <p:inputTextarea id="userPrompt"
-                         value="#{htmlFormBean.userPrompt}"
-                         rows="4"
-                         autoResize="true"
-                         styleClass="w-full mt-2"/>
-        <div class="flex justify-content-end mt-2">
-          <p:commandButton value="Cancelar"
-                           icon="pi pi-times"
-                           process="@this"
-                           update="ai_panel"
-                           action="#{htmlFormBean.closeAiPanel()}"
-                           styleClass="p-button-text mr-2"/>
+    <!-- AI PAnel -->
+    <p:panel id="ai_panel" header="AI Tools" styleClass="p-shadow-2 ai-panel-container" 
+             widgetVar="aiPanelWidget" style="display:none;">
+             
+      <div class="flex justify-content-between align-items-end">
+        <p:outputLabel for="userPrompt" value="Additional AI prompt:" />
+        
+        <p:commandButton icon="pi pi-trash"
+                         id="aiCleanPrompt"
+                         widgetVar="aiCleanBtnWidget"
+                         action="#{htmlFormBean.setUserPrompt('')}"
+                         process='@this'
+                         update="userPrompt"
+                         oncomplete="setTimeout(toggleAiButtons, 20);"
+                         styleClass="ui-button-flat ui-button-danger p-0"/> 
+      </div>
+      
+      <p:inputTextarea id="userPrompt"
+                       widgetVar="userPromptWidget"
+                       value="#{htmlFormBean.userPrompt}"
+                       rows="4"
+                       autoResize="true"
+                       styleClass="w-full mt-1"
+                       oninput="toggleAiButtons();" />
+                       
+      <div class="flex justify-content-end mt-2">
+        <p:commandButton value="Cancelar"
+                         icon="pi pi-times"
+                         type="button"
+                         onclick="toggleAiPanel(); return false;"
+                         styleClass="p-button-text mr-2"/>
+                         
           <p:commandButton value="Aceptar"
+                           id="aiAcceptBtn"
+                           widgetVar="aiAcceptBtnWidget"
                            icon="pi pi-check"
                            process="@this userPrompt code_editor"
                            update="code_editor ai_panel @(.ideTabLabel)"
                            onclick="cmChanged = true;"
+                           oncomplete="toggleAiPanel();"
                            action="#{htmlFormBean.repairAI()}" />
-        </div>
-      </p:panel>
-    </p:outputPanel>
+      </div>
+    </p:panel>
 
     <gdm:codemirror id="code_editor" lineNumbers="true" language="html" 
                     value="#{ideBean.document.source}" changeListener="cmOnChange"
                     activeExtensions="#{ideBean.activeExtensionsJson}"/>
   </div>
+
+  <script>
+  function toggleAiPanel(){
+    var aiPanel = PF('aiPanelWidget').jq;
+    aiPanel.toggle();
+    
+    // Para hacer focus en el userPrompt, sinceramente no se si funcionará
+    if (aiPanel.is(':visible')) {
+      toggleAiButtons();
+      PF('userPromptWidget').jq.focus();
+    }
+    
+  }
+  
+  function toggleAiButtons(){
+    var text = PF('userPromptWidget').jq.val();
+
+    if (text.trim() === '') {
+      PF('aiAcceptBtnWidget').disable();
+      PF('aiCleanBtnWidget').disable();
+    } else {
+      PF('aiAcceptBtnWidget').enable();
+      PF('aiCleanBtnWidget').enable();
+    }
+  }
+ 
+  </script>
 </ui:composition>

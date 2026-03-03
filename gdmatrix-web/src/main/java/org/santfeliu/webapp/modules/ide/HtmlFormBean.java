@@ -71,20 +71,8 @@ public class HtmlFormBean extends WebBean
   boolean update = true;
   private boolean previewVisible = true;
   private boolean sourceModified;
-
-  private boolean aiPanelVisible = false;
   private String userPrompt;
   private boolean evaluateForm = false;
-
-  public boolean isAiPanelVisible()
-  {
-    return aiPanelVisible;
-  }
-
-  public void setAiPanelVisible(boolean aiPanelVisible)
-  {
-    this.aiPanelVisible = aiPanelVisible;
-  }
 
   public String getUserPrompt()
   {
@@ -300,7 +288,6 @@ public class HtmlFormBean extends WebBean
     {
       String systemPrompt = this.getProperty("ia_prompt");
       String oldForm = ideBean.getDocument().getSource();
-
       String newForm = AiRepairUtils.processForm(oldForm, systemPrompt, userPrompt);
       ideBean.getDocument().setSource(newForm);
 
@@ -308,24 +295,10 @@ public class HtmlFormBean extends WebBean
       // Mark the check in the front
       sourceModified = true;
       ideBean.markChanged();
-
-      // If no errors, hide the Ai panel
-      closeAiPanel();
-
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }
-
-  public void openAiPanel()
-  {
-    aiPanelVisible = true;
-  }
-
-  public void closeAiPanel()
-  {
-    aiPanelVisible = false;
   }
 }
