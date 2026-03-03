@@ -46,6 +46,7 @@ import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
+import dev.langchain4j.model.chat.request.DefaultChatRequestParameters;
 import dev.langchain4j.model.chat.response.PartialResponse;
 import dev.langchain4j.model.chat.response.PartialResponseContext;
 import java.time.Duration;
@@ -74,6 +75,7 @@ public class AssistantData
   private final List<String> toolNames;
   private final String instructions;
   private long lastAccess;
+  private int maxOutputTokens;
 
   public static synchronized AssistantData getInstance(Assistant assistant)
   {
@@ -111,6 +113,8 @@ public class AssistantData
   {
     Duration timeout = assistant.getTimeout() == null ?
       null : Duration.ofSeconds(assistant.getTimeout());
+    
+    maxOutputTokens = assistant.getMaxTokens();
 
     if (OPENAI_PROVIDER.equals(assistant.getProvider()))
     {
@@ -261,47 +265,28 @@ public class AssistantData
 
     private void generate()
     {
+      DefaultChatRequestParameters.Builder<?> builder = 
+        ChatRequestParameters.builder();
+      builder.maxOutputTokens(maxOutputTokens);
+      if (!tools.isEmpty())
+      {
+        builder.toolSpecifications(tools);
+      }
+      ChatRequestParameters parameters = builder.build();
+
+      ChatRequest chatRequest = new ChatRequest.Builder()
+        .messages(memory)
+        .parameters(parameters)
+        .build();
+      
       if (model != null)
       {
-        if (tools.isEmpty())
-        {
-          ChatResponse chatResponse = model.chat(memory);
-          processChatResponse(chatResponse);
-        }
-        else
-        {
-          ChatRequestParameters parameters = ChatRequestParameters.builder()
-            .toolSpecifications(tools)
-            .build();
-
-          ChatRequest chatRequest = new ChatRequest.Builder()
-            .messages(memory)
-            .parameters(parameters)
-            .build();
-
-          ChatResponse chatResponse = model.chat(chatRequest);
-          processChatResponse(chatResponse);
-        }
+        ChatResponse chatResponse = model.chat(chatRequest);
+        processChatResponse(chatResponse);
       }
       else // streaming
       {
-        if (tools.isEmpty())
-        {
-          streamingModel.chat(memory, this);
-        }
-        else
-        {
-          ChatRequestParameters parameters = ChatRequestParameters.builder()
-            .toolSpecifications(tools)
-            .build();
-
-          ChatRequest chatRequest = new ChatRequest.Builder()
-            .messages(memory)
-            .parameters(parameters)
-            .build();
-
-          streamingModel.chat(chatRequest, this);
-        }
+        streamingModel.chat(chatRequest, this);
       }
     }
 
