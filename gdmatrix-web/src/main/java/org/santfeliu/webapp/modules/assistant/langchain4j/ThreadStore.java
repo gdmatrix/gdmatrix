@@ -154,7 +154,6 @@ public class ThreadStore
     thread.setDocId(document.getDocId());
     thread.setDateTime(document.getCaptureDateTime());
     thread.setChangeDateTime(document.getChangeDateTime());    
-    thread.setUserId(userId);
 
     String description =
       DictionaryUtils.getPropertyValue(document.getProperty(), "description");
@@ -163,6 +162,10 @@ public class ThreadStore
     String edited = 
       DictionaryUtils.getPropertyValue(document.getProperty(), "edited");
     thread.setEdited("true".equals(edited));
+    
+    String creatorUserId = 
+      DictionaryUtils.getPropertyValue(document.getProperty(), "userId");
+    thread.setUserId(creatorUserId);
 
     for (Map<String, Object> message : messages)
     {
