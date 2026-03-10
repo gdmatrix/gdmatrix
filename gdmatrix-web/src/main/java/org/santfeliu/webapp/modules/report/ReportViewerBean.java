@@ -40,11 +40,9 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ComponentSystemEvent;
+import javax.faces.event.FacesEvent;
 import javax.inject.Named;
-import org.matrix.doc.Document;
-import org.matrix.doc.DocumentFilter;
-import org.matrix.dic.Property;
-import org.matrix.doc.State;
+import org.matrix.doc.DocumentConstants;
 import org.matrix.report.ParameterDefinition;
 import org.matrix.report.Report;
 import org.matrix.report.ReportManagerPort;
@@ -53,7 +51,6 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.FormFactory;
-import org.santfeliu.form.builder.DocumentFormBuilder;
 import org.santfeliu.report.web.ReportServlet;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
@@ -82,12 +79,11 @@ public class ReportViewerBean extends WebBean implements Serializable
   public static final String FORM_NAME_PROPERTY = "formName";
   @CMSProperty
   public static final String FORM_TYPE_PROPERTY = "formType";
-  public static final String FORM_TYPE_FLEX = "flex";
-  public static final String FORM_TYPE_DYNAMIC = "dynamic";
-  public static final String FORM_TYPE_HTML = "html";
-  public static final String DEFAULT_FORM_NAME_PROPERTY = "workflow.form";
-  public static final String HTML_FORM_NAME_PROPERTY = "workflow.html";
 
+  public static final String FORM_TYPE_HTML = "html";
+  public static final String PREFIX_HTML = "html";  
+  public static final String PREFIX_FORM = "form";   
+     
   @CMSProperty
   public static final String OUTPUT_FORMAT_PROPERTY = "outputFormat";
   public static final String HTML_OUTPUT_FORMAT = "html";
@@ -184,7 +180,13 @@ public class ReportViewerBean extends WebBean implements Serializable
 
     return outputFormat == null ? HTML_OUTPUT_FORMAT : outputFormat;
   }
-
+  
+  public boolean isRenderRefresh()
+  { 
+    return (UserSessionBean.getCurrentInstance()
+      .isUserInRole(DocumentConstants.DOC_ADMIN_ROLE));
+  }
+  
   //Report methods
   private String getReportURL(String reportName, boolean addCredentials)
   {
@@ -305,12 +307,17 @@ public class ReportViewerBean extends WebBean implements Serializable
       }
     }
   }
-
-  public boolean isRenderFlexForm()
+  
+  public void onRefreshForm(FacesEvent event)
   {
-    String formType = getFormType();
-    return formType == null || formType.equals(FORM_TYPE_FLEX);
-  }
+    FormFactory formFactory = FormFactory.getInstance();
+    formFactory.clearForm(formSelector);
+
+    UIComponent component = event.getComponent();
+    UIComponent panel = component.findComponent("dyn_form");
+
+    updateComponents(panel);
+  }    
 
   //Print report methods
   public String getPrintReportName()
@@ -446,43 +453,16 @@ public class ReportViewerBean extends WebBean implements Serializable
     if (formName == null)
       return selector;
 
-    try
-    {
-      Document formDocument = getFormDocument(formName);
-      if (formDocument != null)
-      {
-        selector = DocumentFormBuilder.PREFIX + ":" + formDocument.getDocId();
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return selector;
+    return getFormPrefix() + ":" + formName;
   }
-
-  private Document getFormDocument(String formName) throws Exception
+  
+  private String getFormPrefix()
   {
-    Document form = null;
-    String formNameProp = DEFAULT_FORM_NAME_PROPERTY;
     String formType = getFormType();
-    if (formType != null && formType.equals(FORM_TYPE_HTML))
-      formNameProp = HTML_FORM_NAME_PROPERTY;
-    DocumentManagerClient client = getDocumentManagerClient();
-    DocumentFilter documentFilter = new DocumentFilter();
-    documentFilter.setDocTypeId("FORM");
-    Property property = new Property();
-    property.setName(formNameProp);
-    property.getValue().add(formName);
-    documentFilter.getProperty().add(property);
-    documentFilter.getStates().add(State.DRAFT);
-    documentFilter.getStates().add(State.COMPLETE);
-    documentFilter.getStates().add(State.RECORD);
-    List<Document> documents = client.findDocuments(documentFilter);
-    if (!documents.isEmpty())
-      form = documents.get(0);
-
-    return form;
+    if (FORM_TYPE_HTML.equalsIgnoreCase(formType))
+      return PREFIX_HTML;
+    else
+      return PREFIX_FORM;
   }
 
   private String getConnectionBase()
