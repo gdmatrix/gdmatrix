@@ -46,7 +46,6 @@ import org.matrix.doc.DocumentConstants;
 import org.matrix.report.ParameterDefinition;
 import org.matrix.report.Report;
 import org.matrix.report.ReportManagerPort;
-import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.form.Form;
@@ -78,10 +77,7 @@ public class ReportViewerBean extends WebBean implements Serializable
   @CMSProperty
   public static final String FORM_NAME_PROPERTY = "formName";
   @CMSProperty
-  public static final String FORM_TYPE_PROPERTY = "formType";
 
-  public static final String FORM_TYPE_HTML = "html";
-  public static final String PREFIX_HTML = "html";  
   public static final String PREFIX_FORM = "form";   
      
   @CMSProperty
@@ -452,19 +448,13 @@ public class ReportViewerBean extends WebBean implements Serializable
     String formName = getFormName();
     if (formName == null)
       return selector;
-
-    return getFormPrefix() + ":" + formName;
+    
+    if (formName.contains(":"))
+      return formName;
+    else
+      return PREFIX_FORM + ":" + formName;
   }
   
-  private String getFormPrefix()
-  {
-    String formType = getFormType();
-    if (FORM_TYPE_HTML.equalsIgnoreCase(formType))
-      return PREFIX_HTML;
-    else
-      return PREFIX_FORM;
-  }
-
   private String getConnectionBase()
   {
     return "http://localhost:" +
@@ -531,22 +521,6 @@ public class ReportViewerBean extends WebBean implements Serializable
     MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
     MenuItemCursor cursor = menuModel.getSelectedMenuItem();
     return cursor.getBrowserSensitiveProperty(FORM_NAME_PROPERTY);
-  }
-
-  private String getFormType()
-  {
-    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-    MenuItemCursor cursor = menuModel.getSelectedMenuItem();
-    return cursor.getBrowserSensitiveProperty(FORM_TYPE_PROPERTY);
-  }
-
-  private DocumentManagerClient getDocumentManagerClient() throws Exception
-  {
-    Credentials credentials = ReportModuleBean.getReportAdminCredentials();
-    String userId = credentials.getUserId();
-    String password = credentials.getPassword();
-    DocumentManagerClient client = new DocumentManagerClient(userId, password);
-    return client;
   }
 
   private void mergeUserParameters(Map parameters)
