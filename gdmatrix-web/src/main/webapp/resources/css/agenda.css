@@ -668,6 +668,12 @@ body .fc th > .fc-scrollgrid-sync-inner
   flex-grow: 1;
 }
 
+.meetingFinder .objectSelect > div .ui-autocomplete button
+{
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
 .meetingFinder .objectPanel
 {
 }

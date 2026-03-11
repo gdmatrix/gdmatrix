@@ -43,7 +43,8 @@
                                     minQueryLength="3"
                                     required="false"
                                     autoUpdate="false"
-                                    renderFindButton="false">
+                                    renderFindButton="false"
+                                    renderShowButton="false">
               <p:ajax event="itemSelect" listener="#{eventMeetingFinderBean.addAttendant}"
                       process="@this"
                       update="@(.attPanel) @(.slotsPanel)" />
@@ -163,7 +164,8 @@
                                     minQueryLength="3"                                      
                                     required="false"
                                     autoUpdate="false"
-                                    renderFindButton="false">
+                                    renderFindButton="false"
+                                    renderShowButton="false">
               <p:ajax event="itemSelect" listener="#{eventMeetingFinderBean.addRoom}"
                       process="@this @(.roomPanel)"
                       update="@(.roomPanel)" />
