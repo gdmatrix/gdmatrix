@@ -26,7 +26,7 @@ function quillInit(clientId, readonly, maxLength)
 
   const updateText = (delta, oldDelta, source) =>
   {     
-    var html = quill.getSemanticHTML(0,quill.getLength());
+    var html = quill.getSemanticHTML(0, quill.getLength());
     if (source === 'user') //maxLength control: Only when is a user input
     {
       var isDelete = delta.ops[delta.ops.length - 1].delete === 1;
@@ -34,7 +34,7 @@ function quillInit(clientId, readonly, maxLength)
       if (!isDelete && maxLength && maxLength < length && html !== '<p><br></p>') 
       {
         quill.setContents(oldDelta);  
-        html = quill.getSemanticHTML(0,quill.getLength()); //Set old value          
+        html = quill.getSemanticHTML(0, quill.getLength()); //Set old value          
       }
     } 
     document.getElementById(inputId).value = html;    
@@ -42,11 +42,11 @@ function quillInit(clientId, readonly, maxLength)
 
   const handleImage = (quill) =>
   {
+    let range = quill.getSelection();    
     let url = "";
     let width = "200px";
     let alt = "image";
 
-    let range = quill.getSelection();    
     let delta = quill.getContents(range.index, range.length);
     let ops = delta.ops;
     let op = null;
@@ -78,17 +78,17 @@ function quillInit(clientId, readonly, maxLength)
     document.body.appendChild(dialogElem);
       
     dialogElem.innerHTML = `
-      <label for="ql_img_url">URL:</label><input id="ql_img_url" type="text" value="${url}">
-      <label for="ql_img_width">Width:</label><input id="ql_img_width" type="text" value="${width}">
-      <label for="ql_img_alt">Alt:</label><input id="ql_img_alt" type="text" value="${alt}">
-      <div class="text-center"><button id="ql_img_save">Save</button><button id="ql_img_cancel">Cancel</button></div>
+      <label>URL:</label><input class="ql_img_url" type="text" value="${url}">
+      <label>Width:</label><input class="ql_img_width" type="text" value="${width}">
+      <label>Alt:</label><input class="ql_img_alt" type="text" value="${alt}">
+      <div class="text-center"><button class="ql_img_save">Save</button><button class="ql_img_cancel">Cancel</button></div>
     `;
    
-    document.getElementById("ql_img_save").addEventListener("click", () => 
+    dialogElem.querySelector(".ql_img_save").addEventListener("click", () => 
     {
-      let url = document.getElementById("ql_img_url").value;
-      let width = document.getElementById("ql_img_width").value;
-      let alt = document.getElementById("ql_img_alt").value;
+      let url = dialogElem.querySelector(".ql_img_url").value;
+      let width = dialogElem.querySelector(".ql_img_width").value;
+      let alt = dialogElem.querySelector(".ql_img_alt").value;
       
       if (url && width && alt)
       {
@@ -112,7 +112,7 @@ function quillInit(clientId, readonly, maxLength)
       }
     });
 
-    document.getElementById("ql_img_cancel").addEventListener("click", () => 
+    dialogElem.querySelector(".ql_img_cancel").addEventListener("click", () => 
     {
       dialogElem.parentNode.removeChild(dialogElem);
     });    
