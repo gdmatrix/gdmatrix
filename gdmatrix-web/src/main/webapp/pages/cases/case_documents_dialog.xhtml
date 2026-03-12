@@ -80,11 +80,13 @@
                                           oncomplete="PF('caseDocumentsDialog').hide();"
                                           onselect="PF('caseDocumentsDialog').show();"
                                           type="Document"
+                                          aclFilter="Create"
                                           showNavigatorItems="true"
                                           showNonInstantiableItems="false"
                                           scrollHeight="200"
                                           queryDelay="1000"
                                           minQueryLength="3"
+                                          maxResults="500"
                                           required="false"
                                           disabled="#{!caseObjectBean.editable or caseDocumentsTabBean.refTypeId != null}">
                     </emcomp:typeReference>

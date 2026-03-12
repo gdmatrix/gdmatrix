@@ -199,7 +199,8 @@ public abstract class TypeBean<T, F> extends WebBean
   {
     List<SelectItem> items = new ArrayList<>();
 
-    if (StringUtils.isBlank(query) && addNavigatorItems)
+    boolean isDropDown = StringUtils.isBlank(query) || query.startsWith("?");
+    if (isDropDown && addNavigatorItems)
     {
       if (typeId == null) typeId = getRootTypeId();
       addNavigatorItems(items, typeId);
@@ -214,6 +215,13 @@ public abstract class TypeBean<T, F> extends WebBean
         items.add(new SelectItem(objectId, description));
       }
     }
+    
+    if (query != null && query.startsWith("?"))
+    {
+      String filterText = query.substring(1).toLowerCase();
+      items.removeIf(item -> !item.getLabel().toLowerCase()
+        .startsWith(filterText));
+    }     
 
     if (sorted)
     {

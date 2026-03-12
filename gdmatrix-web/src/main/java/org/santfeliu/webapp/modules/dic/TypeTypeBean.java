@@ -32,7 +32,9 @@ package org.santfeliu.webapp.modules.dic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.model.SelectItem;
@@ -258,40 +260,63 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   public List<SelectItem> getSelectItems(String query, String typeId,
     boolean addNavigatorItems, boolean sorted)
   {
-    return getSelectItems(query, typeId, addNavigatorItems, sorted, 0, true);
+    return getSelectItems(query, typeId, addNavigatorItems, sorted, 0, true, null);
   }
 
   public List<SelectItem> getSelectItems(String query, String typeId,
     boolean addNavigatorItems, boolean sorted, int maxResults, 
-    boolean addNonInstantiable)
+    boolean addNonInstantiable, String aclFilter)
   {
     List<SelectItem> items = new ArrayList<>();
+    
+    boolean isDropDown = StringUtils.isBlank(query) || query.startsWith("?");
 
-    if (StringUtils.isBlank(query) && addNavigatorItems)
+    if (isDropDown)  // Navigator, ACL or Full results
     {
-      if (typeId == null) typeId = getRootTypeId();
-      addNavigatorItems(items, typeId);
-    }
-    else if (StringUtils.isBlank(query))
-    {
-      org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
-      if (type != null)
+      if (addNavigatorItems)
       {
-        for (org.santfeliu.dic.Type derived : type.getDerivedTypes(true))
-        {
-          String objectId = derived.getTypeId();
-          String description = getDescription(objectId);
-          String typePath = "";
-          org.santfeliu.dic.Type superType = derived.getSuperType();
-          if (superType != null)
-            typePath = superType.formatTypePath(false, true, false, typeId);
-          if (addNonInstantiable || derived.isInstantiable())
-            items.add(new SelectItem(objectId, description, typePath));
-          if (maxResults > 0 && items.size() >= maxResults) break;
-        }
+        String auxTypeId = (typeId == null ? getRootTypeId() : typeId);
+        addNavigatorItems(items, auxTypeId);
       }
+    
+      boolean isAclFilter = !StringUtils.isBlank(aclFilter);
+      
+      if (isAclFilter)
+      {    
+        if (addNavigatorItems)
+          items.add(new SelectItem("", "<hr>", "$4", false, false, true));
+        
+        String auxTypeId = (typeId == null ? getRootTypeId() : typeId);
+        Map<String,String> userTypes = getUserTypes(auxTypeId, aclFilter); 
+        for (String id : userTypes.keySet())
+        {
+          String description = userTypes.get(id);
+          description = (description.indexOf("/") > 0 ? 
+            description.substring(0, description.indexOf("/")) : "");
+          items.add(new SelectItem(id, getDescription(id), description));
+        }
+      } 
+      else if (!addNavigatorItems)
+      {
+        org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
+        if (type != null)
+        {
+          for (org.santfeliu.dic.Type derived : type.getDerivedTypes(true))
+          {
+            String objectId = derived.getTypeId();
+            String description = getDescription(objectId);
+            String typePath = "";
+            org.santfeliu.dic.Type superType = derived.getSuperType();
+            if (superType != null)
+              typePath = superType.formatTypePath(false, true, false, typeId);
+            if (addNonInstantiable || derived.isInstantiable())
+              items.add(new SelectItem(objectId, description, typePath));
+            if (maxResults > 0 && items.size() >= maxResults) break;
+          }
+        }
+      }      
     }
-    else
+    else //Filter by input query
     {
       TypeFilter typeFilter = queryToFilter(query, typeId);
       typeFilter.setMaxResults(maxResults);
@@ -311,7 +336,14 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
         if (maxResults > 0 && items.size() >= maxResults) break;
       }
     }
-
+    
+    if (query != null && query.startsWith("?"))
+    {
+      String filterText = query.substring(1).toLowerCase();
+      items.removeIf(item -> !item.getLabel().toLowerCase()
+        .startsWith(filterText));
+    }   
+  
     if (sorted)
     {
       sortSelectItems(items);
@@ -319,6 +351,44 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 
     return items;
   }
+  
+  public Map<String,String> getUserTypes(String rootTypeId, String action)
+  {
+    Map<String,String> typesMap = new HashMap();
+    try
+    {        
+      for (Type userDocType : getActionTypes(rootTypeId, action))
+      {
+        String typeId = userDocType.getTypeId();
+        org.santfeliu.dic.Type type =
+          TypeCache.getInstance().getType(typeId);
+
+        if (type.isInstantiable())
+        {
+          String typePath = null;
+          if (rootTypeId.equals(typeId))
+            typePath = type.formatTypePath(false, true, true);
+          else
+            typePath = type.formatTypePath(false, true, false);
+          typesMap.put(typeId, typePath);
+        }
+      }
+    }
+    catch(Exception ex)
+    {
+      //return empty map
+    }    
+    return typesMap;
+  }
+
+  private static List<Type> getActionTypes(String rootTypeId, String action)
+    throws Exception
+  {
+    TypeFilter filter = new TypeFilter();
+    filter.setAction(action);
+    filter.setTypePath("/" + rootTypeId + "/%");
+    return DicModuleBean.getPort(false).findTypes(filter);
+  } 
   
   public String getTypeDescription(String typeId)
   {

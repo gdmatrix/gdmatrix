@@ -72,7 +72,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
 
     selectItems = typeTypeBean.getSelectItems(
       query, typeId, showNavigatorItems, true, getMaxResults(), 
-      isShowNonInstantiableItems());
+      isShowNonInstantiableItems(), getACLFilter());
   
     String objectId = WebUtils.getValue("#{cc.attrs.value}");
     if (!StringUtils.isBlank(objectId))
@@ -214,6 +214,15 @@ public class TypeReferenceBean extends ObjectReferenceBean
     if (value == null) return true;
     if (value instanceof Boolean) return ((Boolean)value);
     return "true".equals(value);
+  }
+  
+  public String getACLFilter()
+  {
+    Object value = WebUtils.getValue("#{cc.attrs.aclFilter}");
+    if 
+      (value == null) return null;
+    else
+      return ((String)value); 
   }
 
   protected void resetFormSelector()
