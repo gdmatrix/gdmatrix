@@ -13,13 +13,17 @@
 
 .sqlweb .message
 {
-  color: #495057;
   font-weight: bold;
 }
 
 .sqlweb > .result_container > .ui-datatable .ui-datatable-header
 {
   padding: 1rem;
+}
+
+.sqlweb > .result_container .ui-datatable-tablewrapper table thead tr th
+{
+  background: var(--surface-200);
 }
 
 .sqlweb > .result_container > .ui-datatable .ui-datatable-data
@@ -96,6 +100,13 @@
 .sqlweb.flexed > .result_container > .ui-datatable > .ui-paginator
 {
   position: sticky;
+}
+
+.sqlweb.flexed table tr th
+{
+  position: sticky;
+  top: 0;
+  border: 0;  
 }
 
 @media only screen and (width <= 700px)
