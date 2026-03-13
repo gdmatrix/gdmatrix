@@ -15,6 +15,7 @@ class ChartControl
     this.parameters = options.parameters || [];
     this.currentSourceId = null;
     this.markers = {}; // for sourceId: [markers...]
+    this.recreateMarkers = false;
     this.updatingMarkers = false;
   }
 
@@ -47,13 +48,13 @@ class ChartControl
       let source = map.getSource(sourceId);
       if (source.type === "geojson")
       {
-        let sourceMarkers = markers[sourceId];        
+        let sourceMarkers = markers[sourceId];
         let visible = map.getLayoutProperty(layerId, "visibility") !== "none";
         if (map.getZoom() < layer.minzoom || map.getZoom() > layer.maxzoom)
         {
           visible = false;
         }
-        
+
         if (visible)
         {
           visibleLayers++;
@@ -63,8 +64,8 @@ class ChartControl
           }
           else
           {
-            const geojson = await source.getData();
-            sourceMarkers = await this.createMarkers(geojson, layerSetup);
+            const features = this.map.querySourceFeatures(sourceId);
+            sourceMarkers = await this.createMarkers(features, layerSetup);
             markers[sourceId] = sourceMarkers;
           }
         }
@@ -82,34 +83,60 @@ class ChartControl
     this.updatingMarkers = false;
   }
   
-  async createMarkers(geojson, layerSetup)
+  async createMarkers(features, layerSetup)
   {
     const map = this.map;
     const chartType = layerSetup.chartType;
     let sourceMarkers = [];
         
-    for (let feature of geojson.features)
+    for (let feature of features)
     {
       const loadDiv = document.createElement("div");
       loadDiv.innerHTML = `<div style="width:24px;height:24px;border-radius:50%;background:rgba(240,240,240,0.8);color:black" 
         class="flex align-items-center justify-content-center">
         <i class="pi pi-spin pi-spinner"></i>
       </div>`;
-
-      let marker = new maplibregl.Marker({ element : loadDiv });
-      const centroid = turf.centroid(feature);
-      marker.setLngLat(centroid.geometry.coordinates);
-      marker.addTo(map);
-      marker._feature = feature;
-      sourceMarkers.push(marker);     
+      const geometry = feature.geometry;
+      const properties = feature.properties;
+      const jsonFeature = 
+      {
+        properties: properties,
+        geometry:  
+        {
+          type: geometry.type, 
+          coordinates: geometry.coordinates
+        }
+      };
+      
+      let data = [];
+      
+      if (layerSetup.chartData)
+      {
+        data = layerSetup.chartData(this.getParameterValues(), feature);
+      }
+      else if (layerSetup.chartDataUrl)
+      {
+        const url = layerSetup.chartDataUrl(this.getParameterValues(), feature);
+        const response = await fetch(url);
+        data = await response.json();
+      }
+      if (data.length > 0)
+      {
+        let marker = new maplibregl.Marker({ element : loadDiv });
+        const centroid = turf.centroid(jsonFeature.geometry);
+        marker.setLngLat(centroid.geometry.coordinates);
+        marker.addTo(map);
+        marker._feature = jsonFeature;
+        marker._data = data;
+        sourceMarkers.push(marker);
+      }
     }
     
     for (let marker of sourceMarkers)
     {
       const feature = marker._feature;
-      const url = layerSetup.chartDataUrl(this.getParameterValues(), feature);
-      const response = await fetch(url);
-      const data = await response.json();
+      const data = marker._data;
+      
       let chart;
       switch (chartType)
       {
@@ -167,8 +194,9 @@ class ChartControl
     `;
     this.createParametersForm();
     
-    map.on("idle", () => this.updateMarkers());
-    map.on("zoomend", () => this.updateMarkers());
+    const recreateMarkers = this.options.recreateMarkers;
+    map.on("idle", () => this.updateMarkers(recreateMarkers));
+//    map.on("zoomend", () => this.updateMarkers());
 
     this.createPanel(map);
 
@@ -396,6 +424,8 @@ class ChartControl
 
   async showData(layerSetup, feature, id)
   {
+    if (!layerSetup.tableDataUrl) return;
+    
     this.panel.show();  
     this.panel.bodyDiv.innerHTML = `<i class="pi pi-spin pi-spinner"></i> ${bundle.get("ChartControl.loading")}...`;
     
