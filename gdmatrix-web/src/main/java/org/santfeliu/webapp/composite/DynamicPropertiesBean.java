@@ -42,30 +42,30 @@ import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.component.UIViewRoot;
+import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
-import javax.faces.event.PhaseId;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
-import org.primefaces.PF;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.PropertyConverter;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.FormDescriptor;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
+import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
@@ -239,13 +239,6 @@ public class DynamicPropertiesBean implements Serializable
 
   public void onSelectForm(FacesEvent event)
   {
-    UIComponent component = event.getComponent();
-    UIComponent panel = component.findComponent("dyn_form");
-
-    if (panel != null)
-    {
-      updateComponents(panel);
-    }
   }
 
   public void onInspectForm(FacesEvent event)
@@ -271,8 +264,6 @@ public class DynamicPropertiesBean implements Serializable
 
     // reset renderedFormId
     panelAttributes.remove(FORM_ID);
-
-    updateComponents(panel);
   }
 
   public void loadDynamicComponents(ComponentSystemEvent event)
@@ -471,7 +462,7 @@ public class DynamicPropertiesBean implements Serializable
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      renderNoFormMessage(panel, ex);
     }
   }
 
@@ -498,4 +489,24 @@ public class DynamicPropertiesBean implements Serializable
     }
     return false;
   }
+
+  private void renderNoFormMessage(UIComponent panel, Exception ex)
+  {
+    panel.getChildren().clear();
+    Application application =
+      FacesContext.getCurrentInstance().getApplication();
+    HtmlPanelGroup group = (HtmlPanelGroup)application.
+      createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+    group.setStyleClass("field col-12");
+    group.setLayout("block");
+    panel.getChildren().add(group);
+    HtmlOutputText noInputFormText = (HtmlOutputText)application.
+      createComponent(HtmlOutputText.COMPONENT_TYPE);
+    String text = ApplicationBean.getCurrentInstance().translate(
+      "$$objectBundle.errorInForm");
+    noInputFormText.setValue(text);
+    FacesUtils.addMessage(ex);
+    group.getChildren().add(noInputFormText);
+  }
+
 }
