@@ -152,7 +152,7 @@ public class ReportViewerBean extends WebBean implements Serializable
     this.parameters = parameters;
   }
 
-  private String getReportName()
+  public String getReportName()
   {
     return reportName;
   }
@@ -176,12 +176,33 @@ public class ReportViewerBean extends WebBean implements Serializable
 
     return outputFormat == null ? HTML_OUTPUT_FORMAT : outputFormat;
   }
-  
-  public boolean isRenderRefresh()
-  { 
+    
+  public boolean isAdminUser()
+  {
     return (UserSessionBean.getCurrentInstance()
-      .isUserInRole(DocumentConstants.DOC_ADMIN_ROLE));
+      .isUserInRole(DocumentConstants.DOC_ADMIN_ROLE));    
   }
+  
+  public boolean isEditorUser()
+  {
+    if (isAdminUser())
+      return true;
+    
+    MenuItemCursor mic =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    List<String> editRoles;
+    try
+    {
+      editRoles = mic.getEditRoles();
+    }
+    catch (Exception e)
+    {
+      return false;
+    }
+
+    if (editRoles == null || editRoles.isEmpty()) return true;
+    return UserSessionBean.getCurrentInstance().isUserInRole(editRoles);
+  }    
   
   //Report methods
   private String getReportURL(String reportName, boolean addCredentials)
@@ -208,7 +229,7 @@ public class ReportViewerBean extends WebBean implements Serializable
   {
     return getReportURL(reportName, true);
   }
-
+  
   public String getAllowedHtmlTags()
   {
     return getProperty(ALLOWED_TAGS_PROPERTY);

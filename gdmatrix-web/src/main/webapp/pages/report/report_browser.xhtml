@@ -6,7 +6,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions"      
       xmlns:gdm="http://gdmatrix.org/faces">
-
+            
     <sf:browser url="#{reportViewerBean.headerURL}"
       port="#{applicationBean.defaultPort}"
       rendered="#{reportViewerBean.headerURL != null}"
@@ -33,16 +33,22 @@
                          actionListener="#{reportViewerBean.onRefreshForm}" 
                          title="#{objectBundle.update}"
                          process="@this" update="dyn_form"
-                         rendered="#{reportViewerBean.isRenderRefresh()}"/>         
+                         rendered="#{reportViewerBean.isEditorUser()}"/>         
       </p:outputPanel>
       <p:defaultCommand target="default_button" />    
     </p:outputPanel>
 
-    <p:outputPanel rendered="#{reportViewerBean.printButtonRendered}"
-                   styleClass="text-right">
-      <p:linkButton href="#{reportViewerBean.printURL}" target="blank" icon="pi pi-print" />
+    <p:outputPanel styleClass="text-right">
+      <p:linkButton href="javascript:showPage('IDE', {'name': '#{reportViewerBean.getReportName()}', type:'template'})" 
+        rendered="#{reportViewerBean.isEditorUser()}"
+        icon="pi pi-file-edit"
+        styleClass="m-1"/>        
+      <p:linkButton href="#{reportViewerBean.printURL}" target="blank" icon="pi pi-print" 
+                    styleClass="m-1"
+                    rendered="#{reportViewerBean.printButtonRendered}"/>  
     </p:outputPanel>
 
+    
     <p:outputPanel id="report_body" styleClass="body">
       <pe:documentViewer url="#{reportViewerBean.reportURL}" 
                          style="height:90vh"
