@@ -26,14 +26,14 @@
         <p:commandButton id="default_button" value="#{reportViewerBean.executeButtonLabel == null ? webBundle.buttonExecute : reportViewerBean.executeButtonLabel}"
                          action="#{reportViewerBean.executeReport}" ajax="true"
                          process="@form:cnt:find_selector"
-                         update="@form:cnt:report_body"
+                         update="dyn_form @form:cnt:report_body"
                          resetValues="false"
-                         styleClass="m-1" /> 
+                         styleClass="m-1" />        
         <p:commandButton icon="pi pi-refresh"
                          actionListener="#{reportViewerBean.onRefreshForm}" 
                          title="#{objectBundle.update}"
                          process="@this" update="dyn_form"
-                         rendered="#{reportViewerBean.isEditorUser()}"/>         
+                         rendered="#{reportViewerBean.isEditorUser()}"/>  
       </p:outputPanel>
       <p:defaultCommand target="default_button" />    
     </p:outputPanel>
