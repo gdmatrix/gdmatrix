@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
@@ -93,14 +94,7 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext>
         String messageType = Boolean.TRUE.equals(outboundProperty) ?
           "OUT" : "IN";
 
-        XMLPrinter xmlPrinter = new XMLPrinter();
-        xmlPrinter.setTruncateLongTexts(true);
-        xmlPrinter.setIndentSize(0);
-        xmlPrinter.setSingleLine(true);
-        xmlPrinter.setPrintNamespaces(false);
-        xmlPrinter.setPrintAttributes(false);
-        xmlPrinter.setMaxOutputSize(128);
-        String messageString = xmlPrinter.format(message.getSOAPBody());
+        String messageString = getMessageString(message);
 
         // TODO: CHECK URL
         HttpServletRequest request = (HttpServletRequest)
@@ -170,7 +164,19 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext>
   {
   }
 
-  private String getOperation(SOAPMessage message)
+  protected String getMessageString(SOAPMessage message) throws Exception
+  {
+    XMLPrinter xmlPrinter = new XMLPrinter();
+    xmlPrinter.setTruncateLongTexts(true);
+    xmlPrinter.setIndentSize(0);
+    xmlPrinter.setSingleLine(true);
+    xmlPrinter.setPrintNamespaces(false);
+    xmlPrinter.setPrintAttributes(false);
+    xmlPrinter.setMaxOutputSize(128);
+    return xmlPrinter.format(message.getSOAPBody());
+  }
+
+  protected String getOperation(SOAPMessage message)
   {
     String operation;
     try
