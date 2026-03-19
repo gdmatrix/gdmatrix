@@ -78,6 +78,10 @@ import org.matrix.agenda.EventView;
 import org.matrix.agenda.SecurityMode;
 import org.matrix.agenda.Theme;
 import org.matrix.agenda.ThemeFilter;
+import org.matrix.cases.CaseEventFilter;
+import org.matrix.cases.CaseEventView;
+import org.matrix.cases.CaseManagerPort;
+import org.matrix.cases.CaseManagerService;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
@@ -322,6 +326,16 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
     query = entityManager.createNamedQuery("deleteEventDocuments");
     query.setParameter("eventId", eventId);
     query.executeUpdate();
+
+    CaseManagerPort casesPort = getCaseManagerPort();
+    CaseEventFilter ceFilter = new CaseEventFilter();
+    ceFilter.setEventId(eventId);
+    ceFilter.setExcludeMetadata(true);
+    List<CaseEventView> ceList = casesPort.findCaseEventViews(ceFilter);
+    for (CaseEventView ce : ceList)
+    {
+      casesPort.removeCaseEvent(ce.getCaseEventId());
+    }
 
     if (dbEvent.getStartDateTime().equals(DELETED_EVENT_DATETIME))
     {
@@ -1692,24 +1706,24 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       throw new RuntimeException(ex);
     }
   }
-  
-//  private SQLManagerPort getSQLManagerPort()
-//  {
-//    try
-//    {
-//      WSDirectory wsDirectory = WSDirectory.getInstance();
-//      WSEndpoint endpoint =
-//        wsDirectory.getEndpoint(SQLManagerService.class);
-//
-//      String userId = MatrixConfig.getProperty("adminCredentials.userId");
-//      String password = MatrixConfig.getProperty("adminCredential.password");
-//      return endpoint.getPort(SQLManagerPort.class, userId, password);
-//    }
-//    catch (Exception ex)
-//    {
-//      throw new RuntimeException(ex);
-//    }
-//  }  
+
+  private CaseManagerPort getCaseManagerPort()
+  {
+    try
+    {
+      WSDirectory wsDirectory = WSDirectory.getInstance();
+      WSEndpoint endpoint =
+        wsDirectory.getEndpoint(CaseManagerService.class);
+
+      Credentials credentials = SecurityUtils.getCredentials(wsContext);
+      return endpoint.getPort(CaseManagerPort.class, credentials.getUserId(),
+        credentials.getPassword());
+    }
+    catch (Exception ex)
+    {
+      throw new RuntimeException(ex);
+    }
+  }
 
   private List<EventPlaceView> createEventPlaceViews(
     List<DBEventPlace> dbEventPlaces, boolean reduced)
