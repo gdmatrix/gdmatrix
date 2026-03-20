@@ -110,6 +110,7 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.WSTypeValidator;
 import org.santfeliu.jpa.JPAQuery;
+import org.santfeliu.jpa.JPAUtils;
 import org.santfeliu.kernel.service.DBEntityBase;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
@@ -221,7 +222,12 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       getEndpoint().toGlobalId(org.matrix.dic.Type.class, eventTypeId);
     Type eventType = TypeCache.getInstance().getType(eventTypeId);
     
-    validateEvent(event, eventType);
+    /* Hack: Validation changes blank properties to null. Avoid this change 
+    validating a copy of the event */
+    Event aux = new Event();
+    JPAUtils.copy(event, aux); 
+    aux.getProperty().addAll(event.getProperty());
+    validateEvent(aux, eventType);
 
     event.setDetail(HTMLNormalizer.normalize(event.getDetail()));
     
