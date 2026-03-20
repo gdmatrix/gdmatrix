@@ -114,6 +114,8 @@ public class EventFinderBean extends FinderBean
 
   private String searchEventThemeId;
   private String searchEventTypeId;
+  private String searchEventAddressId;
+  private String searchEventRoomId;
 
   //Schedule
   private ScheduleModel eventModel;
@@ -274,6 +276,38 @@ public class EventFinderBean extends FinderBean
   public void setSearchEventThemeId(String searchEventThemeId)
   {
     this.searchEventThemeId = searchEventThemeId;
+  }
+
+  public String getSearchEventAddressId()
+  {
+    return searchEventAddressId;
+  }
+
+  public void setSearchEventAddressId(String searchEventAddressId)
+  {
+    this.searchEventAddressId = searchEventAddressId;
+    searchEventRoomId = null;
+  }
+
+  public String getSearchEventRoomId()
+  {
+    return searchEventRoomId;
+  }
+
+  public void setSearchEventRoomId(String searchEventRoomId)
+  {
+    this.searchEventRoomId = searchEventRoomId;
+    searchEventAddressId = null;
+  }
+
+  public void onClearAddress()
+  {
+    setSearchEventAddressId(null);
+  }
+
+  public void onClearRoom()
+  {
+    setSearchEventRoomId(null);
   }
 
   public ScheduleModel getEventModel()
@@ -596,6 +630,16 @@ public class EventFinderBean extends FinderBean
     {
       filter.getThemeId().add(searchEventThemeId);
     }
+    
+    filter.setRoomId(null);
+    if (!StringUtils.isBlank(searchEventRoomId))
+    {
+      filter.setRoomId(searchEventRoomId);
+    }
+    else if (!StringUtils.isBlank(searchEventAddressId))
+    {
+      filter.setRoomId(searchEventAddressId);
+    }
 
     doFind(true);
     setSessionProperties(filter);    
@@ -638,6 +682,8 @@ public class EventFinderBean extends FinderBean
     filter.setDateComparator("S");
     searchEventTypeId = null;
     searchEventThemeId = null;
+    searchEventAddressId = null;
+    searchEventRoomId = null;
     rows = null;
     eventModel = null;
     setFinding(false);
@@ -793,7 +839,7 @@ public class EventFinderBean extends FinderBean
       searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView, formSelector, rows,
       searchEventTypeId, outdated, scheduleEdit, getPageSize(), eventModel,
-      selectedEvent };
+      selectedEvent, searchEventAddressId, searchEventRoomId };
   }
 
   @Override
@@ -824,6 +870,8 @@ public class EventFinderBean extends FinderBean
       setPageSize((Integer)stateArray[13]);
       eventModel = (ScheduleModel)stateArray[14];
       selectedEvent = (ScheduleEvent)stateArray[15];
+      searchEventAddressId = (String)stateArray[16];
+      searchEventRoomId = (String)stateArray[17];
     }
     catch (Exception ex)
     {

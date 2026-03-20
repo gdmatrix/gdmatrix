@@ -167,19 +167,45 @@
                   </emcomp:objectReference>
                 </div>
 
+                <!-- Address -->
+                <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('address')}">
+                  <p:outputLabel for="@next" value="#{agendaBundle.eventPlaces_address}" />
+                  <emcomp:objectReference id="eventFinderAddress"
+                                          value="#{eventFinderBean.searchEventAddressId}"
+                                          type="Address"
+                                          scrollHeight="200"
+                                          queryDelay="1000"
+                                          minQueryLength="3"
+                                          renderShowButton="false"
+                                          onselect="showPanel('leftPanel')"
+                                          process="@form:cnt:find_selector"
+                                          widgetVar="eventFinderAddressAutocomplete"
+                                          autoUpdate="false">
+                    <p:ajax event="itemSelect" process="@this" update="@root:@id(eventFinderRoom):autocomplete" />
+                    <p:ajax event="clear" process="@this" update="@root:@id(eventFinderRoom):autocomplete"
+                            listener="#{eventFinderBean.onClearAddress()}" />
+                  </emcomp:objectReference>
+                </p:outputPanel>
+
                 <!-- Room -->
-                <div class="field col-12">
-                  <p:outputLabel for="@next" value="#{agendaBundle.event_place}" />
-                  <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
+                <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('room')}">
+                  <p:outputLabel for="@next" value="#{agendaBundle.eventPlaces_room}" />
+                  <emcomp:objectReference id="eventFinderRoom"
+                                          value="#{eventFinderBean.searchEventRoomId}"
                                           type="Room"
                                           scrollHeight="200"
                                           queryDelay="1000"
                                           minQueryLength="3"
                                           renderShowButton="false"
                                           onselect="showPanel('leftPanel')"
-                                          process="@form:cnt:find_selector">
+                                          process="@form:cnt:find_selector"
+                                          widgetVar="eventFinderRoomAutocomplete"
+                                          autoUpdate="false">
+                    <p:ajax event="itemSelect" process="@this" update="@root:@id(eventFinderAddress):autocomplete" />
+                    <p:ajax event="clear" process="@this" update="@root:@id(eventFinderAddress):autocomplete"
+                            listener="#{eventFinderBean.onClearRoom()}" />
                   </emcomp:objectReference>
-                </div>
+                </p:outputPanel>
 
               </div>
 
