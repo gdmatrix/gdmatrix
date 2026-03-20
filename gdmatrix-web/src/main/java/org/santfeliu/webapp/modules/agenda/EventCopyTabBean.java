@@ -1230,7 +1230,14 @@ public class EventCopyTabBean extends WebBean implements Serializable
         try
         {
           EventFilter filter = new EventFilter();
-          filter.setRoomId(place.getRoomId());
+          if (place.getRoomId() != null)
+          {
+            filter.setRoomId(place.getRoomId());
+          }
+          else if (place.getAddressId() != null)
+          {
+            filter.setRoomId(place.getAddressId());
+          }
           filter.setStartDateTime(event.getStartDateTime());
           filter.setEndDateTime(event.getEndDateTime());
           filter.setSecurityMode(SecurityMode.HIDDEN);
