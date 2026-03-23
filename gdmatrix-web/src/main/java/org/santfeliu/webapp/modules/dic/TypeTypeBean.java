@@ -270,6 +270,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     List<SelectItem> items = new ArrayList<>();
     
     boolean isDropDown = StringUtils.isBlank(query) || query.startsWith("?");
+    boolean isAclFilter = !StringUtils.isBlank(aclFilter);    
 
     if (isDropDown)  // Navigator, ACL or Full results
     {
@@ -278,9 +279,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
         String auxTypeId = (typeId == null ? getRootTypeId() : typeId);
         addNavigatorItems(items, auxTypeId);
       }
-    
-      boolean isAclFilter = !StringUtils.isBlank(aclFilter);
-      
+       
       if (isAclFilter)
       {    
         if (addNavigatorItems)
@@ -320,6 +319,8 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     {
       TypeFilter typeFilter = queryToFilter(query, typeId);
       typeFilter.setMaxResults(maxResults);
+      if (isAclFilter)
+        typeFilter.setAction(aclFilter);
       List<Type> types = find(typeFilter);
       for (Type t : types)
       {       
