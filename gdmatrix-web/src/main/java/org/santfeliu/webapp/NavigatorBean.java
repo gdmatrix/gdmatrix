@@ -53,7 +53,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONObject;
 import org.matrix.dic.PropertyDefinition;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
@@ -283,6 +282,14 @@ public class NavigatorBean extends WebBean implements Serializable
   public String show(String objectTypeId, String objectId,
     int editTabSelector, String selectExpression, String jsAction)
   {
+    return show(objectTypeId, objectId, editTabSelector, selectExpression,
+      jsAction, null);
+  }
+
+  public String show(String objectTypeId, String objectId,
+    int editTabSelector, String selectExpression, String jsAction,
+    Integer searchTabSelector)
+  {
     BaseTypeInfo baseTypeInfo = objectTypeId == null ?
       getBaseTypeInfo() : getBaseTypeInfo(objectTypeId);
 
@@ -320,14 +327,21 @@ public class NavigatorBean extends WebBean implements Serializable
     leap.setObjectId(objectId);
     if (selectExpression != null)
     {
-      int searchTabSelector = baseTypeInfo.getDefaultSearchTabSelector();
-      if (searchTabSelector == -1) searchTabSelector = 0;
-      leap.setSearchTabSelector(searchTabSelector);
+      int defaultSearchTabSelector = baseTypeInfo.getDefaultSearchTabSelector();
+      if (defaultSearchTabSelector == -1) defaultSearchTabSelector = 0;
+      leap.setSearchTabSelector(defaultSearchTabSelector);
     }
     else
     {
-      leap.setSearchTabSelector(requestedObjectId == null ?
-        baseTypeInfo.getDefaultSearchTabSelector() : -1);
+      if (searchTabSelector != null)
+      {
+        leap.setSearchTabSelector(searchTabSelector);
+      }
+      else
+      {
+        leap.setSearchTabSelector(requestedObjectId == null ?
+          baseTypeInfo.getDefaultSearchTabSelector() : -1);
+      }
     }
     leap.setEditTabSelector(editTabSelector);
 
@@ -399,6 +413,12 @@ public class NavigatorBean extends WebBean implements Serializable
   public void view(String objectId, int editTabSelector, boolean resetPosition,
     Map<String, Object> parameters)
   {
+    view(objectId, editTabSelector, resetPosition, parameters, null);
+  }
+
+  public void view(String objectId, int editTabSelector, boolean resetPosition,
+    Map<String, Object> parameters, Integer searchTabSelector)
+  {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     if (baseTypeInfo == null) return;
 
@@ -412,7 +432,14 @@ public class NavigatorBean extends WebBean implements Serializable
     history.push(historyLeap);
 
     objectBean.setObjectId(objectId);
-    objectBean.setSearchTabSelector(objectBean.getEditModeSelector());
+    if (searchTabSelector != null)
+    {
+      objectBean.setSearchTabSelector(searchTabSelector);
+    }
+    else
+    {
+      objectBean.setSearchTabSelector(objectBean.getEditModeSelector());
+    }
     objectBean.setEditTabSelector(editTabSelector);
     objectBean.load(parameters);
 

@@ -100,13 +100,15 @@ public class HistoryBean implements Serializable
 
   public void view(DirectLeap leap)
   {
-    navigatorBean.view(leap.getObjectId(), 0, true);
+    Integer searchTabSelector = ("".equals(leap.getObjectId()) ? 0 : null);
+    navigatorBean.view(leap.getObjectId(), 0, true, null, searchTabSelector);
   }
 
   public String show(DirectLeap leap)
   {
-    return navigatorBean.show(leap.getBaseTypeId(),
-      leap.getObjectId(), leap.getEditTabSelector());
+    Integer searchTabSelector = ("".equals(leap.getObjectId()) ? 0 : null);
+    return navigatorBean.show(leap.getBaseTypeId(), leap.getObjectId(), 
+      leap.getEditTabSelector(), null, null, searchTabSelector);
   }
 
   public String getIcon(DirectLeap leap)
