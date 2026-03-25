@@ -76,8 +76,8 @@
                 </p:outputPanel>
 
                 <!-- Title -->
-                <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('title')}">
-                  <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
+                <p:outputPanel id="title" styleClass="field col-12" rendered="#{caseFinderBean.isRender('title')}">
+                  <p:outputLabel for="@next" value="#{caseFinderBean.getPropertyLabel('title', caseBundle.case_title)}" />
                   <p:inputText value="#{caseFinderBean.filter.title}" />
                 </p:outputPanel>
 
@@ -96,8 +96,8 @@
                 </p:outputPanel>
 
                 <!-- TypeId -->
-                <p:outputPanel styleClass="field col-12" rendered="#{caseObjectBean.renderTypeId and caseFinderBean.isRender('typeId')}">
-                  <p:outputLabel for="@next" value="#{caseBundle.case_caseTypeId}" />
+                <p:outputPanel id="caseTypeId" styleClass="field col-12" rendered="#{caseObjectBean.renderTypeId and caseFinderBean.isRender('typeId')}">
+                  <p:outputLabel for="@next" value="#{caseFinderBean.getPropertyLabel('caseTypeId', caseBundle.case_caseTypeId)}" />
                   <emcomp:typeReference value="#{caseFinderBean.filter.caseTypeId}"
                                         type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                                         showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"                                    
@@ -110,13 +110,16 @@
                                         formSelector="#{caseFinderBean.formSelector}"
                                         onselect="showPanel('leftPanel')"
                                         process="@form:cnt:find_selector"
-                                        update="@form:cnt:find_selector:case_dynamic_properties">
+                                        update="@form:cnt:find_selector:case_dynamic_properties 
+                                                @form:cnt:find_selector:title
+                                                @form:cnt:find_selector:caseTypeId
+                                                @form:cnt:find_selector:description">
                   </emcomp:typeReference>
                 </p:outputPanel>
 
                 <!-- Description -->
-                <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('description')}">
-                  <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
+                <p:outputPanel id="description" styleClass="field col-12" rendered="#{caseFinderBean.isRender('description')}">
+                  <p:outputLabel for="@next" value="#{caseFinderBean.getPropertyLabel('description', caseBundle.case_description)}" />
                   <p:inputText value="#{caseFinderBean.filter.description}" />
                 </p:outputPanel>
 

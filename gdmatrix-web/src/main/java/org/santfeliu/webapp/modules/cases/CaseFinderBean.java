@@ -349,6 +349,12 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
     }
   }
   
+  public String getPropertyLabel(String propName, String altName)
+  {
+    return caseTypeBean.getPropertyLabel(filter.getCaseTypeId(), 
+      propName, altName);
+  }
+  
   @Override
   public void smartFind()
   {

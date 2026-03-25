@@ -233,9 +233,13 @@ public abstract class TypeBean<T, F> extends WebBean
 
   public String getPropertyLabel(T object, String propName, String altName)
   {
-    String label = altName;
-
     String typeId = getTypeId(object);
+    return getPropertyLabel(typeId, propName, altName);
+  }
+  
+  public String getPropertyLabel(String typeId, String propName, String altName)
+  {
+    String label = altName;
     PropertyDefinition pd = getPropertyDefinition(typeId, propName);
     if (pd != null)
     {
@@ -243,7 +247,7 @@ public abstract class TypeBean<T, F> extends WebBean
       ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
       label = applicationBean.translate(pd.getDescription(), group);
     }
-    return label;
+    return label;    
   }
 
   public boolean isPropertyHidden(T object, String propName)
