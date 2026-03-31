@@ -75,7 +75,7 @@ public class AssistantData
   private final List<String> toolNames;
   private final String instructions;
   private long lastAccess;
-  private int maxOutputTokens;
+  private Integer maxOutputTokens;
 
   public static synchronized AssistantData getInstance(Assistant assistant)
   {

@@ -396,8 +396,8 @@ public class ThreadsBean extends WebBean implements Serializable
         {
           if (queue.isInterrupted())
           {
+            System.out.println(queue + " interrupted.");
             if (handle != null) handle.cancel();
-            queue.push(0);
           }
           else if (!StringUtils.isEmpty(tokens))
           {
@@ -463,6 +463,7 @@ public class ThreadsBean extends WebBean implements Serializable
     StreamQueue queue = StreamQueue.getInstance(getThreadId(), false);
     if (queue != null)
     {
+      queue.push(0);      
       queue.interrupt();
     }
   }

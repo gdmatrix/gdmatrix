@@ -50,8 +50,19 @@ public class StreamQueue
   private static long lastPurge;
 
   private final List<Object> items = new ArrayList<>();
+  private final String queueId;
   private long lastAccess;
   private boolean interrupted;
+  
+  StreamQueue(String queueId)
+  {
+    this.queueId = queueId;
+  }
+  
+  public String getQueueId()
+  {
+    return queueId;
+  }
 
   public static StreamQueue getInstance(String queueId)
   {
@@ -63,7 +74,7 @@ public class StreamQueue
     StreamQueue queue = queues.get(queueId);
     if (queue == null && create)
     {
-      queue = new StreamQueue();
+      queue = new StreamQueue(queueId);
       queues.put(queueId, queue);
       LOGGER.log(Level.INFO, "Queue {0} created.", queueId);
     }
@@ -132,13 +143,20 @@ public class StreamQueue
     interrupted = false;
   }
 
-  public void interrupt()
+  public synchronized void interrupt()
   {
     interrupted = true;
+    notifyAll();
   }
 
   public boolean isInterrupted()
   {
     return interrupted;
+  }
+  
+  @Override
+  public String toString()
+  {
+    return "Queue(" + queueId + ")";
   }
 }
