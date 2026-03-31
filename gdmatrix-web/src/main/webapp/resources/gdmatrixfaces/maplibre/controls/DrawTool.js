@@ -1638,7 +1638,7 @@ class DrawTool extends Tool
         this.loadSelectedLayer();
       });    
     }
-    if (this.directEditing)
+    if (this.layers.length === 0)
     {
       layerSelector.style.display = "none";
       const buttonBar = bodyDiv.querySelector(".button_bar");
@@ -1755,18 +1755,20 @@ class DrawTool extends Tool
         let refreshSources = layer.refreshSources || [];
         for (let sourceId of refreshSources)
         {
-          const source = sources[sourceId];  
-          let url = source.data;
-          if (url.indexOf("?") === -1)
+          let url = getSourceUrl(sourceId, map.getStyle());
+          if (typeof url === "string")
           {
-            url += "?" + seed;
+            if (url.indexOf("?") === -1)
+            {
+              url += "?" + seed;
+            }
+            else
+            {
+              url += "&" + seed;
+            }
+            console.info("Refresh " + sourceId);
+            map.getSource(sourceId).setData(url);
           }
-          else
-          {
-            url += "&" + seed;
-          }
-          console.info("Refresh " + sourceId);
-          map.getSource(sourceId).setData(url);
         }
       }
     }
