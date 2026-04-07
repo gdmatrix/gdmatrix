@@ -66,7 +66,8 @@ public class EditTab implements Serializable
   private List<Object> pageSizeOptions;
   private Boolean exportable;
   private Integer rowExportLimit;
-  private Set<String> hideProperties = new HashSet();  
+  private Set<String> hideProperties = new HashSet(); 
+  private List<String> formDescriptorsFilter = new ArrayList();
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -287,6 +288,16 @@ public class EditTab implements Serializable
   public void setHideProperties(Set<String> hideProperties)
   {
     this.hideProperties = hideProperties;
+  }
+
+  public List<String> getFormDescriptorsFilter()
+  {
+    return formDescriptorsFilter;
+  }
+
+  public void setFormDescriptorsFilter(List<String> formDescriptorsFilter)
+  {
+    this.formDescriptorsFilter = formDescriptorsFilter;
   }
   
   public boolean isRenderProperty(String propertyName)

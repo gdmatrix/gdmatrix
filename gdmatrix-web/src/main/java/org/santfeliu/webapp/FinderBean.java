@@ -287,6 +287,20 @@ public abstract class FinderBean extends BaseBean
     }    
   }  
   
+  public List<String> getFormDescriptorsFilter()
+  {
+    List<String> formDescriptorsFilter = null;
+    try
+    {
+      formDescriptorsFilter = getObjectSetup().getFormDescriptorsFilter();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return formDescriptorsFilter;
+  }   
+  
   protected ActionObject executeAction(String actionName, Object object)
   {
     ActionObject actionObject = new ActionObject(object);

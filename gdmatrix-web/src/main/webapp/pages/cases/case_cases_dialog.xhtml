@@ -122,6 +122,7 @@
                                 typeId="#{caseCasesTabBean.editing.caseCaseTypeId}"
                                 object="#{caseCasesTabBean.editing.caseCaseId == null ? caseObjectBean.case : caseCasesTabBean.editing}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
+                                formDescriptorsFilter="#{caseObjectBean.formDescriptorsFilter}"
                                 properties="#{caseCasesTabBean.editing.property}"
                                 oncomplete="PF('caseCasesDialog').resetPosition();" />
     </h:panelGroup>

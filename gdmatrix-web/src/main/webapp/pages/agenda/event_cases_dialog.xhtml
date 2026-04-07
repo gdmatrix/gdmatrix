@@ -94,6 +94,7 @@
                                 typeId="#{eventCasesTabBean.editing.caseEventTypeId}"
                                 object="#{eventCasesTabBean.editing.caseEventId == null ? eventObjectBean.event : eventCasesTabBean.editing}"                                
                                 formSelector="#{eventCasesTabBean.formSelector}"
+                                formDescriptorsFilter="#{eventObjectBean.formDescriptorsFilter}"
                                 properties="#{eventCasesTabBean.editing.property}"
                                 oncomplete="PF('eventCasesDialog').resetPosition();" />
     

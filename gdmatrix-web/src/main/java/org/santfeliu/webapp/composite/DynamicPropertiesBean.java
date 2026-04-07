@@ -35,6 +35,7 @@ import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -216,6 +217,33 @@ public class DynamicPropertiesBean implements Serializable
           TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
 
         descriptors = FormFactory.getInstance().findForms(selectorBase);
+        
+        List<String> descriptorsFilter = getFormDescriptorsFilter();
+        if (!descriptors.isEmpty() && descriptorsFilter != null && 
+          !descriptorsFilter.isEmpty())
+        {
+          descriptors.removeIf(d -> 
+            !descriptorsFilter.contains(d.getSelector()));
+          
+          //Sort as descriptorsFilter list
+          Map<String, Integer> sortMap = new HashMap<>();
+          for (int i = 0; i < descriptorsFilter.size(); i++) 
+          {
+            sortMap.put(descriptorsFilter.get(i), i);
+          }     
+                   
+          Comparator<FormDescriptor> comparator = 
+            (FormDescriptor d1, FormDescriptor d2) -> 
+          {
+            Integer index1 = sortMap.get(d1.getSelector());
+            Integer index2 = sortMap.get(d2.getSelector());
+            int val1 = (index1 != null) ? index1 : Integer.MAX_VALUE;
+            int val2 = (index2 != null) ? index2 : Integer.MAX_VALUE;
+            return Integer.compare(val1, val2);
+          };
+
+          Collections.sort(descriptors, comparator); 
+        }
       }
       ResourceBundle bundle = ResourceBundle.getBundle(
         "org.santfeliu.web.obj.resources.ObjectBundle",
@@ -236,6 +264,11 @@ public class DynamicPropertiesBean implements Serializable
     }
     return descriptors;
   }
+  
+  private List<String> getFormDescriptorsFilter()
+  {
+    return WebUtils.getValue("#{cc.attrs.formDescriptorsFilter}");
+  }  
 
   public void onSelectForm(FacesEvent event)
   {
@@ -364,7 +397,7 @@ public class DynamicPropertiesBean implements Serializable
       }
     }
   }
-
+  
   // --- private methods ---
 
   private void updateComponents(UIComponent panel)

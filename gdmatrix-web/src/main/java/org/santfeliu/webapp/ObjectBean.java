@@ -293,6 +293,11 @@ public abstract class ObjectBean extends BaseBean
     return ApplicationBean.getCurrentInstance().translate(val);
   }
 
+  public List<String> getFormDescriptorsFilter()
+  {
+    return getActiveEditTab().getFormDescriptorsFilter();
+  }
+  
   public BaseTypeInfo getBaseTypeInfo()
   {
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
