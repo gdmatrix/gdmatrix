@@ -53,6 +53,8 @@ import org.santfeliu.webapp.ObjectBean;
 @RequestScoped
 public class EnumTypeFinderBean extends FinderBean
 {
+  private static final String SUPER_ENUM_TYPE_ID = "superEnumTypeId";
+  
   private EnumTypeFilter filter = new EnumTypeFilter();
   private List<EnumType> rows;
 
@@ -98,7 +100,12 @@ public class EnumTypeFinderBean extends FinderBean
       filter.getEnumTypeId().addAll(enumTypeIdList);
     }
   }
-
+  
+  public boolean isRenderSuperEnumTypeId()
+  {
+    return getSuperEnumTypeId() == null;
+  }
+  
   public String getSmartFilter()
   {
     return smartFilter;
@@ -141,9 +148,11 @@ public class EnumTypeFinderBean extends FinderBean
   public void smartFind()
   {
     setFinding(true);
-    setFilterTabSelector(0);
+    setFilterTabSelector(0);   
     filter = enumTypeTypeBean.queryToFilter(smartFilter,
       DictionaryConstants.ENUM_TYPE_TYPE);
+    if (!isRenderSuperEnumTypeId())
+      filter.setSuperEnumTypeId(getSuperEnumTypeId());     
     doFind(true);
     resetWildcards(filter);
     firstRow = 0;
@@ -154,6 +163,8 @@ public class EnumTypeFinderBean extends FinderBean
   {
     setFinding(true);
     setFilterTabSelector(1);
+    if (!isRenderSuperEnumTypeId())
+      filter.setSuperEnumTypeId(getSuperEnumTypeId());
     smartFilter = enumTypeTypeBean.filterToQuery(filter);
     doFind(true);
     resetWildcards(filter);
@@ -301,5 +312,10 @@ public class EnumTypeFinderBean extends FinderBean
     if (name != null && !name.startsWith("\"") && !name.endsWith("\""))
       name = name.replaceAll("^%+|%+$", "");
     filter.setName(name);
+  }
+  
+  private String getSuperEnumTypeId()
+  {
+    return getProperty(SUPER_ENUM_TYPE_ID);
   }
 }

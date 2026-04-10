@@ -68,6 +68,11 @@
 
             <h:panelGroup id="advanced_search_panel" styleClass="scrollable_content" layout="block">
               <div class="ui-fluid formgrid grid">
+                
+                <p:outputPanel styleClass="field col-12" rendered="#{enumTypeFinderBean.renderSuperEnumTypeId}">
+                  <p:outputLabel for="@next" value="#{dicBundle.enumType_superType}" />
+                  <p:inputText value="#{enumTypeFinderBean.filter.superEnumTypeId}" />
+                </p:outputPanel>                
 
                 <p:outputPanel styleClass="field col-12">
                   <p:outputLabel for="@next" value="#{dicBundle.enumType_type}" />
