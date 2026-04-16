@@ -37,7 +37,7 @@
       </p:column>
 
       <p:column headerText="#{agendaBundle.eventThemes_theme}" styleClass="col-11">
-        <h:outputText value="#{row.description}"/>
+        <h:outputText value="#{themeTypeBean.getDescription(row.themeId)}"/>
       </p:column>
 
       <p:column styleClass="text-right white-space-nowrap" exportable="false">

@@ -4,6 +4,8 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:p="http://primefaces.org/ui">
 
+  <h:outputStylesheet library="css" name="agenda.css" />
+
   <p:dataTable value="#{themeFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
@@ -11,13 +13,21 @@
                rowStyleClass="#{row.themeId == themeObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-               rowIndexVar="rowIndex"
+               rowIndexVar="rowIndex" styleClass="themeList"
                rendered="true" emptyMessage="#{objectBundle.no_data}">
     <p:column headerText="#{agendaBundle.theme_id}" styleClass="col-1">
       <h:outputText value="#{row.themeId}" />
     </p:column>
-    <p:column headerText="#{agendaBundle.theme_description}" styleClass="col-11">
+    <p:column headerText="#{agendaBundle.theme_description}" styleClass="col-10">
       <h:outputText value="#{row.description}" />
+    </p:column>
+    <p:column headerText="#{agendaBundle.theme_visible}" styleClass="col-1">
+      <p:graphicImage styleClass="pi pi-check visible"
+                      rendered="#{row.visible}"
+                      alt=""/>
+      <p:graphicImage styleClass="pi pi-times notVisible"
+                      rendered="#{not row.visible}"
+                      alt=""/>
     </p:column>
     <p:column styleClass="text-right white-space-nowrap">
       <p:commandButton icon="ui-icon fa fa-reply"

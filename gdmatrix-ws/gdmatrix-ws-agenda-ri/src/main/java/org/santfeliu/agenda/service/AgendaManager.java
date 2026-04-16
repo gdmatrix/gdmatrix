@@ -1280,7 +1280,9 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
     if (dbTheme == null)
       throw new WebServiceException("agenda:OBJECT_NOT_FOUND");
 
-    return getEndpoint().toGlobal(Theme.class, dbTheme);
+    Theme theme = new Theme();
+    dbTheme.copyTo(theme);
+    return getEndpoint().toGlobal(Theme.class, theme);
   }
 
   @Override
@@ -1312,9 +1314,8 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
   @Override
   public List<Theme> findThemes(ThemeFilter filter)
   {
-    Query query =
-      entityManager.createNamedQuery("findThemes");
-
+    List<Theme> result = new ArrayList<>();
+    Query query = entityManager.createNamedQuery("findThemes");
     query.setParameter("themeId", filter.getThemeId());
     String description = filter.getDescription();
     query.setParameter("description", description != null ?
@@ -1322,8 +1323,14 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
     query.setFirstResult(filter.getFirstResult());
     int maxResults = filter.getMaxResults();
     if (maxResults > 0) query.setMaxResults(maxResults);
-
-    return query.getResultList();
+    List<DBTheme> dbThemes = query.getResultList();
+    for (DBTheme dbTheme : dbThemes)
+    {
+      Theme theme = new Theme();
+      dbTheme.copyTo(theme);
+      result.add(getEndpoint().toGlobal(Theme.class, theme));
+    }
+    return result;
   }
 
   @Override
@@ -1427,13 +1434,15 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
         {
           DBEventTheme dbEventTheme = (DBEventTheme)result[0];
           DBTheme dbTheme = (DBTheme)result[1];
+          Theme theme = new Theme();
+          dbTheme.copyTo(theme);
           EventThemeView eventThemeView = new EventThemeView();
           eventThemeView.setEventThemeId(dbEventTheme.getEventId() +
             AgendaManager.PK_SEPARATOR + dbEventTheme.getThemeId());
           eventThemeView.setEventId(dbEventTheme.getEventId());
           eventThemeView.setThemeId(dbEventTheme.getThemeId());
-          eventThemeView.setDescription(dbTheme.getDescription());
-
+          eventThemeView.setDescription(theme.getDescription());
+          eventThemeView.setVisible(theme.isVisible());
           eventThemeViews.add(eventThemeView);
         }
       }
@@ -1954,6 +1963,12 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
   private List<EventThemeView> createEventThemeViews(
     List<DBEventTheme> dbEventThemes)
   {
+    Map<String, Theme> themeMap = new HashMap<>();
+    List<Theme> themes = findThemes(new ThemeFilter());
+    for (Theme theme : themes)
+    {
+      themeMap.put(theme.getThemeId(), theme);
+    }
     List<EventThemeView> eventThemeViews = new ArrayList<>();
     for (DBEventTheme dbEventTheme : dbEventThemes)
     {
@@ -1962,6 +1977,11 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       eventThemeView.setEventId(dbEventTheme.getEventId());
       eventThemeView.setThemeId(dbEventTheme.getThemeId());
       eventThemeView.setDescription(dbEventTheme.getComments());
+      if (themeMap.containsKey(dbEventTheme.getThemeId()))
+      {
+        Theme theme = themeMap.get(dbEventTheme.getThemeId());
+        eventThemeView.setVisible(theme.isVisible());
+      }
       eventThemeViews.add(eventThemeView);
     }
     return eventThemeViews;

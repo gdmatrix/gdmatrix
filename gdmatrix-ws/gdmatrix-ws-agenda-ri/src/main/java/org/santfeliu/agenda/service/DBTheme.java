@@ -39,6 +39,8 @@ import org.santfeliu.jpa.JPAUtils;
  */
 public class DBTheme extends Theme
 {
+  private String visibleWeb;
+
   public DBTheme()
   {
   }
@@ -48,13 +50,25 @@ public class DBTheme extends Theme
     copyFrom(theme);
   }
 
+  public String getVisibleWeb()
+  {
+    return visibleWeb;
+  }
+
+  public void setVisibleWeb(String visibleWeb)
+  {
+    this.visibleWeb = visibleWeb;
+  }
+
   public void copyTo(Theme theme)
   {
     JPAUtils.copy(this, theme);
+    theme.setVisible("S".equalsIgnoreCase(visibleWeb));
   }
 
   private void copyFrom(Theme theme)
   {
     JPAUtils.copy(theme, this);
+    visibleWeb = (theme.isVisible() ? "S" : "N");
   }
 }

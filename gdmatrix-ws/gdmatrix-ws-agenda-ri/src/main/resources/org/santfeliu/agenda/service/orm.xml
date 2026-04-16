@@ -446,6 +446,9 @@
         <basic name="description">
           <column name="TEMADESC" length="100" />
         </basic>
+        <basic name="visibleWeb">
+          <column name="VISIBLEWEB" length="1" />
+        </basic>
       </attributes>
     </entity>
 

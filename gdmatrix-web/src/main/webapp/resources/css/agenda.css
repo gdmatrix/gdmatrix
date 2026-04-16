@@ -754,3 +754,15 @@ body .fc th > .fc-scrollgrid-sync-inner
   padding-left: 1rem;
   text-align: left;
 }
+
+/*** event_list_grouped.xhtml ***/
+
+.themeList img.visible
+{
+  color: green;
+}
+
+.themeList img.notVisible
+{
+  color: red;
+}

@@ -15,6 +15,14 @@
                      readonly="#{!themeObjectBean.editable}" />
       </p:outputPanel>
 
+      <p:outputPanel styleClass="field col-12"
+                     rendered="true">
+        <p:selectBooleanCheckbox id="visible" value="#{themeObjectBean.theme.visible}"
+                                 disabled="#{!themeObjectBean.editable}"/>
+        <p:outputLabel for="@previous" value="#{agendaBundle.theme_visible}"
+                       styleClass="ml-2" />
+      </p:outputPanel>
+
     </div>
 
 </ui:composition>

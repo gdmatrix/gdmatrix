@@ -69,7 +69,13 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
   @Override
   public String describe(Theme theme)
   {
-    return theme.getDescription();
+    StringBuilder sb = new StringBuilder();
+    sb.append(theme.getDescription());
+    if (theme.isVisible())
+    {
+      sb.append(" ").append(((char)0x24CC));
+    }
+    return sb.toString();
   }
 
   @Override

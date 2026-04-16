@@ -287,7 +287,9 @@
     <entity name="Theme">
       <identifier name="themeId" type="xs:string" minOccurs="1">
       </identifier>
-      <property name="description" type="xs:string" minOccurs="0" >
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="visible" type="xs:boolean">
       </property>
     </entity>
 
@@ -337,6 +339,8 @@
         references="agenda:Theme">
       </property>
       <property name="description" type="xs:string" minOccurs="0" >
+      </property>
+      <property name="visible" type="xs:boolean">
       </property>
     </struct>  
 
