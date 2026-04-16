@@ -34,7 +34,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,7 +57,7 @@ import org.santfeliu.webapp.util.WebUtils;
 public class ClassObjectBean extends ObjectBean
 {
   private Class classObject = new Class();
-  private transient List<Class> history;
+  private List<Class> history;
   private String formSelector;
 
   @Inject
