@@ -12,6 +12,9 @@ class FilterControl
       sourceUrls: { sourceId: (startDate, endDate) => url, ... } url function for each geojson source (optional).
       paintProperties : array of [layerId, property name], the Paint properties to apply the variable values
       layoutProperties : array of [layerId, property name], the Layout properties to apply the variable values
+      toolbar : array of { label, title, icon, params: {key:value,...} }
+      toolbarTitle : text
+      toolbarFontSize: text
    */
   constructor(options)
   {
@@ -21,6 +24,7 @@ class FilterControl
         "iconClass" : "pi pi-filter",
         "populateForm" : null
       }, ...options};
+    this._activeToolbarParams = {};
   }
 
   createFilterPanel(map)
@@ -62,15 +66,24 @@ class FilterControl
   updateSourcesAndLayers()
   {
     const map = this.map;
-    const jsonFilter = document.getElementById("json_filter")?.value;
+    const options = this.options;
     let params = {};
-    if (jsonFilter)
+    
+    if (options.toolbar)
     {
-      params = JSON.parse(jsonFilter);
+      params = this._activeToolbarParams;
     }
     else
     {
-      this.paramsFromForm(params);
+      const jsonFilter = document.getElementById("json_filter")?.value;
+      if (jsonFilter)
+      {
+        params = JSON.parse(jsonFilter);
+      }
+      else
+      {
+        this.paramsFromForm(params);
+      }
     }
     console.info(params);
     this.setGlobalParameters(params);
@@ -202,22 +215,93 @@ class FilterControl
   onAdd(map)
   {
     this.map = map;
+    const options = this.options;
     const div = document.createElement("div");
     this.div = div;
-    div.innerHTML = `<button><span class="${this.options.iconClass}"/></button>`;
-    div.className = "maplibregl-ctrl maplibregl-ctrl-group";
-    div.title = this.options.title;
-    div.style.width = "29px";
-    div.style.height = "29px";
-    div.style.fontFamily = "var(--font-family)";
-    div.addEventListener("contextmenu", (e) => e.preventDefault());
-    div.addEventListener("click", (e) =>
+    if (options.toolbar)
     {
-      e.preventDefault();
-      this.filterPanel.show();
-    });
+      const buttons = options.toolbar;
+      div.className = "maplibregl-ctrl maplibregl-ctrl-group";
+      div.title = options.title;
+      div.style.width = "29px";
+      div.style.fontFamily = "var(--font-family)";
+      div.addEventListener("contextmenu", (e) => e.preventDefault());
+      
+      if (options.toolbarTitle)
+      {
+        const titleElem = document.createElement("div");
+        titleElem.textContent = options.toolbarTitle;
+        titleElem.classList.add("text-center");
+        titleElem.style.minHeight = "24px";
+        titleElem.style.borderBottom = "1px solid var(--surface-300)";
+        
+        div.appendChild(titleElem);
+        if (options.toolbarFontSize)
+        {
+          titleElem.style.fontSize = options.toolbarFontSize;
+        }
+      }
+      
+      let activeButtonElem = null;
+      for (let button of buttons)
+      {
+        const buttonElem = document.createElement("button");
+        if (button.icon)
+        {
+          buttonElem.innerHTML = `<i class="${button.icon}" title="${button.title || ""}" />`;          
+        }
+        else if (button.label)
+        {
+          buttonElem.textContent = button.label;
+        }
+        buttonElem.title = button.title || "";
+        buttonElem.style.fontFamily = "var(--font-family)";
+        if (options.toolbarFontSize)
+        {
+          buttonElem.style.fontSize = options.toolbarFontSize;
+        }
+        if (button.active)
+        {
+          activeButtonElem = buttonElem;          
+        }
 
-    this.createFilterPanel(map);
+        buttonElem.addEventListener("click", (e) =>
+        {
+          e.preventDefault();
+          let selectedButtonElem = div.querySelector(".active");
+          if (selectedButtonElem)
+          {
+            selectedButtonElem.classList.remove("active");
+          }
+          buttonElem.classList.add("active");
+          this._activeToolbarParams = button.params;
+          this.updateSourcesAndLayers();
+        });
+        div.appendChild(buttonElem);
+      }
+      if (activeButtonElem)
+      {
+        activeButtonElem.click();
+      }      
+    }
+    else
+    {
+      // add button to show side panel
+      div.innerHTML = `<button><span class="${this.options.iconClass}"/></button>`;
+      div.className = "maplibregl-ctrl maplibregl-ctrl-group";
+      div.title = this.options.title;
+      div.style.width = "29px";
+      div.style.height = "29px";
+      div.style.fontFamily = "var(--font-family)";
+      div.addEventListener("contextmenu", (e) => e.preventDefault());
+      div.addEventListener("click", (e) =>
+      {
+        e.preventDefault();
+        this.filterPanel.show();
+      });
+
+      this.createFilterPanel(map);
+    }
     
     map.on("load", () => this.onLoad());
 

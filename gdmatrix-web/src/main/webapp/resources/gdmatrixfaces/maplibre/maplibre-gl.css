@@ -634,3 +634,9 @@ a.maplibregl-ctrl-logo.maplibregl-compact{
   width:100%!important;
   z-index:99999
 }
+
+.maplibregl-ctrl.maplibregl-ctrl-group button.active
+{
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
+}
