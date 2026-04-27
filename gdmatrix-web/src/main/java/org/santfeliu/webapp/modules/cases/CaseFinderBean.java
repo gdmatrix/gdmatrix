@@ -489,7 +489,8 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
                 filter.getClassId().addAll(classIds);
               }
               if (isFilterByIntervention())
-                setInterventionsFilter(interventionFilter, filter);             
+                setInterventionsFilter(interventionFilter, filter);
+              setFilterBy(filter);              
               int count = CasesModuleBean.getPort(false).countCases(filter);
               filter.setTitle(title);
               CaseFinderBean.this.setClassId(classId);
@@ -535,6 +536,8 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
               String searchExpression = filter.getSearchExpression();
               if (StringUtils.isBlank(searchExpression))
                 setOrderBy(filter);
+              
+              setFilterBy(filter);              
 
               List<TableProperty> tableProperties = getTableProperties();
               for (TableProperty tableProperty : tableProperties)
@@ -549,8 +552,8 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
               CaseFinderBean.this.setClassId(classId);
               
               if (isFilterByIntervention())
-                filter.getCaseId().clear();  
-              
+                filter.getCaseId().clear(); 
+                            
               return toDataTableRows(cases);
             }
             catch (Exception ex)
@@ -681,7 +684,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       filter.setSearchExpression(buffer.toString());
     }
   }
-
+  
   private RowStyleClassGenerator getRowStyleClassGenerator()
   {
     return new DateTimeRowStyleClassGenerator("startDate,startTime",

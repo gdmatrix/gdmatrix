@@ -57,6 +57,7 @@ import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
 import org.santfeliu.webapp.util.WebUtils;
+import org.santfeliu.webapp.setup.PropertyMap;
 
 /**
  *
@@ -198,7 +199,7 @@ public abstract class FinderBean extends BaseBean
   {
     executeAction(PUT_DEFAULT_FILTER, getFilter());
   }
-
+  
   public String getSmartSearchTip()
   {
     if (System.currentTimeMillis() - lastSmartSearchTipRefresh >
@@ -335,6 +336,26 @@ public abstract class FinderBean extends BaseBean
 
     return actionObject;
   }
+  
+  protected void setFilterBy(Object filter) throws Exception
+  {
+    if (filter == null)
+      filter = getFilter();
+    int tabSelector = getObjectBean().getSearchTabSelector();
+    tabSelector =
+      tabSelector < getObjectSetup().getSearchTabs().size() ? tabSelector : 0;
+    PropertyMap filterBy = 
+      getObjectSetup().getSearchTabs().get(tabSelector).getFilterBy();
+    if (filterBy != null)
+    {
+      for (String key : filterBy.keySet())
+      {
+        Property property = DictionaryUtils.getProperty(getFilter(), key);
+        if (property == null || property.getValue().isEmpty())
+          DictionaryUtils.setProperty(filter, key, filterBy.getList(key));
+      }
+    }
+  }     
     
   protected Object getSessionProperties(Object filter)
   {    
@@ -378,7 +399,7 @@ public abstract class FinderBean extends BaseBean
       } 
     }      
   }
-  
+    
   private List<String> getSessionPropertyNames()
   {
     try

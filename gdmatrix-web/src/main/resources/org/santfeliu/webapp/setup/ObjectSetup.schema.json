@@ -150,6 +150,21 @@
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/TableProperty" }
         },
+        "filterBy": {
+          "description": "...",
+          "type": "object",
+          "properties": {            
+          },
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "integer" },
+              { "type": "array" }, 
+              { "type": "object" },  
+              { "type": "boolean" }
+            ]
+          }
+        },
         "orderBy": {
           "description": "...",
           "type": "array",

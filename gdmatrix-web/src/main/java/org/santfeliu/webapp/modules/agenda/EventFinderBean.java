@@ -898,6 +898,7 @@ public class EventFinderBean extends FinderBean
           {
             try
             {
+              setFilterBy(filter); 
               return AgendaModuleBean.getClient().countEventsFromCache(filter);
             }
             catch (Exception ex)
@@ -915,6 +916,7 @@ public class EventFinderBean extends FinderBean
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               filter.setIncludeMetadata(true);
+              setFilterBy(filter); 
               setOrderBy(filter);
               List<Event> events = AgendaModuleBean.getClient().
                 findEventsFromCache(filter);

@@ -476,7 +476,7 @@ public class DocumentFinderBean extends FinderBean
                 filter.getClassId().addAll(classIds);
               }
               addFilterWildcards(filter);
-
+              setFilterBy(filter);
               int count = DocModuleBean.getPort(false).countDocuments(filter);
               DocumentFinderBean.this.setClassId(classId);
 
@@ -515,7 +515,8 @@ public class DocumentFinderBean extends FinderBean
                 filter.getOutputProperty().add(tableProperty.getName());
               }
               filter.setIncludeContentMetadata(true);
-
+              
+              setFilterBy(filter);
               setOrderBy(filter);
 
               List<Document> documents =

@@ -51,6 +51,7 @@ public class SearchTab
   private PropertyMap properties = new PropertyMap();
   private Boolean exportable;
   private Integer rowExportLimit;
+  private PropertyMap filterBy = new PropertyMap();
 
   public SearchTab(String label, String viewId)
   {
@@ -138,4 +139,13 @@ public class SearchTab
     this.rowExportLimit = rowExportLimit;
   }
 
+  public PropertyMap getFilterBy()
+  {
+    return filterBy;
+  }
+
+  public void setFilterBy(PropertyMap filterBy)
+  {
+    this.filterBy = filterBy;
+  }
 }

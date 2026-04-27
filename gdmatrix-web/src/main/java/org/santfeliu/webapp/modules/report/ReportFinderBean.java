@@ -290,8 +290,9 @@ public class ReportFinderBean extends FinderBean
               if (!StringUtils.isBlank(technology))
                 DictionaryUtils.setProperty(filter, "technology", technology);   
               if (!StringUtils.isBlank(theme))
-                DictionaryUtils.setProperty(filter, "theme", theme);               
+                DictionaryUtils.setProperty(filter, "theme", theme); 
               
+              setFilterBy(filter);
               int count = DocModuleBean.getPort(false).countDocuments(filter);
 
               removeFilterWildcards(filter);
@@ -329,6 +330,8 @@ public class ReportFinderBean extends FinderBean
               OrderByProperty orderBy = new OrderByProperty();
               orderBy.setName("title");
               orderBy.setDescending(false);
+              
+              setFilterBy(filter);
               filter.getOrderByProperty().add(orderBy);
               
               List<Document> documents =
