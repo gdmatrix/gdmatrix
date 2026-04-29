@@ -94,7 +94,12 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
   {
     height: inherit;
     overflow: auto;
-  }  
+  }
+
+  .central_column.zoom .sticky_container
+  {
+    height: 100%;
+  }
 }
 
 .side_panel
@@ -411,6 +416,108 @@ body .central_column .ui-tabs .ui-tabs-panels .ui-tabs-panel
 {
   margin: 0.5rem 1rem;
 }
-                 
 
+/* Zoom mode */
 
+div.side_panel.zoom
+{
+  display: none !important
+}
+
+div.central_column.zoom
+{
+}
+
+div.central_column.zoom .object_header
+{
+  display: none;
+}
+
+div.central_column.zoom [id='mainform:search_tabs'] > ul
+{
+  display: none;
+}
+
+div.central_column.zoom [id='mainform:search_tabs:tabs'] > ul.ui-tabs-nav
+{
+  display: none;
+}
+
+div.central_column.zoom [id='mainform:search_tabs'] .tab_footer
+{
+  display: none;
+}
+
+div.central_column.zoom .objectHeaderScroll
+{
+  display: none !important;
+}
+
+div.central_column .objectHeaderTabLabel
+{
+  display: none !important;
+}
+
+div.central_column.zoom .objectHeaderTabLabel
+{
+  display: block !important;
+}
+
+div.central_column.zoom .objectHeaderButtons
+{
+  display: none !important;
+}
+
+div.central_column .zoomInButton
+{
+  display: inline-block !important;
+}
+
+div.central_column.zoom .zoomInButton
+{
+  display: none !important;
+}
+
+div.central_column .zoomOutButton
+{
+  display: none !important;
+}
+
+div.central_column.zoom .zoomOutButton
+{
+  display: inline-block !important;
+}
+
+div.central_column.zoom div.ui-datatable.zoomable
+{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+div.central_column.zoom div.ui-datatable.zoomable .ui-datatable-header
+{
+  position: sticky;
+  top: 0;
+  flex-grow: 0;
+}
+
+div.central_column.zoom div.ui-datatable.zoomable .ui-datatable-tablewrapper
+{
+  flex-grow: 1;
+}
+
+div.central_column.zoom div.ui-datatable.zoomable .ui-datatable-tablewrapper table tr th
+{
+  position: sticky;
+  top: 0;
+  border: 0;
+  z-index: 1;
+}
+
+div.central_column.zoom div.ui-datatable.zoomable .ui-paginator-bottom
+{
+  position: sticky;
+  bottom: 0;
+  flex-grow: 0;
+}

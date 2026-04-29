@@ -18,14 +18,15 @@
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="#{documentFinderBean.pageSize}" rowsPerPageTemplate="5,10,25,50"
                rowIndexVar="rowIndex" emptyMessage="#{objectBundle.no_data}"
-               rowKey="#{row.rowId}" expandedRow="true">
+               rowKey="#{row.rowId}" expandedRow="true"
+               styleClass="zoomable">
 
     <f:attribute name="exportableBean" value="#{documentFinderBean}" />
     
     <f:facet name="header">
       <p:outputPanel styleClass="text-right" 
-                     rendered="#{documentFinderBean.isExportable() &amp;&amp; documentFinderBean.rows != null}">
-        <h:panelGroup id="csvButtonWrapper">
+                     rendered="#{documentFinderBean.rows != null}">
+        <h:panelGroup id="csvButtonWrapper" rendered="#{documentFinderBean.isExportable()}">
           <p:commandButton disabled="#{documentFinderBean.rows.size() &gt; documentFinderBean.rowExportLimit}" 
                            icon="pi pi-download"
                            styleClass="rounded-button ui-button-flat">
@@ -43,6 +44,16 @@
             </h:outputFormat>
           </p:tooltip>                  
         </h:panelGroup>
+        <p:commandButton icon="pi pi-arrow-up-right"
+                         styleClass="zoomInButton rounded-button ui-button-flat"
+                         process="@this"
+                         oncomplete="zoomIn()"
+                         alt="#{objectBundle.zoomIn}" title="#{objectBundle.zoomIn}" />
+        <p:commandButton icon="pi pi-arrow-down-left"
+                         styleClass="zoomOutButton rounded-button"
+                         process="@this"
+                         oncomplete="zoomOut()"
+                         alt="#{objectBundle.zoomOut}" title="#{objectBundle.zoomOut}" />
       </p:outputPanel>
     </f:facet>
     
@@ -113,7 +124,7 @@
                        action="#{documentFinderBean.view(rowIndex)}"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}"
                        process="@this"
-                       oncomplete="PF('searchTabs').select(1);"
+                       oncomplete="PF('searchTabs').select(1);zoomOut();"
                        update="@form:cnt:search_tabs:obj_tabs @form:cnt:context_panel"
                        />     
     </p:column>

@@ -8,7 +8,7 @@
 
   <div class="sticky_container">
     <p:outputPanel id="object_header" class="sticky_content flex flex-wrap align-items-center card-container m-2 px-3">
-      <p:outputPanel class="flex flex-grow-0 align-items-center justify-content-start align-self-center"
+      <p:outputPanel class="flex flex-grow-0 align-items-center justify-content-start align-self-center objectHeaderScroll"
                      rendered="#{objectBean.finderBean.isScrollEnabled()}">
           <p:commandButton icon="ui-icon pi pi-step-backward"
                            styleClass="rounded-button ui-button-flat mr-2"
@@ -41,8 +41,12 @@
       </p:outputPanel>
       <h:outputText value="#{objectBean.objectId}" styleClass="main_object_id mr-2 pt-2 pb-2" />
       <span class="font-bold pt-2 pb-2">#{objectBean.description}</span>
+      <p:outputPanel styleClass="objectHeaderTabLabel">
+        <h:outputText styleClass="font-bold pt-2 pb-2 ml-2" 
+                      value="> #{applicationBean.translate(objectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+      </p:outputPanel>
 
-      <div class="flex flex-grow-1 justify-content-end">
+      <div class="flex flex-grow-1 justify-content-end objectHeaderButtons">
         <p:commandButton icon="ui-icon fa fa-reply"
                          styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.select}"

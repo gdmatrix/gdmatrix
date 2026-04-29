@@ -26,7 +26,8 @@
                  rows="#{caseInterventionsTabBean.pageSize}" 
                  rowsPerPageTemplate="#{caseInterventionsTabBean.pageSizeOptions}" emptyMessage="#{objectBundle.no_data}"
                  rowKey="#{row.rowId}" expandedRow="true"
-                 sortMode="multiple" allowUnsorting="true">
+                 sortMode="multiple" allowUnsorting="true"
+                 styleClass="zoomable">
       
       <f:attribute name="exportableBean" value="#{caseInterventionsTabBean}" />
     
@@ -104,6 +105,18 @@
                              oncomplete="PF('caseInterventionsDialog').show()"
                              alt="#{objectBundle.add}" title="#{objectBundle.add}"
                              disabled="#{!caseObjectBean.editable}"/>
+            <p:commandButton icon="pi pi-arrow-up-right"
+                             styleClass="zoomInButton rounded-button ui-button-flat"
+                             process="@this"
+                             update="@(.objectHeaderTabLabel)"
+                             oncomplete="zoomIn()"
+                             alt="#{objectBundle.zoomIn}" title="#{objectBundle.zoomIn}" />
+            <p:commandButton icon="pi pi-arrow-down-left"
+                             styleClass="zoomOutButton rounded-button"
+                             process="@this"
+                             update="@(.objectHeaderTabLabel)"
+                             oncomplete="zoomOut()"
+                             alt="#{objectBundle.zoomOut}" title="#{objectBundle.zoomOut}" />
           </div>
         </div>
       </f:facet>
