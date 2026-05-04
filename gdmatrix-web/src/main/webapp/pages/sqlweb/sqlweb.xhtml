@@ -130,16 +130,22 @@
                 <p:dataExporter type="xml" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
               </p:menuitem>
               <p:menuitem value="PDF" icon="pi pi-file-pdf">
-                <p:dataExporter type="pdf" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
+                <p:dataExporter type="pdf" target="result_table" fileName="results_#{sqlwebBean.timeStamp}"
+                                options="#{sqlwebBean.pdfOptions}"
+                                preProcessor="#{sqlwebBean.preProcessPdf}"
+                                postProcessor="#{sqlwebBean.postProcessPdf}"
+                                onTableRender="#{sqlwebBean.onTableRender}"
+                                encoding="ISO-8859-1" />
               </p:menuitem>
               <p:menuitem value="TXT" icon="pi pi-file">
                 <p:dataExporter type="txt" target="result_table" fileName="results_#{sqlwebBean.timeStamp}" />
               </p:menuitem>
             </p:menuButton>
-            <div class="flex-grow-1" />
+            <div class="flex-grow-1" />            
             <div>
               <p:toggleSwitch id="showRowNumbers" value="#{sqlwebBean.showRowNumbers}"
-                            styleClass="vertical-align-middle mr-2">
+                              styleClass="vertical-align-middle mr-2"
+                              rendered="#{not sqlwebBean.exporting}">
                 <p:ajax process="@this" update="@(.result_table)" />
               </p:toggleSwitch>
               <p:outputLabel for="showRowNumbers" value="#{sqlWebBundle.show_row_numbers}"
@@ -149,7 +155,8 @@
             </div>
             <div>
               <p:toggleSwitch id="showLobValues" value="#{sqlwebBean.showLobValues}"
-                              styleClass="vertical-align-middle mr-2">
+                              styleClass="vertical-align-middle mr-2"
+                              rendered="#{not sqlwebBean.exporting}">
                 <p:ajax process="@this" update="@(.result_table)" />
               </p:toggleSwitch>
               <p:outputLabel for="showLobValues" value="#{sqlWebBundle.show_lob_content}"
@@ -159,7 +166,8 @@
             </div>
             <div>
               <p:toggleSwitch id="showNullAsEmpty" value="#{sqlwebBean.showNullAsEmpty}"
-                            styleClass="vertical-align-middle mr-2">
+                            styleClass="vertical-align-middle mr-2"
+                            rendered="#{not sqlwebBean.exporting}">
                 <p:ajax process="@this" update="@(.result_table)" />
               </p:toggleSwitch>
               <p:outputLabel for="showNullAsEmpty" value="#{sqlWebBundle.show_null_as_empty}"

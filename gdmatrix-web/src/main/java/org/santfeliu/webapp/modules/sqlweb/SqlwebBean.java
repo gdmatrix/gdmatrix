@@ -30,6 +30,10 @@
  */
 package org.santfeliu.webapp.modules.sqlweb;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.pdf.PdfPTable;
 import org.santfeliu.webapp.exporters.FixedWidthTextExporter;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -61,6 +65,7 @@ import javax.sql.DataSource;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.component.export.CSVOptions;
 import org.primefaces.component.export.ExporterOptions;
+import org.primefaces.component.export.PDFOptions;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSProperty;
@@ -104,6 +109,7 @@ public class SqlwebBean extends WebBean implements Serializable
   private boolean showNullAsEmpty = false;
   private int firstRow = 0;
   private String htmlDescription;
+  private boolean exporting = false;
 
   public SqlwebBean()
   {
@@ -235,6 +241,156 @@ public class SqlwebBean extends WebBean implements Serializable
   public void setHtmlDescription(String htmlDescription) 
   {
     this.htmlDescription = htmlDescription;
+  }
+
+  public boolean isExporting()
+  {
+    return exporting;
+  }
+
+  public void setExporting(boolean exporting)
+  {
+    this.exporting = exporting;
+  }
+
+  public PDFOptions getPdfOptions()
+  {
+    PDFOptions pdfOptions = new PDFOptions();
+    pdfOptions.setFacetFontStyle("BOLD");
+    pdfOptions.setFacetFontSize("8");
+    pdfOptions.setCellFontSize("8");
+    pdfOptions.setFontName("HELVETICA");
+    return pdfOptions;
+  }
+
+  public void preProcessPdf(Object document)
+  {
+    exporting = true;
+    Document pdf = (Document)document;
+    if (rows != null && !rows.isEmpty())
+    {
+      Object[] testRow = rows.get(0);
+      int colCount = testRow.length;
+      if (showRowNumbers) colCount++;
+      if (colCount >= 20)
+      {
+        pdf.setPageSize(PageSize.A1.rotate());
+      }
+      else if (colCount >= 16)
+      {
+        pdf.setPageSize(PageSize.A2.rotate());
+      }
+      else if (colCount >= 12)
+      {
+        pdf.setPageSize(PageSize.A3.rotate());
+      }
+      else if (colCount >= 8)
+      {
+        pdf.setPageSize(PageSize.A4.rotate());
+      }
+      else
+      {
+        int maxRowLength = getMaxRowLength();
+        if (maxRowLength < 80)
+        {
+          pdf.setPageSize(PageSize.A4);
+        }
+        else
+        {
+          pdf.setPageSize(PageSize.A4.rotate());
+        }
+      }
+      if (!pdf.isOpen())
+      {
+        pdf.open();
+      }
+      pdf.newPage();
+    }
+  }
+
+  public void postProcessPdf(Object document)
+  {
+    exporting = false;
+  }
+
+  public void onTableRender(Object document, Object pdfTable)
+    throws DocumentException
+  {    
+    PdfPTable table = (PdfPTable)pdfTable;
+    int columnCount = table.getNumberOfColumns();
+    float[] columnWidths = new float[columnCount];
+    for (int i = 0; i < columnCount; i++)
+    {
+      columnWidths[i] = 1.0f; //base value
+    }
+
+    for (Object[] row : rows)
+    {
+      for (int i = 0; i < row.length; i++)
+      {
+        int auxIdx = i;
+        if (showRowNumbers) auxIdx++;
+        int length = String.valueOf(row[i]).length();
+        if (length > columnWidths[auxIdx])
+        {
+          columnWidths[auxIdx] = length;
+        }
+      }
+    }
+   
+    balanceColumnWidths(columnWidths, (Document)document);
+
+    table.setWidths(columnWidths);
+    table.setWidthPercentage(100);
+  }
+
+  private int getMaxRowLength()
+  {
+    int maxRowLength = 0;
+    for (Object[] row : rows)
+    {
+      int rowLength = getRowLength(row);
+      if (rowLength > maxRowLength)
+      {
+        maxRowLength = rowLength;
+      }
+    }
+    return maxRowLength;
+  }
+
+  private int getRowLength(Object[] row)
+  {
+    int rowLength = 0;
+    for (Object cell : row)
+    {
+      rowLength += String.valueOf(cell).length();
+    }
+    return rowLength;
+  }
+
+  private void balanceColumnWidths(float[] columnWidths, Document document)
+  {
+    int firstIdx = 0; //first col number with actual data
+    float availableWidth = 100.0f; //available width for actual data
+    if (showRowNumbers)
+    {
+      float pageWidth = document.getPageSize().getWidth(); //pt
+      pageWidth = (pageWidth * 2.54f) / 72.0f; //cm
+      float colNumWidth = (21.0f / pageWidth) * 5.00f; //if shown, 5% or less
+      columnWidths[0] = colNumWidth;
+      availableWidth = 100.0f - colNumWidth;
+      firstIdx = 1;
+    }
+    float totalWidth = 0.0f;
+    for (int i = firstIdx; i < columnWidths.length; i++)
+    {
+      columnWidths[i] = (float)(Math.log(columnWidths[i]));
+      totalWidth += columnWidths[i];
+    }
+    for (int i = firstIdx; i < columnWidths.length; i++)
+    {
+      columnWidths[i] = (availableWidth * (columnWidths[i] / totalWidth));
+    }
   }
 
   public Map<String, String> getColumnDescriptionMap()
