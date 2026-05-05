@@ -11,7 +11,7 @@
         SELECT count(p)
         FROM DBPerson p
         WHERE
-        (:idList IS NULL OR locate(concat(' ', concat(p.personId, ' ')), :idList)  > 0) AND
+        (:applyIdList = false OR p.personId IN :idList) AND
         (:name IS NULL OR lower(p.name) LIKE :name) AND
         (:firstSurname IS NULL OR lower(p.firstSurname) LIKE :firstSurname) AND
         (:secondSurname IS NULL OR lower(p.secondSurname) LIKE :secondSurname) AND
@@ -27,7 +27,7 @@
         SELECT p
         FROM DBPerson p
         WHERE
-        (:idList IS NULL OR locate(concat(' ', concat(p.personId, ' ')), :idList) > 0) AND
+        (:applyIdList = false OR p.personId IN :idList) AND
         (:name IS NULL OR lower(p.name) LIKE :name) AND
         (:firstSurname IS NULL OR lower(p.firstSurname) LIKE :firstSurname) AND
         (:secondSurname IS NULL OR lower(p.secondSurname) LIKE :secondSurname) AND
@@ -45,7 +45,7 @@
         FROM DBAddress a JOIN a.street s JOIN s.city ci 
           JOIN ci.province p JOIN p.country co
         WHERE
-        (:idList IS NULL OR locate(concat(' ', concat(a.addressId, ' ')), :idList) > 0) AND
+        (:applyIdList = false OR a.addressId IN :idList) AND
         (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName) AND
         (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName) AND
         (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName) AND
@@ -68,7 +68,7 @@
         FROM DBAddress a JOIN a.street s JOIN s.city ci 
           JOIN ci.province pr JOIN pr.country co
         WHERE
-        (:idList IS NULL OR locate(concat(' ', concat(a.addressId, ' ')), :idList) > 0) AND
+        (:applyIdList = false OR a.addressId IN :idList) AND
         (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName) AND
         (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName) AND
         (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName) AND

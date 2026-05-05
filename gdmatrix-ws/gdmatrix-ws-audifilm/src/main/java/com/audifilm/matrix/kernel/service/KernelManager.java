@@ -2963,8 +2963,25 @@ public class KernelManager implements KernelManagerPort
     }
     return buffer.toString();
   }
-
-
+  
+  private List<String> getLocalIdList(Class entityClass, List<String> idList)
+  {
+    Entity entity = getEndpoint().getEntity(entityClass);
+    if (idList == null)
+    {
+      return null;
+    }
+    if (idList.isEmpty())
+    {
+      return null;
+    }
+    List<String> resultList = new ArrayList();
+    for (String globalId : idList)
+    {
+      resultList.add(entity.toLocalId(globalId));
+    }
+    return resultList;    
+  }
 
   private int getNextCounterValue(String claupref, String claucod,
           String clauorigen, String claudesc)
@@ -3010,8 +3027,17 @@ public class KernelManager implements KernelManagerPort
   {
     List<String> personIdList = filter.getPersonId();
 
-    String idList = getStringFromIdList(Person.class, personIdList);
-    query.setParameter("idList", idList);
+    List<String> idList = getLocalIdList(Person.class, personIdList);
+    if (idList != null)
+    {
+      query.setParameter("applyIdList", true);      
+      query.setParameter("idList", idList);
+    }
+    else
+    {
+      query.setParameter("applyIdList", false);
+      query.setParameter("idList", null);
+    }
     query.setParameter("name", addPercent(filter.getName()));
     query.setParameter("firstSurname", addPercent(filter.getFirstSurname()));
     query.setParameter("secondSurname", addPercent(filter.getSecondSurname()));
@@ -3028,8 +3054,17 @@ public class KernelManager implements KernelManagerPort
   {
     List<String> addressIdList = filter.getAddressIdList();
 
-    query.setParameter("idList",
-      getStringFromIdList(Address.class, addressIdList));
+    List<String> idList = getLocalIdList(Address.class, addressIdList);
+    if (idList != null)
+    {
+      query.setParameter("applyIdList", true);      
+      query.setParameter("idList", idList);
+    }
+    else
+    {
+      query.setParameter("applyIdList", false);
+      query.setParameter("idList", null);
+    }
 
     String countryName = filter.getCountryName();
     if (countryName != null)

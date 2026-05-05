@@ -1931,7 +1931,16 @@ public class KernelManager implements KernelManagerPort
   private void setPersonFilterParameters(Query query, PersonFilter filter)
   {
     List<String> personIdList = filter.getPersonId();
-    query.setParameter("idList", getStringFromList(personIdList));
+    if (personIdList != null)
+    {
+      query.setParameter("applyIdList", true);      
+      query.setParameter("idList", personIdList);
+    }
+    else
+    {
+      query.setParameter("applyIdList", false);
+      query.setParameter("idList", null);
+    }    
     query.setParameter("name", addPercent(filter.getName()));
     query.setParameter("firstSurname", addPercent(filter.getFirstSurname()));
     query.setParameter("secondSurname", addPercent(filter.getSecondSurname()));
@@ -1947,7 +1956,16 @@ public class KernelManager implements KernelManagerPort
   private void setAddressFilterParameters(Query query, AddressFilter filter)
   {
     List<String> addressIdList = filter.getAddressIdList();
-    query.setParameter("idList", getStringFromList(addressIdList));
+    if (addressIdList != null)
+    {
+      query.setParameter("applyIdList", true);      
+      query.setParameter("idList", addressIdList);
+    }
+    else
+    {
+      query.setParameter("applyIdList", false);
+      query.setParameter("idList", null);
+    }  
 
     String countryName = filter.getCountryName();
     if (countryName != null) countryName =  likePattern(countryName);
