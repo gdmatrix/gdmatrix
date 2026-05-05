@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.cases;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +49,7 @@ import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.classif.ClassCache;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -73,7 +75,8 @@ import org.santfeliu.webapp.helpers.RowsExportHelper;
 @Named
 @RequestScoped
 public class CaseFinderBean extends FinderBean implements DataTableRowExportable
-{  
+{ 
+  private static final int INTERVENTIONS_MAX_RESULTS = 3000; 
   //Dictionary properties
   private static final String PERSON_SEARCH_ENABLED = "_personSearchEnabled";
   
@@ -134,6 +137,56 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   {
     this.filter = filter;
   }
+  
+  public String getInterventionFromDate()
+  {
+    Calendar c = Calendar.getInstance();
+    c.add(Calendar.DATE, -7);
+    if (!StringUtils.isBlank(interventionFilter.getFromDate()))
+      return interventionFilter.getFromDate();
+    else
+      return TextUtils.formatDate(c.getTime(), "yyyyMMdd");
+  }
+  
+  public void setInterventionFromDate(String fromDate)
+  {
+    boolean update = false;
+    if (StringUtils.isBlank(fromDate))
+    {
+      Calendar c = Calendar.getInstance();
+      c.add(Calendar.DATE, -7);      
+      fromDate = TextUtils.formatDate(c.getTime(), "yyyyMMdd");
+      update = true;
+    }
+    interventionFilter.setFromDate(fromDate);
+    if (update)
+      PrimeFaces.current().ajax()
+        .update("mainform:find_selector:interventions_filter");
+  }
+  
+  public String getInterventionToDate()
+  {
+    Calendar c = Calendar.getInstance();
+    if (!StringUtils.isBlank(interventionFilter.getToDate()))
+      return interventionFilter.getToDate();
+    else
+      return TextUtils.formatDate(c.getTime(), "yyyyMMdd");
+  }
+  
+  public void setInterventionToDate(String toDate)
+  {
+    boolean update = false;    
+    if (StringUtils.isBlank(toDate))
+    {
+      Calendar c = Calendar.getInstance();     
+      toDate = TextUtils.formatDate(c.getTime(), "yyyyMMdd");
+      update = true;
+    }    
+    interventionFilter.setToDate(toDate);
+    if (update)
+      PrimeFaces.current().ajax()
+        .update("mainform:find_selector:interventions_filter");    
+  }  
 
   @Override
   public String getObjectId(int position)
@@ -404,10 +457,11 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   {
     super.clear();
     filter = new CaseFilter();
+    interventionFilter = new InterventionFilter();
     smartFilter = null;
     rows = null;
     setFinding(false);
-    formSelector = null;
+    formSelector = null;   
   }
 
   public boolean isRenderPersonId()
@@ -524,13 +578,19 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
               }
               if (isFilterByIntervention())
               {
-                boolean hasInterventions = 
+                int interventionsCount = 
                   setInterventionsFilter(interventionFilter, filter);
-                if (!hasInterventions)
+                if (interventionsCount == 0)
                 {
                   ResourceBundle bundle = ResourceBundle.getBundle(
                     "org.santfeliu.web.resources.MessageBundle", getLocale());        
                   warn(bundle.getString("NO_INTERVENTIONS_MATCH"));
+                }
+                else if (interventionsCount == INTERVENTIONS_MAX_RESULTS)
+                {
+                  ResourceBundle bundle = ResourceBundle.getBundle(
+                    "org.santfeliu.web.resources.MessageBundle", getLocale());                   
+                  warn(bundle.getString("MAX_INTERVENTIONS_REACHED"));
                 }
               } 
               String searchExpression = filter.getSearchExpression();
@@ -706,7 +766,7 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       !interventionFilter.getIntTypeId().isBlank());
   }
   
-  private boolean setInterventionsFilter(InterventionFilter intFilter, 
+  private int setInterventionsFilter(InterventionFilter intFilter, 
     CaseFilter caseFilter) throws Exception
   {
     String intTypeId = intFilter.getIntTypeId() != null ? 
@@ -723,15 +783,15 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
       intFilter.setFromDate(null);
       intFilter.setToDate(null);      
     }
-    intFilter.setMaxResults(1000);
+    intFilter.setMaxResults(INTERVENTIONS_MAX_RESULTS);
     List<InterventionView> intViews = 
       CasesModuleBean.getPort(false).findInterventionViews(intFilter);
-    caseFilter.getCaseId().clear();       
+    caseFilter.getCaseId().clear();
     for (InterventionView intView : intViews)
     {
       caseFilter.getCaseId().add(intView.getCaseId());        
     }
-    return !intViews.isEmpty();
+    return intViews.size();
   }
      
 }

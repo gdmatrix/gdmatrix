@@ -223,7 +223,7 @@
                     <p:outputPanel styleClass="field col-12" 
                                    rendered="#{caseFinderBean.interventionFilter.intTypeId != null}">
                       <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputStartDate}" />
-                      <p:datePicker value="#{caseFinderBean.interventionFilter.fromDate}"
+                      <p:datePicker value="#{caseFinderBean.interventionFromDate}"
                                     autocomplete="off"
                                     placeholder="dd/MM/yyyy"
                                     locale="#{caseFinderBean.language}"
@@ -235,7 +235,7 @@
                     <p:outputPanel styleClass="field col-12" 
                                    rendered="#{caseFinderBean.interventionFilter.intTypeId != null}">
                       <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputEndDate}" />
-                      <p:datePicker value="#{caseFinderBean.interventionFilter.toDate}"
+                      <p:datePicker value="#{caseFinderBean.interventionToDate}"
                                     autocomplete="off"
                                     placeholder="dd/MM/yyyy"
                                     locale="#{caseFinderBean.language}"
