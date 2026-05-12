@@ -144,6 +144,31 @@ class FeatureFinder
   {
     return null;
   }
+  
+  getPointPaint()
+  {
+    return {
+      "circle-color": "#000000",
+      "circle-radius": 4
+    };    
+  }
+  
+  getLineStringPaint()
+  {
+    return {
+      "line-color": "#0000ff",
+      "line-width": 4,
+      "line-opacity": 0.5
+    };    
+  }
+  
+  getPolygonPaint()
+  {
+    return {
+      "fill-color": "#0000ff",
+      "fill-opacity": 0.2
+    };    
+  }
 }
 
 export { FeatureFinder };

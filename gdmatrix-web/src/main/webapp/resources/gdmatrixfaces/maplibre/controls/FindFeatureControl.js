@@ -221,6 +221,7 @@ class FindFeatureControl
     if (this.activeFinder)
     {
       const map = this.map;
+      const activeFinder = this.activeFinder;
       this.resultDiv.innerHTML = `<span class="pi pi-spin pi-spinner pt-4 pb-4" />`;
       try
       {
@@ -230,8 +231,12 @@ class FindFeatureControl
           this.clearForms();
         }
         this.removePopup();
-        
-        this.data.features = await this.activeFinder.find();
+
+        this.applyPaintProperties("finder_points", activeFinder.getPointPaint());
+        this.applyPaintProperties("finder_linestrings", activeFinder.getLineStringPaint());
+        this.applyPaintProperties("finder_polygons", activeFinder.getPolygonPaint());
+
+        this.data.features = await activeFinder.find();
         map.getSource("finder_results").setData(this.data);
 
         if (this.data.features.length > 0)
@@ -243,7 +248,7 @@ class FindFeatureControl
           const panelManager = map.panelManager;
           this.map.fitBounds(bounds,
           {
-            maxZoom: this.activeFinder.maxZoom,
+            maxZoom: activeFinder.maxZoom,
             padding: panelManager.getPadding(paddingOffset)
           });
         }
@@ -444,7 +449,6 @@ class FindFeatureControl
     }
   }  
   
-
   selectFeature(feature, finder, source)
   {
     const map = this.map;
@@ -599,6 +603,16 @@ class FindFeatureControl
     map.on("load", () => this.onLoad());
 
     return div;
+  }
+  
+  applyPaintProperties(layerId, paintProps)
+  {
+    const map = this.map;
+    
+    for (const [key, value] of Object.entries(paintProps)) 
+    {
+      map.setPaintProperty(layerId, key, value);
+    }
   }
 }
 
