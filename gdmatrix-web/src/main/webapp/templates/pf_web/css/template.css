@@ -12,7 +12,8 @@
   --menu-width-small: 300px;
   --menu-padding-left: 24px;
   --menu-align: end;
-  --submenu-offset: -2px;
+  --submenu-offset-x: 8px;
+  --submenu-offset-y: -6px;
   --menuitem-width: 220px;
   --menuitem-padding: 8px 8px;
   --menuitem-margin: 1px;
@@ -30,6 +31,7 @@
   --menuitem-selected-background: var(--surface-300);
   --menuitem-hover-color: var(--primary-color-text);
   --menuitem-hover-background: var(--primary-color);
+  --menuitem-hover-transition: 0.15s;
   --menuitem-entry-hover-color: #ffffff;
   --menuitem-caret-hover-color: #ffffff;
   --menu-transition-duration1: 0.3s;
@@ -43,6 +45,7 @@
   --toolbar-icon-size: 1rem;
   --toolbar-color: #303030;
   --toolbar-color-text: #f0f0f0;
+  --border-radius: 6px;
 }
 
 :root
@@ -334,13 +337,13 @@
 {
   display: none;
   position: absolute;
-  top: 0;
+  top: var(--submenu-offset-y);
 }
 
 .main_menu ul ul ul
 {
   margin-left: 2px;
-  left: calc(var(--menuitem-width) + var(--submenu-offset));  
+  left: calc(var(--menuitem-width) + var(--submenu-offset-x));  
 }
 
 .main_menu > ul > li > ul
@@ -376,7 +379,8 @@
 {
   display: flex;
   flex-direction: row;
-  transition: background-color .2s;
+  _transition: background-color .2s;
+  border-radius: var(--border-radius);
 }
 
 .main_menu .menuitem a
@@ -400,7 +404,16 @@
 .main_menu .menuitem a:focus
 {
   outline: none;
-  border: 1px solid var(--surface-900); 
+  border: 1px solid var(--surface-600);
+  border-radius: var(--border-radius);
+}
+
+.main_menu ul
+{
+  border-radius: var(--border-radius);
+  padding: var(--menuitem-padding);
+  box-sizing: content-box;
+  background-color: var(--menuitem-d2-background);
 }
 
 .main_menu ul li > .menuitem .caret i
@@ -428,13 +441,14 @@
 .main_menu ul li .menuitem
 {
   background-color: transparent;
-  transition: none;
+  transition: background-color var(--menuitem-hover-transition);
 }
 
 .main_menu ul li .menuitem a
 {
   _color: var(--surface-300);
   font-size: var(--menuitem-font-size);
+  transition: none;
 }
 
 .main_menu ul ul li > .menuitem
@@ -446,6 +460,7 @@
 {
   color: var(--menuitem-d2-color);
   font-size: var(--menuitem-font-size);
+  transition: none;
 }
 
 .main_menu ul ul ul li .menuitem
@@ -457,6 +472,7 @@
 {
   color: var(--menuitem-d3-color);
   font-size: var(--menuitem-font-size);
+  transition: none;
 }
 
 .main_menu li.drop > .menuitem
@@ -467,17 +483,20 @@
 .main_menu li.drop > .menuitem a
 {
   color: var(--menuitem-selected-color);  
+  transition: none;
 }
 
 .main_menu .menuitem:hover
 {
   background-color: var(--menuitem-hover-background) !important;
+  transition: background-color var(--menuitem-hover-transition);
 }
 
 .main_menu .menuitem:hover a,
 .main_menu .menuitem:hover a i
 {
   color: var(--menuitem-hover-color) !important;
+  transition: none;
 }
 
 .main_menu .menuitem a.entry i
@@ -510,11 +529,12 @@
 .main_menu ul ul li.scroll .menuitem,
 .main_menu ul ul ul li.scroll .menuitem
 {
-  display: block;
+  display: inline-flex;
+  width: 100%;
   text-decoration: none;
-  text-align: center;
   color: var(--text-color);
   padding: 6px;
+  align-items: center;
 }
 
 .main_menu ul li.scroll .menuitem:hover,
@@ -902,6 +922,12 @@
   {
     margin: 0;
   }
+  
+  .main_menu ul li,
+  .main_menu ul ul li
+  {
+    width: 100%;
+  }
 
   .main_menu ul li > ul
   {
@@ -927,7 +953,7 @@
   .main_menu ul li.drop > ul,
   .main_menu ul ul li.drop > ul
   {
-    width: 100%;
+    _width: 100%;
   }
 
   .main_menu > ul > li > .menuitem
@@ -979,7 +1005,7 @@
   {
     visibility: visible;
     opacity: 1;
-    transition: opacity var(--menu-transition-duration2) linear;
+    _transition: opacity var(--menu-transition-duration2) linear;
   }
 
   .side_menu_button
