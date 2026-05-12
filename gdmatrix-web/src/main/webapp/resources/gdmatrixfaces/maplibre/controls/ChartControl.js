@@ -423,16 +423,23 @@ class ChartControl
   }
 
   async showData(layerSetup, feature, id)
-  {
-    if (!layerSetup.tableDataUrl) return;
+  {    
+    if (!layerSetup.tableDataUrl && !layerSetup.tableData) return;
     
-    this.panel.show();  
+    this.panel.show();
     this.panel.bodyDiv.innerHTML = `<i class="pi pi-spin pi-spinner"></i> ${bundle.get("ChartControl.loading")}...`;
-    
-    const url = layerSetup.tableDataUrl(this.getParameterValues(), feature, id);
-    
-    const response = await fetch(url);
-    const json = await response.json();
+ 
+    let json = [];
+    if (layerSetup.tableDataUrl)
+    {
+      const url = layerSetup.tableDataUrl(this.getParameterValues(), feature, id);    
+      const response = await fetch(url);
+      json = await response.json();
+    }
+    else
+    {
+      json = await layerSetup.tableData(this.getParameterValues(), feature, id);
+    }
     
     let html;
     if (json.length === 0)
