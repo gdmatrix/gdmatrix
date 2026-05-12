@@ -1,0 +1,16 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+ 
+  <!-- Matches the visual appearance of the SelectOneRadio component -->
+  <div class="flex align-items-center">
+    <div class="ui-radiobutton ui-widget">
+      <div class="ui-radiobutton-box ui-widget ui-corner-all ui-state-default">
+        <span class="ui-radiobutton-icon ui-icon ui-c"></span>
+      </div>
+    </div>
+    <label class="ui-outputlabel ui-outputlabel-label ml-2 cursor-pointer mb-0">
+      #{not empty currentBlock.label ? currentBlock.label.labelTextDef : ''}
+    </label>
+  </div>
+  
+</ui:composition>

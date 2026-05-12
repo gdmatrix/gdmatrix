@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <c:if test="#{not empty currentBlock.label and currentBlock.labelFirst}">
+    <p:outputLabel value="#{currentBlock.label.labelTextDef}" styleClass="ui-outputlabel-label #{currentBlock.label.styleClass}"/>
+  </c:if>
+
+<!--  <p:inputText class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all pointer-events-none" 
+               placeholder="#{currentBlock.element.placeholder}" readonly="true"/>
+  <c:if test="#{not empty currentBlock.element.helpText}">
+    <span class="text-xs">#{currentBlock.element.helpText}</span>
+  </c:if>-->
+
+  <c:choose>
+    <c:when test="#{currentBlock.element.format eq 'date'}">
+      <p:inputText class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all pointer-events-none" 
+                   placeholder="dd/mm/yyyy" readonly="true"/>
+      <c:if test="#{not empty currentBlock.element.helpText}">
+        <span class="text-xs">#{currentBlock.element.helpText}</span>
+      </c:if>
+    </c:when>
+
+    <c:when test="#{currentBlock.element.format eq 'datetime'}">
+      <p:inputText class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all pointer-events-none" 
+                   placeholder="dd/mm/yyyy HH:mm" readonly="true"/>
+      <c:if test="#{not empty currentBlock.element.helpText}">
+        <span class="text-xs">#{currentBlock.element.helpText}</span>
+      </c:if>
+    </c:when>
+
+    <c:otherwise>
+      <p:inputText class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all pointer-events-none" 
+                   placeholder="#{currentBlock.element.format}" readonly="true"/>
+      <c:if test="#{not empty currentBlock.element.helpText}">
+        <span class="text-xs">#{currentBlock.element.helpText}</span>
+      </c:if>
+    </c:otherwise>
+  </c:choose>
+
+</ui:composition>

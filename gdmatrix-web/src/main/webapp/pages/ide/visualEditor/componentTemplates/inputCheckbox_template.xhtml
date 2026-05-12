@@ -1,0 +1,22 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <c:if test="#{not empty currentBlock.label}">
+    <label class="ui-outputlabel ui-widget">
+      <span class="ui-outputlabel-label">#{currentBlock.label.labelTextDef}</span>
+    </label>
+  </c:if>
+
+  <div class="ui-toggleswitch ui-widget block" style="pointer-events: none;">
+    <div class="ui-helper-hidden-accessible">
+      <input type="checkbox" disabled="disabled"/>
+    </div>
+    <div class="ui-toggleswitch-slider">
+      <span class="ui-toggleswitch-handler"></span>
+    </div>
+  </div>
+
+</ui:composition>
+

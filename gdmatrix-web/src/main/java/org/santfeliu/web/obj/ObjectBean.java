@@ -338,6 +338,7 @@ public abstract class ObjectBean extends PageBean
         }
       }
       growl("STORE_OBJECT");
+      System.out.println("STORE_OBJECT");
       
       return null;
     }

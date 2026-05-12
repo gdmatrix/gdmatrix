@@ -1,0 +1,16 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <c:if test="#{not empty currentBlock.label and currentBlock.labelFirst}">
+    <p:outputLabel value="#{currentBlock.label.labelTextDef}" styleClass="ui-outputlabel-label #{currentBlock.label.styleClass}"/>
+  </c:if>
+  
+  <p:graphicImage url="#{empty currentBlock.element.src ? 'https://via.placeholder.com/800x400?text=Selecciona+la+imagen+y+edita+el+SRC' : currentBlock.element.src}" 
+                  alt="#{currentBlock.element.alt}" 
+                  styleClass="w-full shadow-1 border-round"
+                  style="object-fit: contain; min-height: 100px; background-color: #f8f9fa; #{currentBlock.element.style}"/>
+
+</ui:composition>

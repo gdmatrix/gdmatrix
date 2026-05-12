@@ -43,6 +43,7 @@ import org.santfeliu.util.enc.HtmlEncoder;
  */
 public class HtmlPrinter
 {
+
   private HtmlForm form;
   private int indentSize = 2;
 
@@ -65,7 +66,7 @@ public class HtmlPrinter
   {
     print(new PrintWriter(writer));
   }
-  
+
   public void print(PrintWriter writer)
   {
     try
@@ -76,85 +77,128 @@ public class HtmlPrinter
         printDocType(writer);
         writer.println("<html>");
         printHeadSection(writer);
-        printView(rootView, writer, indentSize, false);
+        printView(rootView, writer, indentSize, false, true);
         writer.println("</html>");
       }
-    }
-    finally
+    } finally
     {
       writer.close();
     }
   }
-private void printView(HtmlView view, PrintWriter writer, int indent, boolean isRawContext)
+
+  private boolean isInline(HtmlView view)
   {
+    if (view == null)
+    {
+      return false;
+    }
+    String tag = view.getNativeViewType();
+    return View.STYLE.equals(view.getViewType()) // Here the majority is controlled
+      || "em".equalsIgnoreCase(tag)
+      || "strong".equalsIgnoreCase(tag);
+  }
+
+  private void printView(HtmlView view, PrintWriter writer, int indent, boolean isRawContext, boolean isFirstChild)
+  {
+    boolean isInline = isInline(view);
+
     // Case 1: Pure text node
     if (View.TEXT.equals(view.getViewType()))
     {
-      String text = (String)view.getProperty("text");
-      if (text != null) 
+      String text = (String) view.getProperty("text");
+      if (text != null)
       {
-          if (isRawContext) {
-              writer.print(text); // Write without encoder
-          } else {
-              writer.println(HtmlEncoder.encode(text));
-          }
+        if (isRawContext)
+        {
+          writer.print(text);
+        }
+        else
+        {
+          writer.print(HtmlEncoder.encode(text)); // Use print instead of println
+        }
       }
     }
-    // Case 2: Item with 1 child (text). E.g. label
-    else if (view.getChildren().size() == 1 &&
-      View.TEXT.equals(view.getChildren().get(0).getViewType()))
+    // Case 2: Item with 1 child (text). E.g. label, b, p
+    else if (view.getChildren().size() == 1
+      && View.TEXT.equals(view.getChildren().get(0).getViewType()))
     {
       View label = view.getChildren().get(0);
-      printIndent(writer, indent);
+
+      if (!isInline || isFirstChild)
+      {
+        printIndent(writer, indent);
+      }
+
       writer.print("<" + view.getNativeViewType());
       printAttributes(view, writer);
       writer.print(">");
-      
-      String text = (String)label.getProperty("text");
-      
+
+      String text = (String) label.getProperty("text");
       boolean currentIsRaw = isRawTag(view.getNativeViewType());
-      
-      if (text != null) 
+
+      if (text != null)
       {
-          if (currentIsRaw || isRawContext) {
-              if (currentIsRaw && !text.startsWith("\n") && !text.startsWith("\r")) {
-                  writer.println(); 
-              }
-              writer.print(text); 
-          } else {
-              writer.print(HtmlEncoder.encode(text));
-          }
+        if (currentIsRaw || isRawContext)
+        {
+          writer.print(text);
+        }
+        else
+        {
+          writer.print(HtmlEncoder.encode(text));
+        }
       }
-      
-      // If it is raw, we ensure the closing of the key in the following line
-      if (currentIsRaw && text != null && !text.endsWith("\n") && !text.endsWith("\r")) {
-          writer.println();
-          printIndent(writer, indent); 
-      }
-      
-      // Not RAW, the closure goes on the same line
-      if (!currentIsRaw) {
-          writer.println("</" + view.getNativeViewType() + ">");
-      } else {
-          writer.println("</" + view.getNativeViewType() + ">");
-      }
-    }
-    // Case 3: Empty element. Eg input
-    else if (view.getChildren().isEmpty())
-    {
-      if ("textarea".equalsIgnoreCase(view.getNativeViewType()))
+
+      if (!isInline)
       {
-        printIndent(writer, indent);
-        writer.print("<textarea");
-        printAttributes(view, writer);
-        writer.println("></textarea>");
+        writer.println("</" + view.getNativeViewType() + ">");
       }
       else
       {
-        printIndent(writer, indent);
+        writer.print("</" + view.getNativeViewType() + ">");
+      }
+    }
+    
+    // Case 3: Empty element. Eg input, hr, img
+    else if (view.getChildren().isEmpty())
+    {
+      String tag = view.getNativeViewType().toLowerCase();
+
+      // Tags that can’t self-close
+      if ("textarea".equals(tag) || "select".equals(tag) || "div".equals(tag) || "span".equals(tag) || "label".equals(tag) || "p".equals(tag) || "i".equals(tag) || "b".equals(tag))
+      {
+        if (!isInline || isFirstChild)
+        {
+          printIndent(writer, indent);
+        }
+
         writer.print("<" + view.getNativeViewType());
         printAttributes(view, writer);
-        writer.println("/>");
+        writer.print("></" + view.getNativeViewType() + ">");
+
+        if (!isInline)
+        {
+          writer.println();
+        }
+      }
+      else
+      {
+        // Inputs, hr, br, img... (Can self-close)
+        if (!isInline || isFirstChild)
+        {
+          printIndent(writer, indent);
+        }
+
+        writer.print("<" + view.getNativeViewType());
+        printAttributes(view, writer);
+
+        if (isInline)
+        {
+          writer.print("/>");
+        }
+        else
+        {
+          writer.println("/>");
+        }
       }
     }
     // Case 4: Container with several children
@@ -164,24 +208,46 @@ private void printView(HtmlView view, PrintWriter writer, int indent, boolean is
       writer.print("<" + view.getNativeViewType());
       printAttributes(view, writer);
       writer.println(">");
-      
+
       boolean currentIsRaw = isRawTag(view.getNativeViewType());
-      
-      for (View child : view.getChildren())
+      boolean lastWasInline = false;
+
+      for (int i = 0; i < view.getChildren().size(); i++)
       {
-        printView((HtmlView)child, writer, indent + indentSize, isRawContext || currentIsRaw);
+        HtmlView child = (HtmlView) view.getChildren().get(i);
+        boolean childIsInline = isInline(child) || View.TEXT.equals(child.getViewType());
+
+        if (lastWasInline && !childIsInline)
+        {
+          writer.println();
+        }
+
+        printView(child, writer, indent + indentSize, isRawContext || currentIsRaw, i == 0);
+        lastWasInline = childIsInline;
       }
-      
+
+      // If the previous child was text, we lower the next line to close
+      if (lastWasInline)
+      {
+        writer.println();
+      }
+
       printIndent(writer, indent);
       writer.println("</" + view.getNativeViewType() + ">");
     }
   }
 
-  private boolean isRawTag(String tagName) {
-      if (tagName == null) return false;
-      return "script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName);
+  private boolean isRawTag(String tagName)
+  {
+    if (tagName == null)
+    {
+      return false;
+    }
+    return "script".equalsIgnoreCase(tagName) || 
+      "style".equalsIgnoreCase(tagName) || 
+      "div".equalsIgnoreCase(tagName);
   }
-  
+
   private void printIndent(PrintWriter writer, int indent)
   {
     for (int i = 0; i < indent; i++)
@@ -203,21 +269,21 @@ private void printView(HtmlView view, PrintWriter writer, int indent, boolean is
 
   private void printDocType(PrintWriter writer)
   {
-    writer.println("<!DOCTYPE HTML PUBLIC " +
-      "\"-//W3C//DTD HTML 4.01 Transitional//EN\" " +
-      "\"http://www.w3.org/TR/html4/loose.dtd\">");
+    writer.println("<!DOCTYPE HTML PUBLIC "
+      + "\"-//W3C//DTD HTML 4.01 Transitional//EN\" "
+      + "\"http://www.w3.org/TR/html4/loose.dtd\">");
   }
 
   private void printHeadSection(PrintWriter writer)
   {
     writer.println("  <head>");
-    writer.println("    <meta http-equiv=\"Content-Type\" " +
-      "content=\"text/html; charset=" + form.getEncoding() + "\"/>");
+    writer.println("    <meta http-equiv=\"Content-Type\" "
+      + "content=\"text/html; charset=" + form.getEncoding() + "\"/>");
     if (form.getTitle() != null)
     {
       writer.println("    <title>" + form.getTitle() + "</title>");
     }
-    writer.println("  </head>"); 
+    writer.println("  </head>");
   }
 
   public static void main(String args[])

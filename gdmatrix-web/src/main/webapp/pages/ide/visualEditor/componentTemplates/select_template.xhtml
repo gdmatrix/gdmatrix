@@ -1,0 +1,26 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+  <c:if test="#{not empty currentBlock.label and currentBlock.labelFirst}">
+    <p:outputLabel value="#{currentBlock.label.labelTextDef}" styleClass="ui-outputlabel-label #{currentBlock.label.styleClass}"/>
+  </c:if>
+
+  <c:choose>
+    <c:when test="#{currentBlock.element.multiple}">
+      <p:selectCheckboxMenu styleClass="pointer-events-none w-full"
+                            label="(Seleccioni una o més opcions)"/>
+    </c:when>
+    <c:otherwise>
+      <p:selectOneMenu class="pointer-events-none w-full">
+        <f:selectItem itemLabel="(Seleccioni una opció)" itemValue=""/>
+      </p:selectOneMenu>
+    </c:otherwise>
+  </c:choose>
+  <c:if test="#{not empty currentBlock.element.helpText}">
+    <span class="text-xs">#{currentBlock.element.helpText}</span>
+  </c:if>
+</ui:composition>

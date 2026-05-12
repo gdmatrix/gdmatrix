@@ -8,7 +8,7 @@ window.cmInstances = window.cmInstances || {};
 function codemirrorInit(clientId, readonly, language, showLineNumbers, completion, changeListener, activeExtensions)
 {
   
-  console.log("Extensiones que llegan desde Java:", activeExtensions);
+  // console.log("Active Extensions:", activeExtensions);
   
   const editorId = clientId + "_editor";
   const inputId = clientId + "_input";

@@ -89,15 +89,16 @@ public class IdeBean extends WebBean implements Serializable
   public static final String NAME_PARAMETER = "name";
 
   private static final String CHECK_ENABLED_PROPERTY = "checkEnabled";
-  
+
   // Register configurable extensions here
-  public static final String[] IDE_EXTENSIONS = {
+  public static final String[] IDE_EXTENSIONS =
+  {
     "indentWithTab",
     "lineWrapping"
   };
 
   private Map<String, Boolean> ideConfig = null;
-  
+
   private String typeName = "javascript";
   private String name;
   private IdeDocument document = new IdeDocument();
@@ -114,7 +115,7 @@ public class IdeBean extends WebBean implements Serializable
   HtmlFormBean htmlFormBean;
   private boolean pendingSaveWithErrors = false;
   private boolean confirmSaveNewVersion = false;
-  
+
   public String getTypeName()
   {
     return typeName;
@@ -211,21 +212,21 @@ public class IdeBean extends WebBean implements Serializable
     }
     return typeSelectItems;
   }
-  
+
   public Map<String, Boolean> getIdeConfig()
   {
-    if(ideConfig == null)
+    if (ideConfig == null)
     {
-      System.out.println("Loading ideConfig from the database");
+      // System.out.println("Loading ideConfig from the database");
       ideConfig = new HashMap<>();
-      for(String extName : IDE_EXTENSIONS)
+      for (String extName : IDE_EXTENSIONS)
       {
         try
         {
           String pref = getUserPreferences().getPreference(extName);
           // Apply .trim() in case the database returns values like "true " or " true"
           boolean isTrue = pref != null && "true".equalsIgnoreCase(pref.trim());
-          ideConfig.put(extName, isTrue);    
+          ideConfig.put(extName, isTrue);
         }
         catch (Exception ex)
         {
@@ -237,20 +238,20 @@ public class IdeBean extends WebBean implements Serializable
 
     return ideConfig;
   }
-  
+
   public String getActiveExtensionsJson()
   {
     List<String> active = new ArrayList<>();
     for (String extName : IDE_EXTENSIONS)
     {
-      if(getIdeConfig().getOrDefault(extName, false))
+      if (getIdeConfig().getOrDefault(extName, false))
       {
         active.add("'" + extName + "'");
       }
     }
     return "[" + String.join(",", active) + "]";
   }
-  
+
   public List<String> completeDocumentName(String docName)
   {
     List<String> results = new ArrayList<>();
@@ -570,7 +571,7 @@ public class IdeBean extends WebBean implements Serializable
           {
             error(msgComponent, error);
           }
-          
+
           pendingSaveWithErrors = true;
           confirmSaveNewVersion = newVersion;
 
@@ -705,41 +706,46 @@ public class IdeBean extends WebBean implements Serializable
       .disableHtmlEscaping().create();
     return gson.toJson(map);
   }
-  
+
   private UserPreferences getUserPreferences()
   {
     return UserSessionBean.getCurrentInstance().getUserPreferences();
   }
-  
+
   public void saveIdeConfig()
   {
     try
     {
       ArrayList<Property> propertiesToSave = new ArrayList<>();
-      
+
       for (String extName : IDE_EXTENSIONS)
       {
         Object rawVal = ideConfig.get(extName);
         String valueToStore = String.valueOf(rawVal);
-        
+
         // Remove old preference
-        try {
-            getUserPreferences().removePreference(extName);
-        } catch (Exception ignored) {}
-        
+        try
+        {
+          getUserPreferences().removePreference(extName);
+        }
+        catch (Exception ex)
+        {
+          ex.printStackTrace();
+        }
+
         Property p = new Property();
         p.setName(extName);
         p.getValue().add(valueToStore);
-  
+
         propertiesToSave.add(p);
       }
-      
+
       // Save all preferences 
-      if (!propertiesToSave.isEmpty()) 
+      if (!propertiesToSave.isEmpty())
       {
-          getUserPreferences().storePreferences(propertiesToSave);
-          System.out.println("IDE configuration saved successfully."); 
-          info("IDE configuration updated successfully.");
+        getUserPreferences().storePreferences(propertiesToSave);
+        System.out.println("IDE configuration saved successfully.");
+        info("IDE configuration updated successfully.");
       }
     }
     catch (Exception ex)
@@ -747,5 +753,5 @@ public class IdeBean extends WebBean implements Serializable
       error("Failed to update user configuration:", ex.getMessage());
     }
   }
-  
+
 }

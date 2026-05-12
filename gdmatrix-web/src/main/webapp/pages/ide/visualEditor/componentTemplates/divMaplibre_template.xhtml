@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <c:if test="#{not empty currentBlock.label and currentBlock.labelFirst}">
+    <p:outputLabel value="#{currentBlock.label.labelTextDef}" styleClass="ui-outputlabel-label #{currentBlock.label.styleClass}"/>
+  </c:if>
+
+  <div class="w-full h-10rem surface-200 border-round flex flex-column align-items-center justify-content-center border-1 border-400 pointer-events-none">
+    <i class="pi pi-map text-4xl text-500 mb-2"></i>
+    <span class="text-500 font-bold">Map (MapLibre)</span>
+  </div>
+</ui:composition>
+

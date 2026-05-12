@@ -1,0 +1,340 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <div class="flex flex-column lg:flex-row h-full w-full overflow-auto lg:overflow-hidden">
+
+    <div class="flex-1 flex flex-column h-auto lg:h-full border-none border-bottom-1 lg:border-bottom-none border-300" style="min-height: 60vh;">
+      <p:remoteCommand name="rcSelectElement" action="#{visualEditorBean.selectElementFromCanvas}" 
+                       update="properties_panel visual_html_canvas html_visualEditor_toolbar" process="@this" />
+      <p:remoteCommand name="rcResizeElement" action="#{visualEditorBean.resizeElement}" 
+                       update="properties_panel visual_html_canvas @([id$=code_editor])" process="@this" />
+      
+      <p:outputPanel id="html_visualEditor_toolbar" 
+                     class="flex align-items-center gap-2 p-2 surface-100 border-bottom-1 border-300 flex-grow-0"
+                     style="min-height: 3rem;">
+
+        <p:selectOneMenu id="elementSelect" value="#{visualEditorBean.selectedElementDef}">
+          <p:ajax update="html_visualEditor_toolbar" process="@this"/>
+          <f:selectItem itemValue="#{null}" noSelectionOption="true"/>
+          <f:selectItems value="#{visualEditorBean.filteredElementDefs}" var="el"
+                         itemLabel="#{el.label}" itemValue="#{el}"/>
+        </p:selectOneMenu>
+
+        <p:menuButton id="addMenuBtn"
+                      icon="pi pi-plus-circle"
+                      styleClass="mini ml-2 mr-2"
+                      disabled="#{empty visualEditorBean.selectedElementDef}">
+
+          <p:menuitem value="Add (bottom)"
+                      icon="pi pi-arrow-down"
+                      action="#{visualEditorBean.addBottomSelectedElement}"
+                      update="html_visualEditor_toolbar properties_panel visual_html_canvas @([id$=code_editor])"
+                      process="@this elementSelect"
+                      disabled="#{visualEditorBean.selectedView.nativeViewType eq 'fieldset' and 
+                                  (visualEditorBean.selectedElementDef.defaultType eq 'radio' or 
+                                  visualEditorBean.selectedElementDef.defaultType eq 'checkbox')}" />
+          <p:menuitem value="Add (before)"
+                      icon="pi pi-arrow-up"
+                      action="#{visualEditorBean.addBeforeSelectedElement}"
+                      update="html_visualEditor_toolbar properties_panel visual_html_canvas @([id$=code_editor])"
+                      process="@this elementSelect"
+                      disabled="#{visualEditorBean.selectedView.nativeViewType eq 'fieldset' and 
+                                  (visualEditorBean.selectedElementDef.defaultType eq 'radio' or 
+                                  visualEditorBean.selectedElementDef.defaultType eq 'checkbox')}" />
+
+          <p:menuitem value="Add (inside)"
+                      icon="pi pi-sign-in"
+                      action="#{visualEditorBean.addInsideSelectedElement}"
+                      update="html_visualEditor_toolbar properties_panel visual_html_canvas @([id$=code_editor])"
+                      process="@this elementSelect"
+                      disabled="#{empty visualEditorBean.selectedView
+                                  or visualEditorBean.selectedView.nativeViewType ne 'fieldset'
+                                  or (visualEditorBean.selectedElementDef.defaultType ne 'radio'
+                                  and visualEditorBean.selectedElementDef.defaultType ne 'checkbox')}"/>
+        </p:menuButton>
+
+
+        <i class="pi pi-ellipsis-v text-300 mx-2"></i>
+
+        <p:commandButton value="Update canvas" icon="pi pi-refresh" process="@this @([id$=code_editor])" 
+                         update="visual_html_canvas properties_panel" action="#{htmlFormBean.update}" 
+                         oncomplete="syncAfterUpdate('#{not empty visualEditorBean.selectedView ? visualEditorBean.selectedView.id : ''}')"
+                         styleClass="ui-button-secondary ui-button-flat mini"/>
+        <!-- ScreenType selector -->
+        <div class="ml-auto flex align-items-center pr-2 gap-1">
+          <p:commandButton icon="fa-solid fa-desktop" title="Monitor (xl: 1200px+)" 
+                           action="#{visualEditorBean.setScreenType('MONITOR')}"
+                           update="html_visualEditor_toolbar canvas_wrapper" process="@this"
+                           styleClass="ui-button-primary #{visualEditorBean.screenType eq 'MONITOR' ? '' : 'ui-button-flat'} mini" />
+
+          <p:commandButton icon="fa-solid fa-laptop" title="Laptop (lg: 992px)" 
+                           action="#{visualEditorBean.setScreenType('LAPTOP')}"
+                           update="html_visualEditor_toolbar canvas_wrapper" process="@this"
+                           styleClass="ui-button-primary m-1 #{visualEditorBean.screenType eq 'LAPTOP' ? '' : 'ui-button-flat'} mini" />
+
+          <p:commandButton icon="fa-solid fa-tablet-screen-button" title="Tablet (md: 768px)" 
+                           action="#{visualEditorBean.setScreenType('TABLET')}"
+                           update="html_visualEditor_toolbar canvas_wrapper" process="@this"
+                           styleClass="ui-button-primary screen-btn #{visualEditorBean.screenType eq 'TABLET' ? '' : 'ui-button-flat'} mini" />
+
+          <p:commandButton icon="fa-solid fa-mobile-screen-button" title="Mobile (base: 375px)" 
+                           action="#{visualEditorBean.setScreenType('MOBILE')}"
+                           update="html_visualEditor_toolbar canvas_wrapper" process="@this"
+                           styleClass="ui-button-primary screen-btn #{visualEditorBean.screenType eq 'MOBILE' ? '' : 'ui-button-flat'} mini" />
+        </div>
+
+      </p:outputPanel>
+
+      <div class="flex-grow-1 overflow-auto flex justify-content-center align-items-start pt-0 ">
+
+        <h:panelGroup id="canvas_wrapper" layout="block" 
+                      styleClass="border-x-1 border-bottom-1 border-300 transition-all transition-duration-300 mx-auto" 
+                      style="width: #{visualEditorBean.screenType eq 'MOBILE' ? '375px' : (visualEditorBean.screenType eq 'TABLET' ? '768px' : 
+                                      (visualEditorBean.screenType eq 'LAPTOP' ? '992px' : '100%'))}; min-height: 100%;">
+
+          <div class="relative h-full p-4">
+            <div class="absolute top-0 bottom-0 left-0 w-full pointer-events-none z-0 px-4 py-4">
+              <div class="grid grid-nogutter w-full h-full m-0">
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-left: 1px dashed #adb5bd; border-right: 1px dashed #adb5bd; opacity: 0.4">1</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">2</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">3</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">4</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">5</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">6</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">7</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">8</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">9</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">10</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">11</div>
+                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">12</div>
+              </div>
+            </div>
+
+            <p:outputPanel id="visual_html_canvas" 
+                           styleClass="relative z-1 ui-fluid formgrid grid align-content-start m-0 pt-5"
+                           layout="block">
+
+              <c:forEach items="#{visualEditorBean.canvasBlocks}" var="block">
+                <h:panelGroup layout="block"
+                              pt:onclick="event.stopPropagation(); rcSelectElement([{name:'elementId', value:'#{block.element.id}'}]);"
+                              styleClass="field relative #{visualEditorBean.getSimulatedGridClass(block.element)} mb-3 p-2 border-round cursor-pointer transition-colors transition-duration-200 border-2 border-solid 
+                              #{not empty visualEditorBean.selectedView and visualEditorBean.selectedView.id eq block.element.id ? 'surface-hover border-primary' : 'border-transparent hover:surface-100'}">
+
+                  <c:if test="#{not empty visualEditorBean.selectedView and visualEditorBean.selectedView.id eq block.element.id and block.element.resizable}">
+                    <div class="resize-handle absolute top-50 right-0 w-1rem h-2rem bg-primary border-round shadow-2 cursor-w-resize z-5 flex align-items-center justify-content-center" 
+                         style="transform: translateY(-50%) translateX(50%); cursor: ew-resize; touch-action: none;"
+                         onpointerdown="initSnapResize(event, this.closest('.field'), '#{visualEditorBean.screenType}')">
+                      <i class="pi pi-pause text-xs text-white" style="transform: rotate(90deg)"></i>
+                    </div>
+                  </c:if>
+
+                  <c:if test="#{not empty block.element}">
+                    <ui:include src="/pages/ide/visualEditor/componentTemplates/#{visualEditorBean.getDynamicTemplateFileFor(block.element)}">
+                      <ui:param name="elementObj" value="#{block.element}"/>
+                      <ui:param name="currentBlock" value="#{block}"/>
+                    </ui:include>
+                  </c:if>
+
+                </h:panelGroup>
+              </c:forEach>
+            </p:outputPanel>
+          </div>
+        </h:panelGroup>
+      </div>
+    </div>
+
+    <p:outputPanel id="properties_panel" layout="block" 
+                   styleClass="w-full lg:w-3 flex-column h-auto lg:h-full surface-ground flex-shrink-0 border-left-1 border-300 #{empty visualEditorBean.selectedView and not visualEditorBean.showFormProperties ? 'hidden' : 'flex'}">
+      <!-- Element Properties -->
+      <h:panelGroup rendered="#{not empty visualEditorBean.selectedView}" class="flex flex-column h-auto lg:h-full">
+        <div class="flex align-items-center p-2 surface-100 border-bottom-1 border-300 font-bold text-700 flex-shrink-0"
+             style="min-height: 3rem;">
+          <i class="pi pi-sliders-h mr-2"></i> 
+          <h:outputText value="Element Edit" />
+        </div>
+
+        <div class="p-3 flex-grow-1 overflow-auto">
+          <div class="grid formgrid">
+
+            <div class="col-12 flex align-items-center justify-content-between pb-2 border-bottom-1 border-300 mb-3">
+              <span class="font-bold text-primary text-lg">#{visualEditorBean.selectedView.nativeViewType}</span>
+              <span class="text-500 text-sm font-mono">#{visualEditorBean.selectedView.id}</span>
+            </div>
+            <!-- Movement buttons -->
+            <div class="col-12 mb-3">
+              <div class="flex gap-2 mb-3">
+                <p:commandButton icon="pi pi-arrow-up" title="Move up" action="#{visualEditorBean.moveUpSelected()}" process="@this" update="visual_html_canvas properties_panel @([id$=code_editor])" styleClass="ui-button-secondary flex-1" />
+                <p:commandButton icon="pi pi-arrow-down" title="Move down" action="#{visualEditorBean.moveDownSelected()}" process="@this" update="visual_html_canvas properties_panel @([id$=code_editor])" styleClass="ui-button-secondary flex-1" />
+                <p:commandButton icon="pi pi-trash" title="Delete" action="#{visualEditorBean.removeSelected()}" process="@this" update="visual_html_canvas properties_panel html_visualEditor_toolbar @([id$=code_editor])" styleClass="ui-button-danger flex-1" />
+              </div>
+              <!-- Width Spinners -->
+              <p:outputPanel rendered="#{visualEditorBean.gridSizeEditable}" styleClass="grid formgrid">
+                <div class="col-6 mb-2">
+                  <p:outputLabel value="Mobile (sm)" for="spinColDef" class="text-sm block mb-1"/>
+                  <p:spinner id="spinColDef" value="#{visualEditorBean.colDefault}" min="1" max="12" decimalPlaces="0">
+                    <p:ajax process="@this" listener="#{visualEditorBean.updateGridClasses}" update="visual_html_canvas @([id$=code_editor])" />
+                  </p:spinner>
+                </div>
+                <div class="col-6 mb-2">
+                  <p:outputLabel value="Tablet (md)" for="spinColMd" class="text-sm block mb-1"/>
+                  <p:spinner id="spinColMd" value="#{visualEditorBean.colMd}" min="0" max="12">
+                    <p:ajax process="@this" listener="#{visualEditorBean.updateGridClasses}" update="visual_html_canvas @([id$=code_editor])" />
+                  </p:spinner>
+                </div>
+                <div class="col-6 mb-2">
+                  <p:outputLabel value="Laptop (lg)" for="spinColLg" class="text-sm block mb-1"/>
+                  <p:spinner id="spinColLg" value="#{visualEditorBean.colLg}" min="0" max="12">
+                    <p:ajax process="@this" listener="#{visualEditorBean.updateGridClasses}" update="visual_html_canvas @([id$=code_editor])" />
+                  </p:spinner>
+                </div>
+                <div class="col-6 mb-2">
+                  <p:outputLabel value="Monitor (xl)" for="spinColXl" class="text-sm block mb-1"/>
+                  <p:spinner id="spinColXl" value="#{visualEditorBean.colXl}" min="0" max="12">
+                    <p:ajax process="@this" listener="#{visualEditorBean.updateGridClasses}" update="visual_html_canvas @([id$=code_editor])" />
+                  </p:spinner>
+                </div>
+              </p:outputPanel>
+            </div>
+
+            <div class="col-12">
+              <p:outputPanel id="element_properties">
+                <div class="flex flex-column gap-2 mb-3">
+                  <p:outputLabel value="Element ID" class="font-bold text-sm text-primary"/>
+                  <p:inputText value="#{visualEditorBean.selectedView.id}" styleClass="w-full" />
+                </div>
+                <!-- Specific element properties -->
+                <ui:include src="/pages/ide/visualEditor/componentProperties/#{visualEditorBean.dynamicPropFile}" />
+
+                <p:defaultCommand target="save_properties_btn" scope="element_properties"/>
+              </p:outputPanel>
+            </div>
+
+            <div class="col-12 mt-4 flex gap-2 border-top-1 border-300 pt-3">
+              <p:commandButton value="Close" icon="pi pi-times" 
+                               action="#{visualEditorBean.cancelElement()}" process="@this" 
+                               update="properties_panel html_visualEditor_toolbar visual_html_canvas" styleClass="ui-button-secondary ui-button-outlined flex-1" />
+              <p:commandButton value="Save" icon="pi pi-save" id="save_properties_btn" 
+                               action="#{visualEditorBean.saveElement()}" process="@this properties_panel" 
+                               update="visual_html_canvas html_visualEditor_toolbar properties_panel @([id$=code_editor])" styleClass="ui-button-success flex-1" />
+            </div>
+
+          </div>
+        </div>
+      </h:panelGroup>
+
+    </p:outputPanel>
+  </div>
+
+  <gdm:saveBean value="visualEditorBean"/>
+  <gdm:saveBean value="htmlFormBean"/>
+
+  <script type="text/javascript">
+    //<![CDATA[
+    // Force sync with the selected element before updating the canvas.
+    function syncAfterUpdate(elementId) {
+      if (elementId && elementId.trim() !== '') {
+
+        setTimeout(function () {
+          if (typeof rcSelectElement === 'function') {
+            rcSelectElement([{name: 'elementId', value: elementId}]);
+          } else {
+            console.warn("The rcSelectElement function has not been loaded on time.");
+          }
+        }, 150);
+      }
+    }
+
+    // Emulates different types of screens
+    function initSnapResize(e, elementNode, screenType) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const startX = e.clientX;
+      const startWidth = elementNode.offsetWidth;
+      const gridContainer = elementNode.parentElement;
+      const colWidth = gridContainer.offsetWidth / 12;
+
+      let currentCols = Math.round(startWidth / colWidth);
+      let newCols = currentCols;
+
+      let activePrefix = 'xl:col-';
+      switch (screenType) {
+        case "MOBILE":
+          activePrefix = 'col-';
+          break;
+        case "TABLET":
+          activePrefix = 'md:col-';
+          break;
+        case "LAPTOP":
+          activePrefix = 'lg:col-';
+          break;
+        case "MONITOR":
+          activePrefix = 'xl:col-';
+          break;
+      }
+
+      function doDrag(e) {
+        const diff = e.clientX - startX;
+        newCols = Math.round((startWidth + diff) / colWidth);
+
+        if (newCols < 1)
+          newCols = 1;
+        if (newCols > 12)
+          newCols = 12;
+
+        if (currentCols !== newCols) {
+          const classNames = Array.from(elementNode.classList);
+
+          classNames.forEach(function (cls) {
+            // Delete ONLY the prefix we are modifying
+            if (activePrefix === 'col-') {
+              if (/^col-\d+$/.test(cls))
+                elementNode.classList.remove(cls);
+            } else {
+              if (cls.startsWith(activePrefix))
+                elementNode.classList.remove(cls);
+            }
+          });
+
+          // Add the new gridClass
+          elementNode.classList.add(activePrefix + newCols);
+          currentCols = newCols;
+        }
+      }
+
+      function stopDrag() {
+        document.removeEventListener('pointermove', doDrag);
+        document.removeEventListener('pointerup', stopDrag);
+        document.removeEventListener('pointercancel', stopDrag);
+        rcResizeElement([{name: 'columns', value: newCols}]);
+      }
+
+      document.addEventListener('pointermove', doDrag);
+      document.addEventListener('pointerup', stopDrag);
+      document.removeEventListener('pointercancel', stopDrag);
+    }
+    //]]>
+  </script>
+  <style>
+    .fa-desktop{
+      transform: translateX(-1px);
+    }
+
+    .fa-laptop {
+      transform: translateX(-2px)
+    }
+
+    .screen-btn .ui-button-icon-left {
+      width: 1rem;
+      text-align: center;
+    }
+  </style>
+</ui:composition>

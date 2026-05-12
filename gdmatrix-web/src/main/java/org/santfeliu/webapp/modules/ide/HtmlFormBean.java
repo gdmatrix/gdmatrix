@@ -32,12 +32,16 @@ package org.santfeliu.webapp.modules.ide;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ComponentSystemEvent;
@@ -62,17 +66,57 @@ import static org.santfeliu.webapp.util.FormImporter.SUBMIT_BUTTON_OPTION;
 @RequestScoped
 public class HtmlFormBean extends WebBean
 {
+
   private static final String CONTAINER_ID = "panel";
 
   @Inject
   IdeBean ideBean;
 
-  Map<String, Object> data = new HashMap();
+  // Map<String, Object> data = new HashMap();
+  Map<String, Object> dataUni = new HashMap();
+  Map<String, Object> dataMulti = new MultiValueMap();
+
   boolean update = true;
   private boolean previewVisible = true;
   private boolean sourceModified;
   private String userPrompt;
   private boolean evaluateForm = false;
+  private HtmlForm form = new HtmlForm();
+
+  public IdeBean getIdeBean()
+  {
+    return ideBean;
+  }
+
+  public HtmlForm getForm()
+  {
+    return form;
+  }
+
+  public void setForm(HtmlForm form)
+  {
+    this.form = form;
+  }
+
+  public boolean isUpdate()
+  {
+    return update;
+  }
+
+  public void setUpdate(boolean update)
+  {
+    this.update = update;
+  }
+
+  public boolean isSourceModified()
+  {
+    return sourceModified;
+  }
+
+  public void setSourceModified(boolean sourceModified)
+  {
+    this.sourceModified = sourceModified;
+  }
 
   public String getUserPrompt()
   {
@@ -84,14 +128,32 @@ public class HtmlFormBean extends WebBean
     this.userPrompt = userPrompt;
   }
 
-  public boolean isSourceModified()
-  {
-    return sourceModified;
-  }
-
   public Map<String, Object> getData()
   {
-    return data;
+    Map<String, Object> combined = new HashMap<>();
+    combined.putAll(dataUni);
+    combined.putAll(dataMulti);
+    return combined;
+  }
+
+  public Map<String, Object> getDataUni()
+  {
+    return dataUni;
+  }
+
+  public void setDataUni(Map<String, Object> m)
+  {
+    this.dataUni = m;
+  }
+
+  public Map<String, Object> getDataMulti()
+  {
+    return dataMulti;
+  }
+
+  public void setDataMulti(Map<String, Object> m)
+  {
+    this.dataMulti = m;
   }
 
   public String getDataAsJSON()
@@ -99,29 +161,53 @@ public class HtmlFormBean extends WebBean
     Gson gson = new GsonBuilder()
       .disableHtmlEscaping()
       .setPrettyPrinting().create();
-    return gson.toJson(data);
+    return gson.toJson(getData());
   }
 
+//  public void loadDynamicComponents(ComponentSystemEvent event)
+//  {
+//    UIComponent panel = ComponentUtils.postAddToView(event);
+//    if (panel != null && update)
+//    {
+//      panel.getChildren().clear();
+//
+//      if (previewVisible)
+//      {
+//        updateComponents(panel);
+//      }
+//      else
+//      {
+//        System.out.println("PREVIEW HIDDEN");
+//      }
+//      update = false;
+//    }
+//  }
+  
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
     UIComponent panel = ComponentUtils.postAddToView(event);
-
     if (panel != null && update)
     {
-      panel.getChildren().clear();
-
-      if (previewVisible)
+      try
       {
-        updateComponents(panel);
+        panel.getChildren().clear();
+        if(previewVisible)
+        {
+          updateComponents(panel);
+        }
       }
-      else
+      catch (Exception ex)
       {
-        System.out.println("PREVIEW HIDDEN");
+        ex.printStackTrace();
+        error("Error loading dynamic components: " + ex.getMessage());
       }
-      update = false;
+      finally
+      {
+        update = false;
+      }
     }
   }
-
+  
   private void updateComponents(UIComponent panel)
   {
     try
@@ -132,14 +218,14 @@ public class HtmlFormBean extends WebBean
       String source = ideBean.getDocument().getSource();
       if (!StringUtils.isBlank(source))
       {
-        HtmlForm form = new HtmlForm();
+        //HtmlForm form = new HtmlForm();
         HtmlParser parser = new HtmlParser(form);
         parser.parse(new StringReader(source));
 
         Form finalForm = form;
         if (evaluateForm)
         {
-          finalForm = form.evaluate(data);
+          finalForm = form.evaluate(getData());
         }
 
         Map<String, Object> options = new HashMap<>();
@@ -147,7 +233,9 @@ public class HtmlFormBean extends WebBean
         options.put(SUBMIT_BUTTON_OPTION, "mainform:editor:submit_form"); //Only required fields are validated if the submit button is used.
 
         ComponentUtils.includeFormComponents(panel, finalForm,
-          "htmlFormBean.data", "htmlFormBean.data", options);
+          "htmlFormBean.dataUni",
+          "htmlFormBean.dataMulti", // multivalor
+          options);
       }
       else
       {
@@ -166,7 +254,9 @@ public class HtmlFormBean extends WebBean
     this.evaluateForm = false;
     this.previewVisible = true;
     this.update = true;
-    this.data.clear();
+    //this.data.clear();
+    this.dataUni.clear();
+    this.dataMulti.clear();
   }
 
   public void evaluate()
@@ -174,14 +264,18 @@ public class HtmlFormBean extends WebBean
     this.evaluateForm = true;
     this.previewVisible = true;
     this.update = true;
-    this.data.clear();
+    //this.data.clear();
+    this.dataUni.clear();
+    this.dataMulti.clear();
   }
 
   public void clear()
   {
     previewVisible = false;
     this.update = true;
-    this.data.clear();
+    //this.data.clear();
+    this.dataUni.clear();
+    this.dataMulti.clear();
   }
 
   private HtmlForm loadForm() throws Exception
@@ -191,7 +285,8 @@ public class HtmlFormBean extends WebBean
     {
       return null;
     }
-    HtmlForm form = new HtmlForm();
+    //HtmlForm form = new HtmlForm();
+    form = new HtmlForm();
     HtmlParser parser = new HtmlParser(form);
     parser.parse(new StringReader(source));
     return form;
@@ -299,6 +394,55 @@ public class HtmlFormBean extends WebBean
     catch (Exception ex)
     {
       error(ex);
+    }
+  }
+
+  public void loadVisualEditor()
+  {
+    try
+    {
+      HtmlForm loadedForm = loadForm();
+      this.form = (loadedForm != null) ? loadedForm : new HtmlForm();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  // Reproduce the core idea of PropertyHelper's PropertyMap in a simpler form
+  public static class MultiValueMap extends AbstractMap<String, Object> 
+    implements Serializable
+  {
+    private final Map<String, Object> inner = new HashMap<>();
+
+    @Override
+    public Object put(String key, Object value)
+    {
+      if (value instanceof String[])
+      {
+        String[] arr = (String[]) value;
+        return inner.put(key, new ArrayList<>(java.util.Arrays.asList(arr)));
+      }
+      else if (value instanceof String)
+      {
+        List<String> list = new ArrayList<>();
+        list.add((String) value);
+        return inner.put(key, list);
+      }
+      return inner.put(key, value);
+    }
+
+    @Override
+    public Object get(Object key)
+    {
+      return inner.get(key);
+    }
+
+    @Override
+    public Set<Entry<String, Object>> entrySet()
+    {
+      return inner.entrySet();
     }
   }
 }

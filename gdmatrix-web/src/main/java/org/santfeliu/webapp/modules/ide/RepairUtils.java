@@ -44,6 +44,10 @@ import org.santfeliu.form.View;
 import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlView;
 
+/**
+ *
+ * @author granadogj
+ */
 public class RepairUtils
 {
 
@@ -147,7 +151,7 @@ public class RepairUtils
 
     /**
    * Walk the tree once and apply all cleaning rules: 1. If
-   * ir's a <script>, fixes the text content (removes u00A0). 2. If
+   * it's a <script>, fixes the text content (removes u00A0). 2. If
    * container (<fieldset> or has scripts), deletes junk children. 3. Continue
    * down recursively.
    */
@@ -328,6 +332,8 @@ public class RepairUtils
 
       HtmlView fieldset = new HtmlView();
       fieldset.setNativeViewType("fieldset");
+      String tempId = "f" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+      fieldset.setProperty("id", "fieldset_"+tempId);// Asing temporary ID
       fieldset.setProperty("class", "generated-fieldset");
 
       HtmlView legendLabel = findGroupLabel(radios, views);

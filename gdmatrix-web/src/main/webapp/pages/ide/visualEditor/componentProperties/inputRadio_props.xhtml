@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Label Text" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.associatedLabelText}" styleClass="w-full"/>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Value" class="font-bold txt-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.value}"/>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Renderer" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.renderer}" styleClass="w-full"/>
+  </div>
+
+  <div class="flex gap-2 mt-3">
+    <p:selectBooleanCheckbox value="#{visualEditorBean.elementProps.required}" />
+    <p:outputLabel value="Required" class="font-bold text-sm"/>
+  </div>
+
+  <div class="flex gap-2 mt-2">
+    <p:selectBooleanCheckbox value="#{visualEditorBean.elementProps.disabled}" />
+    <p:outputLabel value="Disabled" class="font-bold text-sm"/>
+  </div>
+</ui:composition>

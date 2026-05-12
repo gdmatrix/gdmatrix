@@ -1,0 +1,11 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Map name" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementInnerText}" styleClass="w-full no-enter" />
+  </div>
+</ui:composition>

@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Label Text" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.associatedLabelText}" styleClass="w-full"/>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Format" class="font-bold text-sm text-primary"/>
+    <p:selectOneMenu widgetVar="formatModeDropdown"
+                     value="#{visualEditorBean.elementProps.format}">
+      <f:selectItem itemLabel="Text" itemValue=""/>
+      <f:selectItem itemLabel="Date" itemValue="date"/>
+      <f:selectItem itemLabel="DateTime" itemValue="datetime"/>
+      <f:selectItem itemLabel="Number" itemValue="number"/>
+      <f:selectItem itemLabel="Boolean" itemValue="boolean"/>
+    </p:selectOneMenu>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="HelpText" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.helpText}" styleClass="w-full"/>
+  </div>
+  
+<!--  <c:if test="#{visualEditorBean.elementProps.format ne 'date'
+                and visualEditorBean.elementProps.format ne 'datetime'}">-->
+    <div class="flex flex-column gap-2 mt-2">
+      <p:outputLabel value="InfoText" class="font-bold text-sm text-primary"/>
+      <p:inputText value="#{visualEditorBean.elementProps.infoText}" styleClass="w-full"/>
+    </div>
+  <!--</c:if>-->
+
+  <div class="flex gap-2 mt-3">
+    <p:selectBooleanCheckbox value="#{visualEditorBean.elementProps.required}" />
+    <p:outputLabel value="Required" class="font-bold text-sm"/>
+  </div>
+
+  <div class="flex gap-2 mt-2">
+    <p:selectBooleanCheckbox value="#{visualEditorBean.elementProps.disabled}" />
+    <p:outputLabel value="Disabled" class="font-bold text-sm"/>
+  </div>
+</ui:composition>

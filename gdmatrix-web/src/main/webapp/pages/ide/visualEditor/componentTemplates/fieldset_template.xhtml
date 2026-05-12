@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <p:fieldset legend="#{currentBlock.element.legendText}" 
+              styleClass="w-full">
+    
+    <h:panelGroup rendered="#{not empty currentBlock.childrenBlocks}" 
+                  layout="block"
+                  styleClass="flex flex-wrap gap-2">
+      
+      <c:forEach items="#{currentBlock.childrenBlocks}" var="childBlock">
+        <c:if test="#{not empty childBlock.element}">
+          <h:panelGroup layout="block"
+                        pt:onclick="event.stopPropagation(); rcSelectElement([{name:'elementId', value:'#{childBlock.element.id}'}])"
+                        styleClass="field relative p-2 border-round cursor-pointer transition-colors transition-duration-200 border-2 border-solid 
+                                    #{not empty visualEditorBean.selectedView and visualEditorBean.selectedView.id eq childBlock.element.id ? 'surface-hover border-primary' : 'border-transparent hover:surface-100'}">
+            
+            <ui:include src="/pages/ide/visualEditor/componentTemplates/#{visualEditorBean.getDynamicTemplateFileFor(childBlock.element)}">
+              <ui:param name="elementObj" value="#{childBlock.element}"/>
+              <ui:param name="currentBlock" value="#{childBlock}"/>
+            </ui:include>
+          </h:panelGroup>
+        </c:if>
+      </c:forEach>
+      
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{empty currentBlock.childrenBlocks}">
+      <h:outputText value="Select this fieldset and add items from the menu" 
+                    styleClass="text-400 text-sm font-italic block p-3 text-center border-1 border-dashed border-300 border-round"/>
+    </h:panelGroup>
+
+  </p:fieldset>
+</ui:composition>
+
+
+

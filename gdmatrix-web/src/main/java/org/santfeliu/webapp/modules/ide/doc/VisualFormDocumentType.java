@@ -50,7 +50,8 @@ public class VisualFormDocumentType extends IdeDocumentType
       "fa fa-brands fa-html5",
       // Specific tabs
       new Tab("html_editor.xhtml", "HTML Editor", "fa fa-brands fa-html5", true),
-      new Tab("html_preview.xhtml", "HTML preview", "pi pi-eye")
+      new Tab("html_preview.xhtml", "HTML preview", "pi pi-eye"),
+      new Tab("visualEditor/html_visualEditor.xhtml", "Html Visual Editor", "fa-brands fa-wpforms")
     );
     registerCommonTabs();
   }

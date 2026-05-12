@@ -8,7 +8,7 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
-
+  
   <h:outputStylesheet library="css" name="ide.css" />
 
   <h:outputScript library="js" name="ide.js" />
@@ -23,6 +23,7 @@
   </p:messages>
 
   <script>
+    //<![CDATA[
     var cmChanged = false;
     function cmOnChange(editorView, doc)
     {
@@ -32,6 +33,7 @@
         cmChanged = true;
       }
     }
+    //]]>
   </script>
 
   <div class="ide_body p-0 flex flex-column h-full">
@@ -73,7 +75,7 @@
                        title="#{objectBundle.store}" 
                        action="#{ideBean.save}" 
                        process="@form:cnt" 
-                       update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm @form:cnt:ideMessages"
+                       update="@form:cnt:docs_panel @form:cnt:ide_history :mainform:editor:doc_versions_table ide_confirm @form:cnt:ideMessages"
                        onstart="return checkSave();"
                        oncomplete="cmChanged = false;"
                        icon="pi pi-save" 
@@ -83,7 +85,7 @@
                       action="#{ideBean.saveNewVersion}" 
                       process="@form:cnt" 
                       oncomplete="cmChanged = false;"
-                      update="@form:cnt:docs_panel @form:cnt:ide_history @(.ideTabLabel) :mainform:editor:doc_versions_table ide_confirm @form:cnt:ideMessages"
+                      update="@form:cnt:docs_panel @form:cnt:ide_history :mainform:editor:doc_versions_table ide_confirm @form:cnt:ideMessages"
                       icon="pi pi-save" styleClass="mini" />
         </p:splitButton>          
         <div class="ui-inputgroup ml-1 mr-2">
@@ -98,7 +100,7 @@
                            alt="#{objectBundle.load}" 
                            title="#{objectBundle.load}"/>
         </div> 
-            
+
         <!-- Ide config -->
         <div class="flex align-items-center ml-1">
           <p:commandButton id="ideConfigBtn" icon="pi pi-cog" 
@@ -107,21 +109,21 @@
                            process="@this"
                            update="configDialogContent"
                            oncomplete="PF('configDialog').show();">
-             <p:resetInput target="configDialogContent" />
+            <p:resetInput target="configDialogContent" />
           </p:commandButton>
 
           <p:dialog id="configDialog" widgetVar="configDialog" header="#{webBundle.ideConfig}" 
                     modal="true" responsive="true" resizable="false" width="350" 
                     closable="false" closeOnEscape="false" appendTo="@(form)">
-            
+
             <p:outputPanel id="configDialogContent">
               <div class="flex flex-column gap-3 p-2">
-                
+
                 <div class="flex align-items-center justify-content-between">
                   <p:outputLabel for="tabSwitch" value="Indent with Tab:" />
                   <p:toggleSwitch id="tabSwitch" value="#{ideBean.ideConfig['indentWithTab']}" />
                 </div>
-                
+
                 <div class="flex align-items-center justify-content-between">
                   <p:outputLabel for="lineWrappingSwitch" value="Line Wrapping:"/>
                   <p:toggleSwitch id="lineWrappingSwitch" value="#{ideBean.ideConfig['lineWrapping']}"/>               
@@ -134,7 +136,7 @@
                                    update="configDialogContent" 
                                    oncomplete="PF('configDialog').hide();" 
                                    styleClass="ui-button-sm mini">
-                      <p:resetInput target="configDialogContent" />
+                    <p:resetInput target="configDialogContent" />
                   </p:commandButton>                              
                   <p:commandButton value="#{objectBundle.store}" icon="pi pi-save" 
                                    actionListener="#{ideBean.saveIdeConfig}" 
@@ -147,9 +149,7 @@
             </p:outputPanel>
           </p:dialog>
         </div>
-        
-        
-        <!-- Add here the rest of configurable extensions  -->
+
         <p:button title="Documents"
                   widgetVar="docsPanelButton"
                   onclick="return showPanel()"
@@ -166,7 +166,9 @@
             <f:facet name="title">
               <span class="#{tab.icon} mr-2"/>
               <p:outputLabel styleClass="ideTabLabel" 
-                             value="#{tab.label}#{tab.editor and ideBean.document.modified ? ' *' : ''}" />
+                             value="#{tab.label}#{tab.editor and ideBean.document.modified ? ' *' : ''}">
+                <p:autoUpdate/>
+              </p:outputLabel>
             </f:facet>
             <ui:include src="#{tab.viewId}" />
           </p:tab>
@@ -214,7 +216,7 @@
   <p:remoteCommand id="markChangedCommand"
                    name="onDocumentChange" actionListener="#{ideBean.markChanged}" 
                    process="@this"
-                   update="@(.ideTabLabel) @form:cnt:docs_panel @form:cnt:ideMessages ide_confirm" />
+                   update="@form:cnt:docs_panel @form:cnt:ideMessages ide_confirm" />
 
   <p:growl for="growl" life="1500" >
     <p:autoUpdate />

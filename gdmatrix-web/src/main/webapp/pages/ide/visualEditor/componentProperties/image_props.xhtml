@@ -1,0 +1,26 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Image SRC" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.src}" styleClass="w-full"
+                 placeholder="ej. /documents/141183/foto.jpg"/>
+  </div>
+  <div class="flex flex-column gap-2 mt-2" >
+    <p:outputLabel value="Image ALT" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.alt}" styleClass="w-full"/>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Style" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.style}" styleClass="w-full"/>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Renderer" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.renderer}" styleClass="w-full"/>
+  </div>
+</ui:composition>

@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+
+  <c:if test="#{not empty currentBlock.label and currentBlock.labelFirst}">
+    <p:outputLabel value="#{currentBlock.label.labelTextDef}"
+                   styleClass="ui-outputlabel-label #{currentBlock.label.styleClass}"/>
+  </c:if>
+
+  <c:choose>
+    <c:when test="#{currentBlock.element.renderer eq 'quill' or currentBlock.element.renderer eq 'htmlEditor'}">
+      <div class="w-full p-2 border-1 surface-border border-round pointer-events-none #{currentBlock.element.styleClass}"
+           style="min-height: 80px; background-color: var(--surface-card);">
+        <span class="text-xs text-500 block mb-1">
+          <i class="pi pi-pencil mr-1"></i>Quill (rich text)
+        </span>
+        <!--<span class="text-500 font-italic">#{currentBlock.element.placeholder}</span>-->
+      </div>
+    </c:when>
+
+    <c:when test="#{currentBlock.element.renderer eq 'tinymce'}">
+      <div class="w-full p-2 border-1 surface-border border-round pointer-events-none #{currentBlock.element.styleClass}"
+           style="min-height: 80px; background-color: var(--surface-card);">
+        <span class="text-xs text-500 block mb-1">
+          <i class="pi pi-pencil mr-1"></i>TinyMCE
+        </span>
+        <!--<span class="text-500 font-italic">#{currentBlock.element.placeholder}</span>-->
+      </div>
+    </c:when>
+
+    <c:when test="#{not empty currentBlock.element.renderer and fn:startsWith(currentBlock.element.renderer, 'codemirror')}">
+      <div class="w-full p-2 border-1 surface-border border-round pointer-events-none font-mono text-sm #{currentBlock.element.styleClass}"
+           style="min-height: 80px; background-color: var(--surface-ground);">
+        <span class="text-xs text-500 block mb-1">
+          <i class="pi pi-code mr-1"></i>CodeMirror (#{currentBlock.element.renderer})
+        </span>
+        <!--<span class="text-500 font-italic">#{currentBlock.element.placeholder}</span>-->
+      </div>
+    </c:when>
+
+    <c:otherwise>
+      <p:inputTextarea class="w-full pointer-events-none #{currentBlock.element.styleClass}"
+                       placeholder="#{currentBlock.element.placeholder}"
+                       readonly="true"/>
+    </c:otherwise>
+  </c:choose>
+
+  <c:if test="#{not empty currentBlock.element.helpText}">
+    <span class="text-xs">#{currentBlock.element.helpText}</span>
+  </c:if>
+</ui:composition>

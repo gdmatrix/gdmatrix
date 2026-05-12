@@ -56,7 +56,7 @@ public class AiRepairUtils
   // Inicialization of the AI Model
   private static final OllamaChatModel model = OllamaChatModel.builder()
     .baseUrl("http://10.30.30.1:11434/")
-    .modelName("qwen3:32b")
+    .modelName("qwen3.5:27b")
     .timeout(Duration.ofMinutes(2)) // 2 min max timeout
     .temperature(0.1)
     .build();

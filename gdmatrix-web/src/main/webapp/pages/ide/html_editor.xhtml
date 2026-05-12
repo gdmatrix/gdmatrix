@@ -36,7 +36,7 @@
                              onclick="toggleAiPanel(); return false;" class="mini mt-1" />
     </p:outputPanel>
 
-    <!-- AI PAnel -->
+    <!-- AI Panel -->
     <p:panel id="ai_panel" header="AI Tools" styleClass="p-shadow-2 ai-panel-container" 
              widgetVar="aiPanelWidget" style="display:none;">
              
@@ -90,7 +90,7 @@
     var aiPanel = PF('aiPanelWidget').jq;
     aiPanel.toggle();
     
-    // Para hacer focus en el userPrompt, sinceramente no se si funcionará
+    // Para hacer focus en el userPrompt
     if (aiPanel.is(':visible')) {
       toggleAiButtons();
       PF('userPromptWidget').jq.focus();

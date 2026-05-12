@@ -20,17 +20,20 @@
     <p:outputPanel id="html_editor_toolbar" class="flex-grow-0 pt-2 pb-2 text-left">
       <p:commandButton value="Update" 
                        icon="pi pi-refresh"
-                       process="@this html_data code_editor" 
+                       process="@form" 
                        update="html_form html_data"
                        action="#{htmlFormBean.update}" />
+      <!-- process="@this html_data code_editor"-->
       <p:commandButton value="Evaluate"
                        icon="pi pi-check"
-                       process="@this html_data code_editor" 
+                       process="@form"
                        update="html_form html_data"
-                       action="#{htmlFormBean.evaluate}" class="ml-1" />
+                       action="#{htmlFormBean.evaluate}" class="ml-1"/>
+       <!--processs="@this html_data code_editor"--> 
+      
       <p:commandButton value="Clear" 
                        icon="pi pi-eraser"
-                       process="@this"
+                       process="@form"
                        action="#{htmlFormBean.clear}"
                        update="html_form html_data" class="ml-1" /> 
       <p:commandButton id="submit_form"
@@ -38,14 +41,15 @@
                        icon="pi pi-play"
                        process="@form"
                        update="html_form html_data" class="ml-1" />
+      <!--processs="@this html_data code_editor"--> 
     </p:outputPanel>
-    
+
     <p:outputPanel id="html_data" class="flex-grow-1 overflow-auto code" 
-         style="border:1px solid var(--surface-200);border-radius:var(--border-radius);background-color: var(--surface-ground)">
+                   style="border:1px solid var(--surface-200);border-radius:var(--border-radius);background-color: var(--surface-ground)">
       <pre>#{htmlFormBean.dataAsJSON}</pre>
     </p:outputPanel>
   </div>  
-  
+
   <gdm:saveBean value="htmlFormBean"/>
-  
+  <gdm:saveBean value="visualEditorBean"/>
 </ui:composition>

@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Style Class" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.baseStyleClass}" styleClass="w-full"/>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Style" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.style}" styleClass="w-full"/>
+  </div>
+
+  <div class="flex flex-column gap-2 mt-2">
+    <p:outputLabel value="Renderer" class="font-bold text-sm text-primary"/>
+    <p:inputText value="#{visualEditorBean.elementProps.renderer}" styleClass="w-full"/>
+  </div>
+
+  <!-- Header con botón expandir -->
+  <div class="flex align-items-center justify-content-between mt-2">
+    <p:outputLabel value="Text - HTML" class="font-bold text-sm text-primary"/>
+    <p:commandButton icon="pi pi-window-maximize"
+                     type="button"
+                     title="Expand editor"
+                     onclick="toggleEditorModal(); return false;"
+                     styleClass="ui-button ui-widget ui-corner-all ui-button-icon-only ui-button-flat p-0"/>
+  </div>
+
+  <!-- Html Editor -->
+  <div id="div_props_htmlEditor"
+       class="relative"
+       onkeydown="if (event.keyCode === 13 || event.key === 'Enter')
+             event.stopPropagation();">
+
+    <!-- Close button - Only visible in modal mode -->
+    <button type="button"
+            id="btn_close_editor_modal"
+            onclick="toggleEditorModal(); return false;"
+            title="Close"
+            style="display:none; position:absolute; top:0.5rem; right:0.5rem; z-index:10000;
+            width:2rem; height:2rem; padding:0;
+            background:none; border:none; cursor:pointer;
+            color: var(--text-color); opacity:0.6;"
+            onmouseover="this.style.opacity = '1'"
+            onmouseout="this.style.opacity = '0.6'">
+      <span class="pi pi-times" style="font-size:1.2rem;"></span>
+    </button>
+    <!-- CodeMirror instance -->
+    <gdm:codemirror id="cm_htmlEditor"
+                    lineNumbers="true"
+                    language="html"
+                    value="#{visualEditorBean.elementInnerText}"
+                    activeExtensions="#{ideBean.activeExtensionsJson}"
+                    style="height: calc(1.5em * 6);"
+                    class="w-full"/>
+  </div>
+
+  <script type="text/javascript">
+    //<![CDATA[
+    function toggleEditorModal() {
+      var wrapper = document.getElementById('div_props_htmlEditor');
+      var closeBtn = document.getElementById('btn_close_editor_modal');
+      var backdrop = document.getElementById('editor_modal_backdrop');
+
+      if (!wrapper)
+        return;
+
+      var isModal = wrapper.classList.toggle('cm-modal-mode');
+
+      if (isModal) {
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.id = 'editor_modal_backdrop';
+          backdrop.onclick = toggleEditorModal;
+          document.body.appendChild(backdrop);
+        }
+        backdrop.style.display = 'block';
+        closeBtn.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      } else {
+        if (backdrop)
+          backdrop.style.display = 'none';
+        closeBtn.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+    // Exit with ESC
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var wrapper = document.getElementById('div_props_htmlEditor');
+        if (wrapper && wrapper.classList.contains('cm-modal-mode')) {
+          toggleEditorModal();
+        }
+      }
+    });
+    //]]>
+  </script>
+
+  <style type="text/css">
+    /* Backdrop - gray background */
+    #editor_modal_backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+    }
+
+    /* Wrapper en modo modal */
+    .cm-modal-mode {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 80vw !important;
+      max-width: 1100px;
+      height: 75vh !important;
+      max-height: 800px;
+      z-index: 9999 !important;
+      background-color: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      padding: 2.5rem 1rem 1rem 1rem;
+      margin: 0 !important;
+    }
+
+    /* Force the editor to occupy all the space */
+    .cm-modal-mode > .codemirror-container,
+    .cm-modal-mode > div[id*="cm_htmlEditor"] {
+      height: 100% !important;
+    }
+
+    .cm-modal-mode .cm-editor {
+      height: 100% !important;
+      font-size: 0.95rem;
+    }
+  </style>
+</ui:composition>
