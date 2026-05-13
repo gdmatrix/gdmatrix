@@ -180,7 +180,8 @@ public class FormFactory
 
   private String hash(Map context)
   {
-    if (context == null || context.isEmpty()) return "";
+    if (context == null) return "";
+    if (context.isEmpty()) return "EMPTY";
 
     try
     {
