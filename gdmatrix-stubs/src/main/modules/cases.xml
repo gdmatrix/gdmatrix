@@ -500,7 +500,9 @@
       <property name="event" type="agenda:Event" minOccurs="0">
       </property>
       <property name="caseEventTypeId" type="xs:string" minOccurs="0" references="dic:Type">
-      </property>      
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
       <property name="property" type="dic:Property" minOccurs="0"
         maxOccurs="unbounded" nillable="true">
       </property>

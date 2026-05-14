@@ -2590,6 +2590,7 @@ public class CaseManager implements CaseManagerPort
             caseEventView.setCaseEventTypeId(caseEventTypeId != null ?
               caseEventTypeId : DictionaryConstants.CASE_EVENT_TYPE);
             caseEventView.setEvent(event);
+            caseEventView.setComments(dbCaseEvent.getComments());
             caseEventViewList.add(caseEventView);
           }
         }
@@ -2641,6 +2642,7 @@ public class CaseManager implements CaseManagerPort
           String caseEventTypeId = dbCaseEvent.getCaseEventTypeId();
           caseEventView.setCaseEventTypeId(caseEventTypeId != null ?
               caseEventTypeId : DictionaryConstants.CASE_EVENT_TYPE);
+          caseEventView.setComments(dbCaseEvent.getComments());
           caseEventViewList.add(caseEventView);
         }
       }
