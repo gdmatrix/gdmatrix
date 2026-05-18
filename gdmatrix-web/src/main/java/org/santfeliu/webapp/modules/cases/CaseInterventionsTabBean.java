@@ -58,11 +58,9 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
-import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
-import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
@@ -500,12 +498,12 @@ public class CaseInterventionsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction(PRE_TAB_EDIT_ACTION, null);
+    executePreTabEditAction();
     editing = new Intervention();
     editing.setIntTypeId(getCreationTypeId());
     setDefaultPerson(editing);    
     formSelector = null;
-    executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    executePostTabEditAction(editing);
   }
 
   @Override
@@ -574,9 +572,9 @@ public class CaseInterventionsTabBean extends TabBean
       if (intId != null)
       {
         casePersonViews = null;
-        executeTabAction(PRE_TAB_EDIT_ACTION, row);
+        executePreTabEditAction(row);
         editing = CasesModuleBean.getPort(false).loadIntervention(intId);
-        executeTabAction(POST_TAB_EDIT_ACTION, editing);
+        executePostTabEditAction(editing);
       }
       else
       {

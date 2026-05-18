@@ -67,7 +67,7 @@ public class EditTab implements Serializable
   private Boolean exportable;
   private Integer rowExportLimit;
   private Set<String> hideProperties = new HashSet(); 
-  private List<String> formDescriptorsFilter = new ArrayList();
+  private List<String> formSelectorsFilter = new ArrayList();
 
   public EditTab(String label, String icon, String viewId)
   {
@@ -290,14 +290,14 @@ public class EditTab implements Serializable
     this.hideProperties = hideProperties;
   }
 
-  public List<String> getFormDescriptorsFilter()
+  public List<String> getFormSelectorsFilter()
   {
-    return formDescriptorsFilter;
+    return formSelectorsFilter;
   }
 
-  public void setFormDescriptorsFilter(List<String> formDescriptorsFilter)
+  public void setFormSelectorsFilter(List<String> formSelectorsFilter)
   {
-    this.formDescriptorsFilter = formDescriptorsFilter;
+    this.formSelectorsFilter = formSelectorsFilter;
   }
   
   public boolean isRenderProperty(String propertyName)

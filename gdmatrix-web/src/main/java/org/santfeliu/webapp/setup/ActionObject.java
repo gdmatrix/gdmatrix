@@ -47,6 +47,8 @@ public class ActionObject
   private final List<Message> messages = new ArrayList();
   private String subviewId;
   private Object mainObject;
+  private List<String> editFormSelectors = new ArrayList();
+  private List<String> searchFormSelectors = new ArrayList();
   
   public ActionObject(Object object)
   {
@@ -119,6 +121,26 @@ public class ActionObject
   public void setMainObject(Object mainObject)
   {
     this.mainObject = mainObject;
+  }
+
+  public List<String> getEditFormSelectors()
+  {
+    return editFormSelectors;
+  }
+
+  public void setEditFormSelectors(List<String> editFormSelectors)
+  {
+    this.editFormSelectors = editFormSelectors;
+  }
+
+  public List<String> getSearchFormSelectors()
+  {
+    return searchFormSelectors;
+  }
+
+  public void setSearchFormSelectors(List<String> searchFormSelectors)
+  {
+    this.searchFormSelectors = searchFormSelectors;
   }
 
   public void addInfo(String message, String... params)

@@ -60,11 +60,9 @@ import org.santfeliu.webapp.helpers.RowsExportHelper;
 import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
-import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
-import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
@@ -462,7 +460,7 @@ public class CaseCasesTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction(PRE_TAB_EDIT_ACTION, null);
+    executePreTabEditAction();
     editing = new CaseCase();
     editing.setCaseCaseTypeId(getCreationTypeId());
     if (isDirectRelation())
@@ -474,7 +472,7 @@ public class CaseCasesTabBean extends TabBean
       editing.setRelCaseId(getObjectId());
     }
     formSelector = null;
-    executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    executePostTabEditAction(editing);
   }
 
   public String getCaseDescription()
@@ -561,9 +559,9 @@ public class CaseCasesTabBean extends TabBean
     {
       if (caseCaseId != null)
       {
-        executeTabAction(PRE_TAB_EDIT_ACTION, row);
+        executePreTabEditAction(row);
         editing = CasesModuleBean.getPort(false).loadCaseCase(caseCaseId);
-        executeTabAction(POST_TAB_EDIT_ACTION, editing);
+        executePostTabEditAction(editing);
       }
       else
       {

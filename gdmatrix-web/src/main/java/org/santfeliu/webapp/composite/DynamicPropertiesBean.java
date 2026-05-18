@@ -200,12 +200,15 @@ public class DynamicPropertiesBean implements Serializable
     String prefix = getFormBuilderPrefix();
     String typeId = getTypeId();
     String formKey = prefix + ":" + typeId;
-
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance(); 
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.web.obj.resources.ObjectBundle",
+      userSessionBean.getViewLocale());    
+    
     List<FormDescriptor> descriptors = formDescriptorMap.get(formKey);
+
     if (descriptors == null)
     {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-
       if (StringUtils.isBlank(typeId))
       {
         descriptors = new ArrayList<>();
@@ -217,58 +220,69 @@ public class DynamicPropertiesBean implements Serializable
           TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
 
         descriptors = FormFactory.getInstance().findForms(selectorBase);
-        
-        List<String> descriptorsFilter = getFormDescriptorsFilter();
-        if (!descriptors.isEmpty() && descriptorsFilter != null && 
-          !descriptorsFilter.isEmpty())
-        {
-          descriptors.removeIf(d -> 
-            !descriptorsFilter.contains(d.getSelector()));
-          
-          //Sort as descriptorsFilter list
-          Map<String, Integer> sortMap = new HashMap<>();
-          for (int i = 0; i < descriptorsFilter.size(); i++) 
-          {
-            sortMap.put(descriptorsFilter.get(i), i);
-          }     
-                   
-          Comparator<FormDescriptor> comparator = 
-            (FormDescriptor d1, FormDescriptor d2) -> 
-          {
-            Integer index1 = sortMap.get(d1.getSelector());
-            Integer index2 = sortMap.get(d2.getSelector());
-            int val1 = (index1 != null) ? index1 : Integer.MAX_VALUE;
-            int val2 = (index2 != null) ? index2 : Integer.MAX_VALUE;
-            return Integer.compare(val1, val2);
-          };
-
-          Collections.sort(descriptors, comparator); 
-        }
       }
-      ResourceBundle bundle = ResourceBundle.getBundle(
-        "org.santfeliu.web.obj.resources.ObjectBundle",
-        userSessionBean.getViewLocale());
-
+      
       if (userSessionBean.isUserInRole("DOC_ADMIN"))
       {
         descriptors.add(new FormDescriptor(PROPERTY_EDITOR_SELECTOR,
           bundle.getString("property_editor")));
-      }
-
-      if (descriptors.isEmpty())
-      {
-        descriptors.add(
-          new FormDescriptor("", bundle.getString("type_without_form")));
-      }
-      formDescriptorMap.put(formKey, descriptors);
+      }      
     }
+
+    List<String> formSelectorsFilter = getFormSelectorsFilter(); 
+    filterFormDescriptors(descriptors, formSelectorsFilter); 
+
+    if (descriptors.isEmpty())
+    {
+      descriptors.add(
+        new FormDescriptor("", bundle.getString("type_without_form")));
+    }
+    
+    formDescriptorMap.put(formKey, descriptors); 
+    
+    //Refresh entry if has dynamic selectors    
+    if (formSelectorsFilter != null && !formSelectorsFilter.isEmpty()) 
+      formDescriptorMap.remove(formKey);
+    
     return descriptors;
   }
   
-  private List<String> getFormDescriptorsFilter()
+  private List<String> getFormSelectorsFilter()
   {
-    return WebUtils.getValue("#{cc.attrs.formDescriptorsFilter}");
+    return WebUtils.getValue("#{cc.attrs.formSelectorsFilter}");
   }  
+  
+  private List<FormDescriptor> filterFormDescriptors(
+    List<FormDescriptor> descriptors, List<String> formSelectorsFilter)
+  {
+    if (!descriptors.isEmpty() && formSelectorsFilter != null && 
+      !formSelectorsFilter.isEmpty())
+    {
+      descriptors.removeIf(d -> 
+        !formSelectorsFilter.contains(d.getSelector()));
+
+      //Sort as descriptorsFilter list
+      Map<String, Integer> sortMap = new HashMap<>();
+      for (int i = 0; i < formSelectorsFilter.size(); i++) 
+      {
+        sortMap.put(formSelectorsFilter.get(i), i);
+      }     
+
+      Comparator<FormDescriptor> comparator = 
+        (FormDescriptor d1, FormDescriptor d2) -> 
+      {
+        Integer index1 = sortMap.get(d1.getSelector());
+        Integer index2 = sortMap.get(d2.getSelector());
+        int val1 = (index1 != null) ? index1 : Integer.MAX_VALUE;
+        int val2 = (index2 != null) ? index2 : Integer.MAX_VALUE;
+        return Integer.compare(val1, val2);
+      };
+
+      Collections.sort(descriptors, comparator); 
+    }
+    
+    return descriptors;    
+  }
 
   public void onSelectForm(FacesEvent event)
   {
@@ -413,7 +427,7 @@ public class DynamicPropertiesBean implements Serializable
           !isValidFormSelector(formSelector, descriptors))
       {
         // set first formSelector
-        formSelector = (String)descriptors.get(0).getSelector();
+        formSelector = descriptors.get(0).getSelector();
         setFormSelector(formSelector);
       }
 

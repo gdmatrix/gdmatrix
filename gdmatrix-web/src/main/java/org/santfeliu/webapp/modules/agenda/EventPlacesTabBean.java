@@ -47,11 +47,9 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.kernel.AddressObjectBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.RoomObjectBean;
-import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
-import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
@@ -187,12 +185,12 @@ public class EventPlacesTabBean extends TabBean
 
   public String edit(EventPlaceView row)
   {
-    executeTabAction(PRE_TAB_EDIT_ACTION, row);
+    executePreTabEditAction(row);
     String eventPlaceId = null;
     if (row != null)
       eventPlaceId = row.getEventPlaceId();
     String result = editPlace(eventPlaceId);
-    executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    executePostTabEditAction(editing);
     return result;
   }
   
@@ -237,9 +235,9 @@ public class EventPlacesTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction(PRE_TAB_EDIT_ACTION, null);
+    executePreTabEditAction();
     editing = new EventPlace();
-    executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    executePostTabEditAction(editing);
   }
 
   @Override

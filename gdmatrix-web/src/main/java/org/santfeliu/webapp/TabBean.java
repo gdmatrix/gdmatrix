@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
+import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import org.santfeliu.webapp.setup.ActionObject;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -53,6 +55,8 @@ public abstract class TabBean extends BaseBean
   private static final String DEFAULT_PAGE_SIZE_OPTIONS = "5,10,25,50";
 
   private String objectId = NavigatorBean.NEW_OBJECT_ID;
+  
+  private List<String> formSelectorsFilter;  
 
   public String getObjectId()
   {
@@ -81,7 +85,7 @@ public abstract class TabBean extends BaseBean
   public void edit(String rowId)
   {
   }
-
+  
   public void store() throws Exception
   {
   }
@@ -216,7 +220,19 @@ public abstract class TabBean extends BaseBean
     Type baseType = typeCache.getType(baseTypeId);
     return (baseType != null ? baseType.isLeaf() : false);
   }
+  
 
+  
+  public void setFormSelectorsFilter(List<String> formSelectorsFilter)
+  {
+    this.formSelectorsFilter = formSelectorsFilter;
+  }
+   
+  public List<String> getFormSelectorsFilter()
+  {
+    return formSelectorsFilter;
+  }
+  
   protected String getCreationTypeId()
   {
     String typeId = getTabBaseTypeId();
@@ -237,6 +253,24 @@ public abstract class TabBean extends BaseBean
       getObjectBean().executeTabAction(actionName, object);
     return actionObject.getObject();
   }
+  
+  protected Object executePreTabEditAction()
+  {
+    return executePreTabEditAction(null);
+  }
+  
+  protected Object executePreTabEditAction(Object row)
+  {
+    return executeTabAction(PRE_TAB_EDIT_ACTION, row);  
+  }
+    
+  protected Object executePostTabEditAction(Object editing)
+  {
+    ActionObject actionObject = 
+      getObjectBean().executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    setFormSelectorsFilter(actionObject.getEditFormSelectors());
+    return actionObject.getObject();
+  }  
   
   private String getShowAllLabel()
   {

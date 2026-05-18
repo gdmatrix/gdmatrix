@@ -76,11 +76,9 @@ import org.santfeliu.webapp.util.DataTableRowComparator;
 import org.santfeliu.webapp.util.DateTimeRowStyleClassGenerator;
 import org.santfeliu.webapp.util.RowStyleClassGenerator;
 import org.santfeliu.webapp.util.WebUtils;
-import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
-import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
@@ -651,11 +649,11 @@ public class CasePersonsTabBean extends TabBean
   
   public void create()
   {
-    executeTabAction(PRE_TAB_EDIT_ACTION, null);
+    executePreTabEditAction();
     editing = new CasePerson();
     editing.setCasePersonTypeId(getCreationTypeId());
     tabIndex = 0;
-    executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    executePostTabEditAction(editing);
   }
 
   @Override
@@ -712,14 +710,14 @@ public class CasePersonsTabBean extends TabBean
     {
       try
       {
-        executeTabAction(PRE_TAB_EDIT_ACTION, row);
+        executePreTabEditAction(row);
         editing = CasesModuleBean.getPort(false).loadCasePerson(row.getRowId());
         personContacts =
           getPersonContacts(editing.getPersonId());
         representantContacts =
           getPersonContacts(editing.getRepresentantPersonId());
         tabIndex = 0;
-        executeTabAction(POST_TAB_EDIT_ACTION, editing);
+        executePostTabEditAction(editing);
       }
       catch (Exception ex)
       {

@@ -41,6 +41,7 @@ import java.util.Set;
  */
 public class Action implements Serializable
 {
+  public static final String PRE_CREATE_ACTION = "preCreate";
   public static final String POST_LOAD_ACTION = "postLoad";
   public static final String PRE_STORE_ACTION = "preStore";
   public static final String POST_STORE_ACTION = "postStore";
@@ -60,6 +61,10 @@ public class Action implements Serializable
   
   public static final String GET_ACTIONS_ACTION = "getActions"; 
   public static final String PUT_DEFAULT_FILTER = "putDefaultFilter";
+  
+  public static final String PUT_FINDER_FORM_SELECTORS = "putFinderFormSelectors";
+  public static final String PUT_OBJECT_FORM_SELECTORS = "putObjectFormSelectors";  
+  public static final String PUT_TAB_FORM_SELECTORS = "putTabFormSelectors";  
 
   public final static Set<String> predefinedActionNames;
 
@@ -77,6 +82,7 @@ public class Action implements Serializable
     predefinedActionNames.add(GET_ACTIONS_ACTION);
     
     //Object actions
+    predefinedActionNames.add(PRE_CREATE_ACTION);
     predefinedActionNames.add(POST_LOAD_ACTION);
     predefinedActionNames.add(PRE_STORE_ACTION);
     predefinedActionNames.add(POST_STORE_ACTION);
@@ -96,7 +102,12 @@ public class Action implements Serializable
     predefinedActionNames.add(POST_TAB_REMOVE_ACTION);
     
     //Finder
-    predefinedActionNames.add(PUT_DEFAULT_FILTER);      
+    predefinedActionNames.add(PUT_DEFAULT_FILTER); 
+    
+    //Form selectors
+    predefinedActionNames.add(PUT_OBJECT_FORM_SELECTORS);     
+    predefinedActionNames.add(PUT_FINDER_FORM_SELECTORS); 
+    predefinedActionNames.add(PUT_TAB_FORM_SELECTORS);     
   }
   
   public Action(String label, String name)

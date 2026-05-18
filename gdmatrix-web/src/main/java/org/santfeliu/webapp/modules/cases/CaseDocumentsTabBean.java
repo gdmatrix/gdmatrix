@@ -88,11 +88,9 @@ import org.santfeliu.webapp.helpers.RowsFilterHelper;
 import org.santfeliu.webapp.helpers.TablePropertyHelper;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
-import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
-import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
 import org.santfeliu.webapp.setup.TableProperty;
@@ -716,7 +714,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction(PRE_TAB_EDIT_ACTION, null);
+    executePreTabEditAction();
     editing = new CaseDocument();
     setActiveTabIndex(CREATE_NEW_DOCUMENT_TAB_INDEX);
     setEnabledTabIndex(null);
@@ -731,7 +729,7 @@ public class CaseDocumentsTabBean extends TabBean
     String caseDocTypeId = getUploadTypeId();
     if (caseDocTypeId == null) caseDocTypeId = getCreationTypeId();
     editing.setCaseDocTypeId(caseDocTypeId);
-    executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    executePostTabEditAction(editing);
   }
 
   public String getCurrentVolume()
@@ -775,12 +773,12 @@ public class CaseDocumentsTabBean extends TabBean
     {
       try
       {
-        executeTabAction(PRE_TAB_EDIT_ACTION, row);
+        executePreTabEditAction(row);
         editing =
           CasesModuleBean.getPort(false).loadCaseDocument(row.getRowId());
         setActiveTabIndex(UPDATE_CONTENT_TAB_INDEX);
         setEnabledTabIndex(null);
-        executeTabAction(POST_TAB_EDIT_ACTION, editing);
+        executePostTabEditAction(editing);
       }
       catch (Exception ex)
       {

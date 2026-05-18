@@ -53,7 +53,6 @@ public class ObjectSetup implements Serializable
   private String smartSearchTipDocId;
   private String defaultSearchTabSelector;
   private String defaultSearchPageSize;
-  private List<String> formDescriptorsFilter = new ArrayList();  
   private List<SearchTab> searchTabs = new ArrayList<>();
   private List<EditTab> editTabs = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
@@ -136,16 +135,6 @@ public class ObjectSetup implements Serializable
   public void setDefaultSearchPageSize(String defaultSearchPageSize) 
   {
     this.defaultSearchPageSize = defaultSearchPageSize;
-  }
-
-  public List<String> getFormDescriptorsFilter()
-  {
-    return formDescriptorsFilter;
-  }
-
-  public void setFormDescriptorsFilter(List<String> formDescriptorsFilter)
-  {
-    this.formDescriptorsFilter = formDescriptorsFilter;
   }
 
   public List<SearchTab> getSearchTabs()

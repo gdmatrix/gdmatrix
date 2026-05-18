@@ -60,11 +60,9 @@ import org.santfeliu.webapp.helpers.GroupableRowsHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
-import static org.santfeliu.webapp.setup.Action.POST_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_TAB_STORE_ACTION;
-import static org.santfeliu.webapp.setup.Action.PRE_TAB_EDIT_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_LOAD_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_TAB_STORE_ACTION;
@@ -263,10 +261,10 @@ public class EventDocumentsTabBean extends TabBean
     {
       try
       {
-        executeTabAction(PRE_TAB_EDIT_ACTION, row);
+        executePreTabEditAction(row);
         editing = AgendaModuleBean.getClient(false).
           loadEventDocument(row.getEventDocId());
-        executeTabAction(POST_TAB_EDIT_ACTION, editing);
+        executePostTabEditAction(editing);
       }
       catch (Exception ex)
       {
@@ -329,10 +327,10 @@ public class EventDocumentsTabBean extends TabBean
 
   public void create()
   {
-    executeTabAction(PRE_TAB_EDIT_ACTION, null);
+    executePreTabEditAction();
     editing = new EventDocument();
     editing.setEventDocTypeId(getCreationTypeId());
-    executeTabAction(POST_TAB_EDIT_ACTION, editing);
+    executePostTabEditAction(editing);
   }
 
   @Override

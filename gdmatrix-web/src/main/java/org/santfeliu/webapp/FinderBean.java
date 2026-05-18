@@ -84,6 +84,7 @@ public abstract class FinderBean extends BaseBean
   private transient ObjectSetup objectSetup;
   private transient ScriptClient scriptClient;
   private int pageSize = -1;
+  private List<String> formSelectorsFilter;  
 
   public int getFilterTabSelector()
   {
@@ -168,6 +169,16 @@ public abstract class FinderBean extends BaseBean
     }
     return objectSetup;
   }
+
+  public List<String> getFormSelectorsFilter()
+  {
+    return formSelectorsFilter;
+  }
+
+  public void setFormSelectorsFilter(List<String> formSelectorsFilter)
+  {
+    this.formSelectorsFilter = formSelectorsFilter;
+  }
   
   public ScriptClient getScriptClient(String scriptName) throws Exception
   {
@@ -197,7 +208,7 @@ public abstract class FinderBean extends BaseBean
 
   public void putDefaultFilter()
   {
-    executeAction(PUT_DEFAULT_FILTER, getFilter());
+    executeAction(PUT_DEFAULT_FILTER, null, getFilter());
   }
   
   public String getSmartSearchTip()
@@ -288,21 +299,13 @@ public abstract class FinderBean extends BaseBean
     }    
   }  
   
-  public List<String> getFormDescriptorsFilter()
-  {
-    List<String> formDescriptorsFilter = null;
-    try
-    {
-      formDescriptorsFilter = getObjectSetup().getFormDescriptorsFilter();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return formDescriptorsFilter;
-  }   
-  
   protected ActionObject executeAction(String actionName, Object object)
+  {
+    return executeAction(actionName, null, object);
+  }
+  
+  protected ActionObject executeAction(String actionName, Object[] parameters, 
+    Object object)
   {
     ActionObject actionObject = new ActionObject(object);
     try

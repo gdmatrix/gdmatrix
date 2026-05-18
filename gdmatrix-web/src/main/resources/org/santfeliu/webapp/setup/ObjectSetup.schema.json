@@ -36,15 +36,6 @@
       "description": "...",
       "type": "integer"
     },
-    "formDescriptorsFilter": {
-      "description": "...",
-      "type": "array",
-      "minItems": 0,
-      "items": {
-        "type": "string",
-        "examples": ["doc:1111", "type:Case"]
-      }
-    },
     "mergeMode": {
       "description": "...",      
       "enum": ["ADD", "PRESERVE"]      
@@ -384,15 +375,6 @@
           "items": {
             "type": "string",
             "examples": ["caseTypeId", "endDate", "comments"]
-          }
-        },
-        "formDescriptorsFilter": {
-          "description": "...",
-          "type": "array",
-          "minItems": 0,
-          "items": {
-            "type": "string",
-            "examples": ["doc:1111", "type:Case"]
           }
         },
         "properties": {

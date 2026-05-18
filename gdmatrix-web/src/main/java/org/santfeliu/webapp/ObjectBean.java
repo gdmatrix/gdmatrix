@@ -80,6 +80,7 @@ public abstract class ObjectBean extends BaseBean
   private transient ScriptClient scriptClient;
   private Map<String, Object> state = new HashMap<>();
   private List<Action> actions;
+  private List<String> formSelectorsFilter;
 
   @Override
   public ObjectBean getObjectBean()
@@ -293,11 +294,16 @@ public abstract class ObjectBean extends BaseBean
     return ApplicationBean.getCurrentInstance().translate(val);
   }
 
-  public List<String> getFormDescriptorsFilter()
+  public List<String> getFormSelectorsFilter()
   {
-    return getActiveEditTab().getFormDescriptorsFilter();
+    return formSelectorsFilter;
   }
-  
+
+  public void setFormSelectorsFilter(List<String> formSelectorsFilter)
+  {
+    this.formSelectorsFilter = formSelectorsFilter;
+  }
+
   public BaseTypeInfo getBaseTypeInfo()
   {
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
@@ -318,7 +324,20 @@ public abstract class ObjectBean extends BaseBean
       loadObjectSetup();
       processParameters(parameters);
       if (!NEW_OBJECT_ID.equals(objectId))
-        executeAction(Action.POST_LOAD_ACTION);
+      {
+        ActionObject actionObject = executeAction(Action.POST_LOAD_ACTION);
+        setFormSelectorsFilter(actionObject.getEditFormSelectors());
+        getFinderBean().setFormSelectorsFilter(
+          actionObject.getSearchFormSelectors());          
+      }
+      else
+      {
+        ActionObject actionObject = executeAction(Action.PRE_CREATE_ACTION);
+        setFormSelectorsFilter(actionObject.getEditFormSelectors());
+        getFinderBean().setFormSelectorsFilter(
+          actionObject.getSearchFormSelectors());         
+      }
+
       loadActiveEditTab();
 
       Object object = getObject();
@@ -526,7 +545,7 @@ public abstract class ObjectBean extends BaseBean
 
     return actionObject;
   }
-
+  
   public ActionObject executeTabAction(String actionName, Object object)
   {
     ActionObject actionObject =
@@ -585,7 +604,7 @@ public abstract class ObjectBean extends BaseBean
 
     return actionObject;
   }
-
+  
   protected void processParameters(Map<String, Object> parameters)
   {
     if (parameters != null)
@@ -866,5 +885,5 @@ public abstract class ObjectBean extends BaseBean
     {
       return false;
     }    
-  }  
+  }   
 }
