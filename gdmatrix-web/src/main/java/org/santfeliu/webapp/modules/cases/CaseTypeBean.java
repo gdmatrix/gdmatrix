@@ -188,7 +188,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     titleColumn.setIcon("text-xl mr-1");
     documentsTab.getTableProperties().add(titleColumn);    
     documentsTab.getTableProperties().add(new TableProperty("caseDocTypeId", 
-      BUNDLE_PREFIX + "caseDocuments_type", "col-3")); 
+      BUNDLE_PREFIX + "caseDocuments_collection", "col-3"));
     documentsTab.getTableProperties().add(new TableProperty("docCreationDate", 
       "$$documentBundle.document_creationDate", 
       "col-2 text-center"));

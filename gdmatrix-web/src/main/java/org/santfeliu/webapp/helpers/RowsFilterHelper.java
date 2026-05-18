@@ -210,6 +210,11 @@ public abstract class RowsFilterHelper<T>
             "$$objectBundle.filter");
         }
       }
+      else
+      {
+        filterByLabel = ApplicationBean.getCurrentInstance().translate(
+          filterByLabel);
+      }
     }
     else //linked filter
     {
@@ -227,6 +232,11 @@ public abstract class RowsFilterHelper<T>
           filterByLabel = ApplicationBean.getCurrentInstance().translate(
             "$$objectBundle.filter");
         }
+      }
+      else
+      {
+        filterByLabel = ApplicationBean.getCurrentInstance().translate(
+          filterByLabel);
       }
     }
     return filterByLabel;
@@ -246,7 +256,7 @@ public abstract class RowsFilterHelper<T>
     return "";
   }
 
-  private String getFilterBy()
+  public String getFilterBy()
   {
     String filterBy = null;
     if (prevRowsFilterHelper == null) //first filter

@@ -47,7 +47,9 @@
           </p:outputPanel>
           <p:outputPanel styleClass="rowsFilter flex-grow-0 mr-4 mb-1 mt-1"
                          rendered="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.rendered}">
-            <p:outputLabel value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
+            <p:outputLabel value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterBy == 'typeId' ?
+                                    caseBundle.caseDocuments_collection :
+                                    caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterByLabel}:"
                            styleClass="mr-2 vertical-align-middle"
                            for="@next" />
             <p:selectOneMenu value="#{caseDocumentsTabBean.tabInstances[tab.subviewId].rowsFilterHelper.filterValue}" 
