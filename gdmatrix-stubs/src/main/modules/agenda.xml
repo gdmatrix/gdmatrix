@@ -181,6 +181,8 @@
       </property>
       <property name="eventDocTypeId" type="xs:string" minOccurs="0" references="dic:Type">
       </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
     </struct>
 
     <struct name="EventDocumentFilter">

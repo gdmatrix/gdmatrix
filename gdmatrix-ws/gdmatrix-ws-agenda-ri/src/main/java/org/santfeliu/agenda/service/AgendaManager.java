@@ -835,6 +835,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
         EventDocumentView eventDocumentView = new EventDocumentView();
         eventDocumentView.setEventDocId(dbEventDocument.getEventDocId());
         eventDocumentView.setEventDocTypeId(dbEventDocument.getEventDocTypeId());
+        eventDocumentView.setComments(dbEventDocument.getComments());
         Event event = new Event();
         dbEventDocument.getDbEvent().copyTo(event);
         eventDocumentView.setEvent(event);
