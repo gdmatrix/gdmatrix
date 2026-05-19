@@ -926,6 +926,7 @@ public class EventCopyTabBean extends WebBean implements Serializable
               eventDocument.setEventId(storeEvent.getEventId());
               eventDocument.setDocId(srcED.getDocument().getDocId());
               eventDocument.setEventDocTypeId(srcED.getEventDocTypeId());
+              eventDocument.setComments(srcED.getComments());
               port.storeEventDocument(eventDocument);
             }
           }
@@ -939,6 +940,7 @@ public class EventCopyTabBean extends WebBean implements Serializable
               caseEvent.setEventId(storeEvent.getEventId());
               caseEvent.setCaseId(srcEC.getCaseObject().getCaseId());
               caseEvent.setCaseEventTypeId(srcEC.getCaseEventTypeId());
+              caseEvent.setComments(srcEC.getComments());
               caseEvent.getProperty().addAll(srcEC.getProperty());
               CaseManagerPort cport = CasesModuleBean.getPort();
               cport.storeCaseEvent(caseEvent);
