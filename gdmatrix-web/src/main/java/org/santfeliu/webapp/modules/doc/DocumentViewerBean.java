@@ -79,6 +79,8 @@ public class DocumentViewerBean extends WebBean implements Serializable
   public static final String FOOTER_DOCID_PROPERTY = "footer.docId";
   @CMSProperty
   public static final String EDITOR_LANGUAGE_PROPERTY = "editor.language";
+  @CMSProperty
+  public static final String DISABLE_HTML_FIXER = "disableHtmlFixer";
 
   public static final String DOC_SERVLET_URL = "/documents/";
   private static final String OUTCOME = "/pages/doc/document_viewer.xhtml";
@@ -273,8 +275,8 @@ public class DocumentViewerBean extends WebBean implements Serializable
   public void saveDocument()
   {
     try
-    {
-      editor.storeDocument(keepLocking);
+    {      
+      editor.storeDocument(keepLocking, isHtmlFixerDisabled());
       editor = null;
     }
     catch (Exception ex)
@@ -408,5 +410,13 @@ public class DocumentViewerBean extends WebBean implements Serializable
       UserSessionBean.getCurrentInstance().getPassword());
 
     return client;
+  }
+  
+  private boolean isHtmlFixerDisabled()
+  {
+    String disableHtmlFixer = getProperty(DISABLE_HTML_FIXER);
+    if (disableHtmlFixer == null)
+      return false;
+    return Boolean.parseBoolean(disableHtmlFixer);
   }
 }

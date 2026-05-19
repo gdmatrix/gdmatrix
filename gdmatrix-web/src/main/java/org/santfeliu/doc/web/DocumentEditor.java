@@ -148,10 +148,17 @@ public class DocumentEditor implements Serializable
 
   public void storeDocument() throws Exception
   {
-    storeDocument(false);
+    storeDocument(false, false);
+  }
+  
+  public void storeDocument(boolean keepLocking) 
+    throws Exception
+  {
+    storeDocument(keepLocking, false);
   }
 
-  public void storeDocument(boolean keepLocking) throws Exception
+  public void storeDocument(boolean keepLocking, boolean disableHtmlFixer) 
+    throws Exception
   {
     try
     {
@@ -161,9 +168,11 @@ public class DocumentEditor implements Serializable
       {
         if (!keepLocking)
           unlockDocument();
+        
+        String contentType = document.getContent().getContentType();
         TemporaryDataSource dataSource =
-
-          writeDocument(documentData, document.getContent().getContentType());
+          writeDocument(documentData, contentType, disableHtmlFixer);
+        
         DataHandler dataHandler = new DataHandler(dataSource);
         document.getContent().setContentId(null);
         document.getContent().setData(dataHandler);
@@ -271,7 +280,7 @@ public class DocumentEditor implements Serializable
   }
 
   private TemporaryDataSource writeDocument(String documentData,
-    String contentType) throws Exception
+    String contentType, boolean disableHtmlFixer) throws Exception
   {
     File file = File.createTempFile("editor", ".tmp");
 
@@ -279,7 +288,7 @@ public class DocumentEditor implements Serializable
     {
       try (FileOutputStream out = new FileOutputStream(file))
       {
-        if (contentType.contains("html"))
+        if (contentType.contains("html") && !disableHtmlFixer)
         {
           //If file is html fix aria label errors
           String scriptName = MatrixConfig.getProperty("htmlFixer.script");
