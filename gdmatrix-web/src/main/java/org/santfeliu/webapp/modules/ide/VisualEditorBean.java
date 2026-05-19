@@ -262,6 +262,7 @@ public class VisualEditorBean extends WebBean
   /* -- DTO FOR SELECT OPTIONS -- */
   public static class SelectOption implements Serializable
   {
+
     private static final long serialVersionUID = 1L;
     private String value;
     private String text;
@@ -746,7 +747,7 @@ public class VisualEditorBean extends WebBean
       addElement(selectedElementDef.getTag(), selectedElementDef.getDefaultType(), AddMode.BEFORE);
     }
   }
-  
+
   public void addInsideSelectedElement()
   {
     if (selectedElementDef != null)
@@ -1154,7 +1155,7 @@ public class VisualEditorBean extends WebBean
     this.showFormProperties = false;
     this.selectedMode = "";
   }
-  
+
   private HtmlView getAssociatedLabel(List<View> container, HtmlView element)
   {
     if (element == null || container == null)
@@ -1846,7 +1847,7 @@ public class VisualEditorBean extends WebBean
       this.manualOptionsList.add(new SelectOption(val, txt));
     }
   }
-  
+
   public String getInnerHtml(HtmlViewWrapper wrapper)
   {
     HtmlView view = wrapper.getUnderlyingView();

@@ -1,15 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:pe="http://primefaces.org/ui/extensions"
-                xmlns:sf="http://faces.santfeliu.org"
-                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:gdm="http://gdmatrix.org/faces"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
-
-  <div class="#{currentBlock.element.baseStyleClass}">  
-    <h:outputText value="#{elementObj.innerText}" escape="false"/>
-  </div>
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+  
+  <h:outputText value="#{visualEditorBean.getInnerHtml(elementObj)}"
+                escape="false"
+                styleClass="{currentBlock.element.styleClass} py-2"/>
 </ui:composition>

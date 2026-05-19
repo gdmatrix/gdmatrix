@@ -31,6 +31,8 @@
 package org.santfeliu.form.type.html;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.santfeliu.form.View;
 import org.santfeliu.webapp.modules.ide.VisualEditorBean.ElementDef;
 
@@ -170,7 +172,7 @@ public class HtmlViewWrapper
 
     if (currentCss != null)
     {
-      java.util.regex.Matcher m = java.util.regex.Pattern
+      Matcher m = Pattern
         .compile("(?:^|\\s)(col-\\d+|md:col-\\d+|lg:col-\\d+|xl:col-\\d+)(?=\\s|$)").matcher(currentCss);
       while (m.find())
       {
@@ -544,7 +546,6 @@ public class HtmlViewWrapper
   public boolean isMultiple()
   {
     String multiple = view.getProperty("multiple");
-    // Es true si existe y no es la palabra "false"
     return multiple != null && !multiple.trim().isEmpty() && !"false".equalsIgnoreCase(multiple);
   }
 
@@ -552,7 +553,7 @@ public class HtmlViewWrapper
   {
     if (multiple)
     {
-      view.setProperty("multiple", "true"); // En HTML puro se suele usar multiple="multiple"
+      view.setProperty("multiple", "true");
     }
     else
     {
@@ -660,7 +661,7 @@ public class HtmlViewWrapper
 
     StringBuilder gridClasses = new StringBuilder();
 
-    java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?:sm:|md:|lg:|xl:)?col-\\d+")
+    Matcher m = Pattern.compile("(?:sm:|md:|lg:|xl:)?col-\\d+")
       .matcher(styleClass);
 
     while (m.find())
