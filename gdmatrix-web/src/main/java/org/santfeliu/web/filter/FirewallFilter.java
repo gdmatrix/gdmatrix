@@ -243,6 +243,7 @@ public class FirewallFilter implements Filter
 
   private synchronized void addUntrustedAddress(String ip)
   {
+    if ("127.0.0.1".equals(ip)) return;
     untrustedAddresses.add(ip);
   }
 
@@ -447,6 +448,7 @@ public class FirewallFilter implements Filter
     @Override
     public void addUntrustedAddress(String ip)
     {
+      if ("127.0.0.1".equals(ip)) return;
       FirewallFilter.this.addUntrustedAddress(ip);
     }
 
