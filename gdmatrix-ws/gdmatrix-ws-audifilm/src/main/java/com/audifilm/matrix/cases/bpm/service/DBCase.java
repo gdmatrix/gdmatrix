@@ -735,9 +735,10 @@ public class DBCase extends DBGenesysEntity
             + " " + TextUtil.encodeEmpty(getPerscog1())
             + " " + TextUtil.encodeEmpty(getPerscog2())).trim());
 
-    personView.setNif( TextUtil.encodeEmpty(getPersnif()));
-    personView.setPersonId(endpoint.toGlobalId(Person.class,
-        getFotoPersonaId()));
+    personView.setNif(TextUtil.encodeEmpty(getPersnif()));
+//    personView.setPersonId(endpoint.toGlobalId(Person.class,
+//        getFotoPersonaId()));
+    personView.setPersonId(endpoint.toGlobalId(Person.class, getPersId()));
     casePersonView.setPersonView(personView);
 
     PersonView representantView = new PersonView();

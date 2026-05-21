@@ -373,7 +373,8 @@ public class DBInteressat extends DBGenesysEntity
             + " " + TextUtil.encodeEmpty(getPersonSurname1())
             + " " + TextUtil.encodeEmpty(getPersonSurname2())).trim()  );
     personView.setNif( TextUtil.encodeEmpty(getPersonNif()));
-    personView.setPersonId(endpoint.toGlobalId(Person.class, getFotoPersonaId()));
+//    personView.setPersonId(endpoint.toGlobalId(Person.class, getFotoPersonaId()));
+    personView.setPersonId(endpoint.toGlobalId(Person.class, getPersonId()));
     casePerson.setPersonView(personView);
 
     PersonView representantView = new PersonView();
