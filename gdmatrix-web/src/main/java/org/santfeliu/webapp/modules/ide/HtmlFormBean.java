@@ -163,25 +163,6 @@ public class HtmlFormBean extends WebBean
       .setPrettyPrinting().create();
     return gson.toJson(getData());
   }
-
-//  public void loadDynamicComponents(ComponentSystemEvent event)
-//  {
-//    UIComponent panel = ComponentUtils.postAddToView(event);
-//    if (panel != null && update)
-//    {
-//      panel.getChildren().clear();
-//
-//      if (previewVisible)
-//      {
-//        updateComponents(panel);
-//      }
-//      else
-//      {
-//        System.out.println("PREVIEW HIDDEN");
-//      }
-//      update = false;
-//    }
-//  }
   
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
@@ -194,6 +175,10 @@ public class HtmlFormBean extends WebBean
         if(previewVisible)
         {
           updateComponents(panel);
+        }
+        else
+        {
+          System.out.println("PREVIEW HIDDEN");
         }
       }
       catch (Exception ex)

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -474,7 +475,7 @@ public class HtmlForm implements Form, Serializable
   public void write(OutputStream os, Map data) throws IOException
   {
     HtmlPrinter printer = new HtmlPrinter(this);
-    printer.print(new PrintWriter(os));
+    printer.print(new PrintWriter(new OutputStreamWriter(os, encoding)));
   }
 
   public void linkView(HtmlView view, HtmlField field)
