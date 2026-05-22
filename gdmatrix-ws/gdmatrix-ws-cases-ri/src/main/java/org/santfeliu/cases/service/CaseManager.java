@@ -3236,6 +3236,14 @@ public class CaseManager implements CaseManagerPort
     Type type = TypeCache.getInstance().getType(casePersonTypeId);
     WSTypeValidator validator = new WSTypeValidator(type);
     validator.validate(casePerson, "casePersonId");
+    
+    //Person existence validation
+    KernelManagerPort port = getKernelManagerPort();
+    PersonFilter personFilter = new PersonFilter();
+    personFilter.getPersonId().add(casePerson.getPersonId());
+    int counter = port.countPersons(personFilter);
+    if (counter < 1)
+      throw new WebServiceException("cases:PERSON_NOT_FOUND");
   }
 
   private void validateIntervention(Intervention intervention)
