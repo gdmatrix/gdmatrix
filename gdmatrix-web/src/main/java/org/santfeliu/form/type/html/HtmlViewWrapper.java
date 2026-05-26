@@ -440,6 +440,17 @@ public class HtmlViewWrapper
     StringBuilder sb = new StringBuilder();
     sb.append("<").append(tag).append(">");
 
+//    // Includete atributes
+//    for (String name : node.getPropertyNames())
+//    {
+//      Object value = node.getProperty(name);
+//      if (value != null)
+//      {
+//        sb.append(" ").append(name).append("=\"").append(value).append("\"");
+//      }
+//    }
+//    sb.append(">");
+
     for (Object obj : node.getChildren())
     {
       sb.append(reconstructHtml((HtmlView) obj));
@@ -461,7 +472,7 @@ public class HtmlViewWrapper
     return (text != null && !text.trim().isEmpty()) ? text : "Label";
   }
 
-  // Get the legend of a Fildset
+  // Get the legend of a Fieldset
   public String getLegendText()
   {
     if ("fieldset".equals(view.getNativeViewType()))
@@ -484,7 +495,7 @@ public class HtmlViewWrapper
   public String getButtonValueDef()
   {
     String val = getValue();
-    return (val != null && !val.trim().isEmpty()) ? val : "Botón";
+    return (val != null && !val.trim().isEmpty()) ? val : "Button";
   }
 
   // == Image properties == //
@@ -650,26 +661,31 @@ public class HtmlViewWrapper
       view.setProperty("dataref", dataref);
     }
   }
-
-  public String getGridClass()
+  
+  public String getGridClass() 
   {
     String styleClass = getStyleClass();
     if (styleClass == null || styleClass.trim().isEmpty())
     {
-      return "col-12 md:col-6";
+      return getDefaultGridClass();
     }
-
+    
     StringBuilder gridClasses = new StringBuilder();
-
     Matcher m = Pattern.compile("(?:sm:|md:|lg:|xl:)?col-\\d+")
       .matcher(styleClass);
-
+    
     while (m.find())
     {
       gridClasses.append(m.group()).append(" ");
     }
-
+    
     String result = gridClasses.toString().trim();
-    return result.isEmpty() ? "col-12 md:col-6" : result;
+    return result.isEmpty() ? getDefaultGridClass() : result;
+  }
+  
+  private String getDefaultGridClass()
+  {
+    ElementDef def = ElementDef.fromView(this);
+    return def != null ? def.getDefaultWidth() : "col-12";
   }
 }

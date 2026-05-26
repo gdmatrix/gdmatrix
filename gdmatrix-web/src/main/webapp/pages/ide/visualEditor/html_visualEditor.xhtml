@@ -16,7 +16,7 @@
                        update="properties_panel visual_html_canvas html_visualEditor_toolbar" process="@this" />
       <p:remoteCommand name="rcResizeElement" action="#{visualEditorBean.resizeElement}" 
                        update="properties_panel visual_html_canvas @([id$=code_editor])" process="@this" />
-      
+
       <p:outputPanel id="html_visualEditor_toolbar" 
                      class="flex align-items-center gap-2 p-2 surface-100 border-bottom-1 border-300 flex-grow-0"
                      style="min-height: 3rem;">
@@ -99,22 +99,14 @@
                       styleClass="border-x-1 border-bottom-1 border-300 transition-all transition-duration-300 mx-auto" 
                       style="width: #{visualEditorBean.screenType eq 'MOBILE' ? '375px' : (visualEditorBean.screenType eq 'TABLET' ? '768px' : 
                                       (visualEditorBean.screenType eq 'LAPTOP' ? '992px' : '100%'))}; min-height: 100%;">
-
           <div class="relative h-full p-4">
+            <!-- Background grid reference (12 columns guide) -->
             <div class="absolute top-0 bottom-0 left-0 w-full pointer-events-none z-0 px-4 py-4">
               <div class="grid grid-nogutter w-full h-full m-0">
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-left: 1px dashed #adb5bd; border-right: 1px dashed #adb5bd; opacity: 0.4">1</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">2</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">3</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">4</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">5</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">6</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">7</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">8</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">9</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">10</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">11</div>
-                <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm" style="border-right: 1px dashed #adb5bd; opacity: 0.4">12</div>
+                <ui:repeat value="#{[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}" var="n">
+                  <div class="col-1 h-full flex justify-content-center pt-2 font-bold text-400 text-sm"
+                       style="#{n == 1 ? 'border-left: 1px dashed #adb5bd;' : ''} border-right: 1px dashed #adb5bd; opacity: 0.4">#{n}</div>
+                </ui:repeat>
               </div>
             </div>
 
@@ -252,11 +244,16 @@
       }
     }
 
-    // Emulates different types of screens
     function initSnapResize(e, elementNode, screenType) {
       e.preventDefault();
       e.stopPropagation();
 
+      const handle = e.currentTarget;
+      handle.classList.add('dragging');
+      try {
+        handle.setPointerCapture(e.pointerId);
+      } catch (err) {}
+      
       const startX = e.clientX;
       const startWidth = elementNode.offsetWidth;
       const gridContainer = elementNode.parentElement;
@@ -281,10 +278,9 @@
           break;
       }
 
-      function doDrag(e) {
-        const diff = e.clientX - startX;
+      function doDrag(ev) {
+        const diff = ev.clientX - startX;
         newCols = Math.round((startWidth + diff) / colWidth);
-
         if (newCols < 1)
           newCols = 1;
         if (newCols > 12)
@@ -296,30 +292,43 @@
           classNames.forEach(function (cls) {
             // Delete ONLY the prefix we are modifying
             if (activePrefix === 'col-') {
-              if (/^col-\d+$/.test(cls))
+              if (/^col-\d+$/.test(cls)){
                 elementNode.classList.remove(cls);
+              }
             } else {
-              if (cls.startsWith(activePrefix))
+              if (cls.startsWith(activePrefix)){
                 elementNode.classList.remove(cls);
+              }
             }
           });
-
-          // Add the new gridClass
+          // Real data
           elementNode.classList.add(activePrefix + newCols);
+
+          // Visual Feedback, indepedent from the ViewPort - temporal col-x
+          Array.from(elementNode.classList).forEach(function (cls) {
+            if (/^col-\d+$/.test(cls))
+              elementNode.classList.remove(cls);
+          });
+          elementNode.classList.add('col-' + newCols);
           currentCols = newCols;
         }
       }
 
       function stopDrag() {
-        document.removeEventListener('pointermove', doDrag);
-        document.removeEventListener('pointerup', stopDrag);
-        document.removeEventListener('pointercancel', stopDrag);
+        handle.removeEventListener('pointermove', doDrag);
+        handle.removeEventListener('pointerup', stopDrag);
+        handle.removeEventListener('pointercancel', stopDrag);
+        try {
+          handle.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+        handle.classList.remove('dragging');
+        
         rcResizeElement([{name: 'columns', value: newCols}]);
       }
 
-      document.addEventListener('pointermove', doDrag);
-      document.addEventListener('pointerup', stopDrag);
-      document.removeEventListener('pointercancel', stopDrag);
+      handle.addEventListener('pointermove', doDrag);
+      handle.addEventListener('pointerup', stopDrag);
+      handle.addEventListener('pointercancel', stopDrag);
     }
     //]]>
   </script>
@@ -335,6 +344,26 @@
     .screen-btn .ui-button-icon-left {
       width: 1rem;
       text-align: center;
+    }
+    
+    .resize-handle {
+      position: absolute;
+    }
+    
+    /* Invisible touch area. Increases the touch area */
+    .resize-handle::before {
+      content: '';
+      position: absolute;
+      top: -0.75rem;
+      bottom: -0.75rem;
+      left: -0.75rem;
+      right: -0.75rem;
+      cursor: ew-resize;
+    }
+    
+    .resize-handle.dragging::before {
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 50%;
     }
   </style>
 </ui:composition>

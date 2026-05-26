@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.enterprise.context.RequestScoped;
@@ -86,7 +87,7 @@ public class VisualEditorBean extends WebBean
   {
     INPUT("Input Text", "input", true, true, "col-12 md:col-6", "text", "inputText_template.xhtml", "inputText_props.xhtml"),
     RADIO("Input Radio", "input", true, false, "", "radio", "inputRadio_template.xhtml", "inputRadio_props.xhtml"),
-    CHECKBOX("Input CheckBox", "input", true, false, "", "checkbox", "inputCheckbox_template.xhtml", "inputCheckbox_props.xhtml"),
+    CHECKBOX("Input CheckBox", "input", true, false, "col-12 md:col-6", "checkbox", "inputCheckbox_template.xhtml", "inputCheckbox_props.xhtml"),
     TEXTAREA("Textarea", "textarea", true, true, "col-12 md:col-12", null, "textArea_template.xhtml", "textArea_props.xhtml"),
     SELECT("Select", "select", true, true, "col-12 md:col-6", null, "select_template.xhtml", "select_props.xhtml"),
     BUTTON("Button", "button", false, true, "col-12 md:col-6", "button", "button_template.xhtml", "button_props.xhtml"),
@@ -277,11 +278,6 @@ public class VisualEditorBean extends WebBean
       this.text = text;
     }
 
-    public static long getSerialVersionUID()
-    {
-      return serialVersionUID;
-    }
-
     public String getValue()
     {
       return value;
@@ -314,12 +310,11 @@ public class VisualEditorBean extends WebBean
     {
       HtmlView view = findViewByIdRecursively((HtmlView) form.getRootView(), this.selectedViewId);
 
-      // If view found, renovate element reference
-      if (view != null)
-      {
-        view.setReference(this.selectedViewId);
-      }
-
+//      // If view found, renovate element reference
+//      if (view != null)
+//      {
+//        view.setReference(this.selectedViewId);
+//      }
       return view;
     }
     return null;
@@ -330,6 +325,7 @@ public class VisualEditorBean extends WebBean
     if (view != null)
     {
       this.selectedViewId = view.getId();
+      view.setReference(this.selectedViewId);
     }
     else
     {
@@ -383,7 +379,7 @@ public class VisualEditorBean extends WebBean
           return def == ElementDef.RADIO || def == ElementDef.CHECKBOX;
         }
 
-        return def != ElementDef.RADIO && def != ElementDef.CHECKBOX;
+        return def != ElementDef.RADIO; // && def != ElementDef.CHECKBOX;
       })
       .toArray(ElementDef[]::new);
   }
@@ -425,7 +421,7 @@ public class VisualEditorBean extends WebBean
     return manualOptionsList;
   }
 
-  // Por si volvemos a querer el UI:REPEAT
+  // In case we want back the UI:REPEAT
   public void setManualOptionsList(List<SelectOption> manualOptionsList)
   {
     this.manualOptionsList = manualOptionsList;
@@ -588,7 +584,7 @@ public class VisualEditorBean extends WebBean
     }
     return blocks;
   }
-
+  
   public String getDynamicPropFile()
   {
     HtmlView currentView = getSelectedView();
@@ -699,37 +695,48 @@ public class VisualEditorBean extends WebBean
     try
     {
       HtmlForm form = htmlFormBean.getForm();
-      if (form != null)
+      if (form == null)
       {
-        if (form.getRootView() != null)
-        {
-          cleanWhitespaceNodes((HtmlView) form.getRootView());
-        }
-
-        StringWriter sw = new StringWriter();
-        form.write(new WriterOutputStream(sw, StandardCharsets.UTF_8), null);
-
-        htmlFormBean.getIdeBean().getDocument().setSource(sw.toString());
-
-        // Recreate the tree from the plain text
-        htmlFormBean.loadVisualEditor();
-
-        // After recosntructing the tree, re-select the current element by id
-        HtmlView currentView = getSelectedView();
-        if (currentView != null)
-        {
-          currentView.setReference(this.selectedViewId);
-        }
-
-        htmlFormBean.setSourceModified(true);
-        htmlFormBean.getIdeBean().markChanged();
-        htmlFormBean.setUpdate(true);
+        return;
       }
+      if (form.getRootView() != null)
+      {
+        cleanWhitespaceNodes((HtmlView) form.getRootView(), false);
+      }
+
+      StringWriter sw = new StringWriter();
+      try (WriterOutputStream wos = new WriterOutputStream(sw, StandardCharsets.UTF_8))
+      {
+        form.write(wos, null);
+        wos.flush();
+      }
+
+      htmlFormBean.getIdeBean().getDocument().setSource(sw.toString());
+
+      // Recreate the tree from the plain text
+      htmlFormBean.loadVisualEditor();
+
+      // After recosntructing the tree, re-select the current element by id
+      HtmlView currentView = getSelectedView();
+      if (currentView != null)
+      {
+        currentView.setReference(this.selectedViewId);
+      }
+
+      htmlFormBean.setSourceModified(true);
+      htmlFormBean.getIdeBean().markChanged();
+      htmlFormBean.setUpdate(true);
     }
     catch (Exception ex)
     {
-      error(ex);
+      error("Error in saveVisualEditorToText :" + ex.getMessage());
     }
+  }
+
+  private void commit()
+  {
+    htmlFormBean.setUpdate(true);
+    saveVisualEditorToText();
   }
 
   public void addBottomSelectedElement()
@@ -750,18 +757,24 @@ public class VisualEditorBean extends WebBean
 
   public void addInsideSelectedElement()
   {
-    if (selectedElementDef != null)
+    if (selectedElementDef == null)
     {
-      HtmlView currentView = getSelectedView();
-      if (currentView != null && "fieldset".equals(currentView.getNativeViewType()))
-      {
-        if (selectedElementDef != ElementDef.RADIO && selectedElementDef != ElementDef.CHECKBOX)
-        {
-          return;
-        }
-      }
-      addElement(selectedElementDef.getTag(), selectedElementDef.getDefaultType(), AddMode.INSIDE);
+      error("Please select an elemen type first.");
+      return;
     }
+
+    HtmlView currentView = getSelectedView();
+    if (currentView == null || "fieldset".equals(currentView.getNativeViewType()))
+    {
+      error("Inside insertion is only allowed inside a fieldset");
+      return;
+    }
+    if (selectedElementDef != ElementDef.RADIO && selectedElementDef != ElementDef.CHECKBOX)
+    {
+      error("Only radio/checkbox elements can be added inside a fieldset");
+      return;
+    }
+    addElement(selectedElementDef.getTag(), selectedElementDef.getDefaultType(), AddMode.INSIDE);
   }
 
   public void addElement(String tag)
@@ -786,7 +799,7 @@ public class VisualEditorBean extends WebBean
     }
 
     boolean needsLabel = config.isHasLabel();
-    String id = "i" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+    String id = generateUniqueId();
     HtmlViewWrapper wrapper = new HtmlViewWrapper(new HtmlView(config.getTag()));
 
     if ("input".equals(config.getTag()) && config.getDefaultType() != null)
@@ -800,7 +813,8 @@ public class VisualEditorBean extends WebBean
     this.associatedLabelText = "New " + tag;
 
     // Assign defaultWith depending on the element
-    String baseWidth = config != null ? config.getDefaultWidth() : "col-12";
+    // String baseWidth = config != null ? config.getDefaultWidth() : "col-12";
+    String baseWidth = config.getDefaultWidth();
     wrapper.setStyleClass(baseWidth);
 
     if ("fieldset".equals(config.getTag()))
@@ -870,7 +884,8 @@ public class VisualEditorBean extends WebBean
     }
 
     // --- CONSTRUCTION OF THE BLOCK (Label + Element) ---
-    boolean isLabelAfter = config != null && "radio".equals(config.getDefaultType());
+    //boolean isLabelAfter = config != null && "radio".equals(config.getDefaultType());
+    boolean isLabelAfter = "radio".equals(config.getDefaultType());
     HtmlViewWrapper labelWrapper = null;
 
     if (needsLabel)
@@ -896,7 +911,7 @@ public class VisualEditorBean extends WebBean
     }
     else
     {
-      // Insertion into the final
+      // Insertion into the end
       if (needsLabel && !isLabelAfter && labelWrapper != null)
       {
         targetContainer.add(labelWrapper.getUnderlyingView());
@@ -923,8 +938,7 @@ public class VisualEditorBean extends WebBean
     this.manualOptionsList.clear();
     this.elementInnerText = "";
 
-    htmlFormBean.setUpdate(true);
-    saveVisualEditorToText();
+    commit();
   }
 
   public void selectElementFromCanvas()
@@ -1024,7 +1038,7 @@ public class VisualEditorBean extends WebBean
 
     if (currentView == null)
     {
-      error("No element selected. Please click on an elemenet in the canvas first.");
+      error("No element selected. Please click on an element in the canvas first.");
       return;
     }
 
@@ -1098,8 +1112,6 @@ public class VisualEditorBean extends WebBean
 
       boolean hasExternalSource = (dataRef != null && !dataRef.trim().isEmpty())
         || (sql != null && !sql.trim().isEmpty());
-//      boolean hasManualOptions = this.manualOptionsList != null
-//        && !this.manualOptionsList.isEmpty();
 
       if (hasExternalSource)
       {
@@ -1131,15 +1143,7 @@ public class VisualEditorBean extends WebBean
         }
       }
     }
-    htmlFormBean.setUpdate(true);
-    saveVisualEditorToText();
-
-  }
-
-  public void saveFormProperties()
-  {
-    htmlFormBean.setUpdate(true);
-    saveVisualEditorToText();
+    commit();
   }
 
   public void cancelElement()
@@ -1373,9 +1377,8 @@ public class VisualEditorBean extends WebBean
     {
       container.add(targetInsertIdx, currentView);
     }
-
-    htmlFormBean.setUpdate(true);
-    saveVisualEditorToText();
+    
+    commit();
   }
 
   public void moveDownSelected()
@@ -1513,8 +1516,7 @@ public class VisualEditorBean extends WebBean
       container.add(targetInsertIdx, currentView);
     }
 
-    htmlFormBean.setUpdate(true);
-    saveVisualEditorToText();
+    commit();
   }
 
   public void removeSelected()
@@ -1541,16 +1543,10 @@ public class VisualEditorBean extends WebBean
 
     cancelElement();
 
-    htmlFormBean.setUpdate(true);
-    saveVisualEditorToText();
+    commit();
   }
-
-  private void cleanWhitespaceNodes(HtmlView view)
-  {
-    cleanWhitespaceNodesRecursive(view, false);
-  }
-
-  private void cleanWhitespaceNodesRecursive(HtmlView view, boolean preserveWhitespace)
+  
+  private void cleanWhitespaceNodes(HtmlView view, boolean preserveWhitespace)
   {
     if (view == null || view.getChildren() == null)
     {
@@ -1579,7 +1575,7 @@ public class VisualEditorBean extends WebBean
           }
           else if (!isPre)
           {
-            // Convert to simple withespaces
+            // Convert to simple whitespaces
             String cleaned = text.replaceAll("[\\r\\n\\t]+", " ");
 
             cleaned = cleaned.replaceAll("(?:&#160;|&nbsp;| )+", " ");
@@ -1589,7 +1585,7 @@ public class VisualEditorBean extends WebBean
         }
         else
         {
-          cleanWhitespaceNodesRecursive(htmlChild, isPre);
+          cleanWhitespaceNodes(htmlChild, isPre);
         }
       }
     }
@@ -1661,8 +1657,7 @@ public class VisualEditorBean extends WebBean
 
     currentView.setProperty("class", finalCss);
 
-    htmlFormBean.setUpdate(true);
-    saveVisualEditorToText();
+    commit();
   }
 
   public void resizeElement()
@@ -1718,7 +1713,7 @@ public class VisualEditorBean extends WebBean
         currentXl = newColSize;
       }
 
-      // Syn the spinners
+      // Sync the spinners
       this.colDefault = currentCol;
       this.colMd = currentMd;
       this.colLg = currentLg;
@@ -1743,36 +1738,51 @@ public class VisualEditorBean extends WebBean
 
       wrapper.setStyleClass(finalCss);
 
-      htmlFormBean.setUpdate(true);
-      saveVisualEditorToText();
+      commit();
     }
   }
-
-  public String getSimulatedGridClass(HtmlViewWrapper wrapper)
+  
+  public String getSimulatedGridClass(HtmlViewWrapper wrapper) 
   {
     if (wrapper == null)
     {
-      return "col-12 md:col-6";
+      return "col-12";
     }
+    
+    String css = wrapper.getGridClass();
 
-    String realGridClass = wrapper.getGridClass();
-
-    if ("MOBILE".equals(screenType))
+    Integer base = extractColSize(css, "col-");
+    Integer md   = extractColSize(css, "md:col-");
+    Integer lg   = extractColSize(css, "lg:col-");
+    Integer xl   = extractColSize(css, "xl:col-"); 
+    
+    // PF is mobile-first. The base is 12
+    if (base == null)
     {
-      return realGridClass.replaceAll("(?:sm:|md:|lg:|xl:)col-\\d+", "").replaceAll("\\s+", " ").trim();
+      base = 12;
     }
-    else if ("TABLET".equals(screenType))
+    
+    int effective;
+    switch (screenType)
     {
-      return realGridClass.replaceAll("(?:lg:|xl:)col-\\d+", "").replaceAll("\\s+", " ").trim();
+      case "MOBILE":
+        effective = base;
+        break;
+      case "TABLET":
+        effective = (md != null) ? md : base;
+        break;
+      case "LAPTOP":
+        effective = (lg != null) ? lg : (md != null ? md : base);
+        break;
+      case "MONITOR":
+      default:
+        effective = (xl != null) ? xl : (lg != null ? lg : (md != null ? md : base));
+        break;
     }
-    else if ("LAPTOP".equals(screenType))
-    {
-      return realGridClass.replaceAll("(?:xl:)col-\\d+", "").replaceAll("\\s+", " ").trim();
-    }
-
-    //If it's Monitor (xl) do not remove anything
-    return realGridClass;
+    
+    return "col-" + effective;
   }
+
 
   public void addManualOption()
   {
@@ -1864,7 +1874,7 @@ public class VisualEditorBean extends WebBean
       }
     }
 
-    // First-load case: The div is parsed in the tree. Extract the literal contenet from the original source. (Preserves identation).
+    // First-load case: The div is parsed in the tree. Extract the literal contenet from the original source. (Preserves indentation).
     String divId = wrapper.getId();
     if (divId == null || divId.isEmpty())
     {
@@ -1937,16 +1947,21 @@ public class VisualEditorBean extends WebBean
     return str.substring(start, end);
   }
 
-  public boolean isLegacyFormDetected()
+  private String generateUniqueId()
   {
-    String source = htmlFormBean.getIdeBean().getDocument().getSource();
-    if (source == null)
-    {
-      return false;
-    }
+    HtmlForm form = htmlFormBean.getForm();
+    HtmlView root = (form != null) ? (HtmlView) form.getRootView() : null;
 
-    return source.contains("position:absolute")
-      || source.contains("data-outputorder")
-      || source.contains("FORM");
+    for (int attempt = 0; attempt < 10; attempt++)
+    {
+      String candidate = "i" + java.util.UUID.randomUUID()
+        .toString().replace("-", "").substring(0, 12);
+
+      if (root == null || findViewByIdRecursively(root, candidate) == null)
+      {
+        return candidate;
+      }
+    }
+    return "i" + java.util.UUID.randomUUID().toString().replace("-", "");
   }
 }
