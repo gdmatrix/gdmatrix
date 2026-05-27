@@ -151,7 +151,11 @@ public class HtmlParser
     }
     else if (node instanceof Comment)
     {
-      // remove comments
+      // Not remove comments
+      HtmlView view = new HtmlView();
+      populateView(node, view, parentView);
+      view.setViewType(View.UNKNOWN); // Reusar TEXT para no modificar view con un nuevo type. (Aunque seria lo mejor)
+      view.setProperty("text", node.getNodeValue());
     }
     else if (node instanceof Element)// normal tag
     {

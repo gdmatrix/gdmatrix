@@ -535,7 +535,7 @@ public class VisualEditorBean extends WebBean
       }
 
       String type = currentView.getNativeViewType();
-      if ("#text".equals(type) || "legend".equals(type))
+      if ("#comment".equals(type) || "#text".equals(type) || "legend".equals(type))
       {
         continue;
       }

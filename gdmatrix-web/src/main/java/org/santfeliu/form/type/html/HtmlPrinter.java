@@ -102,6 +102,20 @@ public class HtmlPrinter
   {
     boolean isInline = isInline(view);
 
+    // Case 0: Comment node
+    if ("#comment".equals(view.getNativeViewType()))
+    {
+      String text = (String) view.getProperty("text");
+      if (text != null)
+      {
+        // Keep the comment as-is
+        printIndent(writer, indent);
+        writer.print("<!--");
+        writer.print(text);
+        writer.println("-->");
+      }
+      return;
+    }
     // Case 1: Pure text node
     if (View.TEXT.equals(view.getViewType()))
     {
@@ -120,7 +134,8 @@ public class HtmlPrinter
     }
     // Case 2: Item with 1 child (text). E.g. label, b, p
     else if (view.getChildren().size() == 1
-      && View.TEXT.equals(view.getChildren().get(0).getViewType()))
+      && View.TEXT.equals(view.getChildren().get(0).getViewType())
+      && !"#comment".equals(view.getChildren().get(0).getNativeViewType()))
     {
       View label = view.getChildren().get(0);
 
@@ -157,7 +172,6 @@ public class HtmlPrinter
         writer.print("</" + view.getNativeViewType() + ">");
       }
     }
-    
     // Case 3: Empty element. Eg input, hr, img
     else if (view.getChildren().isEmpty())
     {
