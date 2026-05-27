@@ -36,8 +36,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -491,16 +494,42 @@ public class VisualEditorBean extends WebBean
   {
     return buildBlocksFromList(getPanelChildren());
   }
-
+  
   private List<VisualCanvasBlock> buildBlocksFromList(List<View> children)
   {
     List<VisualCanvasBlock> blocks = new ArrayList<>();
-    List<HtmlView> processedElements = new ArrayList<>();
 
+    Set<HtmlView> processed = Collections.newSetFromMap(new IdentityHashMap<>()); //O(1) lookup
+
+    // Pre-indexar id → posición y for → posición. Una sola pasada O(N).
+    Map<String, Integer> indexById = new HashMap<>();
+    Map<String, Integer> indexByLabelFor = new HashMap<>();
     for (int i = 0; i < children.size(); i++)
     {
+      HtmlView v = (HtmlView) children.get(i);
+      String id = v.getId();
+      if (id == null)
+      {
+        id = (String) v.getProperty("id");
+      }
+      if (id != null && !id.isEmpty())
+      {
+        indexById.putIfAbsent(id, i);
+      }
+      if ("label".equals(v.getNativeViewType()))
+      {
+        String forAttr = (String) v.getProperty("for");
+        if (forAttr != null && !forAttr.isEmpty())
+        {
+          indexByLabelFor.putIfAbsent(forAttr, i);
+        }
+      }
+    }
+    
+    for (int i = 0; i < children.size(); i++) // O(N), lookups interiores O(1)
+    {
       HtmlView currentView = (HtmlView) children.get(i);
-      if (processedElements.contains(currentView))
+      if (processed.contains(currentView))
       {
         continue;
       }
@@ -518,28 +547,20 @@ public class VisualEditorBean extends WebBean
       if ("label".equals(type))
       {
         labelWrapper = new HtmlViewWrapper(currentView);
-        processedElements.add(currentView);
+        processed.add(currentView);
+
         String forAttr = labelWrapper.getProperty("for");
-        if (forAttr != null && !forAttr.trim().isEmpty())
+        if (forAttr != null && !forAttr.isEmpty())
         {
-          for (int j = 0; j < children.size(); j++)
+          Integer pairIdx = indexById.get(forAttr);
+          if (pairIdx != null)
           {
-            HtmlView candidate = (HtmlView) children.get(j);
-            if (processedElements.contains(candidate))
+            HtmlView pair = (HtmlView) children.get(pairIdx);
+            if (!processed.contains(pair))
             {
-              continue;
-            }
-            String candidateId = candidate.getId();
-            if (candidateId == null)
-            {
-              candidateId = (String) candidate.getProperty("id");
-            }
-            if (forAttr.equals(candidateId))
-            {
-              elementWrapper = new HtmlViewWrapper(candidate);
-              processedElements.add(candidate);
-              isLabelFirst = (i < j);
-              break;
+              elementWrapper = new HtmlViewWrapper(pair);
+              processed.add(pair);
+              isLabelFirst = (i < pairIdx);
             }
           }
         }
@@ -547,27 +568,20 @@ public class VisualEditorBean extends WebBean
       else
       {
         elementWrapper = new HtmlViewWrapper(currentView);
-        processedElements.add(currentView);
+        processed.add(currentView);
+
         String myId = elementWrapper.getId();
-        if (myId != null && !myId.trim().isEmpty())
+        if (myId != null && !myId.isEmpty())
         {
-          for (int j = 0; j < children.size(); j++)
+          Integer pairIdx = indexByLabelFor.get(myId);
+          if (pairIdx != null)
           {
-            HtmlView candidate = (HtmlView) children.get(j);
-            if (processedElements.contains(candidate))
+            HtmlView pair = (HtmlView) children.get(pairIdx);
+            if (!processed.contains(pair))
             {
-              continue;
-            }
-            if ("label".equals(candidate.getNativeViewType()))
-            {
-              String forAttr = (String) candidate.getProperty("for");
-              if (myId.equals(forAttr))
-              {
-                labelWrapper = new HtmlViewWrapper(candidate);
-                processedElements.add(candidate);
-                isLabelFirst = (j < i);
-                break;
-              }
+              labelWrapper = new HtmlViewWrapper(pair);
+              processed.add(pair);
+              isLabelFirst = (pairIdx < i);
             }
           }
         }
@@ -584,7 +598,7 @@ public class VisualEditorBean extends WebBean
     }
     return blocks;
   }
-  
+
   public String getDynamicPropFile()
   {
     HtmlView currentView = getSelectedView();
@@ -1377,7 +1391,7 @@ public class VisualEditorBean extends WebBean
     {
       container.add(targetInsertIdx, currentView);
     }
-    
+
     commit();
   }
 
@@ -1545,7 +1559,7 @@ public class VisualEditorBean extends WebBean
 
     commit();
   }
-  
+
   private void cleanWhitespaceNodes(HtmlView view, boolean preserveWhitespace)
   {
     if (view == null || view.getChildren() == null)
@@ -1741,27 +1755,27 @@ public class VisualEditorBean extends WebBean
       commit();
     }
   }
-  
-  public String getSimulatedGridClass(HtmlViewWrapper wrapper) 
+
+  public String getSimulatedGridClass(HtmlViewWrapper wrapper)
   {
     if (wrapper == null)
     {
       return "col-12";
     }
-    
+
     String css = wrapper.getGridClass();
 
     Integer base = extractColSize(css, "col-");
-    Integer md   = extractColSize(css, "md:col-");
-    Integer lg   = extractColSize(css, "lg:col-");
-    Integer xl   = extractColSize(css, "xl:col-"); 
-    
+    Integer md = extractColSize(css, "md:col-");
+    Integer lg = extractColSize(css, "lg:col-");
+    Integer xl = extractColSize(css, "xl:col-");
+
     // PF is mobile-first. The base is 12
     if (base == null)
     {
       base = 12;
     }
-    
+
     int effective;
     switch (screenType)
     {
@@ -1779,10 +1793,9 @@ public class VisualEditorBean extends WebBean
         effective = (xl != null) ? xl : (lg != null ? lg : (md != null ? md : base));
         break;
     }
-    
+
     return "col-" + effective;
   }
-
 
   public void addManualOption()
   {
