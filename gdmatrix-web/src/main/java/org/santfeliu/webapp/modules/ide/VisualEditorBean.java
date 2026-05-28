@@ -41,7 +41,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.enterprise.context.RequestScoped;
@@ -311,7 +310,7 @@ public class VisualEditorBean extends WebBean
     HtmlForm form = htmlFormBean.getForm();
     if (form != null && form.getRootView() != null)
     {
-      HtmlView view = findViewByIdRecursively((HtmlView) form.getRootView(), this.selectedViewId);
+      HtmlView view = htmlFormBean.findViewByIdRecursively((HtmlView) form.getRootView(), this.selectedViewId);
 
 //      // If view found, renovate element reference
 //      if (view != null)
@@ -499,9 +498,9 @@ public class VisualEditorBean extends WebBean
   {
     List<VisualCanvasBlock> blocks = new ArrayList<>();
 
-    Set<HtmlView> processed = Collections.newSetFromMap(new IdentityHashMap<>()); //O(1) lookup
+    Set<HtmlView> processed = Collections.newSetFromMap(new IdentityHashMap<>());
 
-    // Pre-indexar id → posición y for → posición. Una sola pasada O(N).
+    // Pre-index id → position and for → position.
     Map<String, Integer> indexById = new HashMap<>();
     Map<String, Integer> indexByLabelFor = new HashMap<>();
     for (int i = 0; i < children.size(); i++)
@@ -526,7 +525,7 @@ public class VisualEditorBean extends WebBean
       }
     }
     
-    for (int i = 0; i < children.size(); i++) // O(N), lookups interiores O(1)
+    for (int i = 0; i < children.size(); i++)
     {
       HtmlView currentView = (HtmlView) children.get(i);
       if (processed.contains(currentView))
@@ -645,7 +644,7 @@ public class VisualEditorBean extends WebBean
     {
       return null;
     }
-    return findViewByIdRecursively((HtmlView) form.getRootView(), CONTAINER_ID);
+    return htmlFormBean.findViewByIdRecursively((HtmlView) form.getRootView(), CONTAINER_ID);
   }
 
   public List<View> getPanelChildren()
@@ -675,35 +674,6 @@ public class VisualEditorBean extends WebBean
     return wrappers;
   }
 
-  private HtmlView findViewByIdRecursively(HtmlView view, String id)
-  {
-    if (view == null || id == null)
-    {
-      return null;
-    }
-
-    String viewId = view.getId();
-    if (viewId == null || viewId.trim().isEmpty())
-    {
-      viewId = (String) view.getProperty("id");
-    }
-
-    if (id.equals(viewId) || id.equals(view.getReference()))
-    {
-      return view;
-    }
-
-    for (View child : view.getChildren())
-    {
-      HtmlView found = findViewByIdRecursively((HtmlView) child, id);
-      if (found != null)
-      {
-        return found;
-      }
-    }
-    return null;
-  }
-
   public void saveVisualEditorToText()
   {
     try
@@ -713,11 +683,7 @@ public class VisualEditorBean extends WebBean
       {
         return;
       }
-      if (form.getRootView() != null)
-      {
-        cleanWhitespaceNodes((HtmlView) form.getRootView(), false);
-      }
-
+      
       StringWriter sw = new StringWriter();
       try (WriterOutputStream wos = new WriterOutputStream(sw, StandardCharsets.UTF_8))
       {
@@ -813,7 +779,7 @@ public class VisualEditorBean extends WebBean
     }
 
     boolean needsLabel = config.isHasLabel();
-    String id = generateUniqueId();
+    String id = htmlFormBean.generateUniqueId();
     HtmlViewWrapper wrapper = new HtmlViewWrapper(new HtmlView(config.getTag()));
 
     if ("input".equals(config.getTag()) && config.getDefaultType() != null)
@@ -827,7 +793,6 @@ public class VisualEditorBean extends WebBean
     this.associatedLabelText = "New " + tag;
 
     // Assign defaultWith depending on the element
-    // String baseWidth = config != null ? config.getDefaultWidth() : "col-12";
     String baseWidth = config.getDefaultWidth();
     wrapper.setStyleClass(baseWidth);
 
@@ -898,7 +863,6 @@ public class VisualEditorBean extends WebBean
     }
 
     // --- CONSTRUCTION OF THE BLOCK (Label + Element) ---
-    //boolean isLabelAfter = config != null && "radio".equals(config.getDefaultType());
     boolean isLabelAfter = "radio".equals(config.getDefaultType());
     HtmlViewWrapper labelWrapper = null;
 
@@ -1017,10 +981,6 @@ public class VisualEditorBean extends WebBean
             {
               this.selectedMode = "SQL";
             }
-            else if (!this.manualOptionsList.isEmpty())
-            {
-              this.selectedMode = "MANUAL";
-            }
             else
             {
               this.selectedMode = "";
@@ -1121,45 +1081,32 @@ public class VisualEditorBean extends WebBean
     }
     if ("select".equals(wrapper.getNativeViewType()))
     {
-      String dataRef = wrapper.getDataRef();
-      String sql = wrapper.getSql();
-
-      boolean hasExternalSource = (dataRef != null && !dataRef.trim().isEmpty())
-        || (sql != null && !sql.trim().isEmpty());
-
-      if (hasExternalSource)
+      // Override source options
+      wrapper.getChildren().clear();
+      for (SelectOption opt : this.manualOptionsList)
       {
-        wrapper.getChildren().clear(); //Clear manualOptions
-      }
-      else
-      {
-        // Override source options
-        wrapper.getChildren().clear();
-        for (SelectOption opt : this.manualOptionsList)
+        if ((opt.getValue() == null || opt.getValue().trim().isEmpty())
+          && (opt.getText() == null || opt.getText().trim().isEmpty()))
         {
-          if ((opt.getValue() == null || opt.getValue().trim().isEmpty())
-            && (opt.getText() == null || opt.getText().trim().isEmpty()))
-          {
-            continue;
-          }
-
-          String val = opt.getValue() != null ? opt.getValue().trim() : "";
-          String text = opt.getText() != null && !opt.getText().trim().isEmpty()
-            ? opt.getText().trim() : val;
-
-          HtmlViewWrapper optWrapper = new HtmlViewWrapper(new HtmlView("option"));
-          if (!val.isEmpty())
-          {
-            optWrapper.setValue(val);
-          }
-          optWrapper.setInnerText(text);
-          wrapper.getChildren().add(optWrapper.getUnderlyingView());
+          continue;
         }
+
+        String val = opt.getValue() != null ? opt.getValue().trim() : "";
+        String text = opt.getText() != null && !opt.getText().trim().isEmpty()
+          ? opt.getText().trim() : val;
+
+        HtmlViewWrapper optWrapper = new HtmlViewWrapper(new HtmlView("option"));
+        if (!val.isEmpty())
+        {
+          optWrapper.setValue(val);
+        }
+        optWrapper.setInnerText(text);
+        wrapper.getChildren().add(optWrapper.getUnderlyingView());
       }
     }
     commit();
   }
-
+  
   public void cancelElement()
   {
     this.selectedViewId = null;
@@ -1559,52 +1506,7 @@ public class VisualEditorBean extends WebBean
 
     commit();
   }
-
-  private void cleanWhitespaceNodes(HtmlView view, boolean preserveWhitespace)
-  {
-    if (view == null || view.getChildren() == null)
-    {
-      return;
-    }
-
-    boolean isPre = preserveWhitespace || "pre".equalsIgnoreCase(view.getNativeViewType()) || "code".equalsIgnoreCase(view.getNativeViewType());
-
-    for (int i = view.getChildren().size() - 1; i >= 0; i--)
-    {
-      View child = view.getChildren().get(i);
-      if (child instanceof HtmlView)
-      {
-        HtmlView htmlChild = (HtmlView) child;
-        if ("#text".equals(htmlChild.getNativeViewType()))
-        {
-          String text = htmlChild.getProperty("text");
-
-          // If it has only blank spaces or is empty, erase it
-          if (text == null || text.replace("&#160;", "").replace("&nbsp;", "").trim().isEmpty())
-          {
-            if (!isPre)
-            {
-              view.getChildren().remove(i);
-            }
-          }
-          else if (!isPre)
-          {
-            // Convert to simple whitespaces
-            String cleaned = text.replaceAll("[\\r\\n\\t]+", " ");
-
-            cleaned = cleaned.replaceAll("(?:&#160;|&nbsp;| )+", " ");
-
-            htmlChild.setProperty("text", cleaned);
-          }
-        }
-        else
-        {
-          cleanWhitespaceNodes(htmlChild, isPre);
-        }
-      }
-    }
-  }
-
+  
   private Integer extractColSize(String css, String prefix)
   {
     if (css == null || css.trim().isEmpty())
@@ -1958,23 +1860,5 @@ public class VisualEditorBean extends WebBean
       end--;
     }
     return str.substring(start, end);
-  }
-
-  private String generateUniqueId()
-  {
-    HtmlForm form = htmlFormBean.getForm();
-    HtmlView root = (form != null) ? (HtmlView) form.getRootView() : null;
-
-    for (int attempt = 0; attempt < 10; attempt++)
-    {
-      String candidate = "i" + java.util.UUID.randomUUID()
-        .toString().replace("-", "").substring(0, 12);
-
-      if (root == null || findViewByIdRecursively(root, candidate) == null)
-      {
-        return candidate;
-      }
-    }
-    return "i" + java.util.UUID.randomUUID().toString().replace("-", "");
   }
 }

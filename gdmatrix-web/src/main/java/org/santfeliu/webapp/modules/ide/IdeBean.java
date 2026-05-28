@@ -213,6 +213,11 @@ public class IdeBean extends WebBean implements Serializable
     return typeSelectItems;
   }
 
+  public HtmlFormBean getHtmlFormBean()
+  {
+    return htmlFormBean;
+  }
+  
   public Map<String, Boolean> getIdeConfig()
   {
     if (ideConfig == null)
@@ -370,6 +375,10 @@ public class IdeBean extends WebBean implements Serializable
           document.setMetadata(metadataToJson(doc, type));
           document.setAccessControl(doc.getAccessControl());
           document.setModified(false);
+          
+          // Delegate post-load processing to the document type
+          type.onLoaded(document, this);
+          
           versions = null;
           saveCache();
         }

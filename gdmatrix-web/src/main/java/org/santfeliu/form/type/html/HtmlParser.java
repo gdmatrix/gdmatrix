@@ -142,19 +142,33 @@ public class HtmlParser
   private void parseNode(Node node, HtmlView parentView) throws IOException
   {
     if (node instanceof Text)
-    {
-      HtmlView view = new HtmlView();
-      populateView(node, view, parentView);
-      view.setViewType(View.TEXT);
+    {      
       String text = node.getNodeValue();
-      view.setProperty("text", text);
+      if (text != null)
+      {
+        // Skip whitespaces-only nodes, exept inside tags where whitespace is significant
+        String parentTag = (parentView != null) ? parentView.getNativeViewType() : null;
+        boolean preserveWhitespaces = "pre".equalsIgnoreCase(parentTag)
+          || "code".equalsIgnoreCase(parentTag)
+          || "textarea".equalsIgnoreCase(parentTag)
+          || "script".equalsIgnoreCase(parentTag)
+          || "style".equalsIgnoreCase(parentTag);
+        
+        if (preserveWhitespaces || !text.trim().isEmpty())
+        {
+          HtmlView view = new HtmlView();
+          populateView(node, view, parentView);
+          view.setViewType(View.TEXT);
+          view.setProperty("text", text);
+        }
+      }
     }
     else if (node instanceof Comment)
     {
       // Not remove comments
       HtmlView view = new HtmlView();
       populateView(node, view, parentView);
-      view.setViewType(View.UNKNOWN); // Reusar TEXT para no modificar view con un nuevo type. (Aunque seria lo mejor)
+      view.setViewType(View.UNKNOWN); // Unknown
       view.setProperty("text", node.getNodeValue());
     }
     else if (node instanceof Element)// normal tag

@@ -50,9 +50,11 @@ import javax.inject.Named;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.form.Form;
+import org.santfeliu.form.View;
 import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlParser;
 import org.santfeliu.form.type.html.HtmlView;
+import org.santfeliu.form.type.html.HtmlViewWrapper;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.util.ComponentUtils;
 import static org.santfeliu.webapp.util.FormImporter.ACTION_UPDATE_OPTION;
@@ -163,7 +165,7 @@ public class HtmlFormBean extends WebBean
       .setPrettyPrinting().create();
     return gson.toJson(getData());
   }
-  
+
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
     UIComponent panel = ComponentUtils.postAddToView(event);
@@ -172,7 +174,7 @@ public class HtmlFormBean extends WebBean
       try
       {
         panel.getChildren().clear();
-        if(previewVisible)
+        if (previewVisible)
         {
           updateComponents(panel);
         }
@@ -185,14 +187,13 @@ public class HtmlFormBean extends WebBean
       {
         ex.printStackTrace();
         error("Error loading dynamic components: " + ex.getMessage());
-      }
-      finally
+      } finally
       {
         update = false;
       }
     }
   }
-  
+
   private void updateComponents(UIComponent panel)
   {
     try
@@ -394,11 +395,12 @@ public class HtmlFormBean extends WebBean
       error(ex);
     }
   }
-  
+
   // Reproduce the core idea of PropertyHelper's PropertyMap in a simpler form
-  public static class MultiValueMap extends AbstractMap<String, Object> 
+  public static class MultiValueMap extends AbstractMap<String, Object>
     implements Serializable
   {
+
     private final Map<String, Object> inner = new HashMap<>();
 
     @Override
@@ -430,4 +432,162 @@ public class HtmlFormBean extends WebBean
       return inner.entrySet();
     }
   }
+
+  public HtmlView findViewByIdRecursively(HtmlView view, String id)
+  {
+    if (view == null || id == null)
+    {
+      return null;
+    }
+
+    String viewId = view.getId();
+    if (viewId == null || viewId.trim().isEmpty())
+    {
+      viewId = (String) view.getProperty("id");
+    }
+
+    if (id.equals(viewId) || id.equals(view.getReference()))
+    {
+      return view;
+    }
+
+    for (View child : view.getChildren())
+    {
+      HtmlView found = findViewByIdRecursively((HtmlView) child, id);
+      if (found != null)
+      {
+        return found;
+      }
+    }
+    return null;
+  }
+
+  public String generateUniqueId()
+  {
+    HtmlView root = (form != null) ? (HtmlView) form.getRootView() : null;
+
+    for (int attempt = 0; attempt < 10; attempt++)
+    {
+      String candidate = "i" + java.util.UUID.randomUUID()
+        .toString().replace("-", "").substring(0, 12);
+
+      if (root == null || findViewByIdRecursively(root, candidate) == null)
+      {
+        return candidate;
+      }
+    }
+    return "i" + java.util.UUID.randomUUID().toString().replace("-", "");
+  }
+
+  public void normalizeFormIds()
+  {
+    try
+    {
+      HtmlForm loadedForm = loadForm();
+      if (loadedForm == null)
+      {
+        return;
+      }
+      this.form = loadedForm;
+
+      HtmlView panel = findViewByIdRecursively(
+        (HtmlView) form.getRootView(), CONTAINER_ID);
+      if (panel == null)
+      {
+        return; // Not a compatible form, skip entirely
+      }
+      boolean changed = ensureElementsHaveIds();
+      if (!changed)
+      {
+        return;
+      }
+
+      StringWriter sw = new StringWriter();
+      try (WriterOutputStream wos = new WriterOutputStream(sw, StandardCharsets.UTF_8))
+      {
+        form.write(wos, null);
+        wos.flush();
+      }
+
+      ideBean.getDocument().setSource(sw.toString());
+      // No markChanged() — opening a document shouldn't flag it as modified.
+      // The new ids will be persisted on the user's next real save
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+    public boolean ensureElementsHaveIds()
+  {
+    if (form == null || form.getRootView() == null) return false;
+
+    HtmlView panel = findViewByIdRecursively(
+      (HtmlView) form.getRootView(), CONTAINER_ID);
+    if (panel == null) return false;
+
+    return ensureIdsForSelectableElements(panel);
+  }
+
+  /**
+   * Assigns ids to nodes that the visual editor knows how to handle.
+   * A node is "selectable" when ElementDef.fromView returns a definition
+   * for it. Everything else (raw HTML content inside divs, table rows,
+   * formatted text) is left untouched.
+   */
+  private boolean ensureIdsForSelectableElements(HtmlView panel)
+  {
+    boolean changed = false;
+
+    for (View child : panel.getChildren())
+    {
+      if (!(child instanceof HtmlView)) continue;
+      HtmlView htmlChild = (HtmlView) child;
+
+      if (isSelectable(htmlChild))
+      {
+        if (assignIdIfMissing(htmlChild)) changed = true;
+      }
+
+      // Fieldsets contain selectable radios/checkboxes
+      if ("fieldset".equalsIgnoreCase(htmlChild.getNativeViewType()))
+      {
+        for (View grandchild : htmlChild.getChildren())
+        {
+          if (!(grandchild instanceof HtmlView)) continue;
+          HtmlView htmlGrandchild = (HtmlView) grandchild;
+          if (isSelectable(htmlGrandchild))
+          {
+            if (assignIdIfMissing(htmlGrandchild)) changed = true;
+          }
+        }
+      }
+    }
+
+    return changed;
+  }
+
+  private boolean isSelectable(HtmlView view)
+  {
+    return VisualEditorBean.ElementDef.fromView(new HtmlViewWrapper(view)) != null;
+  }
+
+  private boolean assignIdIfMissing(HtmlView view)
+  {
+    String currentId = view.getId();
+    if (currentId == null || currentId.trim().isEmpty())
+    {
+      currentId = (String) view.getProperty("id");
+    }
+    if (currentId == null || currentId.trim().isEmpty())
+    {
+      String newId = view.getProperty("name") != null ? view.getProperty("name") : generateUniqueId();
+      view.setId(newId);
+      view.setProperty("id", newId);
+      view.setReference(newId);
+      return true;
+    }
+    return false;
+}
+
 }

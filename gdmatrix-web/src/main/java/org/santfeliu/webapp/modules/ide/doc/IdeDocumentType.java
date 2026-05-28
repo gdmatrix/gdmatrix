@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.santfeliu.webapp.modules.ide.IdeBean;
 
 /**
  *
@@ -76,7 +77,7 @@ public abstract class IdeDocumentType implements Serializable
       this.tabs.add(tab);
     }
   }
-
+  
   public String getTypeName()
   {
     return typeName;
@@ -148,6 +149,18 @@ public abstract class IdeDocumentType implements Serializable
   public abstract List<String> validate(String source);
     //return Collections.EMPTY_LIST;
 
+   /**
+   * Called by ideBean.load() after a document has been fully loaded form the DB
+   * Default implementation does nothing; subclases override this when they need
+   * post-Load processing (e.g. id normalization)
+   * @param doc the loaded document
+   * @param ideBean provides access to other beans if needed.
+   */
+  public void onLoaded(IdeDocument doc, IdeBean ideBean)
+  {
+    // Default: no-operation
+  }
+  
   static void registerType(IdeDocumentType docTypeInstance)
   {
     typeCache.put(docTypeInstance.getTypeName(), docTypeInstance);

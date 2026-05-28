@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.ide.doc;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.santfeliu.webapp.modules.ide.IdeBean;
 
 /**
  *
@@ -89,5 +90,11 @@ public class VisualFormDocumentType extends IdeDocumentType
     
     // HTML validation here if required
     return errors;
+  }
+  
+  @Override
+  public void onLoaded(IdeDocument doc, IdeBean ideBean)
+  {
+    ideBean.getHtmlFormBean().normalizeFormIds();
   }
 }

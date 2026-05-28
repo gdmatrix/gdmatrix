@@ -37,7 +37,6 @@
       <f:selectItem itemLabel="(Select option)" itemValue=""/>
       <f:selectItem itemLabel="Enum (DataRef)" itemValue="ENUM" />
       <f:selectItem itemLabel="Database(SQL)" itemValue="SQL" />
-      <f:selectItem itemLabel="Add manually" itemValue="MANUAL" />
     </p:selectOneMenu>
   </div>
 
@@ -72,10 +71,11 @@
                  placeholder="Select __ from __ where __ ... ;"/>
   </div>
 
-  <div id="panel_MANUAL" class="mt-3 flex-column gap-2" style="display: none;">
+  <div class="mt-4 flex flex-column gap-2 border-top-1 border-300 pt-3">
     <p:outputLabel value="Manual Options" class="font-bold text-sm text-primary"/>
     <span class="text-xs text-500 mb-1">
-      One option per line. Format <code>value|text</code> (text is optional)
+      Added alone or alongside the external source. One option per line.
+      Format Format <code>value|text</code> (text is optional)
     </span>
 
     <p:inputTextarea value="#{visualEditorBean.manualOptionsText}"
@@ -108,16 +108,12 @@
     function toggleSelectMode(mode) {
       let pEnum = document.querySelector('[id$="panel_ENUM"]');
       let pSql = document.querySelector('[id$="panel_SQL"]');
-      let pMan = document.querySelector('[id$="panel_MANUAL"]');
 
       if (pEnum) {
         pEnum.style.display = (mode === 'ENUM') ? 'flex' : 'none';
       }
       if (pSql) {
         pSql.style.display = (mode === 'SQL') ? 'flex' : 'none';
-      }
-      if (pMan) {
-        pMan.style.display = (mode === 'MANUAL') ? 'flex' : 'none';
       }
     }
     // Execute to load the correct panel depening on the selectedMode
@@ -130,4 +126,15 @@
 
     //]]>
   </script>
+  
+  <style>
+    code {
+      font-family: monospace;
+      font-weight: bold;
+      background: var(--surface-200);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      color: var(--primary-color);
+    }
+  </style>
 </ui:composition>
