@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces"
+                xmlns:p="http://primefaces.org/ui">
+
+  <f:subview id="#{tab.subviewId}">
+
+    <!-- Results table -->
+    <p:dataTable id="document_events_table" value="#{documentEventsTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" 
+                 rows="#{documentEventsTabBean.pageSize}"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{documentEventsTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="#{documentEventsTabBean.pageSizeOptions}"
+                 emptyMessage="#{objectBundle.no_data}">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{documentEventsTabBean.groupableRowsHelper.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{documentEventsTabBean.groupableRowsHelper.switchView}"
+                           process="document_events_table"
+                           update="document_events_table"
+                           resetValues="true"
+                           alt="#{documentEventsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{documentEventsTabBean.groupableRowsHelper.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{documentEventsTabBean.groupableRowsHelper.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{documentEventsTabBean.create}"
+                           process="@this"
+                           update="@form:cnt:search_tabs:document_events_dialog"
+                           resetValues="true"
+                           oncomplete="PF('documentEventsDialog').show()"
+                           disabled="#{!documentObjectBean.editable}"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
+
+      <p:headerRow expandable="true"
+                   expanded="true" 
+                   rendered="#{documentEventsTabBean.groupableRowsHelper.groupedView}"
+                   groupBy="#{documentEventsTabBean.groupableRowsHelper.groupBy}">
+        <p:column colspan="4">
+          <h:outputText styleClass="ml-2" 
+                        value="#{documentEventsTabBean.groupableRowsHelper.groupByDescription}"/>
+        </p:column>
+      </p:headerRow>
+
+      <p:column headerText="#{documentBundle.documentEvents_id}" styleClass="col-1"
+                rendered="#{documentEventsTabBean.groupableRowsHelper.isColumnRendered('eventId')}">
+        <h:outputText value="#{row.event.eventId}" />
+      </p:column>
+
+      <p:column headerText="#{documentBundle.documentEvents_summary}" styleClass="col-8"
+                rendered="#{documentEventsTabBean.groupableRowsHelper.isColumnRendered('eventSummary')}">
+        <h:outputText value="#{row.event.summary}"/>
+      </p:column>
+
+      <p:column headerText="#{documentBundle.documentEvents_type}" styleClass="col-3"
+                rendered="#{documentEventsTabBean.groupableRowsHelper.isColumnRendered('eventDocTypeId')}">
+        <h:outputText value="#{typeTypeBean.getDescription(row.eventDocTypeId)}"/>
+      </p:column>
+
+      <p:column styleClass="text-right white-space-nowrap">
+
+        <p:commandButton icon="pi pi-arrow-circle-right"
+                         styleClass="rounded-button ui-button-flat"
+                         process="@this"
+                         update="@form:cnt"
+                         action="#{navigatorBean.show('Event', row.event.eventId)}"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+        
+        <p:menuButton icon="pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                      menuStyleClass="w200"
+                      title="#{objectBundle.actions}">
+          <p:menuitem value="#{documentBundle.documentEvents_edit}"
+                      icon="pi pi-pencil"
+                      styleClass="rounded-button ui-button-flat w200"
+                      action="#{documentEventsTabBean.edit(row)}"
+                      process="@this"
+                      update="@form:cnt:search_tabs:document_events_dialog"
+                      title="#{objectBundle.edit}"
+                      resetValues="true"
+                      oncomplete="PF('documentEventsDialog').show()" />
+          <p:menuitem value="#{objectBundle.delete}"
+                      icon="pi pi-trash"
+                      action="#{documentEventsTabBean.remove(row)}"
+                      process="@this"
+                      update="@form:cnt:search_tabs:tabs"
+                      styleClass="rounded-button ui-button-flat w200"
+                      disabled="#{!documentObjectBean.editable}" >
+                    <p:confirm header="#{objectBundle.confirm_remove_header}"
+                   message="#{objectBundle.confirm_remove_message}"
+                   icon="pi pi-info-circle" />
+          </p:menuitem>
+        </p:menuButton>
+
+      </p:column>
+    </p:dataTable>
+
+    <gdm:saveBean value="documentEventsTabBean" />
+    
+  </f:subview>
+
+</ui:composition>

@@ -123,6 +123,7 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_content", "pi pi-save", "/pages/doc/document_content.xhtml"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "pi pi-folder", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents", "pi pi-file-o", "/pages/doc/document_documents.xhtml", "documentDocumentsTabBean"));  
+    //editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_events", "pi pi-calendar", "/pages/doc/document_events.xhtml", "documentEventsTabBean", "events1", "/pages/doc/document_events_dialog.xhtml"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", "pi pi-key", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_policies", "material-icons-outlined mi-policy text-lg", "/pages/policy/document_policies.xhtml", "documentPoliciesTabBean"));      
     objectSetup.setEditTabs(editTabs);

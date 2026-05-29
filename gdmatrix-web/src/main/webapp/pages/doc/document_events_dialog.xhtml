@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <p:dialog id="document_events_dialog" widgetVar="documentEventsDialog"
+            styleClass="edit_data_dialog mw_600"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{documentObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{applicationBean.translate(documentObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{documentEventsTabBean.eventDescription}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <p:messages showSummary="true" styleClass="messages" 
+                showIcon="true" closable="false" forIgnores="growl">
+      <p:autoUpdate />
+    </p:messages>      
+
+    <h:panelGroup styleClass="mt-2" id="document_events_panel"
+                  layout="block"
+                  rendered="#{documentEventsTabBean.editing != null}">
+      
+      <div class="ui-fluid formgrid grid" >
+
+        <!-- Event -->
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{documentBundle.documentEvents_event}"
+                         styleClass="w-full"
+                         indicateRequired="true" />
+          <emcomp:objectReference value="#{documentEventsTabBean.editing.eventId}"
+                                  process="@form:cnt:search_tabs:document_events_dialog"
+                                  type="Event"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  oncomplete="PF('documentEventsDialog').hide();"
+                                  onselect="PF('documentEventsDialog').show();"
+                                  required="#{not empty param['mainform:search_tabs:document_events_store']}"
+                                  requiredMessage="#{messageBundle.EVENT_MUST_BE_SELECTED}"
+                                  minQueryLength="3"
+                                  disabled="#{!documentObjectBean.editable}">
+          </emcomp:objectReference>
+        </div>
+
+        <!-- Type -->
+        <p:outputPanel styleClass="field col-12 md:col-6"
+                       rendered="#{!documentEventsTabBean.leafBaseType}">
+          <p:outputLabel for="@next"
+                         value="#{documentBundle.documentEvents_type}"
+                         indicateRequired="true" />
+          <emcomp:typeReference value="#{documentEventsTabBean.eventDocTypeId}"
+                                process="@form:cnt:search_tabs:document_events_dialog"
+                                update="@form:cnt:search_tabs:document_events_panel"
+                                oncomplete="PF('documentEventsDialog').hide();"
+                                onselect="PF('documentEventsDialog').show();"
+                                type="#{documentEventsTabBean.tabBaseTypeId != null ? documentEventsTabBean.tabBaseTypeId : 'EventDocument'}"
+                                showNavigatorItems="#{documentEventsTabBean.tabBaseTypeId != 'EventDocument' ? 'false' : 'true'}"
+                                showNonInstantiableItems="false"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="#{not empty param['mainform:search_tabs:document_events_store']}"
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                disabled="#{!documentObjectBean.editable}">
+          </emcomp:typeReference>
+        </p:outputPanel>
+
+        <!-- Comments -->
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{documentBundle.documentEvents_comments}" />
+          <p:inputTextarea value="#{documentEventsTabBean.editing.comments}"
+                           readonly="#{!documentObjectBean.editable}" />
+        </div>
+
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="text-right">
+        <p:commandButton id="document_events_store"
+                         action="#{documentEventsTabBean.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
+                         process="document_events_dialog"
+                         update="@form:cnt:search_tabs:tabs document_events_panel"
+                         oncomplete="closePFDialog('documentEventsDialog')"
+                         disabled="#{!documentObjectBean.editable}"
+                         icon="pi pi-save"/>
+        <p:commandButton action="#{documentEventsTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="document_events_dialog" global="false"
+                         onclick="PF('documentEventsDialog').hide()"
+                         icon="pi pi-times" />
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>

@@ -54,7 +54,8 @@
         </div>
 
         <!-- Type -->
-        <div class="field col-12 md:col-6">
+        <p:outputPanel styleClass="field col-12 md:col-6"
+                       rendered="#{!eventDocumentsTabBean.leafBaseType}">
           <p:outputLabel for="@next"
                          value="#{agendaBundle.eventDocuments_type}"
                          indicateRequired="true" />
@@ -74,7 +75,7 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 disabled="#{!eventObjectBean.editable}">
           </emcomp:typeReference>
-        </div>
+        </p:outputPanel>
 
         <!-- Comments -->
         <div class="field col-12">
