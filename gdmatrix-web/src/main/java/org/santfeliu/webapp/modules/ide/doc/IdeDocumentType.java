@@ -169,6 +169,7 @@ public abstract class IdeDocumentType implements Serializable
   {
     registerType(new JavascriptDocumentType());
     registerType(new HtmlFormDocumentType());
+    registerType(new CssDocumentType());
     registerType(new VisualFormDocumentType());
     registerType(new TemplateReportDocumentType());
     registerType(new XslTemplateDocumentType());
