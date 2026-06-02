@@ -259,7 +259,8 @@ public class DynamicPropertiesBean implements Serializable
       !formSelectorsFilter.isEmpty())
     {
       descriptors.removeIf(d -> 
-        !formSelectorsFilter.contains(d.getSelector()));
+        !formSelectorsFilter.contains(d.getSelector()) 
+          && !d.getSelector().equals(PROPERTY_EDITOR_SELECTOR));
 
       //Sort as descriptorsFilter list
       Map<String, Integer> sortMap = new HashMap<>();
