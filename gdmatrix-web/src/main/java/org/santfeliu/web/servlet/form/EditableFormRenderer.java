@@ -99,6 +99,10 @@ public class EditableFormRenderer implements FormRenderer
     {
       writeSelect(view, form, data, writer);
     }
+    else if (tag.equals("script"))
+    {
+      writeScript(view, form, data, writer);
+    }
     else
     {
       writeGenericView(view, form, data, writer);
@@ -161,8 +165,8 @@ public class EditableFormRenderer implements FormRenderer
       writer.write(svalue);
     }
     writer.write("</" + view.getNativeViewType() + ">");
-  }
-
+  }  
+  
   protected void writeSelect(View view, HtmlForm form, Map data, Writer writer)
     throws IOException
   {
@@ -208,6 +212,25 @@ public class EditableFormRenderer implements FormRenderer
         writer.write("</option>");
       }
     }
+  }
+  
+  protected void writeScript(View view, HtmlForm form, Map data, Writer writer)
+    throws IOException
+  {
+    writer.write("<script");
+    writeAttributes(view, writer);
+    writer.write(">");
+    List<View> children = view.getChildren();
+    if (!children.isEmpty())
+    {
+      View textView = children.get(0);
+      String text = (String)textView.getProperty("text");
+      if (text != null)
+      {
+        writer.write(text);
+      }
+    }
+    writer.write("</script>");
   }
 
   protected void writeGenericView(View view, HtmlForm form, Map data,

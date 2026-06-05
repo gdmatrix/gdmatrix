@@ -112,6 +112,25 @@ class FeatureForm
 
       const response = await fetch("/form?" + new URLSearchParams(params));
       this._div.innerHTML = await response.text();
+      
+      const scripts = this._div.querySelectorAll("script");
+
+      scripts.forEach(oldScript => 
+      {
+        const newScript = document.createElement("script");
+
+        if (oldScript.textContent) 
+        {
+          newScript.textContent = oldScript.textContent;
+        }
+
+        for (const attr of oldScript.attributes) 
+        {
+          newScript.setAttribute(attr.name, attr.value);
+        }
+        oldScript.replaceWith(newScript);
+      });
+      
       this._rendered = true;
     }
     return this;
