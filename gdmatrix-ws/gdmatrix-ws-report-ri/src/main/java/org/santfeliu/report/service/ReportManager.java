@@ -85,6 +85,7 @@ import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
 public class ReportManager implements ReportManagerPort
 {
   private static final Logger LOGGER = Logger.getLogger("Report");
+  private static final long MAX_CONFIGURABLE_TIMEOUT = 60 * 60 * 1000; //1 hour
 
   @Resource
   WebServiceContext wsContext;
@@ -200,7 +201,14 @@ public class ReportManager implements ReportManagerPort
       ReportEngine engine = getReportEngine(technology);
       if (connectionName == null)
         connectionName = report.getDefaultConnectionName();
-
+      
+      Long customExecutionTimeout = report.getExecutionTimeout();
+      if (customExecutionTimeout == null || customExecutionTimeout < 1
+        || customExecutionTimeout > MAX_CONFIGURABLE_TIMEOUT)
+      {
+        customExecutionTimeout = executionTimeout;
+      }
+        
       Content content = report.getContent();
       String contentId = content.getContentId();
       DataSource dataSource = content.getData().getDataSource();
@@ -222,7 +230,7 @@ public class ReportManager implements ReportManagerPort
           executor.wait(1000); // wait a second
         }
         while (executor.isAlive() &&
-          executor.getElapsedTime() < executionTimeout);
+          executor.getElapsedTime() < customExecutionTimeout);
       }
 
       switch (executor.getStatus())
@@ -440,7 +448,16 @@ public class ReportManager implements ReportManagerPort
     {
       report.setTechnology(technologyProp.getValue().get(0));
     }
-    else report.setTechnology(DEFAULT_TECHNOLOGY);
+    else report.setTechnology(DEFAULT_TECHNOLOGY);   
+    //executionTimeout
+    Property executionTimeoutProp =
+      DictionaryUtils.getProperty(document, "executionTimeout");
+    if (executionTimeoutProp != null)
+    {
+      String executionTimeoutValue = executionTimeoutProp.getValue().get(0);
+      if (executionTimeoutValue != null)
+        report.setExecutionTimeout(Long.valueOf(executionTimeoutValue));
+    }    
   }
 
   private boolean canUserExecuteReport(Credentials credentials, Report report)

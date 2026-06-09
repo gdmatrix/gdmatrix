@@ -25,6 +25,8 @@
       </property>
       <property name="defaultConnectionName" type="xs:string" minOccurs="0">
       </property>
+      <property name="executionTimeout" type="xs:long" minOccurs="0">
+      </property>      
       <property name="parameterDefinition" type="report:ParameterDefinition"
         minOccurs="0" maxOccurs="unbounded" nillable="true">
       </property>
