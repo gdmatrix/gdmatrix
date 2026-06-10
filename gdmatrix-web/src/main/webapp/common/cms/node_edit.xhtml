@@ -90,10 +90,8 @@
                       update="@this :mainform:treeContextMenu @(.toolbarRenderingButtons) :mainform:topPanel :mainform:rightPanel" 
                       listener="#{nodeEditBean.onNodeSelect}" global="false" /> 
               <p:ajax event="dragdrop" 
-                      update="@this :mainform:messagesPanel @(.nodeSyncPanel)"
                       listener="#{nodeEditBean.onDragDrop}" global="false"
-                      onstart="return handleDragStart();" 
-                      rendered="#{nodeEditBean.dragDropEnabled}" />                
+                      rendered="#{nodeEditBean.dragDropEnabled}" />
               <p:treeNode type="Node">                  
                 <div class="menuItem">
                   <div class="#{node.boxStyleClass}">
@@ -109,6 +107,27 @@
                 </div>
               </p:treeNode>
             </p:tree>
+
+            <p:dialog header="#{cmsBundle.moveNode}" widgetVar="dragConfirmDialog"
+                      modal="true" resizable="false"
+                      appendTo="@(body)" closable="false">
+              <h:outputText value="#{cmsBundle.confirmDragDrop}" />
+              <div class="text-right mt-4">
+                <p:commandButton value="#{objectBundle.accept}"
+                                 action="#{nodeEditBean.executeDragDrop}"
+                                 update="topPanel :mainform:tree :mainform:rightPanel messagesPanel"
+                                 process="@this"
+                                 oncomplete="PF('dragConfirmDialog').hide();"
+                                 icon="pi pi-check"
+                                 styleClass="mr-2" />
+                <p:commandButton value="#{objectBundle.cancel}"
+                                 action="#{nodeEditBean.cancelDragDrop}"
+                                 update=":mainform:tree"
+                                 process="@this"
+                                 oncomplete="PF('dragConfirmDialog').hide();"
+                                 icon="pi pi-check" />
+              </div>
+            </p:dialog>
 
             <p:contextMenu for="tree" id="treeContextMenu" style="width:200px">
               <p:menuitem value="#{cmsBundle.edit}" 
@@ -219,7 +238,7 @@
         </p:outputPanel>
         
       </p:outputPanel>
-      
+
       <p:ajaxStatus onstart="PF('statusDialog').show()" 
                     onsuccess="PF('statusDialog').hide()"
                     delay="1000" />
@@ -230,7 +249,7 @@
           <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
         </div>
       </p:dialog> 
-      
+
       <p:remoteCommand name="showBothPanels" 
                        actionListener="#{nodeEditBean.showPanel('BOTH')}"
                        process="@this"
@@ -269,20 +288,7 @@
           }
           oldWidth = window.innerWidth;
         }
-  
-        function handleDragStart() 
-        {
-          try
-          {
-            PF('cmsTree').droppedNodeParams[0].dropNode[0].id; //test
-            return true;
-          }
-          catch (ex)
-          {
-            return false;
-          }
-        }        
-       
+
         function getTreePanel()
         {
           return $('.treePanel').first();

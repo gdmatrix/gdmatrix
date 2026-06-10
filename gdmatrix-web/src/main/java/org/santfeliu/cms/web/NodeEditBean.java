@@ -65,6 +65,7 @@ import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
+import org.primefaces.PrimeFaces;
 import org.primefaces.component.tree.TreeDragDropInfo;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
@@ -169,6 +170,7 @@ public class NodeEditBean extends FacesBean implements Serializable
   private org.primefaces.model.menu.MenuModel nodePathModel;
   private final CMSConfigHelper configHelper;
   private VisiblePanel visiblePanel = VisiblePanel.BOTH;
+  private TreeDragDropEvent pendingEvent;
   
   public enum VisiblePanel
   {
@@ -797,45 +799,57 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     return true;
   }
-  
-  public void onDragDrop(TreeDragDropEvent event) 
+
+  public void onDragDrop(TreeDragDropEvent event)
+  {
+    this.pendingEvent = event;
+    PrimeFaces.current().executeScript("PF('dragConfirmDialog').show();");
+  }
+
+  public void executeDragDrop()
   {
     try
     {
-      TreeNode dropNode = event.getDropNode();
-      String parentNodeId = ((NodeInfo)dropNode.getData()).getNodeId();
-      if (parentNodeId != null)
+      if (this.pendingEvent != null)
       {
-        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-        CWorkspace cWorkspace = userSessionBean.getMenuModel().getCWorkspace();
-        TreeNode dragNode = event.getDragNode();
-        String draggedNodeId = ((NodeInfo)dragNode.getData()).getNodeId();
-        CNode draggedCNode = cWorkspace.getNode(draggedNodeId);
-        int nodeIndex = 1;
-        int dropIndex = event.getDropIndex(); //0..N
-        if (dropIndex > 0)
+        TreeDragDropEvent event = this.pendingEvent;
+        TreeNode dropNode = event.getDropNode();
+        String parentNodeId = ((NodeInfo)dropNode.getData()).getNodeId();
+        if (parentNodeId != null)
         {
-          CNode parentCNode = cWorkspace.getNode(parentNodeId);
-          List<CNode> auxChildren = new ArrayList(parentCNode.getChildren());
-          if (dropIndex < auxChildren.size())
+          UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+          CWorkspace cWorkspace = userSessionBean.getMenuModel().getCWorkspace();
+          TreeNode dragNode = event.getDragNode();
+          String draggedNodeId = ((NodeInfo)dragNode.getData()).getNodeId();
+          CNode draggedCNode = cWorkspace.getNode(draggedNodeId);
+          int nodeIndex = 1;
+          int dropIndex = event.getDropIndex(); //0..N
+          if (dropIndex > 0)
           {
-            CNode nextCNode = auxChildren.get(dropIndex);
-            nodeIndex = nextCNode.getNode().getIndex();            
+            CNode parentCNode = cWorkspace.getNode(parentNodeId);
+            List<CNode> auxChildren = new ArrayList(parentCNode.getChildren());
+            if (dropIndex < auxChildren.size())
+            {
+              CNode nextCNode = auxChildren.get(dropIndex);
+              nodeIndex = nextCNode.getNode().getIndex();
+            }
+            else //new last node
+            {
+              nodeIndex =
+                auxChildren.get(auxChildren.size() - 1).getNode().getIndex() + 1;
+            }
           }
-          else //new last node
-          {
-            nodeIndex = 
-              auxChildren.get(auxChildren.size() - 1).getNode().getIndex() + 1;
-          }
+          Node node = cloneCNode(draggedCNode, true);
+          node.setParentNodeId(parentNodeId);
+          node.setIndex(nodeIndex);
+          CMSConfigBean.getPort().storeNode(node);
+          updateCache();
+          resetTree();
+          resetTopPanel();
+          resetSyncPanel();
+          info("NODE_MOVED");
         }
-        Node node = cloneCNode(draggedCNode, true);
-        node.setParentNodeId(parentNodeId);
-        node.setIndex(nodeIndex);
-        CMSConfigBean.getPort().storeNode(node);
-        updateCache();            
-        resetTree();
-        resetSyncPanel();
-        info("NODE_MOVED");
+        this.pendingEvent = null;
       }
     }
     catch (Exception ex)
@@ -843,7 +857,14 @@ public class NodeEditBean extends FacesBean implements Serializable
       error(ex);
     }    
   }
-  
+
+  public void cancelDragDrop()
+  {
+    updateCache();
+    resetTree();    
+    this.pendingEvent = null;
+  }
+
   public List getPropertyValues()
   {
     List<PropertyValueWrapper> values = new ArrayList();
