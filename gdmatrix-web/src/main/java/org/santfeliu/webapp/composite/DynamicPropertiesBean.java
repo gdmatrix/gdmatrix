@@ -32,7 +32,9 @@ package org.santfeliu.webapp.composite;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,6 +57,7 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
+import org.matrix.doc.DocumentConstants;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
@@ -222,7 +225,7 @@ public class DynamicPropertiesBean implements Serializable
         descriptors = FormFactory.getInstance().findForms(selectorBase);
       }
       
-      if (userSessionBean.isUserInRole("DOC_ADMIN"))
+      if (userSessionBean.isUserInRole(DocumentConstants.DOC_ADMIN_ROLE))
       {
         descriptors.add(new FormDescriptor(PROPERTY_EDITOR_SELECTOR,
           bundle.getString("property_editor")));
@@ -548,13 +551,28 @@ public class DynamicPropertiesBean implements Serializable
     group.setStyleClass("field col-12");
     group.setLayout("block");
     panel.getChildren().add(group);
+    
     HtmlOutputText noInputFormText = (HtmlOutputText)application.
       createComponent(HtmlOutputText.COMPONENT_TYPE);
     String text = ApplicationBean.getCurrentInstance().translate(
       "$$objectBundle.errorInForm");
     noInputFormText.setValue(text);
+    
+    HtmlOutputText stackTraceText = (HtmlOutputText)application.
+      createComponent(HtmlOutputText.COMPONENT_TYPE);
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    boolean isAdminUser = 
+      userSessionBean.isUserInRole(DocumentConstants.DOC_ADMIN_ROLE);
+    stackTraceText.setRendered(isAdminUser);
+    stackTraceText.setStyleClass("code");
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    ex.printStackTrace(pw);
+    stackTraceText.setValue(": " + sw.toString());
+
     FacesUtils.addMessage(ex);
     group.getChildren().add(noInputFormText);
+    group.getChildren().add(stackTraceText);
   }
 
 }
