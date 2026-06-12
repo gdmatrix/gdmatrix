@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.santfeliu.form.View;
-import org.santfeliu.webapp.modules.ide.VisualEditorBean.ElementDef;
+import org.santfeliu.webapp.modules.ide.visualEditor.ElementDef;
 
 /**
  *

@@ -28,9 +28,8 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.ide;
+package org.santfeliu.webapp.modules.ide.visualEditor;
 
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -53,6 +52,7 @@ import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlView;
 import org.santfeliu.form.type.html.HtmlViewWrapper;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.modules.ide.HtmlFormBean;
 
 /**
  *
@@ -66,6 +66,7 @@ public class VisualEditorBean extends WebBean
   @Inject
   private HtmlFormBean htmlFormBean;
   private String selectedViewId;
+  private String editingId;
   private ElementDef selectedElementDef;
   private boolean showFormProperties = false;
   private String associatedLabelText = "";
@@ -73,6 +74,7 @@ public class VisualEditorBean extends WebBean
   private String screenType = "MONITOR"; // DEFAULT
   private static final String CONTAINER_ID = "panel";
   private static final String DEFAULT_MAP = "novetats_policia_60";
+  private String serverScript = "";
 
   // Select vars
   private String selectedMode = ""; // DEFAULT
@@ -85,222 +87,11 @@ public class VisualEditorBean extends WebBean
   private Integer colXl;
 
   /* -- CONFIG DICT FOR ALL ELEMENTS --*/
-  public enum ElementDef
-  {
-    INPUT("Input Text", "input", true, true, "col-12 md:col-6", "text", "inputText_template.xhtml", "inputText_props.xhtml"),
-    RADIO("Input Radio", "input", true, false, "", "radio", "inputRadio_template.xhtml", "inputRadio_props.xhtml"),
-    CHECKBOX("Input CheckBox", "input", true, false, "col-12 md:col-6", "checkbox", "inputCheckbox_template.xhtml", "inputCheckbox_props.xhtml"),
-    TEXTAREA("Textarea", "textarea", true, true, "col-12 md:col-12", null, "textArea_template.xhtml", "textArea_props.xhtml"),
-    SELECT("Select", "select", true, true, "col-12 md:col-6", null, "select_template.xhtml", "select_props.xhtml"),
-    BUTTON("Button", "button", false, true, "col-12 md:col-6", "button", "button_template.xhtml", "button_props.xhtml"),
-    IMAGE("Image", "img", false, true, "col-12 md:col-6", null, "image_template.xhtml", "image_props.xhtml"),
-    FIELDSET("Fieldset", "fieldset", false, true, "col-12 md:col-6", null, "fieldset_template.xhtml", "fieldset_props.xhtml"),
-    MAPLIBRE("MapLibre", "div", false, false, "col-12 md:col-12", "mapLibre", "divMaplibre_template.xhtml", "divMaplibre_props.xhtml"),
-    DIV("RawHtml", "div", false, true, "col-12", null, "div_template.xhtml", "div_props.xhtml");
-
-    private final String label;
-    private final String tag;
-    private final boolean hasLabel;
-    private final boolean resizable;
-    private final String defaultWidth;
-    private final String defaultType;
-    private final String templateFile;
-    private final String propFile;
-
-    ElementDef(String label, String tag, boolean hasLabel, boolean resizable, String defaultWidth, String defaultType, String templateFile, String propFile)
-    {
-      this.label = label;
-      this.tag = tag;
-      this.hasLabel = hasLabel;
-      this.resizable = resizable;
-      this.defaultWidth = defaultWidth;
-      this.defaultType = defaultType;
-      this.templateFile = templateFile;
-      this.propFile = propFile;
-    }
-
-    public static ElementDef fromTagAndType(String tag, String type)
-    {
-      if (tag == null)
-      {
-        return null;
-      }
-
-      if ("input".equals(tag) && (type == null || type.isEmpty()))
-      {
-        type = "text";
-      }
-      if ("button".equals(tag) && (type == null || type.isEmpty()))
-      {
-        type = "button";
-      }
-
-      for (ElementDef def : values())
-      {
-        if (def.getTag().equals(tag))
-        {
-          if (def.getDefaultType() == null)
-          {
-            return def;
-          }
-          if (def.getDefaultType().equals(type))
-          {
-            return def;
-          }
-        }
-      }
-      return null;
-    }
-
-    public static ElementDef fromView(HtmlViewWrapper wrapper)
-    {
-      if (wrapper == null || wrapper.getNativeViewType() == null)
-      {
-        return null;
-      }
-
-      String tag = wrapper.getNativeViewType();
-      String type = wrapper.getInputType();
-
-      if ("div".equals(tag) && "mapLibre".equals(wrapper.getRenderer()))
-      {
-        type = "mapLibre";
-      }
-
-      return fromTagAndType(tag, type);
-    }
-
-    public String getLabel()
-    {
-      return label;
-    }
-
-    public String getTag()
-    {
-      return tag;
-    }
-
-    public boolean isHasLabel()
-    {
-      return hasLabel;
-    }
-
-    public boolean isResizable()
-    {
-      return resizable;
-    }
-
-    public String getDefaultWidth()
-    {
-      return defaultWidth;
-    }
-
-    public String getDefaultType()
-    {
-      return defaultType;
-    }
-
-    public String getTemplateFile()
-    {
-      return templateFile;
-    }
-
-    public String getPropFile()
-    {
-      return propFile;
-    }
-  }
-
   public enum AddMode
   {
     BOTTOM, BEFORE, INSIDE
   };
-
-  /* -- DTO FOR VISUAL GROUPING -- */
-  public static class VisualCanvasBlock
-  {
-
-    private HtmlViewWrapper label;
-    private HtmlViewWrapper element;
-    private boolean labelFirst = true;
-    private List<VisualCanvasBlock> childrenBlocks = new ArrayList();
-
-    public VisualCanvasBlock(HtmlViewWrapper label, HtmlViewWrapper element)
-    {
-      this.label = label;
-      this.element = element;
-    }
-
-    public HtmlViewWrapper getLabel()
-    {
-      return this.label;
-    }
-
-    public HtmlViewWrapper getElement()
-    {
-      return this.element;
-    }
-
-    public List<VisualCanvasBlock> getChildrenBlocks()
-    {
-      return childrenBlocks;
-    }
-
-    public void setChildrenBlocks(List<VisualCanvasBlock> childrenBlocks)
-    {
-      this.childrenBlocks = childrenBlocks;
-    }
-
-    public boolean isLabelFirst()
-    {
-      return labelFirst;
-    }
-
-    public void setLabelFirst(boolean labelFirst)
-    {
-      this.labelFirst = labelFirst;
-    }
-  }
-
-  /* -- DTO FOR SELECT OPTIONS -- */
-  public static class SelectOption implements Serializable
-  {
-
-    private static final long serialVersionUID = 1L;
-    private String value;
-    private String text;
-
-    public SelectOption()
-    {
-    }
-
-    public SelectOption(String value, String text)
-    {
-      this.value = value;
-      this.text = text;
-    }
-
-    public String getValue()
-    {
-      return value;
-    }
-
-    public void setValue(String value)
-    {
-      this.value = value;
-    }
-
-    public String getText()
-    {
-      return text;
-    }
-
-    public void setText(String text)
-    {
-      this.text = text;
-    }
-  }
-
+  
   public HtmlView getSelectedView()
   {
     if (this.selectedViewId == null)
@@ -311,7 +102,6 @@ public class VisualEditorBean extends WebBean
     if (form != null && form.getRootView() != null)
     {
       HtmlView view = htmlFormBean.findViewByIdRecursively((HtmlView) form.getRootView(), this.selectedViewId);
-
 //      // If view found, renovate element reference
 //      if (view != null)
 //      {
@@ -319,6 +109,7 @@ public class VisualEditorBean extends WebBean
 //      }
       return view;
     }
+
     return null;
   }
 
@@ -333,6 +124,16 @@ public class VisualEditorBean extends WebBean
     {
       this.selectedViewId = null;
     }
+  }
+
+  public String getEditingId()
+  {
+    return editingId;
+  }
+
+  public void setEditingId(String editingId)
+  {
+    this.editingId = editingId;
   }
 
   public ElementDef getSelectedElementDef()
@@ -448,6 +249,16 @@ public class VisualEditorBean extends WebBean
   {
     this.screenType = screenType;
   }
+  
+  public String getServerScript()
+  {
+    return serverScript;
+  }
+  
+  public void setServerScript(String serverScript)
+  {
+    this.serverScript = serverScript;
+  }
 
   public Integer getColDefault()
   {
@@ -493,7 +304,7 @@ public class VisualEditorBean extends WebBean
   {
     return buildBlocksFromList(getPanelChildren());
   }
-  
+
   private List<VisualCanvasBlock> buildBlocksFromList(List<View> children)
   {
     List<VisualCanvasBlock> blocks = new ArrayList<>();
@@ -524,7 +335,7 @@ public class VisualEditorBean extends WebBean
         }
       }
     }
-    
+
     for (int i = 0; i < children.size(); i++)
     {
       HtmlView currentView = (HtmlView) children.get(i);
@@ -683,7 +494,7 @@ public class VisualEditorBean extends WebBean
       {
         return;
       }
-      
+
       StringWriter sw = new StringWriter();
       try (WriterOutputStream wos = new WriterOutputStream(sw, StandardCharsets.UTF_8))
       {
@@ -744,7 +555,7 @@ public class VisualEditorBean extends WebBean
     }
 
     HtmlView currentView = getSelectedView();
-    if (currentView == null || "fieldset".equals(currentView.getNativeViewType()))
+    if (currentView == null || !"fieldset".equals(currentView.getNativeViewType()))
     {
       error("Inside insertion is only allowed inside a fieldset");
       return;
@@ -902,6 +713,7 @@ public class VisualEditorBean extends WebBean
     }
 
     this.selectedViewId = id;
+    this.editingId = id;
     // Extract the exact columns to synchronize the spinners
     this.colDefault = extractColSize(baseWidth, "col-");
     this.colMd = extractColSize(baseWidth, "md:col-");
@@ -928,11 +740,14 @@ public class VisualEditorBean extends WebBean
 
     if (id != null && form != null)
     {
+
       this.selectedViewId = id;
       HtmlView currentView = getSelectedView();
 
       if (currentView != null)
       {
+        this.editingId = currentView.getId();
+
         // Even if JSF changes the ID, this way Java doesn’t lose it
         currentView.setReference(this.selectedViewId);
 
@@ -1020,7 +835,15 @@ public class VisualEditorBean extends WebBean
     HtmlView labelView = (container != null) ? getAssociatedLabel(container, currentView) : null;
 
     HtmlViewWrapper wrapper = new HtmlViewWrapper(currentView);
-    String newId = wrapper.getId();
+    // String newId = wrapper.getId();
+    String newId = (this.editingId != null && !this.editingId.trim().isEmpty())
+      ? this.editingId.trim() : wrapper.getId();
+
+    if (isIdInUse(newId, currentView))
+    {
+      error("The id '" + newId + "' is already in use. Please choose a different one.");
+      return;
+    }
 
     wrapper.setReference(newId);
     wrapper.setId(newId);
@@ -1106,10 +929,11 @@ public class VisualEditorBean extends WebBean
     }
     commit();
   }
-  
+
   public void cancelElement()
   {
     this.selectedViewId = null;
+    this.editingId = null;
     this.associatedLabelText = "";
     this.elementInnerText = "";
     this.manualOptionsList.clear();
@@ -1160,10 +984,10 @@ public class VisualEditorBean extends WebBean
       return null;
     }
 
-    String searchId = target.getReference();
+    String searchId = target.getId();
     if (searchId == null)
     {
-      searchId = target.getId();
+      searchId = target.getReference();
     }
 
     for (View v : root)
@@ -1190,6 +1014,48 @@ public class VisualEditorBean extends WebBean
       }
     }
     return null;
+  }
+
+  private boolean isIdInUse(String candidateId, HtmlView currentView)
+  {
+    if (candidateId == null || candidateId.trim().isEmpty())
+    {
+      return false;
+    }
+    HtmlForm form = htmlFormBean.getForm();
+    if (form == null || form.getRootView() == null)
+    {
+      return false;
+    }
+    return existsIdExcluding((HtmlView) form.getRootView(), candidateId.trim(), currentView);
+  }
+
+  private boolean existsIdExcluding(HtmlView view, String candidateId, HtmlView exclude)
+  {
+    if (view == null)
+    {
+      return false;
+    }
+    if (view != exclude)
+    {
+      String viewId = view.getId();
+      if (viewId == null || viewId.trim().isEmpty())
+      {
+        viewId = (String) view.getProperty("id");
+      }
+      if (candidateId.equals(viewId))
+      {
+        return true;
+      }
+    }
+    for (View child : view.getChildren())
+    {
+      if (existsIdExcluding((HtmlView) child, candidateId, exclude))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   private HtmlView getParentFieldset(List<View> root, HtmlView target)
@@ -1254,7 +1120,8 @@ public class VisualEditorBean extends WebBean
 
     // Find where the previous block starts to skip it
     int targetInsertIdx = -1;
-    for (int i = blockStart - 1; i >= 0; i--)
+    int minIndex = getFirstVisualElementIndex(container); // Calculate safe zone
+    for(int i = blockStart -1; i >= minIndex; i--)
     {
       HtmlView v = (HtmlView) container.get(i);
       if ("#text".equals(v.getNativeViewType()))
@@ -1480,6 +1347,199 @@ public class VisualEditorBean extends WebBean
     commit();
   }
 
+  // FUNCIÓN PARA EL DRAG AND DROP
+  /**
+   * Moves a dragged element (and its associated label) to a new position,
+   * relative to a target element. Reused by the drag-and-drop feature.
+   *
+   * Request params: draggedId - id of the element being dragged targetId - id
+   * of the element it was dropped onto position - "before" or "after" (relative
+   * to the target)
+   */
+  public void moveElementToPosition()
+  {
+    Map<String, String> params = FacesContext.getCurrentInstance()
+      .getExternalContext().getRequestParameterMap();
+    String draggedId = params.get("draggedId");
+    String targetId = params.get("targetId");
+    String containerId = params.get("containerId");
+    String position = params.get("position");
+
+    if (draggedId == null)
+    {
+      return;
+    }
+
+    HtmlForm form = htmlFormBean.getForm();
+    if (form == null || form.getRootView() == null)
+    {
+      return;
+    }
+
+    HtmlView draggedView = htmlFormBean.findViewByIdRecursively(
+      (HtmlView) form.getRootView(), draggedId);
+    if (draggedView == null)
+    {
+      return;
+    }
+
+    // Source: container + label of the dragged element
+    List<View> sourceContainer = getParentContainer(getPanelChildren(), draggedView);
+    if (sourceContainer == null)
+    {
+      return;
+    }
+    HtmlView draggedLabel = getAssociatedLabel(sourceContainer, draggedView);
+    HtmlView sourceFieldset = getParentFieldset(getPanelChildren(), draggedView);
+
+    // --- Resolve destination container and insertion index ---
+    List<View> destContainer;
+    int insertIndex;
+    HtmlView destFieldset;
+
+    if ("end".equals(position) && containerId != null)
+    {
+      // Drop into empty area → end of the named container
+      if ("panel".equals(containerId))
+      {
+        destContainer = getPanelChildren();
+        destFieldset = null;
+      }
+      else
+      {
+        HtmlView fieldset = htmlFormBean.findViewByIdRecursively(
+          (HtmlView) form.getRootView(), containerId);
+        if (fieldset == null)
+        {
+          return;
+        }
+        destContainer = fieldset.getChildren();
+        destFieldset = fieldset;
+      }
+
+      if (!isMoveAllowed(draggedView, destFieldset != null))
+      {
+        return;
+      }
+
+      // Remove dragged (and label) from source first
+      sourceContainer.remove(draggedView);
+      if (draggedLabel != null)
+      {
+        sourceContainer.remove(draggedLabel);
+      }
+
+      insertIndex = destContainer.size(); // end
+    }
+    else
+    {
+      // Drop relative to a target element (existing before/after logic)
+      if (targetId == null || draggedId.equals(targetId))
+      {
+        return;
+      }
+      HtmlView targetView = htmlFormBean.findViewByIdRecursively(
+        (HtmlView) form.getRootView(), targetId);
+      if (targetView == null)
+      {
+        return;
+      }
+
+      destContainer = getParentContainer(getPanelChildren(), targetView);
+      if (destContainer == null)
+      {
+        return;
+      }
+      destFieldset = getParentFieldset(getPanelChildren(), targetView);
+
+      HtmlViewWrapper targetWrapper = new HtmlViewWrapper(targetView);
+      if ("fieldset".equals(targetWrapper.getNativeViewType()) && destFieldset == targetView)
+      {
+        destFieldset = null;
+      }
+
+      if (!isMoveAllowed(draggedView, destFieldset != null))
+      {
+        return;
+      }
+
+      sourceContainer.remove(draggedView);
+      if (draggedLabel != null)
+      {
+        sourceContainer.remove(draggedLabel);
+      }
+
+      int targetIndex = destContainer.indexOf(targetView);
+      if (targetIndex == -1)
+      {
+        return;
+      }
+
+      HtmlView targetLabel = getAssociatedLabel(destContainer, targetView);
+      int targetLabelIndex = (targetLabel != null) ? destContainer.indexOf(targetLabel) : -1;
+
+      if ("before".equals(position))
+      {
+        insertIndex = targetIndex;
+        if (targetLabelIndex != -1 && targetLabelIndex < targetIndex)
+        {
+          insertIndex = targetLabelIndex;
+        }
+      }
+      else
+      {
+        insertIndex = targetIndex + 1;
+        if (targetLabelIndex != -1 && targetLabelIndex > targetIndex)
+        {
+          insertIndex = targetLabelIndex + 1;
+        }
+      }
+    }
+    
+    int minIndex = getFirstVisualElementIndex(destContainer);
+    if (insertIndex < minIndex)
+    {
+      insertIndex = minIndex; 
+    }
+    if (insertIndex > destContainer.size())
+    {
+      insertIndex = destContainer.size();
+    }
+
+    // --- Insert preserving label↔element order ---
+    HtmlViewWrapper draggedWrapper = new HtmlViewWrapper(draggedView);
+    boolean isLabelAfter = "radio".equals(draggedWrapper.getInputType());
+
+    if (draggedLabel != null)
+    {
+      if (isLabelAfter)
+      {
+        destContainer.add(insertIndex, draggedView);
+        destContainer.add(insertIndex + 1, draggedLabel);
+      }
+      else
+      {
+        destContainer.add(insertIndex, draggedLabel);
+        destContainer.add(insertIndex + 1, draggedView);
+      }
+    }
+    else
+    {
+      destContainer.add(insertIndex, draggedView);
+    }
+
+    // Reassign radio group name if moved into a different fieldset
+    if (destFieldset != null && destFieldset != sourceFieldset
+      && "radio".equals(draggedWrapper.getInputType()))
+    {
+      draggedWrapper.setName(destFieldset.getId());
+    }
+    
+    this.selectedViewId = draggedId;
+    this.editingId = draggedId;
+    commit();
+  }
+
   public void removeSelected()
   {
     HtmlView currentView = getSelectedView();
@@ -1506,7 +1566,7 @@ public class VisualEditorBean extends WebBean
 
     commit();
   }
-  
+
   private Integer extractColSize(String css, String prefix)
   {
     if (css == null || css.trim().isEmpty())
@@ -1847,7 +1907,7 @@ public class VisualEditorBean extends WebBean
 
   private String trimSurroundingNewLines(String str)
   {
-    // Remove only leading/trailing line breaks, but keep internal user indentation
+    // Trim leading line breaks and trailing whitespaces whithout affecting internal user indentation
     int start = 0;
     int end = str.length();
     while (start < end && (str.charAt(start) == '\n' || str.charAt(start) == '\r'))
@@ -1860,5 +1920,120 @@ public class VisualEditorBean extends WebBean
       end--;
     }
     return str.substring(start, end);
+  }
+
+  private boolean isMoveAllowed(HtmlView draggedView, boolean destIsFieldset)
+  {
+    HtmlViewWrapper w = new HtmlViewWrapper(draggedView);
+    String tag = w.getNativeViewType();
+    String inputType = w.getInputType();
+
+    boolean isRadio = "radio".equals(inputType);
+    boolean isCheckbox = "checkbox".equals(inputType);
+    boolean isFieldset = "fieldset".equals(tag);
+
+    if (isRadio)
+    {
+      return destIsFieldset;
+    }
+    if (isCheckbox)
+    {
+      return true;
+    }
+    if (isFieldset)
+    {
+      return !destIsFieldset;
+    }
+    return !destIsFieldset;
+  }
+  
+  public void loadServerScript()
+  {
+    this.serverScript = "";
+    HtmlView panel = getPanel();
+    if (panel == null) return;
+    
+    for (View v : panel.getChildren())
+    {
+      HtmlView hv = (HtmlView) v;
+      if ("#comment".equals(hv.getNativeViewType()))
+      {
+        String text = (String) hv.getProperty("text");
+        if (text != null)
+        {
+          this.serverScript = unwrapScript(text);
+        }
+        return; // only the first comment
+      }
+      if (!"#text".equals(hv.getNativeViewType())) return;
+    }
+  }
+  
+  private String unwrapScript(String text)
+  {
+    String t = text.trim();
+    if (t.startsWith("${") && t.endsWith("}"))
+    {
+      return t.substring(2, t.length() - 1);
+    }
+    return text;
+  }
+  
+  public void saveServerScript()
+  {
+    HtmlView panel = getPanel();
+    if (panel == null) return;
+    
+    // Reconstruct the comment content using the ${} wrapper
+    String body = (serverScript != null) ? serverScript.trim() : "";
+    String commentText = "${" + body + "}";
+    
+    HtmlView existing = null;
+    for (View v : panel.getChildren())
+    {
+      HtmlView hv = (HtmlView) v;
+      if ("#comment".equals(hv.getNativeViewType()))
+      {
+        existing = hv;
+        break;
+      }
+      if (!"#text".equals(hv.getNativeViewType())) break; // First node != comment
+    }
+    
+    if (body.isEmpty())
+    {
+      // If empty script, remove the #comment node
+      if (existing != null) panel.getChildren().remove(existing);
+    }
+    else if (existing != null)
+    {
+      existing.setProperty("text", commentText);
+    }
+    else
+    {
+      HtmlView comment = new HtmlView();
+      comment.setViewType(View.UNKNOWN);
+      comment.setNativeViewType("#comment");
+      comment.setProperty("text", commentText);
+      panel.getChildren().add(0, comment);
+    }
+    
+    commit();
+  }
+  
+  private int getFirstVisualElementIndex(List<View> container)
+  {
+    if (container == null) return 0;
+    for (int i = 0; i < container.size(); i++)
+    {
+      HtmlView hv = (HtmlView) container.get(i);
+      String type = hv.getNativeViewType();
+      // Ignore comments (Server Script) and text nodes (code line hops)
+      if (!"#text".equals(type) && !"#comment".equals(type))
+      {
+        return i; // First element index
+      }
+    }
+    return container.size();
   }
 }

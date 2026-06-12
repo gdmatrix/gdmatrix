@@ -56,6 +56,7 @@ import org.santfeliu.form.type.html.HtmlParser;
 import org.santfeliu.form.type.html.HtmlView;
 import org.santfeliu.form.type.html.HtmlViewWrapper;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.modules.ide.visualEditor.ElementDef;
 import org.santfeliu.webapp.util.ComponentUtils;
 import static org.santfeliu.webapp.util.FormImporter.ACTION_UPDATE_OPTION;
 import static org.santfeliu.webapp.util.FormImporter.SUBMIT_BUTTON_OPTION;
@@ -446,7 +447,8 @@ public class HtmlFormBean extends WebBean
       viewId = (String) view.getProperty("id");
     }
 
-    if (id.equals(viewId) || id.equals(view.getReference()))
+    //if (id.equals(viewId) || id.equals(view.getReference()))
+    if(id.equals(viewId))
     {
       return view;
     }
@@ -569,7 +571,7 @@ public class HtmlFormBean extends WebBean
 
   private boolean isSelectable(HtmlView view)
   {
-    return VisualEditorBean.ElementDef.fromView(new HtmlViewWrapper(view)) != null;
+    return ElementDef.fromView(new HtmlViewWrapper(view)) != null;
   }
 
   private boolean assignIdIfMissing(HtmlView view)
@@ -588,6 +590,6 @@ public class HtmlFormBean extends WebBean
       return true;
     }
     return false;
-}
+  }
 
 }

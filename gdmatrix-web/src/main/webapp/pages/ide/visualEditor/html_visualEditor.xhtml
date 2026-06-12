@@ -12,12 +12,14 @@
   <div class="flex flex-column lg:flex-row h-full w-full overflow-auto lg:overflow-hidden">
 
     <div class="flex-1 flex flex-column h-auto lg:h-full border-none border-bottom-1 lg:border-bottom-none border-300" style="min-height: 60vh;">
-      <p:remoteCommand name="rcSelectElement" action="#{visualEditorBean.selectElementFromCanvas}" 
+      <p:remoteCommand name="rcSelectElement" action="#{visualEditorBean.selectElementFromCanvas}"
                        update="properties_panel visual_html_canvas html_visualEditor_toolbar" process="@this" />
-      <p:remoteCommand name="rcResizeElement" action="#{visualEditorBean.resizeElement}" 
+      <p:remoteCommand name="rcResizeElement" action="#{visualEditorBean.resizeElement}"
                        update="properties_panel visual_html_canvas @([id$=code_editor])" process="@this" />
+      <p:remoteCommand name="rcMoveElement" action="#{visualEditorBean.moveElementToPosition}"
+                       update="properties_panel canvas_wrapper @([id$=code_editor])" process="@this" />
 
-      <p:outputPanel id="html_visualEditor_toolbar" 
+      <p:outputPanel id="html_visualEditor_toolbar"
                      class="flex align-items-center gap-2 p-2 surface-100 border-bottom-1 border-300 flex-grow-0"
                      style="min-height: 3rem;">
 
@@ -38,16 +40,16 @@
                       action="#{visualEditorBean.addBottomSelectedElement}"
                       update="html_visualEditor_toolbar properties_panel visual_html_canvas @([id$=code_editor])"
                       process="@this elementSelect"
-                      disabled="#{visualEditorBean.selectedView.nativeViewType eq 'fieldset' and 
-                                  (visualEditorBean.selectedElementDef.defaultType eq 'radio' or 
+                      disabled="#{visualEditorBean.selectedView.nativeViewType eq 'fieldset' and
+                                  (visualEditorBean.selectedElementDef.defaultType eq 'radio' or
                                   visualEditorBean.selectedElementDef.defaultType eq 'checkbox')}" />
           <p:menuitem value="Add (before)"
                       icon="pi pi-arrow-up"
                       action="#{visualEditorBean.addBeforeSelectedElement}"
                       update="html_visualEditor_toolbar properties_panel visual_html_canvas @([id$=code_editor])"
                       process="@this elementSelect"
-                      disabled="#{visualEditorBean.selectedView.nativeViewType eq 'fieldset' and 
-                                  (visualEditorBean.selectedElementDef.defaultType eq 'radio' or 
+                      disabled="#{visualEditorBean.selectedView.nativeViewType eq 'fieldset' and
+                                  (visualEditorBean.selectedElementDef.defaultType eq 'radio' or
                                   visualEditorBean.selectedElementDef.defaultType eq 'checkbox')}" />
 
           <p:menuitem value="Add (inside)"
@@ -61,31 +63,36 @@
                                   and visualEditorBean.selectedElementDef.defaultType ne 'checkbox')}"/>
         </p:menuButton>
 
-
         <i class="pi pi-ellipsis-v text-300 mx-2"></i>
 
-        <p:commandButton value="Update canvas" icon="pi pi-refresh" process="@this @([id$=code_editor])" 
-                         update="visual_html_canvas properties_panel" action="#{htmlFormBean.update}" 
+        <p:commandButton value="Update canvas" icon="pi pi-refresh" process="@this @([id$=code_editor])"
+                         update="visual_html_canvas properties_panel" action="#{htmlFormBean.update}"
                          oncomplete="syncAfterUpdate('#{not empty visualEditorBean.selectedView ? visualEditorBean.selectedView.id : ''}')"
                          styleClass="ui-button-secondary ui-button-flat mini"/>
+        <p:commandButton value="Server script" icon="fab fa-js-square"
+                         process="@this" action="#{visualEditorBean.loadServerScript}"
+                         update="server_script_panel"
+                         oncomplete="toggleServerScriptModal()"
+                         styleClass="ui-button-secondary ui-button-flat mini"/>
+
         <!-- ScreenType selector -->
         <div class="ml-auto flex align-items-center pr-2 gap-1">
-          <p:commandButton icon="fa-solid fa-desktop" title="Monitor (xl: 1200px+)" 
+          <p:commandButton icon="fa-solid fa-desktop" title="Monitor (xl: 1200px+)"
                            action="#{visualEditorBean.setScreenType('MONITOR')}"
                            update="html_visualEditor_toolbar canvas_wrapper" process="@this"
                            styleClass="ui-button-primary #{visualEditorBean.screenType eq 'MONITOR' ? '' : 'ui-button-flat'} mini" />
 
-          <p:commandButton icon="fa-solid fa-laptop" title="Laptop (lg: 992px)" 
+          <p:commandButton icon="fa-solid fa-laptop" title="Laptop (lg: 992px)"
                            action="#{visualEditorBean.setScreenType('LAPTOP')}"
                            update="html_visualEditor_toolbar canvas_wrapper" process="@this"
                            styleClass="ui-button-primary m-1 #{visualEditorBean.screenType eq 'LAPTOP' ? '' : 'ui-button-flat'} mini" />
 
-          <p:commandButton icon="fa-solid fa-tablet-screen-button" title="Tablet (md: 768px)" 
+          <p:commandButton icon="fa-solid fa-tablet-screen-button" title="Tablet (md: 768px)"
                            action="#{visualEditorBean.setScreenType('TABLET')}"
                            update="html_visualEditor_toolbar canvas_wrapper" process="@this"
                            styleClass="ui-button-primary screen-btn #{visualEditorBean.screenType eq 'TABLET' ? '' : 'ui-button-flat'} mini" />
 
-          <p:commandButton icon="fa-solid fa-mobile-screen-button" title="Mobile (base: 375px)" 
+          <p:commandButton icon="fa-solid fa-mobile-screen-button" title="Mobile (base: 375px)"
                            action="#{visualEditorBean.setScreenType('MOBILE')}"
                            update="html_visualEditor_toolbar canvas_wrapper" process="@this"
                            styleClass="ui-button-primary screen-btn #{visualEditorBean.screenType eq 'MOBILE' ? '' : 'ui-button-flat'} mini" />
@@ -95,9 +102,9 @@
 
       <div class="flex-grow-1 overflow-auto flex justify-content-center align-items-start pt-0 ">
 
-        <h:panelGroup id="canvas_wrapper" layout="block" 
-                      styleClass="border-x-1 border-bottom-1 border-300 transition-all transition-duration-300 mx-auto" 
-                      style="width: #{visualEditorBean.screenType eq 'MOBILE' ? '375px' : (visualEditorBean.screenType eq 'TABLET' ? '768px' : 
+        <h:panelGroup id="canvas_wrapper" layout="block"
+                      styleClass="transition-all transition-duration-300 mx-auto"
+                      style="width: #{visualEditorBean.screenType eq 'MOBILE' ? '375px' : (visualEditorBean.screenType eq 'TABLET' ? '768px' :
                                       (visualEditorBean.screenType eq 'LAPTOP' ? '992px' : '100%'))}; min-height: 100%;">
           <div class="relative h-full p-4">
             <!-- Background grid reference (12 columns guide) -->
@@ -110,18 +117,31 @@
               </div>
             </div>
 
-            <p:outputPanel id="visual_html_canvas" 
+            <p:outputPanel id="visual_html_canvas"
+                           pt:data-container-id="panel"
                            styleClass="relative z-1 ui-fluid formgrid grid align-content-start m-0 pt-5"
                            layout="block">
 
               <c:forEach items="#{visualEditorBean.canvasBlocks}" var="block">
                 <h:panelGroup layout="block"
+                              pt:data-element-id="#{block.element.id}"
+                              pt:data-is-fieldset="#{block.element.nativeViewType eq 'fieldset'}"
                               pt:onclick="event.stopPropagation(); rcSelectElement([{name:'elementId', value:'#{block.element.id}'}]);"
-                              styleClass="field relative #{visualEditorBean.getSimulatedGridClass(block.element)} mb-3 p-2 border-round cursor-pointer transition-colors transition-duration-200 border-2 border-solid 
+                              styleClass="field relative #{visualEditorBean.getSimulatedGridClass(block.element)} mb-3 p-2 border-round cursor-pointer transition-colors transition-duration-200 border-2 border-solid
                               #{not empty visualEditorBean.selectedView and visualEditorBean.selectedView.id eq block.element.id ? 'surface-hover border-primary' : 'border-transparent hover:surface-100'}">
 
+                  <!-- Drag handle -->
+                  <c:if test="#{not empty visualEditorBean.selectedView and visualEditorBean.selectedView.id eq block.element.id}">
+                    <div class="drag-handle absolute top-0 left-0 w-1rem h-1rem bg-primary border-round shadow-2 z-5 flex align-items-center justify-content-center"
+                         style="transform: translate(-50%, -50%); cursor: move; touch-action: none;"
+                         onpointerdown="initDragMove(event, this.closest('.field'), '#{block.element.id}', '#{block.element.nativeViewType}', '#{block.element.inputType}')">
+                      <i class="pi pi-arrows-alt text-xs text-white"></i>
+                    </div>
+                  </c:if>
+
+                  <!-- Resize handle -->
                   <c:if test="#{not empty visualEditorBean.selectedView and visualEditorBean.selectedView.id eq block.element.id and block.element.resizable}">
-                    <div class="resize-handle absolute top-50 right-0 w-1rem h-2rem bg-primary border-round shadow-2 cursor-w-resize z-5 flex align-items-center justify-content-center" 
+                    <div class="resize-handle absolute top-50 right-0 w-1rem h-2rem bg-primary border-round shadow-2 cursor-w-resize z-5 flex align-items-center justify-content-center"
                          style="transform: translateY(-50%) translateX(50%); cursor: ew-resize; touch-action: none;"
                          onpointerdown="initSnapResize(event, this.closest('.field'), '#{visualEditorBean.screenType}')">
                       <i class="pi pi-pause text-xs text-white" style="transform: rotate(90deg)"></i>
@@ -143,13 +163,13 @@
       </div>
     </div>
 
-    <p:outputPanel id="properties_panel" layout="block" 
-                   styleClass="w-full lg:w-3 flex-column h-auto lg:h-full surface-ground flex-shrink-0 border-left-1 border-300 #{empty visualEditorBean.selectedView and not visualEditorBean.showFormProperties ? 'hidden' : 'flex'}">
+    <p:outputPanel id="properties_panel" layout="block"
+                   styleClass="w-full lg:w-3 flex-column h-auto lg:h-full flex-shrink-0 border-left-1 border-300 #{empty visualEditorBean.selectedView and not visualEditorBean.showFormProperties ? 'hidden' : 'flex'}">
       <!-- Element Properties -->
       <h:panelGroup rendered="#{not empty visualEditorBean.selectedView}" class="flex flex-column h-auto lg:h-full">
         <div class="flex align-items-center p-2 surface-100 border-bottom-1 border-300 font-bold text-700 flex-shrink-0"
              style="min-height: 3rem;">
-          <i class="pi pi-sliders-h mr-2"></i> 
+          <i class="pi pi-sliders-h mr-2"></i>
           <h:outputText value="Element Edit" />
         </div>
 
@@ -200,7 +220,7 @@
               <p:outputPanel id="element_properties">
                 <div class="flex flex-column gap-2 mb-3">
                   <p:outputLabel value="Element ID" class="font-bold text-sm text-primary"/>
-                  <p:inputText value="#{visualEditorBean.selectedView.id}" styleClass="w-full" />
+                  <p:inputText value="#{visualEditorBean.editingId}" styleClass="w-full" />
                 </div>
                 <!-- Specific element properties -->
                 <ui:include src="/pages/ide/visualEditor/componentProperties/#{visualEditorBean.dynamicPropFile}" />
@@ -210,11 +230,11 @@
             </div>
 
             <div class="col-12 mt-4 flex gap-2 border-top-1 border-300 pt-3">
-              <p:commandButton value="Close" icon="pi pi-times" 
-                               action="#{visualEditorBean.cancelElement()}" process="@this" 
+              <p:commandButton value="Close" icon="pi pi-times"
+                               action="#{visualEditorBean.cancelElement()}" process="@this"
                                update="properties_panel html_visualEditor_toolbar visual_html_canvas" styleClass="ui-button-secondary ui-button-outlined flex-1" />
-              <p:commandButton value="Save" icon="pi pi-save" id="save_properties_btn" 
-                               action="#{visualEditorBean.saveElement()}" process="@this properties_panel" 
+              <p:commandButton value="Save" icon="pi pi-save" id="save_properties_btn"
+                               action="#{visualEditorBean.saveElement()}" process="@this properties_panel"
                                update="visual_html_canvas html_visualEditor_toolbar properties_panel @([id$=code_editor])" styleClass="ui-button-success flex-1" />
             </div>
 
@@ -224,6 +244,38 @@
 
     </p:outputPanel>
   </div>
+
+  <p:outputPanel id="server_script_panel" layout="block">
+    <div id="div_server_script_editor" class="relative" style="display:none"
+         onkeydown="if (event.keyCode === 13 || event.key === 'Enter')
+               event.stopPropagation();">
+
+      <!-- Close button -->
+      <button type="button" id="btn_close_server_script_modal" title="Close"
+              onclick="toggleServerScriptModal(); return false;"
+              style="display:none; position:absolute; top:0.5rem; right:0.5rem; z-index:10000;
+              width:2rem; height:2rem; padding:0;
+              background:none; border:none; cursor:pointer;
+              color: var(--text-color); opacity:0.6;"
+              onmouseover="this.style.opacity = '1'"
+              onmouseout="this.style.opacity = '0.6'">
+        <span class="pi pi-times" style="font-size: 1.2rem;"> </span>
+      </button>
+      <!-- Save button -->
+      <p:commandButton value="Save script" icon="pi pi-save"
+                       action="#{visualEditorBean.saveServerScript}"
+                       process="@this server_script_panel"
+                       update="visual_html_canvas @([id$=code_editor])"
+                       oncomplete="toggleServerScriptModal()"
+                       styleClass="ui-button-success mini"
+                       style="position: absolute; top: 0.5rem; left: 0.5rem; z-index: 10000;"/>
+      <!-- CodeMirror -->
+      <gdm:codemirror id="cm_serverScript" lineNumbers="true" language="javascript"
+                      value="#{visualEditorBean.serverScript}"
+                      activeExtensions="#{ideBean.activeExtensionsJson}"
+                      class="w-full"/>
+    </div>
+  </p:outputPanel>
 
   <gdm:saveBean value="visualEditorBean"/>
   <gdm:saveBean value="htmlFormBean"/>
@@ -252,8 +304,9 @@
       handle.classList.add('dragging');
       try {
         handle.setPointerCapture(e.pointerId);
-      } catch (err) {}
-      
+      } catch (err) {
+      }
+
       const startX = e.clientX;
       const startWidth = elementNode.offsetWidth;
       const gridContainer = elementNode.parentElement;
@@ -292,11 +345,11 @@
           classNames.forEach(function (cls) {
             // Delete ONLY the prefix we are modifying
             if (activePrefix === 'col-') {
-              if (/^col-\d+$/.test(cls)){
+              if (/^col-\d+$/.test(cls)) {
                 elementNode.classList.remove(cls);
               }
             } else {
-              if (cls.startsWith(activePrefix)){
+              if (cls.startsWith(activePrefix)) {
                 elementNode.classList.remove(cls);
               }
             }
@@ -304,7 +357,7 @@
           // Real data
           elementNode.classList.add(activePrefix + newCols);
 
-          // Visual Feedback, indepedent from the ViewPort - temporal col-x
+          // Visual Feedback, independent from the ViewPort - temporal col-x
           Array.from(elementNode.classList).forEach(function (cls) {
             if (/^col-\d+$/.test(cls))
               elementNode.classList.remove(cls);
@@ -320,9 +373,10 @@
         handle.removeEventListener('pointercancel', stopDrag);
         try {
           handle.releasePointerCapture(e.pointerId);
-        } catch (err) {}
+        } catch (err) {
+        }
         handle.classList.remove('dragging');
-        
+
         rcResizeElement([{name: 'columns', value: newCols}]);
       }
 
@@ -330,6 +384,303 @@
       handle.addEventListener('pointerup', stopDrag);
       handle.addEventListener('pointercancel', stopDrag);
     }
+
+    /* DRAG AND DROP */
+    function initDragMove(e, blockNode, draggedId, draggedType, draggedInputType) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+     // document.body.classList.add('drag-lock');
+
+      const handle = e.currentTarget;
+      handle.style.pointerEvents = 'none';
+
+      // --- Disable browser zoom during the drag (root cause: viewport allows pinch-zoom) ---
+      // 1. Tighten the viewport meta temporarily (works on Chrome Android).
+      var vpMeta = document.querySelector('meta[name="viewport"]');
+      window._savedViewport = vpMeta ? vpMeta.getAttribute('content') : null;
+      if (vpMeta) {
+        vpMeta.setAttribute('content',
+                'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, interactive-widget=resizes-visual');
+      }
+      // 2. Block touch/gesture events (covers Safari iOS, which ignores the viewport change).
+      window._dragTouchBlocker = function (ev) {
+        ev.preventDefault();
+      };
+      window._dragGestureBlocker = function (ev) {
+        ev.preventDefault();
+      };
+      document.addEventListener('touchmove', window._dragTouchBlocker, {passive: false});
+      document.addEventListener('gesturestart', window._dragGestureBlocker, {passive: false});
+      document.addEventListener('gesturechange', window._dragGestureBlocker, {passive: false});
+
+      try {
+        handle.setPointerCapture(e.pointerId);
+      } catch (err) {
+      }
+      const pointerId = e.pointerId;
+
+      const ghost = blockNode.cloneNode(true);
+      ghost.querySelectorAll('.drag-handle, .resize-handle').forEach(el => el.remove());
+      ghost.style.position = 'fixed';
+      ghost.style.left = '0';
+      ghost.style.top = '0';
+      ghost.style.width = blockNode.offsetWidth + 'px';
+      ghost.style.pointerEvents = 'none';
+      ghost.style.opacity = '0.6';
+      ghost.style.zIndex = '10000';
+      ghost.style.margin = '0';
+      document.body.appendChild(ghost);
+
+      const blockRect = blockNode.getBoundingClientRect();
+      const offsetX = e.clientX - blockRect.left;
+      const offsetY = e.clientY - blockRect.top;
+
+      let drop = {targetId: null, position: null, containerId: null};
+
+      function positionGhost(clientX, clientY) {
+        ghost.style.left = (clientX - offsetX) + 'px';
+        ghost.style.top = (clientY - offsetY) + 'px';
+      }
+      positionGhost(e.clientX, e.clientY);
+
+      function clearTargetHighlight() {
+        document.querySelectorAll('.drop-target-before, .drop-target-after, .drop-target-container').forEach(el => {
+          el.classList.remove('drop-target-before', 'drop-target-after', 'drop-target-container');
+        });
+      }
+
+      // --- Restore everything we changed at drag start ---
+      function restoreBrowserGestures() {
+        // document.body.classList.remove('drag-lock');
+        var vp = document.querySelector('meta[name="viewport"]');
+        if (vp && window._savedViewport !== null && window._savedViewport !== undefined) {
+          vp.setAttribute('content', window._savedViewport);
+        }
+        window._savedViewport = null;
+        if (window._dragTouchBlocker) {
+          document.removeEventListener('touchmove', window._dragTouchBlocker, {passive: false});
+          window._dragTouchBlocker = null;
+        }
+        if (window._dragGestureBlocker) {
+          document.removeEventListener('gesturestart', window._dragGestureBlocker, {passive: false});
+          document.removeEventListener('gesturechange', window._dragGestureBlocker, {passive: false});
+          window._dragGestureBlocker = null;
+        }
+      }
+
+      // --- Auto-scroll when the finger approaches the container edges ---
+      const scrollContainer = blockNode.closest('.overflow-auto');
+      let autoScrollRAF = null;
+      let autoScrollDir = 0; // Direction (-1 , +1)
+
+      function autoScrollStep() {
+        if (autoScrollDir !== 0 && scrollContainer) {
+          scrollContainer.scrollTop += autoScrollDir * 8;
+          autoScrollRAF = requestAnimationFrame(autoScrollStep);
+        } else {
+          autoScrollRAF = null;
+        }
+      }
+
+      function updateAutoScroll(clientY) {
+        if (!scrollContainer) return;
+        const rect = scrollContainer.getBoundingClientRect();
+        const band = 60;   // sensitive band in px
+        if (clientY > rect.bottom - band) {
+          autoScrollDir = 1;
+        } else if (clientY < rect.top + band) {
+          autoScrollDir = -1;
+        } else {
+          autoScrollDir = 0;
+        }
+        if (autoScrollDir !== 0 && autoScrollRAF === null) {
+          autoScrollRAF = requestAnimationFrame(autoScrollStep);
+        }
+      }
+
+      // --- 2b: rule validation ---
+      function isDropAllowed(destIsFieldset) {
+        const isRadio = draggedType === 'radio' || draggedInputType === 'radio';
+        const isCheckbox = draggedType === 'checkbox' || draggedInputType === 'checkbox';
+        const isFieldset = draggedType === 'fieldset';
+
+        if (isRadio)
+          return destIsFieldset;     // radio: only inside fieldsets
+        if (isCheckbox)
+          return true;               // checkbox: anywhere
+        if (isFieldset)
+          return !destIsFieldset;    // fieldset: never nested
+        return !destIsFieldset;      // standard case: not inside a fieldset
+      }
+
+      // --- 2c: resolve the drop according to the target zone ---
+      function computeDrop(under, clientX) {
+        const result = {targetId: null, position: null, containerId: null, destIsFieldset: false};
+        if (!under)
+          return result;
+
+        const nearestField = under.closest('.field');
+        const nearestContainer = under.closest('[data-container-id]');
+        const fieldId = nearestField ? nearestField.dataset.elementId : null;
+        const containerId = nearestContainer ? nearestContainer.dataset.containerId : null;
+
+        if (nearestField && nearestField !== blockNode && fieldId && fieldId !== draggedId) {
+          const isFieldset = nearestField.dataset.isFieldset === 'true';
+
+          // Zone A/D: fieldset chrome (legend/border) -> beside the fieldset (in the panel)
+          if (isFieldset && containerId !== fieldId) {
+            const rect = nearestField.getBoundingClientRect();
+            const left = (clientX - rect.left) < (rect.width / 2);
+            result.targetId = fieldId;
+            result.position = left ? 'before' : 'after';
+            result.destIsFieldset = false;
+            return result;
+          }
+
+          // Zone C: inside the fieldset, empty area -> end of the fieldset
+          if (isFieldset && containerId === fieldId) {
+            result.containerId = fieldId;
+            result.position = 'end';
+            result.destIsFieldset = true;
+            return result;
+          }
+
+          // Zone B / standard element -> before/after the target
+          const rect = nearestField.getBoundingClientRect();
+          const left = (clientX - rect.left) < (rect.width / 2);
+          result.targetId = fieldId;
+          result.position = left ? 'before' : 'after';
+          result.destIsFieldset = (containerId !== null && containerId !== 'panel');
+          return result;
+        }
+
+        // No field -> empty area of a container -> end
+        if (containerId) {
+          result.containerId = containerId;
+          result.position = 'end';
+          result.destIsFieldset = (containerId !== 'panel');
+        }
+        return result;
+      }
+
+      function doDrag(ev) {
+        if (ev.pointerId !== pointerId)
+          return;
+        positionGhost(ev.clientX, ev.clientY);
+        updateAutoScroll(ev.clientY);
+
+        clearTargetHighlight();
+        drop = {targetId: null, position: null, containerId: null};
+
+        const under = document.elementFromPoint(ev.clientX, ev.clientY);
+        const resolved = computeDrop(under, ev.clientX);
+
+        if (!resolved.targetId && !resolved.containerId)
+          return;
+
+        // 2b: block if it breaks the rules
+        if (!isDropAllowed(resolved.destIsFieldset))
+          return;
+
+        drop = {targetId: resolved.targetId, position: resolved.position, containerId: resolved.containerId};
+
+        // visual marker
+        if (resolved.targetId) {
+          const field = document.querySelector('.field[data-element-id="' + resolved.targetId + '"]');
+          if (field)
+            field.classList.add(resolved.position === 'before' ? 'drop-target-before' : 'drop-target-after');
+        } else if (resolved.containerId) {
+          const cont = document.querySelector('[data-container-id="' + resolved.containerId + '"]');
+          if (cont)
+            cont.classList.add('drop-target-container');
+        }
+      }
+
+      function stopDrag(ev) {
+        if (ev.pointerId !== pointerId)
+          return;
+        handle.removeEventListener('pointermove', doDrag);
+        handle.removeEventListener('pointerup', stopDrag);
+        handle.removeEventListener('pointercancel', stopDrag);
+        try {
+          handle.releasePointerCapture(pointerId);
+        } catch (err) {
+        }
+
+        handle.style.pointerEvents = '';
+
+        autoScrollDir = 0;
+        if (autoScrollRAF !== null) {
+          cancelAnimationFrame(autoScrollRAF);
+          autoScrollRAF = null;
+        }
+
+        restoreBrowserGestures();
+        ghost.remove();
+        clearTargetHighlight();
+
+        if (drop.targetId && drop.position) {
+          rcMoveElement([
+            {name: 'draggedId', value: draggedId},
+            {name: 'targetId', value: drop.targetId},
+            {name: 'position', value: drop.position}
+          ]);
+        } else if (drop.containerId && drop.position === 'end') {
+          rcMoveElement([
+            {name: 'draggedId', value: draggedId},
+            {name: 'containerId', value: drop.containerId},
+            {name: 'position', value: 'end'}
+          ]);
+        }
+      }
+
+      handle.addEventListener('pointermove', doDrag);
+      handle.addEventListener('pointerup', stopDrag);
+      handle.addEventListener('pointercancel', stopDrag);
+    }
+
+    function toggleServerScriptModal() {
+      var wrapper = document.getElementById('div_server_script_editor');
+      var closeBtn = document.getElementById('btn_close_server_script_modal');
+      var backdrop = document.getElementById('server_script_backdrop');
+
+      if (!wrapper)
+        return;
+
+      if (wrapper.style.display === 'none') {
+        wrapper.style.display = 'block';
+      }
+
+      var isModal = wrapper.classList.toggle('cm-modal-mode');
+
+      if (isModal) {
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.id = 'server_script_backdrop';
+          backdrop.onclick = toggleServerScriptModal;
+          document.body.appendChild(backdrop);
+        }
+        backdrop.style.display = 'block';
+        closeBtn.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      } else {
+        if (backdrop)
+          backdrop.style.display = 'none';
+        closeBtn.style.display = 'none';
+        document.body.style.overflow = '';
+        wrapper.style.display = 'none';
+      }
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var wrapper = document.getElementById('div_server_script_editor');
+        if (wrapper && wrapper.classList.contains('cm-modal-mode')) {
+          toggleServerScriptModal();
+        }
+      }
+    });
     //]]>
   </script>
   <style>
@@ -345,12 +696,12 @@
       width: 1rem;
       text-align: center;
     }
-    
+
     .resize-handle {
       position: absolute;
     }
-    
-    /* Invisible touch area. Increases the touch area */
+
+    /* Invisible touch area */
     .resize-handle::before {
       content: '';
       position: absolute;
@@ -360,10 +711,91 @@
       right: -0.75rem;
       cursor: ew-resize;
     }
-    
+
     .resize-handle.dragging::before {
       background: rgba(99, 102, 241, 0.1);
       border-radius: 50%;
+    }
+
+    .drag-handle {
+      position: absolute;
+    }
+
+    /* Invisible touch area expander, same trick as resize handle */
+    .drag-handle::before {
+      content: '';
+      position: absolute;
+      top: -0.75rem;
+      bottom: -0.75rem;
+      left: -0.75rem;
+      right: -0.75rem;
+      cursor: move;
+    }
+
+    /* Drop target when releasing into an empty area of a container */
+    .drop-target-container {
+      outline: 2px dashed var(--primary-color, #6366f1);
+      outline-offset: -2px;
+    }
+
+    /* Straight vertical drop indicator (left = before, right = after) */
+    .drop-target-before,
+    .drop-target-after {
+      position: relative;
+    }
+
+    .drop-target-before::before,
+    .drop-target-after::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--primary-color, #6366f1);
+      z-index: 6;
+    }
+
+    .drop-target-before::before {
+      left: -1px;
+    }
+
+    .drop-target-after::before {
+      right: -1px;
+    }
+
+    #server_script_backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+    }
+
+    #div_server_script_editor.cm-modal-mode {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 80vw !important;
+      max-width: 1100px;
+      height: 75vh !important;
+      max-height: 800px;
+      z-index: 9999 !important;
+      background-color: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      padding: 3rem 1rem 1rem 1rem;
+      margin: 0 !important;
+      display: block !important;
+    }
+
+    #div_server_script_editor.cm-modal-mode .cm-editor {
+      height: 100% !important;
+      font-size: 0.95rem;
     }
   </style>
 </ui:composition>
