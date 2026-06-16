@@ -452,6 +452,10 @@ public class HtmlFormRenderer extends FormRenderer
     DynamicForm component, String clientId, ResponseWriter writer)
     throws IOException
   {
+    
+    // Html comments are not rendered as DOM nodes in dynamic form
+    if (View.COMMENT.equals(view.getViewType())) return;
+    
     String tag = view.getNativeViewType();
     if (tag == null) tag = "span";
     if (tag.equals("body") || tag.equals("form"))

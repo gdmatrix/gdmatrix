@@ -168,7 +168,7 @@ public class HtmlParser
       // Not remove comments
       HtmlView view = new HtmlView();
       populateView(node, view, parentView);
-      view.setViewType(View.UNKNOWN); // Unknown
+      view.setViewType(View.COMMENT);
       view.setProperty("text", node.getNodeValue());
     }
     else if (node instanceof Element)// normal tag

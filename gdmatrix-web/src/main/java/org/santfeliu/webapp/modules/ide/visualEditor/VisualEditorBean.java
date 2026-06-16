@@ -1124,7 +1124,7 @@ public class VisualEditorBean extends WebBean
     for(int i = blockStart -1; i >= minIndex; i--)
     {
       HtmlView v = (HtmlView) container.get(i);
-      if ("#text".equals(v.getNativeViewType()))
+      if (isInsignificantNode(v))
       {
         continue;
       }
@@ -1141,7 +1141,7 @@ public class VisualEditorBean extends WebBean
         for (int j = i - 1; j >= 0; j--)
         {
           HtmlView v2 = (HtmlView) container.get(j);
-          if ("#text".equals(v2.getNativeViewType()))
+          if (isInsignificantNode(v2))
           {
             continue;
           }
@@ -1158,7 +1158,7 @@ public class VisualEditorBean extends WebBean
         for (int j = i - 1; j >= 0; j--)
         {
           HtmlView v2 = (HtmlView) container.get(j);
-          if ("#text".equals(v2.getNativeViewType()))
+          if (isInsignificantNode(v2))
           {
             continue;
           }
@@ -1252,7 +1252,7 @@ public class VisualEditorBean extends WebBean
     for (int i = blockEnd + 1; i < container.size(); i++)
     {
       HtmlView v = (HtmlView) container.get(i);
-      if ("#text".equals(v.getNativeViewType()))
+      if (isInsignificantNode(v))
       {
         continue;
       }
@@ -1265,7 +1265,7 @@ public class VisualEditorBean extends WebBean
         for (int j = i + 1; j < container.size(); j++)
         {
           HtmlView v2 = (HtmlView) container.get(j);
-          if ("#text".equals(v2.getNativeViewType()))
+          if (isInsignificantNode(v2))
           {
             continue;
           }
@@ -1282,7 +1282,7 @@ public class VisualEditorBean extends WebBean
         for (int j = i + 1; j < container.size(); j++)
         {
           HtmlView v2 = (HtmlView) container.get(j);
-          if ("#text".equals(v2.getNativeViewType()))
+          if (isInsignificantNode(v2))
           {
             continue;
           }
@@ -1956,7 +1956,7 @@ public class VisualEditorBean extends WebBean
     for (View v : panel.getChildren())
     {
       HtmlView hv = (HtmlView) v;
-      if ("#comment".equals(hv.getNativeViewType()))
+      if (View.COMMENT.equals(hv.getViewType()))
       {
         String text = (String) hv.getProperty("text");
         if (text != null)
@@ -2012,7 +2012,7 @@ public class VisualEditorBean extends WebBean
     else
     {
       HtmlView comment = new HtmlView();
-      comment.setViewType(View.UNKNOWN);
+      comment.setViewType(View.COMMENT);
       comment.setNativeViewType("#comment");
       comment.setProperty("text", commentText);
       panel.getChildren().add(0, comment);
@@ -2035,5 +2035,14 @@ public class VisualEditorBean extends WebBean
       }
     }
     return container.size();
+  }
+  
+  private static boolean isInsignificantNode(View v)
+  {
+    if (v == null) return true;
+    if (!(v instanceof HtmlView)) return true;
+    HtmlView hv = (HtmlView) v;
+    return "#text".equals(hv.getNativeViewType())
+      || View.COMMENT.equals(hv.getViewType());
   }
 }

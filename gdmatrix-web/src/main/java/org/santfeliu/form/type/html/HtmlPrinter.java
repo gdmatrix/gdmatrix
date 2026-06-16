@@ -103,7 +103,7 @@ public class HtmlPrinter
     boolean isInline = isInline(view);
 
     // Case 0: Comment node
-    if ("#comment".equals(view.getNativeViewType()))
+    if (View.COMMENT.equals(view.getViewType()))
     {
       String text = (String) view.getProperty("text");
       if (text != null)
@@ -133,9 +133,9 @@ public class HtmlPrinter
       }
     }
     // Case 2: Item with 1 child (text). E.g. label, b, p
+    //  && !"#comment".equals(view.getChildren().get(0).getNativeViewType())
     else if (view.getChildren().size() == 1
-      && View.TEXT.equals(view.getChildren().get(0).getViewType())
-      && !"#comment".equals(view.getChildren().get(0).getNativeViewType()))
+      && View.TEXT.equals(view.getChildren().get(0).getViewType()))
     {
       View label = view.getChildren().get(0);
 

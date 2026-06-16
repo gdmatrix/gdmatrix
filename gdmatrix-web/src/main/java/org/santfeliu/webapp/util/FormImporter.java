@@ -141,6 +141,9 @@ public class FormImporter
 
   protected void importHtmlView(HtmlView view, UIComponent parent)
   {
+   // Comments don't translate to JSF components
+   if(View.COMMENT.equals(view.getViewType())) return;
+    
     String tag = view.getNativeViewType();
 
     if (tag == null) tag = "span";

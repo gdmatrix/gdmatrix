@@ -56,6 +56,7 @@ public interface View
   static final String SLIDER = "SLIDER";
   static final String CALENDAR = "CALENDAR";
   static final String BUTTON = "BUTTON";
+  static final String COMMENT = "COMMENT";
 
   String getId();
   String getReference();

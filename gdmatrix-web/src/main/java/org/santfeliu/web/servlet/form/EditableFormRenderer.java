@@ -77,6 +77,9 @@ public class EditableFormRenderer implements FormRenderer
   protected void writeFormView(View view, HtmlForm form,
     Map data, Writer writer) throws IOException
   {
+    // HTML comments are server-side scripts/metadata: do not render in the response
+    if(View.COMMENT.equals(view.getViewType())) return;
+    
     String tag = view.getNativeViewType();
     if (tag == null) tag = "span";
     if (tag.equals("body") || tag.equals("form"))
