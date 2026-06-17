@@ -169,7 +169,10 @@ public class CmdTwain
     String target = programDirectory.getAbsolutePath().replace('/', '\\');
     Runtime runtime = Runtime.getRuntime();
     String cmd = programDirectory.getAbsolutePath() + 
-      "/CmdTwain.exe " + getOptionsString() + " " + target + "\\image.bmp";
+      "/CmdTwain.exe " + getOptionsString() + " \"" + target + "\\image.bmp\"";
+    System.out.println("cmd: " + cmd);
+    
+    
     Logger.getLogger(getClass().getName()).fine(cmd);
     Process exec = runtime.exec(cmd);
     exec.waitFor();
