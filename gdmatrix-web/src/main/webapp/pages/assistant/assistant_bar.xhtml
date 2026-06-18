@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+  <h:panelGroup id="input_panel" layout="block" styleClass="assistant-bar">
+
+  <p:inputTextarea id="question" value="#{threadsBean.text}"
+                   pt:spellcheck="false" widgetVar="assistantTextarea"
+                   onkeyup="onAssistantKeyUp(event)" onpaste="assistantPaste(event)"
+                   rows="2" autoResize="true"
+                   placeholder="#{threadsBean.inputPlaceholder}" />
+
+  <div class="ab-action-row">
+    <div class="ab-left">
+
+      <!-- Resize menu (disabled for now) -->
+      <p:commandButton type="button"
+                       title="Menú"
+                       icon="pi pi-bars" styleClass="ui-button-icon-only"
+                       rendered="false"/>
+
+      <!-- Suggestions (dissabled for now) -->
+      <p:commandButton type="button"
+                       title="Preguntes suggerides"
+                       icon="pi pi-question" styleClass="ui-button-icon-only"
+                       rendered="false"/>
+
+      <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
+                       process="@this" update="uploaded_file"
+                       widgetVar="assistantUploadButton" title="#{objectBundle.upload}"
+                       onclick="PF('fileUpload').show()"
+                       icon="pi pi-paperclip" styleClass="ui-button-icon-only" />
+    </div>
+    <div class="ab-spacer"></div>
+
+    <p:commandButton action="#{threadsBean.sendMessage()}"
+                     process="assistant_panel"
+                     update="question threads_panel uploaded_file floating_bar"
+                     widgetVar="assistantSendButton" title="#{objectBundle.send}"
+                     onclick="sendMessage()" global="false"
+                     oncomplete="showResponse('#{threadsBean.threadId}')"
+                     icon="pi pi-arrow-right" styleClass="ab-send ui-button-icon-only" />
+                     <!-- pi pi-send -->
+                     
+    <p:commandButton action="#{threadsBean.interruptStreaming()}"
+                     process="assistant_panel"
+                     update="question threads_panel uploaded_file floating_bar"
+                     widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"
+                     style="display:none" global="false"
+                     icon="pi pi-stop-circle" styleClass="ab-send ab-stop ui-button-icon-only" />
+  </div>
+
+</h:panelGroup>
+</ui:composition>

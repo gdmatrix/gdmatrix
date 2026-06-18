@@ -344,5 +344,241 @@
   }
 }  
 
+/* ──────────────────────────────────────────────────────────────────────
+   ASSISTANT BAR
+   ────────────────────────────────────────────────────────────────────── */
+.assistant-bar
+{
+  --ab-accent: var(--primary-color);
+  --ab-on-accent: var(--primary-color-text);
+  --ab-surface: var(--surface-0);
+  --ab-text: var(--text-color);
+  --ab-icon: var(--surface-500);
+  --ab-placeholder: var(--surface-400, color-mix(in srgb, var(--ab-text) 45%, transparent));
+  --ab-inset: var(--surface-100);
+  --ab-inset-2: var(--surface-200);
+  --ab-hover: color-mix(in srgb, var(--ab-accent) 12%, var(--ab-surface));
+  /* Magenta llegible: s'aclareix sol si el text és clar (tema fosc) */
+  --ab-accent-ink: color-mix(in srgb, var(--ab-accent) 70%, var(--ab-text));
+  --ab-radius: var(--border-radius);
+  --ab-btn-radius: var(--border-radius);
+  --ab-shadow: var(--ab-elevation, 0 0 #0000);
 
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  font-family: var(--font-family, inherit);
+  font-size: var(--font-size, inherit);
+  background: var(--ab-surface);
+  border: var(--ab-border, 1px solid var(--surface-border));
+  border-radius: var(--ab-radius);
+  padding: 8px 8px 6px;
+  box-shadow: var(--ab-shadow);
+  transition: box-shadow 0.2s ease;
+}
 
+.assistant-bar.is-focus,
+.assistant-bar:focus-within
+{
+  box-shadow: var(--ab-shadow), var(--focus-ring, 0 0 0 4px color-mix(in srgb, var(--ab-accent) 16%, transparent));
+}
+
+@media (max-width: 440px)
+{
+  .assistant-bar
+  {
+    padding: 7px 7px 5px;
+  }
+}
+
+/* Camp de text: a dalt, transparent, sense vora */
+.assistant-bar .ui-inputtextarea,
+.assistant-bar textarea.ui-inputtext
+{
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.4;
+  color: var(--ab-text);
+  padding: 4px 6px 0;
+  margin: 0;
+  resize: none;
+  max-height: 148px;
+  min-height: 1.6em;
+}
+
+.assistant-bar .ui-inputtextarea::placeholder
+{
+  color: var(--ab-placeholder);
+}
+
+.assistant-bar .ui-inputtextarea:hover,
+.assistant-bar .ui-inputtextarea:focus,
+.assistant-bar .ui-inputtextarea.ui-state-hover,
+.assistant-bar .ui-inputtextarea.ui-state-focus
+{
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Actions row */
+.assistant-bar .ab-action-row
+{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.assistant-bar .ab-action-row .ab-left
+{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.assistant-bar .ab-action-row .ab-spacer
+{
+  flex: 1 1 auto;
+}
+
+/* Ghost icon buttons (menu, suggests, attach, ...)*/
+.assistant-bar .ui-button.ui-button-icon-only
+{
+  width: 36px;
+  height: 36px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--ab-btn-radius);
+  background: transparent;
+  color: var(--ab-icon);
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.16s ease, color 0.16s ease, transform 0.12s ease, filter 0.16s ease;
+}
+
+.assistant-bar .ui-button.ui-button-icon-only .ui-icon,
+.assistant-bar .ui-button.ui-button-icon-only .pi
+{
+  position: static;
+  margin: 0;
+  font-size: 17px;
+}
+
+.assistant-bar .ui-button.ui-button-icon-only .ui-button-text
+{
+  display: none;
+}
+
+.assistant-bar .ui-button.ui-button-icon-only:enabled:hover,
+.assistant-bar .ui-button.ui-button-icon-only.ui-state-hover
+{
+  background: var(--ab-hover);
+  color: var(--ab-accent-ink);
+  border: none;
+}
+
+.assistant-bar .ui-button.ui-button-icon-only:enabled:active,
+.assistant-bar .ui-button.ui-button-icon-only.ui-state-active
+{
+  transform: scale(0.92);
+  background: var(--ab-hover);
+  color: var(--ab-accent-ink);
+}
+
+.assistant-bar .ui-button
+{
+  width: 38px;
+  height: 38px;
+  border-radius: var(--ab-btn-radius);
+  background: var(--ab-accent);
+  color: var(--ab-on-accent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--ab-accent) 36%, transparent);
+}
+
+.assistant-bar .ui-button.ab-send .ui-icon,
+.assistant-bar .ui-button.ab-send .pi
+{
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.assistant-bar .ui-button.ab-send:enabled:hover,
+.assistant-bar .ui-button.ab-send.ui-state-hover
+{
+  background: var(--ab-accent);
+  color: var(--ab-on-accent);
+  filter: brightness(1.07);
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--ab-accent) 42%, transparent);
+}
+
+.assistant-bar .ui-button.ab-send:enabled:hover .pi
+{
+  transform: translateX(2px);
+}
+
+.assistant-bar .ui-button.ab-send:enabled:active,
+.assistant-bar .ui-button.ab-send.ui-state-active
+{
+  transform: scale(0.92);
+}
+
+.assistant-bar .ui-button.ab-send.ui-state-disabled,
+.assistant-bar .ui-button.ab-send:disabled
+{
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--ab-inset-2);
+  color: var(--ab-icon);
+  box-shadow: none;
+}
+
+/* Stop streaming button (ab-stop)*/
+.assistant-bar .ui-button.ab-stop
+{
+  background: var(--ab-inset-2);
+  color: var(--ab-accent-ink);
+  box-shadow: none;
+}
+
+.assistant-bar .ui-button.ab-stop:enabled:hover,
+.assistant-bar .ui-button.ab-stop.ui-state-hover
+{
+  background: var(--ab-hover);
+  color: var(--ab-accent-ink);
+  filter: none;
+  box-shadow: none;
+}
+
+/* Optional attach */
+.assistant-bar .ab-attach
+{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 50%;
+  background: var(--ab-inset);
+  color: var(--ab-text);
+  border-radius: var(--border-radius);
+  padding: 5px 9px 5px 11px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.assistant-bar .ab-attach .pi
+{
+  color: var(--ab-accent-ink);
+  font-size: 13px;
+}
