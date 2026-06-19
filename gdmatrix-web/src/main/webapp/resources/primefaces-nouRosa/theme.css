@@ -12,7 +12,7 @@
   --font-family:Montserrat, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
   --surface-0: #ffffff;
   --surface-50: #FAFAFA;
-  --surface-100: #F5F5F5;
+  --surface-100: #ffffff; /*#F5F5F5;*/
   --surface-200: #EEEEEE;
   --surface-300: #E0E0E0;
   --surface-400: #BDBDBD;
@@ -52,7 +52,7 @@ body .ui-widget{
   font-size:1rem;
   text-decoration:none;
   /*RADIO GLOBAL - Todos los componentes (ui-widget))*/
-  /*border-radius: var(--border-radius);*/
+  border-radius: var(--border-radius);
 }
 
 * {
@@ -400,7 +400,7 @@ body .ui-selectbooleanbutton.ui-state-active .ui-icon,body .ui-selectonebutton>.
   color:#fff
 }
 body .ui-selectbooleanbutton.ui-state-active:not(.ui-state-disabled):hover,body .ui-selectonebutton>.ui-button.ui-state-active:not(.ui-state-disabled):hover,body .ui-selectmanybutton>.ui-button.ui-state-active:not(.ui-state-disabled):hover{
-  /*background:#9a094b;*/
+  background:#9a094b;
   border-color:#9a094b;
   color:#fff
 }
@@ -7068,7 +7068,7 @@ body .ui-panel .ui-panel-titlebar+.ui-panel-content{
   border-top:0 none
 }
 body .ui-panel .ui-panel-content{
-/*  border:1px solid #dee2e6;*/
+  border:1px solid #dee2e6;
   background:#fff;
   color:#495057;
   padding:1rem
@@ -7504,6 +7504,14 @@ body .ui-wizard .ui-icon-arrowthick-1-e:before{
 
   /* Subtler focus ring derived from the corporate color */
   --focus-ring: 0 0 0 0.2rem rgba(171, 10, 83, 0.22);
+
+  /* ── Decisions per a components que les hereten (p.ex. assistant-bar) ──
+     Aquest tema és premium: sense vores i amb elevació flotant. Els
+     components que llegeixen aquests tokens (com el calaix de l'assistent)
+     s'hi adapten sols. Un tema pla posaria --ab-border: 1px solid
+     var(--surface-border) i --ab-elevation: none. */
+  --ab-border: none;
+  --ab-elevation: 0 16px 38px rgba(26, 16, 32, 0.13), 0 3px 10px rgba(26, 16, 32, 0.07);
 }
 
 /* ---- Universal smoothing & micro-radius normalization ------------------- */
@@ -7585,12 +7593,14 @@ body .ui-button{
   border: 1px solid transparent;
   border-radius: var(--border-radius);
   box-shadow: 0 1px 2px rgba(20, 22, 28, 0.06);
+  transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, transform .15s var(--nt-transition, ease), opacity .2s;
 }
-body .ui-button:enabled:hover{
-  box-shadow: 0 3px 8px rgba(20, 22, 28, 0.10);
+body .ui-button:enabled:hover,
+body .ui-button.ui-state-hover{
+  box-shadow: 0 1px 2px rgba(20, 22, 28, 0.06);
 }
-body .ui-button:enabled:active{
-  transform: scale(.97);
+body .ui-button:enabled:active,
+body .ui-button.ui-state-active{
   box-shadow: 0 1px 2px rgba(20, 22, 28, 0.06);
 }
 body .ui-button.ui-button-flat,
@@ -7599,7 +7609,9 @@ body .ui-button.ui-button-text{
   box-shadow: none;
 }
 body .ui-button.ui-button-flat:enabled:hover,
-body .ui-button.ui-button-text:enabled:hover{
+body .ui-button.ui-button-text:enabled:hover,
+body .ui-button.ui-button-flat.ui-state-hover,
+body .ui-button.ui-button-text.ui-state-hover{
   background: rgba(171, 10, 83, 0.08);
   transform: none;
   box-shadow: none;
@@ -7798,8 +7810,6 @@ body .ui-widget:disabled{
   box-shadow: none !important;
 }
 
-/* ---- Iteració 1: refinaments cap a la proposta «sobri institucional» ----- */
-
 /* Botó secundari: tonal neutre i quiet (reserva el magenta) */
 body .ui-button.ui-button-secondary,
 body .ui-splitbutton.ui-button-secondary>.ui-button,
@@ -7876,7 +7886,6 @@ body .ui-messages .ui-messages-warn .ui-messages-close{ background: transparent 
 body .ui-messages .ui-messages-error .ui-messages-close,
 body .ui-messages .ui-messages-fatal .ui-messages-close{ background: transparent !important; color: #8c231c !important; }
 
-/* Fieldset: contorn subtil + llegenda diferenciada (xip) */
 body .ui-fieldset{
   border: 1px solid var(--nt-hairline) !important;
   border-radius: var(--border-radius);
@@ -7898,32 +7907,6 @@ body .ui-fieldset.ui-fieldset-toggleable > .ui-fieldset-legend:hover{
   color: var(--primary-color);
 }
 
-/* -- EFECTO EN LOS BOTONES -- */
-/* ---- Botones: Se levantan ligeramente + sombra en el hover con color coorporativo ---- */
-/*body .ui-button{
-  transition: background-color .2s, color .2s, border-color .2s,
-              box-shadow .2s, transform .15s, opacity .2s;
-}
-body .ui-button:enabled:hover,
-body .ui-button.ui-state-hover{
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(171, 10, 83, 0.22), 0 2px 6px rgba(20, 22, 28, 0.08);
-}
-body .ui-button:enabled:active,
-body .ui-button.ui-state-active{
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(171, 10, 83, 0.18);
-}
- Los botones sin fondo, no se levantan 
-body .ui-button.ui-button-flat:enabled:hover,
-body .ui-button.ui-button-text:enabled:hover,
-body .ui-button.ui-button-flat.ui-state-hover,
-body .ui-button.ui-button-text.ui-state-hover{
-  transform: none;
-  box-shadow: none;
-}*/
-
-/* Panell · Card: ombra suau i envoltant (inclou la vora superior), com la resta */
 body .ui-panel,
 body .ui-card{
   box-shadow: 0 4px 12px rgba(20, 22, 28, 0.07),
@@ -7936,4 +7919,50 @@ body .ui-panel:hover{
               0 4px 8px rgba(20, 22, 28, 0.05),
               0 0 0 1px rgba(20, 22, 28, 0.05) !important;
 }
+
+/* Panell · Card: eliminar vores internes del titlebar i content (caixa dins de caixa) */
+body .ui-panel > .ui-panel-titlebar,
+body .ui-panel > .ui-panel-content,
+body .ui-panel > .ui-panel-footer,
+body .ui-card .ui-card-body,
+body .ui-card .ui-card-content{
+  border: 0 none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+body .ui-panel > .ui-panel-content{
+  background: var(--surface-card) !important;
+}
+
+/* Desplegables: el halo de focus envolta TOT el control, no l'etiqueta interna */
+body .ui-selectonemenu > .ui-selectonemenu-label:focus,
+body .ui-selectonemenu > .ui-selectonemenu-label.ui-state-focus,
+body .ui-multiselect > .ui-multiselect-label:focus{
+  box-shadow: none !important;
+}
+body .ui-selectonemenu.ui-state-focus,
+body .ui-selectonemenu:focus-within,
+body .ui-multiselect.ui-state-focus,
+body .ui-multiselect:focus-within{
+  box-shadow: var(--focus-ring) !important;
+  border-color: transparent !important;
+  position: relative;
+  z-index: 2;
+}
+
+.ui-connected-overlay-enter{
+  opacity: 0 !important;
+}
+.ui-connected-overlay-enter-active{
+  opacity: 1 !important;
+  transition: opacity .14s ease !important;
+}
+.ui-connected-overlay-enter-done{
+  opacity: 1 !important;
+}
+.ui-connected-overlay-leave-active{
+  opacity: 0 !important;
+  transition: opacity .1s ease !important;
+}
+
 /* End of nouTheme overrides */
