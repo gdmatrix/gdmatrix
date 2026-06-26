@@ -45,6 +45,7 @@ public class Assistant implements Serializable
 {
   public static final String OPENAI_PROVIDER = "openai";
   public static final String OLLAMA_PROVIDER = "ollama";
+  public static final String ANTHROPIC_PROVIDER = "anthropic";
 
   private String assistantId;
   private String name;

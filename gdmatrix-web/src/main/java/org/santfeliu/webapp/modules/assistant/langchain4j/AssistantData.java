@@ -43,6 +43,8 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.model.anthropic.AnthropicChatModel;
+import dev.langchain4j.model.anthropic.AnthropicStreamingChatModel;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
@@ -56,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.util.MatrixConfig;
+import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.ANTHROPIC_PROVIDER;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OLLAMA_PROVIDER;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OPENAI_PROVIDER;
 
@@ -146,6 +149,31 @@ public class AssistantData
           .maxTokens(assistant.getMaxTokens())
           .build();
       }
+    }
+    else if (ANTHROPIC_PROVIDER.equals(assistant.getProvider()))
+    {
+      if (assistant.isStreaming())
+      {
+        streamingModel = AnthropicStreamingChatModel.builder()
+          .baseUrl(assistant.getBaseUrl())
+          .modelName(assistant.getModelName())
+          .temperature(assistant.getTemperature())
+          .topP(assistant.getTopP())
+          .timeout(timeout)
+          .returnThinking(false)
+          .build();
+      }
+      else
+      {
+        model = AnthropicChatModel.builder()
+          .baseUrl(assistant.getBaseUrl())
+          .modelName(assistant.getModelName())
+          .temperature(assistant.getTemperature())
+          .topP(assistant.getTopP())
+          .timeout(timeout)
+          .returnThinking(false)
+          .build();
+      }      
     }
     else if (OLLAMA_PROVIDER.equals(assistant.getProvider()))
     {
