@@ -322,7 +322,7 @@ public class DynamicPropertiesBean implements Serializable
     UIComponent panel = ComponentUtils.postAddToView(event);
     if (panel != null)
     {
-      if (isPanelRendered(panel))
+      if (isPanelRendered(panel) && canUpdateForm())
       {
         updateComponents(panel);
       }
@@ -350,6 +350,11 @@ public class DynamicPropertiesBean implements Serializable
     WebUtils.setValue("#{cc.attrs.formSelector}", String.class, formSelector);
   }
 
+  public boolean canUpdateForm()
+  {
+    return WebUtils.getValue("#{cc.attrs.canUpdateForm}");
+  }  
+  
   public String getTypeId()
   {
     return WebUtils.getValue("#{cc.attrs.typeId}");

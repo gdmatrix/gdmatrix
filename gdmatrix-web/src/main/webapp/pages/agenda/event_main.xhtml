@@ -132,6 +132,7 @@
     <emcomp:dynamicProperties id="event_main_dynamic_properties" 
                               typeId="#{eventObjectBean.event.eventTypeId}"
                               object="#{eventObjectBean.event}"
+                              canUpdateForm="#{eventObjectBean.editTabSelector eq 0}"
                               formSelector="#{eventObjectBean.formSelector}"
                               formSelectorsFilter="#{eventObjectBean.formSelectorsFilter}"
                               properties="#{eventObjectBean.event.property}" />

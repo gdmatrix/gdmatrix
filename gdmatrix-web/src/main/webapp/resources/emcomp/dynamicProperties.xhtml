@@ -19,6 +19,7 @@
       <composite:attribute name="formSelectorsFilter" required="false" type="java.util.List"/>      
       <composite:attribute name="options" required="false" type="java.util.Map" />
       <composite:attribute name="oncomplete" required="false" />
+      <composite:attribute name="canUpdateForm" type="java.lang.Boolean" default="true" />
     </composite:interface>
     <composite:implementation>
       <div id="#{cc.clientId}">
