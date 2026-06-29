@@ -164,7 +164,13 @@
         <ui:include src="/pages/assistant/assistant_bar.xhtml" />
         
         <script>
-          jQuery(document).ready(() => updateAssistantButtons());
+          var questionElem = document.getElementById("mainform:question");
+          if (!questionElem.value) questionElem.style.height = "0";
+
+          jQuery(document).ready(() => {
+            updateAssistantButtons();
+            if (!questionElem.value) questionElem.style.height = "0";          
+          });
         </script>
       </h:panelGroup>      
 
@@ -308,6 +314,7 @@
       window.addEventListener("resize", scrollMessages);
       window.assistantResizeDetection = true;
     }
+    
   </script>  
   
 </ui:composition>
