@@ -95,8 +95,9 @@ public class EnumTypeFinderBean extends FinderBean
   public void setEnumTypeIdList(List<String> enumTypeIdList)
   {
     filter.getEnumTypeId().clear();
-    if (enumTypeIdList != null)
+    if (enumTypeIdList != null && !enumTypeIdList.isEmpty())
     {
+      enumTypeIdList.replaceAll(String::trim);
       filter.getEnumTypeId().addAll(enumTypeIdList);
     }
   }

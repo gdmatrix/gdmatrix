@@ -116,7 +116,10 @@ public class AddressFinderBean extends FinderBean
   {
     this.filter.getAddressIdList().clear();
     if (addressIds != null && !addressIds.isEmpty())
+    {
+      addressIds.replaceAll(String::trim);
       this.filter.getAddressIdList().addAll(addressIds);
+    }
   }
 
   @Override

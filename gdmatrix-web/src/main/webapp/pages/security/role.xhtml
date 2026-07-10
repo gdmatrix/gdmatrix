@@ -70,7 +70,8 @@
 
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="RoleId" />
-                  <p:chips value="#{roleFinderBean.roleIdList}" />
+                  <p:chips value="#{roleFinderBean.roleIdList}" 
+                           addOnPaste="true" separator="," />
                 </div>
 
                 <div class="field col-12">

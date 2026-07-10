@@ -70,7 +70,8 @@
               <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="UserId" />
-              <p:chips value="#{userFinderBean.userIdList}" />
+              <p:chips value="#{userFinderBean.userIdList}" 
+                       addOnPaste="true" separator=","/>
             </div>
 
             <div class="field col-12">

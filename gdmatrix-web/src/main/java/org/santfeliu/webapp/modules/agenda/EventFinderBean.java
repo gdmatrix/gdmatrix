@@ -473,7 +473,10 @@ public class EventFinderBean extends FinderBean
   {
     filter.getEventId().clear();
     if (eventIds != null && !eventIds.isEmpty())
-      filter.getEventId().addAll(eventIds);
+    {
+      eventIds.replaceAll(String::trim);
+      filter.getEventId().addAll(eventIds);      
+    }
   }
 
   public void onEventShow()

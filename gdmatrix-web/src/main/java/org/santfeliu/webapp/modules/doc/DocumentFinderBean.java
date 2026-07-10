@@ -210,8 +210,9 @@ public class DocumentFinderBean extends FinderBean
   public void setDocIdList(List<String> docIdList)
   {
     filter.getDocId().clear();
-    if (docIdList != null)
+    if (docIdList != null && !docIdList.isEmpty())
     {
+      docIdList.replaceAll(String::trim);
       filter.getDocId().addAll(docIdList);
     }
   }

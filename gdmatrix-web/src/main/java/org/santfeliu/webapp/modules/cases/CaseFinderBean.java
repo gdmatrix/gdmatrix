@@ -208,8 +208,9 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   public void setCaseIdList(List<String> caseIdList)
   {
     filter.getCaseId().clear();
-    if (caseIdList != null)
+    if (caseIdList != null && !caseIdList.isEmpty())
     {
+      caseIdList.replaceAll(String::trim);
       filter.getCaseId().addAll(caseIdList);
     }
   }
@@ -222,8 +223,9 @@ public class CaseFinderBean extends FinderBean implements DataTableRowExportable
   public void setIntIdList(List<String> intIdList)
   {
     interventionFilter.getIntId().clear();
-    if (intIdList != null)
+    if (intIdList != null && !intIdList.isEmpty())
     {
+      intIdList.replaceAll(String::trim);
       interventionFilter.getIntId().addAll(intIdList);
     }
   }  

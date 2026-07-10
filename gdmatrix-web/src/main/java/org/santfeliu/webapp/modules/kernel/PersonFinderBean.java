@@ -118,6 +118,7 @@ public class PersonFinderBean extends FinderBean
     this.filter.getPersonId().clear();
     if (personIds != null && !personIds.isEmpty())
     {
+      personIds.replaceAll(String::trim);
       this.filter.getPersonId().addAll(personIds);
     }
   }

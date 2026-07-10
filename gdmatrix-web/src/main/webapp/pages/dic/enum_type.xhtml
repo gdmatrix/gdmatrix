@@ -76,7 +76,8 @@
 
                 <p:outputPanel styleClass="field col-12">
                   <p:outputLabel for="@next" value="#{dicBundle.enumType_type}" />
-                  <p:chips value="#{enumTypeFinderBean.enumTypeIdList}" />
+                  <p:chips value="#{enumTypeFinderBean.enumTypeIdList}" 
+                           addOnPaste="true" separator=","/>
                 </p:outputPanel>
 
                 <p:outputPanel styleClass="field col-12">

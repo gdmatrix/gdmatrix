@@ -138,7 +138,10 @@ public class NewFinderBean extends FinderBean
   {
     this.filter.getNewId().clear();
     if (newIds != null && !newIds.isEmpty())
+    {
+      newIds.replaceAll(String::trim);
       this.filter.getNewId().addAll(newIds);
+    }
   }
 
   public SelectItem getFilterSectionId()

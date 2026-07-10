@@ -114,8 +114,9 @@ public class UserFinderBean extends FinderBean
   public void setUserIdList(List<String> userIdList)
   {
     filter.getUserId().clear();
-    if (userIdList != null)
+    if (userIdList != null && !userIdList.isEmpty())
     {
+      userIdList.replaceAll(String::trim);
       filter.getUserId().addAll(userIdList);
     }
   }

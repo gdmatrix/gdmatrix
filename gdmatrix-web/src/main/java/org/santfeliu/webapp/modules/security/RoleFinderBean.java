@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.security;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -114,8 +113,9 @@ public class RoleFinderBean extends FinderBean
   public void setRoleIdList(List<String> roleIdList)
   {
     filter.getRoleId().clear();
-    if (roleIdList != null)
+    if (roleIdList != null && !roleIdList.isEmpty())
     {
+      roleIdList.replaceAll(String::trim);
       filter.getRoleId().addAll(roleIdList);
     }
   }

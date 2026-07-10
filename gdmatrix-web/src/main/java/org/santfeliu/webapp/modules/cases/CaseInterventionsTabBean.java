@@ -543,7 +543,7 @@ public class CaseInterventionsTabBean extends TabBean
             "org.santfeliu.cases.web.resources.CaseBundle", getLocale());        
           warn(bundle.getString("caseInterventions_inactiveHiddenWarning"));
         }        
-        executeTabAction(POST_TAB_LOAD_ACTION, null);
+        executeTabAction(POST_TAB_LOAD_ACTION, getCurrentTabInstance().rows);
       }
       catch (Exception ex)
       {

@@ -72,7 +72,7 @@
                 <!-- CaseId -->
                 <p:outputPanel styleClass="field col-12" rendered="#{caseFinderBean.isRender('caseId')}">
                   <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
-                  <p:chips value="#{caseFinderBean.caseIdList}"/>
+                  <p:chips value="#{caseFinderBean.caseIdList}" addOnPaste="true" separator=","/>
                 </p:outputPanel>
 
                 <!-- Title -->
@@ -193,7 +193,8 @@
 
                     <div class="field col-12">
                       <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
-                      <p:chips value="#{caseFinderBean.intIdList}"/>
+                      <p:chips value="#{caseFinderBean.intIdList}" 
+                               addOnPaste="true" separator=","/>
                     </div>  
                     <div class="field col-12">
                       <p:outputLabel for="@next" value="#{caseBundle.caseInterventions_type}" />

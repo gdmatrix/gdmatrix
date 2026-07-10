@@ -72,7 +72,8 @@
 
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="DocId" />
-                  <p:chips value="#{documentFinderBean.docIdList}" />
+                  <p:chips value="#{documentFinderBean.docIdList}"
+                           addOnPaste="true" separator="," />
                 </div>
 
                 <div class="field col-12">

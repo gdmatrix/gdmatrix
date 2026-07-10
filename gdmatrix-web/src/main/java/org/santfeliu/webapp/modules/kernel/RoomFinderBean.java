@@ -143,7 +143,10 @@ public class RoomFinderBean extends FinderBean
   {
     filter.getRoomIdList().clear();
     if (roomIds != null && !roomIds.isEmpty())
+    {
+      roomIds.replaceAll(String::trim);
       filter.getRoomIdList().addAll(roomIds);
+    }
   }
 
   @Override
