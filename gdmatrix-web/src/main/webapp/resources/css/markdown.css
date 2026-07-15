@@ -1,0 +1,107 @@
+.markdown_body {
+  line-height: 1.6;
+  color: var(--text-color);
+  font-size: 1rem;
+  word-wrap: break-word;
+}
+
+/* Headings with separated lines */
+.markdown_body h1,
+.markdown_body h2,
+.markdown_body h3,
+.markdown_body h4,
+.markdown_body h5,
+.markdown_body h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+}
+.markdown_body h1 {
+  font-size: 2rem;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--surface-300);
+}
+.markdown_body h2 {
+  font-size: 1.5rem;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--surface-300);
+}
+.markdown_body h3 { font-size: 1.25rem; }
+.markdown_body h4 { font-size: 1rem; }
+.markdown_body h5 { font-size: 0.9rem; }
+.markdown_body h6 { font-size: 0.85rem; color: var(--surface-600); }
+
+.markdown_body p { margin: 0.8em 0; }
+
+/* Lists */
+.markdown_body ul,
+.markdown_body ol {
+  padding-left: 2em;
+  margin: 0.8em 0;
+}
+.markdown_body li { margin: 0.25em 0; }
+
+/* Inline code */
+.markdown_body code {
+  background: var(--surface-200);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+/* Code block */
+.markdown_body pre {
+  background: var(--surface-200);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+.markdown_body pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+/* Quotes */
+.markdown_body blockquote {
+  border-left: 4px solid var(--surface-300);
+  padding: 0 1em;
+  color: var(--surface-600);
+  margin: 0.8em 0;
+}
+
+/* Tables */
+.markdown_body table {
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  width: auto;
+}
+.markdown_body th,
+.markdown_body td {
+  border: 1px solid var(--surface-300);
+  padding: 0.5em 0.9em;
+}
+.markdown_body th {
+  background: var(--surface-100);
+  font-weight: 600;
+}
+
+/* Images */
+.markdown_body img { max-width: 100%; }
+
+/* Horizontal lines */
+.markdown_body hr {
+  border: none;
+  border-top: 1px solid var(--surface-300);
+  margin: 1.5em 0;
+}
+
+/* Links */
+.markdown_body a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.markdown_body a:hover { text-decoration: underline; }

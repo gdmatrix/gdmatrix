@@ -8,16 +8,18 @@
                 xmlns:gdm="http://gdmatrix.org/faces">
 
 
+  <h:outputScript library="js" name="markdown.js" />
+  <h:outputStylesheet library="css" name="markdown.css" />
   <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
                 var="documentBundle"/>
 
   <div class="doc_body">
 
-    <p:messages showSummary="true" styleClass="messages" 
+    <p:messages showSummary="true" styleClass="messages"
                 showIcon="true" closable="false" forIgnores="growl" class="pl-2 pr-2">
       <p:autoUpdate />
     </p:messages>
-    
+
     <p:outputPanel id="header"
                    rendered="#{documentViewerBean.headerBrowserUrl!=null}"
                    styleClass="headerDocument">
@@ -27,24 +29,24 @@
                   translationGroup="#{userSessionBean.translationGroup}" />
     </p:outputPanel>
 
-    <p:outputPanel id="document-panel" styleClass="w-full">  
+    <p:outputPanel id="document-panel" styleClass="w-full">
       <div class="actions p-2 text-right">
         <p:commandButton action="#{documentViewerBean.editDocument}"
                          styleClass="m-1"
                          process="@this" update="document-panel"
-                         icon="pi pi-file-edit" 
+                         icon="pi pi-file-edit"
                          rendered="#{documentViewerBean.renderEditButton}"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"/>
 
         <p:commandButton styleClass="m-1" type="button"
-                         icon="pi pi-print" 
+                         icon="pi pi-print"
                          rendered="#{documentViewerBean.printEnabled and not documentViewerBean.editing and not documentViewerBean.iframe}"
                          alt="#{documentBundle.print_new_window}">
-          <p:printer target="pnlPrint"/>        
+          <p:printer target="pnlPrint"/>
         </p:commandButton>
 
         <p:commandButton action="#{documentViewerBean.saveDocument}" value="#{webBundle.buttonSave}"
-                         icon="pi pi-save" styleClass="m-1" 
+                         icon="pi pi-save" styleClass="m-1"
                          process="document-panel" update="document-panel"
                          rendered="#{documentViewerBean.editing}"/>
 
@@ -60,28 +62,64 @@
         <i class="pi pi-lock" />
         <h:outputText styleClass="font-bold m-2" value="#{documentBundle.lockedBy} #{documentViewerBean.lockUserId}" />
 
-        <h:selectBooleanCheckbox value="#{documentViewerBean.keepLocking}" 
+        <h:selectBooleanCheckbox value="#{documentViewerBean.keepLocking}"
                                  rendered="#{documentViewerBean.editing}"
                                  style="vertical-align:middle;"/>
         <h:outputText value="#{documentBundle.keepLocked}"
-                      rendered="#{documentViewerBean.editing}" 
+                      rendered="#{documentViewerBean.editing}"
                       style="editingMessage"/>
 
         <!--
         <gdm:tinyMCE value="#{documentViewerBean.editor.documentData}" />
         -->
-        <gdm:codemirror lineNumbers="true" 
-                        language="#{documentViewerBean.editorLanguage}" 
+        <gdm:codemirror lineNumbers="true"
+                        language="#{documentViewerBean.editorLanguage}"
                         value="#{documentViewerBean.editor.documentData}" />
 
       </p:outputPanel>
 
       <p:outputPanel id="pnlPrint" styleClass="p-2">
+        <!-- Markdown -->
+        <h:panelGroup rendered="#{documentViewerBean.editorLanguage eq 'markdown' and not documentViewerBean.editing}" layout="block">
+          <div id="markdown_content" class="markdown_body"> </div>
+          <script>
+          //<![CDATA[
+          (function() {
+            var url = "#{documentViewerBean.url}";
+            function renderMarkdown(attempts) {
+              attempts = attempts || 0;
+              if (!window.markdown) {
+                if (attempts > 40) {
+                  document.getElementById("markdown_content").textContent =
+                    "Error loading markdown library";
+                  return;
+                }
+                setTimeout(function() { renderMarkdown(attempts + 1); }, 50);
+                return;
+              }
+              fetch(url)
+                .then(function(r) { return r.text(); })
+                .then(function(md) {
+                  document.getElementById("markdown_content").innerHTML =
+                    window.markdown.render(md);
+                })
+                .catch(function(e) {
+                  document.getElementById("markdown_content").textContent =
+                    "Error loading document: " + e;
+                });
+            }
+            renderMarkdown();
+          })();
+          //]]>
+          </script> 
+        </h:panelGroup>
+
+        <!-- Other documents besides Markdown -->
         <sf:browser url="#{documentViewerBean.url}"
                     port="#{applicationBean.defaultPort}"
-                    rendered="#{not documentViewerBean.editing}" 
-                    iframe="#{documentViewerBean.iframe}" 
-                    width="#{documentViewerBean.iframeWidth}" 
+                    rendered="#{not documentViewerBean.editing and documentViewerBean.editorLanguage ne 'markdown'}"
+                    iframe="#{documentViewerBean.iframe}"
+                    width="#{documentViewerBean.iframeWidth}"
                     height="#{documentViewerBean.iframeHeight}"
                     translator="#{userSessionBean.translator}"
                     translationGroup="#{documentViewerBean.translationGroup}" />
@@ -98,13 +136,12 @@
     </p:outputPanel>
   </div>
 
-  <gdm:saveBean value="documentViewerBean" /> 
+  <gdm:saveBean value="documentViewerBean" />
 
   <script>
     controlNavigationHistory({
       url : "/pages/doc/document_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}",
       title : "#{userSessionBean.selectedMenuItem.label}"
     });
-  </script>    
-
+  </script>
 </ui:composition>
