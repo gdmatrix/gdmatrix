@@ -235,6 +235,32 @@ public class DataTableRow implements Serializable
   {
     return new DefaultValue("");
   }
+  
+  protected Value formatSingleValue(String value, PropertyDefinition pd, 
+    String icon, String skey) 
+    throws Exception
+  {
+    Value rowValue = null;
+    
+    if (value != null)
+    {
+      PropertyType propType = pd.getType();
+      if (propType.equals(PropertyType.DATE))
+        rowValue = new DateValue(value, icon);
+      else if (pd.getEnumTypeId() != null)
+      {
+        rowValue =
+          new EnumTypeValue(pd.getEnumTypeId(), value, propType, icon);
+      }
+      else if (skey.endsWith("TypeId"))
+        rowValue = new TypeValue(value, icon);
+      else if (propType.equals(PropertyType.NUMERIC))
+        rowValue = new NumericValue(value, icon);
+      else
+        rowValue = new DefaultValue(value, icon);
+    }
+    return rowValue;    
+  }  
 
   protected Value formatValue(String rowTypeId, Object key,
     List<String> values, String icon) throws Exception
@@ -254,31 +280,19 @@ public class DataTableRow implements Serializable
         PropertyDefinition pd = type.getPropertyDefinition((String) key);
         if (pd != null)
         {
-          if (pd.getMaxOccurs() > 1)
+          if (pd.getMaxOccurs() != 1)
           {
-            rowValue = new DefaultValue(values.toString(), icon);
+            List<Value> result = new ArrayList();
+            for (String value : values)
+            {
+              result.add(formatSingleValue(value, pd, icon, skey));
+            }
+            rowValue = new DefaultValue(result, icon);
           }
           else
           {
             String value = values.get(0);
-            if (value != null)
-            {
-              PropertyType propType = pd.getType();
-              if (propType.equals(PropertyType.DATE))
-                rowValue = new DateValue(value, icon);
-              else if (pd.getEnumTypeId() != null)
-              {
-                rowValue =
-                  new EnumTypeValue(pd.getEnumTypeId(), value, propType, icon);
-              }
-              else if (skey.endsWith("TypeId"))
-                rowValue = new TypeValue(value, icon);
-              else if (propType.equals(PropertyType.NUMERIC))
-                rowValue = new NumericValue(value, icon);
-              else
-                rowValue = new DefaultValue(value, icon);
-            }
-            return rowValue;
+            rowValue = formatSingleValue(value, pd, icon, skey);
           }
         }
         else
@@ -290,7 +304,7 @@ public class DataTableRow implements Serializable
 
     return rowValue != null ? rowValue : new DefaultValue("");
   }
-
+  
   protected Value getTablePropertyValue(BaseBean baseBean,
     TableProperty tableProperty, Object row) throws Exception
   {
@@ -414,6 +428,11 @@ public class DataTableRow implements Serializable
     public void setAltLabel(Object altLabel)
     {
       this.altLabel = altLabel != null ? altLabel.toString() : null;
+    }
+    
+    public String toString()
+    {
+      return getLabel();
     }
   }
 
