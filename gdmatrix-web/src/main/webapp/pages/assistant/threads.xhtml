@@ -6,7 +6,8 @@
                 xmlns:gdm="http://gdmatrix.org/faces"
                 xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <div class="flex flex-column h-full">
     <h:panelGroup layout="block" id="assistant_toolbar"
@@ -62,7 +63,7 @@
         style="color:var(--text-color)" rendered="#{not threadsBean.editionEnabled}">
 
         <h:panelGroup id="floating_bar" layout="block"
-                      styleClass="absolute top-0 right-0 p-2 flex surface-0 border-round">
+                      styleClass="absolute top-0 right-0 p-2 flex border-round">
 
             <p:selectBooleanButton value="#{threadsBean.debugEnabled}" styleClass="mini white-space-nowrap"
                                    onIcon="fa fa-bug" offIcon="fa fa-bug"
@@ -160,20 +161,19 @@
                          action="#{threadsBean.uploadImage}"
                          update="input_panel uploaded_file" />
         
-        <!-- Assistant bar -->
-        <ui:include src="/pages/assistant/assistant_bar.xhtml" />
+
+        <!-- Only rendered within the Asssitant tab in Matrix3 -->
+        <c:if test="#{userSessionBean.selectedMenuItem.properties.label eq 'Assistent'}">
+          <ui:include src='/pages/assistant/assistant_bar.xhtml' />
+        </c:if>
         
-        <script>
-          var questionElem = document.getElementById("mainform:question");
-          if (!questionElem.value) questionElem.style.height = "0";
+        <!-- Assistant bar - Only rendered in the old template (pf_app)-->
+<!--    <c:if test="#{userSessionBean.template eq 'pf_app'}" >
+          <ui:include src="/pages/assistant/assistant_bar.xhtml" />
+        </c:if> -->
 
-          jQuery(document).ready(() => {
-            updateAssistantButtons();
-            if (!questionElem.value) questionElem.style.height = "0";          
-          });
-        </script>
-      </h:panelGroup>      
-
+      </h:panelGroup>     
+      
       <p:panel id="threads_panel" styleClass="threads_panel flex-grow-0 v-full first_time"
                widgetVar="threadsPanel" closeSpeed="50">
         <f:facet name="header">
@@ -316,5 +316,4 @@
     }
     
   </script>  
-  
 </ui:composition>

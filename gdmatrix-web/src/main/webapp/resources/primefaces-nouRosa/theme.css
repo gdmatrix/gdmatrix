@@ -7504,13 +7504,8 @@ body .ui-wizard .ui-icon-arrowthick-1-e:before{
 
   /* Subtler focus ring derived from the corporate color */
   --focus-ring: 0 0 0 0.2rem rgba(171, 10, 83, 0.22);
-
-  /* ── Decisions per a components que les hereten (p.ex. assistant-bar) ──
-     Aquest tema és premium: sense vores i amb elevació flotant. Els
-     components que llegeixen aquests tokens (com el calaix de l'assistent)
-     s'hi adapten sols. Un tema pla posaria --ab-border: 1px solid
-     var(--surface-border) i --ab-elevation: none. */
   --ab-border: none;
+  --wsm-offset: 10px;
   --ab-elevation: 0 16px 38px rgba(26, 16, 32, 0.13), 0 3px 10px rgba(26, 16, 32, 0.07);
 }
 

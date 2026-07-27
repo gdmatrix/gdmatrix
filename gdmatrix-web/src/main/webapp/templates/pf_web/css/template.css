@@ -46,6 +46,7 @@
   --toolbar-color: #303030;
   --toolbar-color-text: #f0f0f0;
   --border-radius: 6px;
+  --assistant-width:32%;
 }
 
 :root
@@ -236,7 +237,7 @@
 {
   font-size: var(--font-size);
   font-family: var(--font-family);
-  width:32%;
+  width: var(--assistant-width);
   min-width:32%;
   max-width: 100%;
   border-left: 1px solid var(--primary-color);
@@ -963,12 +964,6 @@
     margin-bottom: var(--menuitem-margin);
   }
 
-/*  .main_menu ul li .menuitem a.caret,
-  .main_menu ul ul li .menuitem a.caret
-  {
-    padding: 4px 16px;    
-  }*/
-
   .main_menu ul ul li .menuitem
   {
     border-left: 1px solid var(--surface-400);
@@ -1135,4 +1130,68 @@
 {
   from {opacity:0;}
   to {opacity:1;}
+}
+
+/* Assistant Dock - Wraps the floating bar that stays with the user while navigating.
+The dock is always visible and exists outside .content-footer and .assistant-panel, so
+it does not depend on AJAX updates being rendered or on the panel's visibility state.
+The current size (min, half, or full) is set by setAssistantSize() in header.xhtml
+as a class on the <body> element.
+*/
+
+/* If the assistant behaviour is ever unified with pf_app, move the assistant-dock
+rules to assistant.css */
+.assistant-dock
+{
+  position: fixed;
+  bottom: 1rem;
+  right: 0;
+  z-index: 100;
+  box-sizing: border-box;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+/*  transition: width 180ms ease;  Animate the left side of the bar to grow*/
+}
+
+/* Minimized: Only the bar floating.*/
+body.asst-min .assistant-dock
+{
+  width: min(420px, calc(100vw - 2rem));
+}
+
+/* Half Screen */
+body.asst-half .assistant-dock
+{
+  width: var(--assistant-width);
+}
+
+/* Full Screen */
+body.asst-full .assistant-dock
+{
+  width: 100%;
+}
+
+/* The panel reserves the actual dock space so messages remain visible and are
+never obscured by the floating bar. --dock-height is updated by a ResizeObserver 
+in header.xhtml */
+body.asst-half .assistant_panel,
+body.asst-full .assistant_panel
+{
+  padding-bottom: calc(var(--dock-height, 80px) + 1rem);
+  box-sizing: border-box;
+}
+
+/* Mobile: The bar occupies the full width at all times */
+@media (max-width: 800px)
+{
+  body.asst-min .assistant-dock,
+  body.asst-half .assistant-dock,
+  body.asst-full .assistant-dock
+  {
+    width: auto;
+    left: 1rem;
+    right: 1rem; 
+    padding-right: 0;
+    padding-left: 0;
+  }
 }

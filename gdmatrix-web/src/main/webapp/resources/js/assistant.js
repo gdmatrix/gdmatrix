@@ -145,6 +145,13 @@ async function assistantPaste(event)
 
 function sendMessage()
 {
+  /* If the bar is in floating mode, open it half so the conversation remains
+  visible. */
+  if (document.body.classList.contains("asst-min"))
+  {
+    changeWindowSize("half");
+  }
+  
   let listElem = getMessageList();
   let textarea = PF("assistantTextarea").getJQ();
   let text = textarea.val().trim();
@@ -390,4 +397,44 @@ function scrollMessages()
   {
     elem.scrollTop = elem.scrollHeight;
   }
+}
+
+/*
+ * Window size menu (wsm-*, mirar assistant_bar.xhtml)
+ * Estas funciones las he añadido/movido desde header, porque assistant_bar.xhtml
+ * se usa tanto en pf_web (nouweb) como pf_app (actual) donde
+ * maximize/minimize/hideAssistantPanel no existen. Los "guards typeof" estan para
+ * evitar romper la web actual/intra (pf_app)
+ */
+function changeWindowSize(size)
+{
+  var fk = { preventDefault: function() {} };
+  
+  if (size === "full" && typeof maximizeAssistantPanel === "function")
+  {
+    maximizeAssistantPanel(fk);
+  }
+  else if (size === "half" && typeof minimizeAssistantPanel === "function")
+  {
+    minimizeAssistantPanel(fk);
+  }
+  else if (size === "min" && typeof hideAssistantPanel === "function")
+  {
+    hideAssistantPanel(fk);
+  }
+  
+  updateWsmSelection(size);
+  
+  if (window.PF && PrimeFaces.widgets["wsmOverlay"])
+  {
+    PF("wsmOverlay").hide();
+  }
+}
+
+function updateWsmSelection(size)
+{
+  document.querySelectorAll(".wsm-item").forEach(function(item)
+  {
+    item.classList.toggle("wsm-selected", item.dataset.size === size);
+  });
 }

@@ -24,7 +24,7 @@
           <p:selectOneMenu id="language_selector" value="#{userSessionBean.viewLanguage}"
                            styleClass="mt-2 block">
             <p:ajax event="valueChange" process="@this"
-                    update="menubar login_sb config_label language_label font_label theme_label save_prefs @form:cnt global_confirm_dialog" />
+                    update="menubar login_sb config_label language_label font_label theme_label save_prefs assistant_dock @form:cnt global_confirm_dialog" />
             <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale"
                            itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)} (#{locale.language})" />
           </p:selectOneMenu>

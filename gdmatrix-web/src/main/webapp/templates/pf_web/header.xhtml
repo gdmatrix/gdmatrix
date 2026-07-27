@@ -112,7 +112,7 @@
                     onclick="hideDialogPanels();return showDialogPanel('config_panel', event);">
               <i class="pi pi-cog" />
             </p:link>
-
+            
             <p:link href="#" styleClass="header_button ml-2 mr-2 assistant_button"
                     title="Assistant"
                     onclick="toggleAssistantPanel(event);activateAssistantTextarea()">
@@ -124,6 +124,7 @@
       </div>
 
       <script>
+        //<![CDATA[
         var menuSetup = {
           mainMenuClass: "main_menu",
           maxItemsPerSubMenu: 8,
@@ -145,6 +146,9 @@
         };
         initMenu();
         
+        /* Podriamos llevarlo a ASSISTANT.js, para reaprovecharlo */
+        /* Move it to ASSISTANT.js to make it reusable*/
+        
         function isAssistantVisible()
         {
           var assistantPanel = document.querySelector(".assistant_panel");
@@ -162,7 +166,13 @@
             minimizeAssistantPanel(event);
           }    
         }
-
+        // Marks on the <body> the assistant current size so that the floating
+        // bar can be positioned
+        function setAssistantSize(size)
+        {
+          document.body.classList.remove("asst-min", "asst-half", "asst-full");
+          document.body.classList.add("asst-" + size);
+        }
         function maximizeAssistantPanel(event)
         {
           event.preventDefault();
@@ -181,6 +191,9 @@
 
           var assistantButton = document.querySelector(".assistant_button");
           assistantButton.classList.add("active");
+          
+          setAssistantSize("full");
+          if (typeof updateWsmSelection === "function") updateWsmSelection("full");
         }
 
         function minimizeAssistantPanel(event)
@@ -200,6 +213,9 @@
 
           var assistantButton = document.querySelector(".assistant_button");
           assistantButton.classList.add("active");
+          
+          setAssistantSize("half");
+          if (typeof updateWsmSelection === "function") updateWsmSelection("half");
         }
         
         function activateAssistantTextarea()
@@ -225,11 +241,33 @@
           
           var assistantButton = document.querySelector(".assistant_button");
           assistantButton.classList.remove("active");
+          
+          setAssistantSize("min");
+          if (typeof updateWsmSelection === "function") updateWsmSelection("min");
         }
 
         window.addEventListener("load", () => {
           updateFontSize(#{userSessionBean.fontSize});
+          
+          // Initial dock state: hidden panel, floating bar starts in min
+          if (!document.body.className.match(/asst-(min|half|full)/))
+          {
+            setAssistantSize("min");
+            if (typeof updateWsmSelection === "function") updateWsmSelection("min");
+          }
+          
+          // Publish the actual height of the floating bar in --dock-height to
+          // reserve the necessary space and prevent messages from being hidden
+          // behind the bar.
+          var dock = document.querySelector(".assistant-dock");
+          if (dock && window.ResizeObserver)
+          {
+            new ResizeObserver(function(entries){
+              document.body.style.setProperty("--dock-height", entries[0].target.offsetHeight + "px");
+            }).observe(dock);
+          }
         });
+        //]]>
       </script>
 
     </h:panelGroup>

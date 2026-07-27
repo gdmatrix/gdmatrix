@@ -3,55 +3,141 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-  <h:panelGroup id="input_panel" layout="block" styleClass="assistant-bar">
+  <h:panelGroup id="input_panel" layout="block" styleClass="assistant-bar" style="position: relative;">
+    
+    <h:panelGroup id="wsmAnchor" layout="block" style="position:absolute; top:0; left:0; width:1px; pointer-events:none;" />
 
-  <p:inputTextarea id="question" value="#{threadsBean.text}"
-                   pt:spellcheck="false" widgetVar="assistantTextarea"
-                   onkeyup="onAssistantKeyUp(event)" onpaste="assistantPaste(event)"
-                   rows="1" autoResize="true"
-                   placeholder="#{threadsBean.inputPlaceholder}" />
+    <p:inputTextarea id="question" value="#{threadsBean.text}"
+                     pt:spellcheck="false" widgetVar="assistantTextarea"
+                     onkeyup="onAssistantKeyUp(event)" onpaste="assistantPaste(event)"
+                     rows="1" autoResize="true"
+                     placeholder="#{threadsBean.inputPlaceholder}" />
 
-  <div class="ab-action-row">
-    <div class="ab-left">
+    <div class="ab-action-row">
+      <div class="ab-left">
+        <!-- Window size menu - Only for nouweb (pf_web) -->
+        <c:if test="#{userSessionBean.template eq 'pf_web'}">
+          <p:commandButton id="wsmToggleBtn" type="button"
+                           title="Window Size Menu"
+                           icon="pi pi-bars" styleClass="ui-button-icon-only wsm-toggle-btn"
+                           onmousedown="toggleWsm(event)" />
+        </c:if>
+        
+        <!-- Suggestions (dissabled for now) -->
+        <p:commandButton type="button"
+                         title="Suggested questions"
+                         icon="pi pi-question" styleClass="ui-button-icon-only"
+                         rendered="false"/>
 
-      <!-- Resize menu (disabled for now) -->
-      <p:commandButton type="button"
-                       title="Menú"
-                       icon="pi pi-bars" styleClass="ui-button-icon-only"
-                       rendered="false"/>
+        <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
+                         process="@this" update="uploaded_file"
+                         widgetVar="assistantUploadButton" title="#{objectBundle.upload}"
+                         onclick="PF('fileUpload').show()"
+                         icon="pi pi-paperclip" styleClass="ui-button-icon-only" />
+      </div>
+      <div class="ab-spacer"></div>
 
-      <!-- Suggestions (dissabled for now) -->
-      <p:commandButton type="button"
-                       title="Preguntes suggerides"
-                       icon="pi pi-question" styleClass="ui-button-icon-only"
-                       rendered="false"/>
+      <p:commandButton action="#{threadsBean.sendMessage()}"
+                       process="assistant_panel"
+                       update="question threads_panel uploaded_file floating_bar"
+                       widgetVar="assistantSendButton" title="#{objectBundle.send}"
+                       onclick="sendMessage()" global="false"
+                       oncomplete="showResponse('#{threadsBean.threadId}')"
+                       icon="pi pi-arrow-right" styleClass="ab-send ui-button-icon-only" />
 
-      <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
-                       process="@this" update="uploaded_file"
-                       widgetVar="assistantUploadButton" title="#{objectBundle.upload}"
-                       onclick="PF('fileUpload').show()"
-                       icon="pi pi-paperclip" styleClass="ui-button-icon-only" />
+      <p:commandButton action="#{threadsBean.interruptStreaming()}"
+                       process="assistant_panel"
+                       update="question threads_panel uploaded_file floating_bar"
+                       widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"
+                       style="display:none" global="false"
+                       icon="pi pi-stop-circle" styleClass="ab-send ab-stop ui-button-icon-only" />
     </div>
-    <div class="ab-spacer"></div>
 
-    <p:commandButton action="#{threadsBean.sendMessage()}"
-                     process="assistant_panel"
-                     update="question threads_panel uploaded_file floating_bar"
-                     widgetVar="assistantSendButton" title="#{objectBundle.send}"
-                     onclick="sendMessage()" global="false"
-                     oncomplete="showResponse('#{threadsBean.threadId}')"
-                     icon="pi pi-arrow-right" styleClass="ab-send ui-button-icon-only" />
-                     <!-- pi pi-send -->
-                     
-    <p:commandButton action="#{threadsBean.interruptStreaming()}"
-                     process="assistant_panel"
-                     update="question threads_panel uploaded_file floating_bar"
-                     widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"
-                     style="display:none" global="false"
-                     icon="pi pi-stop-circle" styleClass="ab-send ab-stop ui-button-icon-only" />
-  </div>
+    <p:overlayPanel for="wsmAnchor" 
+                    widgetVar="wsmOverlay"
+                    dismissable="true" 
+                    dynamic="false"
+                    appendTo="@(body)"
+                    my="left bottom-10" 
+                    at="left top"
+                    styleClass="wsm-panel-overlay">
+      
+      <div class="wsm-title">#{assistantBundle.windowSize}</div>
+      <ul class="wsm-list" style="margin: 0; padding: 0; list-style: none;">
+        <li class="wsm-item" data-size="full" onclick="changeWindowSize('full')">
+          <span class="wsm-icon wsm-icon-full">
+            <i class="pi pi-window-maximize"></i>
+          </span>
+          <span class="wsm-label">#{assistantBundle.windowSizeFull}</span>
+        </li>
+        <li class="wsm-item" data-size="half" onclick="changeWindowSize('half')">
+          <span class="wsm-icon wsm-icon-half">
+            <span class="wsm-icon-half-box"><span class="wsm-icon-half-fill"></span></span>
+          </span>
+          <span class="wsm-label">#{assistantBundle.windowSizeHalf}</span>
+          <span class="wsm-check"><i class="pi pi-check"></i></span>
+        </li>
+        <li class="wsm-item wsm-selected" data-size="min" onclick="changeWindowSize('min')">
+          <span class="wsm-icon wsm-icon-min">
+            <i class="pi pi-window-minimize"></i>
+          </span>
+          <span class="wsm-label">#{assistantBundle.windowSizeMin}</span>
+        </li>
+      </ul>
+    </p:overlayPanel>
 
-</h:panelGroup>
+  </h:panelGroup>
+    
+<!--  <script>
+    var questionElem = document.getElementById("mainform:question");
+    if (!questionElem.value) questionElem.style.height = "0";
+
+    jQuery(document).ready(() => {
+      updateAssistantButtons();
+      if (!questionElem.value) questionElem.style.height = "0";          
+    });
+  </script>-->
+  
+  <script>
+    //<![CDATA[
+    function resetAssistantHeight() {
+      var ta = document.getElementById("mainform:question");
+      if (ta && !ta.value) {
+        ta.style.height = "0";
+      }
+    }
+    resetAssistantHeight();
+    if (document.fonts && document.font.ready) {
+      document.fonts.ready.then(resetAssistantHeight);
+    }
+    if (window.jQuery) {
+      jQuery(document).ready(function() {
+        if (typeof updateAssistantButtons === "function") updateAssistantButtons();
+        resetAssistantHeight();
+      });
+    }
+    //]]>
+  </script>
+
+  <script type="text/javascript">
+    //<![CDATA[
+    function toggleWsm(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation(); // Prevent PF default actions
+      }
+      var wsm = PF('wsmOverlay');
+      if (wsm) {
+        if (wsm.isVisible()) {
+          wsm.hide();
+        } else {
+          wsm.show();
+        }
+      }
+    }
+    //]]>
+  </script>
 </ui:composition>
