@@ -24,6 +24,10 @@
           translator="#{userSessionBean.translator}"
           translationGroup="#{userSessionBean.translationGroup}" />
       </title>
+      <meta name="description" content="#{userSessionBean.translate(userSessionBean.selectedMenuItem.properties.pageDescription)}" />
+      <c:if test="${userSessionBean.selectedMenuItem.properties.googleSiteVerification != null}">
+        <meta name="google-site-verification" content="#{userSessionBean.selectedMenuItem.properties.googleSiteVerification}" />
+      </c:if>
       <link rel="stylesheet" type="text/css"
         href="${pageContext.request.contextPath}/topframe/css/topframe.css?v=${applicationBean.resourcesVersion}" />
       <c:if test="${userSessionBean.viewMode == 'RENDER'}">
@@ -44,11 +48,53 @@
         </c:forEach>
       </c:if>
       <c:if test="${userSessionBean.selectedMenuItem.properties.faviconURL != null}">
-        <link rel="shortcut icon" href="${userSessionBean.selectedMenuItem.properties.faviconURL}" />
+        <link rel="icon" href="${userSessionBean.selectedMenuItem.properties.faviconURL}" />
       </c:if>
       <c:if test="${userSessionBean.selectedMenuItem.properties.touchIconURL != null}">
         <link rel="apple-touch-icon" href="${userSessionBean.selectedMenuItem.properties.touchIconURL}" />
       </c:if>
+      
+      <!-- OG and X cards -->
+      <meta property="og:locale" content="${seoBean.ogLocale}" />      
+      <meta property="og:title" content="#{userSessionBean.translate(
+          (empty userSessionBean.selectedMenuItem.properties.pageTitlePrefix 
+              ? '' 
+              : userSessionBean.selectedMenuItem.properties.pageTitlePrefix.concat(' '))
+          .concat(
+              empty userSessionBean.selectedMenuItem.properties.pageTitle 
+                  ? userSessionBean.selectedMenuItem.properties.label 
+                  : userSessionBean.selectedMenuItem.properties.pageTitle
+          )
+      )}" />
+      <meta name ="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="#{userSessionBean.translate(
+          (empty userSessionBean.selectedMenuItem.properties.pageTitlePrefix 
+              ? '' 
+              : userSessionBean.selectedMenuItem.properties.pageTitlePrefix.concat(' '))
+          .concat(
+              empty userSessionBean.selectedMenuItem.properties.pageTitle 
+                  ? userSessionBean.selectedMenuItem.properties.label 
+                  : userSessionBean.selectedMenuItem.properties.pageTitle
+          )
+      )}" />
+      <c:if test="${userSessionBean.selectedMenuItem.properties.pageDescription != null}" >
+        <meta property="og:description" content="${userSessionBean.translate(userSessionBean.selectedMenuItem.properties.pageDescription)}" /> 
+        <meta name="twitter:description" content="${userSessionBean.translate(userSessionBean.selectedMenuItem.properties.pageDescription)}" /> 
+      </c:if>
+      <c:if test="${userSessionBean.selectedMenuItem.properties.siteName != null}" >
+        <meta property="og:site_name" content="${userSessionBean.selectedMenuItem.properties.siteName}" />
+      </c:if>
+      <meta property="og:type" content="website" />
+      <!-- Preview image -->      
+      <c:if test="${userSessionBean.selectedMenuItem.properties.pagePreviewImage != null}">
+        <meta property="og:image" content="${userSessionBean.selectedMenuItem.properties.pagePreviewImage}" />
+        <meta name="twitter:image" content="${userSessionBean.selectedMenuItem.properties.pagePreviewImage}" />
+        <c:if test="${userSessionBean.selectedMenuItem.properties.pagePreviewImageAlt != null}">
+          <meta property="og:image:alt" content="${userSessionBean.translate(userSessionBean.selectedMenuItem.properties.pagePreviewImageAlt)}" />
+          <meta name="twitter:image:alt" content="${userSessionBean.translate(userSessionBean.selectedMenuItem.properties.pagePreviewImageAlt)}" />
+        </c:if>
+      </c:if>
+      
       <script type="text/javascript" src="${pageContext.request.contextPath}/topframe/js/common_script.js?v=${applicationBean.resourcesVersion}">
         /* general script */
       </script>
