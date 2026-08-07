@@ -44,7 +44,7 @@ public class CssDocumentType extends IdeDocumentType
   {
     super("css",
       "Css",
-      "CODE",
+      "CSS",
       "workflow.js",
       "text/css",
       "fa fa-brands fa-css3-alt",

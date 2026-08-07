@@ -125,6 +125,7 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("text/xml", new String[]{"xml"});    
     addMimeType("text/markdown", new String[]{"md", "mdown"}); 
     addMimeType("text/csv", new String[]{"csv"});     
+    addMimeType("text/javascript", new String[]{"js"});
     addMimeType("image/gif", new String[]{"gif"});
     addMimeType("image/jpeg", new String[]{"jpg", "jpeg"});
     addMimeType("image/tiff", new String[]{"tif", "tiff"});
