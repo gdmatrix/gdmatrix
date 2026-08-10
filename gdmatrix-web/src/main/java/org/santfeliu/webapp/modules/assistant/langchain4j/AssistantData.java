@@ -124,6 +124,7 @@ public class AssistantData
       if (assistant.isStreaming())
       {
         streamingModel = OpenAiStreamingChatModel.builder()
+          .baseUrl(assistant.getBaseUrl())
           .apiKey(getApiKey(assistant.getApiKey()))
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
@@ -138,6 +139,7 @@ public class AssistantData
       else
       {
         model = OpenAiChatModel.builder()
+          .baseUrl(assistant.getBaseUrl())
           .apiKey(getApiKey(assistant.getApiKey()))
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
