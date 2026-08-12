@@ -90,50 +90,25 @@
     </p:overlayPanel>
 
   </h:panelGroup>
-    
-<!--  <script>
-    var questionElem = document.getElementById("mainform:question");
-    if (!questionElem.value) questionElem.style.height = "0";
-
-    jQuery(document).ready(() => {
-      updateAssistantButtons();
-      if (!questionElem.value) questionElem.style.height = "0";          
-    });
-  </script>-->
   
-  <script>
-    //<![CDATA[
-    function resetAssistantHeight() {
-      var ta = document.getElementById("mainform:question");
-      if (ta && !ta.value) {
-        ta.style.height = "0";
-      }
-    }
-    resetAssistantHeight();
-    if (document.fonts && document.font.ready) {
-      document.fonts.ready.then(resetAssistantHeight);
-    }
-    if (window.jQuery) {
-      jQuery(document).ready(function() {
-        if (typeof updateAssistantButtons === "function") updateAssistantButtons();
-        resetAssistantHeight();
-      });
-    }
-    //]]>
-  </script>
-
   <script type="text/javascript">
     //<![CDATA[
-    function toggleWsm(event) {
-      if (event) {
+    function toggleWsm(event) 
+    {
+      if (event) 
+      {
         event.preventDefault();
         event.stopPropagation(); // Prevent PF default actions
       }
       var wsm = PF('wsmOverlay');
-      if (wsm) {
-        if (wsm.isVisible()) {
+      if (wsm) 
+      {
+        if (wsm.isVisible())
+        {
           wsm.hide();
-        } else {
+        }
+        else 
+        {
           wsm.show();
         }
       }

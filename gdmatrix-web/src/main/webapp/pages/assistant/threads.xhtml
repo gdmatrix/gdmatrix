@@ -161,16 +161,9 @@
                          action="#{threadsBean.uploadImage}"
                          update="input_panel uploaded_file" />
         
-
-        <!-- Only rendered within the Asssitant tab in Matrix3 -->
-        <c:if test="#{userSessionBean.selectedMenuItem.properties.label eq 'Assistent'}">
+        <c:if test="#{userSessionBean.selectedMenuItem.properties.assistantBarEnabled != 'false'}">
           <ui:include src='/pages/assistant/assistant_bar.xhtml' />
         </c:if>
-        
-        <!-- Assistant bar - Only rendered in the old template (pf_app)-->
-<!--    <c:if test="#{userSessionBean.template eq 'pf_app'}" >
-          <ui:include src="/pages/assistant/assistant_bar.xhtml" />
-        </c:if> -->
 
       </h:panelGroup>     
       

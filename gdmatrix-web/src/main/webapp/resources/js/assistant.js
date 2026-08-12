@@ -401,10 +401,10 @@ function scrollMessages()
 
 /*
  * Window size menu (wsm-*, mirar assistant_bar.xhtml)
- * Estas funciones las he añadido/movido desde header, porque assistant_bar.xhtml
- * se usa tanto en pf_web (nouweb) como pf_app (actual) donde
- * maximize/minimize/hideAssistantPanel no existen. Los "guards typeof" estan para
- * evitar romper la web actual/intra (pf_app)
+ * Added/moved these functions from the header because assistant_bar.xhtml
+ * is used in both pf_web (nouweb) and pf_app (actual) where
+ * maximize/minimize/hideAssistantPanel don't exist. The "guards typeof" are there to
+ * prevent breaking the current/intra website (pf_app)
  */
 function changeWindowSize(size)
 {
