@@ -625,10 +625,7 @@ public class ThreadsBean extends WebBean implements Serializable
       AiMessage aiMessage = (AiMessage)message;
       if (aiMessage.hasToolExecutionRequests())
       {
-        if (debugEnabled)
-        {
-          queue.push(ChatMessageAdapter.toMap(message));
-        }
+        queue.push(ChatMessageAdapter.toMap(message, debugEnabled));
       }
       else if (listing)
       {

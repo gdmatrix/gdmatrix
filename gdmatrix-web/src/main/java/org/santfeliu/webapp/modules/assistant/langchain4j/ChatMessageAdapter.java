@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.assistant.langchain4j;
 
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
@@ -53,6 +54,11 @@ public class ChatMessageAdapter
 {
   public static Map<String, Object> toMap(ChatMessage message)
   {
+    return toMap(message, true);
+  }
+
+  public static Map<String, Object> toMap(ChatMessage message, boolean complete)
+  {
     Map<String, Object> map = new HashMap<>();
     map.put("type", message.type().name());
 
@@ -60,7 +66,29 @@ public class ChatMessageAdapter
     {
       AiMessage aiMessage = (AiMessage)message;
       map.put("text", aiMessage.text());
-      map.put("toolExecutionRequests", aiMessage.toolExecutionRequests());
+      if (complete)
+      {
+        map.put("toolExecutionRequests", aiMessage.toolExecutionRequests());
+      }
+      else if (!aiMessage.toolExecutionRequests().isEmpty())
+      {
+        ToolExecutionRequest toolReq = aiMessage.toolExecutionRequests().get(0);
+        String toolName = toolReq.name();
+        map.put("toolName", toolName);
+        try
+        {
+          ToolSpecification toolSpec = 
+            ToolStore.getInstance().getToolSpecification(toolName);
+          String userInfo = (String)toolSpec.metadata().get("userInfo");
+          if (userInfo != null)
+          {
+            map.put("userInfo", userInfo);
+          }
+        }  
+        catch (Exception ex)
+        {
+        }
+      }
     }
     else if (message instanceof UserMessage)
     {

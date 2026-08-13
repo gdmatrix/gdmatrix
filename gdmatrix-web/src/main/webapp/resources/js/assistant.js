@@ -256,10 +256,21 @@ async function showResponse(threadId)
       {
         let json = JSON.stringify(
         {
-          type: "AI", 
+          type: "AI",
           toolExecutionRequests: toolExecutionRequests 
-        }, null, 2); 
-        var itemElem = createMessage(type, "```json\n" + json + "\n```");
+        }, null, 2);
+        let itemElem = createMessage(type, "```json\n" + json + "\n```");
+        listElem.appendChild(itemElem);
+      }
+      else if (item.userInfo)
+      {
+        let itemElem = createMessage(type, "*" + item.userInfo + "*");
+        listElem.appendChild(itemElem);
+      }
+      else if (item.toolName)
+      {
+        let toolMessage = "*" + callToolLabel + " " + item.toolName + "*";
+        let itemElem = createMessage(type, toolMessage);
         listElem.appendChild(itemElem);
       }
       

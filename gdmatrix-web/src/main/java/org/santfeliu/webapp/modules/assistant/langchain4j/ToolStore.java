@@ -91,7 +91,11 @@ public class ToolStore
       Scriptable definition = (Scriptable)scriptClient.execute(fn);
       String description = ((String)definition.get("description", scope));
       toolBuilder.description(description);
-
+      if (definition.has("userInfo", scope))
+      {
+        String userInfo = (String)definition.get("userInfo", scope);
+        toolBuilder.addMetadata("userInfo", userInfo);
+      }
       Scriptable parameters = (Scriptable)definition.get("parameters", scope);
       if (parameters != null)
       {
