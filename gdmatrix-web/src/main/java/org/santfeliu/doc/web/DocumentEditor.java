@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -261,30 +262,24 @@ public class DocumentEditor implements Serializable
 
     return client;
   }
-
+  
   private String readDocument(DataSource dataSource) throws IOException
   {
-    String result;
-    try (InputStream is = dataSource.getInputStream())
+    Charset charset = getEditorCharset();
+    
+    try (InputStream inputStream = dataSource.getInputStream())
     {
-      StringBuilder sb = new StringBuilder();
-      int numRead;
-      byte[] bytes = new byte[1024];
-      while ((numRead = is.read(bytes)) != -1)
-      {
-        sb.append(new String(bytes).toCharArray(), 0, numRead);
-      }
-      result = sb.toString();
+      return IOUtils.toString(inputStream, charset);
     }
-    return result;
   }
-
+  
   private TemporaryDataSource writeDocument(String documentData,
     String contentType, boolean disableHtmlFixer) throws Exception
   {
     File file = File.createTempFile("editor", ".tmp");
-
-    try (InputStream in = IOUtils.toInputStream(documentData, Charset.defaultCharset()))
+    Charset charset = getEditorCharset();
+   
+    try (InputStream in = IOUtils.toInputStream(documentData, charset))
     {
       try (FileOutputStream out = new FileOutputStream(file))
       {
@@ -304,6 +299,16 @@ public class DocumentEditor implements Serializable
     TemporaryDataSource dataSource = new TemporaryDataSource(file, contentType);
 
     return dataSource;
+  }
+  
+  private Charset getEditorCharset()
+  {
+    String editorLanguage = UserSessionBean.getCurrentInstance()
+      .getSelectedMenuItem().getProperty("editor.language");
+    
+    return "markdown".equalsIgnoreCase(editorLanguage)
+      ? StandardCharsets.UTF_8
+      : Charset.defaultCharset();
   }
 
   private Document getTranslation(Document document, String language)
