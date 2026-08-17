@@ -54,6 +54,7 @@ public class Assistant implements Serializable
   private String modelName;
   private String baseUrl;
   private String apiKey;
+  private String httpClient;
   private boolean streaming;
   private Integer seed;
   private Double temperature;
@@ -159,6 +160,16 @@ public class Assistant implements Serializable
   public void setApiKey(String apiKey)
   {
     this.apiKey = apiKey;
+  }
+  
+  public String getHttpClient()
+  {
+    return httpClient;
+  }
+  
+  public void setHttpClient(String httpClient)
+  {
+    this.httpClient = httpClient;
   }
 
   public String getInstructions()
@@ -335,6 +346,7 @@ public class Assistant implements Serializable
   {
     StringBuilder buffer = new StringBuilder();
     buffer.append(provider)
+      .append(StringUtils.defaultIfBlank(httpClient, "-"))
       .append("|")
       .append(modelName)
       .append("|")

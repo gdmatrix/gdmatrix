@@ -49,16 +49,25 @@
     </div>
 
     <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="Base url:" />
+      <p:inputText value="#{assistantBean.assistant.baseUrl}" pt:spellcheck="false" />
+    </div>
+    
+    <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="Api key:" />
       <p:inputText value="#{assistantBean.assistant.apiKey}" 
                    styleClass="code" pt:spellcheck="false" />
     </div>
     
-    <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="Base url:" />
-      <p:inputText value="#{assistantBean.assistant.baseUrl}" pt:spellcheck="false" />
-    </div>
-
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="HttpClient version:" />
+      <p:selectOneMenu value="#{assistantBean.assistant.httpClient}">   
+        <f:selectItem itemValue="" itemLabel="" />
+        <f:selectItem itemValue="1.1" itemLabel="HTTP 1.1" />
+        <f:selectItem itemValue="2" itemLabel="HTTP 2.0" /> 
+      </p:selectOneMenu>
+    </div> 
+    
     <div class="field col-6 md:col-3">
       <p:outputLabel for="@next" value="Seed:" />
       <p:inputNumber value="#{assistantBean.assistant.seed}" />
@@ -134,7 +143,7 @@
       <p:outputLabel for="@next" value="#{objectBundle.changedBy}:" />
       <p:inputText value="#{assistantBean.assistant.changeUserId}" readonly="true" />
     </div>
-    
+        
   </div>
   
 </ui:composition>

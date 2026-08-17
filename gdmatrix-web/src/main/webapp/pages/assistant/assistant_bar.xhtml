@@ -18,19 +18,17 @@
 
     <div class="ab-action-row">
       <div class="ab-left">
-        <!-- Window size menu - Only for nouweb (pf_web) -->
-        <c:if test="#{userSessionBean.template eq 'pf_web'}">
+        <c:if test="#{userSessionBean.selectedMenuItem.properties.assistantBarEnabled != 'true'}" >
           <p:commandButton id="wsmToggleBtn" type="button"
                            title="Window Size Menu"
                            icon="pi pi-bars" styleClass="ui-button-icon-only wsm-toggle-btn"
                            onmousedown="toggleWsm(event)" />
-        </c:if>
-        
         <!-- Suggestions (dissabled for now) -->
         <p:commandButton type="button"
                          title="Suggested questions"
                          icon="pi pi-question" styleClass="ui-button-icon-only"
                          rendered="false"/>
+        </c:if>
 
         <p:commandButton action="#{threadsBean.deleteAttachedFile()}"
                          process="@this" update="uploaded_file"

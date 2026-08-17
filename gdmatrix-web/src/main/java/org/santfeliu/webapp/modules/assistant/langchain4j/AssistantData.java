@@ -51,17 +51,19 @@ import dev.langchain4j.model.chat.request.ChatRequestParameters;
 import dev.langchain4j.model.chat.request.DefaultChatRequestParameters;
 import dev.langchain4j.model.chat.response.PartialResponse;
 import dev.langchain4j.model.chat.response.PartialResponseContext;
+import dev.langchain4j.http.client.jdk.JdkHttpClient;
+import dev.langchain4j.http.client.jdk.JdkHttpClientBuilder;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.http.HttpClient;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.util.MatrixConfig;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.ANTHROPIC_PROVIDER;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OLLAMA_PROVIDER;
 import static org.santfeliu.webapp.modules.assistant.langchain4j.Assistant.OPENAI_PROVIDER;
-
 /**
  *
  * @author realor
@@ -116,14 +118,15 @@ public class AssistantData
   {
     Duration timeout = assistant.getTimeout() == null ?
       null : Duration.ofSeconds(assistant.getTimeout());
+    JdkHttpClientBuilder httpClientBuilder = buildHttpClientBuilder(assistant);
     
     maxOutputTokens = assistant.getMaxTokens();
-
+    
     if (OPENAI_PROVIDER.equals(assistant.getProvider()))
     {
       if (assistant.isStreaming())
       {
-        streamingModel = OpenAiStreamingChatModel.builder()
+        var builder = OpenAiStreamingChatModel.builder()
           .baseUrl(assistant.getBaseUrl())
           .apiKey(getApiKey(assistant.getApiKey()))
           .modelName(assistant.getModelName())
@@ -133,12 +136,16 @@ public class AssistantData
           .timeout(timeout)
           .seed(assistant.getSeed())
           .returnThinking(false)
-          .maxTokens(assistant.getMaxTokens())
-          .build();
+          .maxTokens(assistant.getMaxTokens());
+          if(httpClientBuilder != null) 
+          {
+            builder.httpClientBuilder(httpClientBuilder);
+          }
+          this.streamingModel = builder.build();
       }
       else
       {
-        model = OpenAiChatModel.builder()
+        var builder = OpenAiChatModel.builder()
           .baseUrl(assistant.getBaseUrl())
           .apiKey(getApiKey(assistant.getApiKey()))
           .modelName(assistant.getModelName())
@@ -148,40 +155,52 @@ public class AssistantData
           .timeout(timeout)
           .seed(assistant.getSeed())
           .returnThinking(false)
-          .maxTokens(assistant.getMaxTokens())
-          .build();
+          .maxTokens(assistant.getMaxTokens());
+          if (httpClientBuilder != null)
+          {
+            builder.httpClientBuilder(httpClientBuilder);
+          }
+          this.model = builder.build();
       }
     }
     else if (ANTHROPIC_PROVIDER.equals(assistant.getProvider()))
     {
       if (assistant.isStreaming())
       {
-        streamingModel = AnthropicStreamingChatModel.builder()
+        var builder = AnthropicStreamingChatModel.builder()
           .baseUrl(assistant.getBaseUrl())
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
           .topP(assistant.getTopP())
           .timeout(timeout)
-          .returnThinking(false)
-          .build();
+          .returnThinking(false);
+          if(httpClientBuilder != null) 
+          {
+            builder.httpClientBuilder(httpClientBuilder);
+          }
+          this.streamingModel = builder.build();
       }
       else
       {
-        model = AnthropicChatModel.builder()
+        var builder = AnthropicChatModel.builder()
           .baseUrl(assistant.getBaseUrl())
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
           .topP(assistant.getTopP())
           .timeout(timeout)
-          .returnThinking(false)
-          .build();
+          .returnThinking(false);
+          if (httpClientBuilder != null)
+          {
+            builder.httpClientBuilder(httpClientBuilder);
+          }
+          this.model = builder.build();
       }      
     }
     else if (OLLAMA_PROVIDER.equals(assistant.getProvider()))
     {
       if (assistant.isStreaming())
       {
-        streamingModel = OllamaStreamingChatModel.builder()
+        var builder = OllamaStreamingChatModel.builder()
           .baseUrl(assistant.getBaseUrl())
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
@@ -190,12 +209,16 @@ public class AssistantData
           .timeout(timeout)
           .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
-          .returnThinking(false)
-          .build();
+          .returnThinking(false);
+          if (httpClientBuilder != null)
+          {
+            builder.httpClientBuilder(httpClientBuilder);
+          }
+          this.streamingModel = builder.build();
       }
       else
       {
-        model = OllamaChatModel.builder()
+        var builder = OllamaChatModel.builder()
           .baseUrl(assistant.getBaseUrl())
           .modelName(assistant.getModelName())
           .temperature(assistant.getTemperature())
@@ -204,8 +227,12 @@ public class AssistantData
           .timeout(timeout)
           .numCtx(assistant.getNumCtx())
           .seed(assistant.getSeed())
-          .returnThinking(false)
-          .build();
+          .returnThinking(false);
+          if (httpClientBuilder != null)
+          {
+            builder.httpClientBuilder(httpClientBuilder);
+          }
+          this.model = builder.build();
       }
     }
     else throw new RuntimeException("Invalid provider");
@@ -232,7 +259,30 @@ public class AssistantData
     }
     return apiKey;
   }
-
+  
+  private JdkHttpClientBuilder buildHttpClientBuilder(Assistant assistant)
+  {
+    String httpClient = assistant.getHttpClient();
+    if (StringUtils.isBlank(httpClient))
+    {
+      return null; // If not specified, use LangChain4js default client
+    }
+    
+    HttpClient.Builder jdkBuilder = HttpClient.newBuilder();
+    if ("1.1".equals(httpClient))
+    {
+      jdkBuilder.version(HttpClient.Version.HTTP_1_1);
+      System.out.println("HTTPCLIENT: " + HttpClient.Version.HTTP_1_1);
+    }
+    else if ("2".equals(httpClient))
+    {
+      jdkBuilder.version(HttpClient.Version.HTTP_2);
+      System.out.println("HTTPCLIENT: " + HttpClient.Version.HTTP_2);
+    }
+    
+    return JdkHttpClient.builder().httpClientBuilder(jdkBuilder);
+  }
+    
   class Generator implements StreamingChatResponseHandler
   {
     final List<ChatMessage> memory = new ArrayList<>();
