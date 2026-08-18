@@ -55,13 +55,16 @@ function createMessage(role, markdown = "")
   {
     case "USER": icon = "pi pi-user"; break;
     case "AI": icon = "mi-outlined mi-smart-toy"; break;
+    case "TOOL_EXECUTION_REQUEST": icon = "pi pi-cog"; break;
     case "TOOL_EXECUTION_RESULT": icon = "pi pi-cog"; break;
     default: icon = "pi pi-cog"; break;
   }
 
   let roleLabel = role;
-  if (role === "AI") roleLabel = aiLabel || role;
-  else if (role === "USER") roleLabel = userLabel || role;
+  if (role === "AI" || role === "TOOL_EXECUTION_REQUEST") 
+    roleLabel = aiLabel || role;
+  else if (role === "USER") 
+    roleLabel = userLabel || role;
 
   const itemElem = document.createElement("li");
   itemElem.innerHTML =
@@ -252,26 +255,32 @@ async function showResponse(threadId)
       let text = item.text;
       let toolExecutionRequests = item.toolExecutionRequests;
 
-      if (toolExecutionRequests && toolExecutionRequests.length > 0)
+      if (type === "AI")
       {
-        let json = JSON.stringify(
+        // show tool execution request
+        if (toolExecutionRequests && toolExecutionRequests.length > 0)
         {
-          type: "AI",
-          toolExecutionRequests: toolExecutionRequests 
-        }, null, 2);
-        let itemElem = createMessage(type, "```json\n" + json + "\n```");
-        listElem.appendChild(itemElem);
-      }
-      else if (item.userInfo)
-      {
-        let itemElem = createMessage(type, "*" + item.userInfo + "*");
-        listElem.appendChild(itemElem);
-      }
-      else if (item.toolName)
-      {
-        let toolMessage = "*" + callToolLabel + " " + item.toolName + "*";
-        let itemElem = createMessage(type, toolMessage);
-        listElem.appendChild(itemElem);
+          let json = JSON.stringify(
+          {
+            type: "AI",
+            toolExecutionRequests: toolExecutionRequests 
+          }, null, 2);
+          let itemElem = createMessage("TOOL_EXECUTION_REQUEST", 
+            "```json\n" + json + "\n```");
+          listElem.appendChild(itemElem);
+        }
+        else if (item.userInfo)
+        {
+          let itemElem = createMessage("TOOL_EXECUTION_REQUEST", 
+            "*" + item.userInfo + "*");
+          listElem.appendChild(itemElem);
+        }
+        else if (item.toolName)
+        {
+          let toolMessage = "*" + callToolLabel + " " + item.toolName + "*";
+          let itemElem = createMessage("TOOL_EXECUTION_REQUEST", toolMessage);
+          listElem.appendChild(itemElem);
+        }
       }
       
       if (type === "TOOL_EXECUTION_RESULT")

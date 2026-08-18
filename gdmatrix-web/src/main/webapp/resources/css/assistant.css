@@ -150,6 +150,22 @@
   font-size: 16px;
 }
 
+.message.TOOL_EXECUTION_REQUEST .avatar
+{
+  background-color: #d0d0a0;
+}
+
+.message.TOOL_EXECUTION_REQUEST .avatar > span
+{
+  color: black;
+  font-size: 16px;
+}
+
+.message.TOOL_EXECUTION_REQUEST .content
+{
+  color: var(--gray-600);
+}
+
 .message.TOOL_EXECUTION_RESULT .avatar
 {
   background-color: #c0c020;
@@ -158,6 +174,7 @@
 .message.TOOL_EXECUTION_RESULT .avatar > span
 {
   color: black;
+  font-size: 16px;
 }
 
 .message.TOOL_EXECUTION_RESULT .content
