@@ -416,6 +416,7 @@ public class ThreadsBean extends WebBean implements Serializable
         public String onExecute(ToolExecutionRequest toolRequest)
         {
           ToolExecutor executor = new ToolExecutor();
+          executor.put("userSessionBean", userSessionBean);
           executor.put("userId", userId);
           executor.put("mid", mid);
           executor.put("threadId", threadId);
