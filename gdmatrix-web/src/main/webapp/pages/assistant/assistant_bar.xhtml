@@ -39,7 +39,7 @@
       <div class="ab-spacer"></div>
 
       <p:commandButton action="#{threadsBean.sendMessage()}"
-                       process="assistant_panel"
+                       process="@this question"
                        update="question threads_panel uploaded_file floating_bar"
                        widgetVar="assistantSendButton" title="#{objectBundle.send}"
                        onclick="sendMessage()" global="false"
@@ -47,7 +47,7 @@
                        icon="pi pi-arrow-right" styleClass="ab-send ui-button-icon-only" />
 
       <p:commandButton action="#{threadsBean.interruptStreaming()}"
-                       process="assistant_panel"
+                       process="@this"
                        update="question threads_panel uploaded_file floating_bar"
                        widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"
                        style="display:none" global="false"
