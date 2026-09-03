@@ -22,9 +22,14 @@
       </script>
       </ui:fragment>
     </p:outputPanel>
-    
+    <script>
+      var assistantDock = document.querySelector(".assistant-dock");
+      if (assistantDock) {
+        assistantDock.style.display = "#{assistantBean.view}" === "assistant" ? "none" : "";
+      }
+    </script>
   </h:panelGroup>
-
+  
   <gdm:saveBean value="threadsBean" />
   <gdm:saveBean value="assistantBean" />
 

@@ -87,7 +87,7 @@
                              icon="pi pi-plus-circle"
                              rendered="#{threadsBean.thread.isPersistent()}"
                              styleClass="white-space-nowrap ml-2"
-                             process="assistant_panel" update="assistant_panel assistant_history" />
+                             process="assistant_panel" update="assistant_panel assistant_history input_panel" />
             
             <p:menuButton styleClass="ml-2" 
                           rendered="#{threadsBean.thread.isPersistent()}">
@@ -106,7 +106,7 @@
                           value="#{objectBundle.delete}" 
                           title="#{objectBundle.delete}"
                           icon="pi pi-trash"
-                          process="assistant_panel" update="assistant_panel assistant_history">
+                          process="assistant_panel" update="assistant_panel assistant_history input_panel">
                 <p:confirm header="#{objectBundle.delete}"
                            message="#{assistantBundle.deleteThread}"
                            icon="pi pi-info-circle" />
@@ -200,10 +200,10 @@
               <li class="p-2 #{threadsBean.threadId == thread.threadId ? 'current' : ''}">
                 <p:commandLink action="#{threadsBean.changeThread(thread.threadId)}"
                                process="@this"
-                               update="@parent:@parent:assistant_panel @parent:@parent:assistant_history"
+                               update="@parent:@parent:assistant_panel @parent:@parent:assistant_history mainform:input_panel"
                                styleClass="flex flex-column no-underline"
                                oncomplete="endThreadsPanel();">
-
+                  
                   <h:outputText value="#{thread.dateTime}" styleClass="time"
                                 converter="DateTimeConverter" /> 
                   <div>#{thread.description}</div>                

@@ -60,10 +60,12 @@ import org.matrix.doc.Document;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
+import org.santfeliu.cms.CMSCache;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MimeTypeMap;
+import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.servlet.stream.StreamQueue;
 import org.santfeliu.webapp.modules.assistant.langchain4j.Assistant;
 import org.santfeliu.webapp.modules.assistant.langchain4j.ChatMessageListener;
@@ -365,6 +367,7 @@ public class ThreadsBean extends WebBean implements Serializable
   {
     final StreamQueue queue = StreamQueue.getInstance(getThreadId(), true);
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();
     String userId = userSessionBean.getUserId();
     String mid = userSessionBean.getSelectedMid();
     String threadId = getThreadId();
@@ -417,6 +420,7 @@ public class ThreadsBean extends WebBean implements Serializable
         {
           ToolExecutor executor = new ToolExecutor();
           executor.put("userSessionBean", userSessionBean);
+          executor.put("cmsCache", cmsCache);
           executor.put("userId", userId);
           executor.put("mid", mid);
           executor.put("threadId", threadId);
