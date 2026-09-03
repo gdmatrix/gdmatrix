@@ -18,6 +18,14 @@ function onAssistantKeyUp(event)
   }
 }
 
+function onAssistantKeyDown(event)
+{
+  if(event.key === "Enter" && !event.shiftKey)
+  {
+    event.preventDefault();
+  }
+}
+
 function updateAssistantButtons()
 {
   let text = PF("assistantTextarea").getJQ().val().trim();
