@@ -25,7 +25,7 @@ function quillInit(clientId, readonly, maxLength)
   ];
 
   const updateText = (delta, oldDelta, source) =>
-  {     
+  {
     var html = quill.getSemanticHTML(0, quill.getLength());
     if (source === 'user') //maxLength control: Only when is a user input
     {
@@ -39,7 +39,7 @@ function quillInit(clientId, readonly, maxLength)
     } 
     document.getElementById(inputId).value = html;    
   };
-
+  
   const handleImage = (quill) =>
   {
     let range = quill.getSelection();    
@@ -263,7 +263,8 @@ function quillInit(clientId, readonly, maxLength)
   }
 
   quill.on('text-change', updateText);
-  updateText();
+  
+  setTimeout(updateText, 100);
   
   if (readonly) quill.disable();
 }
