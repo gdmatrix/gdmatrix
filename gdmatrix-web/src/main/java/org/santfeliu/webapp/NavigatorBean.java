@@ -194,12 +194,12 @@ public class NavigatorBean extends WebBean implements Serializable
       if (objectBean != null)
       {
         objectId = objectBean.getObjectId();
-        String viewId = objectBean.getTypeBean().getViewId();
-        pageUrl = viewId + "?xmid=" + baseTypeInfo.getMid();
+        String contextPath = getContextPath();
+        pageUrl = contextPath + "/web/" + baseTypeInfo.getMid();
 
         if (!objectBean.isNew())
         {
-          pageUrl += "&" + OBJECTID_PARAMETER + "=" + objectBean.getObjectId();
+          pageUrl += "?" + OBJECTID_PARAMETER + "=" + objectId;
           pageTitle += " > " + objectBean.getDescription();
         }
       }

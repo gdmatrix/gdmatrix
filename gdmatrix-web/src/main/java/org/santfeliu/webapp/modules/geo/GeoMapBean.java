@@ -672,7 +672,8 @@ public class GeoMapBean extends WebBean implements Serializable
     MenuItemCursor menuItem = getSelectedMenuItem();
     String mid = menuItem.getMid();
     Map<String, String> jsonState = new HashMap<>();
-    StringBuilder urlBuffer = new StringBuilder("/go.faces?xmid=" + mid);
+    String contextPath = getContextPath();
+    StringBuilder urlBuffer = new StringBuilder(contextPath + "/web/" + mid);
 
     String title;
     if (mapDocument != null)
@@ -692,7 +693,7 @@ public class GeoMapBean extends WebBean implements Serializable
 
       jsonState.put(MAP_NAME_PARAMETER, mapDocument.getName());
       jsonState.put(MAP_VIEW_PARAMETER, view);
-      urlBuffer.append("&").append(MAP_NAME_PARAMETER)
+      urlBuffer.append("?").append(MAP_NAME_PARAMETER)
         .append("=").append(mapDocument.getName());
       urlBuffer.append("&").append(MAP_VIEW_PARAMETER)
         .append("=").append(view);

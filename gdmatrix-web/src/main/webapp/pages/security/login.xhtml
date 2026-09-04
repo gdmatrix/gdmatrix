@@ -170,8 +170,17 @@
             var search = window.location.search;
             if (search) search += "&amp;";
             else search = "?";
-            search += "_lc=" + Math.random(); 
-            window.location = "/go.faces" + search + window.location.hash;
+            search += "_lc=" + Math.random();
+            
+            var pathname = window.location.pathname;
+            if (pathname.startsWith("/web/"))
+            {
+              window.location = pathname + search + window.location.hash;              
+            }
+            else
+            {
+              window.location = "/go.faces" + search + window.location.hash;
+            }
           }
         }
         

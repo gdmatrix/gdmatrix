@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.faces.application.Application;
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
@@ -72,7 +73,7 @@ public class CMSListener implements PhaseListener
   public static final String WORKSPACEID_PARAM = "workspaceid";
   public static final String BROWSER_TYPE_PARAM = "btype";
   public static final String LANGUAGE_PARAM = "language";
-
+  
   public static final String PAGE_USERID_PARAM = "_userid_";
   // Replace by RequestDispatcher.FORWARD_REQUEST_URI in servlet spec 3.0
   public static final String FORWARD_REQUEST_URI =
@@ -105,6 +106,7 @@ public class CMSListener implements PhaseListener
   private int clientSecurePort;
   private final WebAuditor webAuditor = new WebAuditor();
   private final HashSet<String> pathExceptions = new HashSet<>();
+  private static final Pattern WEB_PATTERN = Pattern.compile("^/web/[0-9]+$");  
 
   public CMSListener()
   {
@@ -325,7 +327,29 @@ public class CMSListener implements PhaseListener
     MenuModel menuModel = userSessionBean.getMenuModel();
     menuModel.setAllVisible(true);
 
-    String mid = null;
+    // access by /web/<mid>
+    String path = request.getRequestURI();
+    if (WEB_PATTERN.matcher(path).matches())
+    {
+      String mid = path.substring(5);
+      System.out.println("$$MID: " + mid);
+      try
+      {
+       menuItem = menuModel.getMenuItemByMid(mid);
+      }
+      catch (MenuException ex) // MenuItemNotFound
+      {
+        menuItem = userSessionBean.getSelectedMenuItem();
+      }        
+      // register menuItem in request attribute
+      request.setAttribute(NEXT_MENU_ITEM_ATTR, menuItem);
+
+      menuModel.setAllVisible(false);
+
+      return menuItem;  
+    }
+
+    String mid;
     String topic = (String)request.getParameter(TOPIC_PARAM);
     if (topic != null) // by topic
     {

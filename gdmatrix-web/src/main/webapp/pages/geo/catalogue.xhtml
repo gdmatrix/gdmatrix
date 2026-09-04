@@ -146,7 +146,7 @@
       (value, index) => PrimeFaces.detachedWidgets.indexOf(value) === index);
 
     controlNavigationHistory({
-      url : "/go.faces?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      url : "/web/#{userSessionBean.selectedMenuItem.mid}",
       title : "#{userSessionBean.selectedMenuItem.label}"
     });
 

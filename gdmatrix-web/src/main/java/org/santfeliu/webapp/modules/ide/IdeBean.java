@@ -446,12 +446,13 @@ public class IdeBean extends WebBean implements Serializable
     MenuItemCursor menuItem = getSelectedMenuItem();
     String mid = menuItem.getMid();
     Map<String, String> jsonState = new HashMap<>();
-    StringBuilder urlBuffer = new StringBuilder("/go.faces?xmid=" + mid);
+    String contextPath = getContextPath();
+    StringBuilder urlBuffer = new StringBuilder(contextPath + "/web/" + mid);
     String title;
     if (!isBlank(typeName) && !isBlank(name))
     {
       title = typeName + ":" + name;
-      urlBuffer.append("&").append(TYPE_PARAMETER).append("=").append(typeName);
+      urlBuffer.append("?").append(TYPE_PARAMETER).append("=").append(typeName);
       urlBuffer.append("&").append(NAME_PARAMETER).append("=").append(name);
     }
     else

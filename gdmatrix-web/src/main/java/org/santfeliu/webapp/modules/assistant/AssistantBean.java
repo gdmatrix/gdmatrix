@@ -138,24 +138,32 @@ public class AssistantBean extends WebBean implements Serializable
     MenuItemCursor menuItem = getSelectedMenuItem();
     String mid = menuItem.getMid();
     Map<String, String> jsonState = new HashMap<>();
-    StringBuilder urlBuffer = new StringBuilder("/go.faces?xmid=" + mid);
+    String contextPath = getContextPath();
+    StringBuilder urlBuffer = new StringBuilder(contextPath + "/web/" + mid);
     String threadId = threadsBean.getThreadId();
     String assistantId = getAssistantId();
 
     String title = menuItem.getLabel();
+    boolean params = false;
 
     if (!isBlank(threadId) && threadsBean.getThread().isPersistent())
     {
-      urlBuffer.append("&").append(THREADID_PARAMETER).append("=").append(threadId);
+      urlBuffer.append("?")
+        .append(THREADID_PARAMETER).append("=").append(threadId);
       title += " - " + threadId;
+      params = true;
     }
 
     if (!isBlank(assistantId) && getAssistant().isPersistent())
     {
-      urlBuffer.append("&").append(ASSISTANTID_PARAMETER).append("=").append(assistantId);
+      urlBuffer.append(params ? "&" : "?")
+        .append(ASSISTANTID_PARAMETER).append("=").append(assistantId);
       if ("assistant".equals(view)) title += " - " + getAssistant().getName();
+      params = true;
     }
-    urlBuffer.append("&").append(ASSISTANT_VIEW_PARAMETER).append("=").append(view);
+    
+    urlBuffer.append(params ? "&" : "?")
+      .append(ASSISTANT_VIEW_PARAMETER).append("=").append(view);
 
     jsonState.put("title", title);
     jsonState.put("url", urlBuffer.toString());

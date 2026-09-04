@@ -119,6 +119,18 @@ function setupPopupListener()
         console.info("fparams", fparams);
         showPage("Node", fparams);
       }
+      else // pathnames: /web/<mid>
+      {
+        let pathname = document.location.pathname;
+        if (pathname.startsWith("/web/"))
+        {
+          mid = pathname.substring(5);
+          const fparams = Object.fromEntries(params);
+          fparams["mid"] = mid;
+          console.info("fparams", fparams);
+          showPage("Node", fparams);
+        }
+      }
     }
   };
 

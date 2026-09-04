@@ -255,11 +255,12 @@ public class QueryMainBean extends WebBean implements Serializable, QueryFinder
   public String getQueryUrl()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("/go.faces?xmid=" + 
+    String contextPath = getContextPath();
+    sb.append(contextPath).append("/web/").append(
       UserSessionBean.getCurrentInstance().getSelectedMenuItem().getMid());
-    sb.append("&" + QUERY_NAME_PROPERTY + "=" + getQuery().getName());
-    sb.append("&" + QUERY_VIEW_PROPERTY + "=" + 
-      ("query_edit".equals(getView()) ? "edit" : "view"));
+    sb.append("?" + QUERY_NAME_PROPERTY + "=").append(getQuery().getName());
+    sb.append("&" + QUERY_VIEW_PROPERTY + "=")
+      .append("query_edit".equals(getView()) ? "edit" : "view");
     return sb.toString();
   }
   
