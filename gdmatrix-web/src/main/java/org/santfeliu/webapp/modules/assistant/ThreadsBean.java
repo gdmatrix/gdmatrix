@@ -125,11 +125,10 @@ public class ThreadsBean extends WebBean implements Serializable
   {
     String host = System.getProperty("host");
     if (host == null) host = "localhost";
-    ServletContext context = (ServletContext)getExternalContext().getContext();
-    String contextPath = context.getContextPath();
+    String contextPath = getContextPath();
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    return "https://" + host + "/" + contextPath + "go.faces?xmid=" +
-      userSessionBean.getSelectedMid() + "&threadid=" + getThreadId();
+    return "https://" + host + contextPath + "/web/" +
+      userSessionBean.getSelectedMid() + "?threadid=" + getThreadId();
   }
 
   public String getThreadFilter()
