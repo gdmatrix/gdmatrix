@@ -209,6 +209,9 @@ public class SignatureFormBean extends FormBean
     try
     {
       result = (String)model.parseResult();
+      if ("signature is valid".equals(result))
+        result = "OK";
+      
       if (!StringUtils.isBlank(result))
       {
         InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");

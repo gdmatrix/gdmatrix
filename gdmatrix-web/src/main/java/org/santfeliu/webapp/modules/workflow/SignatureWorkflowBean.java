@@ -214,6 +214,9 @@ public class SignatureWorkflowBean extends WorkflowBean
     try
     {
       result = (String)model.parseResult();
+      if ("signature is valid".equals(result))
+        result = "OK";
+      
       if (!StringUtils.isBlank(result))
       {
         instanceBean.forward();
