@@ -380,6 +380,7 @@ public class ThreadsBean extends WebBean implements Serializable
     String userId = userSessionBean.getUserId();
     String mid = userSessionBean.getSelectedMid();
     String threadId = getThreadId();
+    String sessionId = userSessionBean.getSession().getId();
     attachedFilename = null;
     attachedDocId = null;
     attachedContentId = null;
@@ -434,6 +435,7 @@ public class ThreadsBean extends WebBean implements Serializable
           executor.put("threadId", threadId);
           executor.put("simulation", simulationEnabled);
           executor.put("pageUrl", pageUrl);
+          executor.put("sessionId", sessionId);
           String result = executor.execute(toolRequest);
           String action = executor.getAction();
           if (action != null)
