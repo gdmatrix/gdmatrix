@@ -50,7 +50,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -103,6 +102,7 @@ public class ThreadsBean extends WebBean implements Serializable
   String attachedDocId;
   String attachedContentId;
   String json;
+  String pageUrl;
 
   @Inject
   AssistantBean assistantBean;
@@ -219,6 +219,16 @@ public class ThreadsBean extends WebBean implements Serializable
     this.json = json;
   }
 
+  public String getPageUrl()
+  {
+    return pageUrl;
+  }
+
+  public void setPageUrl(String pageUrl)
+  {
+    this.pageUrl = pageUrl;
+  }
+  
   public void endEdition()
   {
     try
@@ -373,7 +383,7 @@ public class ThreadsBean extends WebBean implements Serializable
     attachedFilename = null;
     attachedDocId = null;
     attachedContentId = null;
-
+    
     try
     {
       queue.clear();
@@ -418,12 +428,12 @@ public class ThreadsBean extends WebBean implements Serializable
         public String onExecute(ToolExecutionRequest toolRequest)
         {
           ToolExecutor executor = new ToolExecutor();
-          executor.put("userSessionBean", userSessionBean);
           executor.put("cmsCache", cmsCache);
           executor.put("userId", userId);
           executor.put("mid", mid);
           executor.put("threadId", threadId);
           executor.put("simulation", simulationEnabled);
+          executor.put("pageUrl", pageUrl);
           String result = executor.execute(toolRequest);
           String action = executor.getAction();
           if (action != null)

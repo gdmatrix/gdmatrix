@@ -40,7 +40,7 @@
       <div class="ab-spacer"></div>
 
       <p:commandButton action="#{threadsBean.sendMessage()}"
-                       process="@this question"
+                       process="@this question page_url"
                        update="question threads_panel uploaded_file floating_bar"
                        widgetVar="assistantSendButton" title="#{objectBundle.send}"
                        onclick="sendMessage()" global="false"
@@ -53,6 +53,8 @@
                        widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"
                        style="display:none" global="false"
                        icon="pi pi-stop-circle" styleClass="ab-send ab-stop ui-button-icon-only" />
+
+      <h:inputHidden id="page_url" value="#{threadsBean.pageUrl}" />
     </div>
 
     <p:overlayPanel for="wsmAnchor" 

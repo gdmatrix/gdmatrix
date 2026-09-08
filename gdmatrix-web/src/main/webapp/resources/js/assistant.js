@@ -163,6 +163,9 @@ function sendMessage()
     changeWindowSize("half");
   }
   
+  let urlElem = document.getElementById("mainform:page_url");
+  urlElem.value = document.location.href;
+  
   let listElem = getMessageList();
   let textarea = PF("assistantTextarea").getJQ();
   let text = textarea.val().trim();
