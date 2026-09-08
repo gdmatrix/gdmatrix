@@ -23,7 +23,7 @@
   
   <script>
     controlNavigationHistory({
-      url : "/pages/grid/grid.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}",
+      url : "/web/#{userSessionBean.selectedMenuItem.mid}",
       title : "#{userSessionBean.selectedMenuItem.label}"
     });
     setTimeout(() => history.replaceState(null, null, ' '), 0); // remove #hash

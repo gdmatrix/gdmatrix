@@ -31,7 +31,7 @@
 
     <script>
       controlNavigationHistory({
-        url : "/pages/news/new_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;newid=#{newViewerBean.newObject.newId}",
+        url : "/web/#{userSessionBean.selectedMenuItem.mid}&amp;newid=#{newViewerBean.newObject.newId}",
         title : "#{userSessionBean.selectedMenuItem.label}"
       });
       
