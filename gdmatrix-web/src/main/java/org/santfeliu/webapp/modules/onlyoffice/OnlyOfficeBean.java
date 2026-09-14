@@ -56,6 +56,7 @@ import org.santfeliu.util.MatrixConfig;
 import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.jwt.JWTUtils;
+import org.santfeliu.web.bean.CMSAction;
 
 /**
  *
@@ -70,6 +71,8 @@ public class OnlyOfficeBean extends WebBean
 
   private Map config;
   private String jwtSecret;
+  private String docId;
+  private String accessMode;
 
   @PostConstruct
   public void init()
@@ -77,24 +80,25 @@ public class OnlyOfficeBean extends WebBean
     this.jwtSecret = MatrixConfig.getProperty("org.santfeliu.onlyOffice.JwtSecret");
   }
 
-  public void show()
-  {
+  @CMSAction
+  public String show()
+  { 
     // Block the execution if the inegration is disabled
     if (!getOnlyOfficeEnabled())
     {
       logger.log(Level.WARNING, "OnlyOffice integration is disabled");
       error("DOCUMENT_ONLYOFFICE_DISABLED");
-      return;
+      return templateOutcome();
     }
 
     try
     {
-      String docId = FacesContext.getCurrentInstance()
-        .getExternalContext().getRequestParameterMap().get("docId");
-
-      String accessMode = FacesContext.getCurrentInstance()
-        .getExternalContext().getRequestParameterMap().get("accessMode");
-
+      Map<String, String> requestParams = FacesContext.getCurrentInstance()
+        .getExternalContext().getRequestParameterMap();
+      
+      docId = requestParams.get("docId");
+      accessMode = requestParams.get("accessMode");
+      
       String userId = UserSessionBean.getCurrentInstance().getUserId();
       String username = UserSessionBean.getCurrentInstance().getUsername();
 
@@ -103,7 +107,7 @@ public class OnlyOfficeBean extends WebBean
         config = new HashMap<>();
         logger.log(Level.WARNING, "DocId is null, cannot load the document");
         error("DOCUMENT_NO_DOCID");
-        return;
+        return templateOutcome();
       }
 
       DocumentManagerPort port = getPort(false);
@@ -115,7 +119,7 @@ public class OnlyOfficeBean extends WebBean
       //Check if the type of document is supported
       if (!isSupportedType(fileType))
       {
-        return;
+        return templateOutcome();
       }
 
       // Only check the user permissions if the user enters in the edit mode
@@ -166,7 +170,7 @@ public class OnlyOfficeBean extends WebBean
       if (isUserInDocument(userId, key))
       {
         error("DOCUMENT_SAME_DOCUMENT");
-        return;
+        return templateOutcome();
       }
 
       // -- Config data --
@@ -175,7 +179,7 @@ public class OnlyOfficeBean extends WebBean
       String lang = !"%%".equals(document.getLanguage()) ? document.getLanguage() : "es";
       String docUrl = String.format("https://%s/documents/%s/%s.%s", getHost(), key, title, fileType);
       String callbackUrl = String.format("https://%s/onlyoffice?fileKey=%s", getHost(), docId);
-
+      
       config = new HashMap();
 
       // -- config.document --
@@ -220,14 +224,17 @@ public class OnlyOfficeBean extends WebBean
 
       //Add token into the config.json
       config.put("token", token);
-
+      
     }
     catch (Exception ex)
     {
       error(ex);
+      return templateOutcome();
     }
+    
+    return templateOutcome();
   }
-
+  
   public String getContent()
   {
     return "/pages/onlyoffice/editor.xhtml";
@@ -237,6 +244,22 @@ public class OnlyOfficeBean extends WebBean
   {
     String configString = new Gson().toJson(config);
     return configString;
+  }
+  
+  public String getDocId()
+  {
+    return docId;
+  }
+  
+  public String getAccessMode()
+  {
+    return accessMode;
+  }
+  
+  private String templateOutcome()
+  {
+    String template = UserSessionBean.getCurrentInstance().getTemplate();
+    return "/templates/" + template + "/template.xhtml";
   }
 
   private static final Map<String, String> EXTENSION_TO_DOCUMENT_TYPE = Map.ofEntries(

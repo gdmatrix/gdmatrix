@@ -41,12 +41,26 @@
         console.error("Error charging the OnlyOffice API:", err);
       }
     }
+    
+    var url = "/web/#{userSessionBean.selectedMenuItem.mid}";
+    var params = [];
+
+    var docId = "#{onlyOfficeBean.docId}";
+    var accessMode = "#{onlyOfficeBean.accessMode}";
+
+    if (docId) params.push("docId=" + encodeURIComponent(docId));
+    if (accessMode) params.push("accessMode=" + encodeURIComponent(accessMode));
+
+    if (params.length > 0)
+    {
+      url += "?" + params.join("&amp;");
+    }
 
     controlNavigationHistory({
-      url: "/web/#{userSessionBean.selectedMenuItem.mid}",
+      url: url,
       title: "#{userSessionBean.selectedMenuItem.label}"
     });
-
+    
     init();
   </script>
 
