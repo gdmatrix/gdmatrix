@@ -155,11 +155,12 @@
                       process="@this"
                       update="input_panel uploaded_file"
                       onstart="PF('fileUpload').getJQ().css('display','block');"
-                      oncomplete="PF('fileUpload').getJQ().css('display','none');updateAssistantButtons();scrollMessages()"
+                      oncomplete="PF('fileUpload').getJQ().css('display','none');updateAssistantButtons();expandIfMinimized();scrollMessages();"
                       global="false" />
         <p:remoteCommand name="uploadImage" 
                          action="#{threadsBean.uploadImage}"
-                         update="input_panel uploaded_file" />
+                         update="input_panel uploaded_file"
+                         oncomplete="expandIfMinimized();"/>
         
         <c:if test="#{userSessionBean.selectedMenuItem.properties.assistantBarEnabled != 'false'}">
           <ui:include src='/pages/assistant/assistant_bar.xhtml' />

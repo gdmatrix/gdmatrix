@@ -28,11 +28,14 @@ function onAssistantKeyDown(event)
 
 function updateAssistantButtons()
 {
-  let text = PF("assistantTextarea").getJQ().val().trim();
+  let textareaWidget = PF("assistantTextarea");
   let sendButton = PF("assistantSendButton");
   let interruptButton = PF("assistantInterruptButton");
   let uploadButton = PF("assistantUploadButton");
 
+  if (!textareaWidget || !sendButton || !interruptButton || !uploadButton) return;
+
+  let text = PF("assistantTextarea").getJQ().val().trim();
   let inProgress = isInProgress();
 
   if (inProgress)
@@ -53,6 +56,22 @@ function updateAssistantButtons()
     uploadButton.enable();
     sendButton.jq.show();
     interruptButton.jq.hide();
+  }
+}
+
+function tryUpdateAssistantButtons(retries)
+{
+  if (window.PrimeFaces && PrimeFaces.widgets
+      && PrimeFaces.widgets["assistantTextarea"]
+      && PrimeFaces.widgets["assistantSendButton"]
+      && PrimeFaces.widgets["assistantInterruptButton"]
+      && PrimeFaces.widgets["assistantUploadButton"])
+  {
+    updateAssistantButtons();
+  }
+  else if (retries > 0)
+  {
+    setTimeout(function() { tryUpdateAssistantButtons(retries - 1); }, 100);
   }
 }
 
@@ -158,10 +177,7 @@ function sendMessage()
 {
   /* If the bar is in floating mode, open it half so the conversation remains
   visible. */
-  if (document.body.classList.contains("asst-min"))
-  {
-    changeWindowSize("half");
-  }
+  expandIfMinimized();
   
   let urlElem = document.getElementById("mainform:page_url");
   urlElem.value = document.location.href;
@@ -468,4 +484,12 @@ function updateWsmSelection(size)
   {
     item.classList.toggle("wsm-selected", item.dataset.size === size);
   });
+}
+
+function expandIfMinimized()
+{
+  if (document.body.classList.contains("asst-min"))
+  {
+    changeWindowSize("half");
+  }
 }
