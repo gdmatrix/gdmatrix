@@ -175,6 +175,7 @@ public abstract class IdeDocumentType implements Serializable
     registerType(new XslTemplateDocumentType());
     registerType(new AntTemplateDocumentType());
     registerType(new ObjectSetupDocumentType());
+    registerType(new PebbleTemplateDocumentType());
   }
 
   public static List<IdeDocumentType> getTypes()

@@ -189,6 +189,11 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
       const {markdown} = CM["@codemirror/lang-markdown"];
       extensions.push(markdown());
       break;
+      
+    case "pebble":
+      const {jinja} = CM["@codemirror/lang-jinja"];
+      extensions.push(jinja());
+      break;
     
     default:
       const {javascript} = CM["@codemirror/lang-javascript"];
