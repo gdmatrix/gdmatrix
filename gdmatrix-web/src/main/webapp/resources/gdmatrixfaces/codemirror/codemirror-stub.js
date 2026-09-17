@@ -6,13 +6,9 @@ import "./codemirror.js";
 window.cmInstances = window.cmInstances || {};
 
 function codemirrorInit(clientId, readonly, language, showLineNumbers, completion, changeListener, activeExtensions)
-{
-  
-  // console.log("Active Extensions:", activeExtensions);
-  
+{ 
   const editorId = clientId + "_editor";
   const inputId = clientId + "_input";
-
   const editorElem = document.getElementById(editorId);
   editorElem.className = "cm-editor-holder";
 
@@ -21,7 +17,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
   const {keymap, highlightSpecialChars, drawSelection,
     highlightActiveLine, dropCursor,
     rectangularSelection, crosshairCursor, EditorView,
-    lineNumbers, highlightActiveLineGutter, lineWrapping} = CM["@codemirror/view"];
+    lineNumbers, highlightActiveLineGutter} = CM["@codemirror/view"];
   const {Extension, EditorState} = CM["@codemirror/state"];
   const {defaultHighlightStyle, syntaxHighlighting, indentOnInput,
     bracketMatching, foldGutter, foldKeymap, indentUnit} = CM["@codemirror/language"]
@@ -95,10 +91,9 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     }
   });
 
-  let editorView = new EditorView(
-          {
-            parent: editorElem
-          });
+  let editorView = new EditorView({
+    parent: editorElem
+  });
 
   let updateListenerExtension = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
@@ -147,7 +142,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
     try {
       extsToLoad = JSON.parse(activeExtensions);
     }catch(e){
-      console.warn("ERROR al parsear extensiones", e);
+      console.warn("ERROR when parsing extensions", e);
     }
   }
   
@@ -169,7 +164,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
       const {html} = CM["@codemirror/lang-html"];
       extensions.push(html());
       break;
-
+      
     case "json":
       const {json} = CM["@codemirror/lang-json"];
       extensions.push(json());
@@ -194,7 +189,7 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
       const {markdown} = CM["@codemirror/lang-markdown"];
       extensions.push(markdown());
       break;
-
+    
     default:
       const {javascript} = CM["@codemirror/lang-javascript"];
       extensions.push(javascript());
@@ -213,12 +208,40 @@ function codemirrorInit(clientId, readonly, language, showLineNumbers, completio
   }
 
   let editorState = EditorState.create(
-          {
-            doc: inputElem.value,
-            extensions: extensions
-          });
+  {
+    doc: inputElem.value,
+    extensions: extensions
+  });
           
   editorView.setState(editorState);
+
+  // Register the current instance to destroy it later
+  window.cmInstances[clientId] = editorView;
+  return editorView;
+}
+
+// Destroy a single CodeMirror instance by clientId
+function cmDestroy(clientId)
+{
+  const instance = window.cmInstances[clientId];
+  if (instance)
+  {
+    try 
+    {
+      instance.destroy();
+    } 
+    catch (e) {}
+    
+    delete window.cmInstances[clientId];
+  }
+}
+
+// Destroy all active CodeMirror instances.
+function cmDestroyAll()
+{
+  Object.keys(window.cmInstances).forEach(cmDestroy);
 }
 
 window.codemirrorInit = codemirrorInit;
+window.cmDestroy = cmDestroy;
+window.cmDestroyAll = cmDestroyAll;

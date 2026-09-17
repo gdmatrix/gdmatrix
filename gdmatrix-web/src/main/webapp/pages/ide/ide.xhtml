@@ -46,7 +46,7 @@
           <p:ajax event="valueChange"
                   listener="#{ideBean.onTypeChange}"
                   update="@form:cnt:editor @form:cnt:name @form:cnt:ide_history"
-                  onstart="cmChanged = false;"
+                  onstart="cmChanged = false; cmDestroy('mainform:editor:code_editor');"
                   process="@this editor" />
         </p:selectOneMenu>
       </div>
@@ -65,7 +65,7 @@
           <p:ajax event="itemSelect"
                   listener="#{ideBean.onNameSelect}"
                   update="editor docs_panel @form:cnt:ide_history"
-                  onstart="cmChanged = false;"
+                  onstart="cmChanged = false; cmDestroy('mainform:editor:code_editor');"
                   process="@this editor" />
           <p:column>
             <span class="code">#{docName}</span>
@@ -91,11 +91,13 @@
         <div class="ui-inputgroup ml-1 mr-2">
           <p:commandButton action="#{ideBean.create}"
                            process="@form:cnt" update="@form:cnt"
+                           onstart="cmDestroy('mainform:editor:code_editor');"
                            icon="pi pi-plus-circle" 
                            alt="#{objectBundle.create}" 
                            title="#{objectBundle.create}" />
           <p:commandButton action="#{ideBean.load}"
                            process="@form:cnt" update="@form:cnt"
+                           onstart="cmDestroy('mainform:editor:code_editor');"
                            icon="pi pi-refresh"
                            alt="#{objectBundle.load}" 
                            title="#{objectBundle.load}"/>
@@ -142,6 +144,7 @@
                                    actionListener="#{ideBean.saveIdeConfig}" 
                                    process="configDialogContent @form:cnt:editor" 
                                    update="@form:cnt:editor" 
+                                   onstart="cmDestroy('mainform:editor:code_editor');"
                                    oncomplete="PF('configDialog').hide();" 
                                    styleClass="ui-button-sm mini" />
                 </div>        
@@ -191,7 +194,8 @@
           <ui:repeat value="#{ideDocumentCacheBean.documents}" var="document">
             <li class="flex w-full align-items-center">
               <p:commandLink action="#{ideBean.loadCache(document.reference)}"
-                             process="@form:cnt"   update="@form:cnt @form:cnt:docs_panel @form:cnt:ideMessages" 
+                             process="@form:cnt"   update="@form:cnt @form:cnt:docs_panel @form:cnt:ideMessages"
+                             onstart="cmDestroy('mainform:editor:code_editor');"
                              class="flex-grow-1 no-underline p-2">
                 <span class="#{ideBean.getDocumentIcon(document)} ml-1 mr-1" />
                 <span class="code">#{document.name}#{document.modified ? ' *' : ''}</span>                
@@ -264,6 +268,7 @@
       <p:commandButton value="Si" 
                        actionListener="#{ideBean.confirmSaveYes}" 
                        update="@form:cnt @form:cnt:ideMessages ide_history docs_panel dialogErrors" 
+                       onstart="cmDestroy('mainform:editor:code_editor');"
                        oncomplete="PF('confirmSaveDialog').hide();" 
                        icon="pi pi-check" styleClass="mr-2"/>
       <p:commandButton value="No" 
