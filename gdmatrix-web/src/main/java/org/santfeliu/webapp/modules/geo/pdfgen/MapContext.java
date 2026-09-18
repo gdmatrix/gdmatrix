@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.geo.pdfgen;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.maplibre.model.Style;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.PojoUtils;
@@ -45,6 +46,7 @@ import org.santfeliu.webapp.modules.geo.io.MapDocument;
 public class MapContext
 {
   public static final String MAP = "map";
+  public static final String BASE_MAP = "base_map";
   public static final String MAP_NAME = "map_name";
   public static final String BBOX = "bbox";
   public static final String BOUNDS = "bounds";
@@ -80,6 +82,13 @@ public class MapContext
 
       Style style = map.getStyle();
 
+      String baseMapName = map.getBaseMapName();
+      if (!StringUtils.isBlank(baseMapName))
+      {
+        MapDocument baseMap = mapStore.loadMap(baseMapName);
+        context.put(BASE_MAP, baseMap);
+      }
+      
       // bounds
       String bbox = (String)context.get(BBOX);
       Bounds bounds;

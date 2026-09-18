@@ -91,7 +91,7 @@ public class MapViewNode extends MapRectNode
       MapDocument map = (MapDocument)context.get(MAP);
       Bounds mapBounds = (Bounds)context.get(BOUNDS);
       Style style = map.getStyle();
-
+      
       String layerVisibility = (String)context.get(LAYER_VISIBILITY);
       Credentials credentials = (Credentials)context.get(CREDENTIALS);
 
@@ -117,8 +117,31 @@ public class MapViewNode extends MapRectNode
       }
       gen.getContext().put(BOUNDS, mapBounds);
 
-      List<Layer> layers = style.getLayers();
+      List<Layer> layers = new ArrayList<>();
 
+      MapDocument baseMap = (MapDocument)context.get(BASE_MAP);
+      if (baseMap != null)
+      {
+        layers.addAll(baseMap.getStyle().getLayers());
+      }      
+      
+      layers.addAll(style.getLayers());
+      
+      System.out.println("style.layers " + layers.size());
+      System.out.println("param.layers " + layerVisibility.length());
+      
+      for (int i = 0; i < layers.size(); i++)
+      {
+        Layer layer = layers.get(i);
+        boolean visible = false;
+        if (i < layerVisibility.length())
+        {
+          visible = layerVisibility.charAt(i) == '1';
+          System.out.println(i + ": " + layer.getId() + " " + visible);
+        }
+      }
+      
+      
       for (int i = 0; i < layers.size(); i++)
       {
         Layer layer = layers.get(i);
