@@ -30,7 +30,12 @@
  */
 package org.santfeliu.webapp.modules.assistant.langchain4j;
 
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.response.StreamingHandle;
+import dev.langchain4j.model.output.FinishReason;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -379,5 +384,86 @@ public class Assistant implements Serializable
   public void generate(List<ChatMessage> messages, ChatMessageListener listener)
   {
     AssistantData.getInstance(this).generate(messages, listener);
+  }
+  
+  public String generate(List<ChatMessage> messages, 
+    final ToolExecutor toolExecutor, long maxMillis) 
+    throws InterruptedException 
+  {
+    Object lock = new Object();
+    final Object[] responseHolder = new Object[1]; 
+    
+    AssistantData.getInstance(this).generate(messages, new ChatMessageListener()
+    {
+      @Override
+      public void onComplete(FinishReason reason)
+      {
+        synchronized (lock)
+        {
+          lock.notify();
+        }
+      }
+
+      @Override
+      public void onError(Throwable t)
+      {
+        responseHolder[0] = t;
+        synchronized (lock)
+        {
+          lock.notify();
+        }
+      }
+
+      @Override
+      public String onExecute(ToolExecutionRequest toolRequest)
+      {
+        if (toolExecutor != null) 
+        {
+          return toolExecutor.execute(toolRequest);
+        }
+        return "Tool not available";
+      }
+
+      @Override
+      public void onMessage(ChatMessage message)
+      {
+        if (message instanceof AiMessage)
+        {
+          responseHolder[0] = message;
+        }
+      }
+
+      @Override
+      public void onNext(String tokens, StreamingHandle handle)
+      {
+      }      
+    });
+    
+    // wait for response
+    if (responseHolder[0] == null)
+    {
+      synchronized (lock)
+      {
+        lock.wait(maxMillis);      
+      }
+    }
+
+    // return response
+    Object response = responseHolder[0];
+    if (response instanceof AiMessage)
+    {
+      return ((AiMessage)response).text();
+    }
+    else if (response instanceof Throwable)
+    {
+      throw new RuntimeException((Throwable)response);
+    }
+    return null;
+  }
+
+  public String generate(String message, ToolExecutor executor, long maxMillis) 
+    throws InterruptedException
+  {
+    return generate(List.of(UserMessage.from(message)), executor, maxMillis);
   }
 }
