@@ -30,12 +30,19 @@
  */
 package org.santfeliu.webapp.modules.doc;
 
+import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.error.PebbleException;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.santfeliu.doc.web.*;
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.io.IOUtils;
 
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
@@ -81,6 +88,8 @@ public class DocumentViewerBean extends WebBean implements Serializable
   public static final String EDITOR_LANGUAGE_PROPERTY = "editor.language";
   @CMSProperty
   public static final String DISABLE_HTML_FIXER = "disableHtmlFixer";
+  @CMSProperty
+  public static final String PEBBLE_TEMPLATE = "pebbleTemplate";
 
   public static final String DOC_SERVLET_URL = "/documents/";
   private static final String OUTCOME = "/pages/doc/document_viewer.xhtml";
@@ -91,6 +100,9 @@ public class DocumentViewerBean extends WebBean implements Serializable
   private boolean keepLocking;
   private transient String tempUrl;
   private DocumentEditor editor;
+  
+  @Inject
+  PebbleBean pebbleBean;
 
   public DocumentEditor getEditor()
   {
@@ -302,6 +314,59 @@ public class DocumentViewerBean extends WebBean implements Serializable
       {
         editor = null;
       }
+    }
+  }
+  
+  public boolean isPebbleTemplate()
+  {
+    return "true".equals(getProperty(PEBBLE_TEMPLATE));
+  }
+  
+  public String getPebbleContent()
+  {
+    try
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      MenuModel menuModel = userSessionBean.getMenuModel();
+      MenuItemCursor cursor = menuModel.getSelectedMenuItem();
+      String docId = getDocId(cursor);
+      if (docId == null) return "No document";
+
+      Document document = getDocumentFromWS(docId);
+      String source;
+      try (var is = document.getContent().getData().getInputStream())
+      {
+        source = IOUtils.toString(is, "UTF-8");
+      }
+      
+      PebbleEngine engine = pebbleBean.getEngine();
+      
+      Map<String, Object> context = new HashMap<>();
+      context.put("userId", userSessionBean.getUserId());
+      context.put("displayName", userSessionBean.getDisplayName());
+      context.put("data", pebbleBean.getData(userSessionBean.getCredentials()));
+      PebbleTemplate template = engine.getLiteralTemplate(source);
+      
+      StringWriter writer = new StringWriter();
+      template.evaluate(writer, context);
+      return writer.toString();
+    }
+    catch (PebbleException ex)
+    {
+      Throwable cause = ex;
+      while (cause.getCause() != null)
+      {
+        cause = cause.getCause();
+      }
+      
+      return "<p class=\"error\">Error in line " + ex.getLineNumber() + ": " +
+        ex.getPebbleMessage() + " / " + 
+        cause.toString() +
+        "</p>";
+    }
+    catch (Exception ex)
+    {
+      return "ERROR: " + ex.toString();
     }
   }
 

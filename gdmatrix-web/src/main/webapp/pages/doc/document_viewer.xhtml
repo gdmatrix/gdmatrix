@@ -56,6 +56,7 @@
                          rendered="#{documentViewerBean.editing}" />
       </div>
 
+      <!-- edit panel -->
       <p:outputPanel rendered="#{documentViewerBean.editing}">
 
         <h:outputText styleClass="font-bold m-2" value="#{documentViewerBean.document.docId} (#{documentViewerBean.document.language})" />
@@ -78,51 +79,61 @@
 
       </p:outputPanel>
 
-      <p:outputPanel id="pnlPrint" styleClass="p-2">
-        <!-- Markdown -->
-        <h:panelGroup rendered="#{documentViewerBean.editorLanguage eq 'markdown' and not documentViewerBean.editing}" layout="block">
-          <div id="markdown_content" class="markdown_body"> </div>
-          <script>
-          //<![CDATA[
-          (function() {
-            var url = "#{documentViewerBean.url}";
-            function renderMarkdown(attempts) {
-              attempts = attempts || 0;
-              if (!window.markdown) {
-                if (attempts > 40) {
-                  document.getElementById("markdown_content").textContent =
-                    "Error loading markdown library";
+      <!-- render panel -->
+      <p:outputPanel id="pnlPrint" styleClass="p-2" rendered="#{not documentViewerBean.editing}">
+
+        <ui:fragment rendered="#{documentViewerBean.pebbleTemplate}">
+        
+          <h:outputText escape="false" value="#{documentViewerBean.pebbleContent}" />
+        
+        </ui:fragment>
+        
+        <ui:fragment rendered="#{not documentViewerBean.pebbleTemplate}">
+          <!-- Markdown -->
+          <h:panelGroup rendered="#{documentViewerBean.editorLanguage eq 'markdown'}" layout="block">
+            <div id="markdown_content" class="markdown_body"> </div>
+            <script>
+            //<![CDATA[
+            (function() {
+              var url = "#{documentViewerBean.url}";
+              function renderMarkdown(attempts) {
+                attempts = attempts || 0;
+                if (!window.markdown) {
+                  if (attempts > 40) {
+                    document.getElementById("markdown_content").textContent =
+                      "Error loading markdown library";
+                    return;
+                  }
+                  setTimeout(function() { renderMarkdown(attempts + 1); }, 50);
                   return;
                 }
-                setTimeout(function() { renderMarkdown(attempts + 1); }, 50);
-                return;
+                fetch(url)
+                  .then(function(r) { return r.text(); })
+                  .then(function(md) {
+                    document.getElementById("markdown_content").innerHTML =
+                      window.markdown.render(md);
+                  })
+                  .catch(function(e) {
+                    document.getElementById("markdown_content").textContent =
+                      "Error loading document: " + e;
+                  });
               }
-              fetch(url)
-                .then(function(r) { return r.text(); })
-                .then(function(md) {
-                  document.getElementById("markdown_content").innerHTML =
-                    window.markdown.render(md);
-                })
-                .catch(function(e) {
-                  document.getElementById("markdown_content").textContent =
-                    "Error loading document: " + e;
-                });
-            }
-            renderMarkdown();
-          })();
-          //]]>
-          </script> 
-        </h:panelGroup>
+              renderMarkdown();
+            })();
+            //]]>
+            </script> 
+          </h:panelGroup>
 
-        <!-- Other documents besides Markdown -->
-        <sf:browser url="#{documentViewerBean.url}"
-                    port="#{applicationBean.defaultPort}"
-                    rendered="#{not documentViewerBean.editing and documentViewerBean.editorLanguage ne 'markdown'}"
-                    iframe="#{documentViewerBean.iframe}"
-                    width="#{documentViewerBean.iframeWidth}"
-                    height="#{documentViewerBean.iframeHeight}"
-                    translator="#{userSessionBean.translator}"
-                    translationGroup="#{documentViewerBean.translationGroup}" />
+          <!-- Other documents besides Markdown -->
+          <sf:browser url="#{documentViewerBean.url}"
+                      port="#{applicationBean.defaultPort}"
+                      rendered="#{not documentViewerBean.editing and documentViewerBean.editorLanguage ne 'markdown'}"
+                      iframe="#{documentViewerBean.iframe}"
+                      width="#{documentViewerBean.iframeWidth}"
+                      height="#{documentViewerBean.iframeHeight}"
+                      translator="#{userSessionBean.translator}"
+                      translationGroup="#{documentViewerBean.translationGroup}" />
+        </ui:fragment>
       </p:outputPanel>
     </p:outputPanel>
 
