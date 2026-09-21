@@ -345,6 +345,10 @@ public class DocumentViewerBean extends WebBean implements Serializable
       context.put("userId", userSessionBean.getUserId());
       context.put("displayName", userSessionBean.getDisplayName());
       context.put("data", pebbleBean.getData(userSessionBean.getCredentials()));
+      context.put("mid", userSessionBean.getSelectedMenuItem().getMid());
+      context.put("node", userSessionBean.getSelectedMenuItem().getProperties());
+      context.put("params", getExternalContext().getRequestParameterMap());
+      
       PebbleTemplate template = engine.getLiteralTemplate(source);
       
       StringWriter writer = new StringWriter();
