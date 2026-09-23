@@ -45,6 +45,7 @@ import java.io.Serializable;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
@@ -428,6 +429,12 @@ public class ThreadsBean extends WebBean implements Serializable
         @Override
         public String onExecute(ToolExecutionRequest toolRequest)
         {
+          if (queue.isInterrupted())
+          {
+            System.out.println("[ASSISTANT] TOOL NOT EXECUTED - INTERRUPTED: " +toolRequest.name());
+            return "The user interrupted the conversation. Therefore, tool execution was stopped. End the conversation";
+          }
+          
           ToolExecutor executor = new ToolExecutor();
           executor.put("cmsCache", cmsCache);
           executor.put("userId", userId);
@@ -442,6 +449,7 @@ public class ThreadsBean extends WebBean implements Serializable
           {
             pushAction(queue, action);
           }
+          
           return result;
         }
 
@@ -477,10 +485,23 @@ public class ThreadsBean extends WebBean implements Serializable
   public void interruptStreaming()
   {
     StreamQueue queue = StreamQueue.getInstance(getThreadId(), false);
-    if (queue != null)
+    if (queue != null && !queue.isInterrupted())
     {
+      System.out.println("[USER INTERRUPTION]");
+      ResourceBundle bundle = 
+              ResourceBundle.getBundle("org.santfeliu.assistant.web.resources.AssistantBundle", getLocale());
+
+      UserMessage message = UserMessage.from(bundle.getString("interruptedByUser"));
+      thread.getMessages().add(message);
+      pushMessage(queue, message, true);   
       queue.push(0);      
       queue.interrupt();
+
+      try
+      {
+        getThreadStore().saveThread(thread);
+      }
+      catch (Exception ex){}
     }
   }
 
