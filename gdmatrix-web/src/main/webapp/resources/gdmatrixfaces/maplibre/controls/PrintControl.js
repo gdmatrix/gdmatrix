@@ -143,7 +143,11 @@ class PrintControl
     let visibility = "";
     for (let layer of layers)
     {
-      visibility += layer.metadata?.visible ? "1" : "0";
+      if (layer.metadata?.visible)
+      {
+        if (visibility) visibility += ",";
+        visibility += layer.id;
+      }
     }
 
     let url = location.protocol + "//" + location.host + port

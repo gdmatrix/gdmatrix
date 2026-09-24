@@ -207,7 +207,7 @@ public class GeoMapBean extends WebBean implements Serializable
         }
       }
       if (removedLayerIds.isEmpty()) return userStyle;
-
+      
       layers = userStyle.getLayers();
 
       for (int i = layers.size() - 1; i >= 0; i--)
