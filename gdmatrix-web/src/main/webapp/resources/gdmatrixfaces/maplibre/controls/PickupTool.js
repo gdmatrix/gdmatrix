@@ -22,6 +22,8 @@ class PickupTool extends Tool
     this.propertyName = options.propertyName; // the property name to pickup from selection
     this.restServiceUrl = options.restServiceUrl; // the service url to send & read data
     this.referenceText = options.referenceText || "Reference"; // the reference field label 
+    this.renderFormFunction = options.renderFormFunction; // fn(div) => creates form
+    this.readFormFunction = options.readFormFunction; // fn(div) => JSON 
     this.helpText = options.helpText || ""; // the tool help
     this.sourceIdsToUpdate = options.sourceIdsToUpdate || [];
 
@@ -282,7 +284,7 @@ class PickupTool extends Tool
   {
     let reference = this.referenceInput.value;
     if (!reference) return;
-
+    
     this.resultDiv.innerHTML =  `<span class="pi pi-spin pi-spinner p-2" />`;
     
     let codes = Array.from(this.codeSelection);
@@ -292,11 +294,21 @@ class PickupTool extends Tool
       this.resultDiv.innerHTML = JSON.stringify(codes, null, 2);
       return;
     }
+    
+    let jsonData = this.readFormFunction?.(this.panel.bodyDiv);
+    if (jsonData)
+    {
+      jsonData.codes = codes;
+    }
+    else
+    {
+      jsonData = codes;
+    }
 
     let response = await fetch(this.restServiceUrl + "?ref=" + reference, {
       method: "POST",
       headers: { "Content-Type": "application/json;charset=UTF-8" },
-      body: JSON.stringify(codes)
+      body: JSON.stringify(jsonData)
     });
     this.resultDiv.innerHTML = await response.text();
     
@@ -443,6 +455,8 @@ class PickupTool extends Tool
 
     bodyDiv.appendChild(this.referenceLabel);
     bodyDiv.appendChild(this.referenceInput);
+    
+    this.renderFormFunction?.(bodyDiv);
 
     const buttonBar = document.createElement("div");
     buttonBar.className = "button_bar p-1 text-center";
