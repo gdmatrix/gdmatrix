@@ -19,6 +19,8 @@ class LegendControl
   createPanel(map)
   {
     this.panel = new Panel(map, this.options);
+    window.setLayerVisibility = (path, visible) => 
+      this.setLayerVisibility(path, visible);
   }
 
   onAdd(map)
@@ -126,14 +128,6 @@ class LegendControl
       if (node.layerId) // layer node
       {
         this.changeNodeVisibility(node, "toggle");
-//        if (node.parent?.mode === "single")
-//        {
-//          this.changeSingleNodeVisibility(node);
-//        }
-//        else
-//        {
-//          this.changeNodeVisibility(node, "toggle");
-//        }
       }
       else // group node
       {
@@ -151,10 +145,6 @@ class LegendControl
         {
           this.changeNodeVisibility(node, groupVisible ? "none" : "visible");
         }
-//        if (node.parent?.mode === "single")
-//        {
-//          this.changeSingleNodeVisibility(node);
-//        }
       }
       this.updateLegendStyle();
     });
@@ -174,26 +164,48 @@ class LegendControl
     }
   }
 
-//  changeSingleNodeVisibility(node)
-//  {
-//    let visibleNode = null;
-//    for (let childNode of node.parent.children)
-//    {
-//      if (childNode.link?.firstElementChild?.className === "pi pi-eye")
-//      {
-//        visibleNode = childNode;
-//        break;
-//      }
-//    }
-//    if (visibleNode)
-//    {
-//      this.changeNodeVisibility(visibleNode, "none");
-//    }
-//    if (visibleNode !== node)
-//    {
-//      this.changeNodeVisibility(node, "visible");
-//    }
-//  }
+  setLayerVisibility(path, visible)
+  {
+    const map = this.map;
+    const style = map.getStyle();
+    const legend = style.metadata.legend;
+    if (legend)
+    {
+      let node = legend;
+      const names = path.split("/");
+      for (let i = 0; i < names.length; i++)
+      {
+        let name = names[i];
+        let index = parseInt(name);
+        let children = node.children;
+        if (children)
+        {
+          if (!isNaN(index)) // access by index
+          {
+            node = children[index];
+          }
+          else // access by label
+          {
+            for (let k = 0; k < children.length; k++)
+            {
+              if (children[k].label === name)
+              {
+                node = children[k];
+                break;
+              }
+            }
+          }
+        }
+        else break;
+      }
+      console.info("NODE", node);
+      if (node)
+      {
+        this.changeNodeVisibility(node, visible);
+        this.updateNodeStyle(node);
+      }
+    }
+  }
 
   addNodeGraphicAndLabel(node, link)
   {
