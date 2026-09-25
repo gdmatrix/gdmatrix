@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Theme;
@@ -154,6 +155,16 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
     {
       return Collections.EMPTY_LIST;
     }
+  }
+  
+  public List<SelectItem> getSelectItems(List<String> themeIds)
+  {
+    List<SelectItem> themes = this.getSelectItems();
+    themes = themes.stream()
+      .filter(theme -> themeIds.contains(theme.getValue()))
+      .toList();
+
+    return themes;
   }
 
   private boolean checkIntegerValues(String s)

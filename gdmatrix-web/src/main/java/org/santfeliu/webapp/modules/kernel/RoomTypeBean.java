@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Room;
@@ -158,6 +159,22 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
       value = filter.getRoomName();
     return value;
   }
+  
+  public List<SelectItem> getSelectItems(List<String> roomIds)
+  {
+    List<SelectItem> items = new ArrayList<SelectItem>();
+    for (String objId : roomIds)
+    {
+      SelectItem item = new SelectItem();
+      item.setValue(objId);
+      String description = getDescription(objId);
+      item.setLabel(("".equals(description)) ? " " : description);
+      item.setDescription(description);
+      items.add(item);
+    }
+
+    return items;    
+  }    
 
   @Override
   public List<Room> find(RoomFilter filter)

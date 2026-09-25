@@ -1,0 +1,248 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces">
+  
+  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle" var="agendaBundle"/>
+
+  <h:outputStylesheet library="css" name="web/agenda.css" />
+
+  <section class="agenda-container overflow-hidden" aria-labelledby="agenda-heading">
+
+    <!-- Header -->
+    <div class="agenda-header">
+      <h1 id="agenda-heading" class="agenda-title">#{agendaViewBean.properties.label}</h1>
+        <p:ajaxStatus>
+          <f:facet name="start">
+            <div class="search-loading-badge">
+              <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+              <span>Carregant...</span>
+            </div>
+          </f:facet>
+        </p:ajaxStatus>        
+    </div>
+
+    <!-- Collapsible Filter Panel -->
+    <details class="agenda-filter-card">
+      <summary class="filter-card-header">
+
+        <div class="search-main-group" onclick="event.stopPropagation();">
+          <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+          <p:inputText id="nameInput"
+                  value="#{agendaViewBean.filterName}" 
+                  placeholder="#{agendaBundle.agendaView_searchByName}" 
+                  styleClass="clean-search-input">
+          <p:ajax event="keyup" 
+                  delay="600" 
+                  listener="#{agendaViewBean.search()}" 
+                  update="agenda-events-wrapper" process="nameInput" />
+          </p:inputText>
+        </div>
+
+        <!-- Toggle Action -->
+        <div class="filter-toggle-btn">
+          <span class="filter-card-title">
+            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            #{agendaBundle.agendaView_advancedSearch}
+          </span>
+          <i class="fa-solid fa-chevron-down filter-chevron" aria-hidden="true"></i>
+        </div>
+
+      </summary>
+
+      <h:panelGroup id="filter-form-container" layout="block" styleClass="filter-card-body">
+
+        <!-- Date Filter -->
+        <div class="filter-group">
+          <label for="startDate" class="filter-label">#{agendaBundle.agendaView_startDate}</label>
+          <p:datePicker id="startDate" 
+                        value="#{agendaViewBean.filterStartDate}" 
+                        pattern="dd/MM/yyyy" 
+                        showIcon="false" 
+                        placeholder="dd/mm/aaaa"
+                        styleClass="clean-input" />
+        </div>
+
+        <!-- Theme Filter -->
+        <div class="filter-group">
+          <label for="themeSelect" class="filter-label">#{agendaBundle.agendaView_theme}</label>
+          <p:selectOneMenu id="themeSelect" 
+                           value="#{agendaViewBean.selectedTheme}" 
+                           styleClass="clean-select"
+                           autoWidth="false">
+            <f:selectItem itemLabel="#{agendaBundle.agendaView_allThemes}" itemValue="" />
+            
+            <f:selectItems value="#{agendaViewBean.themes}" 
+                           var="theme" 
+                           itemLabel="#{theme.description}" 
+                           itemValue="#{theme.id}" />
+            
+          </p:selectOneMenu>
+        </div>
+
+        <!-- Location Filter -->
+        <div class="filter-group">
+          <label for="locationInput" class="filter-label">#{agendaBundle.agendaView_location}</label>
+          <p:selectOneMenu id="locationSelect" 
+                           value="#{agendaViewBean.selectedLocation}" 
+                           styleClass="clean-select"
+                           autoWidth="false">
+            
+            <f:selectItem itemLabel="#{agendaBundle.agendaView_allLocations}" itemValue="" />
+            
+            <f:selectItems value="#{agendaViewBean.locations}" 
+                           var="location" 
+                           itemLabel="#{location.description}" 
+                           itemValue="#{location.id}" />
+            
+          </p:selectOneMenu>          
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="filter-actions">
+          
+          <p:commandButton value="#{agendaBundle.agendaView_clean}" 
+                           action="#{agendaViewBean.clearFilters()}" 
+                           update="filter-form-container agenda-events-wrapper" process="@this"
+                           styleClass="btn-clean-secondary" />
+          <p:commandButton value="#{agendaBundle.agendaView_search}" 
+                           action="#{agendaViewBean.search()}" 
+                           update="agenda-events-wrapper" process="filter-form-container nameInput" 
+                           styleClass="btn-clean-primary" />
+        </div>
+
+      </h:panelGroup>
+    </details>  
+    
+    <!-- Dynamic Wrapper for Events List / Grouped View -->
+    <h:panelGroup id="agenda-events-wrapper" layout="block">   
+
+      <h:panelGroup rendered="#{agendaViewBean.groupedByMonth}">
+        <p:dataTable value="#{agendaViewBean.rows}" 
+                     var="event"  lazy="true"
+                     rowIndexVar="rowIndex"
+                     rows="#{agendaViewBean.pageSize}"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     styleClass="agenda-datatable ui-datatable-noborder">
+
+          <p:column>
+
+            <h:panelGroup rendered="#{agendaViewBean.isFirstOfMonth(rowIndex)}" 
+                          layout="block" 
+                          styleClass="month-group-title">
+              <i class="fa-regular fa-calendar-days" aria-hidden="true"></i>
+              <h:outputText value="#{event.startLocalDate}">
+                    <f:convertDateTime type="localDate" pattern="LLLL yyyy" />
+              </h:outputText>
+            </h:panelGroup>
+
+            <!-- Card -->
+            <article class="event-card" tabindex="0" 
+                     aria-label="#{event.summary}, #{event.startDateTime}, #{event.location}">
+
+              <div class="date-badge" aria-hidden="true">
+                <span class="date-day">
+                  <h:outputText value="#{event.startLocalDate}">
+                    <f:convertDateTime type="localDate" pattern="d" />
+                  </h:outputText>
+                </span>
+                <span class="date-month">
+                  <h:outputText value="#{event.startLocalDate}">
+                    <f:convertDateTime type="localDate" pattern="MMM" locale="ca" />
+                  </h:outputText>
+                </span>
+                <span class="date-year">
+                  <h:outputText value="#{event.startLocalDate}">
+                    <f:convertDateTime type="localDate" pattern="yyyy" locale="ca" />
+                  </h:outputText>
+                </span>            
+              </div>
+
+              <div class="event-details">
+                <span class="event-category">#{event.eventTypeName}</span>
+                <a href="#" onclick="return showPage('Event', #{event.jsonParameters})" class="agenda-link">
+                  <h2 class="event-title">#{event.summary}</h2>
+                </a>
+                <div class="event-location">
+                  <i class="pi pi-map-marker" aria-hidden="true"></i>
+                  <span>#{event.location}</span>
+                </div>
+              </div>
+
+            </article>
+
+          </p:column>
+
+        </p:dataTable>
+      </h:panelGroup>
+
+      <h:panelGroup rendered="#{!agendaViewBean.groupedByMonth}">
+        <p:dataView id="agenda-dataview" value="#{agendaViewBean.rows}" var="event"
+                    rows="#{agendaViewBean.pageSize}"
+                    paginator="true" lazy="true"
+                    paginatorPosition="bottom"
+                    paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink}"
+                    layout="list"
+                    styleClass="agenda-dataview">
+
+          <p:dataViewListItem>
+            <article class="event-card" tabindex="0" 
+                     aria-label="#{event.summary}, #{event.startDateTime}, at #{event.location}">
+
+              <div class="date-badge" aria-hidden="true">
+                <span class="date-day">
+                  <h:outputText value="#{event.startLocalDate}">
+                    <f:convertDateTime type="localDate" pattern="d" />
+                  </h:outputText>
+                </span>
+                <span class="date-month">
+                  <h:outputText value="#{event.startLocalDate}">
+                    <f:convertDateTime type="localDate" pattern="MMM" locale="ca" />
+                  </h:outputText>
+                </span>
+                <span class="date-year">
+                  <h:outputText value="#{event.startLocalDate}">
+                    <f:convertDateTime type="localDate" pattern="yyyy" locale="ca" />
+                  </h:outputText>
+                </span>            
+              </div>
+
+              <!-- Event Details -->
+              <div class="event-details">
+                <span class="event-category">#{event.eventTypeName}</span>
+                <a href="#" onclick="return showPage('Event', #{event.jsonParameters})" class="agenda-link">
+                  <h2 class="event-title">#{event.summary}</h2>
+                </a>
+                <div class="event-location">
+                  <i class="pi pi-map-marker" aria-hidden="true"></i>
+                  <span>#{event.location}</span>
+                </div>
+              </div>
+            </article>
+          </p:dataViewListItem>
+
+        </p:dataView>
+      </h:panelGroup>
+
+    </h:panelGroup>
+  </section>
+
+  <gdm:saveBean value="agendaViewBean" />   
+  
+  <script>
+    controlNavigationHistory({
+      url: "/web/#{userSessionBean.selectedMenuItem.mid}",
+      title: "#{userSessionBean.selectedMenuItem.label}"
+    });
+
+    document.querySelector(".content_footer").scrollTo(0, 0);
+  </script>
+
+</ui:composition>
+
+

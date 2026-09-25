@@ -47,7 +47,7 @@ import org.santfeliu.web.obj.util.RequestParameters;
  *
  * @author lopezrj-sf
  */
-public abstract class BasicSearchHelper
+public abstract class BasicSearchHelper<T>
 {
   @CMSProperty
   public static final String SEARCH_TITLE_PROPERTY = "oc.searchTitle";
@@ -58,7 +58,7 @@ public abstract class BasicSearchHelper
   private static final int CACHE_SIZE = 15;
 
   private int firstRowIndex;
-  private BigList rows; // when rows == null, result table is not shown
+  private BigList<T> rows; // when rows == null, result table is not shown
 
   public BigList getRows()
   {
@@ -139,7 +139,7 @@ public abstract class BasicSearchHelper
   {
     String pageSize = getSelectedMenuItem().getProperty(PAGE_SIZE_PROPERTY);
     if (pageSize != null)
-      return Integer.valueOf(pageSize);
+      return Integer.parseInt(pageSize);
     else
       return PAGE_SIZE;
   }
@@ -160,7 +160,7 @@ public abstract class BasicSearchHelper
     return outcome;
   }
 
-  // force new seach
+  // force new search
   private void initRows()
   {
     if (rows != null && (getPageSize() == rows.getBlockSize()))
