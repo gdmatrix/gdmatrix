@@ -47,7 +47,7 @@
                        oncomplete="showResponse('#{threadsBean.threadId}')"
                        icon="pi pi-arrow-right" styleClass="ab-send ui-button-icon-only" />
 
-      <p:commandButton action="#{threadsBean.interruptStreaming()}"
+      <p:commandButton action="#{threadsBean.interruptStreaming(true)}"
                        process="@this"
                        update="question threads_panel uploaded_file floating_bar"
                        widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"

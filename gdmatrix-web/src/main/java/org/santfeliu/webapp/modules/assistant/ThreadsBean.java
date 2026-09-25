@@ -257,7 +257,7 @@ public class ThreadsBean extends WebBean implements Serializable
   {
     try
     {
-      interruptStreaming();      
+      interruptStreaming(false);      
       thread = getThreadStore().loadThread(threadId);
       repaintThread();
       editionEnabled = false;
@@ -482,29 +482,35 @@ public class ThreadsBean extends WebBean implements Serializable
     }
   }
 
-  public void interruptStreaming()
+  public void interruptStreaming(boolean userInitiated)
   {
     StreamQueue queue = StreamQueue.getInstance(getThreadId(), false);
     if (queue != null && !queue.isInterrupted())
     {
-      System.out.println("[USER INTERRUPTION]");
-      ResourceBundle bundle = 
-              ResourceBundle.getBundle("org.santfeliu.assistant.web.resources.AssistantBundle", getLocale());
-
-      UserMessage message = UserMessage.from(bundle.getString("interruptedByUser"));
-      thread.getMessages().add(message);
-      pushMessage(queue, message, true);   
+      if (userInitiated)
+      {
+        System.out.println("[USER INTERRUPTION]");
+        ResourceBundle bundle = 
+        ResourceBundle.getBundle("org.santfeliu.assistant.web.resources.AssistantBundle", getLocale());
+        UserMessage message = UserMessage.from(bundle.getString("interruptedByUser"));
+        thread.getMessages().add(message);
+        pushMessage(queue, message, true);
+      }
+    
       queue.push(0);      
       queue.interrupt();
-
-      try
+      
+      if (userInitiated)
       {
-        getThreadStore().saveThread(thread);
+        try
+        {
+          getThreadStore().saveThread(thread);
+        }
+        catch (Exception ex){}
       }
-      catch (Exception ex){}
     }
   }
-
+  
   public String getAttachedFilename()
   {
     return attachedFilename;
