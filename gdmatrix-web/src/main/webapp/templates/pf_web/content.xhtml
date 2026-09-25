@@ -37,7 +37,7 @@
 
         <sf:treeMenu id="side_menu" var="item" expandDepth="3" styleClass="side_menu"
                      expandSelected="true"
-                     baseMid="#{userSessionBean.selectedMenuItem.parent.parent.mid}">
+                     baseMid="#{userSessionBean.selectedMenuItem.parent.mid}">
           <f:facet name="data">
             <ui:fragment rendered="#{item.rendered}">
               <p:commandLink action="#{templateBean.show(item.mid)}"
