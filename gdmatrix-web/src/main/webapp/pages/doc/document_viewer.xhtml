@@ -59,7 +59,7 @@
       <!-- edit panel -->
       <p:outputPanel rendered="#{documentViewerBean.editing}">
 
-        <h:outputText styleClass="font-bold m-2" value="#{documentViewerBean.document.docId} (#{documentViewerBean.document.language})" />
+        <h:outputText styleClass="font-bold m-2" value="#{documentViewerBean.editor.document.docId} (#{documentViewerBean.editor.document.language})" />
         <i class="pi pi-lock" />
         <h:outputText styleClass="font-bold m-2" value="#{documentBundle.lockedBy} #{documentViewerBean.lockUserId}" />
 
@@ -82,13 +82,13 @@
       <!-- render panel -->
       <p:outputPanel id="pnlPrint" styleClass="p-2" rendered="#{not documentViewerBean.editing}">
 
-        <ui:fragment rendered="#{documentViewerBean.pebbleTemplate}">
+        <ui:fragment rendered="#{documentViewerBean.pebbleEnabled}">
         
           <h:outputText escape="false" value="#{documentViewerBean.pebbleContent}" />
         
         </ui:fragment>
         
-        <ui:fragment rendered="#{not documentViewerBean.pebbleTemplate}">
+        <ui:fragment rendered="#{not documentViewerBean.pebbleEnabled}">
           <!-- Markdown -->
           <h:panelGroup rendered="#{documentViewerBean.editorLanguage eq 'markdown'}" layout="block">
             <div id="markdown_content" class="markdown_body"> </div>

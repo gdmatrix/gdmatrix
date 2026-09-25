@@ -303,10 +303,12 @@ public class DocumentEditor implements Serializable
   
   private Charset getEditorCharset()
   {
+    //TODO: remove references to UserSessionBean
     String editorLanguage = UserSessionBean.getCurrentInstance()
       .getSelectedMenuItem().getProperty("editor.language");
     
-    return "markdown".equalsIgnoreCase(editorLanguage)
+    return "markdown".equalsIgnoreCase(editorLanguage) || 
+           "pebble".equalsIgnoreCase(editorLanguage)
       ? StandardCharsets.UTF_8
       : Charset.defaultCharset();
   }

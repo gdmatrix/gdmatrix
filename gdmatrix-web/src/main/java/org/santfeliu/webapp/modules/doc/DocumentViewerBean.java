@@ -33,9 +33,19 @@ package org.santfeliu.webapp.modules.doc;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import org.santfeliu.doc.web.*;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +53,11 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.IOUtils;
+import org.matrix.dic.Property;
 
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
+import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.RelatedDocument;
 import org.matrix.doc.RelationType;
 
@@ -89,7 +101,11 @@ public class DocumentViewerBean extends WebBean implements Serializable
   @CMSProperty
   public static final String DISABLE_HTML_FIXER = "disableHtmlFixer";
   @CMSProperty
-  public static final String PEBBLE_TEMPLATE = "pebbleTemplate";
+  public static final String PEBBLE_TEMPLATE_PROPERTY = "pebbleTemplate";
+  @CMSProperty
+  public static final String PEBBLE_CONTENT_KEY_PROPERTY = "pebbleContentKey";
+  @CMSProperty
+  public static final String PEBBLE_REFRESH_PROPERTY = "pebbleRefresh"; // seconds
 
   public static final String DOC_SERVLET_URL = "/documents/";
   private static final String OUTCOME = "/pages/doc/document_viewer.xhtml";
@@ -100,6 +116,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
   private boolean keepLocking;
   private transient String tempUrl;
   private DocumentEditor editor;
+  private boolean refreshPebble;
   
   @Inject
   PebbleBean pebbleBean;
@@ -185,11 +202,6 @@ public class DocumentViewerBean extends WebBean implements Serializable
     return printEnabled == null || "true".equals(printEnabled);
   }
 
-  public Document getDocument()
-  {
-    return editor.getDocument();
-  }
-
   public String getLockUserId()
   {
     return (editor != null ? editor.getDocument().getLockUserId() : null);
@@ -266,9 +278,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
   public void editDocument()
   {
     keepLocking = false;
-    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
-    MenuItemCursor mic = menuModel.getSelectedMenuItem();
-    String docId = getDocId(mic);
+    String docId = getDocId();
     try
     {
       editor = new DocumentEditor(docId);
@@ -287,9 +297,10 @@ public class DocumentViewerBean extends WebBean implements Serializable
   public void saveDocument()
   {
     try
-    {      
+    {
       editor.storeDocument(keepLocking, isHtmlFixerDisabled());
       editor = null;
+      refreshPebble = true;
     }
     catch (Exception ex)
     {
@@ -317,38 +328,110 @@ public class DocumentViewerBean extends WebBean implements Serializable
     }
   }
   
-  public boolean isPebbleTemplate()
+  public boolean isPebbleEnabled()
   {
-    return "true".equals(getProperty(PEBBLE_TEMPLATE));
+    return "pebble".equals(getEditorLanguage());
+  }
+
+  public String getPebbleContent()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+
+    String content;
+    Map<String, Object> context = createPebbleContext(userSessionBean);
+    String key = getPebbleContentKey(context);    
+    if (key == null) // cache is disabled
+    {
+      content = generatePebbleContent(context);
+    }
+    else // cache is enabled
+    {
+      try
+      {
+        content = refreshPebble ? null : readCachedContent(key);
+        refreshPebble = false;
+        if (content == null)
+        {
+          content = generatePebbleContent(context);
+          writeCachedContent(key, content);
+        }
+      }
+      catch (Exception ex)
+      {
+        content = "ERROR: " + ex;
+      }
+    }
+    return content;
   }
   
-  public String getPebbleContent()
+  private File getCacheDir()
+  {
+    String userHome = System.getProperty("user.home");
+    File dir = new File(userHome, "pebble");
+    if (!dir.exists()) dir.mkdirs();
+    return dir;
+  }
+
+  private String readCachedContent(String key) throws IOException
+  {
+    Path file = getCacheDir().toPath().resolve(key + ".html");
+    System.out.println("File: " + file);
+
+    if (!Files.exists(file)) return null;
+    
+    long ellapsedSeconds = (System.currentTimeMillis() - 
+      Files.getLastModifiedTime(file).toMillis()) / 1000;
+    
+    if (ellapsedSeconds > getPebbleRefreshTime()) return null;
+    
+    return Files.readString(file, StandardCharsets.UTF_8);
+  }
+
+  private void writeCachedContent(String key, String content) throws IOException
+  {
+    Path file = getCacheDir().toPath().resolve(key + ".html");
+    Path temp = Files.createTempFile(getCacheDir().toPath(), "content-", ".tmp");
+
+    Files.writeString(temp, content, StandardCharsets.UTF_8);
+
+    Files.move(temp, file,
+      StandardCopyOption.REPLACE_EXISTING,
+      StandardCopyOption.ATOMIC_MOVE);  
+  }
+  
+  private long getPebbleRefreshTime()
+  {
+    String millis = getProperty(PEBBLE_REFRESH_PROPERTY);
+    if (millis != null)
+    {
+      try
+      {
+        return Long.parseLong(millis) / 1000;
+      }
+      catch (Exception ex)
+      {
+      }
+    }
+    return 60;
+  }
+
+  private String generatePebbleContent(Map<String, Object> context)
   {
     try
     {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      MenuModel menuModel = userSessionBean.getMenuModel();
-      MenuItemCursor cursor = menuModel.getSelectedMenuItem();
-      String docId = getDocId(cursor);
-      if (docId == null) return "No document";
+      String docId = getDocId();
 
-      Document document = getDocumentFromWS(docId);
+      if (docId == null) return "ERROR: Pebble document not found.";
+
+      Document document = getDocumentById(docId);
+
       String source;
       try (var is = document.getContent().getData().getInputStream())
       {
         source = IOUtils.toString(is, "UTF-8");
       }
-      
+            
       PebbleEngine engine = pebbleBean.getEngine();
-      
-      Map<String, Object> context = new HashMap<>();
-      context.put("userId", userSessionBean.getUserId());
-      context.put("displayName", userSessionBean.getDisplayName());
-      context.put("data", pebbleBean.getData(userSessionBean.getCredentials()));
-      context.put("mid", userSessionBean.getSelectedMenuItem().getMid());
-      context.put("node", userSessionBean.getSelectedMenuItem().getProperties());
-      context.put("params", getExternalContext().getRequestParameterMap());
-      
       PebbleTemplate template = engine.getLiteralTemplate(source);
       
       StringWriter writer = new StringWriter();
@@ -362,16 +445,113 @@ public class DocumentViewerBean extends WebBean implements Serializable
       {
         cause = cause.getCause();
       }
-      
-      return "<p class=\"error\">Error in line " + ex.getLineNumber() + ": " +
-        ex.getPebbleMessage() + " / " + 
-        cause.toString() +
-        "</p>";
+      return "ERROR: line " + ex.getLineNumber() + ": " +
+        ex.getPebbleMessage() + " / " + cause.toString();
     }
     catch (Exception ex)
     {
       return "ERROR: " + ex.toString();
+    }    
+  }
+  
+  private String getPebbleContentKey(Map<String, Object> context)
+  {
+    // <object>[:<property>]|<object>[:<property>]|...
+    String pattern = getProperty(PEBBLE_CONTENT_KEY_PROPERTY);
+    if (pattern == null) return null;
+
+    StringBuilder contentKeyBuffer = new StringBuilder();
+
+    contentKeyBuffer.append((String)context.get(DOCID_PROPERTY));
+    contentKeyBuffer.append("|");
+    contentKeyBuffer.append((String)context.get(PEBBLE_TEMPLATE_PROPERTY));
+    contentKeyBuffer.append("|");
+        
+    StringBuilder buffer = new StringBuilder();
+    Map<String, Object> object = null;
+    for (int i = 0; i <= pattern.length(); i++)
+    {
+      char ch = i == pattern.length() ? '|' : pattern.charAt(i);
+
+      if (object == null) // outside object
+      {
+        if (ch == ':')
+        {
+          String name = buffer.toString();
+          buffer.setLength(0);
+          Object value = context.get(name);
+          if (value instanceof Map) object = (Map)value;
+          else object = Collections.emptyMap();
+        }
+        else if (ch == '|')
+        {
+          String name = buffer.toString();
+          buffer.setLength(0);
+          if (name.length() > 0)
+          {
+            String value = String.valueOf(context.get(name));
+            contentKeyBuffer.append(value);
+            contentKeyBuffer.append("|");
+          }
+        }
+        else
+        {
+          buffer.append(ch);
+        }
+      }
+      else // inside object
+      {
+        if (ch == '|')
+        {
+          String name = buffer.toString();
+          buffer.setLength(0);
+          String value = String.valueOf(object.get(name));
+          contentKeyBuffer.append(value);
+          contentKeyBuffer.append("|");
+          object = null;
+        }
+        else
+        {
+          buffer.append(ch);
+        }        
+      }
     }
+    String key = contentKeyBuffer.toString();
+    System.out.println("key-string:" + key);
+    try
+    {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(key.getBytes(StandardCharsets.UTF_8));
+
+      StringBuilder result = new StringBuilder();
+      for (byte b : hash) 
+      {
+        result.append(String.format("%02x", b));
+      }
+      return result.toString();
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+  
+  private Map<String, Object> createPebbleContext(UserSessionBean userSessionBean)
+  {
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    Map<String, Object> context = new HashMap<>();
+    context.put(DOCID_PROPERTY, cursor.getProperty(DOCID_PROPERTY));
+    context.put(PEBBLE_TEMPLATE_PROPERTY, cursor.getProperty(PEBBLE_TEMPLATE_PROPERTY));
+    context.put("userId", userSessionBean.getUserId());
+    context.put("displayName", userSessionBean.getDisplayName());
+    context.put("language", userSessionBean.getLastPageLanguage());
+    context.put("data", pebbleBean.getData(userSessionBean.getCredentials()));
+    context.put("node", cursor.getProperties());
+    context.put("params", getExternalContext().getRequestParameterMap());
+    context.put("mid", cursor.getMid());
+    context.put("workspaceid", userSessionBean.getMenuModel()
+      .getCWorkspace().getWorkspace().getWorkspaceId());
+    return context;
   }
 
   private String getDocumentUrl()
@@ -395,7 +575,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
           try
           {
             String language = FacesUtils.getViewLanguage();
-            Document document = getDocumentFromWS(docId);
+            Document document = getDocumentById(docId);
             if (!language.equals(document.getLanguage()))
               document = getTranslation(document, language);
             String uuid = document.getContent().getContentId();
@@ -417,12 +597,12 @@ public class DocumentViewerBean extends WebBean implements Serializable
     return getContextURL() + DOC_SERVLET_URL;
   }
 
-  private Document getDocumentFromWS(String docId)
+  private Document getDocumentById(String docId)
     throws Exception
   {
     return getClient().loadDocument(docId, 0, ContentInfo.ALL);
   }
-
+  
   public void setKeepLocking(boolean keepLocking)
   {
     this.keepLocking = keepLocking;
@@ -441,6 +621,41 @@ public class DocumentViewerBean extends WebBean implements Serializable
     return ("doc:" + docId);
   }
 
+  private String getDocId()
+  {
+    MenuItemCursor cursor = 
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem();
+
+    String docId = getDocId(cursor, true);
+
+    if (docId == null && isPebbleEnabled())
+    {
+      try
+      {
+        String name = getProperty(PEBBLE_TEMPLATE_PROPERTY);
+        if (name != null)
+        {
+          CachedDocumentManagerClient client = getClient();
+          DocumentFilter filter = new DocumentFilter();
+          Property property = new Property();
+          property.setName("name");
+          property.getValue().add(name);
+          filter.setDocTypeId("PEBBLE");
+          filter.getProperty().add(property);
+          List<Document> documents = client.findDocuments(filter);
+          if (!documents.isEmpty())
+          {
+            docId = documents.get(0).getDocId();
+          }
+        }
+      }
+      catch (Exception ex)
+      {        
+      }
+    }
+    return docId;
+  }  
+  
   private String getDocId(MenuItemCursor mic)
   {
     return getDocId(mic, true);
@@ -467,7 +682,6 @@ public class DocumentViewerBean extends WebBean implements Serializable
         return getClient().loadDocument(relDoc.getDocId(), 0, ContentInfo.ALL);
       }
     }
-
     return document;
   }
 
