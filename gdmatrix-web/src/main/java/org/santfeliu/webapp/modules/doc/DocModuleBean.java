@@ -82,7 +82,7 @@ public class DocModuleBean
   }
   
   public static CachedDocumentManagerClient getClient(String userId, 
-    String password) throws Exception
+    String password) 
   {
     CachedDocumentManagerClient client = 
       new CachedDocumentManagerClient(userId, password);
@@ -90,7 +90,6 @@ public class DocModuleBean
   }
   
   public static CachedDocumentManagerClient getClient(boolean asAdmin) 
-    throws Exception
   {
     String userId;
     String password;
