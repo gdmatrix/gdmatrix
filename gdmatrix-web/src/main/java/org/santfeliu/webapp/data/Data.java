@@ -55,6 +55,21 @@ public class Data
     return new EventQuery(credentials);
   }
   
+  public NewQuery news()
+  {
+    return new NewQuery(credentials);
+  }
+  
+  public CaseQuery cases()
+  {
+    return new CaseQuery(credentials);
+  }
+  
+  public DocumentQuery documents()
+  {
+    return new DocumentQuery(credentials);
+  }
+  
   public SQLQuery sql(String dataSource, String sql)
   {
     return new SQLQuery(dataSource, sql);
