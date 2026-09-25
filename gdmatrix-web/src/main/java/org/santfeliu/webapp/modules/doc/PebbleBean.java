@@ -31,31 +31,28 @@
 package org.santfeliu.webapp.modules.doc;
 
 import io.pebbletemplates.pebble.PebbleEngine;
-import io.pebbletemplates.pebble.loader.FileLoader;
+import io.pebbletemplates.pebble.extension.AbstractExtension;
+import io.pebbletemplates.pebble.extension.Filter;
 import io.pebbletemplates.pebble.loader.Loader;
-import io.pebbletemplates.pebble.template.PebbleTemplate;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import org.matrix.agenda.AgendaManagerPort;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
-import org.matrix.kernel.KernelManagerPort;
-import org.matrix.kernel.Person;
-import org.matrix.kernel.PersonFilter;
 import org.santfeliu.security.util.Credentials;
-import org.santfeliu.webapp.modules.agenda.AgendaModuleBean;
-import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.webapp.data.Data;
+import org.santfeliu.webapp.data.ParseDateFilter;
+import org.santfeliu.webapp.data.ReverseTextFilter;
 
 /**
  *
@@ -72,6 +69,7 @@ public class PebbleBean
   {
     engine = new PebbleEngine.Builder()
       .loader(new MatrixLoader())
+      .extension(new MatrixExtension())
       .cacheActive(false)
       .build();
   }
@@ -157,5 +155,16 @@ public class PebbleBean
     {
       return true;
     }    
+  }
+  
+  static public class MatrixExtension extends AbstractExtension
+  {
+    public Map<String, Filter> getFilters()   
+    {
+      Map<String, Filter> filters = new HashMap<>();
+      filters.put("reverseText", new ReverseTextFilter());
+      filters.put("parseDate", new ParseDateFilter());
+      return filters;
+    }
   }
 }
