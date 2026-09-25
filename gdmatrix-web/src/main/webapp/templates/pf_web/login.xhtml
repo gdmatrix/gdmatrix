@@ -109,6 +109,11 @@
                                update="@none" />
             </div>
             
+            <h:panelGroup styleClass="p-2 w-full" layout="block" 
+                          rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}">
+              <h:outputText value="#{webBundle.workspace}: #{userSessionBean.workspaceId}" />
+            </h:panelGroup>
+            
             <p:outputPanel styleClass="p-2 w-full" 
                            rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}">            
               <p:commandButton value="#{webBundle.cmsEditor}"
