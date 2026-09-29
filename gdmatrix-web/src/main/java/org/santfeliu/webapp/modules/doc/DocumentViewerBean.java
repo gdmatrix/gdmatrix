@@ -330,6 +330,11 @@ public class DocumentViewerBean extends WebBean implements Serializable
     }
   }
 
+  public boolean isMarkdownEnabled()
+  {
+    return "markdown".equals(getEditorLanguage());
+  }
+  
   public boolean isPebbleEnabled()
   {
     return "pebble".equals(getEditorLanguage());
@@ -720,6 +725,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     String disableHtmlFixer = getProperty(DISABLE_HTML_FIXER);
     if (disableHtmlFixer == null)
       return false;
+    
     return Boolean.parseBoolean(disableHtmlFixer);
   }
 }

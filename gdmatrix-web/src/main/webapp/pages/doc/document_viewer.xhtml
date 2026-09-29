@@ -73,15 +73,16 @@
         <!--
         <gdm:tinyMCE value="#{documentViewerBean.editor.documentData}" />
         -->
-        <gdm:codemirror lineNumbers="true"
-                        language="#{documentViewerBean.editorLanguage}"
-                        value="#{documentViewerBean.editor.documentData}" />
-
+        
+        <gdm:codemirror lineNumbers="true" language="#{documentViewerBean.editorLanguage}" 
+                value="#{documentViewerBean.editor.documentData}"
+                activeExtensions="#{ideBean.activeExtensionsJson}"/>
       </p:outputPanel>
 
       <!-- render panel -->
       <p:outputPanel id="pnlPrint" styleClass="p-2" rendered="#{not documentViewerBean.editing}">
-
+        
+        <!-- Pebble -->
         <ui:fragment rendered="#{documentViewerBean.pebbleEnabled}">
         
           <h:outputText escape="false" value="#{documentViewerBean.pebbleContent}" />
@@ -90,7 +91,7 @@
         
         <ui:fragment rendered="#{not documentViewerBean.pebbleEnabled}">
           <!-- Markdown -->
-          <h:panelGroup rendered="#{documentViewerBean.editorLanguage eq 'markdown'}" layout="block">
+          <h:panelGroup rendered="#{documentViewerBean.markdownEnabled}" layout="block">
             <div id="markdown_content" class="markdown_body"> </div>
             <script>
             //<![CDATA[
@@ -127,7 +128,7 @@
           <!-- Other documents besides Markdown -->
           <sf:browser url="#{documentViewerBean.url}"
                       port="#{applicationBean.defaultPort}"
-                      rendered="#{not documentViewerBean.editing and documentViewerBean.editorLanguage ne 'markdown'}"
+                      rendered="#{not documentViewerBean.editing and  not documentViewerBean.markdownEnabled}"
                       iframe="#{documentViewerBean.iframe}"
                       width="#{documentViewerBean.iframeWidth}"
                       height="#{documentViewerBean.iframeHeight}"
