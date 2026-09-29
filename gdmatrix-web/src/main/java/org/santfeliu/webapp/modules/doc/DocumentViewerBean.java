@@ -39,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import org.santfeliu.doc.web.*;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -63,6 +64,7 @@ import org.matrix.doc.RelationType;
 
 import org.santfeliu.doc.client.CachedDocumentManagerClient;
 import org.santfeliu.faces.FacesUtils;
+import org.santfeliu.faces.Translator;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
@@ -117,7 +119,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
   private transient String tempUrl;
   private DocumentEditor editor;
   private boolean refreshPebble;
-  
+
   @Inject
   PebbleBean pebbleBean;
 
@@ -327,7 +329,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
       }
     }
   }
-  
+
   public boolean isPebbleEnabled()
   {
     return "pebble".equals(getEditorLanguage());
@@ -339,7 +341,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
 
     String content;
     Map<String, Object> context = createPebbleContext(userSessionBean);
-    String key = getPebbleContentKey(context);    
+    String key = getPebbleContentKey(context);
     if (key == null) // cache is disabled
     {
       content = generatePebbleContent(context);
@@ -363,7 +365,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     }
     return content;
   }
-  
+
   private File getCacheDir()
   {
     String userHome = System.getProperty("user.home");
@@ -378,12 +380,12 @@ public class DocumentViewerBean extends WebBean implements Serializable
     System.out.println("File: " + file);
 
     if (!Files.exists(file)) return null;
-    
-    long ellapsedSeconds = (System.currentTimeMillis() - 
+
+    long ellapsedSeconds = (System.currentTimeMillis() -
       Files.getLastModifiedTime(file).toMillis()) / 1000;
-    
+
     if (ellapsedSeconds > getPebbleRefreshTime()) return null;
-    
+
     return Files.readString(file, StandardCharsets.UTF_8);
   }
 
@@ -396,9 +398,9 @@ public class DocumentViewerBean extends WebBean implements Serializable
 
     Files.move(temp, file,
       StandardCopyOption.REPLACE_EXISTING,
-      StandardCopyOption.ATOMIC_MOVE);  
+      StandardCopyOption.ATOMIC_MOVE);
   }
-  
+
   private long getPebbleRefreshTime()
   {
     String millis = getProperty(PEBBLE_REFRESH_PROPERTY);
@@ -406,7 +408,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     {
       try
       {
-        return Long.parseLong(millis) / 1000;
+        return Long.parseLong(millis);
       }
       catch (Exception ex)
       {
@@ -430,13 +432,26 @@ public class DocumentViewerBean extends WebBean implements Serializable
       {
         source = IOUtils.toString(is, "UTF-8");
       }
-            
+
       PebbleEngine engine = pebbleBean.getEngine();
       PebbleTemplate template = engine.getLiteralTemplate(source);
-      
+
       StringWriter writer = new StringWriter();
       template.evaluate(writer, context);
-      return writer.toString();
+      String content = writer.toString();
+
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      Translator translator = userSessionBean.getTranslator();
+      if (translator != null)
+      {
+        String userLanguage = (String)context.get("language");
+        String translationGroup = userSessionBean.getTranslationGroup();
+        writer = new StringWriter();
+        translator.translate(new StringReader(content), writer, 
+          "text/html", userLanguage, translationGroup);
+        content = writer.toString();
+      }
+      return content;
     }
     catch (PebbleException ex)
     {
@@ -451,9 +466,9 @@ public class DocumentViewerBean extends WebBean implements Serializable
     catch (Exception ex)
     {
       return "ERROR: " + ex.toString();
-    }    
+    }
   }
-  
+
   private String getPebbleContentKey(Map<String, Object> context)
   {
     // <object>[:<property>]|<object>[:<property>]|...
@@ -466,7 +481,9 @@ public class DocumentViewerBean extends WebBean implements Serializable
     contentKeyBuffer.append("|");
     contentKeyBuffer.append((String)context.get(PEBBLE_TEMPLATE_PROPERTY));
     contentKeyBuffer.append("|");
-        
+    contentKeyBuffer.append((String)context.get("language"));
+    contentKeyBuffer.append("|");
+
     StringBuilder buffer = new StringBuilder();
     Map<String, Object> object = null;
     for (int i = 0; i <= pattern.length(); i++)
@@ -513,7 +530,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
         else
         {
           buffer.append(ch);
-        }        
+        }
       }
     }
     String key = contentKeyBuffer.toString();
@@ -524,7 +541,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
       byte[] hash = digest.digest(key.getBytes(StandardCharsets.UTF_8));
 
       StringBuilder result = new StringBuilder();
-      for (byte b : hash) 
+      for (byte b : hash)
       {
         result.append(String.format("%02x", b));
       }
@@ -535,7 +552,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
       return null;
     }
   }
-  
+
   private Map<String, Object> createPebbleContext(UserSessionBean userSessionBean)
   {
     MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
@@ -544,7 +561,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     context.put(PEBBLE_TEMPLATE_PROPERTY, cursor.getProperty(PEBBLE_TEMPLATE_PROPERTY));
     context.put("userId", userSessionBean.getUserId());
     context.put("displayName", userSessionBean.getDisplayName());
-    context.put("language", userSessionBean.getLastPageLanguage());
+    context.put("language", getFacesContext().getViewRoot().getLocale().getLanguage());
     context.put("data", pebbleBean.getData(userSessionBean.getCredentials()));
     context.put("node", cursor.getProperties());
     context.put("params", getExternalContext().getRequestParameterMap());
@@ -602,7 +619,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
   {
     return getClient().loadDocument(docId, 0, ContentInfo.ALL);
   }
-  
+
   public void setKeepLocking(boolean keepLocking)
   {
     this.keepLocking = keepLocking;
@@ -623,7 +640,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
 
   private String getDocId()
   {
-    MenuItemCursor cursor = 
+    MenuItemCursor cursor =
       UserSessionBean.getCurrentInstance().getSelectedMenuItem();
 
     String docId = getDocId(cursor, true);
@@ -650,12 +667,12 @@ public class DocumentViewerBean extends WebBean implements Serializable
         }
       }
       catch (Exception ex)
-      {        
+      {
       }
     }
     return docId;
-  }  
-  
+  }
+
   private String getDocId(MenuItemCursor mic)
   {
     return getDocId(mic, true);
@@ -694,9 +711,12 @@ public class DocumentViewerBean extends WebBean implements Serializable
 
     return client;
   }
-  
+
   private boolean isHtmlFixerDisabled()
   {
+    if (isPebbleEnabled())
+      return true;
+    
     String disableHtmlFixer = getProperty(DISABLE_HTML_FIXER);
     if (disableHtmlFixer == null)
       return false;
