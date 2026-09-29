@@ -37,6 +37,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Room;
 import org.matrix.kernel.RoomFilter;
@@ -162,7 +163,7 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
   
   public List<SelectItem> getSelectItems(List<String> roomIds)
   {
-    List<SelectItem> items = new ArrayList<SelectItem>();
+    List<SelectItem> items = new ArrayList<>();
     for (String objId : roomIds)
     {
       SelectItem item = new SelectItem();
@@ -174,8 +175,20 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
     }
 
     return items;    
-  }    
+  }  
 
+  @Override
+  public synchronized String getDescription(String objectId)
+  {
+    if (StringUtils.isBlank(objectId)) 
+      return "";
+       //Avoid trying to describe addresses
+    if (!checkRoomIdValue(objectId))
+      return objectId;
+    else
+      return super.getDescription(objectId);
+  }
+  
   @Override
   public List<Room> find(RoomFilter filter)
   {
@@ -191,29 +204,34 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
 
   private boolean checkRoomIdValues(String s)
   {
-    String[] roomSplit = s.split(",");
-    for (String roomItem : roomSplit)
+    for (String roomItem : s.split(","))
     {
-      try
+      if (!checkRoomIdValue(roomItem))
+        return false;
+    }
+    return true;
+  }
+  
+  private boolean checkRoomIdValue(String roomId)
+  {
+    try
+    {
+      String[] fkSplit = roomId.split(";");
+      if (fkSplit.length == 2)
       {
-        String[] fkSplit = roomItem.split(";");
-        if (fkSplit.length == 2)
-        {
-          Integer.valueOf(fkSplit[0]); //domcod
-          Integer.valueOf(fkSplit[1]); //salacod
-        }
-        else
-        {
-          return false;
-        }
+        Integer.valueOf(fkSplit[0]); //domcod
+        Integer.valueOf(fkSplit[1]); //salacod
       }
-      catch (NumberFormatException ex)
+      else
       {
         return false;
       }
     }
+    catch (NumberFormatException ex)
+    {
+      return false;
+    }  
+    
     return true;
   }
-
-
 }

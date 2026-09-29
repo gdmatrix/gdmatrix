@@ -52,6 +52,7 @@ import org.matrix.agenda.EventView;
 import org.matrix.agenda.SecurityMode;
 import org.santfeliu.agenda.Place;
 import org.santfeliu.cases.AddressDescriptionCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.TextUtils;
@@ -69,9 +70,19 @@ import org.santfeliu.webapp.modules.kernel.RoomTypeBean;
 @RequestScoped
 public class AgendaViewBean extends WebBean implements Serializable
 {
-  public static final String THEMES_PROPERTY = "Event.themes";
-  public static final String TYPES_PROPERTY =  "Event.types";
-  public static final String ROOMS_PROPERTY = "Event.rooms";
+  //Selectors
+  public static final String THEMES_PROPERTY = "searchEventTheme";
+  public static final String TYPES_PROPERTY =  "searchEventType";
+  public static final String ROOMS_PROPERTY = "searchEventRoom";
+  
+  //Filters
+  public static final String PERSON_FILTER_PROPERTY = "searchEventPerson";
+  public static final String NAME_FILTER_PROPERTY = "searchEventPropertyName";
+  public static final String VALUE_FILTER_PROPERTY = "searchEventPropertyValue";  
+  
+  //Render
+  
+  //Other
   public static final String SORT_EVENT_ROOM = "sortEventRoom";  
   
   private static final String OUTCOME = "/pages/agenda/agenda_view.xhtml";
@@ -161,8 +172,10 @@ public class AgendaViewBean extends WebBean implements Serializable
   {
     if (eventFilter.getThemeId().size() > 1)
       return "";
-    else
+    else if (!eventFilter.getThemeId().isEmpty())
       return eventFilter.getThemeId().get(0);
+    else
+      return null;
   }
 
   public void setSelectedTheme(String selectedTheme)
@@ -215,7 +228,6 @@ public class AgendaViewBean extends WebBean implements Serializable
 
   public List<EventRow> getRows()
   {
-    System.out.println("--> getRows() solicitado por el XHTML");
     return basicSearchHelper.getRows();
   }
 
@@ -245,7 +257,7 @@ public class AgendaViewBean extends WebBean implements Serializable
       = UserSessionBean.getCurrentInstance().getSelectedMenuItem();    
     return selectedMenuItem.getMultiValuedProperty(ROOMS_PROPERTY);
   }    
-  
+   
   public List<SelectItem> getThemes()
   {
     return themeTypeBean.getSelectItems(getThemeIds());
@@ -264,12 +276,35 @@ public class AgendaViewBean extends WebBean implements Serializable
   private void setConfigurationFilter()
   {
     eventFilter = new EventFilter();
+    
     eventFilter.setStartDateTime(TextUtils.formatDate(
       new Date(), "yyyyMMddHHmmss"));
+    
     eventFilter.getThemeId().clear();
     eventFilter.getThemeId().addAll(getThemeIds());
+    
     eventFilter.getEventTypeId().clear();
     eventFilter.getEventTypeId().addAll(getTypeIds());
+    
+    String personId = getProperty(PERSON_FILTER_PROPERTY);
+    if (personId != null)
+      eventFilter.setPersonId(personId);
+    
+    List<String> propNames = 
+      getSelectedMenuItem().getMultiValuedProperty(NAME_FILTER_PROPERTY);
+    List<String> propValues = 
+      getSelectedMenuItem().getMultiValuedProperty(VALUE_FILTER_PROPERTY);  
+    if (propNames != null && !propNames.isEmpty())
+    {
+      for (int i = 0; i < propNames.size(); i++)
+      {
+        String propName = propNames.get(i);
+        String propValue = propValues.get(i);
+        DictionaryUtils.addProperty(eventFilter.getProperty(), propName, 
+          propValue);
+      }    
+    }
+
     eventFilter.setSecurityMode(SecurityMode.FILTERED);
   }
   
@@ -419,7 +454,8 @@ public class AgendaViewBean extends WebBean implements Serializable
   
     List roomIdList = getRoomIds();
     if (roomIdList.isEmpty())
-      result = roomTypeBean.getSelectItems();
+      return null;
+    
     else
       result = roomTypeBean.getSelectItems(roomIdList);
 
@@ -429,7 +465,7 @@ public class AgendaViewBean extends WebBean implements Serializable
       {
         String id = (String)item.getValue();
         String label = item.getLabel();
-        if (label.equals(roomTypeBean.getRootTypeId() + " " + id)) 
+        if (label.equals(id)) 
         { 
           //is not a room, is probably an address
           if (!StringUtils.isBlank(id))

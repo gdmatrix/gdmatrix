@@ -491,6 +491,7 @@ body .ui-selectonemenu-panel .ui-selectonemenu-item {
     gap: 12px;
 }
 
+/* --- Loading badge --- */
 .search-loading-badge {
   display: inline-flex;
   align-items: center;
