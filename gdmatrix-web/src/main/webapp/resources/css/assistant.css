@@ -7,9 +7,10 @@
 
 .ui-panel.threads_panel
 {
-  width: 30%;
-  min-width: 220px;
-  height: 100%;
+  width: calc(100% * var(--assistant-threads-ratio, 0.3));
+  min-width: var(--assistant-threads-min, 220px);
+  margin-bottom: var(--assistant-threads-margin-bottom, 0px);
+  margin-right: var(--assistant-threads-margin-bottom, 0px); /* same room on the right as below: the panel is a card of its own */
   display:flex;
   flex-shrink: 0;
   flex-direction: column;
@@ -77,7 +78,7 @@
 
   .threads_panel_button.first_time
   {
-    display: inline;
+    display: inline-flex
   }
   
   body .ui-button.ui-button-text-icon-left.mini,
@@ -112,9 +113,13 @@
 .message .avatar
 {
   border-radius: 50%;
-  padding: 8px;
+/*  padding: 8px;
   width: 32px;
-  height: 32px;
+  height: 32px;*/
+  padding: var(--assistant-avatar-padding, 8px);
+  width: var(--assistant-avatar-size, 32px);
+  height: var(--assistant-avatar-size, 32px);
+
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -126,12 +131,35 @@
 {
   display: block;
   max-width: 100%;
-  border: 1px solid var(--surface-700);
+  border: var(--assistant-image-border, 1px solid var(--surface-700));
+  border-radius: var(--assistant-image-radius, 0);
+  box-shadow: var(--assistant-image-shadow, none);
 }
 
 .message.USER .avatar
 {
   background: var(--primary-color);
+  box-shadow: var(--assistant-user-avatar-shadow, none);
+}
+
+.message.USER
+{
+  flex-direction: var(--assistant-user-direction, row);
+}
+
+.message.USER > .flex-grow-1
+{
+  align-items: var(--assistant-user-align, stretch);
+  margin-left: var(--assistant-user-margin-left, 0.5rem) !important;
+  margin-right: var(--assistant-user-margin-right, 0);
+}
+
+.message.USER .content
+{
+  max-width: var(--assistant-user-bubble-max-width, none);
+  padding: var(--assistant-user-bubble-padding, 0);
+  border-radius: var(--assistant-user-bubble-radius, 0);
+  background: var(--assistant-user-bubble-background, transparent);
 }
 
 .message.USER .avatar > span
@@ -141,39 +169,40 @@
 
 .message.AI .avatar
 {
-  background-color: #c0c0c0;
+  background-color: var(--assistant-ai-avatar-background, #c0c0c0);
 }
 
 .message.AI .avatar > span
 {
-  color: #404040;
+  color: var(--assistant-ai-avatar-color, #404040);
   font-size: 16px;
 }
 
 .message.TOOL_EXECUTION_REQUEST .avatar
 {
-  background-color: #d0d0a0;
+  background-color: var(--assistant-tool-avatar-background,#d0d0a0);
 }
 
 .message.TOOL_EXECUTION_REQUEST .avatar > span
 {
-  color: black;
+  color: var(--assistant-tool-avatar-color, black);
   font-size: 16px;
 }
 
 .message.TOOL_EXECUTION_REQUEST .content
 {
-  color: var(--gray-600);
+  color: var(--assistant-tool-color, var(--gray-600));
+  font-family: var(--assistant-tool-font, inherit);
 }
 
 .message.TOOL_EXECUTION_RESULT .avatar
 {
-  background-color: #c0c020;
+  background-color: var(--assistant-tool-avatar-background, #c0c020);
 }
 
 .message.TOOL_EXECUTION_RESULT .avatar > span
 {
-  color: black;
+  color: var(--assistant-tool-avatar-color, black);
   font-size: 16px;
 }
 
@@ -184,13 +213,27 @@
 
 .message.ACTION .avatar
 {
-  background: #000080;
+  background: var(--assistant-action-avatar-background, #000080);
+  
 }
 
 .message.ACTION .avatar > span
 {
-  color: white;
+  color: var(--assistant-action-avatar-color, white);
 }
+
+/* tool calls and actions: optional compact chip */
+.message.TOOL_EXECUTION_REQUEST .content,
+.message.TOOL_EXECUTION_RESULT .content,
+.message.ACTION .content
+{
+  align-self: flex-start;
+  max-width: 100%;
+  padding: var(--assistant-tool-padding, 0);
+  border-radius: var(--assistant-tool-radius, 0);
+  background: var(--assistant-tool-background, transparent);
+  font-size: var(--assistant-tool-size, inherit);
+ }
 
 .message.ACTION .content
 {
@@ -199,18 +242,21 @@
 
 .message.ERROR .avatar
 {
-  background: red;
+  background: var(--assistant-error-avatar-background, red);
 }
 
 .message.ERROR .avatar > span
 {
-  color: white;
+  color: var(--assistant-error-avatar-color, white);
 }
 
 .message.ERROR .content
 {
   font-weight: bold;
-  color: red;
+  color: var(--assistant-error-color, red);
+  background: var(--assistant-error-background, transparent);
+  padding: var(--assistant-error-padding, 0);
+  border-radius: var(--assistant-error-radius, 0);
 }
 
 .message .think
@@ -226,7 +272,9 @@
 
 .message .role
 {
-  font-weight: bold;
+  font-weight: var(--assistant-role-weight, bold);
+  font-size: var(--assistant-role-size, inherit);
+  color: var(--assistant-role-color, inherit);
 }
 
 .message .time
@@ -247,8 +295,11 @@
 
 .message .content pre
 {
-  background-color: var(--surface-200);
-  border-radius: var(--border-radius);
+/*  background-color: var(--surface-200);
+  border-radius: var(--border-radius);*/
+  background-color: var(--assistant-code-background, var(--surface-200));
+  border-radius: var(--border-radius, 6px);
+
   color: var(--text-color);
   padding: 1rem;
   overflow-x:auto;
@@ -361,8 +412,10 @@
   --ab-inset-2: var(--surface-200);
   --ab-hover: color-mix(in srgb, var(--ab-accent) 12%, var(--ab-surface));
   --ab-accent-ink: color-mix(in srgb, var(--ab-accent) 70%, var(--ab-text));
-  --ab-radius: var(--border-radius);
-  --ab-btn-radius: var(--border-radius);
+/*  --ab-radius: var(--border-radius);
+  --ab-btn-radius: var(--border-radius);*/
+  --ab-radius: var(--assistant-bar-radius, var(--border-radius, 6px));
+  --ab-btn-radius: var(--assistant-btn-radius, var(--border-radius, 6px));
   --ab-shadow: var(--ab-elevation, 0 0 #0000);
 
   box-sizing: border-box;
@@ -380,10 +433,16 @@
   transition: box-shadow 0.2s ease;
 }
 
-.assistant-bar.is-focus,
 .assistant-bar:focus-within
 {
   box-shadow: var(--ab-shadow), var(--focus-ring, 0 0 0 4px color-mix(in srgb, var(--ab-accent) 16%, transparent));
+}
+
+/* the bar inside the open panel (half / full screen) */
+body.asst-half .assistant-bar,
+body.asst-full .assistant-bar
+{
+  --ab-shadow: var(--ab-docked-elevation, var(--ab-elevation, 0 0 #0000));
 }
 
 @media (max-width: 440px)
@@ -418,8 +477,11 @@
   color: var(--ab-placeholder);
 }
 
+/* the focus ring is the bar (:focus-within), not the textarea; :enabled:focus also wins over
+   the theme rules for fields (body .ui-inputtext:enabled:focus) */
 .assistant-bar .ui-inputtextarea:hover,
 .assistant-bar .ui-inputtextarea:focus,
+.assistant-bar .ui-inputtextarea:enabled:focus,
 .assistant-bar .ui-inputtextarea.ui-state-hover,
 .assistant-bar .ui-inputtextarea.ui-state-focus
 {
@@ -427,6 +489,28 @@
   border: none;
   box-shadow: none;
 }
+
+/* Input row */
+.assistant-bar .ab-input-row
+{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px;
+  column-gap: 4px;
+  align-items: center;
+}
+
+.assistant-bar .ab-input-row .ui-inputtextarea
+{
+  width: 100%;
+  min-width: 0;
+}
+
+.assistant-bar .ab-input-row .ab-close
+{
+  width: 38px;
+  height: 38px;
+}
+
 
 /* Actions row */
 .assistant-bar .ab-action-row
@@ -597,12 +681,9 @@
   padding: 0px !important;
   background: var(--ab-surface, var(--surface-0)) !important;
   border: var(--ab-border, 1px solid var(--surface-border)) !important;
-  /*box-shadow: var(--ab-elevation, 0 10px 40px rgba(0, 0, 0, 0.3)) !important;*/
   box-shadow: var(--ab-elevation, none) !important;
   border-radius: var(--border-radius) !important;
   min-width: 220px;
-  /*margin-top: var(--wsm-offset, -8px) !important;*/
-  /*transform: translateY(var(--wsm-offset, 0px));*/
 }
 
 .wsm-panel-overlay .wsm-title {
@@ -689,4 +770,22 @@
 /* Show the checkmark only when selected */
 .wsm-panel-overlay .wsm-item.wsm-selected .wsm-check {
   display: inline-flex;
+}
+
+/* panel toolbar (threads.xhtml / assistant.xhtml) */
+.assistant_toolbar
+{
+  padding: var(--assistant-toolbar-padding, 0.5rem);
+  border-bottom: var(--assistant-toolbar-border, 1px solid var(--surface-border));
+}
+
+.assistant_toolbar .assistant_title
+{
+  font-size: var(--assistant-title-size, inherit);
+}
+
+/* conversation */
+.message_list
+{
+  padding: var(--assistant-list-padding, 0);
 }

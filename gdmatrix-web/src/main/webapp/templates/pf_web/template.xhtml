@@ -11,6 +11,7 @@
 
   <ui:define name="template">
     <script>document.body.classList.add("asst-min");</script>
+    
     <h:outputStylesheet library="css" name="common.css" />
 
     <h:outputScript name="js/pf_template.js" />
@@ -18,8 +19,13 @@
                     library="primefaces"/>
 
     <div class="flex flex-column h-full overflow-hidden">
-      <ui:include src="header.xhtml"></ui:include>
+      <div class="page_band flex-shrink-0">
+        <ui:include src="header.xhtml"></ui:include>
+      </div>
       <div class="flex content_assistant">
+        <!-- Side content menu -->
+        <ui:include src="side_menu.xhtml"></ui:include>
+        <!-- Content + footer -->
         <div class="content_footer flex-grow-1">
           <ui:include src="content.xhtml"></ui:include>
           <ui:include src="footer.xhtml"></ui:include>
@@ -27,14 +33,6 @@
         <!-- Assistant Panel (the background) -->
         <div class="assistant_panel hidden">
           <ui:include src="/pages/assistant/assistant_panel.xhtml"></ui:include>
-          <div class="assistant_slider">
-            <a href="#" onclick="maximizeAssistantPanel(event)" class="assistant_max" title="Maximize">
-              <i class="pi pi-chevron-left" />
-            </a>
-            <a href="#" onclick="minimizeAssistantPanel(event)" class="assistant_min" title="Minimize">
-              <i class="pi pi-chevron-right" />
-            </a>
-          </div>
         </div>
       </div>
     </div>
@@ -48,8 +46,11 @@
 
     <gdm:saveState value="#{templateBean.contextMid}" />
         
-    <p:remoteCommand name="_showObject" action="#{templateBean.showObject}" update="@form:cnt" />
-    <p:remoteCommand name="_showPage" action="#{templateBean.showPage}" update="@form:cnt"  />
+    <p:remoteCommand name="_showObject" action="#{templateBean.showObject}" update="@form:cnt @form:side_menu_container" />
+    <p:remoteCommand name="_showPage" action="#{templateBean.showPage}" update="@form:cnt @form:side_menu_container"  />
+    <!-- Assistant thread remembered in this tab, after a full page load -->
+    <p:remoteCommand name="restoreAssistantThread" action="#{threadsBean.changeThread(param.threadId)}"
+                     process="@this" update="@form:assistant_panel @form:input_panel" />
     
     <script>
       setupPopupListener();

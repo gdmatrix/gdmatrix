@@ -2,10 +2,11 @@
 
 .ide_body .header
 {
+  gap: 4px;
   background-color: var(--surface-ground);
-  color: var(--text-color);
-  border-bottom: 1px solid var(--surface-300);
-  padding: 1rem;
+  border-bottom: var(--ide-header-border, 1px solid var(--surface-300));
+  border-radius: var(--ide-header-radius, 0);
+  margin: var(--ide-header-margin, 0);
 }
 
 .editor.ui-tabs
@@ -69,7 +70,7 @@
 
 .ui-panel.docs_panel ul li:hover
 {
-  background: var(--surface-200);
+  background: color-mix(in srgb, var(--primary-color) 7%, transparent); /* the hover tint of the rest of the web */
 }
 
 .ui-panel.docs_panel > .ui-panel-content
@@ -81,11 +82,6 @@
 .docs_panel_button.first_time
 {
   display: none;
-}
-
-.ide_body .header
-{
-  gap: 4px;
 }
 
 @media only screen and (max-width: 768px) 
@@ -142,6 +138,7 @@
 #js_console
 {
   font-family: monospace;
+  border: 1px solid var(--surface-border); /* like the code editor */
   border-radius: var(--border-radius);
 }
 
@@ -157,14 +154,14 @@
 
 #js_console div.error
 {
-  background-color: #ffb0b0;
-  color: #800000;
+  background-color: var(--red-50);
+  color: var(--red-800);
 }
 
 #js_console div.warn
 {
-  background-color: #efef80;
-  color: #404000;
+  background-color: var(--yellow-100);
+  color: var(--yellow-800);
 }
 
 

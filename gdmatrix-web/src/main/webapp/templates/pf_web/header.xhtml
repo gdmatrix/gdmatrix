@@ -8,125 +8,137 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
   <!-- header -->
-
-  <ui:include src="login.xhtml"></ui:include>
-  <ui:include src="configuration.xhtml"></ui:include>
-
   <div class="app_header">
-    <h:panelGroup id="menubar" layout="block"
-                  class="app_menubar flex flex-column align-items-center">
+    <!-- three zones: brand, main menu and toolbar -->
+    <h:panelGroup id="menubar" layout="block" class="app_menubar">
 
-      <div class="flex flex-row w-full">
-        <div class="menu_button flex-grow-0 flex-shrink-0 align-items-center">
-          <p:button onclick="hideDialogPanels();return showDialogPanel('main_menu_panel', event);" 
+      <div class="header_brand">
+        <div class="menu_button">
+          <p:button onclick="hideDialogPanels();return showDialogPanel('main_menu_panel', event);"
                     icon="pi pi-bars" class="rounded-button ui-button-flat" />
         </div>
 
-        <a href="#{userSessionBean.selectedMenuItem.properties.homeUrl}" class="logo" />
+        <!-- logo: SVG sprite with the shield and the text as separate symbols,
+             painted in template.css; logo_compact replaces logo_full in compact mode -->
+        <a href="#{userSessionBean.selectedMenuItem.properties.homeUrl}" class="logo"
+           aria-label="Ajuntament de Sant Feliu de Llobregat">
+          <svg class="logo_full" viewBox="0 0 37.192671 16.899341" aria-hidden="true">
+            <use class="logo_escut" href="/documents/6612405/Escut_ajuntament_no.svg#escut"/>
+            <use class="logo_text" href="/documents/6612405/Escut_ajuntament_no.svg#text"/>
+          </svg>
+          <svg class="logo_compact" viewBox="0 0 267.40725 62.506381" aria-hidden="true">
+            <use class="logo_escut" href="/documents/6612405/Escut_ajuntament_no.svg#escut_small"/>
+            <use class="logo_text" href="/documents/6612405/Escut_ajuntament_no.svg#text_small"/>
+          </svg>
+        </a>
+      </div>
 
-        <div class="flex align-items-center flex-grow-1 p-0 justify-content-end">
+      <div class="main_menu_panel dialog_panel">
 
-          <div class="main_menu_panel dialog_panel">
-
-            <div class="header p-3">
-              <div class="flex-grow-1 font-bold">
-                #{applicationBean.translate(userSessionBean.selectedMenuItem.properties.description)}
-              </div>
-              <p:button onclick="return hideDialogPanel('main_menu_panel', event)"
-                        icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
-            </div>
-
-            <sf:treeMenu id="main_menu" var="item" expandDepth="3"
-                         styleClass="main_menu flex-grow-0"
-                         baseMid="#{userSessionBean.selectedMenuItem.path[1]}">
-              <f:facet name="data">
-                <ui:fragment rendered="#{item.rendered}">
-                  <div class="menuitem">
-                    <p:commandLink action="#{templateBean.show(item.mid)}"
-                                   rendered="#{item.action != 'url'}"
-                                   process="@form:menubar"
-                                   update="@form:cnt"
-                                   styleClass="entry">
+        <div class="header">
+          <div class="flex-grow-1 font-bold">
+            #{applicationBean.translate(userSessionBean.selectedMenuItem.properties.description)}
+          </div>
+          <p:button onclick="return hideDialogPanel('main_menu_panel', event)"
+                    icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
+        </div>
+        <nav class="menu-principal" aria-label="#{webBundle.menu}">
+          <sf:treeMenu id="main_menu" var="item" expandDepth="3"
+                       styleClass="main_menu flex-grow-0"
+                       baseMid="#{userSessionBean.selectedMenuItem.path[1]}">
+            <f:facet name="data">
+              <ui:fragment rendered="#{item.rendered}">
+                <div class="menuitem">
+                  <!-- node with children: a single button that only opens the submenu -->
+                  <ui:fragment rendered="#{not item.leaf}">
+                    <a href="#" class="entry toggle ui-commandlink ui-widget" role="button">
                       <ui:fragment rendered="#{item.directProperties.icon != null}">
-                        <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
+                        <i class="ui-icon #{item.directProperties.icon} mr-1" />
                       </ui:fragment>
                       <div>#{applicationBean.translate(item.label)}</div>
-                    </p:commandLink>
-                    <ui:fragment rendered="#{not item.leaf}">
-                      <a href="#" title="obre/tanca menu" class="caret">
-                        <i class="pi pi-chevron-right" />
-                      </a>
+                      <span class="caret" aria-hidden="true"><i class="pi pi-chevron-right" /></span>
+                    </a>
+                  </ui:fragment>
+
+                  <p:commandLink action="#{templateBean.show(item.mid)}"
+                                 rendered="#{item.action != 'url'}"
+                                 process="@form:menubar"
+                                 update="@form:cnt"
+                                 styleClass="entry nav">
+                    <ui:fragment rendered="#{item.directProperties.icon != null}">
+                      <i class="ui-icon #{item.directProperties.icon} mr-1" />
                     </ui:fragment>
-                    <p:link href="#{item.properties.url}"
-                            rendered="#{item.action == 'url'}"
-                            styleClass="entry"
-                            onclick="hideDialogPanel('main_menu_panel')"
-                            target="#{item.properties.target == null ? '_self' : item.properties.target}">
-                      <ui:fragment rendered="#{item.directProperties.icon != null}">
-                        <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
-                      </ui:fragment>
-                      #{applicationBean.translate(item.label)}
-                    </p:link>
-                  </div>
-                </ui:fragment>
-              </f:facet>
-            </sf:treeMenu>
-          </div>
+                    <div>#{applicationBean.translate(item.label)}</div>
+                  </p:commandLink>
+                  <p:link href="#{item.properties.url}"
+                          rendered="#{item.action == 'url'}"
+                          styleClass="entry nav"
+                          onclick="hideDialogPanel('main_menu_panel')"
+                          target="#{item.properties.target == null ? '_self' : item.properties.target}">
+                    <ui:fragment rendered="#{item.directProperties.icon != null}">
+                      <i class="ui-icon #{item.directProperties.icon} mr-1" />
+                    </ui:fragment>
+                    #{applicationBean.translate(item.label)}
+                  </p:link>
 
-          <!--
-          <div class="app_toolbar flex-grow-1 flex-shrink-0 text-right pr-2">
-            <ui:repeat value="#{templateBean.highlightedItems}" var="item">
-              <p:commandButton action="#{templateBean.show(item.mid)}"
-                               value="#{applicationBean.translate(item.label)}"
-                               icon="#{item.properties.icon}"
-                               styleClass="mr-1"
-                               rendered="#{item.action != 'url'}"
-                               process="@this" update="@form:cnt"
-                               title="#{item.getProperty('label')}" />
-              <p:linkButton href="#{item.properties.url}"
-                            rendered="#{item.action == 'url'}"
-                            icon="ui-icon #{item.directProperties.icon}"
-                            target="#{item.properties.target == null ? '_self' : item.properties.target}"
-                            title="#{applicationBean.translate(item.label)}" />
-            </ui:repeat>
-          </div>
-          -->
+                </div>
+              </ui:fragment>
+            </f:facet>
+          </sf:treeMenu>
+        </nav>
+      </div>
 
-          <div class="user_toolbar flex flex-row flex-grow-0 flex-shrink-0">
-            <p:link href="#" styleClass="header_button ml-2 mr-2"
-                    title="#{webBundle.identification}"
-                    onclick="hideDialogPanels();showDialogPanel('login_panel', event); enableUserPassButton();return false;"
-                    rendered="#{userSessionBean.anonymousUser}">
-              <i class="pi pi-user" />
-            </p:link>
+      <div class="user_toolbar">
+        <ui:fragment rendered="#{userSessionBean.anonymousUser}">
+          <button type="button"
+                  class="header_icon_button login_button"
+                  title="#{webBundle.identification}"
+                  onmousedown="event.preventDefault()"
+                  onclick="toggleHeaderSheet('login_panel', event); enableUserPassButton(); return false;">
+            <svg class="header_icon" aria-hidden="true">
+              <use href="/documents/6586293/usericon.svg#usericon"/>
+            </svg>
+          </button>
+        </ui:fragment>
 
-            <p:link href="#" styleClass="header_button ml-2 mr-2"
-                    title="#{userSessionBean.displayName}"
-                    onclick="hideDialogPanels();return showDialogPanel('login_panel', event);"
-                    rendered="#{not userSessionBean.anonymousUser}">
-              #{templateBean.userInitial}
-            </p:link>
+        <ui:fragment rendered="#{not userSessionBean.anonymousUser}">
+          <button type="button"
+                  class="header_icon_button login_button"
+                  title="#{userSessionBean.displayName}"
+                  onmousedown="event.preventDefault()"
+                  onclick="return toggleHeaderSheet('login_panel', event);">
+            <span class="user_initial">#{templateBean.userInitial}</span>
+          </button>
+        </ui:fragment>
 
-            <p:link href="#" styleClass="header_button ml-2 mr-2"
-                    title="#{webBundle.configuration}"
-                    onclick="hideDialogPanels();return showDialogPanel('config_panel', event);">
-              <i class="pi pi-cog" />
-            </p:link>
-            
-            <p:link href="#" styleClass="header_button ml-2 mr-2 assistant_button"
-                    title="Assistant"
-                    onclick="toggleAssistantPanel(event);activateAssistantTextarea()">
-              <i class="mi-outlined mi-smart-toy" />
-            </p:link>
-            
-          </div>
-        </div>
+        <button type="button"
+                class="header_icon_button config_button"
+                title="#{webBundle.configuration}"
+                onmousedown="event.preventDefault()"
+                onclick="return toggleHeaderSheet('config_panel', event);">
+          <svg class="header_icon" aria-hidden="true">
+            <use href="/documents/6584153/settingsicon.svg#settingsicon"/>
+          </svg>
+        </button>
+
+        <button type="button"
+                class="header_icon_button assistant_button"
+                title="Assistant" aria-label="Assistant" aria-pressed="true"
+                onclick="animateAssistantButton(this); toggleAssistantVisibility(event)">
+          <svg class="header_icon" aria-hidden="true">
+            <use class="icon_on" href="/documents/6584160/chaboxonicon.svg#chatboxonicon"/>
+            <use class="icon_off" href="/documents/6584159/chatboxofficon.svg#chatboxofficon"/>
+          </svg>
+        </button>
       </div>
 
       <script>
         //<![CDATA[
         var menuSetup = {
           mainMenuClass: "main_menu",
+          megaMenu: true, // Option to use Sheet menu
+          compactWhenNoFit: true, // compact (mobile) menu when the bar does not fit
+          focusDialogs: true,
           maxItemsPerSubMenu: 8,
           horizontal: {
             multiDrop: false,
@@ -135,130 +147,228 @@
           vertical: {
             multiDrop: true,
             hoverDrop: false
-          },
-          onClick: function(event)
-          {
-            if (isAssistantVisible())
-            {
-              minimizeAssistantPanel(event);
-            }
           }
         };
         initMenu();
-        
-        /* Podriamos llevarlo a ASSISTANT.js, para reaprovecharlo */
-        /* Move it to ASSISTANT.js to make it reusable*/
-        
-        function isAssistantVisible()
+
+        // ResizeObserver of the open panel: created once in the load handler
+        var sheetObserver;
+
+        function toggleHeaderSheet(panelClass, event)
         {
-          var assistantPanel = document.querySelector(".assistant_panel");
-          return !assistantPanel.classList.contains("hidden");          
+          var panel = document.querySelector(".app_header > ." + panelClass);
+          if (!panel) return false;
+          if (panel.classList.contains("show")) return hideDialogPanel(panel, event);
+
+          // unfold only if the card was closed. Otherwise only the content changes
+          var header = panel.closest(".app_header");
+          var cardOpen = !!header.querySelector(".main_menu.mega > ul > li.drop, :scope > .header_sheet.show");
+          hideDialogPanels();
+          panel.classList.toggle("sheet_opening", !cardOpen);
+          showDialogPanel(panel, event);
+          closeSubMenus();
+          updateMenuLayout();
+          if (sheetObserver) sheetObserver.observe(panel);
+          return false;
         }
-        
-        function toggleAssistantPanel(event)
+
+        function hideHeaderSheets()
         {
-          if (isAssistantVisible())
+          document.querySelectorAll(".app_header > .header_sheet.show").forEach(function(panel)
           {
-            hideAssistantPanel(event);
+            hideDialogPanel(panel);
+          });
+        }
+
+        function isAssistantClosed()
+        {
+          return document.body.classList.contains("asst-off");
+        }
+
+        function setAssistantOff(off)
+        {
+          document.body.classList.toggle("asst-off", off);
+          updateAssistantButton();
+
+          // in full screen the assistant hides the content
+          var contentPanel = document.querySelector(".content_footer");
+          if (contentPanel)
+          {
+            contentPanel.classList.toggle("hidden",
+              !off && document.body.classList.contains("asst-full"));
+          }
+        }
+
+        function toggleAssistantVisibility(event)
+        {
+          if (event) event.preventDefault();
+
+          document.body.classList.remove("asst-auto-off");
+          setAssistantOff(!isAssistantClosed());
+          rememberAssistantChoice(isAssistantClosed() ? "off" : null);
+
+          if (!isAssistantClosed())
+          {
+            activateAssistantTextarea();
+          }
+        }
+
+        // Pages with assistantClosedByDefault=true (ej.maps) switch to full
+        var assistantAutoOffMid;
+
+        function switchAssistantForPage()
+        {
+          var body = document.body;
+          if (body.classList.contains("page-asst-off"))
+          {
+            if (assistantAutoOffMid === body.dataset.mid) return;
+            assistantAutoOffMid = body.dataset.mid;
+            if (getAssistantChoice() !== "off") // switched off by the user: nothing to undo later
+            {
+              body.classList.add("asst-auto-off");
+              setAssistantOff(true);
+            }
           }
           else
           {
-            minimizeAssistantPanel(event);
-          }    
+            assistantAutoOffMid = null;
+            if (body.classList.contains("asst-auto-off"))
+            {
+              body.classList.remove("asst-auto-off");
+              setAssistantOff(false);
+            }
+          }
         }
-        // Marks on the <body> the assistant current size so that the floating
-        // bar can be positioned
+
+        
+        // Marks on the <body> the assistant current size
         function setAssistantSize(size)
         {
           document.body.classList.remove("asst-min", "asst-half", "asst-full");
           document.body.classList.add("asst-" + size);
         }
-        function maximizeAssistantPanel(event)
+        
+        function syncThreadsPanel(size)
         {
-          event.preventDefault();
-          var contentPanel = document.querySelector(".content_footer");
-          contentPanel.classList.add("hidden");
-
-          var assistantPanel = document.querySelector(".assistant_panel");
-          assistantPanel.classList.remove("hidden");
-          assistantPanel.style.width = "100%";
-          assistantPanel.style.height = "100%";
-
-          var maxButton = document.querySelector(".assistant_max");
-          maxButton.classList.add("hidden");
-          var minButton = document.querySelector(".assistant_min");
-          minButton.classList.remove("hidden");
-
-          var assistantButton = document.querySelector(".assistant_button");
-          assistantButton.classList.add("active");
-          
-          setAssistantSize("full");
-          if (typeof updateWsmSelection === "function") updateWsmSelection("full");
-        }
-
-        function minimizeAssistantPanel(event)
-        {
-          event.preventDefault();
-          var contentPanel = document.querySelector(".content_footer");
-          contentPanel.classList.remove("hidden");
-
-          var assistantPanel = document.querySelector(".assistant_panel");
-          assistantPanel.classList.remove("hidden");
-          assistantPanel.style.width = "";
-          assistantPanel.style.height = "";
-          var maxButton = document.querySelector(".assistant_max");
-          maxButton.classList.remove("hidden");
-          var minButton = document.querySelector(".assistant_min");
-          minButton.classList.add("hidden");
-
-          var assistantButton = document.querySelector(".assistant_button");
-          assistantButton.classList.add("active");
-          
-          setAssistantSize("half");
-          if (typeof updateWsmSelection === "function") updateWsmSelection("half");
+          if(!PrimeFaces.widgets["threadsPanel"]) return;
+          if (size === "full")
+          {
+            var container = document.querySelector(".assistant_container");
+            if (container && container.clientWidth >= 700) showThreadsPanel();
+          }
+          else
+          {
+            closeThreadsPanel();
+          }
         }
         
+        // Shows the assistant panel at the given size: full, half or min
+        function setAssistantPanel(size)
+        {
+          document.querySelector(".content_footer").classList.toggle("hidden", size === "full");
+          document.querySelector(".assistant_panel").classList.toggle("hidden", size === "min");
+
+          setAssistantSize(size);
+          syncThreadsPanel(size);
+          if (typeof updateWsmSelection === "function") updateWsmSelection(size);
+        }
+
+        // The user's choice for this browser session.
+        function getAssistantChoice()
+        {
+          try { return sessionStorage.getItem("assistantChoice"); }
+          catch (e) { return null; }
+        }
+
+        function rememberAssistantChoice(choice)
+        {
+          try
+          {
+            if (choice) sessionStorage.setItem("assistantChoice", choice);
+            else sessionStorage.removeItem("assistantChoice");
+          }
+          catch (e) {}
+        }
+
+        function rememberAssistantThread(threadId)
+        {
+          try { sessionStorage.setItem("assistantThread", threadId); }
+          catch (e) {}
+        }
+
+        function forgetAssistantThread()
+        {
+          try { sessionStorage.removeItem("assistantThread"); }
+          catch (e) {}
+        }
+
+        function restoreRememberedThread()
+        {
+          var threadId;
+          try { threadId = sessionStorage.getItem("assistantThread"); }
+          catch (e) { return; }
+          // a thread in the URL (?threadid=) wins
+          if (!threadId || /[?&]threadid=/.test(location.search)) return;
+          restoreAssistantThread([{ name: "threadId", value: threadId }]);
+        }
+
+        // Size the page asks for: half on content pages, min on full width pages.
+        function sizeAssistantForPage()
+        {
+          if (window.matchMedia("(max-width: 800px)").matches) return;
+
+          var pageFull = document.body.classList.contains("page-full");
+          setAssistantPanel(pageFull || getAssistantChoice() === "min" ? "min" : "half");
+        }
+
         function activateAssistantTextarea()
         {
-          console.info("activate");
           if (PrimeFaces.widgets["assistantTextarea"])
           {
             PF("assistantTextarea").render();
             PF("assistantTextarea").jq.focus();
           }          
         }
-
-        function hideAssistantPanel(event)
+        
+        function updateAssistantButton()
         {
-          event.preventDefault();
-          var contentPanel = document.querySelector(".content_footer");
-          contentPanel.classList.remove("hidden");
-
-          var assistantPanel = document.querySelector(".assistant_panel");
-          assistantPanel.classList.add("hidden");
-          assistantPanel.style.width = "";
-          assistantPanel.style.height = "";
-          
-          var assistantButton = document.querySelector(".assistant_button");
-          assistantButton.classList.remove("active");
-          
-          setAssistantSize("min");
-          if (typeof updateWsmSelection === "function") updateWsmSelection("min");
+          var button = document.querySelector(".assistant_button");
+          if (!button) return;
+          var closed = isAssistantClosed();
+          button.title = closed ? "Assistant OFF" : "Assistant ON";
+          button.setAttribute("aria-label", "Assistant");
+          button.setAttribute("aria-pressed", closed ? "false" : "true");
         }
-
-        window.addEventListener("load", () => {
-          updateFontSize(#{userSessionBean.fontSize});
-          
-          // Initial dock state: hidden panel, floating bar starts in min
-          if (!document.body.className.match(/asst-(min|half|full)/))
+        
+        function animateAssistantButton(button)
+        {
+          if (!button)
           {
-            setAssistantSize("min");
-            if (typeof updateWsmSelection === "function") updateWsmSelection("min");
+            button = document.querySelector(".assistant_button");
           }
           
-          // Publish the actual height of the floating bar in --dock-height to
-          // reserve the necessary space and prevent messages from being hidden
-          // behind the bar.
+          button.classList.remove("assistant_clicked");
+
+          void button.offsetWidth;
+
+          button.classList.add("assistant_clicked");
+
+          setTimeout(function()
+          {
+            button.classList.remove("assistant_clicked");
+          }, 400);
+        }
+        
+        window.addEventListener("load", () => {
+          updateFontSize(#{userSessionBean.fontSize});
+
+          // Initial state
+          if (getAssistantChoice() === "off") document.body.classList.add("asst-off");
+          sizeAssistantForPage();
+          restoreRememberedThread();
+
+          updateAssistantButton();
+          // Publish the actual height of the floating bar in --dock-height.
           var dock = document.querySelector(".assistant-dock");
           if (dock && window.ResizeObserver)
           {
@@ -266,11 +376,63 @@
               document.body.style.setProperty("--dock-height", entries[0].target.offsetHeight + "px");
             }).observe(dock);
           }
+          
+          var pageBand = document.querySelector(".page_band");
+          if (pageBand && window.ResizeObserver)
+          {
+            new ResizeObserver(function(entries){
+              document.body.style.setProperty("--header-height", entries[0].target.offsetHeight + "px");
+            }).observe(pageBand);
+          }
+          
+          // the card (.app_header::after) takes the height of the open panel
+          if (window.ResizeObserver)
+          {
+            // switching panels gives two entries (hidden one and shown one)
+            sheetObserver = new ResizeObserver(function(entries)
+            {
+              entries.forEach(function(entry)
+              {
+                var panel = entry.target;
+                if (panel.classList.contains("show"))
+                {
+                  panel.closest(".app_header").style.setProperty("--mega-panel-height", panel.offsetHeight + "px");
+                }
+              });
+            });
+          }
+
+          // opening a menu tab closes the panels. But never closes the sheet.
+          document.querySelector(".app_header").addEventListener("click", function(event)
+          {
+            if (!event.target.closest(".main_menu.mega > ul > li > .menuitem")) return;
+            if (!document.querySelector(".app_header > .header_sheet.show")) return;
+            requestAnimationFrame(function()
+            {
+              hideHeaderSheets();
+              var mainMenu = document.querySelector(".main_menu.mega");
+              if (mainMenu) mainMenu.classList.remove("mega_opening");
+            });
+          }, true);
+          
+          document.addEventListener("keydown", function(event)
+          {
+            if (event.key !== "Escape" || event.defaultPrevented) return;
+            var panel = document.querySelector(".app_header > .header_sheet.show");
+            if (panel)
+            {
+              hideDialogPanel(panel, event);
+            }
+          });
         });
+
         //]]>
       </script>
-
     </h:panelGroup>
+    
+    <!-- Login and Config panels inside the sheet -->
+    <ui:include src="login.xhtml"></ui:include>
+    <ui:include src="configuration.xhtml"></ui:include>
   </div>
 
 </ui:composition>

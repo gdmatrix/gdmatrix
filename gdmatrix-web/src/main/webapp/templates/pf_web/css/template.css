@@ -1,86 +1,253 @@
-:root 
+/* template.css (pf_web) */
+:root
 {
-  --font-size:12px;
-  --font-family:Montserrat;
-  --logo-width: 200px;
-  --logo-height: 80px;
-  --logo-factor-small: 0.8;
-  --box-shadow: 0px 3px 12px 0px rgba(50, 50, 50, 0.5);
-  --column-width: 280px;  
-  --menubar-max-width: 1300px;
+  /* Typography */
+  --font-size: 12px;
+  --font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--font-size);
+  font-family: var(--font-family);
+
+  /* General */
+  --layout-gap: 12px;
+  --radius-lg: 28px;   /* card radius: panels, footer, drawers (and the header, --header-radius) */
+  --radius-item: calc(0.5lh + 9px); /* menu items, links and small cards: one line is a pill, taller ones keep the same corners */
+  --radius-pill: 999px; /* pill shape: toolbar, icon buttons, menu tabs */
+  --card-shadow: 0 2px 6px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04), 0 0 0 1px rgba(16, 24, 40, 0.06); /* floating cards: side menu, assistant panel */
+  --primary-tint: color-mix(in srgb, var(--primary-color) 7%, transparent); /* light pink: hover, toolbar */
+
+  /* Header: floating pill, always centered in the window */
+  --header-max-width: 1000px; /* width of the menu */
+  --header-margin-top: 14px;    
+  --header-margin-bottom: 24px; 
+  --header-padding-y: 10px;     /* above and below the content of the pill */
+  --header-padding-start: 12px; /* left: before the logo */
+  --header-padding-end: 20px;   /* right: after the toolbar pill */
+  --header-radius: var(--radius-lg); /* pill and sheet card; the card radius for now, kept apart to change it on its own */
+  --header-shadow: 0 10px 30px rgba(16, 24, 40, 0.10), 0 2px 6px rgba(16, 24, 40, 0.04); /* no ring: soft, shifted downwards */
+  --sheet-shadow: 0 20px 44px rgba(16, 24, 40, 0.18), 0 4px 12px rgba(16, 24, 40, 0.08); /* header and sheet card while a tab or a panel is open: stronger */
+  --header-band:
+    url(/documents/6614262/Header_floral_detall.png) center / cover no-repeat,
+    var(--primary-700);                         /* shown while the image loads */
+  --header-band-top: 60%; /* the band starts at 60% of the header */
+
+  /* Header logo */
+  --logo-height: 62px;
+  --logo-height-compact: 36px; /* compact logo (logo_compact) */
+  --logo-separator: 1px solid var(--surface-border); /* vertical line after the logo */
+  --logo-separator-gap: 32px; /* logo to line, line to menu and menu to toolbar */
+  --logo-margin-left: calc(var(--logo-separator-gap) - var(--header-padding-start)); /* computed: the logo is centered between the edge and the separator */
+
+  /* Header: toolbar pill and compact menu */
+  --toolbar-padding: 6px;
+  --toolbar-gap: 4px;
+  --header-icon-size: 32px; /* button size */
+  --header-icon-glyph-size: 20px; /* icon size */
+  --header-initial-size: 18px;    /* circle around the user initial */
+  --header-icon-hover-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 1px rgba(16, 24, 40, 0.06);
+  --menu-button-size: 3rem;
+
+  /* Footer */
+  --footer-background: #2b2d31; /* own color of the template (no PrimeFaces equivalent) */
+  --footer-color: color-mix(in srgb, var(--surface-0) 72%, transparent);
+
+  /* Page */
+  --content-max-width: 1000px; /* the content box only */
+  --page-full-max-width: 100vw; /* full width pages (start page, maps); no limit = 100vw */
+  --layout-column-width: clamp(320px, 24vw, 350px); /* both side columns (side menu and assistant), always the same */
+  --layout-side-width: var(--layout-column-width);      /* 0 when the side menu is a drawer */
+  --layout-assistant-width: var(--layout-column-width); /* 0 when the assistant is stacked below (mobile) */
+  --layout-content-width: min(var(--content-max-width), calc(100vw - 2 * var(--layout-side-width)));
+  --layout-panel-gap: 0px; /* space between each side panel and the content */
+  --assistant-width: calc(var(--layout-assistant-width) - var(--layout-gap) - var(--layout-panel-gap));
+
+  /* Breadcrumb */
+  --navigation-path-height: 32px;
+
+  /* IDE header, read by ide.css */
+  --ide-header-border: none;
+  --ide-header-radius: var(--radius-lg); /* rounded band, concentric with its buttons */
+  --ide-header-margin: 0.5rem;           /* aligned with the editor */
+
+  /* Shadows, focus */
+  --box-shadow: 0 20px 48px rgba(16, 24, 40, 0.16), 0 6px 14px rgba(16, 24, 40, 0.07), 0 0 0 1px rgba(16, 24, 40, 0.06); /* floating panels: drawers */
+  --focus-outline-width: 2px;
+  --focus-outline-color: var(--primary-color);
+
+  /* Main menu (horizontal bar, cascade and drawer) */
   --menu-mode: horizontal;
-  --menu-width-small: 300px;
+  --drawer-width: 300px;                 /* side menu and compact main menu drawers */
+  --drawer-inset: var(--layout-gap);     /* distance of the drawers to the window edges */
+  --drawer-hidden-left: calc(-1 * var(--drawer-width) - var(--drawer-inset) - 48px);
   --menu-padding-left: 24px;
   --menu-align: end;
   --submenu-offset-x: 8px;
   --submenu-offset-y: -6px;
   --menuitem-width: 220px;
-  --menuitem-padding: 8px 8px;
+  --menuitem-padding: 8px 10px;
   --menuitem-margin: 1px;
   --menuitem-font-size: var(--font-size);
-  --menuitem-d1-color: var(--text-color);
-  --menuitem-d2-color: var(--text-color);
-  --menuitem-d3-color: var(--text-color);
-  --menuitem-d1-background: var(--surface-200);
-  --menuitem-d2-background: var(--surface-ground);
-  --menuitem-d3-background: var(--surface-ground);
-  --menuitem-d1-drop-background: var(--surface-200);
-  --menuitem-d2-drop-background: var(--surface-200);
-  --menuitem-d3-drop-background: var(--surface-200);
-  --menuitem-selected-color: var(--text-color);
-  --menuitem-selected-background: var(--surface-300);
-  --menuitem-hover-color: var(--primary-color-text);
-  --menuitem-hover-background: var(--primary-color);
+  --menuitem-d1-background: transparent;
+  --menuitem-d2-background: var(--surface-overlay);
+  --menuitem-d3-background: var(--surface-overlay);
+  --menuitem-hover-background: var(--primary-tint);
   --menuitem-hover-transition: 0.15s;
-  --menuitem-entry-hover-color: #ffffff;
-  --menuitem-caret-hover-color: #ffffff;
+  --menuitem-selected-color: var(--primary-color-text);
+  --menuitem-selected-background: var(--primary-color);
   --menu-transition-duration1: 0.3s;
   --menu-transition-duration2: 0.5s;
-  --focused-menuitem-color: #f0f0f0;
-  --focused-menuitem-background: #404040;
-  --navigation-path-padding: 2px;
-  --navigation-path-height: 32px;
-  --right-panel-width: 240px;
-  --toolbar-button-size: 3rem;
-  --toolbar-icon-size: 1rem;
-  --toolbar-color: #303030;
-  --toolbar-color-text: #f0f0f0;
-  --border-radius: 6px;
-  --assistant-width:32%;
+
+  /* Mega menu (sheet menu) */
+  --mega-rows: 8;
+  --mega-column-width: 200px;
+  --mega-l2-width: 240px;
+  --mega-min-height: min(360px, 45vh);
+  --mega-max-height: min(70vh, 560px);
+  --mega-bar-column-gap: 4px; /* between the tabs of a row */
+  --mega-bar-row-gap: 2px;    /* between the two rows of tabs */
+  --mega-bar-justify: flex-start; /* tabs of a row*/
+  --mega-tab-padding: 0.5rem 1rem;
+  --mega-tab-font-size: 1.05rem;
+  --mega-l2-color: var(--primary-color); /* level 2 titles */
+  --mega-l2-font-size: 0.85rem;
+  --mega-link-font-size: 1.05rem; /* level 3 links */
+  --mega-open-duration: 0.22s;    /* unfold transition duration of the sheet */
+  --mega-content-duration: 0.12s; /* fade of the content when opening or switching tabs */
+
+  /* Assistant */
+  --assistant-reserve: 0px; /* room kept on the right of the content for the assistant column (body.asst-min / asst-off) */
+  --assistant-inset: 12px; /* room around the floating bar inside the panel */
+  --assistant-dock-inset: calc(var(--layout-gap) + var(--assistant-inset)); /* bar to window edge, half and full screen */
+  --assistant-threads-ratio: 0.3;
+  --assistant-threads-min: 220px;
+
+  /* Assistant look, read by assistant.css */
+  --assistant-track: color-mix(in srgb, var(--text-color) 7%, var(--surface-card)); /* light grey: avatars, tool and code blocks */
+  --assistant-error-tint: color-mix(in srgb, var(--red-500) 10%, transparent);
+  --assistant-threads-margin-bottom: var(--layout-gap);
+  /* bar */
+  --ab-border: none;
+  --ab-elevation: 0 8px 24px rgba(16, 24, 40, 0.10), 0 2px 6px rgba(16, 24, 40, 0.05), 0 0 0 1px rgba(16, 24, 40, 0.06);
+  --ab-docked-elevation: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 1px rgba(16, 24, 40, 0.10), 0 4px 14px rgba(16, 24, 40, 0.06);
+  --assistant-bar-radius: 26px; /* concentric with its corner buttons: 18px radius + 8px padding */
+  --assistant-btn-radius: var(--radius-pill);
+  /* panel */
+  --assistant-toolbar-padding: .65rem .75rem;
+  --assistant-toolbar-border: 0 none;
+  --assistant-title-size: 1.1em;
+  --assistant-list-padding: 0 .5rem;
+  /* messages */
+  --assistant-avatar-size: 28px;
+  --assistant-avatar-padding: 0;
+  --assistant-role-weight: 600;
+  --assistant-role-size: .85em;
+  --assistant-role-color: var(--text-color-secondary);
+  --assistant-user-direction: row-reverse;
+  --assistant-user-align: flex-end;
+  --assistant-user-margin-left: 0;
+  --assistant-user-margin-right: .5rem;
+  --assistant-user-bubble-background: var(--primary-tint);
+  --assistant-user-bubble-padding: .6rem .85rem;
+  --assistant-user-bubble-radius: var(--radius-lg) 6px var(--radius-lg) var(--radius-lg);
+  --assistant-user-bubble-max-width: 85%;
+  --assistant-user-avatar-shadow: 0 1px 2px rgba(16, 24, 40, 0.10), 0 2px 6px color-mix(in srgb, var(--primary-color) 18%, transparent);
+  --assistant-ai-avatar-background: var(--assistant-track);
+  --assistant-ai-avatar-color: var(--primary-color);
+  --assistant-tool-avatar-background: var(--assistant-track);
+  --assistant-tool-avatar-color: var(--text-color-secondary);
+  --assistant-action-avatar-background: var(--assistant-track);
+  --assistant-action-avatar-color: var(--text-color-secondary);
+  /* tool, error, code and image blocks */
+  --assistant-tool-background: var(--assistant-track);
+  --assistant-tool-padding: .3rem .6rem;
+  --assistant-tool-radius: 6px;
+  --assistant-tool-size: .85em;
+  --assistant-tool-color: var(--text-color-secondary);
+  --assistant-tool-font: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --assistant-error-avatar-background: var(--assistant-error-tint);
+  --assistant-error-avatar-color: var(--red-800);
+  --assistant-error-background: var(--assistant-error-tint);
+  --assistant-error-color: var(--red-800);
+  --assistant-error-padding: .6rem .85rem;
+  --assistant-error-radius: var(--border-radius);
+  --assistant-code-background: var(--assistant-track);
+  --assistant-image-border: 0 none;
+  --assistant-image-radius: var(--border-radius);
+  --assistant-image-shadow: var(--card-shadow);
 }
 
-:root
+:focus-visible
 {
-  font-size:var(--font-size);
-  font-family: var(--font-family);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: 2px;
 }
 
-/***** template styles *****/
-
-.app_header
+.dialog_panel:focus-visible
 {
-  background-color: var(--surface-0);
-  color: var(--text-color);
-  box-shadow: 0px 3px 12px 0px rgba(50, 50, 50, 0.2);
-  padding-left: 8px;
-  padding-right: 8px;
+  outline: none;
 }
 
-.app_footer
+/* ======================================================================== */
+/* PAGE LAYOUT */
+/* ======================================================================== */
+
+/* Page geometry: on body, it depends on the assistant state. */
+body
 {
-  display: flex;
-  flex-direction: column;
-  background-color: #404040;
-  color: #f0f0f0;
-  padding-bottom: 20px;
+  --assistant-space: var(--layout-assistant-width);
+  --page-max-width: calc(var(--layout-side-width) + var(--layout-content-width) + var(--assistant-space));
+  --page-width: min(100vw, var(--page-max-width));
+  --page-offset: max(0px, calc((100vw - var(--page-max-width)) / 2));
+  --content-offset: var(--page-offset);
 }
 
+/* Header band. Header.xhtml publishes its height in --header-height. */
+.page_band
+{
+  position: relative;
+  z-index: 200; /* above the assistant dock (100), the sheet live in it */
+  margin-bottom: calc(-1 * var(--header-height, 0px));
+  background-color: var(--surface-ground); /* the band (::before) is painted over it */
+  pointer-events: none;
+}
+
+.page_band > *
+{
+  pointer-events: auto;
+}
+
+/* Band behind the header (--header-band: color, images...). */
+.page_band::before
+{
+  content: "";
+  position: absolute;
+  inset: var(--header-band-top) 0 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--header-band);
+}
+
+/* Page row: side menu | content scroller | assistant, centered in the window.
+   --panel-top: where the floating side panels start (below the header). */
+.content_assistant
+{
+  --panel-top: calc(var(--header-height, 0px) + var(--layout-gap));
+  flex-direction: row;
+  width: var(--page-width);
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: auto;
+}
+
+/* Content scroller: the content and the footer scroll, the side columns do not.
+   It starts below the header, so its scrollbar is not hidden behind the band */
 .content_footer
 {
   display: flex;
   flex-direction: column;
   overflow: auto;
-  height: 100%; 
+  margin-top: var(--header-height, 0px);
+  margin-right: var(--assistant-reserve); /* empty assistant column, see body.asst-min */
 }
 
 .content_footer.minimal .app_content
@@ -110,26 +277,21 @@
   display: none;
 }
 
-.app_menubar
+body.asst-min,
+body.asst-off
 {
-  padding: 0;
-  width: 100%;
-  height: 100%;
+  --assistant-reserve: var(--assistant-space);
 }
 
-.app_menubar .menu_button
+body.page-full
 {
-  display: none;
+  --content-offset: max(0px, calc((100vw - var(--page-full-max-width)) / 2));
+  --assistant-reserve: 0px; /* after body.asst-min / asst-off: wins by order */
 }
 
-.app_menubar select
+body.page-full .content_assistant
 {
-  border:none;
-  background-color: var(--primary-color);
-  color: var(--primary-color-text);
-  border: 1px solid var(--primary-color-text);
-  font-family: var(--font-family);
-  border-radius: var(--border-radius);
+  width: min(100%, var(--page-full-max-width));
 }
 
 .app_content
@@ -137,27 +299,31 @@
   width: 100%;
   flex-grow: 1;
   margin-left: auto;
-  margin-right: auto;  
+  margin-right: auto;
   display: flex;
   flex-direction: column;
 }
 
+.app_body
+{
+  padding: 0 var(--layout-gap) var(--layout-gap);
+}
+
 .nav_path_panel
 {
-  padding: var(--navigation-path-padding);
+  padding: 8px calc(var(--layout-gap) + 4px);
   overflow: hidden;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: none;
   min-height: var(--navigation-path-height);
 }
 
 .nav_path
 {
-  align-items: center;
   color: var(--text-color);
   font-family: var(--font-family);
   font-weight: normal;
   text-align: left;
-  display: block;
+  display: inline; /* side menu button after the last arrow */
   padding-left: 2px;
 }
 
@@ -166,6 +332,20 @@
   white-space: nowrap;
   padding: 8px 2px;
   vertical-align: middle;
+  color: var(--primary-color);
+  border-radius: var(--radius-item);
+}
+
+.nav_path a:hover
+{
+  text-decoration: underline;
+}
+
+.nav_path a:focus-visible
+{
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: -2px;
+  border-radius: var(--radius-item);
 }
 
 .nav_path i.pi
@@ -174,126 +354,195 @@
   padding: 8px 2px;
 }
 
-.logo
-{
-  width: var(--column-width);
-  height: var(--logo-height);
+/* ======================================================================== */
+/* HEADER */
+/* ======================================================================== */
 
-  background: var(--text-color);
-  mask-size: var(--logo-width) auto;
-  -webkit-mask-size: var(--logo-width) auto;
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-position: 10px center;
-  -webkit-mask-position: 10px center;
+/* Header bar (floating pill). It is also the anchor of the mega menu panel. */
+.app_header
+{
+  position: relative;
+  background-color: var(--surface-card);
+  color: var(--text-color);
+  box-shadow: var(--header-shadow);
+  box-sizing: border-box;
+  width: min(var(--header-max-width), 100% - 2 * var(--layout-gap)); /* never wider than the band minus its gaps */
+  margin: var(--header-margin-top) auto var(--header-margin-bottom); /* centered in the band */
+  border-radius: var(--header-radius);
+  padding: var(--header-padding-y) var(--header-padding-end) var(--header-padding-y) var(--header-padding-start);
 }
 
-.header_button
+/* three zones, each one centered on its own */
+.app_menubar
 {
-  width: 32px;
-  height: 32px;
-  border-color: var(--primary-color);
-  color: var(--primary-color-text) !important;
-  background-color: var(--primary-color);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "brand menu toolbar";
+  align-items: center;
+  column-gap: var(--logo-separator-gap);
+  height: 100%;
+}
+
+.header_brand
+{
+  grid-area: brand;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding-right: var(--logo-separator-gap);
+  border-right: var(--logo-separator);
+}
+
+.app_menubar .menu_button
+{
+  display: none;
+}
+
+/* Logo: SVG sprite containing two logo variations, each with the shield and text as separate components. */
+.logo
+{
+  display: flex;
+  align-items: center;
+  height: var(--logo-height);
+  margin-left: var(--logo-margin-left);
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.logo svg
+{
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+.logo .logo_compact
+{
+  display: none;
+}
+
+.logo .logo_escut
+{
+  fill: var(--primary-color);
+}
+
+.logo .logo_text
+{
+  fill: var(--text-color);
+}
+
+.user_toolbar
+{
+  grid-area: toolbar;
+  display: flex;
+  gap: var(--toolbar-gap);
+  padding: var(--toolbar-padding);
+  border-radius: var(--radius-pill);
+  background-color: var(--primary-tint);
+}
+
+.header_icon_button
+{
+  width: var(--header-icon-size);
+  height: var(--header-icon-size);
+  padding: 0;
+  margin-left: 0;
+  border: 1px solid transparent !important;
+  border-radius: var(--radius-pill);
+  background: transparent !important;
+  color: var(--text-color) !important;
   text-decoration: none !important;
-  outline:none;
-  border-radius: 50%;
-  border-style:solid;
-  border-width: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
 }
 
-.header_button:focus
+.header_icon_button:hover
 {
-  border-color: var(--primary-color);
-  box-shadow: var(--focus-ring);
+  background-color: var(--surface-card) !important;
+  color: var(--primary-color) !important;
+  box-shadow: var(--header-icon-hover-shadow) !important;
 }
 
-.header_button > i
+.header_icon_button:focus-visible
 {
-  font-size: 16px !important;
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: 2px;
 }
 
-.toolbar_link
+.header_icon
 {
-  font-family: Montserrat;
-  font-size: 12px;
-  margin-right: 8px;
-  color: var(--text-primary-color);
-  text-decoration: none;
+  width: var(--header-icon-glyph-size);
+  height: var(--header-icon-glyph-size);
+  display: block;
+  stroke-width: 1;
 }
 
-.content_assistant
+/* User initial */
+.header_icon_button .user_initial
 {
-  flex-direction: row;
-  height: 100% !important;
-  overflow: auto;
+  width: var(--header-initial-size);
+  height: var(--header-initial-size);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: calc(var(--header-initial-size) * 0.6);
+  font-weight: 500;
+  line-height: 1;
 }
 
-.assistant_panel
+.assistant_button .icon_off
 {
-  font-size: var(--font-size);
-  font-family: var(--font-family);
-  width: var(--assistant-width);
-  min-width:32%;
-  max-width: 100%;
-  border-left: 1px solid var(--primary-color);
-  position:relative;
+  visibility: hidden;
 }
 
-.assistant_button.active
+body.asst-off .assistant_button .icon_on
 {
-  box-shadow: 0 0 0 0.5rem var(--surface-300);
-  animation: assistantFlash 2s infinite;
-  background-color: black;
+  visibility: hidden;
 }
 
-.assistant_button.active i
+body.asst-off .assistant_button .icon_off
 {
-  color: white;
+  visibility: visible;
 }
 
-@keyframes assistantFlash 
+/* Assistant button animation */
+.assistant_button.assistant_clicked .header_icon
 {
-  0% {
-    box-shadow: 0 0 0 0.4rem var(--surface-400);
-  }
-  50% {
-    box-shadow: 0 0 0 0.4rem var(--surface-300);
-  }
-  100% {
-    box-shadow: 0 0 0 0.4rem var(--surface-400);
-  }
+  animation: assistant_shake 0.4s ease-in-out;
 }
 
-.assistant_slider
+@keyframes assistant_shake
 {
-  position: absolute;
-  color: black;
-  left: 0;
-  top: 50%;
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-6deg); }
+  40%  { transform: rotate(6deg); }
+  60%  { transform: rotate(-4deg); }
+  80%  { transform: rotate(4deg); }
+  100% { transform: rotate(0deg); }
 }
 
-.assistant_slider a
-{
-  text-decoration: none;
-  color: var(--primary-color);
-}
+/* ======================================================================== */
+/* MAIN MENU */
+/* ======================================================================== */
 
-/* main menu */
 .main_menu_panel
 {
-  /*padding-bottom: 8px;*/
-  width: 100%;
-  left: calc(var(--menu-width-small) * -1 - 10px);
+  grid-area: menu;
 }
 
 .main_menu_panel .header
 {
-  display : none;
+  display: none;
 }
 
 .main_menu
@@ -303,18 +552,20 @@
   justify-content: start;
   width: 100%;
   border-radius: var(--border-radius);
-  padding-left: 10px;
-  left: calc(var(--menu-width-small) * -1 - 10px);
+  padding-left: 0;
 }
 
 .main_menu ul
 {
   float: left;
-  padding:0;
-  margin:0;
+  margin: 0;
+  padding: var(--menuitem-padding);
   list-style: none;
   position: relative;
   z-index: 500;
+  box-sizing: content-box;
+  border-radius: var(--border-radius);
+  background-color: var(--menuitem-d2-background);
 }
 
 .main_menu ul li
@@ -324,14 +575,17 @@
   float: left;
 }
 
-.main_menu > ul > li > .menuitem
+/* levels 1 and 2 with children: only the single button (the link is hidden) */
+.main_menu > ul > li > .menuitem > .toggle + .nav,
+.main_menu > ul > li > ul > li > .menuitem > .toggle + .nav
 {
-  margin-right: 6px;
+  display: none;
 }
 
-.main_menu > ul > li > .menuitem > .caret
+/* level 3 and deeper: only the link, no button and no arrow */
+.main_menu ul ul ul .menuitem > .toggle
 {
-  margin-right: 2px;
+  display: none;
 }
 
 .main_menu ul ul
@@ -344,7 +598,7 @@
 .main_menu ul ul ul
 {
   margin-left: 2px;
-  left: calc(var(--menuitem-width) + var(--submenu-offset-x));  
+  left: calc(var(--menuitem-width) + var(--submenu-offset-x));
 }
 
 .main_menu > ul > li > ul
@@ -363,8 +617,6 @@
 
 .main_menu li.drop > ul
 {
-  -webkit-box-shadow: var(--box-shadow);
-  -moz-box-shadow: var(--box-shadow);
   box-shadow: var(--box-shadow);
 }
 
@@ -380,8 +632,7 @@
 {
   display: flex;
   flex-direction: row;
-  _transition: background-color .2s;
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-item);
 }
 
 .main_menu .menuitem a
@@ -389,7 +640,6 @@
   display:flex;
   flex-direction: row;
   align-items: center;
-  padding:0 6px;
   font-size:14px;
   text-decoration:none;
   cursor: pointer;
@@ -402,19 +652,27 @@
   margin: 1px;
 }
 
+/* focus */
 .main_menu .menuitem a:focus
 {
   outline: none;
-  border: 1px solid var(--surface-600);
-  border-radius: var(--border-radius);
 }
 
-.main_menu ul
+.main_menu .menuitem a:focus-visible
 {
-  border-radius: var(--border-radius);
-  padding: var(--menuitem-padding);
-  box-sizing: content-box;
-  background-color: var(--menuitem-d2-background);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: -2px; /* inside: the menu panels clip what sticks out */
+  border-radius: var(--radius-item);
+}
+
+.main_menu > ul
+{
+  background-color: transparent;
+}
+
+.main_menu > ul > li > .menuitem a
+{
+  color: var(--text-color);
 }
 
 .main_menu ul li > .menuitem .caret i
@@ -427,6 +685,7 @@
 .main_menu ul li.drop > .menuitem .caret i
 {
   transform: rotate(270deg);
+  color: var(--menuitem-selected-color);
 }
 
 .main_menu ul ul > li > .menuitem .caret i
@@ -447,57 +706,51 @@
 
 .main_menu ul li .menuitem a
 {
-  _color: var(--surface-300);
   font-size: var(--menuitem-font-size);
   transition: none;
 }
 
 .main_menu ul ul li > .menuitem
 {
-  background-color: var(--menuitem-d2-background);  
+  background-color: var(--menuitem-d2-background);
 }
 
 .main_menu ul ul li .menuitem a
 {
-  color: var(--menuitem-d2-color);
+  color: var(--text-color);
   font-size: var(--menuitem-font-size);
   transition: none;
 }
 
 .main_menu ul ul ul li .menuitem
 {
-  background-color: var(--menuitem-d3-background);  
+  background-color: var(--menuitem-d3-background);
 }
 
 .main_menu ul ul ul li .menuitem a
 {
-  color: var(--menuitem-d3-color);
+  color: var(--text-color);
   font-size: var(--menuitem-font-size);
   transition: none;
 }
 
+/* open item */
 .main_menu li.drop > .menuitem
 {
-  background-color: var(--menuitem-selected-background);
+  background-color: var(--menuitem-selected-background) !important;
 }
 
 .main_menu li.drop > .menuitem a
 {
-  color: var(--menuitem-selected-color);  
+  color: var(--menuitem-selected-color);
   transition: none;
 }
 
+/* hover: only the background, the text keeps its color */
 .main_menu .menuitem:hover
 {
   background-color: var(--menuitem-hover-background) !important;
   transition: background-color var(--menuitem-hover-transition);
-}
-
-.main_menu .menuitem:hover a,
-.main_menu .menuitem:hover a i
-{
-  color: var(--menuitem-hover-color) !important;
-  transition: none;
 }
 
 .main_menu .menuitem a.entry i
@@ -511,74 +764,70 @@
   flex-grow: 1;
 }
 
-.main_menu .menuitem a.caret
+/* caret inside the single button */
+.main_menu .menuitem .entry .caret
 {
-  flex-grow: 0;
-}
-
-.main_menu .menuitem a.entry:hover
-{
-  color: var(--menuitem-entry-hover-color) !important;
-}
-
-.main_menu .menuitem a.caret:hover
-{
-  color: var(--menuitem-caret-hover-color) !important;
-}
-
-.main_menu ul li.scroll .menuitem,
-.main_menu ul ul li.scroll .menuitem,
-.main_menu ul ul ul li.scroll .menuitem
-{
-  display: inline-flex;
-  width: 100%;
-  text-decoration: none;
-  color: var(--text-color);
-  padding: 6px;
+  display: flex;
   align-items: center;
+  flex-grow: 0;
+  margin-left: 8px;
+  padding: 8px;
 }
 
-.main_menu ul li.scroll .menuitem:hover,
-.main_menu ul ul li.scroll .menuitem:hover,
-.main_menu ul ul ul li.scroll .menuitem:hover
+.main_menu .menuitem .entry .caret i
 {
-  color: var(--menuitem-hover-color);
+  margin-right: 0;
 }
 
-.main_menu ul li.invisible,
-.main_menu ul ul li.invisible,
-.main_menu ul ul ul li.invisible
-{
-  display: none;
-}
+/* ======================================================================== */
+/* SIDE MENU */
+/* ======================================================================== */
 
-.main_menu ul li.disabled,
-.main_menu ul ul li.disabled,
-.main_menu ul ul ul li.disabled
+.side_menu_panel
 {
-  display: none;
-}
-
-/*.main_menu .menuitem:focus
-{
-  background-color: var(--focused-menuitem-background);
-}
-
-.main_menu .menuitem:focus a
-{
-  border:none;
-  outline: none;
-  text-decoration: none;
-  color: var(--focused-menuitem-color);
-}*/
-
-/* side_menu_panel */
-.side_menu_panel 
-{
-  width: var(--column-width);
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
+  align-self: flex-start;
+  margin: 0 0 var(--layout-gap) var(--layout-gap);
+  padding-top: .5rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-card);
+  box-shadow: var(--card-shadow);
+}
+
+/* Floating column on the left */
+@media (min-width: 1360px)
+{
+  .side_menu_container
+  {
+    flex: 0 0 var(--layout-side-width);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding: var(--panel-top) var(--layout-panel-gap) var(--layout-gap) var(--layout-gap);
+  }
+
+  .side_menu_container > .side_menu_panel
+  {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: auto;
+    margin: 0;
+    align-self: stretch;
+  }
+}
+
+/* Assistant in full screen: the menu is not shown */
+body.asst-full .side_menu_container
+{
+  display: none;
+}
+
+/* Full-width pages that do not show the side menu */
+body.page-full.side-off .side_menu_container
+{
+  display: none;
 }
 
 /* side menu */
@@ -599,7 +848,7 @@
 .side_menu > ul ul
 {
   padding: 0;
-  list-style-type: none;  
+  list-style-type: none;
   padding-left: 16px;
 }
 
@@ -610,23 +859,25 @@
   display: flex;
   gap: 4px;
   align-items: start;
+  border-radius: var(--radius-item);
 }
 
 .side_menu li a:hover
 {
-  color: var(--menuitem-hover-color) !important;
+  color: var(--text-color);
   background-color: var(--menuitem-hover-background) !important;
   text-decoration: none;
 }
 
 .side_menu li li a
 {
-  border-left: 1px solid var(--surface-400);  
+  border-left: 1px solid transparent; /* guide line of the sublevels: off, keeps the room */
 }
 
 .side_menu li.has-children > a
 {
   background-color: var(--menuitem-d1-background);
+  font-weight: 600;
 }
 
 .side_menu li a.current
@@ -639,15 +890,146 @@
   margin-top: 1px;
 }
 
+/* current page: same look as the open tab of the main menu */
 .side_menu li a.selected
 {
-  background-color: var(--primary-color);
-  color: var(--primary-color-text);
+  background-color: var(--menuitem-selected-background) !important;
+  color: var(--menuitem-selected-color);
+  font-weight: 600;
 }
 
 .side_menu_button
 {
-  visibility: hidden;
+  display: none;
+  vertical-align: middle;
+}
+
+/* ======================================================================== */
+/* ASSISTANT */
+/* ======================================================================== */
+
+.assistant_panel
+{
+  font-size: var(--font-size);
+  font-family: var(--font-family);
+  width: var(--assistant-width);
+  min-width: var(--assistant-width);
+  max-width: 100%;
+  border-left: none;
+  margin: var(--layout-gap) var(--layout-gap) var(--layout-gap) 0;
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-card);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  position:relative;
+}
+
+.assistant_panel .ui-panel.threads_panel
+{
+  z-index: 150 !important;
+}
+
+/* full screen: the panel takes the free space */
+body.asst-full .assistant_panel
+{
+  width: auto;
+  min-width: 0;
+  flex: 1 1 auto;
+  margin-left: var(--layout-gap);
+}
+
+/* The panel goes below the floating header (mobile: see SMALL SCREENS) */
+.content_assistant > .assistant_panel
+{
+  margin-top: var(--panel-top);
+  margin-bottom: var(--layout-gap);
+  margin-left: var(--layout-panel-gap);
+}
+
+/* Assistant dock: the floating bar that stays while navigating */
+
+.assistant-dock
+{
+  position: fixed;
+  bottom: var(--layout-gap);
+  right: calc(var(--content-offset) + var(--layout-gap));
+  z-index: 100;
+  box-sizing: border-box;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+/* Minimized: Only the bar floating.*/
+body.asst-min .assistant-dock
+{
+  /* floats over the content, aligned to its right edge */
+  right: calc(var(--content-offset) + var(--assistant-reserve) + var(--layout-gap));
+  width: min(420px, calc(100vw - 2rem));
+}
+
+/* Half Screen: the bar sits inside the panel */
+body.asst-half .assistant-dock
+{
+  bottom: var(--assistant-dock-inset);
+  right: calc(var(--content-offset) + var(--assistant-dock-inset));
+  width: calc(var(--assistant-width) - 2 * var(--assistant-inset));
+}
+
+/* Full Screen: the bar spans the conversation column, up to the threads drawer */
+body.asst-full .assistant-dock
+{
+  --threads-width: calc(max(var(--assistant-threads-min),
+    calc((100vw - 2 * var(--content-offset) - 2 * var(--layout-gap)) * var(--assistant-threads-ratio))) + var(--layout-gap));
+  bottom: var(--assistant-dock-inset);
+  right: calc(var(--content-offset) + var(--assistant-dock-inset) + var(--threads-width));
+  width: calc(100vw - 2 * (var(--content-offset) + var(--assistant-dock-inset)) - var(--threads-width));
+}
+
+/* Full Screen with the threads panel closed, the assistant-bar spans the whole column. */
+body.asst-full:has(.threads_panel[style*="display: none"]) .assistant-dock
+{
+  --threads-width: 0px;
+}
+
+/* The panel reserves the actual dock space so messages remain always visible */
+body.asst-half .assistant_panel
+{
+  padding-bottom: calc(var(--dock-height, 80px) + 2 * var(--assistant-inset));
+  box-sizing: border-box;
+}
+
+body.asst-full .assistant_main
+{
+  margin-bottom: calc(var(--dock-height, 80px) + 2 * var(--assistant-inset));
+}
+
+@media (max-width: 723px)
+{
+  body.asst-full .assistant-dock
+  {
+    --threads-width: 0px;
+  }
+}
+
+body.asst-off .assistant-dock,
+body.asst-off .assistant_panel
+{
+  display: none !important;
+}
+
+/* ======================================================================== */
+/* FOOTER */
+/* ======================================================================== */
+
+.app_footer
+{
+  display: flex;
+  flex-direction: column;
+  background-color: var(--footer-background);
+  color: var(--footer-color);
+  margin: 0 var(--layout-gap) var(--layout-gap);
+  border-radius: var(--radius-lg);
+  padding-bottom: 20px;
 }
 
 /* social networks */
@@ -671,7 +1053,7 @@
 
 .social_networks ul li a
 {
-  color: #f0f0f0;
+  color: var(--footer-color);
 }
 
 .social_networks ul li a:hover
@@ -709,7 +1091,6 @@
   border-right: none;
 }
 
-
 .footer_menu ul li a
 {
   color: var(--surface-100);
@@ -721,50 +1102,94 @@
   text-decoration: none;
 }
 
-@media all and (max-width : 800px)
+@keyframes fade_in
 {
-  .app_toolbar
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+/* ======================================================================== */
+/* SMALL SCREENS */
+/* ======================================================================== */
+
+@media (max-width: 800px)
+{
+  :root
   {
-    display: none;
+    --layout-assistant-width: 0px; /* the assistant is stacked below, not a column */
+  }
+
+  /* the assistant bar takes the whole width: minimized, aligned with the
+     content; half screen, inside the panel. Full screen keeps its own rule */
+  body.asst-min .assistant-dock
+  {
+    left: var(--layout-gap);
+    right: var(--layout-gap);
+    width: auto;
+  }
+
+  body.asst-half .assistant-dock
+  {
+    left: var(--assistant-dock-inset);
+    right: var(--assistant-dock-inset);
+    width: auto;
   }
 
   .content_assistant
   {
     flex-direction: column;
     width: 100%;
-    height: 200px;
   }
 
-  .assistant_panel
+  /* the content shrinks (and scrolls inside) so the stacked assistant keeps
+     its half of the screen */
+  .content_footer
   {
-    width:100%;
+    min-height: 0;
+  }
+
+  .content_assistant > .assistant_panel
+  {
+    width: auto; /* stretched between its margins (100% + margins would overflow) */
     height: 50%;
     min-height: 50%;
     border-left: none;
-    border-top: 1px solid var(--primary-color);
+    border-top: none;
+    margin: 0 var(--layout-gap) var(--layout-gap);
   }
 
-  .assistant_slider
+  /* half screen: the content fades out at its bottom edge, as if it went
+     under the assistant panel stacked below */
+  body.asst-half .content_footer::after
   {
-    left: 50%;
-    top: 0;
+    content: "";
+    position: sticky;
+    bottom: 0;
+    display: block;
+    flex-shrink: 0;
+    height: 24px;
+    margin-top: -24px;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--surface-0));
   }
-  
-  .assistant_slider a i
+
+  /* full screen: the content is hidden, so the panel would go up behind the
+     header band */
+  body.asst-full .assistant_panel
   {
-    transform: rotate(90deg);
-  }  
+    margin-top: var(--panel-top);
+  }
 }
 
-@media only screen and (max-width: 700px) 
-{  
+@media only screen and (max-width: 700px)
+{
   body .ui-button.ui-button-text-icon-left.mini,
   body .ui-button.ui-button-text-icon-right.mini
   {
     padding-left: 2px;
     padding-right: 2px;
   }
-  
+
   body .ui-button.ui-button-text-icon-left.mini > .ui-button-text,
   body .ui-button.ui-button-text-icon-right.mini > .ui-button-text
   {
@@ -782,416 +1207,893 @@
   }
 }
 
-@media all and (max-width : 1100px)
+/* Very narrow phones (up to 400px): smaller compact logo so the header bar fits
+   in one line (about 330px) 
+@media (max-width: 400px)
 {
   :root
   {
-    --menu-mode: vertical;
+    --logo-height-compact: 30px;   about 128px wide 
   }
-  
-  .logo
+}*/
+
+/* ======================================================================== */
+/* SIDE MENU AS DRAWER (window up to 1359px): no left column. 1360px = the
+   minimum widths of the three columns. Independent of the compact mode. */
+/* ======================================================================== */
+
+@media (max-width: 1359px)
+{
+  :root
   {
-    width : calc(var(--column-width) * var(--logo-factor-small));
-    height: 50px;
-    mask-size: calc(var(--logo-width) * var(--logo-factor-small)) auto;
-    -webkit-mask-size: calc(var(--logo-width) * var(--logo-factor-small)) auto;
-    mask-position: left center;
-    -webkit-mask-position: left center;
-  }
-  
-  .app_header
-  {
-    padding-left:0;
+    --layout-side-width: 0px; /* no left column: the side menu is a drawer */
   }
 
-  .app_menubar
+  body.asst-min,
+  body.asst-off
   {
-    max-width: 100%;    
-  }
-    
-  .app_menubar .menu_button
-  {
-    display: flex;
-    width: var(--toolbar-button-size);
-    align-items: center;
-    justify-content: center;
-  }
-
-  .main_menu_panel
-  {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    border-radius: 0;
-    top: 0;
-    bottom: 0;
-    left: calc(var(--menu-width-small) * -1 - 10px);
-    width: var(--menu-width-small);
-    height: 100%;
-    max-width: 100%;
-    align-items:start;
-    z-index: 1000;
-    transition: left 0.3s ease-in-out;
-    margin: 0;
-    -webkit-box-shadow: var(--box-shadow);
-    -moz-box-shadow: var(--box-shadow);
-    background-color: var(--menuitem-d3-background);
-    box-shadow: var(--box-shadow);
-  }
-  
-  .main_menu_panel.show
-  {
-    left: 0;
-    transition: left 0.3s ease-in-out;
-  }  
- 
-  .main_menu_panel .header
-  {
-    display: flex;
-    font-family: var(--font-family);
-    font-size: var(--font-size);
-    color: var(--text-color);
-    flex-grow: 0;
-    padding: 4px;
-    border-bottom: 1px var(--surface-300) solid;
-    width: 100%;
-    align-items: center;
-    padding: 6px;
-  }  
-  
-  .main_menu
-  {
-    height: 100%;
-    scrollbar-gutter: stable;
-    background-color: var(--menuitem-d3-background);
-    flex-grow: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    align-items: start;
-  }
-    
-  .main_menu::-webkit-scrollbar
-  {
-    width: 0px;
-    height: 0px;
-  }
-  
-  .main_menu li.drop ul
-  {
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-  }
-
-  .main_menu ul li .menuitem
-  {
-    background-color: var(--menuitem-d1-background);
-  }
-  
-  .main_menu ul li .menuitem a
-  {
-    color: var(--menuitem-d1-color);
-  }  
-  
-  .main_menu ul li.invisible,
-  .main_menu ul ul li.invisible,
-  .main_menu ul ul ul li.invisible
-  {
-    display: block;
-  }
-   
-  .main_menu ul li.scroll,
-  .main_menu ul ul li.scroll,
-  .main_menu ul ul ul li.scroll
-  {
-    display: none;
-  }
-  
-  .main_menu > ul > li > ul
-  {
-    position: static;
-  }
-  
-  .main_menu ul ul,
-  .main_menu ul ul ul li
-  {
-    float: none;
-    position: static;
-  }
-  
-  .main_menu ul ul ul
-  {
-    margin: 0;
-  }
-  
-  .main_menu ul li,
-  .main_menu ul ul li
-  {
-    width: 100%;
-  }
-
-  .main_menu ul li > ul
-  {
-    max-height: 0;
-    visibility: hidden;
-    overflow: hidden;
-    display: block;
-    padding: 0 var(--menu-padding-left);
-    padding-right: 0;
-    transition: max-height var(--menu-transition-duration2) ease-in-out, 
-      visibility var(--menu-transition-duration2) step-end;
-  }
-  
-  .main_menu ul li.drop > ul
-  {
-    visibility: visible;
-    transition: max-height var(--menu-transition-duration2) ease-in-out, 
-      visibility 0s;
-  }  
-  
-  .main_menu ul li,
-  .main_menu ul ul li,
-  .main_menu ul li.drop > ul,
-  .main_menu ul ul li.drop > ul
-  {
-    _width: 100%;
-  }
-
-  .main_menu > ul > li > .menuitem
-  {
-    margin-right: 0;
-    margin-top: var(--menuitem-margin);
-    margin-bottom: var(--menuitem-margin);
-  }
-
-  .main_menu ul ul li .menuitem
-  {
-    border-left: 1px solid var(--surface-400);
-  }
-
-  .main_menu ul li.drop > ul
-  {
-    display:inherit;
-    animation: none;
-  }
-    
-  .main_menu ul > li > .menuitem .caret i
-  {
-    transform: rotate(90deg);
-    transition: transform var(--menu-transition-duration2) ease-in-out;
-  }
-  
-  .main_menu ul > li.drop > .menuitem .caret i
-  {
-    transform: rotate(270deg);
-  }  
-
-  .main_menu ul ul > li > .menuitem .caret i
-  {
-    transform: rotate(90deg);
-  }
-
-  .main_menu ul ul > li.drop > .menuitem .caret i
-  {
-    transform: rotate(270deg);
-  }
-
-  .main_menu > ul
-  {
-    visibility: visible;
-    opacity: 1;
-    _transition: opacity var(--menu-transition-duration2) linear;
+    --assistant-space: 0px;
   }
 
   .side_menu_button
   {
-    visibility: visible;
-  }  
-  
+    display: inline-flex;
+  }
+
+  /* drawer: floating card on the left, like the main menu drawer of COMPACT MODE */
   .side_menu_panel
   {
     display: block;
     position: fixed;
-    top: 0;
-    bottom: 0;
-    left: calc(var(--menu-width-small) * -1 - 10px);
-    max-width: 100%;
+    top: var(--drawer-inset);
+    bottom: var(--drawer-inset);
+    left: var(--drawer-hidden-left);
     z-index: 1000;
-    background-color: var(--surface-ground);
-    width: var(--menu-width-small);
-    transition: left 0.3s ease-in-out;
+    width: min(var(--drawer-width), calc(100vw - 2 * var(--drawer-inset)));
+    margin: 0;
     box-shadow: var(--box-shadow);
+    visibility: hidden;
+    transition: left 0.3s ease-in-out, visibility 0s 0.3s;
   }
 
   .side_menu_panel.show
   {
-    left: 0;
+    left: var(--drawer-inset);
+    visibility: visible;
     transition: left 0.3s ease-in-out;
   }
 }
 
-/* right panel */
-.right_panel
+/* ======================================================================== */
+/* COMPACT MODE : vertical main menu (drawer) and compact
+   logo. */
+/* ======================================================================== */
+
+:root:where(.menu-compact)
 {
+  --menu-mode: vertical;
+  --logo-margin-left: 8px;       /* next to the menu button (desktop: computed) */
+  --header-padding-end: 12px;    /* desktop: 20px */
+}
+
+:where(.menu-compact) .logo
+{
+  height: var(--logo-height-compact);
+}
+
+:where(.menu-compact) .logo .logo_full
+{
+  display: none;
+}
+
+:where(.menu-compact) .logo .logo_compact
+{
+  display: block;
+}
+
+:where(.menu-compact) .app_menubar
+{
+  column-gap: 0;
+}
+
+:where(.menu-compact) .header_brand
+{
+  padding-right: 0;
+  border-right: none;
+}
+
+:where(.menu-compact) .app_menubar .menu_button
+{
+  display: flex;
+  width: var(--menu-button-size);
+  align-items: center;
+  justify-content: center;
+}
+
+/* drawer: floating card on the left, like the side menu drawer. Hidden, it
+   waits off screen (visibility: hidden once it has slid out, so its shadow
+   does not peek and its links are out of the tab order) */
+:where(.menu-compact) .main_menu_panel
+{
+  display: flex;
+  flex-direction: column;
   position: fixed;
-  overflow: hidden;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: var(--right-panel-width);
-  transform: translateX(100%);
-  height: 100%;
-  max-width: 100%;
+  top: var(--drawer-inset);
+  bottom: var(--drawer-inset);
+  left: var(--drawer-hidden-left);
   z-index: 1000;
-  background-color: var(--surface-ground);
-  box-shadow: none;
-  color: var(--text-color);
-  background-color: var(--surface-0);
-  transition: box-shadow 0s 0.3s, transform 0.3s ease-in-out;
-}
-
-.right_panel.show
-{
-  transform: translateX(0);
-  transition: box-shadow 0s, transform 0.3s ease-in-out;
+  width: min(var(--drawer-width), calc(100vw - 2 * var(--drawer-inset)));
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-card);
   box-shadow: var(--box-shadow);
+  visibility: hidden;
+  transition: left 0.3s ease-in-out, visibility 0s 0.3s;
 }
 
-/* font */
-
-.font_resizer input[type="range"] 
+:where(.menu-compact) .main_menu_panel.show
 {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
+  left: var(--drawer-inset);
+  visibility: visible;
+  transition: left 0.3s ease-in-out;
+}
+
+:where(.menu-compact) .main_menu_panel .header
+{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.75rem 0.25rem 1.25rem;
+  font-size: var(--font-size);
+  color: var(--text-color);
+}
+
+:where(.menu-compact) .main_menu
+{
+  scrollbar-gutter: stable;
+  flex-grow: 1;
+  min-height: 0; /* scrolls inside the card */
+  box-sizing: border-box;
+  padding: 0 0.5rem 0.75rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: start;
+}
+
+:where(.menu-compact) .main_menu::-webkit-scrollbar
+{
+  width: 0px;
+  height: 0px;
+}
+
+:where(.menu-compact) .main_menu li.drop ul
+{
+  box-shadow: none;
+}
+
+:where(.menu-compact) .main_menu ul li .menuitem
+{
+  background-color: var(--menuitem-d1-background);
+}
+
+/* tighter items than in the desktop menus (--menuitem-padding) */
+:where(.menu-compact) .main_menu ul li .menuitem a
+{
+  color: var(--text-color);
+  padding: 6px 10px;
+  margin: 0;
+}
+
+:where(.menu-compact) .main_menu > ul > li > ul
+{
+  position: static;
+}
+
+:where(.menu-compact) .main_menu ul ul,
+:where(.menu-compact) .main_menu ul ul ul li
+{
+  float: none;
+  position: static;
+}
+
+:where(.menu-compact) .main_menu ul ul ul
+{
+  margin: 0;
+}
+
+:where(.menu-compact) .main_menu ul li,
+:where(.menu-compact) .main_menu ul ul li
+{
   width: 100%;
-  margin-left:0;
 }
 
-/* Removes default focus */
-.font_resizer input[type="range"]:focus 
+:where(.menu-compact) .main_menu ul li > ul
 {
-  outline: none;
+  max-height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  display: block;
+  padding: 0 var(--menu-padding-left);
+  padding-right: 0;
+  transition: max-height var(--menu-transition-duration2) ease-in-out,
+    visibility var(--menu-transition-duration2) step-end;
 }
 
-/* slider track */
-.font_resizer input[type="range"]::-webkit-slider-runnable-track 
+:where(.menu-compact) .main_menu ul li.drop > ul
 {
-  background-color: var(--surface-300);
-  border-radius: var(--border-radius);
-  height: 0.5rem;
+  visibility: visible;
+  display: inherit;
+  animation: none;
+  transition: max-height var(--menu-transition-duration2) ease-in-out,
+    visibility 0s;
 }
 
-/* slider thumb */
-.font_resizer input[type="range"]::-webkit-slider-thumb 
+:where(.menu-compact) .main_menu > ul > li > .menuitem
 {
-  -webkit-appearance: none; /* Override default look */
-  appearance: none;
-  margin-top: -0.25rem;
-  background-color: var(--primary-color);
-  border-radius: 50%;
-  height: 1rem;
-  width: 1rem;
-  outline: 3px solid var(--surface-300);
+  margin-top: var(--menuitem-margin);
+  margin-bottom: var(--menuitem-margin);
 }
 
-.font_resizer input[type="range"]:focus::-webkit-slider-thumb 
+:where(.menu-compact) .main_menu ul > li > .menuitem .caret i
 {
-  outline: 3px solid var(--surface-400);
+  transform: rotate(90deg);
+  transition: transform var(--menu-transition-duration2) ease-in-out;
 }
 
-/*********** Firefox styles ***********/
-/* slider track */
-.font_resizer input[type="range"]::-moz-range-track 
+:where(.menu-compact) .main_menu ul > li.drop > .menuitem .caret i
 {
-  background-color: var(--surface-300);
-  border-radius: var(--border-radius);
-  height: 1rem;
+  transform: rotate(270deg);
 }
 
-/* slider thumb */
-.font_resizer input[type="range"]::-moz-range-thumb 
+:where(.menu-compact) .main_menu ul ul > li > .menuitem .caret i
 {
-  appearance: none;
-  margin-top: -0.125rem;
-  background-color: var(--primary-color);
-  border-radius: 50%;
-  height: 1.25rem;
-  width: 1.25rem;
+  transform: rotate(90deg);
 }
 
-.font_resizer input[type="range"]:focus::-moz-range-thumb
+:where(.menu-compact) .main_menu ul ul > li.drop > .menuitem .caret i
 {
-  outline: 3px solid var(--surface-400);
+  transform: rotate(270deg);
 }
 
-@keyframes fade_in
+:where(.menu-compact) .main_menu > ul
 {
-  from {opacity:0;}
-  to {opacity:1;}
+  visibility: visible;
+  opacity: 1;
+  padding: 0;
 }
 
-/* Assistant Dock - Wraps the floating bar that stays with the user while navigating.
-The dock is always visible and exists outside .content-footer and .assistant-panel, so
-it does not depend on AJAX updates being rendered or on the panel's visibility state.
-The current size (min, half, or full) is set by setAssistantSize() in header.xhtml
-as a class on the <body> element.
-*/
+/* ======================================================================== */
+/* MEGA MENU (sheet menu) */
+/* ======================================================================== */
 
-/* If the assistant behaviour is ever unified with pf_app, move the assistant-dock
-rules to assistant.css */
-.assistant-dock
+.main_menu.mega > ul
 {
-  position: fixed;
-  bottom: 1rem;
+  position: static; /* the panel anchors to .app_header*/
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: var(--mega-bar-justify);
+  column-gap: var(--mega-bar-column-gap);
+  row-gap: 0;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+}
+
+.main_menu.mega > ul::after
+{
+  content: "";
+  order: 1;
+  flex: 0 0 100%;
+  height: 0;
+}
+
+/* second row: below the break, separated once from the first row */
+.main_menu.mega > ul > li:nth-child(n+5)
+{
+  order: 2;
+  margin-top: var(--mega-bar-row-gap);
+}
+
+.main_menu.mega > ul > li
+{
+  float: none;
+  display: block;
+  position: static; /* the panel anchors to .app_header, not to the tab */
+  min-width: 0;
+}
+
+.main_menu.mega > ul > li > .menuitem
+{
+  justify-content: center;
+  text-align: center;
+  border-radius: var(--radius-pill);
+  --mega-item-color: var(--text-color);
+}
+
+.main_menu.mega > ul > li > .menuitem a
+{
+  white-space: nowrap;
+  padding: var(--mega-tab-padding);
+  font-size: var(--mega-tab-font-size);
+}
+
+/* the outline goes outside: inside it would be lost on the selected pill */
+.main_menu.mega > ul > li > .menuitem a:focus-visible
+{
+  outline-offset: 2px;
+  border-radius: var(--radius-pill);
+}
+
+/* no caret at any level (in the compact menu it is still needed) */
+.main_menu.mega .entry .caret
+{
+  display: none;
+}
+
+/* open tab. It wins over the hover by specificity, not by order */
+.main_menu.mega > ul > li.drop > .menuitem
+{
+  background-color: var(--menuitem-selected-background) !important;
+  --mega-item-color: var(--menuitem-selected-color);
+}
+
+.main_menu.mega > ul > li.drop > .menuitem a
+{
+  font-weight: 600;
+}
+
+/* panel: content only (the card is .app_header::after). Full width of the
+   header bar; scrollbar on the left (rtl), level 2 on the left, level 3 on the right */
+.main_menu.mega > ul > li > ul
+{
+  position: absolute;
+  top: 100%;
+  left: 0;
   right: 0;
-  z-index: 100;
+  margin: 0 !important; /* overrides inline margins */
+  padding: 0;
   box-sizing: border-box;
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-/*  transition: width 180ms ease;  Animate the left side of the bar to grow*/
+  height: auto !important; /* overrides inline sizes */
+  min-height: var(--mega-panel-height, var(--mega-min-height)) !important;
+  max-height: var(--mega-panel-height, var(--mega-max-height)) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-color) transparent;
+  direction: rtl;
+  border-radius: 0 0 var(--header-radius) var(--header-radius); /* clips the scrollbar */
+  box-shadow: none;
+  background: transparent;
 }
 
-/* Minimized: Only the bar floating.*/
-body.asst-min .assistant-dock
+/* header and panel read as a single card while a tab (or a login or
+   configuration panel, in any menu mode: see HEADER SHEET) is open */
+.app_header:has(.main_menu.mega > ul > li.drop),
+.app_header:has(> .header_sheet.show)
 {
-  width: min(420px, calc(100vw - 2rem));
+  border-radius: var(--header-radius) var(--header-radius) 0 0;
+  box-shadow: var(--sheet-shadow);
 }
 
-/* Half Screen */
-body.asst-half .assistant-dock
+/* sheet card: a single element behind the open panel */
+.app_header:has(.main_menu.mega > ul > li.drop)::after,
+.app_header:has(> .header_sheet.show)::after
 {
-  width: var(--assistant-width);
-}
-
-/* Full Screen */
-body.asst-full .assistant-dock
-{
-  width: 100%;
-}
-
-/* The panel reserves the actual dock space so messages remain visible and are
-never obscured by the floating bar. --dock-height is updated by a ResizeObserver 
-in header.xhtml */
-body.asst-half .assistant_panel,
-body.asst-full .assistant_panel
-{
-  padding-bottom: calc(var(--dock-height, 80px) + 1rem);
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: var(--mega-panel-height, var(--mega-min-height));
   box-sizing: border-box;
+  z-index: 499; /* below the panel (500) */
+  pointer-events: none;
+  border-radius: 0 0 var(--header-radius) var(--header-radius);
+  box-shadow: var(--sheet-shadow);
+  background: var(--surface-card);
+  border-top: 1px solid var(--surface-border);
+  clip-path: inset(0 -96px -96px -96px); /* hides the upper part of the shadow; the sides and bottom leave room for its blur */
+  animation: mega_unfold var(--mega-open-duration) ease-out;
 }
 
-/* Mobile: The bar occupies the full width at all times */
-@media (max-width: 800px)
+.main_menu.mega > ul > li.drop > ul
 {
-  body.asst-min .assistant-dock,
-  body.asst-half .assistant-dock,
-  body.asst-full .assistant-dock
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--mega-l2-width);
+  grid-template-rows: repeat(var(--l2-count, 1), min-content) 1fr;
+  animation: mega_fade_in var(--mega-content-duration) ease-out; /* replaces fade_in */
+}
+
+/* sheet opening: the content unfolds */
+.main_menu.mega.mega_opening > ul > li.drop > ul
+{
+  animation: mega_unfold_content var(--mega-open-duration) ease-out;
+}
+
+@keyframes mega_fade_in
+{
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mega_unfold
+{
+  from { clip-path: inset(0 -96px 100% -96px); }
+  to   { clip-path: inset(0 -96px -96px -96px); }
+}
+
+@keyframes mega_unfold_content
+{
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+  .app_header:has(.main_menu.mega > ul > li.drop)::after,
+  .app_header:has(> .header_sheet.show)::after,
+  .main_menu.mega > ul > li.drop > ul,
+  .main_menu.mega.mega_opening > ul > li.drop > ul,
+  .app_header > .header_sheet.show
   {
-    width: auto;
-    left: 1rem;
-    right: 1rem; 
-    padding-right: 0;
-    padding-left: 0;
+    animation: none;
   }
+}
+
+.main_menu.mega > ul > li > ul::-webkit-scrollbar
+{
+  width: 8px;
+  height: 8px;
+}
+
+.main_menu.mega > ul > li > ul::-webkit-scrollbar-thumb
+{
+  background-color: var(--text-color);
+  border-radius: var(--border-radius);
+}
+
+/* level 2: vertical list on the left */
+
+.main_menu.mega > ul > li > ul > li
+{
+  display: contents;
+}
+
+.main_menu.mega > ul > li > ul > li > .menuitem
+{
+  grid-column: 2;
+  direction: ltr;
+  margin: 0 0.75rem;
+  background-color: transparent;
+  --mega-item-color: var(--mega-l2-color);
+}
+
+.main_menu.mega > ul > li > ul > li:first-child > .menuitem
+{
+  margin-top: 1.25rem;
+}
+
+.main_menu.mega > ul > li > ul > li:last-child > .menuitem
+{
+  margin-bottom: 0.75rem;
+}
+
+.main_menu.mega > ul > li > ul > li > .menuitem .entry
+{
+  font-weight: 700;
+  font-size: var(--mega-l2-font-size);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+/* level 3: only the active level 2*/
+
+.main_menu.mega > ul > li > ul > li > ul
+{
+  display: none;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  position: sticky;
+  top: 0;
+  left: auto; /* cancels the inherited left of ".main_menu ul ul ul" */
+  align-self: start;
+  direction: ltr;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--mega-rows), auto);
+  grid-auto-columns: var(--mega-column-width);
+  box-sizing: border-box;
+  margin: 0;
+  padding: 1rem;
+  height: auto !important; /* overrides inline sizes */
+  min-height: var(--mega-panel-height, var(--mega-min-height));
+  max-height: var(--mega-panel-height, none);
+  overflow: visible;
+  visibility: visible;
+  background-color: transparent;
+  box-shadow: none;
+  animation: none;
+}
+
+/* floating separator between level 2 and level 3 */
+.main_menu.mega > ul > li > ul > li > ul::before
+{
+  content: "";
+  position: absolute; 
+  left: 0;
+  top: 1.25rem;
+  bottom: 1.25rem;
+  border-left: 1px solid var(--surface-border);
+}
+
+.main_menu.mega > ul > li > ul > li.mega_active > ul
+{
+  display: grid;
+}
+
+.main_menu.mega > ul > li > ul > li > ul > li
+{
+  display: block;
+  width: auto;
+  position: static;
+}
+
+.main_menu.mega > ul > li > ul > li > ul > li > .menuitem
+{
+  background-color: transparent;
+  --mega-item-color: var(--text-color);
+}
+
+.main_menu.mega > ul > li > ul > li > ul > li > .menuitem a
+{
+  white-space: normal;
+  font-size: var(--mega-link-font-size);
+}
+
+.main_menu.mega li > .menuitem a,
+.main_menu.mega li > .menuitem a i
+{
+  color: var(--mega-item-color, var(--text-color));
+}
+
+/* selected: pinned level 2 */
+.main_menu.mega > ul > li > ul > li.mega_pinned > .menuitem
+{
+  background-color: var(--menuitem-selected-background) !important;
+  --mega-item-color: var(--menuitem-selected-color);
+}
+
+/* ======================================================================== */
+/* HEADER SHEET */
+/* ======================================================================== */
+
+/* The card is .app_header::after */
+.app_header > .header_sheet
+{
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: var(--mega-max-height);
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 500; /* over the card (499), like the panel of a tab */
+  border-radius: 0 0 var(--header-radius) var(--header-radius);
+}
+
+/* switching from a tab or from the other panel: the content fades */
+.app_header > .header_sheet.show
+{
+  display: block;
+  animation: mega_fade_in var(--mega-content-duration) ease-out;
+}
+
+/* opening the card: the content unfolds with it */
+.app_header > .header_sheet.sheet_opening.show
+{
+  animation: mega_unfold_content var(--mega-open-duration) ease-out;
+}
+
+/* opened panel selection */
+.app_header:has(> .login_panel.show) .login_button,
+.app_header:has(> .config_panel.show) .config_button
+{
+  background-color: var(--menuitem-selected-background) !important;
+  color: var(--menuitem-selected-color) !important;
+}
+
+/* content of the panels - two columns with a separator*/
+.header_sheet
+{
+  container-type: inline-size;
+}
+
+.sheet_body
+{
+  padding: 2rem 2.5rem;
+}
+
+.sheet_columns
+{
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: 2.5rem;
+}
+
+.sheet_column + .sheet_column
+{
+  box-shadow: inset 1px 0 0 var(--surface-border);
+  padding-left: 2.5rem;
+}
+
+@container (max-width: 599px)
+{
+  .sheet_body
+  {
+    padding: 1rem;
+  }
+
+  .sheet_columns
+  {
+    grid-auto-flow: row;
+    row-gap: 1.5rem;
+  }
+
+  .sheet_column + .sheet_column
+  {
+    box-shadow: inset 0 1px 0 var(--surface-border);
+    padding-left: 0;
+    padding-top: 1.5rem;
+  }
+}
+
+.sheet_title
+{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.sheet_title > i
+{
+  color: var(--primary-color);
+  font-size: 1.15rem;
+}
+
+.sheet_text
+{
+  margin-bottom: 1rem;
+  color: var(--text-color-secondary);
+}
+
+.sheet_actions
+{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Login - informative titles*/
+.login_methods
+{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.login_method
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 0.5rem;
+  border-radius: var(--radius-item);
+  background-color: var(--primary-tint);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login_method > i
+{
+  color: var(--primary-color);
+  font-size: 1.25rem;
+}
+
+/* Sheet - user initial */
+.sheet_user
+{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sheet_user_initial
+{
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--primary-tint);
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* sections of a column (language, font size...) */
+.sheet_section + .sheet_section
+{
+  margin-top: 1.5rem;
+}
+
+/* Aa ICON (font-size)*/
+.sheet_title_text
+{
+  color: var(--primary-color);
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.sheet_actions_end
+{
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* font size */
+.font_slider
+{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.font_slider_min
+{
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.font_slider_max
+{
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.font_sample
+{
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-item);
+  background-color: var(--primary-tint);
+}
+
+/* configuration: a card per theme */
+.theme_cards
+{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.theme_card
+{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem; /* the preview inside is concentric (radius - 8px) */
+  border-radius: var(--radius-item);
+  box-shadow: inset 0 0 0 1px var(--surface-border);
+  cursor: pointer;
+}
+
+.theme_card:has(.ui-radiobutton-box.ui-state-active)
+{
+  box-shadow: inset 0 0 0 1.5px var(--primary-color);
+}
+
+.theme_card:has(input:focus-visible)
+{
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: 2px;
+}
+
+/* the preview drawing */
+.theme_preview
+{
+  position: relative;
+  overflow: hidden;
+  height: 64px;
+  border-radius: calc(var(--radius-item) - 8px);
+  background-color: var(--surface-ground);
+  background-image: linear-gradient(to top, var(--preview-primary) 32%, var(--preview-ground) 32%);
+}
+
+/* header pill */
+.theme_preview::before
+{
+  content: "";
+  position: absolute;
+  top: 18%;
+  left: 12%;
+  right: 12%;
+  height: 28%;
+  border-radius: var(--radius-pill);
+  background-color: var(--preview-header);
+}
+
+.theme_card_name
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.25rem 0.25rem;
+  font-weight: 600;
+}
+
+/* only the selected one shows its radio, as a check */
+.theme_card .ui-radiobutton-box:not(.ui-state-active)
+{
+  visibility: hidden;
+}
+
+.theme_card .ui-radiobutton-box.ui-state-active .ui-radiobutton-icon::before
+{
+  content: "\e909"; /* pi-check */
+  font-family: "primeicons";
+  font-size: 0.75rem;
+}
+
+/* THEME PREVIEWS) */
+.theme_preview_nouFloat
+{
+  --preview-ground: #f3f4f7;
+  --preview-header: #ffffff;
+  --preview-primary: #ab0a53;
+}
+
+/* nouFloatDark: not created yet */
+.theme_preview_nouFloatDark
+{
+  --preview-ground: #16171b;
+  --preview-header: #23252b;
+  --preview-primary: #e0457f;
+}
+
+
+/* ======================================================================== */
+/* BORDERLESS HEADER - OPT 2. Comment to return to base version */
+/* ======================================================================== */
+
+.page_band
+{
+  background-color: var(--surface-card);
+}
+
+.page_band::before
+{
+  inset: calc(100% - var(--header-margin-bottom)) 0 0 0;
+}
+
+.app_header
+{
+  transition: box-shadow 0.15s;
+}
+
+.page_band:not(:has(.main_menu.mega > ul > li.drop, .header_sheet.show)) .app_header
+{
+  box-shadow: none;
 }

@@ -10,9 +10,12 @@
 
   <p:outputPanel id="cnt" styleClass="app_content">
     
-    <div class="nav_path_panel flex flex-row align-items-center flex-shrink-0 p-2">
-      <p:outputPanel id="nav_path"
-                     class="nav_path flex-grow-1">
+    <!-- the side menu is outside cnt: update it after each navigation -->
+    <p:remoteCommand name="syncSideMenu" autoRun="true"
+                     update="@form:side_menu_container" process="@none" />
+    
+    <div class="nav_path_panel flex-shrink-0 p-2">
+      <p:outputPanel id="nav_path" class="nav_path">
         <ui:repeat value="#{userSessionBean.selectedMenuItem.cursorPath}" var="item" offset="1">
           <p:commandLink action="#{templateBean.show(item.mid)}"
                          process="@this"
@@ -24,48 +27,12 @@
         </ui:repeat>
       </p:outputPanel>
       <p:button icon="pi pi-ellipsis-h" onclick="return toggleDialogPanel('side_menu_panel', event);"
-                class="ui-button-flat flex-grow-0 flex-shrink-0 side_menu_button mr-1" 
+                class="ui-button-flat ui-button-plain side_menu_button" 
                 rendered="#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible != 'false'}"/>
     </div>
 
-    <div class="flex-grow-1 flex flex-row overflow-hidden">
-      <p:outputPanel id="side_menu_panel" 
-                     styleClass="flex-grow-0 side_menu_panel dialog_panel"
-                     rendered="#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible != 'false'}">
-
-        <div class="p-2 font-bold" style="color:var(--text-color);font-size: 14px">#{userSessionBean.selectedMenuItem.parent.parent.label}</div> 
-
-        <sf:treeMenu id="side_menu" var="item" expandDepth="3" styleClass="side_menu"
-                     expandSelected="true"
-                     baseMid="#{userSessionBean.selectedMenuItem.parent.mid}">
-          <f:facet name="data">
-            <ui:fragment rendered="#{item.rendered}">
-              <p:commandLink action="#{templateBean.show(item.mid)}"
-                             rendered="#{item.action != 'url'}"
-                             process="@form:side_menu_panel"
-                             onclick="hideDialogPanel('side_menu_panel')"
-                             styleClass="#{item.selected ? 'selected' : ''}"
-                             update="@form:cnt">
-                <ui:fragment rendered="#{item.directProperties.icon != null}">
-                  <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
-                </ui:fragment>
-                #{applicationBean.translate(item.label)}
-              </p:commandLink>
-              <p:link href="#{item.properties.url}"
-                      rendered="#{item.action == 'url'}"
-                      onclick="hideDialogPanel('side_menu_panel')"
-                      target="#{item.properties.target == null ? '_self' : item.properties.target}">
-                <ui:fragment rendered="#{item.directProperties.icon != null}">
-                  <i class="ui-icon #{item.directProperties.icon} mr-1'}" />
-                </ui:fragment>
-                #{applicationBean.translate(item.label)}
-              </p:link>
-            </ui:fragment>
-          </f:facet>
-        </sf:treeMenu>
-      </p:outputPanel>
-
-      <div class="flex-grow-1 overflow-auto">
+    <div class="flex-grow-1 flex flex-row">
+      <div class="app_body flex-grow-1 overflow-auto">
         <ui:include src="#{templateBean.content}"></ui:include>
       </div>
     </div>
@@ -79,6 +46,38 @@
       elem.classList.remove("none");
       var footerMode = "#{userSessionBean.selectedMenuItem.properties.footerMode == null ? 'normal' : userSessionBean.selectedMenuItem.properties.footerMode}";
       elem.classList.add(footerMode);
+      
+      // Application pages, like maps, grid(main page). The content uses the whole window
+      var fullWidth = "#{userSessionBean.selectedMenuItem.properties.fullWidth}";
+      var pageFull = fullWidth === "true" ? true
+                   : fullWidth === "false" ? false
+                   : (footerMode === "minimal" || footerMode === "none");
+      document.body.classList.toggle("page-full", pageFull);
+      document.body.classList.toggle("side-off",
+          "#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible}" === "false");
+      // Assistant switched off in pages like maps (now, also on the first load,
+      // so it does not show while the page loads)
+      document.body.dataset.mid = "#{userSessionBean.selectedMenuItem.mid}";
+      document.body.classList.toggle("page-asst-off",
+          "#{userSessionBean.selectedMenuItem.properties.assistantClosedByDefault}" === "true");
+      switchAssistantForPage();
+      // Assistant size for the new page (on the first load, the header's
+      // load handler does it once the assistant exists)
+      if (document.readyState === "complete") sizeAssistantForPage();
+      
+    // Publishes the breadcrumb height so the side panels start below it
+    var breadcrumb = document.querySelector(".nav_path_panel");
+    if (breadcrumb)
+    {
+      if (window._breadcrumbObserver) window._breadcrumbObserver.disconnect();
+      if (window.ResizeObserver)
+      {
+        window._breadcrumbObserver = new ResizeObserver(function(entries){
+          document.body.style.setProperty("--breadcrumb-height", entries[0].target.offsetHeight + "px");
+        });
+        window._breadcrumbObserver.observe(breadcrumb);
+      }
+    }
     </script>      
  
   </p:outputPanel>

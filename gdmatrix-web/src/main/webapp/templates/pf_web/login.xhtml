@@ -7,123 +7,123 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
-  <h:panelGroup id="login_sb" layout="block" 
-                class="login_panel right_panel dialog_panel">
+  <h:panelGroup id="login_sb" layout="block"
+                class="login_panel dialog_panel header_sheet">
     <div class="ui-widget flex flex-column w-full h-full">
-      <div class="flex align-items-center p-3 border-bottom-1 border-300 flex-grow-0">
-        <div class="flex-grow-1"><i class="pi pi-user mr-1" /><h:outputText id="id_label" class="font-bold" value="#{webBundle.identification}" /></div>
-        <p:button onclick="return hideDialogPanel('login_panel', event);" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
-      </div>
-
-      <p:outputPanel class="overflow-auto p-3 pt-1 flex-grow-1">
+      <p:outputPanel class="sheet_body overflow-auto flex-grow-1">
+        <!-- Without user session -->
         <ui:fragment rendered="#{userSessionBean.anonymousUser}">
+          <div class="sheet_columns">
 
-          <h:panelGroup layout="block" styleClass="ui-fluid formgrid grid mb-3"
-                        rendered="#{userSessionBean.selectedMenuItem.properties.login_valid != null}">
-            <div class="p-2">
-              <div>
-                <i class="fa fa-certificate" /> <b>#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid)}</b>
+            <h:panelGroup layout="block" styleClass="sheet_column"
+                          rendered="#{userSessionBean.selectedMenuItem.properties.login_valid != null}">
+              <div class="sheet_title">
+                <i class="pi pi-verified" />
+                #{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid)}
               </div>
-              <h:outputText styleClass="block mt-2" value="#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid_info)}"
+              <h:outputText styleClass="sheet_text block"
+                            value="#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_valid_info)}"
                             rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_info != null}" />
-            </div>
-            <div class="p-2 w-full">
-              <p:commandButton action="#{validBean.login}"
-                               value="#{webBundle.buttonSignin}"
-                               icon="pi pi-sign-in" class="flex-grow-1"
-                               process="@this" update="@none" />
-              <p:linkButton href="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url}"
-                            icon="pi pi-external-link" target="_blank" class="flex-grow-1 mt-1"
-                            rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url != null}"
-                            value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text}" />
-            </div>
-          </h:panelGroup>
-
-          <div class="ui-fluid formgrid grid">
-            <h:panelGroup layout="block" styleClass="p-2" rendered="#{userSessionBean.selectedMenuItem.properties.login_password != null}">
-              <div>
-                <i class="fa fa-key" /> <b>#{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_password)}</b>
+              <div class="login_methods">
+                <div class="login_method"><i class="pi pi-id-card" /><span>#{webBundle.validMethodCertificate}</span></div>
+                <div class="login_method"><i class="pi pi-mobile" /><span>#{webBundle.validMethodIdcat}</span></div>
+                <div class="login_method"><i class="pi pi-comment" /><span>#{webBundle.validMethodClave}</span></div>
+              </div>
+              <div class="sheet_actions">
+                <p:commandButton action="#{validBean.login}"
+                                 value="#{webBundle.buttonSignin}" icon="pi pi-sign-in"
+                                 process="@this" update="@none" />
+                <p:linkButton href="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url}"
+                              value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text}"
+                              icon="pi pi-external-link" target="_blank" styleClass="ui-button-outlined"
+                              rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url != null}" />
               </div>
             </h:panelGroup>
-            <div class="field col-12">
-              <p:outputLabel value="#{webBundle.outputUsername}:" for="@next" />
-              <p:inputText value="#{templateBean.username}" pt:spellcheck="false"
-                           widgetVar="usernameInput"
-                           oninput="enableUserPassButton()"/>
+                         
+            <div class="sheet_column">
+              <h:panelGroup layout="block" styleClass="sheet_title"
+                            rendered="#{userSessionBean.selectedMenuItem.properties.login_password != null}">
+                <i class="pi pi-key" style="transform: rotate(180deg)"/>
+                #{applicationBean.translate(userSessionBean.selectedMenuItem.properties.login_password)}
+              </h:panelGroup>
+              <div class="field ui-fluid">
+                <p:outputLabel value="#{webBundle.outputUsername}" for="@next" />
+                <p:inputText value="#{templateBean.username}" pt:spellcheck="false"
+                             widgetVar="usernameInput"
+                             oninput="enableUserPassButton()" />
+              </div>
+              <div class="field ui-fluid">
+                <p:outputLabel value="#{webBundle.outputPassword}" for="@next" />
+                <p:password value="#{templateBean.password}" class="w-full"
+                            toggleMask="true" redisplay="true" />
+              </div>
+              <div class="sheet_actions">
+                <p:commandButton id="user_pass_button" widgetVar="userPassButton"
+                                 value="#{webBundle.buttonSignin}" action="#{templateBean.login}"
+                                 process="login_sb" update="login_messages"
+                                 icon="pi pi-sign-in"
+                                 oncomplete="if (!isFacesError()) hideDialogPanel('login_panel')" />
+              </div>
+              <p:messages id="login_messages" showSummary="true" styleClass="messages"
+                          showIcon="true" closable="false" />
             </div>
-            <div class="field col-12">
-              <p:outputLabel value="#{webBundle.outputPassword}:" for="@next" />
-              <p:password value="#{templateBean.password}" class="w-full"
-                          toggleMask="true" redisplay="true" />
-            </div>
-            <div class="p-2 w-full">
-              <p:commandButton id="user_pass_button" widgetVar="userPassButton"
-                               value="#{webBundle.buttonSignin}" action="#{templateBean.login}"
-                               process="login_sb" update="login_messages"
-                               icon="pi pi-sign-in"
-                               oncomplete="if (!isFacesError()) hideContainer('login_panel')" />
-            </div>
+
           </div>
-
-
           <p:defaultCommand target="user_pass_button" />
-
-          <p:messages id="login_messages" showSummary="true" styleClass="messages"
-                      showIcon="true" closable="false" />
         </ui:fragment>
 
+        <!-- with user session: show user data, and, for administrators show also the administration panel -->
         <ui:fragment rendered="#{not userSessionBean.anonymousUser}">
-
-          <div class="ui-fluid formgrid grid">
-
-            <h:panelGroup styleClass="p-2 w-full" layout="block">
-              <h:outputText value="#{userSessionBean.displayName}" class="block" />
-            </h:panelGroup>
-
-            <h:panelGroup styleClass="p-2 w-full" layout="block"
-                          rendered="#{userSessionBean.NIF != null}">
-              <h:outputText value="NIF: #{userSessionBean.NIF}" class="block" />
-            </h:panelGroup>
-
-            <h:panelGroup styleClass="p-2 w-full" layout="block"
-                          rendered="#{userSessionBean.CIF != null}">
-              <h:outputText value="CIF: #{userSessionBean.CIF}" class="block" />
-              <h:outputText value="#{webBundle.represents}:" rendered="#{userSessionBean.isRepresentant()}" class="block" />
-              <h:outputText value="#{userSessionBean.organizationName}" class="block font-italic" />
-            </h:panelGroup>
-
-            <h:panelGroup styleClass="p-2 w-full" layout="block"
-                          rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and
-                                      userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}">
-              <h:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" class="block" />
-              <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}" class="block">
-                <f:converter converterId="DateTimeConverter" />
-                <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
-              </h:outputText>
-            </h:panelGroup>
-
-            <div class="p-2 w-full">
-              <p:commandButton action="#{templateBean.logout}" icon="pi pi-sign-out"
-                               value="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
-                               oncomplete="hideContainer('login_panel')"
-                               update="@none" />
+          <div class="sheet_columns">
+            <!-- Info column -->
+            <div class="sheet_column">
+              <div class="sheet_title"><i class="pi pi-user" />#{webBundle.sessionStarted}</div>
+              <div class="sheet_user">
+                <span class="sheet_user_initial" aria-hidden="true">#{templateBean.userInitial}</span>
+                <div>
+                  <div class="font-bold">#{userSessionBean.displayName}</div>
+                  <h:outputText value="NIF: #{userSessionBean.NIF}" styleClass="block"
+                                rendered="#{userSessionBean.NIF != null}" />
+                  <h:panelGroup rendered="#{userSessionBean.CIF != null}">
+                    <h:outputText value="CIF: #{userSessionBean.CIF}" styleClass="block" />
+                    <h:outputText value="#{webBundle.represents}:" styleClass="block"
+                                  rendered="#{userSessionBean.isRepresentant()}" />
+                    <h:outputText value="#{userSessionBean.organizationName}" styleClass="block font-italic" />
+                  </h:panelGroup>
+                </div>
+              </div>
+              <h:panelGroup layout="block" styleClass="sheet_text"
+                            rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and
+                                        userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}">
+                <h:outputText value="#{applicationBean.translate(userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt'))}" styleClass="block" />
+                <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}" styleClass="block">
+                  <f:converter converterId="DateTimeConverter" />
+                  <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                </h:outputText>
+              </h:panelGroup>
+              <div class="sheet_actions">
+                <p:commandButton action="#{templateBean.logout}" icon="pi pi-sign-out"
+                                 value="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
+                                 oncomplete="hideDialogPanel('login_panel')"
+                                 update="@none" />
+              </div>
             </div>
-            
-            <h:panelGroup styleClass="p-2 w-full" layout="block" 
+
+            <!-- Administration panel -->
+            <h:panelGroup layout="block" styleClass="sheet_column"
                           rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}">
-              <h:outputText value="#{webBundle.workspace}: #{userSessionBean.workspaceId}" />
+              <div class="sheet_title"><i class="pi pi-shield" />#{webBundle.administration}</div>
+              <div class="sheet_text">#{webBundle.workspace}: #{userSessionBean.workspaceId}</div>
+              <div class="sheet_actions">
+                <p:commandButton value="#{webBundle.cmsEditor}"
+                                 action="#{userSessionBean.showEditView}"
+                                 icon="pi pi-sitemap" ajax="false" />
+              </div>
             </h:panelGroup>
-            
-            <p:outputPanel styleClass="p-2 w-full" 
-                           rendered="#{userSessionBean.administrator or userSessionBean.cmsAdministrator}">            
-              <p:commandButton value="#{webBundle.cmsEditor}"
-                               action="#{userSessionBean.showEditView}"
-                               icon="pi pi-sitemap" ajax="false" />              
-            </p:outputPanel>            
-                        
+
           </div>
         </ui:fragment>
       </p:outputPanel>
     </div>
-  </h:panelGroup>    
+  </h:panelGroup>
 </ui:composition>

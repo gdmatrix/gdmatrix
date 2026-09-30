@@ -36,12 +36,12 @@ body .ui-widget
 body .ui-inputfield,
 body .ui-selectonemenu .ui-selectonemenu-label
 {
-  background-color: var(--surface-ground);
+  background-color: var(--input-background, var(--surface-ground));
 }
 
 body .ui-selectonemenu .ui-selectonemenu-trigger 
 {
-  background-color: var(--surface-ground);
+  background-color: var(--input-background, var(--surface-ground));
 }
 
 /* component styles */
@@ -294,17 +294,17 @@ body .ui-datatable .ui-datatable-header
 body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-even:hover,
 body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd:hover
 {
-  background-color: var(--surface-100) !important;
+  background-color: var(--datatable-row-hover-background, var(--surface-100)) !important;
 }
 
 body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd
 {
-  background: var(--surface-50);
+  background: var(--datatable-stripe-background, var(--surface-50));
 }
 
 body .ui-datatable.ui-datatable-striped .ui-datatable-data > tr.ui-datatable-odd+tr.ui-expanded-row-content
 {
-  background: var(--surface-50);
+  background: var(--datatable-stripe-background, var(--surface-50));
 }
 
 .ui-menu-button.ui-button-flat button

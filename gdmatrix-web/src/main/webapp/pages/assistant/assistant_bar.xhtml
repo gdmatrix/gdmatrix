@@ -10,13 +10,22 @@
     
     <h:panelGroup id="wsmAnchor" layout="block" style="position:absolute; top:0; left:0; width:1px; pointer-events:none;" />
 
-    <p:inputTextarea id="question" value="#{threadsBean.text}"
-                     pt:spellcheck="false" widgetVar="assistantTextarea"
-                     onkeydown="onAssistantKeyDown(event)"
-                     onkeyup="onAssistantKeyUp(event)" onpaste="assistantPaste(event)"
-                     rows="1" autoResize="true"
-                     placeholder="#{threadsBean.inputPlaceholder}" />
-
+    <div class="ab-input-row">
+      <p:inputTextarea id="question" value="#{threadsBean.text}"
+                       pt:spellcheck="false" widgetVar="assistantTextarea"
+                       onkeydown="onAssistantKeyDown(event)"
+                       onkeyup="onAssistantKeyUp(event)" onpaste="assistantPaste(event)"
+                       rows="1" autoResize="true"
+                       placeholder="#{threadsBean.inputPlaceholder}" />
+      <c:if test="#{userSessionBean.selectedMenuItem.properties.assistantBarEnabled!= 'true'}">
+        <p:commandButton id="closeAssistantBtn"
+                         type="button"
+                         title="Close"
+                         icon="pi pi-times"
+                         styleClass="ui-button-icon-only ab-close"
+                         onclick="animateAssistantButton(); toggleAssistantVisibility(event)" />
+      </c:if>
+    </div>
     <div class="ab-action-row">
       <div class="ab-left">
         <c:if test="#{userSessionBean.selectedMenuItem.properties.assistantBarEnabled != 'true'}" >
@@ -24,7 +33,7 @@
                            title="Window Size Menu"
                            icon="pi pi-bars" styleClass="ui-button-icon-only wsm-toggle-btn"
                            onmousedown="toggleWsm(event)" />
-        <!-- Suggestions (dissabled for now) -->
+        <!-- Suggestions (disabled for now) -->
         <p:commandButton type="button"
                          title="Suggested questions"
                          icon="pi pi-question" styleClass="ui-button-icon-only"
@@ -38,22 +47,23 @@
                          icon="pi pi-paperclip" styleClass="ui-button-icon-only" />
       </div>
       <div class="ab-spacer"></div>
+      
+      <div class="ab-send-column">
+        <p:commandButton action="#{threadsBean.sendMessage()}"
+                         process="@this question page_url"
+                         update="question threads_panel uploaded_file floating_bar"
+                         widgetVar="assistantSendButton" title="#{objectBundle.send}"
+                         onclick="sendMessage()" global="false"
+                         oncomplete="showResponse('#{threadsBean.threadId}'); if (typeof rememberAssistantThread === 'function') rememberAssistantThread('#{threadsBean.threadId}')"
+                         icon="pi pi-arrow-right" styleClass="ab-send ui-button-icon-only" />
 
-      <p:commandButton action="#{threadsBean.sendMessage()}"
-                       process="@this question page_url"
-                       update="question threads_panel uploaded_file floating_bar"
-                       widgetVar="assistantSendButton" title="#{objectBundle.send}"
-                       onclick="sendMessage()" global="false"
-                       oncomplete="showResponse('#{threadsBean.threadId}')"
-                       icon="pi pi-arrow-right" styleClass="ab-send ui-button-icon-only" />
-
-      <p:commandButton action="#{threadsBean.interruptStreaming(true)}"
-                       process="@this"
-                       update="question threads_panel uploaded_file floating_bar"
-                       widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"
-                       style="display:none" global="false"
-                       icon="pi pi-stop-circle" styleClass="ab-send ab-stop ui-button-icon-only" />
-
+        <p:commandButton action="#{threadsBean.interruptStreaming(true)}"
+                         process="@this"
+                         update="question threads_panel uploaded_file floating_bar"
+                         widgetVar="assistantInterruptButton" title="#{assistantBundle.interruptStreaming}"
+                         style="display:none" global="false"
+                         icon="pi pi-stop-circle" styleClass="ab-send ab-stop ui-button-icon-only" />
+      </div>
       <h:inputHidden id="page_url" value="#{threadsBean.pageUrl}" />
     </div>
 
@@ -73,6 +83,7 @@
             <i class="pi pi-window-maximize"></i>
           </span>
           <span class="wsm-label">#{assistantBundle.windowSizeFull}</span>
+          <span class="wsm-check"><i class="pi pi-check"></i></span>
         </li>
         <li class="wsm-item" data-size="half" onclick="changeWindowSize('half')">
           <span class="wsm-icon wsm-icon-half">
@@ -81,15 +92,18 @@
           <span class="wsm-label">#{assistantBundle.windowSizeHalf}</span>
           <span class="wsm-check"><i class="pi pi-check"></i></span>
         </li>
-        <li class="wsm-item wsm-selected" data-size="min" onclick="changeWindowSize('min')">
+        <li class="wsm-item" data-size="min" onclick="changeWindowSize('min')">
           <span class="wsm-icon wsm-icon-min">
             <i class="pi pi-window-minimize"></i>
           </span>
           <span class="wsm-label">#{assistantBundle.windowSizeMin}</span>
+          <span class="wsm-check"><i class="pi pi-check"></i></span>
         </li>
       </ul>
     </p:overlayPanel>
-
+    <script type="text/javascript">
+    syncWsmSelection();  
+    </script>
   </h:panelGroup>
   
   <script type="text/javascript">

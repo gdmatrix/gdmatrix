@@ -450,26 +450,18 @@ function scrollMessages()
  * Window size menu (wsm-*, mirar assistant_bar.xhtml)
  * Added/moved these functions from the header because assistant_bar.xhtml
  * is used in both pf_web (nouweb) and pf_app (actual) where
- * maximize/minimize/hideAssistantPanel don't exist. The "guards typeof" are there to
- * prevent breaking the current/intra website (pf_app)
+ * setAssistantPanel and rememberAssistantChoice don't exist. The "guard typeof"
+ * is there to prevent breaking the current/intra website (pf_app)
  */
 function changeWindowSize(size)
 {
-  var fk = { preventDefault: function() {} };
-  
-  if (size === "full" && typeof maximizeAssistantPanel === "function")
+  if (typeof setAssistantPanel === "function")
   {
-    maximizeAssistantPanel(fk);
+    setAssistantPanel(size);
+    // Minimized by the user: content pages will not open it
+    rememberAssistantChoice(size === "min" ? "min" : null);
   }
-  else if (size === "half" && typeof minimizeAssistantPanel === "function")
-  {
-    minimizeAssistantPanel(fk);
-  }
-  else if (size === "min" && typeof hideAssistantPanel === "function")
-  {
-    hideAssistantPanel(fk);
-  }
-  
+
   updateWsmSelection(size);
   
   if (window.PF && PrimeFaces.widgets["wsmOverlay"])
@@ -484,6 +476,18 @@ function updateWsmSelection(size)
   {
     item.classList.toggle("wsm-selected", item.dataset.size === size);
   });
+}
+
+function getAssistantSize()
+{
+  var match = document.body.className.match(/\basst-(min|half|full)\b/);
+  return match ? match[1] : "min";
+}
+
+// Re-aply currentSelection
+function syncWsmSelection()
+{
+  updateWsmSelection(getAssistantSize());
 }
 
 function expandIfMinimized()

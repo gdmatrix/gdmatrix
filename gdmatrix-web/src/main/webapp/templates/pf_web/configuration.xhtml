@@ -8,59 +8,84 @@
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:gdm="http://gdmatrix.org/faces">
   <h:panelGroup id="config_sb" layout="block" 
-                class="config_panel right_panel dialog_panel" >
+                class="config_panel dialog_panel header_sheet" >
     <div class="ui-widget flex flex-column w-full h-full">
-      <div class="flex align-items-center p-3 border-bottom-1 border-300 flex-grow-0">
-        <div class="flex-grow-1"><i class="pi pi-cog mr-1" /><h:outputText id="config_label" class="font-bold" value="#{webBundle.configuration}" /></div>
-        <p:button onclick="return hideDialogPanel('config_panel', event)" icon="pi pi-times" styleClass="text-color rounded-button ui-button-flat" />
-      </div>
+      <p:outputPanel class="sheet_body overflow-auto flex-grow-1">
+        <div class="sheet_columns">
 
-      <p:outputPanel class="overflow-auto p-3 pt-1 flex-grow-1">
+          <!-- Language and Font size -->
+          <div class="sheet_column">
+            <div class="sheet_section">
+              <h:outputLabel id="language_label" styleClass="sheet_title"
+                             pt:for="mainform:language_selector_input">
+                <i class="pi pi-globe"/>#{webBundle.language}
+              </h:outputLabel>
+              <p:selectOneMenu id="language_selector" value="#{userSessionBean.viewLanguage}"
+                               styleClass="w-full">
+                <p:ajax event="valueChange" process="@this"
+                        update="menubar login_sb language_label font_label font_sample 
+                        theme_label save_prefs assistant_dock @form:cnt global_confirm_dialog" />
+                <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale"
+                               itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)} (#{locale.language})" />
+              </p:selectOneMenu>
+            </div>
 
-        <div class="mt-3">
-          <h:outputLabel id="language_label" styleClass="ui-outputlabel ui-widget"
-                         value="#{webBundle.language}:"
-                         pt:for="mainform:language_selector_input" />
-          <p:selectOneMenu id="language_selector" value="#{userSessionBean.viewLanguage}"
-                           styleClass="mt-2 block">
-            <p:ajax event="valueChange" process="@this"
-                    update="menubar login_sb config_label language_label font_label theme_label save_prefs assistant_dock @form:cnt global_confirm_dialog" />
-            <f:selectItems value="#{userSessionBean.supportedLocales}" var="locale"
-                           itemValue="#{locale.language}" itemLabel="#{locale.getDisplayName(locale)} (#{locale.language})" />
-          </p:selectOneMenu>
-        </div>
-        <div class="mt-3">
-          <h:outputLabel id="theme_label" styleClass="ui-outputlabel ui-widget"
-                         value="#{webBundle.themes}:"
-                         pt:for="mainform:theme_selector_input" />          
-          <p:selectOneMenu id="theme_selector"
-                           value="#{userSessionBean.primefacesTheme}"
-                           styleClass="mt-2 block"
-                           widgetVar="themeSelector">
-            <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').input.val());" />
-            <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
-          </p:selectOneMenu>
-        </div>
-        <div class="font_resizer mt-3">
-          <h:panelGroup id="font_label">
-            <label for="font_range" class="block">#{webBundle.fontSize}:</label>
-          </h:panelGroup>
-          <input id="font_range" class="block w-full mt-3"
-                 type="range" min="12" max="14" step="1"
-                 value="#{userSessionBean.fontSize}"
-                 oninput="updateFontSize(this.value)"
-                 onchange="rcUpdateFontSize([{'name': 'fontSize', 'value': this.value}])" />
-          <p:remoteCommand action="#{userSessionBean.updateFontSize}" name="rcUpdateFontSize" />
-        </div>
-        <div class="mt-5 w-full">
+            <div class="sheet_section">
+              <h:panelGroup id="font_label" layout="block" styleClass="sheet_title">
+                <span class="sheet_title_text" aria-hidden="true">Aa</span>#{webBundle.fontSize}
+              </h:panelGroup>
+              <div class="font_slider">
+                <span class="font_slider_min" aria-hidden="true">A</span>
+                <h:inputHidden id="font_size" value="#{userSessionBean.fontSize}" />
+                <p:slider for="font_size" minValue="12" maxValue="18" step="1"
+                          styleClass="flex-grow-1" onSlide="updateFontSize(ui.value)">
+                  <p:ajax event="slideEnd" process="font_size" update="@none" global="false" />
+                </p:slider>
+                <span class="font_slider_max" aria-hidden="true">A</span>
+              </div>
+              <h:panelGroup id="font_sample" layout="block" styleClass="font_sample">
+                #{webBundle.sampleText}
+              </h:panelGroup>
+            </div>
+          </div>
+
+          <!-- Themes and Save -->
+          <div class="sheet_column">
+            <div class="sheet_section">
+              <h:panelGroup id="theme_label" layout="block" styleClass="sheet_title">
+                <i class="pi pi-palette" />#{webBundle.themes}
+              </h:panelGroup>
+              <p:selectOneRadio id="theme_selector" layout="custom" widgetVar="themeSelector"
+                                pt:aria-labelledby="mainform:theme_label"
+                                value="#{userSessionBean.primefacesTheme}">
+                <p:ajax oncomplete="PrimeFaces.changeTheme(PF('themeSelector').inputs.filter(':checked').val());" />
+                <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
+              </p:selectOneRadio>
+              <!-- Theme cards: the label points to the radio clone, so the
+                   widget handles the click and updates the real input -->
+              <div class="theme_cards">
+                <c:forEach items="#{userSessionBean.primefacesThemeSelectItems}" var="theme" varStatus="loop">
+                  <label class="theme_card" for="mainform:theme_selector:#{loop.index}_clone">
+                    <span class="theme_preview theme_preview_#{theme.value}" aria-hidden="true"/>
+                    <span class="theme_card_name">
+                      #{theme.label}
+                      <p:radioButton for="theme_selector" itemIndex="#{loop.index}"/>
+                    </span>
+                  </label>
+                </c:forEach>
+              </div>
+            </div>
+
+            <div class="sheet_actions sheet_actions_end">
           <p:commandButton id="save_prefs"
                            action="#{templateBean.savePreferences}" icon="pi pi-save"
-                           value="#{webBundle.savePreferences}" styleClass="w-full"
+                           value="#{webBundle.savePreferences}"
                            rendered="#{userSessionBean.isPersistentUser()}"
                            process="@this" update="@none" />
+            </div>
+          </div>
         </div>
       </p:outputPanel>
     </div>
   </h:panelGroup>
-
 </ui:composition>
