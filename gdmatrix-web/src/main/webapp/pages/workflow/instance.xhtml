@@ -89,7 +89,7 @@
 
       <f:facet name="footer">
         <div style="display:flex; flex-direction: row">
-          <span style="flex-grow:1">
+          <span style="flex-grow:1" class="flex align-items-center justify-content-start">
             <p:linkButton value="#{workflowBundle.help}"
                           href="#{workflowInstanceBean.helpUrl}"
                           rendered="#{workflowInstanceBean.helpEnabled}"
@@ -109,7 +109,7 @@
                          icon="pi pi-info-circle" />
             </p:commandButton>
           </span>
-          <span style="flex-grow:1" class="text-right">
+          <span style="flex-grow:1" class="flex align-items-center justify-content-end">
             <p:commandButton value="#{workflowBundle.previous}" id="backward"
                              rendered="#{workflowInstanceBean.formEnabled and workflowInstanceBean.backwardEnabled}"
                              styleClass="mr-2"
