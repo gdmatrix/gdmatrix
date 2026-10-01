@@ -19,6 +19,13 @@ body
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 24px;
+  width: 100%;
+}
+
+.agenda-header-document,
+.agenda-footer-document
+{
+  width: 100%;
 }
 
 .agenda-title
@@ -27,6 +34,7 @@ body
   font-weight: 700;
   color: #1a1a1a;
   margin: 0;
+  width: 100%;
 }
 
 .agenda-link

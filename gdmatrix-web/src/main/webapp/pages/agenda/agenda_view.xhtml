@@ -14,17 +14,25 @@
   <section class="agenda-container overflow-hidden" aria-labelledby="agenda-heading">
 
     <!-- Header -->
-    <div class="agenda-header">
+    <div class="agenda-header">   
       <h1 id="agenda-heading" class="agenda-title">#{agendaViewBean.properties.label}</h1>
-        <p:ajaxStatus>
-          <f:facet name="start">
-            <div class="search-loading-badge">
-              <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
-              <span>Carregant...</span>
-            </div>
-          </f:facet>
-        </p:ajaxStatus>        
+      <p:ajaxStatus>
+        <f:facet name="start">
+          <div class="search-loading-badge">
+            <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+            <span>Carregant...</span>
+          </div>
+        </f:facet>
+      </p:ajaxStatus>          
     </div>
+    
+    <h:panelGroup class="agenda-header-document" layout="block"
+                  rendered="#{agendaViewBean.headerURL != null}">
+      <sf:browser url="#{agendaViewBean.headerURL}"
+        port="#{applicationBean.defaultPort}"
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}" />
+    </h:panelGroup>      
 
     <!-- Collapsible Filter Panel -->
     <details class="agenda-filter-card">
@@ -230,6 +238,15 @@
       </h:panelGroup>
 
     </h:panelGroup>
+    
+    <h:panelGroup class="agenda-footer-document" 
+                  rendered="#{agendaViewBean.footerURL != null}">
+      <sf:browser url="#{agendaViewBean.footerURL}"
+        port="#{applicationBean.defaultPort}"
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}" />
+    </h:panelGroup> 
+    
   </section>
 
   <gdm:saveBean value="agendaViewBean" />   

@@ -34,6 +34,7 @@ import com.google.gson.Gson;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +56,7 @@ import org.santfeliu.cases.AddressDescriptionCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -78,9 +80,15 @@ public class AgendaViewBean extends WebBean implements Serializable
   //Filters
   public static final String PERSON_FILTER_PROPERTY = "searchEventPerson";
   public static final String NAME_FILTER_PROPERTY = "searchEventPropertyName";
-  public static final String VALUE_FILTER_PROPERTY = "searchEventPropertyValue";  
+  public static final String VALUE_FILTER_PROPERTY = "searchEventPropertyValue"; 
+  public static final String DATE_COMPARATOR_FILTER_PROPERTY = "searchDateComparator";
+  public static final String START_DATE_FILTER_PROPERTY = "searchStartDate";
+  public static final String END_DATE_FILTER_PROPERTY = "searchEndDate";
+  public static final String SEARCH_DAYS = "searchDays";
   
-  //Render
+  //Renders
+  public static final String HEADER_DOCUMENT_PROPERTY = "header.docId";
+  public static final String FOOTER_DOCUMENT_PROPERTY = "footer.docId";  
   
   //Other
   public static final String SORT_EVENT_ROOM = "sortEventRoom";  
@@ -88,6 +96,7 @@ public class AgendaViewBean extends WebBean implements Serializable
   private static final String OUTCOME = "/pages/agenda/agenda_view.xhtml";
 
   private EventFilter eventFilter;
+  private String defaultStartDate;
 
   private final boolean groupedByMonth = true;
   
@@ -97,6 +106,7 @@ public class AgendaViewBean extends WebBean implements Serializable
   RoomTypeBean roomTypeBean;  
   
   private BasicSearchHelper<EventView> basicSearchHelper;
+  private List<SelectItem> locations;
 
   @PostConstruct
   public void init()
@@ -139,6 +149,7 @@ public class AgendaViewBean extends WebBean implements Serializable
         return results;
       }
     };
+    locations = createLocationSelectItems();
   }
 
   public String getFilterName()
@@ -165,7 +176,7 @@ public class AgendaViewBean extends WebBean implements Serializable
       eventFilter.setStartDateTime(
         TextUtils.formatDate(filterStartDate, "yyyyMMddHHmmss"));
     else
-      eventFilter.setStartDateTime(null);    
+      eventFilter.setStartDateTime(defaultStartDate);    
   }
 
   public String getSelectedTheme()
@@ -265,7 +276,7 @@ public class AgendaViewBean extends WebBean implements Serializable
   
   public List<SelectItem> getLocations()
   {
-    return createRoomSelectItems(eventFilter.getRoomId());
+    return locations;
   }
   
   public void search()
@@ -276,10 +287,7 @@ public class AgendaViewBean extends WebBean implements Serializable
   private void setConfigurationFilter()
   {
     eventFilter = new EventFilter();
-    
-    eventFilter.setStartDateTime(TextUtils.formatDate(
-      new Date(), "yyyyMMddHHmmss"));
-    
+      
     eventFilter.getThemeId().clear();
     eventFilter.getThemeId().addAll(getThemeIds());
     
@@ -290,6 +298,52 @@ public class AgendaViewBean extends WebBean implements Serializable
     if (personId != null)
       eventFilter.setPersonId(personId);
     
+    //Start date
+    String startDate = getProperty(START_DATE_FILTER_PROPERTY);
+    if (StringUtils.isBlank(startDate))
+    {
+      defaultStartDate = TextUtils.formatDate(
+        new Date(), "yyyyMMddHHmmss");
+      eventFilter.setStartDateTime(defaultStartDate);
+    }
+    else
+    {
+      if (startDate.length() == 8)
+        startDate = startDate + "000000";
+      defaultStartDate = startDate;
+      String searchDays = getProperty(SEARCH_DAYS);
+      if (searchDays != null)
+      {
+        Integer intDays = Integer.valueOf(searchDays);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 0 - intDays);
+        Date minDate = cal.getTime();
+        Date sDate = TextUtils.parseInternalDate(startDate);
+        if (minDate.after(sDate))
+        {
+          String startDT = TextUtils.formatDate(minDate, "yyyyMMdd") + "000000";
+          eventFilter.setStartDateTime(startDT);
+        }
+        else
+          eventFilter.setStartDateTime(startDate);
+      }
+      else
+        eventFilter.setStartDateTime(startDate);
+    }
+    
+    //Date comparator
+    String dateComparator = getProperty(DATE_COMPARATOR_FILTER_PROPERTY);
+    if (!StringUtils.isBlank(dateComparator))
+      eventFilter.setDateComparator(dateComparator);
+    
+    //End date
+    String endDate = getProperty(END_DATE_FILTER_PROPERTY);
+    if (!StringUtils.isBlank(endDate))
+      eventFilter.setEndDateTime(endDate.substring(0, 8) + "235959");
+    else
+      eventFilter.setEndDateTime(null);
+    
+    //Dynamic properties
     List<String> propNames = 
       getSelectedMenuItem().getMultiValuedProperty(NAME_FILTER_PROPERTY);
     List<String> propValues = 
@@ -308,9 +362,19 @@ public class AgendaViewBean extends WebBean implements Serializable
     eventFilter.setSecurityMode(SecurityMode.FILTERED);
   }
   
+  //Header & footer methods
+  public String getHeaderURL()
+  {
+    return getURL(getProperty(HEADER_DOCUMENT_PROPERTY));
+  }
+
+  public String getFooterURL()
+  {
+    return getURL(getProperty(FOOTER_DOCUMENT_PROPERTY));
+  }
+  
   public class EventRow
   {
-
     private final String eventId;
     private final String eventTypeId;
     private final String eventTypeName;
@@ -425,37 +489,33 @@ public class AgendaViewBean extends WebBean implements Serializable
 
   public boolean isFirstOfMonth(int index)
   {
-    List<?> currentRows = getRows();
+    List<EventRow> currentRows = getRows();
     if (currentRows == null || index < 0 || index >= currentRows.size())
-    {
       return false;
-    }
 
     if (index == 0)
-    {
       return true;
-    }
 
-    EventRow current = (EventRow) currentRows.get(index);
-    EventRow previous = (EventRow) currentRows.get(index - 1);
+    EventRow current = currentRows.get(index);
+    EventRow previous = currentRows.get(index - 1);
 
     if (current.getStartLocalDate() == null || previous.getStartLocalDate() == null)
-    {
       return false;
-    }
+    
+    LocalDate currentStartDate = current.getStartLocalDate();
+    LocalDate previousStartDate = previous.getStartLocalDate();
 
-    return !current.getStartLocalDate().getMonth().equals(previous.getStartLocalDate().getMonth())
-      || current.getStartLocalDate().getYear() != previous.getStartLocalDate().getYear();
+    return !currentStartDate.getMonth().equals(previousStartDate.getMonth())
+      || currentStartDate.getYear() != previousStartDate.getYear();
   }
   
-  private List<SelectItem> createRoomSelectItems(String roomId)
+  private List<SelectItem> createLocationSelectItems()
   {
     List<SelectItem> result;
   
     List roomIdList = getRoomIds();
     if (roomIdList.isEmpty())
       return null;
-    
     else
       result = roomTypeBean.getSelectItems(roomIdList);
 
@@ -505,5 +565,22 @@ public class AgendaViewBean extends WebBean implements Serializable
 
     return result;
   }  
+  
+  private String getURL(String docId)
+  {
+    String url = null;
+    if (docId != null && !"none".equals(docId))
+    {
+      url = getConnectionBase() + "/documents/" + docId;
+    }
+    return url;    
+  }
+  
+  private String getConnectionBase()
+  {
+    return "http://localhost:" +
+      MatrixConfig.getProperty("org.santfeliu.web.defaultPort") +
+      getContextPath();
+  }      
    
 }

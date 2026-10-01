@@ -87,5 +87,5 @@ public abstract class WebBean extends FacesBean
   protected MenuItemCursor getSelectedMenuItem()
   {
     return UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
-  }
+  }  
 }
