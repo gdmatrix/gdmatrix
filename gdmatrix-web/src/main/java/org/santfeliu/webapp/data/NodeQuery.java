@@ -30,53 +30,70 @@
  */
 package org.santfeliu.webapp.data;
 
+import java.util.List;
+import org.matrix.cms.CMSManagerPort;
+import org.matrix.cms.Node;
+import org.matrix.cms.NodeFilter;
+import org.matrix.cms.Property;
 import org.santfeliu.security.util.Credentials;
+import org.santfeliu.webapp.modules.cms.CMSModuleBean;
 
 /**
  *
- * @author realor
+ * @author blanquepa
  */
-public class Data
+public class NodeQuery extends DataQuery<Node>
 {
-  final Credentials credentials;
- 
-  public Data()
-  {
-    credentials = new Credentials();
-  }
-  
-  public Data(Credentials credentials)
-  {
-    this.credentials = credentials;
-  }
+  NodeFilter filter;
 
-  public EventQuery events()
+  public NodeQuery(Credentials credentials)
   {
-    return new EventQuery(credentials);
+    super(credentials);
+    filter = new NodeFilter();
   }
   
-  public NewQuery news()
+  public NodeQuery workspaceId(String workspaceId)
   {
-    return new NewQuery(credentials);
+    filter.getWorkspaceId().add(workspaceId);
+    return this;
   }
   
-  public CaseQuery cases()
+  public NodeQuery nodeId(String nodeId)
   {
-    return new CaseQuery(credentials);
+    filter.getNodeId().add(nodeId);
+    return this;
   }
   
-  public DocumentQuery documents()
+  @Override
+  public DataQuery<Node> eq(String field, Object value)
   {
-    return new DocumentQuery(credentials);
-  }
-  
-  public NodeQuery nodes()
-  {
-    return new NodeQuery(credentials);
+    Property property = new Property();
+    property.setName(field);
+    property.getValue().add(String.valueOf(value));
+    filter.getProperty().add(property);
+    return this;
   }  
   
-  public SQLQuery sql(String dataSource, String sql)
+  @Override
+  public NodeQuery firstResult(Number firstResult)
   {
-    return new SQLQuery(dataSource, sql);
+    filter.setFirstResult(firstResult.intValue());
+    return this;
   }
+  
+  @Override
+  public NodeQuery maxResults(Number maxResults)
+  {
+    filter.setMaxResults(maxResults.intValue());
+    return this;
+  }  
+  
+  @Override
+  public List<Node> execute()
+  {
+    CMSManagerPort port = 
+      CMSModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
+    return port.findNodes(filter);
+  }
+  
 }
