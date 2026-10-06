@@ -53,6 +53,13 @@ public class DocumentQuery extends DataQuery<Document>
     super(credentials);
     filter = new DocumentFilter();
   }
+  
+
+  public DocumentQuery type(String typeId)
+  {
+    filter.setDocTypeId(typeId);
+    return this;
+  }  
 
   public DocumentQuery title(String title)
   {

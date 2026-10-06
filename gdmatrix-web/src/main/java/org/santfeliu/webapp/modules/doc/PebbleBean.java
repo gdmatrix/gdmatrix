@@ -51,6 +51,7 @@ import org.santfeliu.security.util.Credentials;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.webapp.data.Data;
+import org.santfeliu.webapp.data.NumberFilter;
 import org.santfeliu.webapp.data.ParseDateFilter;
 import org.santfeliu.webapp.data.ReverseTextFilter;
 
@@ -164,6 +165,7 @@ public class PebbleBean
       Map<String, Filter> filters = new HashMap<>();
       filters.put("reverseText", new ReverseTextFilter());
       filters.put("parseDate", new ParseDateFilter());
+      filters.put("number", new NumberFilter());
       return filters;
     }
   }
