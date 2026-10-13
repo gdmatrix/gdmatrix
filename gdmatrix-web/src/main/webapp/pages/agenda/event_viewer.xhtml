@@ -55,7 +55,7 @@
 
     <script>
       controlNavigationHistory({
-        url: "/pages/agenda/event_viewer.xhtml?xmid=#{userSessionBean.selectedMenuItem.mid}&amp;eventid=#{eventViewerBean.event.eventId}",
+        url: "/web/#{userSessionBean.selectedMenuItem.mid}?eventid=#{eventViewerBean.event.eventId}",
         title: "#{userSessionBean.selectedMenuItem.label}"
       });
 

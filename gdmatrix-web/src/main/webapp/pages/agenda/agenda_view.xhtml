@@ -173,9 +173,10 @@
 
               <div class="event-details">
                 <span class="event-category">#{event.eventTypeName}</span>
-                <a href="#" onclick="return showPage('Event', #{event.jsonParameters})" class="agenda-link">
+                <p:commandLink action="#{eventViewerBean.show}" process="@this" update="@form:cnt">
                   <h2 class="event-title">#{event.summary}</h2>
-                </a>
+                  <f:param name="eventid" value="#{event.eventId}" />
+                </p:commandLink>
                 <div class="event-location">
                   <i class="pi pi-map-marker" aria-hidden="true"></i>
                   <span>#{event.location}</span>
@@ -223,9 +224,10 @@
               <!-- Event Details -->
               <div class="event-details">
                 <span class="event-category">#{event.eventTypeName}</span>
-                <a href="#" onclick="return showPage('Event', #{event.jsonParameters})" class="agenda-link">
+                <p:commandLink action="#{eventViewerBean.show}" process="@this" update="@form:cnt">
                   <h2 class="event-title">#{event.summary}</h2>
-                </a>
+                  <f:param name="eventid" value="#{event.eventId}" />
+                </p:commandLink>
                 <div class="event-location">
                   <i class="pi pi-map-marker" aria-hidden="true"></i>
                   <span>#{event.location}</span>

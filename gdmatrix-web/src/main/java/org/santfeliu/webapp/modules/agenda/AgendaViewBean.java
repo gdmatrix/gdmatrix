@@ -103,7 +103,9 @@ public class AgendaViewBean extends WebBean implements Serializable
   @Inject
   ThemeTypeBean themeTypeBean;
   @Inject
-  RoomTypeBean roomTypeBean;  
+  RoomTypeBean roomTypeBean;
+  @Inject
+  EventViewerBean eventViewerBean;
   
   private BasicSearchHelper<EventView> basicSearchHelper;
   private List<SelectItem> locations;
@@ -221,12 +223,16 @@ public class AgendaViewBean extends WebBean implements Serializable
 
   public String getContent()
   {
-    return OUTCOME;
+    if (eventViewerBean.getEvent() != null)
+      return eventViewerBean.getContent();
+    else
+      return OUTCOME;
   }
 
   @CMSAction
   public String show()
   {
+    eventViewerBean.setEvent(null);
     basicSearchHelper.search();
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
