@@ -66,6 +66,12 @@ public class DocumentQuery extends DataQuery<Document>
     filter.setTitle(title);
     return this;
   }
+  
+  public DocumentQuery content(String content)
+  {
+    filter.setContentSearchExpression(content);
+    return this;
+  }  
 
   public DocumentQuery startDate(String startDate)
   {
