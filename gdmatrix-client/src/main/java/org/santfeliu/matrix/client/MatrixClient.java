@@ -255,6 +255,7 @@ public class MatrixClient extends javax.swing.JFrame
 
           if (trustStoreFile.exists())
           {
+            System.out.println("Trustore file found: " + trustStoreFile);
             System.setProperty("javax.net.ssl.trustStore",
               trustStoreFile.getAbsolutePath());
 
