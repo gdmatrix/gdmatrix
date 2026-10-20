@@ -25,7 +25,7 @@
       <p:outputPanel styleClass="footer buttons text-right" rendered="#{reportViewerBean.executeButtonRendered}">
         <p:commandButton id="default_button" value="#{reportViewerBean.executeButtonLabel == null ? webBundle.buttonExecute : reportViewerBean.executeButtonLabel}"
                          action="#{reportViewerBean.executeReport}" ajax="true"
-                         process="@form:cnt:find_selector"
+                         process="dyn_form_panel"
                          update="dyn_form @form:cnt:report_body"
                          resetValues="false"
                          styleClass="m-1" />        
