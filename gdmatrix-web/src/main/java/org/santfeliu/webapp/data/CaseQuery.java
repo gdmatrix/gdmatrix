@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.data;
 
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.santfeliu.security.util.Credentials;
 import org.matrix.cases.Case;
@@ -102,19 +103,22 @@ public class CaseQuery extends DataQuery<Case>
   public CaseQuery orderBy(String field, boolean descending)
   {
     String searchExpression = filter.getSearchExpression();
-    StringBuilder buffer = new StringBuilder(searchExpression);
-    boolean firstColumn = !searchExpression.contains("ORDER BY");
+    if (!StringUtils.isBlank(searchExpression))
+    {
+      StringBuilder buffer = new StringBuilder(searchExpression);
+      boolean firstColumn = !searchExpression.contains("ORDER BY");
 
-    if (!firstColumn)
-      buffer.append(", ");
-    else
-      buffer.append(" ORDER BY ");
+      if (!firstColumn)
+        buffer.append(", ");
+      else
+        buffer.append(" ORDER BY ");
 
-    buffer.append(field);
-    if (descending)
-      buffer.append(" desc ");
+      buffer.append(field);
+      if (descending)
+        buffer.append(" desc ");
  
-    filter.setSearchExpression(buffer.toString()); 
+      filter.setSearchExpression(buffer.toString()); 
+    }
     
     return this;
   }
@@ -139,5 +143,12 @@ public class CaseQuery extends DataQuery<Case>
     CaseManagerPort port = 
       CasesModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
     return port.findCases(filter);
-  }  
+  }
+
+  public Case load(String caseId)
+  {
+    CaseManagerPort port = 
+      CasesModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
+    return port.loadCase(caseId);
+  }
 }

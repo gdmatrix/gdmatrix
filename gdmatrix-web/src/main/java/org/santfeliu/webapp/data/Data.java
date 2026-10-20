@@ -65,6 +65,21 @@ public class Data
     return new CaseQuery(credentials);
   }
   
+  public CaseAddressesQuery caseAddresses()
+  {
+    return new CaseAddressesQuery(credentials);
+  }
+  
+  public CaseCasesQuery caseCases()
+  {
+    return new CaseCasesQuery(credentials);
+  }  
+  
+  public CasePersonsQuery casePersons()
+  {
+    return new CasePersonsQuery(credentials);
+  }  
+  
   public DocumentQuery documents()
   {
     return new DocumentQuery(credentials);

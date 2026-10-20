@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.doc;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.extension.AbstractExtension;
 import io.pebbletemplates.pebble.extension.Filter;
+import io.pebbletemplates.pebble.extension.Function;
 import io.pebbletemplates.pebble.loader.Loader;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -50,7 +51,11 @@ import org.matrix.doc.DocumentFilter;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.webapp.data.BrowserFunction;
 import org.santfeliu.webapp.data.Data;
+import org.santfeliu.webapp.data.GetDicPropertyValueFunction;
+import org.santfeliu.webapp.data.HtmlFormFunction;
+import org.santfeliu.webapp.data.ImagesCarouselFunction;
 import org.santfeliu.webapp.data.NumberFilter;
 import org.santfeliu.webapp.data.ParseDateFilter;
 import org.santfeliu.webapp.data.ReverseTextFilter;
@@ -84,7 +89,7 @@ public class PebbleBean
   {
     return new Data(credentials);
   }
-  
+    
   static public class MatrixLoader implements Loader<String>
   {
     public MatrixLoader()
@@ -167,6 +172,16 @@ public class PebbleBean
       filters.put("parseDate", new ParseDateFilter());
       filters.put("number", new NumberFilter());
       return filters;
+    }
+    
+    public Map<String, Function> getFunctions()
+    {
+      Map<String, Function> functions = new HashMap<>();
+      functions.put("htmlForm", new HtmlFormFunction());
+      functions.put("imagesCarousel", new ImagesCarouselFunction());
+      functions.put("getDicPropertyValue", new GetDicPropertyValueFunction());
+      functions.put("browser", new BrowserFunction());
+      return functions;
     }
   }
 }

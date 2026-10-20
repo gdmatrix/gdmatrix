@@ -34,8 +34,6 @@ import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.error.PebbleException;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import org.santfeliu.doc.web.*;
 import java.io.Serializable;
@@ -573,6 +571,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     context.put("mid", cursor.getMid());
     context.put("workspaceid", userSessionBean.getMenuModel()
       .getCWorkspace().getWorkspace().getWorkspaceId());
+    context.put("credentials", userSessionBean.getCredentials());
     return context;
   }
 

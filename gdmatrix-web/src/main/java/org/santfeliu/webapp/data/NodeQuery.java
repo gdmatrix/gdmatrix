@@ -30,7 +30,10 @@
  */
 package org.santfeliu.webapp.data;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.matrix.cms.CMSManagerPort;
 import org.matrix.cms.Node;
 import org.matrix.cms.NodeFilter;
@@ -64,6 +67,12 @@ public class NodeQuery extends DataQuery<Node>
     return this;
   }
   
+  public NodeQuery parentNodeId(String nodeId)
+  {
+    filter.getParentNodeId().add(nodeId);
+    return this;
+  }  
+  
   @Override
   public DataQuery<Node> eq(String field, Object value)
   {
@@ -93,7 +102,23 @@ public class NodeQuery extends DataQuery<Node>
   {
     CMSManagerPort port = 
       CMSModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
-    return port.findNodes(filter);
+    
+    List<Node> nodes = port.findNodes(filter);
+    
+    nodes.sort(Comparator.comparing(Node::getIndex));
+    
+    return nodes;  
+  }
+  
+  public Map<String, String> propertyMap(Node node) //TODO: return Map<String, List<String>>
+  {
+    Map<String, String> result = new HashMap();
+    for (Property prop : node.getProperty())
+    {
+      String value = !prop.getValue().isEmpty() ? prop.getValue().get(0) : "";
+      result.put(prop.getName(), value);
+    }
+    return result;
   }
   
 }
