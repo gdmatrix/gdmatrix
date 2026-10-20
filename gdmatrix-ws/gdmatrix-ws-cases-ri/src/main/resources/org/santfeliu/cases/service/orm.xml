@@ -427,7 +427,7 @@
             <column name="TITLE" length="512" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" length="200" />
+            <column name="COMMENTS" length="500" />
         </basic>
         <basic name="creationDateTime">
             <column name="creationDT" length="14" />
