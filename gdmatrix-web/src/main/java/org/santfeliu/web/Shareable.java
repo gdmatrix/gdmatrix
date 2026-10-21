@@ -83,5 +83,32 @@ public interface Shareable
     {
       this.description = description;
     }
+    
+    public String getPfIconClass()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.append("pi");
+      if (shareURL.contains("//www.facebook.com/"))
+      {
+        sb.append(" pi-facebook");
+      }
+      else if (shareURL.contains("//twitter.com/"))
+      {
+        sb.append(" pi-twitter");
+      }
+      else if (shareURL.contains("//www.linkedin.com/"))
+      {
+        sb.append(" pi-linkedin");
+      }
+      else if (shareURL.startsWith("mailto:"))
+      {
+        sb.append(" pi-envelope");
+      }
+      else if (shareURL.startsWith("whatsapp:"))
+      {
+        sb.append(" pi-whatsapp");
+      }
+      return sb.toString();
+    }
   }
 }

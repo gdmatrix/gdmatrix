@@ -1,0 +1,344 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:gdm="http://gdmatrix.org/faces">
+
+  <f:loadBundle basename="org.santfeliu.news.web.resources.NewsBundle"
+                var="newsBundle"/>
+
+  <ui:fragment rendered="#{!newCatalogBean.allowedNode}">
+    <p:outputLabel value="#{newsBundle.new_catalog_sectionNotReadable}" />
+  </ui:fragment>
+
+  <ui:fragment rendered="#{newCatalogBean.allowedNode}">
+
+    <h:outputStylesheet library="css" name="web/news.css" />
+
+    <section class="news-container overflow-hidden" aria-labelledby="news-heading">
+
+      <!-- Header -->
+      <div class="news-header">
+        <p:outputPanel rendered="#{newCatalogBean.rootSectionHeaderRender}">
+          <h2 id="news-heading" class="news-title">
+            <sf:outputText value="#{newCatalogBean.sectionDesc}"
+                           translator="#{userSessionBean.translator}"
+                           translationGroup="#{userSessionBean.translationGroup}" />
+          </h2>
+        </p:outputPanel>
+        <p:ajaxStatus>
+          <f:facet name="start">
+            <div class="search-loading-badge">
+              <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+              <span>#{objectBundle.loading}...</span>
+            </div>
+          </f:facet>
+        </p:ajaxStatus>
+      </div>
+
+      <h:panelGroup styleClass="news-header-document" layout="block"
+                    rendered="#{newCatalogBean.headerRender}">
+        <sf:browser url="#{newCatalogBean.headerUrl}"
+                    port="#{applicationBean.defaultPort}"
+                    translator="#{userSessionBean.translator}"
+                    translationGroup="#{userSessionBean.translationGroup}" />
+      </h:panelGroup>
+
+      <ui:fragment rendered="#{newCatalogBean.filterRender}">
+
+        <p:defaultCommand target="searchButton" />
+
+        <!-- Collapsible Filter Panel -->
+        <details class="news-filter-card">
+
+          <summary class="filter-card-header">
+            <ui:fragment rendered="#{newCatalogBean.filterContentRender}">
+              <div class="search-main-group">
+                <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+                <p:inputText id="nameInput"
+                             value="#{newCatalogBean.searchContent}"
+                             placeholder="#{newsBundle.new_search_content}"
+                             styleClass="clean-search-input">
+                </p:inputText>
+              </div>
+            </ui:fragment>
+
+            <!-- Toggle Action -->
+            <div class="filter-toggle-btn">
+              <span class="filter-card-title">
+                <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                #{newsBundle.new_catalog_advancedSearch}
+              </span>
+              <i class="fa-solid fa-chevron-down filter-chevron" aria-hidden="true"></i>
+            </div>
+          </summary>
+
+          <h:panelGroup id="filter-form-container" layout="block"
+                        styleClass="filter-card-body">
+
+            <!-- Id Filter -->
+            <p:outputPanel styleClass="filter-group"
+                           rendered="#{newCatalogBean.filterIdRender}">
+              <label for="newIdInputText"
+                     id="newIdLabel"
+                     class="filter-label">#{newsBundle.new_search_id}:</label>
+              <p:inputText id="newIdInputText"
+                           value="#{newCatalogBean.searchNewId}" />
+            </p:outputPanel>
+
+            <!-- Date Filter -->
+            <p:outputPanel styleClass="filter-group"
+                           rendered="#{newCatalogBean.filterDateRender}">
+              <label for="startInputCalendar"
+                     id="startDayLabel"
+                     class="filter-label">#{newsBundle.new_search_startDay}:</label>
+              <p:datePicker id="startInputCalendar"
+                            value="#{newCatalogBean.searchStartDate}"
+                            pattern="dd/MM/yyyy HH:mm"
+                            showIcon="true" showTime="true"
+                            placeholder="dd/mm/aaaa hh:mi"
+                            styleClass="clean-input" />
+            </p:outputPanel>
+
+            <p:outputPanel styleClass="filter-group"
+                           rendered="#{newCatalogBean.filterDateRender}">
+              <label for="endInputCalendar"
+                     id="endDayLabel"
+                     class="filter-label">#{newsBundle.new_search_endDay}:</label>
+              <p:datePicker id="endInputCalendar"
+                            value="#{newCatalogBean.searchEndDate}"
+                            pattern="dd/MM/yyyy HH:mm"
+                            showIcon="true" showTime="true"
+                            placeholder="dd/mm/aaaa hh:mi"
+                            styleClass="clean-input" />
+            </p:outputPanel>
+
+            <!-- User Filter -->
+            <p:outputPanel styleClass="filter-group"
+                           rendered="#{newCatalogBean.filterUserRender}">
+              <label for="userIdInputText"
+                     id="userIdLabel"
+                     class="filter-label">#{newsBundle.new_search_user}:</label>
+              <p:inputText id="userIdInputText"
+                           value="#{newCatalogBean.searchUserId}" />
+            </p:outputPanel>
+
+          </h:panelGroup>
+
+          <!-- Action Buttons -->
+          <div class="filter-actions">
+            <p:commandButton value="#{newsBundle.new_catalog_clean}"
+                             action="#{newCatalogBean.clearFilters}"
+                             update="filter-form-container news-list-wrapper nameInput"
+                             process="@this"
+                             styleClass="btn-clean-secondary" />
+            <p:commandButton id="searchButton"
+                             value="#{objectBundle.search}"
+                             action="#{newCatalogBean.search}"
+                             update="news-list-wrapper"
+                             process="@this filter-form-container nameInput"
+                             styleClass="btn-clean-primary" />
+          </div>
+
+        </details>
+      </ui:fragment>
+
+      <p:button alt="#{newCatalogBean.rssButtonTitle}"
+                title="#{newCatalogBean.rssButtonTitle}"
+                styleClass="news-rss-button"
+                href="#{newCatalogBean.rssURL}"
+                icon="fa fa-rss"
+                target="_blank"
+                rendered="#{newCatalogBean.rssEnabled}" />
+
+      <p:messages showSummary="true" styleClass="messages"
+                  showIcon="true" closable="false" forIgnores="growl">
+        <p:autoUpdate />
+      </p:messages>
+
+      <h:panelGroup id="news-list-wrapper" layout="block">
+        <p:dataView id="newSearchRootList" rowIndexVar="rowIndex"
+                    value="#{newCatalogBean.basicSearchHelper.rows}"
+                    var="row" rendered="#{newCatalogBean.basicSearchHelper.rowCount > 0}"
+                    styleClass="news-dataview"
+                    rows="#{newCatalogBean.pageSize}"
+                    first="#{newCatalogBean.basicSearchHelper.firstRowIndex}"
+                    paginator="true"
+                    paginatorPosition="bottom"
+                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                    currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}" >
+          <p:dataViewListItem>
+            <article class="new-card #{newCatalogBean.rootImagePosition}" tabindex="0"
+                     aria-label="#{newCatalogBean.articleAriaLabel}">
+
+              <div class="new-card-badges" aria-hidden="true">
+                <p:badge value="#{newsBundle.new_search_draft}"
+                         styleClass="draft"
+                         rendered="#{row.draft}"></p:badge>
+                <p:badge value="#{newsBundle.new_search_future}"
+                         styleClass="future"
+                         rendered="#{newCatalogBean.futureNew}"></p:badge>
+                <p:badge value="#{newsBundle.new_search_expired}"
+                         styleClass="expired"
+                         rendered="#{newCatalogBean.expiredNew}"></p:badge>
+                <p:outputPanel rendered="#{newCatalogBean.rootStickyIconRender}"
+                               styleClass="sticky">
+                  <i class="fa fa-thumbtack" />
+                </p:outputPanel>
+
+              </div>
+
+              <p:outputPanel styleClass="new-card-date"
+                             rendered="#{newCatalogBean.rootDateRender}">
+                <h:outputText id="newDate_dh"
+                              value="#{newCatalogBean.newDate}"/>
+              </p:outputPanel>
+
+              <!-- New Details -->
+
+              <p:outputPanel rendered="#{newCatalogBean.rootHeadlineRender}"
+                             styleClass="new-card-headline">
+                <ui:fragment rendered="#{newCatalogBean.newCustomUrl}">
+                  <a href="#{newCatalogBean.newLink}"
+                     onclick="#{newCatalogBean.newOnclick}"
+                     class="ui-widget ui-commandlink new-link"
+                     target="#{newCatalogBean.newLinkTarget}"
+                     aria_label="#{newCatalogBean.newAriaLabel}">
+                    <h3 class="new-title">
+                      <sf:outputText value="#{newCatalogBean.newHeadline}"
+                                     translator="#{userSessionBean.translator}"
+                                     translationGroup="#{userSessionBean.translationGroup}" />
+                    </h3>
+                  </a>
+                </ui:fragment>
+                <ui:fragment rendered="#{!newCatalogBean.newCustomUrl}">
+                  <p:commandLink styleClass="new-link"
+                                 action="#{newCatalogBean.goToNew}"
+                                 ariaLabel="#{newCatalogBean.newAriaLabel}"
+                                 process="@this"
+                                 update="@form:cnt"
+                                 target="#{newCatalogBean.newLinkTarget}">
+                    <h3 class="new-title">
+                      <sf:outputText value="#{newCatalogBean.newHeadline}"
+                                     translator="#{userSessionBean.translator}"
+                                     translationGroup="#{userSessionBean.translationGroup}" />
+                    </h3>
+                  </p:commandLink>
+                </ui:fragment>
+              </p:outputPanel>
+              <p:outputPanel rendered="#{newCatalogBean.rootImageRender}"
+                             styleClass="new-card-image">
+                <h:graphicImage url="#{newCatalogBean.newImageURL}"
+                                styleClass="new-image"
+                                style="width:#{newCatalogBean.rootNewImageWidth}px;height:#{newCatalogBean.rootNewImageHeight}px"
+                                alt=""
+                                rendered="#{newCatalogBean.newImageURL != null}" />
+              </p:outputPanel>
+              <p:outputPanel styleClass="new-card-summary"
+                             rendered="#{newCatalogBean.rootSummaryRender}">
+                <sf:outputText styleClass="new-summary"
+                               value="#{row.summary}" escape="false"
+                               translator="#{userSessionBean.translator}"
+                               translationGroup="#{userSessionBean.translationGroup}" />
+              </p:outputPanel>
+
+              <p:outputPanel rendered="#{newCatalogBean.rootDocumentsRender and
+                                         (not empty newCatalogBean.extendedInfoDocList)}"
+                             styleClass="new-card-documents">
+                <ul>
+                  <ui:repeat var="doc"
+                             value="#{newCatalogBean.extendedInfoDocList}">
+                    <li class="new-document">
+                      <h:panelGroup>
+                        <i class="#{documentTypeBean.getContentIcon(doc.getMimeType())} text-xl mr-1" />
+                        <a href="#{newCatalogBean.documentUrl}"
+                           class="new-document-link" target="_blank"
+                           aria-label="#{newCatalogBean.documentAriaLabel}">
+                          <h:outputText value="#{doc.title}" />
+                        </a>
+                      </h:panelGroup>
+                    </li>
+                  </ui:repeat>
+                </ul>
+              </p:outputPanel>
+
+              <p:outputPanel styleClass="new-card-bottom-panel #{newCatalogBean.rootLinksPosition}"
+                             rendered="#{newCatalogBean.rootBottomPanelRender}">
+                <p:commandButton value="#{newCatalogBean.rootReadLinkText}"
+                                 styleClass="button-goto"
+                                 action="#{newCatalogBean.goToNew}"
+                                 rendered="#{newCatalogBean.rootReadLinkRender}"
+                                 ariaLabel="#{newCatalogBean.rootReadLinkAriaLabel}"
+                                 process="@this"
+                                 update="@form:cnt" />
+                <p:commandButton icon="pi pi-arrow-up"
+                                 alt="#{newsBundle.new_search_moveUp}"
+                                 title="#{newsBundle.new_search_moveUp}"
+                                 styleClass="button-move-up"
+                                 style="vertical-align:middle"
+                                 action="#{newCatalogBean.moveUp}"
+                                 rendered="#{newCatalogBean.moveUpButtonRender}"
+                                 process="@this"
+                                 update="newSearchRootList" />
+                <p:commandButton icon="pi pi-arrow-down"
+                                 alt="#{newsBundle.new_search_moveDown}"
+                                 title="#{newsBundle.new_search_moveDown}"
+                                 styleClass="button-move-down"
+                                 style="vertical-align:middle"
+                                 action="#{newCatalogBean.moveDown}"
+                                 rendered="#{newCatalogBean.moveDownButtonRender}"
+                                 process="@this"
+                                 update="newSearchRootList" />
+                <p:button title="#{objectBundle.edit}"
+                          styleClass="button-edit"
+                          href="#"
+                          onclick="return showObject('New', '#{row.newId}')"
+                          icon="pi pi-pencil"
+                          target="_blank"
+                          rendered="#{newCatalogBean.rootEditLinkRender}" />
+              </p:outputPanel>
+            </article>
+          </p:dataViewListItem>
+        </p:dataView>
+      </h:panelGroup>
+
+      <div class="news-actions-bar">
+        <p:button value="#{objectBundle.create}"
+                  href="#"
+                  icon="pi pi-plus-circle"
+                  alt="#{objectBundle.create}"
+                  title="#{objectBundle.create}"
+                  styleClass="button-create"
+                  id="createButton"
+                  rendered="#{newCatalogBean.rootEditLinkRender}"
+                  onclick="#{newCatalogBean.createNewOnclick}" />
+      </div>
+
+      <h:panelGroup styleClass="news-footer-document"
+                    rendered="#{newCatalogBean.footerRender}">
+        <sf:browser url="#{newCatalogBean.footerUrl}"
+                    port="#{applicationBean.defaultPort}"
+                    translator="#{userSessionBean.translator}"
+                    translationGroup="#{userSessionBean.translationGroup}" />
+      </h:panelGroup>
+
+    </section>
+
+  </ui:fragment>
+
+  <gdm:saveBean value="newCatalogBean" />
+
+  <script>
+    controlNavigationHistory({
+      url: "/web/#{userSessionBean.selectedMenuItem.mid}",
+      title: "#{userSessionBean.selectedMenuItem.label}"
+    });
+
+    document.querySelector(".content_footer").scrollTo(0, 0);
+  </script>
+
+</ui:composition>
+

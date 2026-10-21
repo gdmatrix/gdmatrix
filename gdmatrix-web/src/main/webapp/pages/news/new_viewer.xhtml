@@ -7,26 +7,95 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:gdm="http://gdmatrix.org/faces">
 
+  <h:outputStylesheet library="css" name="web/news.css" />
+
+  <p:messages showSummary="true" styleClass="messages" 
+              showIcon="true" closable="false" forIgnores="growl">
+    <p:autoUpdate />
+  </p:messages>
 
   <ui:fragment rendered="#{newViewerBean.newObject != null}"> 
-  
-    <p:outputPanel id="new-panel" styleClass="new_body w-full p-4" style="max-width: 800px;color:var(--text-color)">  
 
-      <h2 style="color:var(--primary-color)">#{newViewerBean.newObject.headline}</h2>
-      <div class="flex justify-content-end p-2">
+    <p:outputPanel id="new-panel" styleClass="new-panel">
+
+      <h2 class="new-heading">
+        <sf:outputText value="#{newViewerBean.newObject.headline}"
+             translator="#{userSessionBean.translator}"
+             translationGroup="#{userSessionBean.translationGroup}" />
+      </h2>
+      <div class="new-date">
         #{newViewerBean.startDate}
       </div>
-        
+
+      <p:outputPanel rendered="#{newViewerBean.readingCountRender}"
+                     styleClass="reading-count">
+        <h:panelGroup>
+          <h:outputText value="#{newsBundle.new_details_readings}: " />
+          <h:outputText value="#{newViewerBean.readingCount}" />
+        </h:panelGroup>
+      </p:outputPanel>
+
       <ui:fragment rendered="#{newViewerBean.imageContentId != null}">
-       <img src="/imgscale/#{newViewerBean.imageContentId}?width=800&amp;crop=auto" alt="" class="w-full" /> 
+       <img src="/imgscale/#{newViewerBean.imageContentId}?width=800&amp;crop=auto" 
+            alt="" class="new-image" />
       </ui:fragment>
 
-      <h:outputText value="#{newViewerBean.newObject.summary}" escape="false" rendered="false" />
-
-      <h:outputText value="#{newViewerBean.newObject.text}" escape="false" />      
+      <sf:outputText value="#{newViewerBean.shownText}" escape="false"
+                     translator="#{userSessionBean.translator}"
+                     translationGroup="#{userSessionBean.translationGroup}"
+                     styleClass="new-text" />
       
-    </p:outputPanel>
+      <p:outputPanel rendered="#{newViewerBean.documentListRender}"
+                     styleClass="new-panel-documents">
+
+        <h:outputText value="#{newsBundle.new_details_relatedDocuments}:"
+                      styleClass="header" />
+        <ul>
+          <ui:repeat var="row" value="#{newViewerBean.documentList}">
+            <li class="new-document">
+              <h:panelGroup>
+                <i class="#{documentTypeBean.getContentIcon(row.getMimeType())} new-document-icon"  />
+                <a href="#{newViewerBean.documentUrl}"
+                   class="new-document-link" target="_blank"
+                   aria-label="#{newViewerBean.documentAriaLabel}">
+                  <h:outputText id="documentListTitle" value="#{row.title}" />
+                </a>
+              </h:panelGroup>
+            </li>
+          </ui:repeat>
+        </ul>
+      </p:outputPanel>
     
+      <p:outputPanel rendered="#{newViewerBean.shareLinksHelper.sharingEnabled}" 
+                     styleClass="share-panel">
+        <h:panelGroup>
+          <h:outputText value="#{userSessionBean.selectedMenuItem.properties['details.shareText']}"
+                         styleClass="share-title"
+                         rendered="#{userSessionBean.selectedMenuItem.properties['details.shareText'] != null}" />
+          <ul class="share-list">
+            <ui:repeat var="item" value="#{newViewerBean.shareLinksHelper.shareLinkList}">
+              <li class="share-item">
+                <p:button href="#{item.shareURL}"
+                   target="_blank"
+                   styleClass="button-share"
+                   icon="#{item.pfIconClass}"
+                   title="#{item.description}"
+                   alt="#{item.description}" />
+              </li>
+            </ui:repeat>
+          </ul>
+        </h:panelGroup>
+      </p:outputPanel>
+
+      <p:button title="#{objectBundle.edit}"
+                href="#" styleClass="button-edit"
+                onclick="return showObject('New', '#{newViewerBean.newObject.newId}')"
+                icon="pi pi-pencil"
+                target="_blank"
+                rendered="#{newViewerBean.editLinkRender}" />
+
+    </p:outputPanel>
+
     <gdm:saveBean value="newViewerBean" /> 
 
     <script>

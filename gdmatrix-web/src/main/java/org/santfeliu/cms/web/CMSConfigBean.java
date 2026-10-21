@@ -42,7 +42,7 @@ import org.santfeliu.web.UserSessionBean;
  */
 public class CMSConfigBean
 {
-  public static CMSManagerPort getPort() throws Exception
+  public static CMSManagerPort getPort()
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();
     WSEndpoint endpoint = wsDirectory.getEndpoint(CMSManagerService.class);

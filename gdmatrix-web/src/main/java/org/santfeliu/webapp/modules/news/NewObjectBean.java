@@ -37,8 +37,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -47,6 +49,7 @@ import org.matrix.cms.NodeFilter;
 import org.matrix.cms.Property;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.news.New;
+import org.matrix.news.NewSection;
 import org.matrix.news.NewStoreOptions;
 import org.matrix.news.Source;
 import org.matrix.news.SourceFilter;
@@ -71,9 +74,12 @@ public class NewObjectBean extends ObjectBean
   public static final String NEWSECTION_PROPERTY = "newSection";
   private static final String LEGACY_SECTION_PROPERTY = "action";
   private static final String LEGACY_SECTION_VALUE = "%newSearchBySection%";
+  private static final String LEGACY_SECTION_VALUE2 = "%newCatalogBean.show%";
 
   private New newObject = new New();
   private List<Source> sources;
+
+  private String autoSectionId = null;  
 
   @Inject
   NewFinderBean newFinderBean;
@@ -132,6 +138,16 @@ public class NewObjectBean extends ObjectBean
   public void setSources(List<Source> sources)
   {
     this.sources = sources;
+  }
+
+  public String getAutoSectionId()
+  {
+    return autoSectionId;
+  }
+
+  public void setAutoSectionId(String autoSectionId)
+  {
+    this.autoSectionId = autoSectionId;
   }
 
   public Date getStartDate()
@@ -238,7 +254,23 @@ public class NewObjectBean extends ObjectBean
   {
     return DictionaryConstants.NEW_TYPE;
   }
-  
+
+  @Override
+  protected void processParameters(Map<String, Object> parameters)
+  {
+    super.processParameters(parameters);
+    if (parameters != null)
+    {
+      setAutoSectionId((String)parameters.get("autoSectionId"));
+      if (autoSectionId != null)
+      {
+        message("org.santfeliu.news.web.resources.NewsBundle",
+          "new_search_publish", new Object[]{autoSectionId},
+          FacesMessage.SEVERITY_INFO);
+      }
+    }
+  }
+
   List<MenuItemCursor> getSectionNodes() throws Exception
   {
     return getSectionNodes(null);
@@ -279,7 +311,22 @@ public class NewObjectBean extends ObjectBean
       nodeFilter.getProperty().add(property);
     }   
     nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
-    
+
+    //Search for legacy sections (GDMatrix 3)
+    nodeFilter.getProperty().clear();
+    property = new Property();
+    property.setName(LEGACY_SECTION_PROPERTY);
+    property.getValue().add(LEGACY_SECTION_VALUE2);
+    nodeFilter.getProperty().add(property);
+    if (name != null)
+    {
+      property = new Property();
+      property.setName("label");
+      property.getValue().add("%" + name + "%");
+      nodeFilter.getProperty().add(property);
+    }
+    nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
+
     nodeList.stream().forEach(node -> nodeIds.add(node.getNodeId()));
 
     return UserSessionBean.getCurrentInstance()
@@ -326,10 +373,39 @@ public class NewObjectBean extends ObjectBean
     encodeNewContent(newObject);
     newObject =
       NewsModuleBean.getPort(false).storeNew(newObject, newStoreOptions);
-    
+
     setObjectId(newObject.getNewId());
     decodeNewContent(newObject);
 
+    if (autoSectionId != null)
+    {
+      try
+      {
+        String newId = getObjectId();
+        List<NewSection> newSectionList =
+          NewsModuleBean.getClient().findNewSectionsFromCache(newId);
+        if (newSectionList.isEmpty())
+        {
+          NewSection newSection = new NewSection();
+          newSection.setNewId(newId);
+          newSection.setSectionId(autoSectionId);
+          newSection = NewsModuleBean.getClient().storeNewSection(newSection);
+          newSectionList.add(newSection);
+        }
+        for (NewSection ns : newSectionList)
+        {
+          message("org.santfeliu.news.web.resources.NewsBundle",
+            "new_sections_published", new Object[]{ns.getSectionId()},
+            FacesMessage.SEVERITY_INFO);
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+      autoSectionId = null;
+    }
+    
     newFinderBean.outdate();
   }
 
