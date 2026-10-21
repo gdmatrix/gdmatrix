@@ -64,6 +64,7 @@ public class NewSectionsTabBean extends TabBean
   private static final String UNSELECTABLE = "unselectable";
 
   public static final String SECTIONID_PROPERTY = "sectionId";
+  public static final String COPY_SECTIONID_PROPERTY = "copySectionId";
 
   private SectionTreeNode root;
   private Map<String, SectionTreeNode> nodeMap;
@@ -283,13 +284,16 @@ public class NewSectionsTabBean extends TabBean
       String sectionId = nodeMic.getDirectProperty(SECTIONID_PROPERTY);
       if (sectionId == null)
       {
-        List<String> editRoles =
-          nodeMic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
-
-        if (UserSessionBean.getCurrentInstance().isUserInRole(editRoles))
+        sectionId = nodeMic.getDirectProperty(COPY_SECTIONID_PROPERTY);
+        if (sectionId == null)
         {
-          TreeNode node = createTreeNode(nodeMic);
-          node.setType(SELECTABLE);
+          List<String> editRoles =
+            nodeMic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
+          if (UserSessionBean.getCurrentInstance().isUserInRole(editRoles))
+          {
+            TreeNode node = createTreeNode(nodeMic);
+            node.setType(SELECTABLE);
+          }
         }
       }
     }
