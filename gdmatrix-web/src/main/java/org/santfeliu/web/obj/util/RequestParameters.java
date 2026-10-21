@@ -88,9 +88,11 @@ import java.util.Map;
       {
         this.name = name;
         this.value = value;
-        this.inURL = queryString != null && 
-          (queryString.contains("?" + name + "=") || 
-           queryString.contains("&" + name + "="));      
+        this.inURL = queryString != null && (
+          queryString.startsWith(name + "=") ||
+          queryString.contains("?" + name + "=") ||
+          queryString.contains("&" + name + "=")
+        );
       }
 
       public String getName()
