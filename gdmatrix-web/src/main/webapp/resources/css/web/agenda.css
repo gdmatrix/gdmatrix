@@ -259,7 +259,8 @@ body .agenda-datatable.ui-datatable tbody tr > td
 }
 
 /* --- Collapsible Filter Panel --- */
-.agenda-filter-card {
+.filter-card 
+{
   background: #ffffff;
   border: 1px solid #e2dedf;
   border-radius: 16px;
@@ -268,8 +269,8 @@ body .agenda-datatable.ui-datatable tbody tr > td
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   overflow: hidden;
 }
-
-.agenda-filter-card[open] {
+.filter-card[open]
+{
   border-color: #d0c8ca;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
@@ -352,26 +353,26 @@ body .agenda-datatable.ui-datatable tbody tr > td
   transition: transform 0.2s ease;
 }
 
-.agenda-filter-card[open] .filter-chevron {
+.filter-card[open] .filter-chevron {
   transform: rotate(180deg);
 }
 
 /* Body / Form Grid */
 .filter-card-body {
   padding: 0 20px 20px 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  justify-content: space-between;
   gap: 16px;
   align-items: end;
   border-top: 1px solid #faf9f9;
 }
-
 
 .filter-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+  width: 100%;
 }
 
 .filter-label {
@@ -380,6 +381,10 @@ body .agenda-datatable.ui-datatable tbody tr > td
   color: #6c757d;
   text-transform: uppercase;
   letter-spacing: 0.6px;
+}
+
+.filter-group .ui-inputfield {
+  width: 100%;
 }
 
 /* --- Inputs Overrides --- */
