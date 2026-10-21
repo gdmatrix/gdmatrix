@@ -62,7 +62,7 @@ public class ImagesCarouselFunction implements Function
       "styleClass", "thumbnailCount", "thumbnailWindow", "mainImageWidth", 
       "mainImageHeight", "mainImageCrop", "thumbnailWidth", "thumbnailHeight", 
       "thumbnailCrop", "renderMainImage", "renderThumbnails", "renderNavLinks",
-      "thumbnailPrevIconUrl", "thumbnailNextIconUrl",
+      "thumbnailPrevIconUrl", "thumbnailNextIconUrl", "thumbnailShiftMode", 
       "translator", "translationGroup");
   }
 }

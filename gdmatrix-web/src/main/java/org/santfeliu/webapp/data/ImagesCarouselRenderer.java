@@ -94,6 +94,8 @@ public class ImagesCarouselRenderer
       String thumbnailPrevIconUrl = (String) params.get("thumbnailPrevIconUrl");
       String thumbnailNextIconUrl = (String) params.get("thumbnailNextIconUrl");
 
+      String thumbnailShiftMode = 
+        getStringParam(params, "thumbnailShiftMode", "thumbnail");      
       String thumbnailClickMode = 
         getStringParam(params, "thumbnailClickMode", "selectAndOpen");
       String mainImageClickMode = 
@@ -151,7 +153,7 @@ public class ImagesCarouselRenderer
 
       html.append(encodeJavaScriptInit(itemList, id, jsVarName, thumbnailWindow, 
         transitionTime, continueTime, renderMainImage, renderThumbnails, 
-        thumbnailClickMode, mainImageClickMode, translator, bundle, locale, 
+        thumbnailShiftMode, thumbnailClickMode, mainImageClickMode, translator, bundle, locale, 
         translationGroup));
       
       html.append("</div>");
@@ -387,7 +389,8 @@ public class ImagesCarouselRenderer
     {
       String desc = 
         getTranslation(item.getDescription(), translator, locale, group).trim();
-      String title = bundle.getString("selectImage") + " " + index + (desc.isEmpty() ? "" : (": " + desc));
+      String title = bundle.getString("selectImage") + " " + index 
+        + (desc.isEmpty() ? "" : (": " + desc));
       if ("selectAndOpen".equals(thumbnailClickMode))
       {
         title = title + " (" + openNewWindowLabel + ")";
@@ -453,9 +456,9 @@ public class ImagesCarouselRenderer
 
   private String encodeJavaScriptInit(List<ImageItem> itemList, String id, 
     String jsVarName, int thumbnailWindow, int transitionTime, int continueTime, 
-    boolean renderMainImage, boolean renderThumbnails, String thumbnailClickMode, 
-    String mainImageClickMode, Translator translator, ResourceBundle bundle, 
-    Locale locale, String group) throws IOException
+    boolean renderMainImage, boolean renderThumbnails, String thumbnailShiftMode, 
+    String thumbnailClickMode, String mainImageClickMode, Translator translator, 
+    ResourceBundle bundle, Locale locale, String group) throws IOException
   {
     int windowSize = itemList.size() >= thumbnailWindow ? thumbnailWindow : itemList.size();
     StringBuilder sb = new StringBuilder();
@@ -477,7 +480,9 @@ public class ImagesCarouselRenderer
     sb.append(jsVarName).append(".continueTime = ")
       .append(continueTime).append(";");
     sb.append(jsVarName).append(".thumbnailClickMode = '")
-      .append(thumbnailClickMode).append("';");
+      .append(thumbnailClickMode).append("';");    
+    sb.append(jsVarName).append(".thumbnailShiftMode = '")
+      .append(thumbnailShiftMode).append("';");
     sb.append(jsVarName).append(".mainImageClickMode = '")
       .append(mainImageClickMode).append("';");
     sb.append(jsVarName).append(".renderMainImage = ")
@@ -525,10 +530,8 @@ public class ImagesCarouselRenderer
     return title;
   }
 
-  // Clase interna auxiliar para representar los elementos de imagen
   public static class ImageItem
   {
-
     private String docId;
     private String description;
     private String mw, mh, mc, tw, th, tc;
