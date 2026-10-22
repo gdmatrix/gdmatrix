@@ -201,33 +201,17 @@
 
               <p:outputPanel rendered="#{newCatalogBean.rootHeadlineRender}"
                              styleClass="new-card-headline">
-                <ui:fragment rendered="#{newCatalogBean.newCustomUrl}">
-                  <a href="#{newCatalogBean.newLink}"
-                     onclick="#{newCatalogBean.newOnclick}"
-                     class="ui-widget ui-commandlink new-link"
-                     target="#{newCatalogBean.newLinkTarget}"
-                     aria_label="#{newCatalogBean.newAriaLabel}">
-                    <h3 class="new-title">
-                      <sf:outputText value="#{newCatalogBean.newHeadline}"
-                                     translator="#{userSessionBean.translator}"
-                                     translationGroup="#{userSessionBean.translationGroup}" />
-                    </h3>
-                  </a>
-                </ui:fragment>
-                <ui:fragment rendered="#{!newCatalogBean.newCustomUrl}">
-                  <p:commandLink styleClass="new-link"
-                                 action="#{newCatalogBean.goToNew}"
-                                 ariaLabel="#{newCatalogBean.newAriaLabel}"
-                                 process="@this"
-                                 update="@form:cnt"
-                                 target="#{newCatalogBean.newLinkTarget}">
-                    <h3 class="new-title">
-                      <sf:outputText value="#{newCatalogBean.newHeadline}"
-                                     translator="#{userSessionBean.translator}"
-                                     translationGroup="#{userSessionBean.translationGroup}" />
-                    </h3>
-                  </p:commandLink>
-                </ui:fragment>
+                <a href="#{newCatalogBean.newLink}"
+                   onclick="#{newCatalogBean.newOnclick}"
+                   class="new-link"
+                   target="#{newCatalogBean.newLinkTarget}"
+                   aria_label="#{newCatalogBean.newAriaLabel}">
+                  <h3 class="new-title">
+                    <sf:outputText value="#{newCatalogBean.newHeadline}"
+                                   translator="#{userSessionBean.translator}"
+                                   translationGroup="#{userSessionBean.translationGroup}" />
+                  </h3>
+                </a>
               </p:outputPanel>
               <p:outputPanel rendered="#{newCatalogBean.rootImageRender}"
                              styleClass="new-card-image">

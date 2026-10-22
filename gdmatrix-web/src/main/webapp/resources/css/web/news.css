@@ -190,7 +190,7 @@ body
 
 .new-link
 {
-  /* color: #800033 !important; */
+  color: var(--primary-color);
   font-weight: 700;
   text-decoration: none;
   font-size: 15px;

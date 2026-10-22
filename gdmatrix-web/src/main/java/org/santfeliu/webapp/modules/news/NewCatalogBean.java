@@ -834,16 +834,18 @@ public class NewCatalogBean extends WebBean implements Serializable
     NewView row = (NewView)getFacesContext().getExternalContext().
       getRequestMap().get("row");
     String customUrl = getCustomUrl(row);
-    return (customUrl != null ? customUrl : "#");
+    return (customUrl != null ? customUrl : 
+      "/web/" + getSelectedMenuItem().getMid() + "?newid=" + row.getNewId());
   }
 
   public String getNewOnclick()
   {
-    NewView row = (NewView)getFacesContext().getExternalContext().
-      getRequestMap().get("row");
-    if (getCustomUrl(row) == null)
+    if (!isNewCustomUrl())
     {
-      return "return showPage('New', " + getJsonParameters(row) + ")";
+      NewView row = (NewView)getFacesContext().getExternalContext().
+        getRequestMap().get("row");
+      return "return goMid('" + getSelectedMenuItem().getMid() + "&newid=" +
+        row.getNewId() + "')";
     }
     else return "";
   }
