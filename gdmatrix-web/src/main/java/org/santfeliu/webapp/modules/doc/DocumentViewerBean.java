@@ -107,9 +107,10 @@ public class DocumentViewerBean extends WebBean implements Serializable
   @CMSProperty
   public static final String PEBBLE_REFRESH_PROPERTY = "pebbleRefresh"; // seconds
 
+  public static final String RUN_AS_ADMIN_PROPERTY = "runAsAdmin";  
   public static final String DOC_SERVLET_URL = "/documents/";
   private static final String OUTCOME = "/pages/doc/document_viewer.xhtml";
-
+  
   private String headerBrowserUrl;
   private String footerBrowserUrl;
 
@@ -428,7 +429,11 @@ public class DocumentViewerBean extends WebBean implements Serializable
 
       if (docId == null) return "ERROR: Pebble document not found.";
 
-      Document document = getDocumentById(docId);
+      Document document = DocModuleBean.getClient(true)
+        .loadDocument(docId, 0, ContentInfo.ALL);
+      
+      if (!DocModuleBean.canUserExecuteDocument(document))
+        return "ERROR: Insufficient privileges";
 
       String source;
       try (var is = document.getContent().getData().getInputStream())
@@ -621,7 +626,8 @@ public class DocumentViewerBean extends WebBean implements Serializable
   private Document getDocumentById(String docId)
     throws Exception
   {
-    return getClient().loadDocument(docId, 0, ContentInfo.ALL);
+    return DocModuleBean.getClient(false)
+      .loadDocument(docId, 0, ContentInfo.ALL);
   }
 
   public void setKeepLocking(boolean keepLocking)
@@ -656,7 +662,8 @@ public class DocumentViewerBean extends WebBean implements Serializable
         String name = getProperty(PEBBLE_TEMPLATE_PROPERTY);
         if (name != null)
         {
-          CachedDocumentManagerClient client = getClient();
+          CachedDocumentManagerClient client = 
+            DocumentConfigBean.getClientAsAdmin();
           DocumentFilter filter = new DocumentFilter();
           Property property = new Property();
           property.setName("name");
@@ -700,20 +707,11 @@ public class DocumentViewerBean extends WebBean implements Serializable
       String relName = relDoc.getName();
       if (RelationType.TRANSLATION.equals(relType) && language.equals(relName))
       {
-        return getClient().loadDocument(relDoc.getDocId(), 0, ContentInfo.ALL);
+        return DocModuleBean.getClient(false)
+          .loadDocument(relDoc.getDocId(), 0, ContentInfo.ALL);
       }
     }
     return document;
-  }
-
-  private CachedDocumentManagerClient getClient()
-    throws Exception
-  {
-    CachedDocumentManagerClient client = new CachedDocumentManagerClient(
-      UserSessionBean.getCurrentInstance().getUsername(),
-      UserSessionBean.getCurrentInstance().getPassword());
-
-    return client;
   }
 
   private boolean isHtmlFixerDisabled()
