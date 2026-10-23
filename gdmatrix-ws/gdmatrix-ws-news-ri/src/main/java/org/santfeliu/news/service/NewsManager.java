@@ -55,6 +55,7 @@ import org.matrix.news.NewDocument;
 import org.matrix.news.NewSection;
 import org.matrix.news.NewStoreOptions;
 import org.matrix.news.NewView;
+import org.matrix.news.NewsConstants;
 import org.matrix.news.NewsFilter;
 import org.matrix.news.NewsManagerPort;
 import org.matrix.news.NewsManagerMetaData;
@@ -65,6 +66,8 @@ import org.matrix.news.SourceFilter;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.doc.client.DocumentManagerClient;
+import org.santfeliu.security.User;
+import org.santfeliu.security.UserCache;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.HTMLNormalizer;
@@ -115,6 +118,11 @@ public class NewsManager implements NewsManagerPort
   public New storeNew(New newObject, NewStoreOptions storeOptions)
   {
     LOGGER.log(Level.INFO, "storeNew {0}", newObject.getNewId());
+    
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     validateNew(newObject);
     
     if (storeOptions.isCleanSummary())
@@ -193,6 +201,11 @@ public class NewsManager implements NewsManagerPort
     try
     {
       LOGGER.log(Level.INFO, "removeNew {0}", newId);
+
+      User user = UserCache.getUser(wsContext);
+      if (!isNewsAdmin(user))
+        throw new WebServiceException("ACTION_DENIED");
+      
       DBNew dbNew = entityManager.getReference(DBNew.class, newId);
       // Sections
       Query query = entityManager.createNamedQuery("removeNewSections");
@@ -350,6 +363,11 @@ public class NewsManager implements NewsManagerPort
   {
     LOGGER.log(Level.INFO, "storeNewSection newId {0},sectionId {1}",
       new String[]{newSection.getNewId(), newSection.getSectionId()});
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     validateNewSection(newSection);
     DBNewSection dbNewSection = new DBNewSection(newSection);    
     if (newSection.getNewSectionId() == null) //Insert
@@ -378,6 +396,11 @@ public class NewsManager implements NewsManagerPort
     try
     {
       LOGGER.log(Level.INFO, "removeNewSection {0}", newSectionId);
+
+      User user = UserCache.getUser(wsContext);
+      if (!isNewsAdmin(user))
+        throw new WebServiceException("ACTION_DENIED");
+
       DBNewSectionPK pk = new DBNewSectionPK(newSectionId);
       DBNewSection dbNewSection = 
         entityManager.getReference(DBNewSection.class, pk);
@@ -412,6 +435,11 @@ public class NewsManager implements NewsManagerPort
   {
     LOGGER.log(Level.INFO, "storeNewDocument newId {0},documentId {1}",
       new String[]{newDocument.getNewId(), newDocument.getDocumentId()});
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     validateNewDocument(newDocument);
     WSEndpoint endpoint = getWSEndpoint();
     DBNewDocument dbNewDocument = new DBNewDocument(newDocument, endpoint);
@@ -435,6 +463,11 @@ public class NewsManager implements NewsManagerPort
     try
     {
       LOGGER.log(Level.INFO, "removeNewDocument {0}", newDocumentId);
+
+      User user = UserCache.getUser(wsContext);
+      if (!isNewsAdmin(user))
+        throw new WebServiceException("ACTION_DENIED");
+
       DBNewDocumentPK pk = new DBNewDocumentPK(newDocumentId);
       DBNewDocument dbNewDocument =
         entityManager.getReference(DBNewDocument.class, pk);
@@ -486,6 +519,11 @@ public class NewsManager implements NewsManagerPort
   public Source storeSource(Source source)
   {
     LOGGER.log(Level.INFO, "storeSource {0}", source.getId());
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     validateSource(source);
 
     DBSource dbSource = new DBSource(source);
@@ -536,6 +574,11 @@ public class NewsManager implements NewsManagerPort
     try
     {
       LOGGER.log(Level.INFO, "removeSource {0}", sourceId);
+
+      User user = UserCache.getUser(wsContext);
+      if (!isNewsAdmin(user))
+        throw new WebServiceException("ACTION_DENIED");
+
       DBSource dbSource = entityManager.getReference(DBSource.class, sourceId);
       entityManager.remove(dbSource);
       return true;
@@ -990,6 +1033,12 @@ public class NewsManager implements NewsManagerPort
   {
     String endpointName = WSUtils.getServletAdapter(wsContext).getName();
     return WSDirectory.getInstance().getEndpoint(endpointName);
+  }
+
+  private boolean isNewsAdmin(User user)
+  {
+    Set<String> userRoles = user.getRoles();
+    return userRoles.contains(NewsConstants.NEWS_ADMIN_ROLE);
   }
 
 }

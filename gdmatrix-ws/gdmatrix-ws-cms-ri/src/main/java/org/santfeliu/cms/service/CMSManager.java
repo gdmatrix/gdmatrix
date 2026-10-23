@@ -146,10 +146,14 @@ public class CMSManager implements CMSManagerPort
   {
     String workspaceId = workspace.getWorkspaceId();
     LOGGER.log(Level.INFO, "storeWorkspace {0}", new Object[]{workspaceId});
+
+    User user = UserCache.getUser(wsContext);
+    if (!isCMSAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+    
     WSEndpoint endpoint = getWSEndpoint();
     if (workspaceId == null) //insert
     {
-      User user = UserCache.getUser(wsContext);
       String localUserId = endpoint.toLocalId(User.class, user.getUserId());
       DBWorkspace dbWorkspace = new DBWorkspace(workspace, endpoint);
       Auditor.auditCreation(dbWorkspace, localUserId);
@@ -182,6 +186,10 @@ public class CMSManager implements CMSManagerPort
     if (fromWorkspaceId == null)
       throw new WebServiceException("cms:FROMWORKSPACEID_IS_MANDATORY");
 
+    User user = UserCache.getUser(wsContext);
+    if (!isCMSAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     WSEndpoint endpoint = getWSEndpoint();
     Workspace workspace = new Workspace();
     String localFromWorkspaceId = endpoint.toLocalId(Workspace.class,
@@ -199,7 +207,6 @@ public class CMSManager implements CMSManagerPort
       newDBWorkspace.setWorkspaceId(null);
       newDBWorkspace.setName(dbFromWorkspace.getName() + " - Copy");
       newDBWorkspace.setRefWorkspaceId(dbFromWorkspace.getWorkspaceId());
-      User user = UserCache.getUser(wsContext);
       String localUserId = endpoint.toLocalId(User.class, user.getUserId());
       Auditor.auditCreation(newDBWorkspace, localUserId);
       entityManager.persist(newDBWorkspace);
@@ -250,6 +257,10 @@ public class CMSManager implements CMSManagerPort
     if (workspaceId == null)
       throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
 
+    User user = UserCache.getUser(wsContext);
+    if (!isCMSAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+    
     WSEndpoint endpoint = getWSEndpoint();
     DBWorkspace dbWorkspace = null;
     String localWorkspaceId = endpoint.toLocalId(Workspace.class, workspaceId);
@@ -347,6 +358,9 @@ public class CMSManager implements CMSManagerPort
         throw new WebServiceException("cms:INVALID_NODE_INDEX");
 
       User user = UserCache.getUser(wsContext);
+      if (!isCMSAdmin(user))
+        throw new WebServiceException("ACTION_DENIED");
+
       WSEndpoint endpoint = getWSEndpoint();
       String localWorkspaceId = endpoint.toLocalId(Workspace.class, workspaceId);
       String localParentNodeId = endpoint.toLocalId(Node.class,
@@ -427,12 +441,15 @@ public class CMSManager implements CMSManagerPort
       if (nodeId == null)
         throw new WebServiceException("cms:NODEID_IS_MANDATORY");
 
+      User user = UserCache.getUser(wsContext);
+      if (!isCMSAdmin(user))
+        throw new WebServiceException("ACTION_DENIED");
+
       WSEndpoint endpoint = getWSEndpoint();
       String localWorkspaceId =
         endpoint.toLocalId(Workspace.class, workspaceId);
       removeDBNodes(localWorkspaceId);
 
-      User user = UserCache.getUser(wsContext);
       String localNodeId = endpoint.toLocalId(Node.class, nodeId);
       String localUserId = endpoint.toLocalId(User.class, user.getUserId());
 
@@ -661,6 +678,9 @@ public class CMSManager implements CMSManagerPort
         throw new WebServiceException("cms:TOWORKSPACEID_IS_MANDATORY");
 
       User user = UserCache.getUser(wsContext);
+      if (!isCMSAdmin(user))
+        throw new WebServiceException("ACTION_DENIED");
+
       WSEndpoint endpoint = getWSEndpoint();
       int syncNodesCount = 0;
       String localToWorkspaceId = endpoint.toLocalId(Workspace.class,
@@ -1419,6 +1439,12 @@ public class CMSManager implements CMSManagerPort
 
     }
     return 4 * 24 * 60 * 60 * 1000; //4 days
+  }
+
+  private boolean isCMSAdmin(User user)
+  {
+    Set<String> userRoles = user.getRoles();
+    return userRoles.contains(CMSConstants.CMS_ADMIN_ROLE);
   }
 
 }
