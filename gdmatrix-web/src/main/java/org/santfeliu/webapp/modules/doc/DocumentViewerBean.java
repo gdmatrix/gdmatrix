@@ -70,6 +70,7 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.webapp.data.WebNodes;
 
 /**
  *
@@ -577,6 +578,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     context.put("workspaceid", userSessionBean.getMenuModel()
       .getCWorkspace().getWorkspace().getWorkspaceId());
     context.put("credentials", userSessionBean.getCredentials());
+    context.put("webNodes", new WebNodes(cursor.getMenuModel()));
     return context;
   }
 
