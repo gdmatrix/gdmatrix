@@ -35,10 +35,10 @@ import io.pebbletemplates.pebble.template.EvaluationContext;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import java.util.List;
 import java.util.Map;
-import org.santfeliu.report.web.ReportConfigBean;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.security.util.URLCredentialsCipher;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 
 /**
  *
@@ -53,7 +53,7 @@ public class BrowserFunction implements Function
     EvaluationContext context, int lineNumber)
   {
     String url = (String) args.get("url");
-    Credentials credentials = ReportConfigBean.getExecutionCredentials();
+    Credentials credentials = DocModuleBean.getExecutionCredentials();
     URLCredentialsCipher cipher = SecurityUtils.getURLCredentialsCipher();
     url = cipher.putCredentials(url, credentials);    
     args.put("url", url);

@@ -52,6 +52,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.CachedDocumentManagerClient;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
@@ -162,6 +163,33 @@ public class DocModuleBean
     filter.setAction(action);
     filter.setTypePath("/" + DictionaryConstants.DOCUMENT_TYPE + "/%");
     return DicModuleBean.getPort(false).findTypes(filter);
+  }  
+  
+  public static Credentials getExecutionCredentials()
+  {
+    Credentials credentials;
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
+    if ("true".equals(cursor.getProperty(DocumentViewerBean.RUN_AS_ADMIN_PROPERTY)))
+    {
+      credentials = getDocAdminCredentials();
+    }
+    else
+    {
+      credentials = userSessionBean.getCredentials();
+    }
+    return credentials;
+  }
+
+  public static Credentials getDocAdminCredentials()
+  {
+    String userId =
+      MatrixConfig.getProperty("adminCredentials.userId");
+    String password =
+      MatrixConfig.getProperty("adminCredentials.password");
+    
+    return new Credentials(userId, password);
   }  
   
   public static boolean canUserExecuteDocument(Document document)
