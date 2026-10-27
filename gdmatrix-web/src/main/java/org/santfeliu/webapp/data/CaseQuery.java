@@ -122,6 +122,12 @@ public class CaseQuery extends DataQuery<Case>
     
     return this;
   }
+  
+  public CaseQuery outputProperty(String propName)
+  {
+    filter.getOutputProperty().add(propName);
+    return this;
+  }
 
   @Override
   public CaseQuery firstResult(Number firstResult)

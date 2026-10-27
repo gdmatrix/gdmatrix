@@ -150,10 +150,12 @@
 
   <gdm:saveBean value="documentViewerBean" />
 
-  <script>
+  <ui:fragment rendered="#{not documentViewerBean.pebbleControlNavigationHistory}">
+   <script>
     controlNavigationHistory({
       url : "/web/#{userSessionBean.selectedMenuItem.mid}",
       title : "#{userSessionBean.selectedMenuItem.label}"
     });
-  </script>
+   </script>
+  </ui:fragment>
 </ui:composition>

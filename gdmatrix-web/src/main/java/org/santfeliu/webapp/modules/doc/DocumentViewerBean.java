@@ -70,6 +70,7 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.web.obj.util.ResultsManager;
 import org.santfeliu.webapp.data.WebNodes;
 
 /**
@@ -371,6 +372,12 @@ public class DocumentViewerBean extends WebBean implements Serializable
     return content;
   }
 
+  public boolean isPebbleControlNavigationHistory()
+  {
+    return (getProperty("pebbleControlNavigationHistory") != null &&
+      getProperty("pebbleControlNavigationHistory").equalsIgnoreCase("true"));
+  }
+  
   private File getCacheDir()
   {
     String userHome = System.getProperty("user.home");
@@ -579,6 +586,9 @@ public class DocumentViewerBean extends WebBean implements Serializable
       .getCWorkspace().getWorkspace().getWorkspaceId());
     context.put("credentials", userSessionBean.getCredentials());
     context.put("webNodes", new WebNodes(cursor.getMenuModel()));
+    ResultsManager resultsManager = new ResultsManager();
+    resultsManager.setColumns(cursor.getMid());
+    context.put("resultsManager", resultsManager);
     return context;
   }
 

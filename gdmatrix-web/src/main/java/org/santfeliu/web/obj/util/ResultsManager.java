@@ -91,12 +91,15 @@ public class ResultsManager extends WebBean implements Serializable
 
   private static Logger LOGGER =
     Logger.getLogger(ResultsManager.class.getName());
+  
+  public ResultsManager()
+  {
+    this(null, null, null);
+  }
 
   public ResultsManager(String bundleClassName, String bundlePrefix)
   {
-    this.defaultColumnNames = new ArrayList();
-    this.bundleClassName = bundleClassName;
-    this.bundlePrefix = bundlePrefix;
+    this(bundleClassName, bundlePrefix, null);
   }
 
   public ResultsManager(String bundleClassName, String bundlePrefix,
@@ -277,7 +280,7 @@ public class ResultsManager extends WebBean implements Serializable
 
   public Object getColumnValue()
   {
-    Object row = (Object)getValue("#{row}");
+    Object row = getValue("#{row}");
     String column = (String)getValue("#{column}");
 
     if (row != null && column != null)
@@ -377,34 +380,54 @@ public class ResultsManager extends WebBean implements Serializable
 
   public boolean isLinkColumn()
   {
-    if (columns != null && columns.get(getColumnName()) != null)
-      return this.columns.get(getColumnName()).isLinkType();
+    return isLinkColumn(getColumnName());
+  }
+  
+  public boolean isLinkColumn(String columnName)
+  {
+    if (columns != null && columns.get(columnName) != null)
+      return this.columns.get(columnName).isLinkType();
     else
       return false;
-  }
+  }  
 
   public boolean isImageColumn()
   {
-    if (columns != null && columns.get(getColumnName()) != null)
-      return this.columns.get(getColumnName()).isImageType();
+    return isImageColumn(getColumnName());
+  }
+  
+  public boolean isImageColumn(String columnName)
+  {
+    if (columns != null && columns.get(columnName) != null)
+      return this.columns.get(columnName).isImageType();
     else
       return false;
-  }
+  }  
 
   public boolean isCustomColumn()
   {
-    if (columns != null && columns.get(getColumnName()) != null)
-      return this.columns.get(getColumnName()).isCustomType();
+    return isCustomColumn(getColumnName());
+  }
+  
+  public boolean isCustomColumn(String columnName)
+  {
+    if (columns != null && columns.get(columnName) != null)
+      return this.columns.get(columnName).isCustomType();
+    else
+      return false;    
+  }
+  
+  public boolean isSubmitColumn(String columnName)
+  {
+    if (columns != null && columns.get(columnName) != null)
+      return this.columns.get(columnName).isSubmitType();
     else
       return false;
-  }
+  }  
 
   public boolean isSubmitColumn()
   {
-    if (columns != null && columns.get(getColumnName()) != null)
-      return this.columns.get(getColumnName()).isSubmitType();
-    else
-      return false;
+    return isSubmitColumn(getColumnName());
   }
 
   public void sort(List rows)
