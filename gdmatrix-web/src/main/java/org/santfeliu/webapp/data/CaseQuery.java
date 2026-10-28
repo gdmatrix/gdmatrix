@@ -30,6 +30,8 @@
  */
 package org.santfeliu.webapp.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
@@ -98,27 +100,45 @@ public class CaseQuery extends DataQuery<Case>
     filter.getProperty().add(property);
     return this;
   }
-  
+    
   @Override
   public CaseQuery orderBy(String field, boolean descending)
   {
+    StringBuilder buffer = new StringBuilder();
+    
     String searchExpression = filter.getSearchExpression();
     if (!StringUtils.isBlank(searchExpression))
     {
-      StringBuilder buffer = new StringBuilder(searchExpression);
+      buffer.append(searchExpression);
       boolean firstColumn = !searchExpression.contains("ORDER BY");
 
       if (!firstColumn)
         buffer.append(", ");
       else
         buffer.append(" ORDER BY ");
-
-      buffer.append(field);
-      if (descending)
-        buffer.append(" desc ");
- 
-      filter.setSearchExpression(buffer.toString()); 
     }
+    else
+    {
+      buffer.append("ORDER BY ");
+    }
+    
+    
+    if (field.startsWith("property[") && field.endsWith("]"))  
+      field = field.replaceAll("property\\[|\\]", "");  
+    
+    if (field.contains(":"))
+    {
+      String[] parts = field.split(":");
+      field = parts[0];
+      if (parts.length > 1 && "desc".equalsIgnoreCase(parts[1]))
+        descending = true;
+    }
+    
+    buffer.append(field);
+    if (descending)
+      buffer.append(" desc ");  
+    
+    filter.setSearchExpression(buffer.toString());     
     
     return this;
   }
@@ -146,6 +166,15 @@ public class CaseQuery extends DataQuery<Case>
   @Override
   public List<Case> execute()
   {          
+    //Set default filters
+    String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
+    if (filter.getFromDate() == null)
+      filter.setFromDate(now);
+    if (filter.getToDate() == null)
+      filter.setToDate(now);
+    if (filter.getDateComparator() == null)
+      filter.setDateComparator("3");
+    
     CaseManagerPort port = 
       CasesModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
     return port.findCases(filter);
