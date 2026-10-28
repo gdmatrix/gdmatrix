@@ -440,9 +440,6 @@ public class DocumentViewerBean extends WebBean implements Serializable
       Document document = DocModuleBean.getClient(true)
         .loadDocument(docId, 0, ContentInfo.ALL);
       
-      if (!DocModuleBean.canUserExecuteDocument(document))
-        return "ERROR: Insufficient privileges";
-
       String source;
       try (var is = document.getContent().getData().getInputStream())
       {

@@ -33,23 +33,16 @@ package org.santfeliu.webapp.modules.doc;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
-import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
-import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.matrix.dic.Type;
 import org.matrix.dic.TypeFilter;
-import org.matrix.doc.Document;
-import org.matrix.doc.DocumentConstants;
 import org.matrix.doc.DocumentManagerPort;
 import org.matrix.doc.DocumentManagerService;
-import org.matrix.security.AccessControl;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.CachedDocumentManagerClient;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.security.util.Credentials;
@@ -190,21 +183,5 @@ public class DocModuleBean
       MatrixConfig.getProperty("adminCredentials.password");
     
     return new Credentials(userId, password);
-  }  
-  
-  public static boolean canUserExecuteDocument(Document document)
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance(); 
-    MenuItemCursor cursor = 
-      userSessionBean.getMenuModel().getSelectedMenuItem();      
-    Set<String> roles = userSessionBean.getRoles();
-    List<AccessControl> acl = document.getAccessControl();
-    org.santfeliu.dic.Type type = TypeCache.getInstance()
-      .getType(document.getDocTypeId()); 
-
-    return roles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type)
-      || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, type)
-      || "true".equals(cursor.getProperty(DocumentViewerBean.RUN_AS_ADMIN_PROPERTY));
   }  
 }
