@@ -39,6 +39,7 @@ import org.santfeliu.security.util.Credentials;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.matrix.cases.CaseManagerPort;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 
 /**
@@ -165,6 +166,10 @@ public class CaseQuery extends DataQuery<Case>
   
   @Override
   public List<Case> execute()
+  {
+    return execute(false);
+  }
+  public List<Case> execute(boolean runAsAdmin)
   {          
     //Set default filters
     String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -175,8 +180,15 @@ public class CaseQuery extends DataQuery<Case>
     if (filter.getDateComparator() == null)
       filter.setDateComparator("3");
     
-    CaseManagerPort port = 
-      CasesModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
+    String userId = runAsAdmin ? 
+      MatrixConfig.getProperty("adminCredentials.userId") : 
+      credentials.getUserId();
+    String password = runAsAdmin ?
+      password = MatrixConfig.getProperty("adminCredentials.password") :
+      credentials.getPassword();
+    
+    CaseManagerPort port = CasesModuleBean.getPort(userId, password);
+    
     return port.findCases(filter);
   }
 
