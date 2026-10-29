@@ -54,9 +54,12 @@
                   widgetVar="uploadDnd"
                   fileLimit="1"                    
                   update="@form:cnt"
-                  sizeLimit="200000000"
+                  sizeLimit="#{uploadDocumentsWorkflowBean.maxFileSize}"
+                  invalidSizeMessage="#{uploadDocumentsWorkflowBean.invalidSizeMessage}"
                   global="false"
-                  dropZone="file_upload">
+                  dropZone="file_upload"
+                  allowTypes="#{uploadDocumentsWorkflowBean.validExtensionsRegExp}"
+                  invalidFileMessage="#{uploadDocumentsWorkflowBean.invalidFileMessage}">
     </p:fileUpload>
 
     <h:panelGroup layout="block" styleClass="ui-fluid formgrid grid"

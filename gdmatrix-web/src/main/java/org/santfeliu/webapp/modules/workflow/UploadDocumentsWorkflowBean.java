@@ -34,10 +34,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -53,7 +55,6 @@ import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Properties;
-import org.santfeliu.util.Table;
 import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 import org.santfeliu.workflow.form.Form;
@@ -84,6 +85,8 @@ public class UploadDocumentsWorkflowBean extends WorkflowBean implements Seriali
   String docTypeId = "Document";
   String language;
   File fileToStore;
+  List<String> validExtensions = new ArrayList();
+  int maxFileSize = 200000000;
 
   @Inject
   WorkflowInstanceBean instanceBean;
@@ -153,12 +156,88 @@ public class UploadDocumentsWorkflowBean extends WorkflowBean implements Seriali
     this.language = language;
   }
 
+  public List getValidExtensions()
+  {
+    return validExtensions;
+  }
+
+  public void setValidExtensions(List validExtensions)
+  {
+    this.validExtensions = validExtensions;
+  }
+
+  public int getMaxFileSize()
+  {
+    return maxFileSize;
+  }
+
+  public void setMaxFileSize(int maxFileSize)
+  {
+    this.maxFileSize = maxFileSize;
+  }
+  
+  public String getValidExtensionsRegExp() 
+  {
+    if (validExtensions == null || validExtensions.isEmpty()) 
+        return "";
+
+    String regExp = validExtensions.stream()
+      .map(String::trim)
+      .collect(Collectors.joining("|"));
+
+    return "/(\\.|\\/)(" + regExp + ")$/i";
+  } 
+  
+  public String getInvalidFileMessage()
+  {
+    return getLocalizedMessage("INVALID_FILE_EXTENSION") +
+            ". " + getLocalizedMessage("validExtensions") +
+            " " + validExtensions.toString();
+  }
+  
+  public void setMaxFileSize(String sMaxFileSize)
+  {
+    if (sMaxFileSize != null)
+    {
+      try
+      {
+        sMaxFileSize = sMaxFileSize.trim().toLowerCase();
+        int length = sMaxFileSize.length();
+        if (sMaxFileSize.endsWith("mb"))
+        {
+          sMaxFileSize = sMaxFileSize.substring(0, length - 2);
+          maxFileSize = Integer.parseInt(sMaxFileSize) * 1024 * 1024;
+        }
+        else if (sMaxFileSize.endsWith("kb"))
+        {
+          sMaxFileSize = sMaxFileSize.substring(0, length - 2);
+          maxFileSize = Integer.parseInt(sMaxFileSize) * 1024;
+        }
+        else // bytes
+        {
+          maxFileSize = Integer.parseInt(sMaxFileSize);
+        }
+      }
+      catch (NumberFormatException ex)
+      {
+        maxFileSize = 200000000;
+      }
+    }
+  }  
+  
+  public String getInvalidSizeMessage()
+  {
+    return getLocalizedMessage("INVALID_FILE_SIZE") +
+      ". " + getLocalizedMessage("maxFileSize") +
+      " (" + DocumentUtils.getSizeString(getMaxFileSize()) + ")";
+  }
+
   public void handleFileUpload(FileUploadEvent event)
   {
     try
     {
-      org.primefaces.model.file.UploadedFile uploadedFile = event.getFile();
-      title = uploadedFile.getFileName();
+      org.primefaces.model.file.UploadedFile uploadedFile = event.getFile();     
+      title = uploadedFile.getFileName();      
       fileToStore = File.createTempFile("upload", ".bin");
       try (InputStream is = uploadedFile.getInputStream())
       {
@@ -195,8 +274,20 @@ public class UploadDocumentsWorkflowBean extends WorkflowBean implements Seriali
       if (value != null) reference = String.valueOf(value);
       else reference = "";
 
-      value = parameters.get("maxFileSize");
-      value = parameters.get("validExtensions");
+
+      if (parameters.containsKey("maxFileSize"))
+      {
+        value = parameters.get("maxFileSize");        
+        setMaxFileSize(String.valueOf(value));
+      }
+      if (parameters.containsKey("validExtensions"))
+      {
+        String extensions = (String) parameters.get("validExtensions");
+        validExtensions = Arrays.stream(extensions.split(","))
+          .map(String::trim)               
+          .filter(s -> !s.isEmpty())       
+          .collect(Collectors.toList());
+      }
       if (parameters.containsKey("title"))
       {
         value = parameters.get("title");
