@@ -294,7 +294,7 @@ public class NewObjectBean extends ObjectBean
       property.getValue().add("%");
     nodeFilter.getProperty().add(property);
         
-    List<Node> nodeList = CMSModuleBean.getPort(true).findNodes(nodeFilter);
+    List<Node> nodeList = CMSModuleBean.getPort(false).findNodes(nodeFilter);
     nodeFilter.getProperty().clear();
     
     //Search for legacy sections   
@@ -310,7 +310,7 @@ public class NewObjectBean extends ObjectBean
       property.getValue().add("%" + name + "%");
       nodeFilter.getProperty().add(property);
     }   
-    nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
+    nodeList.addAll(CMSModuleBean.getPort(false).findNodes(nodeFilter));
 
     //Search for legacy sections (GDMatrix 3)
     nodeFilter.getProperty().clear();
@@ -318,6 +318,10 @@ public class NewObjectBean extends ObjectBean
     property.setName(LEGACY_SECTION_PROPERTY);
     property.getValue().add(LEGACY_SECTION_VALUE2);
     nodeFilter.getProperty().add(property);
+    Property property2 = new Property();
+    property2.setName(NewCatalogBean.VIEW_MODE_PROPERTY);
+    property2.getValue().add("BYSECTION");
+    nodeFilter.getProperty().add(property2);
     if (name != null)
     {
       property = new Property();
@@ -325,7 +329,7 @@ public class NewObjectBean extends ObjectBean
       property.getValue().add("%" + name + "%");
       nodeFilter.getProperty().add(property);
     }
-    nodeList.addAll(CMSModuleBean.getPort(true).findNodes(nodeFilter));
+    nodeList.addAll(CMSModuleBean.getPort(false).findNodes(nodeFilter));
 
     nodeList.stream().forEach(node -> nodeIds.add(node.getNodeId()));
 

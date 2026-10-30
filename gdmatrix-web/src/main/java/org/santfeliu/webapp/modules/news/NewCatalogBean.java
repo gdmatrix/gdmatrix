@@ -56,7 +56,6 @@ import org.matrix.news.NewSection;
 import org.matrix.news.NewView;
 import org.matrix.news.NewsFilter;
 import org.matrix.news.SectionFilter;
-import org.santfeliu.cms.web.CMSConfigBean;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.news.client.NewsManagerClient;
@@ -73,6 +72,7 @@ import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.util.RequestParameters;
 import org.santfeliu.web.obj.util.SetObjectManager;
 import org.santfeliu.webapp.helpers.BasicSearchHelper;
+import org.santfeliu.webapp.modules.cms.CMSModuleBean;
 
 /**
  *
@@ -187,8 +187,7 @@ public class NewCatalogBean extends WebBean implements Serializable
 
   //New property
   @CMSProperty
-  private static final String VIEW_MODE_PROPERTY =
-    "viewMode";
+  public static final String VIEW_MODE_PROPERTY = "viewMode";
 
   private static final String DOC_SERVLET_PATH = "/documents/";
   private static final int DEFAULT_PAGE_SIZE = 10;
@@ -355,7 +354,7 @@ public class NewCatalogBean extends WebBean implements Serializable
     this.newsFilter = newsFilter;
   }
 
-  public Set<String> getVisibleSections()
+  public Set<String> getVisibleSections() throws Exception
   {
     if (visibleSections == null)
     {
@@ -369,7 +368,7 @@ public class NewCatalogBean extends WebBean implements Serializable
     this.visibleSections = visibleSections;
   }
 
-  public Set<String> getEditableSections()
+  public Set<String> getEditableSections() throws Exception
   {
     if (editableSections == null)
     {
@@ -1366,7 +1365,7 @@ public class NewCatalogBean extends WebBean implements Serializable
     }
   }
 
-  private Set<String> calcEditableSections()
+  private Set<String> calcEditableSections() throws Exception
   {
     Set<String> result = new HashSet<>();
     List<String> nodeIdList = getNewSectionNodes();
@@ -1383,7 +1382,7 @@ public class NewCatalogBean extends WebBean implements Serializable
     return result;
   }
 
-  private Set<String> calcVisibleSections()
+  private Set<String> calcVisibleSections() throws Exception
   {
     Set<String> result = new HashSet<>();
     List<String> nodeIdList = getNewSectionNodes();
@@ -1397,12 +1396,12 @@ public class NewCatalogBean extends WebBean implements Serializable
     return result;
   }
 
-  private List<String> getNewSectionNodes()
+  private List<String> getNewSectionNodes() throws Exception
   {
     List<String> nodeIdList = new ArrayList<>();
     String workspaceId =
       UserSessionBean.getCurrentInstance().getWorkspaceId();
-    CMSManagerPort port = CMSConfigBean.getPort();
+    CMSManagerPort port = CMSModuleBean.getPort(false);
     //Old property
     NodeFilter nodeFilter = new NodeFilter();
     Property property = new Property();
@@ -1416,12 +1415,15 @@ public class NewCatalogBean extends WebBean implements Serializable
       nodeIdList.add(node.getNodeId());
     }
     //New property
-    nodeFilter = new NodeFilter();
+    nodeFilter.getProperty().clear();
     property = new Property();
     property.setName("action");
     property.getValue().add("%newCatalogBean%");
     nodeFilter.getProperty().add(property);
-    nodeFilter.getWorkspaceId().add(workspaceId);
+    Property property2 = new Property();
+    property2.setName(VIEW_MODE_PROPERTY);
+    property2.getValue().add("BYSECTION");
+    nodeFilter.getProperty().add(property2);
     nodeList = port.findNodes(nodeFilter);
     for (Node node : nodeList)
     {
@@ -1430,7 +1432,7 @@ public class NewCatalogBean extends WebBean implements Serializable
     return nodeIdList;
   }
 
-  private List<String> getFilteredVisibleSections()
+  private List<String> getFilteredVisibleSections() throws Exception
   {
     List<String> result = new ArrayList<>();
     MenuItemCursor menuItem = getSelectedMenuItem();
