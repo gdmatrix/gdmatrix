@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.assistant;
 
 import com.google.gson.Gson;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +81,9 @@ public class AssistantBean extends WebBean implements Serializable
 
   @Inject
   ThreadsBean threadsBean;
+  
+  @Inject 
+  BackendCheckerBean backendChekerBean;
 
   public int getActiveTabIndex()
   {
@@ -126,9 +130,43 @@ public class AssistantBean extends WebBean implements Serializable
 
   public Assistant getAssistant()
   {
-    if (assistant == null)
+    String balancer = getProperty("balancer");
+    if (balancer != null)
     {
-      initAssistant(null);
+      // find operational backend only once per request
+
+      Map<String, Object> requestMap = 
+        (Map<String, Object>)getExternalContext().getRequestMap();    
+      String assistantInit = (String)requestMap.get("_assistantInit_");
+
+      if (assistantInit != null) return assistant;
+            
+      List<String> backendConfig = getOperationalAssistant(balancer);
+      System.out.println("\n>>>> LLM operational: " + backendConfig);
+
+      if (backendConfig == null)
+      {
+        initAssistant(null);
+        error("No operational LLM server");
+      }
+      else
+      {
+        String assistantId = backendConfig.get(1);
+        String baseUrl = backendConfig.get(2);
+        if (assistant == null || !assistant.getAssistantId().equals(assistantId))
+        {
+          initAssistant(assistantId);
+        }
+        assistant.setBaseUrl(baseUrl);
+      }
+      requestMap.put("_assistantInit_", "true");      
+    }
+    else
+    {
+      if (assistant == null)
+      {
+        initAssistant(getProperty(ASSISTANTID_PROPERTY));
+      }
     }
     return assistant;
   }
@@ -161,7 +199,7 @@ public class AssistantBean extends WebBean implements Serializable
       if ("assistant".equals(view)) title += " - " + getAssistant().getName();
       params = true;
     }
-    
+
     urlBuffer.append(params ? "&" : "?")
       .append(ASSISTANT_VIEW_PARAMETER).append("=").append(view);
 
@@ -297,7 +335,9 @@ public class AssistantBean extends WebBean implements Serializable
       setView("threads");
     }
 
-    initAssistant(map.get(ASSISTANTID_PARAMETER));
+    String assistantId = (String)map.get(ASSISTANTID_PARAMETER);
+    if (assistantId == null) assistantId = getProperty(ASSISTANTID_PROPERTY);
+    initAssistant(assistantId);
 
     String template = UserSessionBean.getCurrentInstance().getTemplate();
     return "/templates/" + template + "/template.xhtml";
@@ -367,12 +407,7 @@ public class AssistantBean extends WebBean implements Serializable
 
   void initAssistant(String assistantId)
   {
-    if (assistantId == null)
-    {
-      assistantId = UserSessionBean.getCurrentInstance().getSelectedMenuItem()
-        .getProperty(ASSISTANTID_PROPERTY);
-    }
-
+    System.out.println("AssistantId: " + assistantId);
     if (assistantId == null)
     {
       createAssistant();
@@ -381,6 +416,7 @@ public class AssistantBean extends WebBean implements Serializable
     {
       try
       {
+        System.out.println("LOAD assistant from DB " + assistantId);
         assistant = getAssistantStore().loadAssistant(assistantId);
       }
       catch (Exception ex)
@@ -389,5 +425,58 @@ public class AssistantBean extends WebBean implements Serializable
         error(ex);
       }
     }
+  }
+
+  List<String> getOperationalAssistant(String balancer)
+  {
+     MenuItemCursor cursor = 
+       UserSessionBean.getCurrentInstance().getSelectedMenuItem();
+    
+    // backendsByLevel = 2 4 (2 backends of level 0, 4 backends of level 1,...) 
+    String[] backendsByLevel = balancer.split(" "); 
+
+    int level = 0;
+    for (String count : backendsByLevel)
+    {
+      List<List<String>> activeBackends = new ArrayList<>();
+
+      // find active backends
+      int backendCount = Integer.parseInt(count.trim());
+      for (int i = 0; i < backendCount; i++)
+      {
+        List<String> backendConfig = 
+          cursor.getDirectMultiValuedProperty("balancer-" + level + "-" + i);
+        if (backendConfig.size() < 3) continue;
+
+        String testUrl = backendConfig.get(0);
+        if (isActiveBackend(testUrl))
+        {
+          String assistantId = backendConfig.get(1);
+          String baseUrl = backendConfig.get(2);
+          if (assistant != null && 
+              assistant.getAssistantId().equals(assistantId) &&
+              baseUrl.equals(assistant.getBaseUrl()))
+          {
+            // current assistant is operational, return it.
+            return backendConfig;
+          }
+          activeBackends.add(backendConfig);
+        }
+      }
+
+      if (!activeBackends.isEmpty())
+      {
+        // select one active backend randomly
+        int index = (int)(Math.random() * activeBackends.size());
+        return activeBackends.get(index);
+      }
+      level++;
+    }
+    return null;
+  }
+
+  boolean isActiveBackend(String url)
+  {
+    return backendChekerBean.isActive(url);
   }
 }
