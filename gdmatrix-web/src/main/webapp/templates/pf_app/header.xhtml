@@ -137,7 +137,8 @@
       initMenu();
 
      window.addEventListener("load", () => {
-        updateFontSize(#{userSessionBean.fontSize});
+        var fontSize = "#{userSessionBean.fontSize}";
+        if (fontSize) updateFontSize(fontSize);
       });
     </script>
 

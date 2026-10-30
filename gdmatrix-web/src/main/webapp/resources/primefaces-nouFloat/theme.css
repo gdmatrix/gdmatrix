@@ -6585,8 +6585,6 @@ body .ui-dialog .ui-dialog-content{
   background:transparent;
   border:0 none;
   box-shadow:none;
-  scrollbar-width:thin;
-  scrollbar-color:rgba(16, 24, 40, 0.22) transparent;
 }
 body .ui-dialog .ui-dialog-footer{
   color:var(--text-color);
@@ -7729,10 +7727,6 @@ body .ui-confirmdialog{
   background:var(--surface-overlay);
   box-shadow:var(--fl-shadow-4);
   overflow:hidden;
-}
-body .ui-selectonemenu-items-wrapper,body .ui-datatable-scrollable-body{
-  scrollbar-width:thin;
-  scrollbar-color:rgba(16, 24, 40, 0.22) transparent;
 }
 .ui-connected-overlay-enter{
   opacity:0;

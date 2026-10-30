@@ -107,7 +107,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String DEFAULT_TEMPLATE = "default";
   public static final String DEFAULT_SECTION = "default";
   public static final String DEFAULT_THEME = "default";
-  public static final String DEFAULT_FONT_SIZE = "12";
   public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
   public static final String MODERN_PRIMEFACES_THEME = "rosa";
 
@@ -144,7 +143,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private String lastPageLanguage;
   private String theme = DEFAULT_THEME;
   private String pfTheme = DEFAULT_PRIMEFACES_THEME;
-  private String fontSize = DEFAULT_FONT_SIZE;
+  private String fontSize;
   private String browserType;
   private String loginMethod;
   private String logoutAction;

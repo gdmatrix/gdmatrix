@@ -46,10 +46,17 @@
             <label for="font_range" class="block">#{webBundle.fontSize}:</label>
           </h:panelGroup>
           <input id="font_range" class="block w-full mt-3"
-                 type="range" min="12" max="14" step="1"
+                 type="range" min="12" max="16" step="1"
                  value="#{userSessionBean.fontSize}"
                  oninput="updateFontSize(this.value)"
                  onchange="rcUpdateFontSize([{'name': 'fontSize', 'value': this.value}])" />
+          <script>
+            if (!"#{userSessionBean.fontSize}")
+            {
+              document.getElementById("font_range").value =
+                parseInt(getComputedStyle(document.documentElement).getPropertyValue("--font-size"));
+            }
+          </script>
           <p:remoteCommand action="#{userSessionBean.updateFontSize}" name="rcUpdateFontSize" />
         </div>
         <div class="mt-5 w-full">

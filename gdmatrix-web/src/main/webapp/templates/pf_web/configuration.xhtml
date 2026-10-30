@@ -37,7 +37,7 @@
               <div class="font_slider">
                 <span class="font_slider_min" aria-hidden="true">A</span>
                 <h:inputHidden id="font_size" value="#{userSessionBean.fontSize}" />
-                <p:slider for="font_size" minValue="12" maxValue="18" step="1"
+                <p:slider for="font_size" widgetVar="fontSlider" minValue="12" maxValue="16" step="1"
                           styleClass="flex-grow-1" onSlide="updateFontSize(ui.value)">
                   <p:ajax event="slideEnd" process="font_size" update="@none" global="false" />
                 </p:slider>

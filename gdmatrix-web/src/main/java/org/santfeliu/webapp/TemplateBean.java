@@ -318,8 +318,12 @@ public class TemplateBean extends WebBean implements Serializable
         userSessionBean.getViewLanguage(), false);
       userPreferences.storePreference(UserPreferences.PRIMEFACES_THEME_PROPERTY,
         userSessionBean.getPrimefacesTheme(), false);
-      userPreferences.storePreference(UserPreferences.FONT_SIZE_PROPERTY,
-        userSessionBean.getFontSize(), false);
+      String fontSize = userSessionBean.getFontSize();
+      if (fontSize != null)
+      {
+        userPreferences.storePreference(UserPreferences.FONT_SIZE_PROPERTY,
+          fontSize, false);
+      }
 
       growl("PREFERENCES_SAVED");
     }

@@ -159,7 +159,8 @@
           var panel = document.querySelector(".app_header > ." + panelClass);
           if (!panel) return false;
           if (panel.classList.contains("show")) return hideDialogPanel(panel, event);
-
+          if (panelClass === "config_panel") syncFontSlider();
+          
           // unfold only if the card was closed. Otherwise only the content changes
           var header = panel.closest(".app_header");
           var cardOpen = !!header.querySelector(".main_menu.mega > ul > li.drop, :scope > .header_sheet.show");
@@ -170,6 +171,12 @@
           updateMenuLayout();
           if (sheetObserver) sheetObserver.observe(panel);
           return false;
+        }
+
+        function syncFontSlider()
+        {
+          var size = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--font-size"));
+          if (size) PF("fontSlider").setValue(size);
         }
 
         function hideHeaderSheets()
@@ -360,7 +367,9 @@
         }
         
         window.addEventListener("load", () => {
-          updateFontSize(#{userSessionBean.fontSize});
+          // empty: the --font-size of template.css
+          var fontSize = "#{userSessionBean.fontSize}";
+          if (fontSize) updateFontSize(fontSize);
 
           // Initial state
           if (getAssistantChoice() === "off") document.body.classList.add("asst-off");

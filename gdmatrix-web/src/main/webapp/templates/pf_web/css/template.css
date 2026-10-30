@@ -2,7 +2,7 @@
 :root
 {
   /* Typography */
-  --font-size: 12px;
+  --font-size: 14px;
   --font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--font-size);
   font-family: var(--font-family);
@@ -1361,12 +1361,6 @@ body.asst-off .assistant_panel
   align-items: start;
 }
 
-:where(.menu-compact) .main_menu::-webkit-scrollbar
-{
-  width: 0px;
-  height: 0px;
-}
-
 :where(.menu-compact) .main_menu li.drop ul
 {
   box-shadow: none;
@@ -1560,8 +1554,6 @@ body.asst-off .assistant_panel
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--text-color) transparent;
   direction: rtl;
   border-radius: 0 0 var(--header-radius) var(--header-radius); /* clips the scrollbar */
   box-shadow: none;
@@ -1640,18 +1632,6 @@ body.asst-off .assistant_panel
   {
     animation: none;
   }
-}
-
-.main_menu.mega > ul > li > ul::-webkit-scrollbar
-{
-  width: 8px;
-  height: 8px;
-}
-
-.main_menu.mega > ul > li > ul::-webkit-scrollbar-thumb
-{
-  background-color: var(--text-color);
-  border-radius: var(--border-radius);
 }
 
 /* level 2: vertical list on the left */
