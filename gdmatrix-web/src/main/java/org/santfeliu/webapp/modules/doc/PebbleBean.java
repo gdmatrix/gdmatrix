@@ -53,6 +53,7 @@ import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.webapp.data.BrowserFunction;
 import org.santfeliu.webapp.data.Data;
+import org.santfeliu.webapp.data.DocumentUtilsFunction;
 import org.santfeliu.webapp.data.GetDicPropertyValueFunction;
 import org.santfeliu.webapp.data.HtmlFormFunction;
 import org.santfeliu.webapp.data.ImagesCarouselFunction;
@@ -181,6 +182,7 @@ public class PebbleBean
       functions.put("imagesCarousel", new ImagesCarouselFunction());
       functions.put("getDicPropertyValue", new GetDicPropertyValueFunction());
       functions.put("browser", new BrowserFunction());
+      functions.put("documentUtils", new DocumentUtilsFunction());
       return functions;
     }
   }

@@ -31,9 +31,11 @@
 package org.santfeliu.webapp.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 
@@ -80,5 +82,12 @@ public class WebNodes
     }
 
     return children;
+  }
+  
+  public boolean isEditorUser()
+  {
+    Set userRoles = menuModel.getRoles();    
+    List<String> editRoles = menuModel.getSelectedMenuItem().getEditRoles();
+    return !Collections.disjoint(userRoles, editRoles);
   }
 }

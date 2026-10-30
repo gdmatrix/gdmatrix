@@ -32,6 +32,7 @@ package org.santfeliu.web.obj.util;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -207,6 +208,109 @@ public class ResultsManager extends WebBean implements Serializable
   {
     registerColumn(columnDefinition, true);
   }
+  
+  public void addDefaultColumn(String columnName, String type, 
+    String converterClassName, String[] converterParams, String styleClass)
+  {
+    ColumnDefinition columnDefinition = new ColumnDefinition(columnName);
+    if (type != null)
+      columnDefinition.setType(type);
+    if (converterClassName != null)
+    {
+      Object converter = 
+        createConverterInstance(converterClassName, converterParams);
+      if (converter != null)
+        columnDefinition.setConverter((Converter) converter);
+    }
+    if (styleClass != null)
+      columnDefinition.setStyleClass(styleClass);
+    
+    addDefaultColumn(columnDefinition);
+  }
+  
+  private Object createConverterInstance(String converterClassName, 
+    String[] converterParams)
+  {
+    try
+    {
+      Class<?> clazz = Class.forName(converterClassName);
+      
+      Constructor<?> targetConstructor = null;
+      int paramCount = (converterParams != null) ? converterParams.length : 0;
+      
+      for (Constructor<?> constructor : clazz.getConstructors())
+      {
+        if (constructor.getParameterCount() == paramCount)
+        {
+          targetConstructor = constructor;
+          break;
+        }
+      }
+      
+      if (targetConstructor == null)
+      {
+        throw new NoSuchMethodException(
+          String.format("NO_CONSTRUCTOR_FOUND: %s", converterClassName));
+      }
+      
+      if (paramCount == 0)
+        return targetConstructor.newInstance();
+      
+      Class<?>[] parameterTypes = targetConstructor.getParameterTypes();
+      Object[] args = new Object[paramCount];
+      
+      for (int i = 0; i < paramCount; i++)
+      {
+        args[i] = convertValue(converterParams[i], parameterTypes[i]);
+      }
+      
+      return targetConstructor.newInstance(args);
+    }
+    catch (ClassNotFoundException | NoSuchMethodException | 
+      InstantiationException | IllegalAccessException | 
+      IllegalArgumentException | InvocationTargetException ex)
+    {
+      Logger.getLogger(ResultsManager.class.getName())
+        .log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
+
+  private Object convertValue(String value, Class<?> targetType)
+  {
+    if (value == null)
+    {
+      return null;
+    }
+
+    if (targetType.equals(String.class))
+    {
+      return value;
+    }
+    else if (targetType.equals(int.class) || targetType.equals(Integer.class))
+    {
+      return Integer.valueOf(value);
+    }
+    else if (targetType.equals(long.class) || targetType.equals(Long.class))
+    {
+      return Long.valueOf(value);
+    }
+    else if (targetType.equals(boolean.class) || targetType.equals(Boolean.class))
+    {
+      return Boolean.valueOf(value);
+    }
+    else if (targetType.equals(double.class) || targetType.equals(Double.class))
+    {
+      return Double.valueOf(value);
+    }
+    else if (targetType.equals(float.class) || targetType.equals(Float.class))
+    {
+      return Float.valueOf(value);
+    }
+
+    return value;
+  }
+
 
   private void registerColumn(ColumnDefinition columnDefinition,
     boolean isDefaultColumnName)

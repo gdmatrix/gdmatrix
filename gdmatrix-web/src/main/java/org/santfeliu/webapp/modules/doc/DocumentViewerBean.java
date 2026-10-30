@@ -586,6 +586,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     ResultsManager resultsManager = new ResultsManager();
     resultsManager.setColumns(cursor.getMid());
     context.put("resultsManager", resultsManager);
+    context.put("editorUser", isEditorUser());
     return context;
   }
 

@@ -84,6 +84,12 @@ public class DocumentQuery extends DataQuery<Document>
     filter.setEndDate(endDate);
     return this;
   }
+  
+  public DocumentQuery includeContentMetadata(boolean includeContentMetadata)
+  {
+    filter.setIncludeContentMetadata(includeContentMetadata);
+    return this;
+  }
 
   @Override
   public DataQuery<Document> eq(String field, Object value)
