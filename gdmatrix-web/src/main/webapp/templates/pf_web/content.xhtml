@@ -47,12 +47,28 @@
       var footerMode = "#{userSessionBean.selectedMenuItem.properties.footerMode == null ? 'normal' : userSessionBean.selectedMenuItem.properties.footerMode}";
       elem.classList.add(footerMode);
       
-      // Application pages, like maps, grid(main page). The content uses the whole window
-      var fullWidth = "#{userSessionBean.selectedMenuItem.properties.fullWidth}";
-      var pageFull = fullWidth === "true" ? true
-                   : fullWidth === "false" ? false
-                   : (footerMode === "minimal" || footerMode === "none");
+      // pageWidth: empty = template CSS, a width = content max width, full = whole window, full + a width = whole window up to that width
+      var pageWidth = "#{userSessionBean.selectedMenuItem.properties.pageWidth}".trim();
+      // To make footerMode minimal/none full width when pageWidth is empty, use instead:
+      // var pageWidth = ("#{userSessionBean.selectedMenuItem.properties.pageWidth}" || (footerMode === "minimal" || footerMode === "none" ? "full" : "")).trim(); //
+      var pageFull = pageWidth.split(" ")[0] === "full";
       document.body.classList.toggle("page-full", pageFull);
+      var width = pageFull ? pageWidth.substring(4).trim() : pageWidth;
+      var rootStyle = document.documentElement.style;
+      rootStyle.removeProperty("--content-max-width");
+      rootStyle.removeProperty("--page-full-max-width");
+      if (CSS.supports("width", width))
+        rootStyle.setProperty(pageFull ? "--page-full-max-width" : "--content-max-width", width);
+
+      // headerWidth: empty = template CSS, a width = header pill max width
+      var headerWidth = "#{userSessionBean.selectedMenuItem.properties.headerWidth}".trim();
+      var oldHeaderWidth = rootStyle.getPropertyValue("--header-max-width");
+      rootStyle.removeProperty("--header-max-width");
+      if (CSS.supports("width", headerWidth))
+        rootStyle.setProperty("--header-max-width", headerWidth);
+      if (rootStyle.getPropertyValue("--header-max-width") !== oldHeaderWidth)
+        if (isMenuFitEnabled()) refitMenu(); // the bar may no longer fit
+      
       document.body.classList.toggle("side-off",
           "#{userSessionBean.selectedMenuItem.directProperties.leftMenuVisible}" === "false");
       // Assistant switched off in pages like maps (now, also on the first load,
