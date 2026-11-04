@@ -843,8 +843,7 @@ public class NewCatalogBean extends WebBean implements Serializable
     {
       NewView row = (NewView)getFacesContext().getExternalContext().
         getRequestMap().get("row");
-      return "return goMid('" + getSelectedMenuItem().getMid() + "&newid=" +
-        row.getNewId() + "')";
+      return "return showPage('Node', " + getJsonParameters(row) + ")";
     }
     else return "";
   }
@@ -1067,15 +1066,6 @@ public class NewCatalogBean extends WebBean implements Serializable
     return (urlSeparator == null ? "###" : urlSeparator);
   }
 
-  public String getJsonParameters(NewView newView)
-  {
-    MenuItemCursor menuItem = getSelectedMenuItem();
-    Map<String, String> params = new HashMap();
-    params.put("newid", newView.getNewId());
-    params.put("sectionid", getSectionId(menuItem));
-    return new Gson().toJson(params);
-  }
-
   public boolean isAutoSectionEnabled()
   {
     if (getViewMode() != ViewMode.BYSECTION) return false;
@@ -1119,6 +1109,15 @@ public class NewCatalogBean extends WebBean implements Serializable
   }
 
   //PRIVATE METHODS
+
+  private String getJsonParameters(NewView newView)
+  {
+    MenuItemCursor menuItem = getSelectedMenuItem();
+    Map<String, String> params = new HashMap();
+    params.put("mid", menuItem.getMid());
+    params.put("newid", newView.getNewId());
+    return new Gson().toJson(params);
+  }
 
   private String getSectionId(MenuItemCursor mic)
   {
