@@ -53,12 +53,14 @@ import org.matrix.news.NewSection;
 import org.matrix.news.NewStoreOptions;
 import org.matrix.news.Source;
 import org.matrix.news.SourceFilter;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.HTMLNormalizer;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.enc.Unicode;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
+import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.cms.CMSModuleBean;
@@ -268,6 +270,20 @@ public class NewObjectBean extends ObjectBean
           "new_search_publish", new Object[]{autoSectionId},
           FacesMessage.SEVERITY_INFO);
       }
+      if (newObject != null)
+      {
+        for (String key : parameters.keySet())
+        {
+          Object value = parameters.get(key);
+          if (!"xmid".equals(key) &&
+              !"smid".equals(key) &&
+              !"autoSectionId".equals(key) &&
+              !NavigatorBean.OBJECTID_PARAMETER.equals(key))
+          {
+            DictionaryUtils.setProperty(newObject, key, value);
+          }
+        }
+      }      
     }
   }
 

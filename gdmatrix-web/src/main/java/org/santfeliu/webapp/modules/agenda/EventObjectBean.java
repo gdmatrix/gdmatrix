@@ -37,6 +37,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -49,6 +50,7 @@ import org.matrix.dic.PropertyDefinition;
 import org.matrix.security.AccessControl;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.TextUtils;
@@ -290,6 +292,25 @@ public class EventObjectBean extends ObjectBean
   {
     return AgendaConstants.AGENDA_ADMIN_ROLE;
   }
+  
+  @Override
+  protected void processParameters(Map<String, Object> parameters)
+  {
+    if (parameters != null && event != null)
+    {
+      for (String key : parameters.keySet())
+      {
+        Object value = parameters.get(key);
+        if (!"xmid".equals(key) &&
+            !"smid".equals(key) &&
+            !NavigatorBean.OBJECTID_PARAMETER.equals(key))
+        {
+          DictionaryUtils.setProperty(event, key, value);
+        }
+      }
+    }
+    super.processParameters(parameters);
+  }  
 
   @Override
   public void loadObject() throws Exception

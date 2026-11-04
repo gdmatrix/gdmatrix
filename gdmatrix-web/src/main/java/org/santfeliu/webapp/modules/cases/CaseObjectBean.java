@@ -54,7 +54,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import javax.enterprise.context.RequestScoped;
+import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.setup.Action.POST_REMOVE_ACTION;
 import static org.santfeliu.webapp.setup.Action.POST_STORE_ACTION;
 import static org.santfeliu.webapp.setup.Action.PRE_REMOVE_ACTION;
@@ -250,6 +253,25 @@ public class CaseObjectBean extends ObjectBean
     String dateTime = TextUtils.concatDateAndTime(date, time);
     return TextUtils.parseInternalDate(dateTime);
   }
+  
+  @Override
+  protected void processParameters(Map<String, Object> parameters)
+  {
+    if (parameters != null && cas != null)
+    {
+      for (String key : parameters.keySet())
+      {
+        Object value = parameters.get(key);
+        if (!"xmid".equals(key) &&
+            !"smid".equals(key) &&
+            !NavigatorBean.OBJECTID_PARAMETER.equals(key))
+        {
+          DictionaryUtils.setProperty(cas, key, value);
+        }
+      }
+    }
+    super.processParameters(parameters);
+  }  
 
   @Override
   public void loadObject() throws Exception
