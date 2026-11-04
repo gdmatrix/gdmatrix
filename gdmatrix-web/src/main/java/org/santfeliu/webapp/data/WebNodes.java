@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.matrix.cms.CMSConstants;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 
@@ -88,6 +89,7 @@ public class WebNodes
   {
     Set userRoles = menuModel.getRoles();    
     List<String> editRoles = menuModel.getSelectedMenuItem().getEditRoles();
-    return !Collections.disjoint(userRoles, editRoles);
+    return !Collections.disjoint(userRoles, editRoles) 
+      || userRoles.contains(CMSConstants.CMS_ADMIN_ROLE);
   }
 }
