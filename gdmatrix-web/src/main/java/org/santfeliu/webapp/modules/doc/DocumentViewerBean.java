@@ -450,7 +450,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
       PebbleTemplate template = engine.getLiteralTemplate(source);
 
       StringWriter writer = new StringWriter();
-      template.evaluate(writer, context);
+      template.evaluate(writer, context, getLocale());
       String content = writer.toString();
 
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
