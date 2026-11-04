@@ -158,7 +158,8 @@ public class TypeReferenceBean extends ObjectReferenceBean
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
     NavigatorBean.BaseTypeInfo baseTypeInfo =
       navigatorBean.getBaseTypeInfo(TYPE_TYPE);
-    return baseTypeInfo.getFavoriteObjectIdList().contains(typeId);
+    return baseTypeInfo != null ? 
+      baseTypeInfo.getFavoriteObjectIdList().contains(typeId) : false;
   }
 
   public void markAsFavorite()
