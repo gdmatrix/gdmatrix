@@ -60,6 +60,11 @@ public class Data
     return new NewQuery(credentials);
   }
   
+  public NewDocumentsQuery newDocuments()
+  {
+    return new NewDocumentsQuery(credentials);
+  }
+  
   public CaseQuery cases()
   {
     return new CaseQuery(credentials);
