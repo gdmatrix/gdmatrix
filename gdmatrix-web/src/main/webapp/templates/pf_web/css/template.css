@@ -3,7 +3,7 @@
 {
   /* Typography */
   --font-size: 14px;
-  --font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--font-size);
   font-family: var(--font-family);
 
@@ -642,7 +642,6 @@ body.asst-off .assistant_button .icon_off
   display:flex;
   flex-direction: row;
   align-items: center;
-  font-size:14px;
   text-decoration:none;
   cursor: pointer;
   user-select: none;
@@ -1470,12 +1469,13 @@ body.asst-off .assistant_panel
   flex-wrap: wrap;
   justify-content: var(--mega-bar-justify);
   column-gap: var(--mega-bar-column-gap);
-  row-gap: 0;
+  row-gap: var(--mega-bar-row-gap); /* 4 + rest break: 0 */
   width: 100%;
   min-width: 0;
   padding: 0;
 }
 
+/* Tabs wrap by width. For a forced 4 + rest break, uncomment and set row-gap: 0 above
 .main_menu.mega > ul::after
 {
   content: "";
@@ -1489,6 +1489,7 @@ body.asst-off .assistant_panel
   order: 2;
   margin-top: var(--mega-bar-row-gap);
 }
+*/
 
 .main_menu.mega > ul > li
 {
