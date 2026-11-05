@@ -278,8 +278,7 @@
                                  update="newSearchRootList" />
                 <p:button title="#{objectBundle.edit}"
                           styleClass="button-edit"
-                          href="#"
-                          onclick="return showObject('New', '#{row.newId}')"
+                          href="/editors/news/#{row.newId}"
                           icon="pi pi-pencil"
                           target="_blank"
                           rendered="#{newCatalogBean.rootEditLinkRender}" />
@@ -291,14 +290,16 @@
 
       <div class="news-actions-bar">
         <p:button value="#{objectBundle.create}"
-                  href="#"
+                  href="/editors/news#{newCatalogBean.autoSectionId != null ?
+                    ('?autoSectionId=' += newCatalogBean.autoSectionId) :
+                    ''}"
+                  target="_blank"
                   icon="pi pi-plus-circle"
                   alt="#{objectBundle.create}"
                   title="#{objectBundle.create}"
                   styleClass="button-create"
                   id="createButton"
-                  rendered="#{newCatalogBean.rootEditLinkRender}"
-                  onclick="#{newCatalogBean.createNewOnclick}" />
+                  rendered="#{newCatalogBean.rootEditLinkRender}" />
       </div>
 
       <h:panelGroup styleClass="news-footer-document"

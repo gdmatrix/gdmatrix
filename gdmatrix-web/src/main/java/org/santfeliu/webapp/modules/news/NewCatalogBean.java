@@ -536,18 +536,14 @@ public class NewCatalogBean extends WebBean implements Serializable
     return null;
   }
 
-  public String getCreateNewOnclick()
+  public String getAutoSectionId()
   {
     if (isAutoSectionEnabled())
     {
       MenuItemCursor menuItem = getSelectedMenuItem();
-      String sectionId = getSectionId(menuItem);
-      return "return showObject('New', '', {autoSectionId:'" + sectionId + "'})";
+      return getSectionId(menuItem);
     }
-    else
-    {
-      return "return showObject('New', '')";
-    }
+    return null;
   }
 
   public String goToNew()
