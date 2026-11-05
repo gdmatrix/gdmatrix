@@ -386,28 +386,22 @@ function markdownToHtml(text, showThinking = true)
   return html;
 }
 
+// State kept in the body
+function setThreadsPanelOpen(open)
+{
+  document.body.classList.toggle("threads-open", open);
+  document.body.classList.toggle("threads-closed", !open);
+}
+
 function showThreadsPanel()
 {
-  let threadsPanel = PF("threadsPanel");
-  threadsPanel.show();
-  threadsPanel.getJQ().css("display", "flex");
-  threadsPanel.getJQ().removeClass("first_time");
-
-  let threadsPanelButton = PF("threadsPanelButton");
-  threadsPanelButton.getJQ().css("display", "none");
-  threadsPanelButton.getJQ().removeClass("first_time");
-
+  setThreadsPanelOpen(true);
   return false;
 }
 
 function closeThreadsPanel()
 {
-  let threadsPanel = PF("threadsPanel");
-  threadsPanel.close();
-
-  let threadsPanelButton = PF("threadsPanelButton");
-  threadsPanelButton.getJQ().css("display", "inline");
-
+  setThreadsPanelOpen(false);
   return false;
 }
 

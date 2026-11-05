@@ -1,27 +1,21 @@
 /* ide.js */
 
+// State kept in the body
+function setDocsPanelOpen(open)
+{
+  document.body.classList.toggle("docs-open", open);
+  document.body.classList.toggle("docs-closed", !open);
+}
+
 function showPanel()
 {
-  var panel = PF("docsPanel");
-  panel.show();
-  panel.getJQ().css("display", "flex");
-  panel.getJQ().removeClass("first_time");
-
-  var threadsPanelButton = PF("docsPanelButton");
-  threadsPanelButton.getJQ().css("display", "none");
-  threadsPanelButton.getJQ().removeClass("first_time");
-
+  setDocsPanelOpen(true);
   return false;
 }
 
 function closePanel()
 {
-  var panel = PF("docsPanel");
-  panel.close();
-
-  var threadsPanelButton = PF("docsPanelButton");
-  threadsPanelButton.getJQ().css("display", "inline");
-
+  setDocsPanelOpen(false);
   return false;
 }
 

@@ -20,7 +20,7 @@
       <c:if test="#{userSessionBean.selectedMenuItem.properties.assistantBarEnabled!= 'true'}">
         <p:commandButton id="closeAssistantBtn"
                          type="button"
-                         title="Close"
+                         title="#{objectBundle.close}" pt:aria-label="#{objectBundle.close}"
                          icon="pi pi-times"
                          styleClass="ui-button-icon-only ab-close"
                          onclick="animateAssistantButton(); toggleAssistantVisibility(event)" />

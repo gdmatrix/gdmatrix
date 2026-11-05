@@ -48,6 +48,22 @@
   display: none;
 }
 
+body.threads-open .ui-panel.threads_panel
+{
+  display: flex;
+}
+
+body.threads-closed .ui-panel.threads_panel,
+body.threads-open .threads_panel_button
+{
+  display: none;
+}
+
+body.threads-closed .threads_panel_button
+{
+  display: inline-flex;
+}
+
 .ui-panel.threads_panel ul > li.current
 {
   font-weight: bold;
@@ -433,9 +449,15 @@
   transition: box-shadow 0.2s ease;
 }
 
+/* hover ring; with the focus inside, the focus ring */
+.assistant-bar:hover:not(:focus-within)
+{
+  box-shadow: var(--ab-shadow), var(--ab-hover-ring, 0 0 #0000);
+}
+
 .assistant-bar:focus-within
 {
-  box-shadow: var(--ab-shadow), var(--focus-ring, 0 0 0 4px color-mix(in srgb, var(--ab-accent) 16%, transparent));
+  box-shadow: var(--ab-shadow), var(--ab-focus-ring, var(--focus-ring, 0 0 0 4px color-mix(in srgb, var(--ab-accent) 16%, transparent)));
 }
 
 /* the bar inside the open panel (half / full screen) */
@@ -477,9 +499,10 @@ body.asst-full .assistant-bar
   color: var(--ab-placeholder);
 }
 
-/* the focus ring is the bar (:focus-within), not the textarea; :enabled:focus also wins over
-   the theme rules for fields (body .ui-inputtext:enabled:focus) */
+/* the focus ring is the bar (:focus-within), not the textarea; :enabled:hover and :enabled:focus
+   also win over the theme rules for fields (body .ui-inputtext:enabled:hover/focus) */
 .assistant-bar .ui-inputtextarea:hover,
+.assistant-bar .ui-inputtextarea:enabled:hover,
 .assistant-bar .ui-inputtextarea:focus,
 .assistant-bar .ui-inputtextarea:enabled:focus,
 .assistant-bar .ui-inputtextarea.ui-state-hover,

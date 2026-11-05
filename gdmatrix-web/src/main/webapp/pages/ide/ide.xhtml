@@ -179,12 +179,13 @@
       </p:tabView>
 
       <p:panel id="docs_panel" styleClass="docs_panel flex-grow-0 v-full first_time h-full"
-               widgetVar="docsPanel" closeSpeed="50" style="min-width:300px;">
+               widgetVar="docsPanel" style="min-width:300px;">
         <f:facet name="header"> 
           <i class="pi pi-copy vertical-align-middle m-1"></i>
 
           <span>Documents</span>
           <p:commandLink onclick="return closePanel();"
+                         title="#{objectBundle.close}"
                          class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
             <span class="ui-icon ui-icon-closethick"></span>
           </p:commandLink>

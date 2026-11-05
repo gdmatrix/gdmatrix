@@ -170,14 +170,15 @@
       </h:panelGroup>     
       
       <p:panel id="threads_panel" styleClass="threads_panel flex-grow-0 v-full first_time"
-               widgetVar="threadsPanel" closeSpeed="50">
+               widgetVar="threadsPanel">
         <f:facet name="header">
           <i class="fa fa-comment-dots vertical-align-middle m-1"></i>
 
           <span>#{assistantBundle.threads}</span>
           <p:commandLink onclick="return closeThreadsPanel();"
+                         title="#{objectBundle.close}" pt:aria-label="#{objectBundle.close}"
                          class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
-            <span class="ui-icon ui-icon-closethick"></span>
+            <span class="ui-icon ui-icon-closethick" aria-hidden="true"></span>
           </p:commandLink>
         </f:facet>
         <h:panelGroup id="thread_filter" layout="block" 

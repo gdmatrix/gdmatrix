@@ -84,6 +84,22 @@
   display: none;
 }
 
+body.docs-open .ui-panel.docs_panel
+{
+  display: flex;
+}
+
+body.docs-closed .ui-panel.docs_panel,
+body.docs-open .docs_panel_button
+{
+  display: none;
+}
+
+body.docs-closed .docs_panel_button
+{
+  display: inline;
+}
+
 @media only screen and (max-width: 768px) 
 {  
   .ide_body .header
