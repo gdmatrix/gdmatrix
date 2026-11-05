@@ -218,8 +218,7 @@ public class EventViewerBean extends WebBean implements Serializable
       String eventId = parameterMap.get(EVENTID_PARAMETER);
       if (eventId != null)
       {
-        AgendaManagerClient client = AgendaModuleBean.getClient(
-          userSessionBean.getUserId(), userSessionBean.getPassword());
+        AgendaManagerClient client = AgendaModuleBean.getClient();
         event = client.loadEventFromCache(eventId);
 
         //Documents
