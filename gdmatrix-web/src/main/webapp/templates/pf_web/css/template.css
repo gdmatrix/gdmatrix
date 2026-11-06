@@ -97,20 +97,17 @@
   --menu-transition-duration2: 0.5s;
 
   /* Mega menu (sheet menu) */
-  --mega-rows: 8;
-  --mega-column-width: 200px;
-  --mega-l2-width: 240px;
-  --mega-min-height: min(360px, 45vh);
-  --mega-max-height: min(70vh, 560px);
+  --mega-height: min(400px, 60vh);      /* sheet card of a menu tab */
+  --mega-head-height: 3rem;            /* section head, over the menu columns */
+  --mega-column-head-height: 3.25rem;  /* head of the level 3 column */
+  --mega-max-height: min(70vh, 560px); /* login and configuration panels */
   --mega-bar-column-gap: 4px; /* between the tabs of a row */
   --mega-bar-row-gap: 2px;    /* between the two rows of tabs */
-  --mega-bar-justify: flex-start; /* tabs of a row*/
+  --mega-bar-justify: flex-start; /* tabs of a row */
   --mega-tab-padding: 0.5rem 1rem;
   --mega-tab-font-size: 1.05rem;
-  --mega-l2-color: var(--primary-color); /* level 2 titles */
-  --mega-l2-font-size: 0.85rem;
-  --mega-link-font-size: 1.05rem; /* level 3 links */
-  --mega-open-duration: 0.22s;    /* unfold transition duration of the sheet */
+  --mega-link-font-size: 1rem; /* levels 2 and 3 */
+  --mega-open-duration: 0.22s;    /* unfold of the sheet and width change of its photo */
   --mega-content-duration: 0.12s; /* fade of the content when opening or switching tabs */
 
   /* Assistant */
@@ -674,29 +671,6 @@ body.asst-off .assistant_button .icon_off
 .main_menu > ul > li > .menuitem a
 {
   color: var(--text-color);
-}
-
-.main_menu ul li > .menuitem .caret i
-{
-  transform: rotate(90deg);
-  transition: transform var(--menu-transition-duration1) ease-in-out;
-  color: var(--text-color);
-}
-
-.main_menu ul li.drop > .menuitem .caret i
-{
-  transform: rotate(270deg);
-  color: var(--menuitem-selected-color);
-}
-
-.main_menu ul ul > li > .menuitem .caret i
-{
-  transform: rotate(0deg);
-}
-
-.main_menu ul ul > li.drop > .menuitem .caret i
-{
-  transform: rotate(180deg);
 }
 
 .main_menu ul li .menuitem
@@ -1430,25 +1404,18 @@ body.asst-off .assistant_panel
   margin-bottom: var(--menuitem-margin);
 }
 
+/* carets, every level: down when closed, up when open */
 :where(.menu-compact) .main_menu ul > li > .menuitem .caret i
 {
   transform: rotate(90deg);
   transition: transform var(--menu-transition-duration2) ease-in-out;
+  color: var(--text-color);
 }
 
 :where(.menu-compact) .main_menu ul > li.drop > .menuitem .caret i
 {
   transform: rotate(270deg);
-}
-
-:where(.menu-compact) .main_menu ul ul > li > .menuitem .caret i
-{
-  transform: rotate(90deg);
-}
-
-:where(.menu-compact) .main_menu ul ul > li.drop > .menuitem .caret i
-{
-  transform: rotate(270deg);
+  color: var(--menuitem-selected-color);
 }
 
 :where(.menu-compact) .main_menu > ul
@@ -1539,31 +1506,32 @@ body.asst-off .assistant_panel
   font-weight: 600;
 }
 
-/* panel: content only (the card is .app_header::after). Full width of the
-   header bar; scrollbar on the left (rtl), level 2 on the left, level 3 on the right */
-.main_menu.mega > ul > li > ul
+/* the extra pieces of the sheet (header.xhtml) are only shown in it */
+.main_menu .mega_section_head,
+.main_menu .mega_feature,
+.main_menu .mega_column_head
 {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin: 0 !important; /* overrides inline margins */
-  padding: 0;
-  box-sizing: border-box;
-  height: auto !important; /* overrides inline sizes */
-  min-height: var(--mega-panel-height, var(--mega-min-height)) !important;
-  max-height: var(--mega-panel-height, var(--mega-max-height)) !important;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  direction: rtl;
-  border-radius: 0 0 var(--header-radius) var(--header-radius); /* clips the scrollbar */
-  box-shadow: none;
-  background: transparent;
+  display: none;
 }
 
-/* header and panel read as a single card while a tab (or a login or
-   configuration panel, in any menu mode: see HEADER SHEET) is open */
+/* Sheet: three equal columns under the header bar. Column 1: level 2;
+   column 2: level 3 of the active level 2; column 3: photo of the section.*/
+.main_menu.mega > ul > li.drop
+{
+  --mega-menu-width: calc(100% / 3);
+}
+
+.main_menu.mega > ul > li.drop:has(> ul > li.mega_active)
+{
+  --mega-menu-width: calc(200% / 3);
+}
+
+.app_header:has(.main_menu.mega > ul > li.drop)
+{
+  contain: layout;
+}
+
+/* header and panel read as a single card while a tab is open */
 .app_header:has(.main_menu.mega > ul > li.drop),
 .app_header:has(> .header_sheet.show)
 {
@@ -1580,7 +1548,7 @@ body.asst-off .assistant_panel
   top: 100%;
   left: 0;
   right: 0;
-  height: var(--mega-panel-height, var(--mega-min-height));
+  height: var(--mega-panel-height, var(--mega-height));
   box-sizing: border-box;
   z-index: 499; /* below the panel (500) */
   pointer-events: none;
@@ -1592,16 +1560,132 @@ body.asst-off .assistant_panel
   animation: mega_unfold var(--mega-open-duration) ease-out;
 }
 
-.main_menu.mega > ul > li.drop > ul
+/* a menu tab has a fixed height (the panels take theirs) */
+.app_header:has(.main_menu.mega > ul > li.drop)::after
 {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--mega-l2-width);
-  grid-template-rows: repeat(var(--l2-count, 1), min-content) 1fr;
+  height: var(--mega-height);
+}
+
+/* section head, over the menu columns */
+.main_menu.mega > ul > li.drop > .mega_section_head
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: var(--mega-menu-width);
+  height: var(--mega-head-height);
+  box-sizing: border-box;
+  padding: 0 1.5rem;
+  z-index: 500;
+  transition: width var(--mega-open-duration) ease-out;
+}
+
+/* line under the section head, inside its padding */
+.main_menu.mega > ul > li.drop > .mega_section_head::after
+{
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 0;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+/* floating line between columns 1 and 2, with a level 3 shown */
+.main_menu.mega > ul > li.drop:has(> ul > li.mega_active)::after
+{
+  content: "";
+  position: absolute;
+  top: calc(100% + var(--mega-head-height) + 1.25rem);
+  left: calc(100% / 3);
+  height: calc(var(--mega-height) - var(--mega-head-height) - 2.5rem);
+  border-left: 1px solid var(--surface-border);
+  z-index: 500;
+  pointer-events: none;
+  animation: mega_fade_in var(--mega-content-duration) ease-out;
+}
+
+.mega_section_name
+{
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-color-secondary);
+}
+
+/* "see all" links to the node of the head */
+.main_menu .mega_see_all
+{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* only the text is underlined, not the arrow */
+.main_menu .mega_see_all:hover
+{
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.main_menu .mega_see_all:hover > span
+{
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.mega_see_all i
+{
+  font-size: 0.75rem;
+}
+
+/* panel: column 1, level 2 (the card is .app_header::after) */
+.main_menu.mega > ul > li > ul
+{
+  position: absolute;
+  top: calc(100% + var(--mega-head-height));
+  left: 0;
+  width: calc(100% / 3);
+  height: calc(var(--mega-height) - var(--mega-head-height)) !important; /* overrides inline sizes */
+  max-height: none !important;
+  margin: 0 !important; /* overrides inline margins */
+  padding: 0 0.75rem 0.75rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 0 0 0 var(--header-radius);
+  box-shadow: none;
+  background: transparent;
+}
+
+/* switching tabs: the content fades */
+.main_menu.mega > ul > li.drop > ul,
+.main_menu.mega > ul > li.drop > .mega_section_head,
+.main_menu.mega > ul > li.drop > .mega_feature
+{
   animation: mega_fade_in var(--mega-content-duration) ease-out; /* replaces fade_in */
 }
 
-/* sheet opening: the content unfolds */
-.main_menu.mega.mega_opening > ul > li.drop > ul
+/* sheet opening: the content unfolds with the card (the section head, too
+   short to unfold at its pace, only fades) */
+.main_menu.mega.mega_opening > ul > li.drop > ul,
+.main_menu.mega.mega_opening > ul > li.drop > .mega_feature
 {
   animation: mega_unfold_content var(--mega-open-duration) ease-out;
 }
@@ -1624,126 +1708,239 @@ body.asst-off .assistant_panel
   to   { clip-path: inset(0 0 0 0); }
 }
 
-@media (prefers-reduced-motion: reduce)
-{
-  .app_header:has(.main_menu.mega > ul > li.drop)::after,
-  .app_header:has(> .header_sheet.show)::after,
-  .main_menu.mega > ul > li.drop > ul,
-  .main_menu.mega.mega_opening > ul > li.drop > ul,
-  .app_header > .header_sheet.show
-  {
-    animation: none;
-  }
-}
-
-/* level 2: vertical list on the left */
+/* level 2 */
 
 .main_menu.mega > ul > li > ul > li
 {
-  display: contents;
-}
-
-.main_menu.mega > ul > li > ul > li > .menuitem
-{
-  grid-column: 2;
-  direction: ltr;
-  margin: 0 0.75rem;
-  background-color: transparent;
-  --mega-item-color: var(--mega-l2-color);
-}
-
-.main_menu.mega > ul > li > ul > li:first-child > .menuitem
-{
-  margin-top: 1.25rem;
-}
-
-.main_menu.mega > ul > li > ul > li:last-child > .menuitem
-{
-  margin-bottom: 0.75rem;
-}
-
-.main_menu.mega > ul > li > ul > li > .menuitem .entry
-{
-  font-weight: 700;
-  font-size: var(--mega-l2-font-size);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-}
-
-/* level 3: only the active level 2*/
-
-.main_menu.mega > ul > li > ul > li > ul
-{
-  display: none;
-  grid-column: 1;
-  grid-row: 1 / -1;
-  position: sticky;
-  top: 0;
-  left: auto; /* cancels the inherited left of ".main_menu ul ul ul" */
-  align-self: start;
-  direction: ltr;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(var(--mega-rows), auto);
-  grid-auto-columns: var(--mega-column-width);
-  box-sizing: border-box;
-  margin: 0;
-  padding: 1rem;
-  height: auto !important; /* overrides inline sizes */
-  min-height: var(--mega-panel-height, var(--mega-min-height));
-  max-height: var(--mega-panel-height, none);
-  overflow: visible;
-  visibility: visible;
-  background-color: transparent;
-  box-shadow: none;
-  animation: none;
-}
-
-/* floating separator between level 2 and level 3 */
-.main_menu.mega > ul > li > ul > li > ul::before
-{
-  content: "";
-  position: absolute; 
-  left: 0;
-  top: 1.25rem;
-  bottom: 1.25rem;
-  border-left: 1px solid var(--surface-border);
-}
-
-.main_menu.mega > ul > li > ul > li.mega_active > ul
-{
-  display: grid;
-}
-
-.main_menu.mega > ul > li > ul > li > ul > li
-{
   display: block;
   width: auto;
-  position: static;
 }
 
+.main_menu.mega > ul > li > ul > li > .menuitem,
 .main_menu.mega > ul > li > ul > li > ul > li > .menuitem
 {
   background-color: transparent;
   --mega-item-color: var(--text-color);
 }
 
+.main_menu.mega > ul > li > ul > li > .menuitem a,
 .main_menu.mega > ul > li > ul > li > ul > li > .menuitem a
 {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
   white-space: normal;
   font-size: var(--mega-link-font-size);
+}
+
+/* level 2 whose level 3 is shown by hover: pink, only while the mouse is not
+   over another level 2 (there the hover marks it); pinned (click): red */
+.main_menu.mega > ul > li > ul:not(:has(> li > .menuitem:hover)) > li.mega_active:not(.mega_pinned) > .menuitem
+{
+  background-color: var(--menuitem-hover-background) !important;
+}
+
+.main_menu.mega > ul > li > ul > li.mega_pinned > .menuitem
+{
+  background-color: var(--menuitem-selected-background) !important;
+  --mega-item-color: var(--menuitem-selected-color);
+}
+
+/* level 3: column 2, only the one of the active level 2. Fixed on
+   .app_header, so it is not clipped by the scroll of column 1 */
+
+.main_menu.mega > ul > li > ul > li.mega_active > .mega_column_head
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: fixed;
+  top: calc(100% + var(--mega-head-height));
+  left: calc(100% / 3);
+  width: calc(100% / 3); /* the whole column: no gap where the mouse leaves the sheet */
+  height: var(--mega-column-head-height);
+  box-sizing: border-box;
+  padding: 0 1.25rem;
+  z-index: 500;
+  animation: mega_fade_in var(--mega-content-duration) ease-out;
+}
+
+/* line under the column head, inside its padding */
+.main_menu.mega > ul > li > ul > li.mega_active > .mega_column_head::after
+{
+  content: "";
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: 0;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.mega_column_name
+{
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-700);
+}
+
+.main_menu.mega > ul > li > ul > li > ul
+{
+  display: none;
+  position: fixed;
+  top: calc(100% + var(--mega-head-height) + var(--mega-column-head-height));
+  left: calc(100% / 3);
+  width: calc(100% / 3);
+  height: calc(var(--mega-height) - var(--mega-head-height) - var(--mega-column-head-height)) !important; /* overrides inline sizes */
+  margin: 0;
+  padding: 0.25rem 0.75rem 0.75rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 500;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.main_menu.mega > ul > li > ul > li.mega_active > ul
+{
+  display: block;
+  animation: mega_fade_in var(--mega-content-duration) ease-out;
+}
+
+.main_menu.mega > ul > li > ul > li > ul > li
+{
+  display: block;
+  width: auto;
+}
+
+/* thin line between the level 3 items */
+.main_menu.mega > ul > li > ul > li > ul > li + li
+{
+  border-top: 1px solid var(--surface-border);
 }
 
 .main_menu.mega li > .menuitem a,
 .main_menu.mega li > .menuitem a i
 {
-  color: var(--mega-item-color, var(--text-color));
+  color: var(--mega-item-color);
 }
 
-/* selected: pinned level 2 */
-.main_menu.mega > ul > li > ul > li.mega_pinned > .menuitem
+/* photo of the section: columns 2 and 3, or column 3 with a level 3 shown */
+.main_menu.mega > ul > li.drop > .mega_feature
 {
-  background-color: var(--menuitem-selected-background) !important;
-  --mega-item-color: var(--menuitem-selected-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: calc(100% - var(--mega-menu-width));
+  height: var(--mega-height);
+  box-sizing: border-box;
+  padding: 1.5rem;
+  overflow: hidden;
+  z-index: 501; /* over the level 3 column: shrinking, it uncovers it */
+  border-radius: 0 0 var(--header-radius) 0;
+  background-color: var(--primary-700);
+  color: var(--primary-color-text);
+  transition: width var(--mega-open-duration) ease-out;
+}
+
+.mega_feature img
+{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* gradient of the picture - from bottom to top */
+.mega_feature::after
+{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    color-mix(in srgb, var(--primary-color) 88%, transparent) 0%,
+    color-mix(in srgb, var(--primary-color) 50%, transparent) 40%,
+    transparent 60%);
+  
+/*  background: linear-gradient(to top,
+    color-mix(in srgb, var(--primary-color) 88%, transparent) 0%,
+    color-mix(in srgb, var(--primary-color) 60%, transparent) 30%,
+    color-mix(in srgb, var(--primary-color) 25%, transparent) 50%,
+    transparent 70%);*/
+}
+
+.mega_feature_text
+{
+  position: relative;
+  z-index: 1; /* over the gradient */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mega_feature_section
+{
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.mega_feature_title
+{
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mega_feature_description
+{
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* shortcut: a link to megaLink, or text without it */
+.main_menu .mega_feature_link
+{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: none;
+}
+
+.main_menu .mega_feature_link:hover
+{
+  color: inherit;
+  text-decoration: none;
+}
+
+/* on the photo the focus outline takes the text color */
+.main_menu .mega_feature_link:focus-visible
+{
+  outline-color: currentColor;
+}
+
+/* like the see all links: on hover only the text is underlined, not the
+   arrow (not the plain text without megaLink) */
+.main_menu a.mega_feature_link:hover > span
+{
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 /* ======================================================================== */

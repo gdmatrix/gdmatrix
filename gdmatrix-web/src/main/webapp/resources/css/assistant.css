@@ -592,6 +592,7 @@ body.asst-full .assistant-bar
   background: var(--ab-hover);
   color: var(--ab-accent-ink);
   border: none;
+  box-shadow: none; /* No theme shadow hover */
 }
 
 .assistant-bar .ui-button.ui-button-icon-only:enabled:active,

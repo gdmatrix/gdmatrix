@@ -73,6 +73,21 @@ function showPage(pageType, parameters)
   return false;
 }
 
+// a link to /web/<mid>?params of this site goes by AJAX with showPage (and
+// closes the sheet); anything else, or a click with a modifier, is a normal link
+function openMegaLink(link, event)
+{
+  if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return true;
+  const url = new URL(link.href);
+  const match = url.pathname.match(/^\/web\/([^/]+)$/);
+  if (url.origin !== location.origin || !match) return true;
+
+  const parameters = { mid: match[1] };
+  for (const [name, value] of url.searchParams) parameters[name] = value;
+  doMenuLayout();
+  return showPage("Node", parameters);
+}
+
 function controlNavigationHistory(pageState)
 {
   console.info("controlNavigationHistory", pageState);
@@ -275,7 +290,7 @@ function updateMenuAria(mainMenu)
   {
     const li = entry.closest("li");
     const topLevel = li.parentElement.parentElement === mainMenu;
-    if (mega&& !topLevel)
+    if (mega && !topLevel)
     {
       // in the sheet, levels 2 and 3 pin/navigate instead of expanding
       entry.removeAttribute("aria-expanded");
@@ -297,78 +312,39 @@ function activateMegaColumn(panel, li)
 
 function pinMegaColumn(panel, li)
 {
+  const pin = !li.classList.contains("mega_pinned");
   for (let col of panel.querySelectorAll(":scope > li"))
   {
-    col.classList.toggle("mega_pinned", col === li);
+    col.classList.toggle("mega_pinned", pin && col === li);
   }
   activateMegaColumn(panel, li);
 }
 
-function getMegaRest(panel)
+// a click out of the level 2 realeases the pinned one
+function onMegaUnpinClick(event)
 {
-  return panel.querySelector(":scope > li.mega_pinned") || panel._megaDefault;
+  if (!isMegaMenu()) return;
+  const panel = document.querySelector(".main_menu.mega > ul > li.drop > ul");
+  const pinned = panel?.querySelector(":scope > li.mega_pinned");
+  if (!pinned) return;
+  if (event.target.closest?.(".main_menu.mega > ul > li > ul > li")) return;
+  pinned.classList.remove("mega_pinned");
+  activateMegaColumn(panel, null);
 }
 
-// called each time a level 1 panel is opened
+// called each time a level 1 panel is opened: it starts clean
 function initMegaPanel(panel)
 {
   if (!panel) return;
-  const cols = [...panel.querySelectorAll(":scope > li")];
-  panel.style.setProperty("--l2-count", cols.length);
+  clearTimeout(panel._megaTimer);
   panel.scrollTop = 0;
-  
-  // lock the panel height to --mega-rows level 2 rows. It is published on the
-  // header so that the sheet card (.app_header::after) and the panel share it
-  const owner = panel.closest(".app_header") || panel;
-  owner.style.removeProperty("--mega-panel-height");
-  
-  // level 3: raise the rows if the columns do not fit in the available width
-  const style = getComputedStyle(panel);
-  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-  const colWidth = parseFloat(style.getPropertyValue("--mega-column-width"));
-  const l2Width = parseFloat(style.getPropertyValue("--mega-l2-width"));
-  const baseRows = parseInt(style.getPropertyValue("--mega-rows")) || 8;
-  const maxCols = Math.max(1,
-    Math.floor((panel.clientWidth - l2Width - 2 * rem) / colWidth));
-  for (let col of cols)
+  for (let col of panel.querySelectorAll(":scope > li"))
   {
+    col.classList.remove("mega_pinned");
     const list = col.querySelector(":scope > ul");
-    if (!list) continue;
-    const listRows = Math.max(baseRows, Math.ceil(list.children.length / maxCols));
-    list.style.setProperty("--mega-rows", listRows);
+    if (list) list.scrollTop = 0;
   }
-  
-  const visible = parseInt(
-    getComputedStyle(panel).getPropertyValue("--mega-rows")) || 8;
-  const rows = cols.map(col => col.querySelector(":scope > .menuitem"));
-
-  // height of the level 2 column: --mega-rows rows, or all of them if fewer
-  let height = panel.scrollHeight;
-  if (rows.length > visible)
-  {
-    const top = panel.getBoundingClientRect().top;
-    height = rows[visible].getBoundingClientRect().top - top;
-  }
-
-  // the panel must never be lower than the tallest level 3
-  for (let col of cols)
-  {
-    const list = col.querySelector(":scope > ul");
-    if (!list) continue;
-    col.classList.add("mega_active");   // display it to measure it
-    list.style.minHeight = "0";
-    list.style.maxHeight = "none";
-    height = Math.max(height, list.scrollHeight);
-    list.style.minHeight = "";
-    list.style.maxHeight = "";
-    col.classList.remove("mega_active");
-  }
-  owner.style.setProperty("--mega-panel-height", height + "px");
-    
-  // every opening starts clean: nothing pinned, first level 2 with children shown
-  for (let col of cols) col.classList.remove("mega_pinned", "mega_active");
-  panel._megaDefault = cols.find(col => col.querySelector(":scope > ul"));
-  if (panel._megaDefault) activateMegaColumn(panel, panel._megaDefault);
+  activateMegaColumn(panel, null);
 }
 
 function onMegaColumnOver(event)
@@ -397,15 +373,14 @@ function onMegaColumnOut(event)
 {
   if (!event.currentTarget.classList.contains("mega")) return;
 
-  const panel = event.target.closest(".main_menu.mega > ul > li > ul");
-  if (!panel || panel.contains(event.relatedTarget)) return;
+  const tab = event.target.closest(".main_menu.mega > ul > li.drop");
+  if (!tab || tab.contains(event.relatedTarget)) return;
 
+  const panel = tab.querySelector(":scope > ul");
+  if (!panel) return;
   clearTimeout(panel._megaTimer);
-  const rest = getMegaRest(panel);
-  if (rest) activateMegaColumn(panel, rest);
+  activateMegaColumn(panel, panel.querySelector(":scope > li.mega_pinned"));
 }
-
-// --------------------------------------------------
 
 function onMegaMenuClick(event)
 {
@@ -425,6 +400,7 @@ function onMegaMenuClick(event)
   {
     event.preventDefault();
     event.stopPropagation();
+    clearTimeout(parentPanel._megaTimer);
     pinMegaColumn(parentPanel, item);
     return;
   }
@@ -437,25 +413,6 @@ function onMegaMenuClick(event)
   event.preventDefault();
   event.stopPropagation();
   toggleSubMenu(entry);
-}
-
-function onMegaMenuWheel(event)
-{
-  const mainMenu = event.currentTarget;
-  if (!mainMenu.classList.contains("mega")) return;
-
-  const panel = event.target.closest(".main_menu.mega > ul > li > ul");
-  if (!panel) return;
-   
-  // Support horizontal actions
-  if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-  // let the panel scroll vertically if it really needs it
-  if (panel.scrollHeight > panel.clientHeight) return;
-  if (panel.scrollWidth <= panel.clientWidth) return;
-
-  const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
-  panel.scrollLeft += delta;
-  event.preventDefault();
 }
 
 function closeSubMenus(subMenu)
@@ -794,7 +751,6 @@ function initMenu()
     mainMenu._megaMenuInitialized = true;
     // capture = true, runs before the onclick of the level 1 commandLinks
     mainMenu.addEventListener("click", onMegaMenuClick, true);
-    mainMenu.addEventListener("wheel", onMegaMenuWheel, { passive: false });
     mainMenu.addEventListener("mouseover", onMegaColumnOver);
     mainMenu.addEventListener("mouseout", onMegaColumnOut);
     mainMenu.addEventListener("keydown", onMegaKeyDown);
@@ -905,6 +861,11 @@ function initMenu()
     open.querySelector(":scope > .menuitem > .entry")?.focus();
   });
 
+  if (menuSetup.megaMenu === true)
+  {
+    document.addEventListener("click", onMegaUnpinClick, true);
+  }
+
   let resizeFrame = 0;
   window.addEventListener("resize", () =>
   {
@@ -970,7 +931,7 @@ function getMegaEntries(list)
 function openMegaTab(entry)
 {
   const li = entry.closest("li");
-  if (li.querySelector(":scope > ul")  && !li.classList.contains("drop"))
+  if (li.querySelector(":scope > ul") && !li.classList.contains("drop"))
   {
     toggleSubMenu(entry);
   }
@@ -1065,11 +1026,9 @@ function onMegaKeyDown(event)
   else if (level === 3)
   {
     const owner = list.parentElement.querySelector(":scope > .menuitem > .entry");
-    const rows = parseInt(
-      getComputedStyle(list).getPropertyValue("--mega-rows")) || 8;
-    
-    // Up/Down cyclic level 3
-    if (key === "ArrowDown") 
+
+    // Up/Down cyclic level 3, Left back to level 2
+    if (key === "ArrowDown")
     {
       target = items[(i + 1) % items.length];
     }
@@ -1077,20 +1036,12 @@ function onMegaKeyDown(event)
     {
       target = items[(i - 1 + items.length) % items.length];
     }
-    else if (key === "ArrowRight")
-    {
-      if(Math.floor(i / rows) < Math.floor(last / rows))
-      {
-        target = items[Math.min(i + rows, last)];
-      }
-    }
-    // Previous column, in the 1s one, back to level 2
     else if (key === "ArrowLeft")
     {
-      target = i - rows >= 0 ? items[i - rows] : owner;
+      target = owner;
     }
   }
-    
+
   // any level: first/last item of its list
   if (key === "Home") target = items[0];
   else if (key === "End") target = items[last];

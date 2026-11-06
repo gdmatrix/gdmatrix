@@ -82,6 +82,69 @@
                   </p:link>
 
                 </div>
+
+                <!-- sheet with the children of level 1: section head + photo -->
+                <ui:fragment rendered="#{not item.leaf and item.parent.mid == userSessionBean.selectedMenuItem.path[1]}">
+                  <!-- level 1 name and a link to the level 1 node -->
+                  <div class="mega_section_head">
+                    <span class="mega_section_name">#{applicationBean.translate(item.label)}</span>
+                    <p:commandLink action="#{templateBean.show(item.mid)}"
+                                   rendered="#{item.action != 'url'}"
+                                   process="@form:menubar" update="@form:cnt"
+                                   onclick="doMenuLayout()" styleClass="mega_see_all">
+                      <span>#{webBundle.seeAllSection}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                    </p:commandLink>
+                    <p:link href="#{item.properties.url}" rendered="#{item.action == 'url'}"
+                            target="#{item.properties.target == null ? '_self' : item.properties.target}"
+                            onclick="doMenuLayout()" styleClass="mega_see_all">
+                      <span>#{webBundle.seeAllSection}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                    </p:link>
+                  </div>
+                  <!-- column 3 - photo (columns 2 and 3 with no level 3 shown) -->
+                  <div class="mega_feature">
+                    <ui:fragment rendered="#{not empty item.directProperties.megaImage}">
+                      <img src="#{item.directProperties.megaImage}" alt="" />
+                    </ui:fragment>
+                    <div class="mega_feature_text">
+                      <span class="mega_feature_section">#{applicationBean.translate(item.label)}</span>
+                      <span class="mega_feature_title">#{applicationBean.translate(empty item.directProperties.megaTitle ? item.label : item.directProperties.megaTitle)}</span>
+                      <ui:fragment rendered="#{not empty item.directProperties.megaDescription}">
+                        <p class="mega_feature_description">#{applicationBean.translate(item.directProperties.megaDescription)}</p>
+                      </ui:fragment>
+                      <!-- shortcut: a link to megaLink (/web/<mid>?params by AJAX, see
+                           openMegaLink), or plain text without it -->
+                      <ui:fragment rendered="#{not empty item.directProperties.megaLinkText}">
+                        <ui:fragment rendered="#{not empty item.directProperties.megaLink}">
+                          <a href="#{item.directProperties.megaLink}" class="mega_feature_link"
+                             onclick="return openMegaLink(this, event)">
+                            <span>#{applicationBean.translate(item.directProperties.megaLinkText)}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                          </a>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{empty item.directProperties.megaLink}">
+                          <span class="mega_feature_link"><span>#{applicationBean.translate(item.directProperties.megaLinkText)}</span><i class="pi pi-arrow-right" aria-hidden="true" /></span>
+                        </ui:fragment>
+                      </ui:fragment>
+                    </div>
+                  </div>
+                </ui:fragment>
+
+                <!-- column 2 - head of the level 3 list of a level 2 item with children, with a link to the level 2 node -->
+                <ui:fragment rendered="#{not item.leaf and item.parent.parent.mid == userSessionBean.selectedMenuItem.path[1]}">
+                  <div class="mega_column_head">
+                    <span class="mega_column_name">#{applicationBean.translate(item.label)}</span>
+                    <p:commandLink action="#{templateBean.show(item.mid)}"
+                                   rendered="#{item.action != 'url'}"
+                                   process="@form:menubar" update="@form:cnt"
+                                   onclick="doMenuLayout()" styleClass="mega_see_all">
+                      <span>#{webBundle.seeAll}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                    </p:commandLink>
+                    <p:link href="#{item.properties.url}" rendered="#{item.action == 'url'}"
+                            target="#{item.properties.target == null ? '_self' : item.properties.target}"
+                            onclick="doMenuLayout()" styleClass="mega_see_all">
+                      <span>#{webBundle.seeAll}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                    </p:link>
+                  </div>
+                </ui:fragment>
               </ui:fragment>
             </f:facet>
           </sf:treeMenu>
@@ -434,7 +497,7 @@
             }
           });
         });
-
+        
         //]]>
       </script>
     </h:panelGroup>
@@ -445,6 +508,3 @@
   </div>
 
 </ui:composition>
-
-
-

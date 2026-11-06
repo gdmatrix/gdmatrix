@@ -72,15 +72,16 @@
   --fl-shadow-3:0 8px 24px rgba(16, 24, 40, 0.10), 0 2px 6px rgba(16, 24, 40, 0.05), 0 0 0 1px var(--fl-ring);
   --fl-shadow-4:0 20px 48px rgba(16, 24, 40, 0.16), 0 6px 14px rgba(16, 24, 40, 0.07), 0 0 0 1px var(--fl-ring);
   --fl-shadow-button:0 1px 2px rgba(16, 24, 40, 0.10), 0 2px 6px rgba(171, 10, 83, 0.18);
-  --fl-shadow-button-hover:0 1px 2px rgba(16, 24, 40, 0.06), 0 3px 8px rgba(171, 10, 83, 0.10);
+  --fl-shadow-button-hover:0 1px 3px rgba(16, 24, 40, 0.12), 0 4px 12px rgba(171, 10, 83, 0.26);
+  --fl-outlined-ring:inset 0 0 0 1.5px var(--fl-tint-2);
   /* ---- shape ------------------------------------------------------------ */
   --fl-radius-sm:6px;
   /* checkboxes, tooltips, small items */
   --fl-radius:10px;
-  /* controls:inputs */
-  --fl-radius-button:999px;
   /* buttons (pill; icon-only ones are circles) */
   --fl-radius-lg: 28px;
+  /* controls:inputs */
+  --fl-radius-button:999px;
   /* cards, panels, overlays, dialogs */
   --fl-radius-pill:999px;
   /* standard tokens, read by the components of the base theme */
@@ -298,14 +299,13 @@ body .ui-button{
   box-shadow:var(--fl-shadow-button);
   font-weight:600;
   transition:background-color var(--fl-transition), box-shadow var(--fl-transition),
-              transform var(--fl-transition), color var(--fl-transition);
+              color var(--fl-transition);
 }
-body .ui-button.ui-state-hover{
+body .ui-button.ui-state-hover,body .ui-button:enabled:hover{
   border-color:var(--fl-primary-hover);
   background:var(--fl-primary-hover);
   color:var(--primary-color-text);
   box-shadow:var(--fl-shadow-button-hover);
-  transform:translateY(-1px);
 }
 body .ui-button.ui-state-focus{
   outline-offset:0;
@@ -317,28 +317,27 @@ body .ui-button.ui-state-down{
   border-color:var(--fl-primary-active);
   color:var(--primary-color-text);
 }
-body .ui-button.ui-state-active{
+body .ui-button.ui-state-active,body .ui-button:enabled:active{
   border-color:var(--fl-primary-active);
   color:var(--primary-color-text);
   background:var(--fl-primary-active);
   box-shadow:var(--fl-shadow-button);
-  transform:translateY(0);
 }
 body .ui-button.ui-button-outlined{
   border:0 none;
   background:transparent;
   color:var(--primary-color);
-  box-shadow:inset 0 0 0 1.5px var(--fl-tint-2);
+  box-shadow:var(--fl-outlined-ring);
 }
-body .ui-button.ui-button-outlined.ui-state-hover{
+body .ui-button.ui-button-outlined.ui-state-hover,body .ui-button.ui-button-outlined:enabled:hover{
   background:var(--fl-tint);
   color:var(--primary-color);
-  border:1px solid
+  box-shadow:var(--fl-outlined-ring), var(--fl-shadow-button-hover)
 }
 body .ui-button.ui-button-outlined.ui-state-active,body .ui-button.ui-button-outlined.ui-state-down{
   background:var(--fl-tint-2);
   color:var(--primary-color);
-  border:1px solid
+  box-shadow:var(--fl-outlined-ring)
 }
 body .ui-button.ui-button-outlined.ui-button-plain{
   color:var(--text-color-secondary);
@@ -362,7 +361,6 @@ body .ui-button.ui-button-flat.ui-state-hover{
   border-color:rgba(0,0,0,0);
   background:var(--fl-tint);
   color:var(--primary-color);
-  transform:none;
 }
 body .ui-button.ui-button-flat.ui-state-active,body .ui-button.ui-button-flat.ui-state-down{
   background:var(--fl-tint-2);
@@ -543,17 +541,10 @@ body .ui-button.ui-button-secondary,body .ui-splitbutton.ui-button-secondary > .
   color:var(--text-color);
   box-shadow:none;
 }
-body .ui-button.ui-button-secondary:not(:disabled):hover,body .ui-splitbutton.ui-button-secondary > .ui-button.ui-state-hover,body .ui-splitbutton.ui-button-secondary > .ui-button:not(:disabled):hover,body .ui-menubutton.ui-button-secondary > .ui-button.ui-state-hover,body .ui-menubutton.ui-button-secondary > .ui-button:not(:disabled):hover{
-  background:#56717d;
-  border-color:#56717d;
-  color:#fff;
-}
-body .ui-button.ui-button-secondary.ui-state-hover{
-  border-color:#56717d;
+body .ui-button.ui-button-secondary.ui-state-hover,body .ui-button.ui-button-secondary:enabled:hover,body .ui-splitbutton.ui-button-secondary > .ui-button.ui-state-hover,body .ui-splitbutton.ui-button-secondary > .ui-button:enabled:hover,body .ui-menubutton.ui-button-secondary > .ui-button.ui-state-hover,body .ui-menubutton.ui-button-secondary > .ui-button:enabled:hover{
   background:var(--fl-tint);
   color:var(--primary-color);
   box-shadow:none;
-  transform:none;
 }
 body .ui-button.ui-button-secondary.ui-state-focus,body .ui-splitbutton.ui-button-secondary>.ui-button.ui-state-focus,body .ui-menubutton.ui-button-secondary>.ui-button.ui-state-focus{
   box-shadow:0 0 0 .2rem #beccd2
@@ -832,26 +823,9 @@ body .ui-button.ui-button-danger.ui-button-flat.ui-state-active,body .ui-splitbu
   border-color:rgba(0,0,0,0);
   color:#d32f2f
 }
-body .ui-button:enabled:hover{
-  background:var(--fl-primary-hover);
-  color:var(--primary-color-text);
-  box-shadow:var(--fl-shadow-button-hover);
-  transform:translateY(-1px);
-}
-body .ui-button:enabled:active{
-  background:var(--fl-primary-active);
-  box-shadow:var(--fl-shadow-button);
-  transform:translateY(0);
-}
 body .ui-button:focus-visible{
   box-shadow:var(--focus-ring), var(--fl-shadow-button);
   outline:0 none;
-}
-body .ui-button.ui-button-secondary:enabled:hover{
-  background:var(--fl-tint);
-  color:var(--primary-color);
-  box-shadow:none;
-  transform:none;
 }
 body .ui-button.ui-button-text,body .ui-button.ui-button-link{
   border:0 none;
@@ -862,11 +836,6 @@ body .ui-button.ui-button-text,body .ui-button.ui-button-link{
 body .ui-button.ui-button-flat:enabled:hover,body .ui-button.ui-button-text:enabled:hover,body .ui-button.ui-button-text.ui-state-hover{
   background:var(--fl-tint);
   color:var(--primary-color);
-  transform:none;
-}
-body .ui-button.ui-button-outlined:enabled:hover{
-  background:var(--fl-tint);
-  transform:none;
 }
 body .ui-commandlink,body .ui-link{
   color:var(--primary-color);
@@ -7746,9 +7715,7 @@ body .ui-confirmdialog{
 }
 
 @media (prefers-reduced-motion: reduce){
-  body .ui-button,
-  body .ui-button:enabled:hover{
-    transform: none !important;
+  body .ui-button{
     transition: none !important;
   }
 }
