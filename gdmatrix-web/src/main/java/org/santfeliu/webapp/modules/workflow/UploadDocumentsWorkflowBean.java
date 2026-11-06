@@ -179,7 +179,7 @@ public class UploadDocumentsWorkflowBean extends WorkflowBean implements Seriali
   public String getValidExtensionsRegExp() 
   {
     if (validExtensions == null || validExtensions.isEmpty()) 
-        return "";
+        return "/.*/";
 
     String regExp = validExtensions.stream()
       .map(String::trim)
