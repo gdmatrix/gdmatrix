@@ -21,7 +21,7 @@
     </p:messages>
 
     <p:outputPanel id="header"
-                   rendered="#{documentViewerBean.headerBrowserUrl!=null}"
+                   rendered="#{not documentViewerBean.pebbleEnabled and documentViewerBean.headerBrowserUrl != null}"
                    styleClass="headerDocument">
       <sf:browser url="#{documentViewerBean.headerBrowserUrl}"
                   port="#{applicationBean.defaultPort}"
@@ -139,7 +139,7 @@
     </p:outputPanel>
 
     <p:outputPanel id="footer"
-                   rendered="#{documentViewerBean.footerBrowserUrl!=null}"
+                   rendered="#{not documentViewerBean.pebbleEnabled and documentViewerBean.footerBrowserUrl!=null}"
                    styleClass="footerDocument">
       <sf:browser url="#{documentViewerBean.footerBrowserUrl}"
                   port="#{applicationBean.defaultPort}"
