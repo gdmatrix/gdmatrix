@@ -191,11 +191,23 @@ public class CaseQuery extends DataQuery<Case>
     
     return port.findCases(filter);
   }
-
+  
   public Case load(String caseId)
   {
-    CaseManagerPort port = 
-      CasesModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
+    return load(caseId, false);
+  }
+
+  public Case load(String caseId, boolean runAsAdmin)
+  {
+    String userId = runAsAdmin ? 
+      MatrixConfig.getProperty("adminCredentials.userId") : 
+      credentials.getUserId();
+    String password = runAsAdmin ?
+      password = MatrixConfig.getProperty("adminCredentials.password") :
+      credentials.getPassword();
+    
+    CaseManagerPort port = CasesModuleBean.getPort(userId, password);
+    
     return port.loadCase(caseId);
   }
 }
