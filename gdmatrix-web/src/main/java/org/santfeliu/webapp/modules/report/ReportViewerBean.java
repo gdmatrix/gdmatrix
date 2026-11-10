@@ -318,7 +318,7 @@ public class ReportViewerBean extends WebBean implements Serializable
     if (isFormRendered())
     {
       UIComponent panel = event.getComponent();
-      if (panel.getChildren().isEmpty())
+      if (panel != null)
       {
         updateComponents(panel);
       }
