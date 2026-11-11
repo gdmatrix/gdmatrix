@@ -364,6 +364,7 @@ body .agenda-datatable.ui-datatable tbody tr > td
   justify-content: space-between;
   gap: 16px;
   align-items: end;
+  flex-wrap: wrap;
   border-top: 1px solid #faf9f9;
 }
 
@@ -372,13 +373,12 @@ body .agenda-datatable.ui-datatable tbody tr > td
   flex-direction: column;
   gap: 6px;
   min-width: 0;
-  width: 100%;
+  flex-grow: 1;
 }
 
 .filter-label {
   font-size: 11px;
   font-weight: 700;
-  color: #6c757d;
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
