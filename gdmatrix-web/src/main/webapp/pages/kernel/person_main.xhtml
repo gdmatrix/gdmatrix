@@ -59,24 +59,28 @@
       <p:inputText value="#{personObjectBean.person.secondSurname}" />
     </div>
 
-    <div class="field col-12 md:col-6 xl:col-3">
+    <h:panelGroup styleClass="field col-12 md:col-6 xl:col-3" 
+         rendered="#{personObjectBean.isAdvancedUser()}">
       <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
       <p:inputText value="#{personObjectBean.person.nif}" />
-    </div>
+    </h:panelGroup>
 
-    <div class="field col-12 md:col-6 xl:col-3">
+    <h:panelGroup styleClass="field col-12 md:col-6 xl:col-3" 
+                  rendered="#{personObjectBean.isAdvancedUser()}">
       <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
       <p:inputText value="#{personObjectBean.person.passport}" />
-    </div>
+    </h:panelGroup>
 
-    <div class="field col-12 md:col-6 xl:col-2">
+    <h:panelGroup styleClass="field col-12 md:col-6 xl:col-2" 
+                  rendered="#{personObjectBean.isAdvancedUser()}">
       <p:outputLabel for="@next" value="#{kernelBundle.person_sex}" />
       <p:selectOneMenu value="#{personObjectBean.person.sex}" touchable="true">
         <f:selectItems value="#{personObjectBean.sexSelectItems}" />
       </p:selectOneMenu>
-    </div>
+    </h:panelGroup>
 
-    <div class="field col-12 md:col-4 xl:col-3">
+    <h:panelGroup styleClass="field col-12 md:col-4 xl:col-3" 
+                  rendered="#{personObjectBean.isAdvancedUser()}">
       <p:outputLabel for="@next" value="#{kernelBundle.person_birthDate}" />
       <p:datePicker value="#{personObjectBean.person.birthDate}"
                     autocomplete="off" placeholder="dd/MM/yyyy"
@@ -85,12 +89,13 @@
                     converter="datePickerConverter" pattern="dd/MM/yyyy"
                     showIcon="true" showTime="false"
                     monthNavigator="true" yearNavigator="true" />
-    </div>
+    </h:panelGroup>
 
-    <div class="field col-12 md:col-2 xl:col-1">
+    <h:panelGroup class="field col-12 md:col-2 xl:col-1" 
+                  rendered="#{personObjectBean.isAdvancedUser()}">
       <p:outputLabel for="@next" value="#{kernelBundle.person_age}" />
       <p:inputText value="#{personObjectBean.age}" readonly="true" />
-    </div>
+    </h:panelGroup>
 
     <div class="field col-12 md:col-6">
       <h:outputLabel for="@next" value="#{kernelBundle.person_birthCity}" />

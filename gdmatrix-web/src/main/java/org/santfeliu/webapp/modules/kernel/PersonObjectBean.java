@@ -46,8 +46,10 @@ import org.matrix.kernel.Sex;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import static org.santfeliu.webapp.modules.kernel.KernelModuleBean.KERNEL_ADVANCED_ROLE;
 
 /**
  *
@@ -196,5 +198,11 @@ public class PersonObjectBean extends ObjectBean
   {
     this.person = (Person)state;
   }
-
+  
+  public boolean isAdvancedUser()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    return userSessionBean.isUserInRole(KERNEL_ADVANCED_ROLE);
+  }
+        
 }

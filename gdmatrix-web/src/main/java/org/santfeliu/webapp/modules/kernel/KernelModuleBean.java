@@ -47,6 +47,8 @@ import org.santfeliu.web.UserSessionBean;
 @ApplicationScoped
 public class KernelModuleBean
 {
+  public final static String KERNEL_ADVANCED_ROLE = "KERNEL_ADVANCED";
+  
   public static KernelManagerPort getPort(String userId, String password)
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();
