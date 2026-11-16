@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.data;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -97,7 +98,10 @@ public class CaseQuery extends DataQuery<Case>
   {
     Property property = new Property();
     property.setName(field);
-    property.getValue().add(String.valueOf(value));
+    if (value != null && value instanceof Collection)
+      property.getValue().addAll((Collection<? extends String>) value);
+    else
+      property.getValue().add(String.valueOf(value));
     filter.getProperty().add(property);
     return this;
   }
