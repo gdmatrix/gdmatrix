@@ -88,8 +88,8 @@
       </p:outputPanel>
 
       <p:button title="#{objectBundle.edit}"
-                href="#" styleClass="button-edit"
-                onclick="return showObject('New', '#{newViewerBean.newObject.newId}')"
+                href="/editors/news/#{newViewerBean.newObject.newId}"
+                styleClass="button-edit"
                 icon="pi pi-pencil"
                 target="_blank"
                 rendered="#{newViewerBean.editLinkRender}" />
