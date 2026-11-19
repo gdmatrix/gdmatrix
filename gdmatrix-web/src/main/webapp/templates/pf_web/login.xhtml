@@ -105,7 +105,7 @@
                 <p:commandButton action="#{templateBean.logout}" icon="pi pi-sign-out"
                                  value="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
                                  oncomplete="hideDialogPanel('login_panel')"
-                                 update="@none" />
+                                 update="@none" process="@this"/>
               </div>
             </div>
 
@@ -117,7 +117,7 @@
               <div class="sheet_actions">
                 <p:commandButton value="#{webBundle.cmsEditor}"
                                  action="#{userSessionBean.showEditView}"
-                                 icon="pi pi-sitemap" ajax="false" />
+                                 icon="pi pi-sitemap" ajax="false" immediate="true"/>
               </div>
             </h:panelGroup>
 
