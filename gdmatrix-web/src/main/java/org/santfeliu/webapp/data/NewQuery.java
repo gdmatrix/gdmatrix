@@ -33,7 +33,7 @@ package org.santfeliu.webapp.data;
 import java.util.List;
 import org.matrix.news.NewView;
 import org.matrix.news.NewsFilter;
-import org.matrix.news.NewsManagerPort;
+import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.webapp.modules.news.NewsModuleBean;
 
@@ -116,8 +116,8 @@ public class NewQuery extends DataQuery<NewView>
   @Override
   public List<NewView> execute()
   {          
-    NewsManagerPort port = 
+    NewsManagerClient client = 
       NewsModuleBean.getPort(credentials.getUserId(), credentials.getPassword());
-    return port.findNewViews(filter);
+    return client.findNewViewsFromCache(filter);
   }  
 }

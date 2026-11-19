@@ -40,10 +40,6 @@ import javax.inject.Named;
 import org.matrix.news.NewDocument;
 import org.matrix.news.NewSection;
 import org.matrix.news.NewView;
-import org.matrix.news.NewsManagerPort;
-import org.matrix.news.NewsManagerService;
-import org.matrix.util.WSDirectory;
-import org.matrix.util.WSEndpoint;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.news.client.NewsManagerClient;
@@ -73,15 +69,26 @@ public class NewsModuleBean
     "NewDocumentCarouselAndDetailsImage";
   public static final String EXTENDED_INFO_TYPE =
     "NewDocumentExtendedInfo";
-  
-  public static NewsManagerPort getPort(String userId, String password)
+
+  public static NewsManagerClient getPort()
   {
-    WSDirectory wsDirectory = WSDirectory.getInstance();
-    WSEndpoint endpoint = wsDirectory.getEndpoint(NewsManagerService.class);
-    return endpoint.getPort(NewsManagerPort.class, userId, password);
+    return new NewsManagerClient(
+      UserSessionBean.getCurrentInstance().getUsername(),
+      UserSessionBean.getCurrentInstance().getPassword());
   }
 
-  public static NewsManagerPort getPort(boolean asAdmin) throws Exception
+  public static NewsManagerClient getPort(String userId, String password)
+  {
+    return new NewsManagerClient(userId, password);
+  }
+
+  public static NewsManagerClient getPort(URL wsDirectoryURL, String userId,
+    String password)
+  {
+    return new NewsManagerClient(wsDirectoryURL, userId, password);
+  }
+
+  public static NewsManagerClient getPort(boolean asAdmin)
   {
     String userId;
     String password;
@@ -89,32 +96,13 @@ public class NewsModuleBean
     {
       userId = MatrixConfig.getProperty("adminCredentials.userId");
       password = MatrixConfig.getProperty("adminCredentials.password");
-    } 
+    }
     else
     {
       userId = UserSessionBean.getCurrentInstance().getUsername();
       password = UserSessionBean.getCurrentInstance().getPassword();
     }
     return getPort(userId, password);
-  }
-
-  public static NewsManagerClient getClient() throws Exception
-  {
-    return new NewsManagerClient(
-      UserSessionBean.getCurrentInstance().getUsername(),
-      UserSessionBean.getCurrentInstance().getPassword());
-  }
-
-  public static NewsManagerClient getClient(String userId, String password)
-    throws Exception
-  {
-    return new NewsManagerClient(userId, password);
-  }
-
-  public static NewsManagerClient getClient(URL wsDirectoryURL, String userId,
-    String password) throws Exception
-  {
-    return new NewsManagerClient(wsDirectoryURL, userId, password);
   }
 
   public static String formatInputText(String text)

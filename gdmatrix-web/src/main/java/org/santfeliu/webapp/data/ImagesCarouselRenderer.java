@@ -242,7 +242,7 @@ public class ImagesCarouselRenderer
     else if (newId != null)
     {
       List<NewDocument> ndList = 
-        NewsConfigBean.getPort().findNewDocumentsFromCache(newId, null);
+        NewsConfigBean.getPort(true).findNewDocumentsFromCache(newId, null);
       for (NewDocument nd : ndList)
       {
         if (itemList.size() >= thumbnailCount)

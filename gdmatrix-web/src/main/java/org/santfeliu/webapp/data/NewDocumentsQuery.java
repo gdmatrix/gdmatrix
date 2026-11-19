@@ -33,7 +33,7 @@ package org.santfeliu.webapp.data;
 import java.util.List;
 import org.santfeliu.security.util.Credentials;
 import org.matrix.news.NewDocument;
-import org.matrix.news.NewsManagerPort;
+import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.webapp.modules.news.NewsModuleBean;
 
@@ -106,8 +106,7 @@ public class NewDocumentsQuery extends DataQuery<NewDocument>
       password = MatrixConfig.getProperty("adminCredentials.password") :
       credentials.getPassword();
     
-    NewsManagerPort port = NewsModuleBean.getPort(userId, password);
-    
-    return port.findNewDocuments(newId, docType);
+    NewsManagerClient client = NewsModuleBean.getPort(userId, password);
+    return client.findNewDocumentsFromCache(newId, docType);
   }
 }

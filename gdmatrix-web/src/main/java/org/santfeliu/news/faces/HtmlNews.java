@@ -719,7 +719,7 @@ public class HtmlNews extends UIComponentBase
       filter.getExcludeDrafts().addAll(getExcludeDrafts());
 
       List<SectionView> sections = 
-        NewsConfigBean.getPort().findNewsBySectionFromCache(filter);
+        NewsConfigBean.getPort(true).findNewsBySectionFromCache(filter);
 
       Translator translator = null;
       if (isEnableTranslation())

@@ -930,8 +930,8 @@ public class HtmlImagesCarousel extends UIComponentBase
   {
     List<ImageItem> itemList = new ArrayList<ImageItem>();    
 
-    List<NewDocument> ndList = NewsConfigBean.getPort().findNewDocumentsFromCache(
-          getNewId(), null);
+    List<NewDocument> ndList = NewsConfigBean.getPort(true).
+      findNewDocumentsFromCache(getNewId(), null);
 
     Iterator it = ndList.iterator();
     while (it.hasNext() && itemList.size() < getThumbnailCount())

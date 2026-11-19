@@ -193,7 +193,7 @@ public class NewSearchBean extends BasicSearchBean
           }          
         }        
       }
-      return NewsConfigBean.getPort().countNewsFromCache(filter);
+      return NewsConfigBean.getPort(true).countNewsFromCache(filter);
     }
     catch (Exception ex)
     {
@@ -238,7 +238,8 @@ public class NewSearchBean extends BasicSearchBean
           }          
         }
       }
-      List<NewView> list = NewsConfigBean.getPort().findNewViewsFromCache(filter);      
+      List<NewView> list = NewsConfigBean.getPort(true).
+        findNewViewsFromCache(filter);
       return list;
     }
     catch (Exception ex)
@@ -485,7 +486,7 @@ public class NewSearchBean extends BasicSearchBean
   {
     try
     {
-      NewsManagerClient client = NewsConfigBean.getPort();      
+      NewsManagerClient client = NewsConfigBean.getPort(true);
       New newObject = client.loadNewFromCache(newId);
       if (newId == null)
       {

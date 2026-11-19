@@ -166,7 +166,12 @@ public class NewsManager implements NewsManagerPort
   @Override
   public New loadNew(String newId)
   {
-    LOGGER.log(Level.INFO, "loadNew {0}", newId);        
+    LOGGER.log(Level.INFO, "loadNew {0}", newId);
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     New newObject = new New();
     DBNew dbNew = entityManager.find(DBNew.class, newId);
     if (dbNew == null) throw new WebServiceException("news:NEW_NOT_FOUND");
@@ -179,6 +184,11 @@ public class NewsManager implements NewsManagerPort
   {
     LOGGER.log(Level.INFO, "incrementNewCounter newId {0} sectionId {1}",
       new String[]{newId, sectionId});
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     int totalCounter = increaseTotalReadCount(newId);
     if (sectionId != null)
     {
@@ -191,6 +201,11 @@ public class NewsManager implements NewsManagerPort
   public int getTotalNewCounter(String newId)
   {
     LOGGER.log(Level.INFO, "getTotalNewCounter {0}", newId);
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     DBNew dbNew = entityManager.find(DBNew.class, newId);
     return dbNew.getTotalReadingCount();
   }
@@ -229,6 +244,11 @@ public class NewsManager implements NewsManagerPort
   public int countNews(NewsFilter filter)
   {
     LOGGER.log(Level.INFO, "countNews");
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     Query query = entityManager.createNamedQuery("countNews");
     setNewsFilterParameters(query, filter);
     return ((Number)query.getSingleResult()).intValue();
@@ -238,6 +258,11 @@ public class NewsManager implements NewsManagerPort
   public List<New> findNews(NewsFilter filter)
   {
     LOGGER.log(Level.INFO, "findNews");
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     List<New> result = new ArrayList<New>();
     Query query = entityManager.createNamedQuery("listNews");
     setNewsFilterParameters(query, filter);
@@ -302,6 +327,11 @@ public class NewsManager implements NewsManagerPort
   public List<NewView> findNewViews(NewsFilter filter)
   {
     LOGGER.log(Level.INFO, "findNewViews");
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     List<NewView> result = new ArrayList<NewView>();
     Query query = entityManager.createNamedQuery("listNews");
     setNewsFilterParameters(query, filter);
@@ -417,6 +447,11 @@ public class NewsManager implements NewsManagerPort
   public List<NewSection> findNewSections(String newId)
   {
     LOGGER.log(Level.INFO, "findNewSections newId:{0}", newId);
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     List<NewSection> newSectionList = new ArrayList<NewSection>();
     Query query = entityManager.createNamedQuery("listNewSections");
     query.setParameter("newId", newId);
@@ -485,6 +520,11 @@ public class NewsManager implements NewsManagerPort
   {
     LOGGER.log(Level.INFO, "findNewDocuments newId:{0} docType:{1}",
       new String[]{newId, docType});
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     List<NewDocument> newDocumentList = new ArrayList<NewDocument>();
     newDocumentList = doListNewDocuments(newId, docType);
     return newDocumentList;
@@ -493,7 +533,12 @@ public class NewsManager implements NewsManagerPort
   @Override
   public NewSection loadNewSection(String newSectionId)
   {
-    LOGGER.log(Level.INFO, "loadNewSection {0}", newSectionId);        
+    LOGGER.log(Level.INFO, "loadNewSection {0}", newSectionId);
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     NewSection newSection = new NewSection();
     DBNewSection dbNewSection = entityManager.find(DBNewSection.class, 
       new DBNewSectionPK(newSectionId));
@@ -506,7 +551,12 @@ public class NewsManager implements NewsManagerPort
   @Override
   public Source loadSource(String sourceId)
   {
-    LOGGER.log(Level.INFO, "loadSource {0}", sourceId);        
+    LOGGER.log(Level.INFO, "loadSource {0}", sourceId);
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     Source source = new Source();
     DBSource dbSource = entityManager.find(DBSource.class, sourceId);
     if (dbSource == null) 
@@ -543,6 +593,11 @@ public class NewsManager implements NewsManagerPort
   public int countSources(SourceFilter filter)
   {
     LOGGER.log(Level.INFO, "countSources");
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     Query query = entityManager.createNamedQuery("countSources");
     setSourceFilterParameters(query, filter);
     return ((Number)query.getSingleResult()).intValue();
@@ -552,6 +607,11 @@ public class NewsManager implements NewsManagerPort
   public List<Source> findSources(SourceFilter filter)
   {
     LOGGER.log(Level.INFO, "findSources");
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     Query query = entityManager.createNamedQuery("listSources");
     setSourceFilterParameters(query, filter);
     query.setFirstResult(filter.getFirstResult());
@@ -593,6 +653,11 @@ public class NewsManager implements NewsManagerPort
   public int countNewsBySection(SectionFilter filter)
   {
     LOGGER.log(Level.INFO, "countNewsBySection");
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     int result = 0;
     for (int i = 0; i < filter.getSectionId().size(); i++)
     {
@@ -609,6 +674,11 @@ public class NewsManager implements NewsManagerPort
   public List<SectionView> findNewsBySection(SectionFilter filter)
   {
     LOGGER.log(Level.INFO, "findNewsBySection");
+
+    User user = UserCache.getUser(wsContext);
+    if (!isNewsReader(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     List<SectionView> result = new ArrayList<SectionView>();
     for (int i = 0; i < filter.getSectionId().size(); i++)
     {
@@ -1039,6 +1109,12 @@ public class NewsManager implements NewsManagerPort
   {
     Set<String> userRoles = user.getRoles();
     return userRoles.contains(NewsConstants.NEWS_ADMIN_ROLE);
+  }
+
+  private boolean isNewsReader(User user)
+  {
+    Set<String> userRoles = user.getRoles();
+    return userRoles.contains(NewsConstants.NEWS_READER_ROLE);
   }
 
 }

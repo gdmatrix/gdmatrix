@@ -250,7 +250,8 @@ public class NewCatalogBean extends WebBean implements Serializable
             sectionFilter.getSectionId().add(getSectionId(menuItem));
             sectionFilter.getExcludeDrafts().clear();
             sectionFilter.getExcludeDrafts().add(isRemoveDraftNews(menuItem));
-            return NewsModuleBean.getClient().countNewsBySectionFromCache(sectionFilter);
+            return NewsModuleBean.getPort(true).
+              countNewsBySectionFromCache(sectionFilter);
           }
           else if (getViewMode() == ViewMode.EDITABLE)
           {
@@ -258,7 +259,8 @@ public class NewCatalogBean extends WebBean implements Serializable
             newsFilter.getSectionId().addAll(getEditableSections());
             newsFilter.setExcludeDrafts(false);
             newsFilter.setExcludeNotPublished(false);
-            return NewsModuleBean.getClient().countNewsFromCache(newsFilter);
+            return NewsModuleBean.getPort(true).
+              countNewsFromCache(newsFilter);
           }
           else if (getViewMode() == ViewMode.VISIBLE)
           {
@@ -266,7 +268,8 @@ public class NewCatalogBean extends WebBean implements Serializable
             newsFilter.getSectionId().addAll(getFilteredVisibleSections());
             newsFilter.setExcludeDrafts(true);
             newsFilter.setExcludeNotPublished(true);
-            return NewsModuleBean.getClient().countNewsFromCache(newsFilter);
+            return NewsModuleBean.getPort(true).
+              countNewsFromCache(newsFilter);
           }
         }
         catch (Exception ex)
@@ -291,7 +294,7 @@ public class NewCatalogBean extends WebBean implements Serializable
             sectionFilter.getExcludeDrafts().add(isRemoveDraftNews(menuItem));
             sectionFilter.setFirstResult(firstResult);
             sectionFilter.setMaxResults(maxResults);
-            list = NewsModuleBean.getClient().
+            list = NewsModuleBean.getPort(true).
               findNewsBySectionFromCache(sectionFilter).get(0).getNewView();
           }
           else if (getViewMode() == ViewMode.EDITABLE)
@@ -302,7 +305,8 @@ public class NewCatalogBean extends WebBean implements Serializable
             newsFilter.setExcludeNotPublished(false);
             newsFilter.setFirstResult(firstResult);
             newsFilter.setMaxResults(maxResults);
-            list = NewsModuleBean.getClient().findNewViewsFromCache(newsFilter);
+            list = NewsModuleBean.getPort(true).
+              findNewViewsFromCache(newsFilter);
           }
           else if (getViewMode() == ViewMode.VISIBLE)
           {
@@ -312,7 +316,8 @@ public class NewCatalogBean extends WebBean implements Serializable
             newsFilter.setExcludeNotPublished(true);
             newsFilter.setFirstResult(firstResult);
             newsFilter.setMaxResults(maxResults);
-            list = NewsModuleBean.getClient().findNewViewsFromCache(newsFilter);
+            list = NewsModuleBean.getPort(true).
+              findNewViewsFromCache(newsFilter);
           }
           for (NewView nv : list)
           {
@@ -580,7 +585,7 @@ public class NewCatalogBean extends WebBean implements Serializable
       NewView newRow = (NewView)getFacesContext().getExternalContext().
         getRequestMap().get("row");
       NewView previousNewRow = getPreviousNewView();
-      swapPriority(NewsModuleBean.getClient(), previousNewRow, newRow, sectionId);
+      swapPriority(NewsModuleBean.getPort(), previousNewRow, newRow, sectionId);
       return basicSearchHelper.refresh();
     }
     catch (Exception ex)
@@ -599,7 +604,7 @@ public class NewCatalogBean extends WebBean implements Serializable
       NewView newRow = (NewView)getFacesContext().getExternalContext().
         getRequestMap().get("row");
       NewView nextNewRow = getNextNewView();
-      swapPriority(NewsModuleBean.getClient(), newRow, nextNewRow, sectionId);
+      swapPriority(NewsModuleBean.getPort(), newRow, nextNewRow, sectionId);
       return basicSearchHelper.refresh();
     }
     catch (Exception ex)

@@ -115,7 +115,7 @@ public class NewsRSSServlet extends HttpServlet
       
       if (inheritedProperties.getEnabled())
       {
-        NewsManagerClient newsClient = getNewsManagerClient(request);
+        NewsManagerClient newsClient = getNewsManagerClient();
         writeRSS(request, response, node, inheritedProperties, newsClient, 
           cmsPort);
       }
@@ -752,16 +752,9 @@ public class NewsRSSServlet extends HttpServlet
     return result;
   }
   
-  private NewsManagerClient getNewsManagerClient(HttpServletRequest request)
+  private NewsManagerClient getNewsManagerClient()
   {
-    Credentials credentials = SecurityUtils.getCredentials(request, false);
-    if (credentials == null)
-    {
-      credentials = UserSessionBean.getCredentials(request);
-    }
-    String username = credentials.getUserId();
-    String password = credentials.getPassword();
-    return new NewsManagerClient(username, password);
+    return NewsConfigBean.getPort(true);
   }
 
   private CMSManagerPort getCMSManagerPort(HttpServletRequest request)

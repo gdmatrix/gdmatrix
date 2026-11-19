@@ -403,13 +403,13 @@ public class NewObjectBean extends ObjectBean
       {
         String newId = getObjectId();
         List<NewSection> newSectionList =
-          NewsModuleBean.getClient().findNewSectionsFromCache(newId);
+          NewsModuleBean.getPort().findNewSections(newId);
         if (newSectionList.isEmpty())
         {
           NewSection newSection = new NewSection();
           newSection.setNewId(newId);
           newSection.setSectionId(autoSectionId);
-          newSection = NewsModuleBean.getClient().storeNewSection(newSection);
+          newSection = NewsModuleBean.getPort().storeNewSection(newSection);
           newSectionList.add(newSection);
         }
         for (NewSection ns : newSectionList)

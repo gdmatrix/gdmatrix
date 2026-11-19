@@ -235,7 +235,7 @@ public class NewViewerBean extends WebBean implements Serializable
     List<NewDocument> newDocumentList, boolean checkVisibility,
     boolean incrementCounter) throws Exception
   {
-    NewsManagerClient client = NewsModuleBean.getClient();
+    NewsManagerClient client = NewsModuleBean.getPort(true);
 
     //Load new object
     newObject = client.loadNewFromCache(newId);

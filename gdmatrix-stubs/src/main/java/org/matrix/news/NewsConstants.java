@@ -37,4 +37,5 @@ package org.matrix.news;
 public class NewsConstants
 {  
   public static final String NEWS_ADMIN_ROLE = "NEWS_ADMIN";
+  public static final String NEWS_READER_ROLE = "NEWS_READER";
 }

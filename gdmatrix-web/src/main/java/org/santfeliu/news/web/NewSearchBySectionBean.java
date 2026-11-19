@@ -280,7 +280,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
       filter.getSectionId().add(getSectionId(menuItem));      
       filter.getExcludeDrafts().clear();
       filter.getExcludeDrafts().add(isRemoveDraftNews(menuItem));      
-      return NewsConfigBean.getPort().countNewsBySectionFromCache(filter);
+      return NewsConfigBean.getPort(true).countNewsBySectionFromCache(filter);
     }
     catch (Exception ex)
     {
@@ -301,7 +301,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
       filter.getExcludeDrafts().add(isRemoveDraftNews(menuItem));      
       filter.setFirstResult(firstResult);
       filter.setMaxResults(maxResults);
-      List<NewView> list = NewsConfigBean.getPort().findNewsBySectionFromCache(filter).
+      List<NewView> list = NewsConfigBean.getPort(true).findNewsBySectionFromCache(filter).
         get(0).getNewView(); 
       
       for (NewView nv : list)
@@ -1246,7 +1246,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
         filter.setMaxResults(getMaxNewsPerSection());
         
         // Here we get the unsorted list of sections
-        List<SectionView> unsortedList = NewsConfigBean.getPort().
+        List<SectionView> unsortedList = NewsConfigBean.getPort(true).
           findNewsBySectionFromCache(filter);        
         
         // Now we convert the special chars to HTML
@@ -1466,7 +1466,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
   private String goToNew(String sectionId, String newId, 
     List<NewDocument> newDocumentList, boolean checkVisibility) throws Exception
   {    
-    NewsManagerClient client = NewsConfigBean.getPort();
+    NewsManagerClient client = NewsConfigBean.getPort(true);
     New newObject = client.loadNewFromCache(newId);
     
     if (checkVisibility)

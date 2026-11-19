@@ -40,6 +40,7 @@ import org.matrix.news.NewDocument;
 import org.matrix.news.NewView;
 import org.matrix.news.NewsManagerMetaData;
 import org.santfeliu.news.client.NewsManagerClient;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 
 /**
@@ -79,23 +80,39 @@ public class NewsConfigBean implements Serializable
     return metaData;
   }
 
-  public static NewsManagerClient getPort() throws Exception
+  public static NewsManagerClient getPort()
   {
     return new NewsManagerClient(
       UserSessionBean.getCurrentInstance().getUsername(),
       UserSessionBean.getCurrentInstance().getPassword());    
   }  
   
-  public static NewsManagerClient getPort(String userId, String password) 
-    throws Exception
+  public static NewsManagerClient getPort(String userId, String password)
   {
     return new NewsManagerClient(userId, password);
   }
 
   public static NewsManagerClient getPort(URL wsDirectoryURL, String userId, 
-    String password) throws Exception
+    String password)
   {
     return new NewsManagerClient(wsDirectoryURL, userId, password);
+  }
+
+  public static NewsManagerClient getPort(boolean asAdmin)
+  {
+    String userId;
+    String password;
+    if (asAdmin)
+    {
+      userId = MatrixConfig.getProperty("adminCredentials.userId");
+      password = MatrixConfig.getProperty("adminCredentials.password");
+    }
+    else
+    {
+      userId = UserSessionBean.getCurrentInstance().getUsername();
+      password = UserSessionBean.getCurrentInstance().getPassword();
+    }
+    return getPort(userId, password);
   }
   
   public static String formatInputText(String text)

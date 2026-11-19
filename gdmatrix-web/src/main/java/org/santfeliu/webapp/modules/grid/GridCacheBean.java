@@ -116,7 +116,7 @@ public class GridCacheBean
     filter.setMaxResults(100);
 
     List<SectionView> sectionViews =
-      NewsModuleBean.getPort(true).findNewsBySection(filter);
+      NewsModuleBean.getPort(true).findNewsBySectionFromCache(filter);
     int priority = 0;
     for (SectionView sectionView : sectionViews)
     {

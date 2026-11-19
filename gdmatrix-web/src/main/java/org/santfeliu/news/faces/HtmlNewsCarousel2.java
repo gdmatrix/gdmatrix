@@ -563,7 +563,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
 
       filter.getExcludeDrafts().add(getExcludeDrafts());
       
-      List<NewView> newList = NewsConfigBean.getPort().
+      List<NewView> newList = NewsConfigBean.getPort(true).
         findNewsBySectionFromCache(filter).get(0).getNewView();
       
       if (newList != null && newList.size() > 0)

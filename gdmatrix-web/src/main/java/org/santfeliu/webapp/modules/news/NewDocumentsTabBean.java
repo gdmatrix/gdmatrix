@@ -53,7 +53,6 @@ import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
 import static org.santfeliu.faces.matrixclient.model.DocMatrixClientModels.DOCTYPES_PARAMETER;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
-import org.santfeliu.news.web.NewsConfigBean;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -476,7 +475,7 @@ public class NewDocumentsTabBean extends TabBean
       NewDocument newDocument = new NewDocument();
       newDocument.setNewId(getObjectId());
       newDocument.setDocumentId(docId);
-      newDocument.setNewDocTypeId(NewsConfigBean.EXTENDED_INFO_TYPE);
+      newDocument.setNewDocTypeId(NewsModuleBean.EXTENDED_INFO_TYPE);
       NewsModuleBean.getPort(false).storeNewDocument(newDocument);
       load();
     }
@@ -500,7 +499,7 @@ public class NewDocumentsTabBean extends TabBean
       List<String> readRoleList = new ArrayList<>();
       List<String> writeRoleList = new ArrayList<>();
       List<NewSection> newSectionList = 
-        NewsConfigBean.getPort().findNewSectionsFromCache(getObjectId());
+        NewsModuleBean.getPort().findNewSectionsFromCache(getObjectId());
       int i = 0;
       boolean readNotProtected = false;
       boolean writeNotProtected = false;
