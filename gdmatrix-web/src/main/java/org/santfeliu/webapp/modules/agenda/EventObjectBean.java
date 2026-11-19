@@ -334,6 +334,10 @@ public class EventObjectBean extends ObjectBean
       endDate = null;
       endTime = null;
       event = new Event();
+      Type baseType =
+        TypeCache.getInstance().getType(getBaseTypeInfo().getBaseTypeId());
+      if (baseType.isInstantiable())
+        event.setEventTypeId(baseType.getTypeId());
     }
   }
 
