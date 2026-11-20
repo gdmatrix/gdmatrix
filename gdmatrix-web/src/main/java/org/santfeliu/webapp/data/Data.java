@@ -30,7 +30,9 @@
  */
 package org.santfeliu.webapp.data;
 
+import java.util.Map;
 import org.santfeliu.security.util.Credentials;
+import org.santfeliu.util.script.ScriptClient;
 
 /**
  *
@@ -93,10 +95,38 @@ public class Data
   public NodeQuery nodes()
   {
     return new NodeQuery(credentials);
-  }  
-  
+  }
+
   public SQLQuery sql(String dataSource, String sql)
   {
     return new SQLQuery(dataSource, sql);
+  }
+
+  public Object script(String scriptName)
+  {
+    return script(scriptName, null, null);
+  }
+  
+  public Object script(String scriptName, String code)
+  {
+    return script(scriptName, code, null);
+  }
+  
+  public Object script(String scriptName, String code, Map params)
+  {
+    try
+    {
+      ScriptClient client = new ScriptClient();
+      if (params != null)
+      {
+        client.put("params", params);
+      }
+      client.put("credentials", credentials);
+      return client.executeScript(scriptName, code);
+    }
+    catch (Exception ex)
+    {
+      return "ERROR: " + ex.toString();
+    }    
   }
 }
