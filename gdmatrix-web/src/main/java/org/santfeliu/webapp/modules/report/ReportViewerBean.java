@@ -33,12 +33,15 @@ package org.santfeliu.webapp.modules.report;
 
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.context.PartialViewContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
 import javax.inject.Named;
@@ -314,16 +317,44 @@ public class ReportViewerBean extends WebBean implements Serializable
   }
 
   public void loadDynamicComponents(ComponentSystemEvent event)
-  {
+  {         
     if (isFormRendered())
-    {
+    {     
       UIComponent panel = event.getComponent();
-      if (panel != null)
-      {
-        updateComponents(panel);
-      }
+      if (panel != null && isComponentUpdated(panel))
+        updateComponents(panel);   
     }
   }
+  
+  public boolean isComponentUpdated(UIComponent targetComponent)
+  {
+    if (targetComponent == null)
+      return false;
+
+    FacesContext context = FacesContext.getCurrentInstance();
+    PartialViewContext partialContext = context.getPartialViewContext();
+
+    if (!partialContext.isAjaxRequest())
+      return true;
+
+    Collection<String> renderIds = partialContext.getRenderIds();
+    if (renderIds == null || renderIds.isEmpty())
+      return false;
+
+    if (renderIds.contains("@all") || renderIds.contains("@form"))
+      return true;
+
+    UIComponent current = targetComponent;
+    while (current != null)
+    {
+      String clientId = current.getClientId(context);
+      if (renderIds.contains(clientId))
+        return true;
+      current = current.getParent();
+    }
+
+    return false;
+  }  
   
   public void onRefreshForm(FacesEvent event)
   {
