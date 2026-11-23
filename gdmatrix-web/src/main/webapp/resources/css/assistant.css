@@ -711,7 +711,7 @@ body.asst-full .assistant-bar
 }
 
 .wsm-panel-overlay .wsm-title {
-  font-size: 11px;
+  font-size: var(--assistant-wsm-text-size, 1rem);
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--ab-icon, var(--surface-500));
@@ -736,7 +736,7 @@ body.asst-full .assistant-bar
   border-radius: var(--border-radius);
   cursor: pointer;
   color: var(--ab-text, var(--text-color));
-  font-size: 0.9rem;
+  font-size: var(--assistant-wsm-text-size,1rem);
   transition: background-color 0.16s ease, color 0.16s ease;
 }
 

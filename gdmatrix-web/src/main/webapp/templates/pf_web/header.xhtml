@@ -85,19 +85,18 @@
 
                 <!-- sheet with the children of level 1: section head + photo -->
                 <ui:fragment rendered="#{not item.leaf and item.parent.mid == userSessionBean.selectedMenuItem.path[1]}">
-                  <!-- level 1 name and a link to the level 1 node -->
+                  <!-- section head: a link to the level 1 node -->
                   <div class="mega_section_head">
-                    <span class="mega_section_name">#{applicationBean.translate(item.label)}</span>
                     <p:commandLink action="#{templateBean.show(item.mid)}"
                                    rendered="#{item.action != 'url'}"
                                    process="@form:menubar" update="@form:cnt"
                                    onclick="doMenuLayout()" styleClass="mega_see_all">
-                      <span>#{webBundle.seeAllSection}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                      <span>#{webBundle.seeAllOf} &#171;#{applicationBean.translate(item.label)}&#187;</span>
                     </p:commandLink>
                     <p:link href="#{item.properties.url}" rendered="#{item.action == 'url'}"
                             target="#{item.properties.target == null ? '_self' : item.properties.target}"
                             onclick="doMenuLayout()" styleClass="mega_see_all">
-                      <span>#{webBundle.seeAllSection}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                      <span>#{webBundle.seeAllOf} &#171;#{applicationBean.translate(item.label)}&#187;</span>
                     </p:link>
                   </div>
                   <!-- column 3 - photo (columns 2 and 3 with no level 3 shown) -->
@@ -131,17 +130,16 @@
                 <!-- column 2 - head of the level 3 list of a level 2 item with children, with a link to the level 2 node -->
                 <ui:fragment rendered="#{not item.leaf and item.parent.parent.mid == userSessionBean.selectedMenuItem.path[1]}">
                   <div class="mega_column_head">
-                    <span class="mega_column_name">#{applicationBean.translate(item.label)}</span>
                     <p:commandLink action="#{templateBean.show(item.mid)}"
                                    rendered="#{item.action != 'url'}"
                                    process="@form:menubar" update="@form:cnt"
                                    onclick="doMenuLayout()" styleClass="mega_see_all">
-                      <span>#{webBundle.seeAll}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                      <span>#{webBundle.seeAllOf} &#171;#{applicationBean.translate(item.label)}&#187;</span>
                     </p:commandLink>
                     <p:link href="#{item.properties.url}" rendered="#{item.action == 'url'}"
                             target="#{item.properties.target == null ? '_self' : item.properties.target}"
                             onclick="doMenuLayout()" styleClass="mega_see_all">
-                      <span>#{webBundle.seeAll}</span><i class="pi pi-arrow-right" aria-hidden="true" />
+                      <span>#{webBundle.seeAllOf} &#171;#{applicationBean.translate(item.label)}&#187;</span>
                     </p:link>
                   </div>
                 </ui:fragment>
@@ -170,7 +168,11 @@
                   title="#{userSessionBean.displayName}"
                   onmousedown="event.preventDefault()"
                   onclick="return toggleHeaderSheet('login_panel', event);">
-            <span class="user_initial">#{templateBean.userInitial}</span>
+            <!-- the circle of the user icon, with the initial inside -->
+            <svg class="header_icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" />
+              <text x="12" y="12" class="user_initial">#{templateBean.userInitial}</text>
+            </svg>
           </button>
         </ui:fragment>
 

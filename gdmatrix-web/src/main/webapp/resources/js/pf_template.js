@@ -263,8 +263,6 @@ function refitMenu()
 
 /* mega menu */
 
-const MEGA_HOVER_DELAY = 60;
-
 function isMegaMenu()
 {
   return menuSetup.megaMenu === true && getMenuMode() === "horizontal";
@@ -290,9 +288,14 @@ function updateMenuAria(mainMenu)
   {
     const li = entry.closest("li");
     const topLevel = li.parentElement.parentElement === mainMenu;
-    if (mega && !topLevel)
+    const level2 = li.parentElement.parentElement.parentElement.parentElement === mainMenu;
+    if (mega && level2)
     {
-      // in the sheet, levels 2 and 3 pin/navigate instead of expanding
+      // in the sheet, a level 2 opens its level 3 column
+      entry.setAttribute("aria-expanded", li.classList.contains("mega_active"));
+    }
+    else if (mega && !topLevel)
+    {
       entry.removeAttribute("aria-expanded");
     }
     else
@@ -307,28 +310,24 @@ function activateMegaColumn(panel, li)
   for (let col of panel.querySelectorAll(":scope > li"))
   {
     col.classList.toggle("mega_active", col === li);
+    col.querySelector(":scope > .menuitem > .entry.toggle")
+      ?.setAttribute("aria-expanded", col === li);
   }
 }
 
-function pinMegaColumn(panel, li)
+// a click on a level 2 opens its level 3; a second click closes it
+function toggleMegaColumn(panel, li)
 {
-  const pin = !li.classList.contains("mega_pinned");
-  for (let col of panel.querySelectorAll(":scope > li"))
-  {
-    col.classList.toggle("mega_pinned", pin && col === li);
-  }
-  activateMegaColumn(panel, li);
+  activateMegaColumn(panel, li.classList.contains("mega_active") ? null : li);
 }
 
-// a click out of the level 2 realeases the pinned one
-function onMegaUnpinClick(event)
+// a click out of the level 2 items closes the open level 3
+function onMegaOutsideClick(event)
 {
   if (!isMegaMenu()) return;
   const panel = document.querySelector(".main_menu.mega > ul > li.drop > ul");
-  const pinned = panel?.querySelector(":scope > li.mega_pinned");
-  if (!pinned) return;
+  if (!panel?.querySelector(":scope > li.mega_active")) return;
   if (event.target.closest?.(".main_menu.mega > ul > li > ul > li")) return;
-  pinned.classList.remove("mega_pinned");
   activateMegaColumn(panel, null);
 }
 
@@ -336,50 +335,13 @@ function onMegaUnpinClick(event)
 function initMegaPanel(panel)
 {
   if (!panel) return;
-  clearTimeout(panel._megaTimer);
   panel.scrollTop = 0;
   for (let col of panel.querySelectorAll(":scope > li"))
   {
-    col.classList.remove("mega_pinned");
     const list = col.querySelector(":scope > ul");
     if (list) list.scrollTop = 0;
   }
   activateMegaColumn(panel, null);
-}
-
-function onMegaColumnOver(event)
-{
-  if (!event.currentTarget.classList.contains("mega")) return;
-
-  const panel = event.target.closest(".main_menu.mega > ul > li > ul");
-  const li = event.target.closest(".main_menu.mega > ul > li > ul > li");
-  if (!panel || !li) return;
-
-  clearTimeout(panel._megaTimer);
-
-  // level 2 without children: it has no level 3, so show none
-  if (!li.querySelector(":scope > ul"))
-  {
-    activateMegaColumn(panel, null);
-    return;
-  }
-
-  if (li.classList.contains("mega_active")) return;
-  panel._megaTimer = setTimeout(() => activateMegaColumn(panel, li),
-    MEGA_HOVER_DELAY);
-}
-
-function onMegaColumnOut(event)
-{
-  if (!event.currentTarget.classList.contains("mega")) return;
-
-  const tab = event.target.closest(".main_menu.mega > ul > li.drop");
-  if (!tab || tab.contains(event.relatedTarget)) return;
-
-  const panel = tab.querySelector(":scope > ul");
-  if (!panel) return;
-  clearTimeout(panel._megaTimer);
-  activateMegaColumn(panel, panel.querySelector(":scope > li.mega_pinned"));
 }
 
 function onMegaMenuClick(event)
@@ -393,15 +355,14 @@ function onMegaMenuClick(event)
   const item = entry.closest("li");
   if (!item) return;
 
-  // level 2 with children: pin its level 3 instead of navigating
+  // level 2 with children: open or close its level 3
   const parentPanel = item.parentElement;
   if (parentPanel?.parentElement?.parentElement?.parentElement === mainMenu
       && item.querySelector(":scope > ul"))
   {
     event.preventDefault();
     event.stopPropagation();
-    clearTimeout(parentPanel._megaTimer);
-    pinMegaColumn(parentPanel, item);
+    toggleMegaColumn(parentPanel, item);
     return;
   }
 
@@ -751,10 +712,7 @@ function initMenu()
     mainMenu._megaMenuInitialized = true;
     // capture = true, runs before the onclick of the level 1 commandLinks
     mainMenu.addEventListener("click", onMegaMenuClick, true);
-    mainMenu.addEventListener("mouseover", onMegaColumnOver);
-    mainMenu.addEventListener("mouseout", onMegaColumnOut);
     mainMenu.addEventListener("keydown", onMegaKeyDown);
-    mainMenu.addEventListener("focusin", onMegaFocusIn);
     mainMenu.addEventListener("focusout", onMegaFocusOut);
   }
   
@@ -863,7 +821,7 @@ function initMenu()
 
   if (menuSetup.megaMenu === true)
   {
-    document.addEventListener("click", onMegaUnpinClick, true);
+    document.addEventListener("click", onMegaOutsideClick, true);
   }
 
   let resizeFrame = 0;
@@ -1003,7 +961,7 @@ function onMegaKeyDown(event)
     const tab = list.parentElement.querySelector(":scope > .menuitem > .entry");
     if (key === "ArrowDown")
     {
-      target = items[Math.min(i + 1, last)];
+      target = items[(i + 1) % items.length];
     }
     else if (key === "ArrowUp")
     {
@@ -1051,19 +1009,6 @@ function onMegaKeyDown(event)
     event.preventDefault();
     target.focus();
   }
-}
-
-// a level 2 that gets the focus shows its level 3
-function onMegaFocusIn(event)
-{
-  const mainMenu = event.currentTarget;
-  if (!mainMenu.classList.contains("mega")) return;
-  
-  const entry = event.target.closest(".entry");
-  if (!entry || getMegaLevel(entry) !== 2) return;
-  
-  const li = entry.closest("li");
-  activateMegaColumn(li.parentElement, li.querySelector(":scope > ul") ? li : null);
 }
 
 function onMegaFocusOut(event)

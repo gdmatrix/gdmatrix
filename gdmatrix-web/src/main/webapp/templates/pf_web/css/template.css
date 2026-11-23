@@ -16,7 +16,7 @@
   --primary-tint: color-mix(in srgb, var(--primary-color) 7%, transparent); /* light pink: hover, toolbar */
 
   /* Header: floating pill, always centered in the window */
-  --header-max-width: 1000px; /* width of the menu */
+  --header-max-width: 1100px; /* width of the menu */
   --header-margin-top: 14px;    
   --header-margin-bottom: 24px; 
   --header-padding-y: 10px;     /* above and below the content of the pill */
@@ -41,8 +41,7 @@
   --toolbar-padding: 6px;
   --toolbar-gap: 4px;
   --header-icon-size: 32px; /* button size */
-  --header-icon-glyph-size: 20px; /* icon size */
-  --header-initial-size: 18px;    /* circle around the user initial */
+  --header-icon-glyph-size: 22px; /* icon size */
   --header-icon-hover-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 1px rgba(16, 24, 40, 0.06);
   --menu-button-size: 3rem;
 
@@ -51,7 +50,7 @@
   --footer-color: color-mix(in srgb, var(--surface-0) 72%, transparent);
 
   /* Page */
-  --content-max-width: 1000px; /* the content box only */
+  --content-max-width: 1100px; /* the content box only */
   --page-full-max-width: 100vw; /* full width pages (start page, maps); no limit = 100vw */
   --layout-column-width: clamp(320px, 24vw, 350px); /* both side columns (side menu and assistant), always the same */
   --layout-side-width: var(--layout-column-width);      /* 0 when the side menu is a drawer */
@@ -105,7 +104,7 @@
   --mega-bar-row-gap: 2px;    /* between the two rows of tabs */
   --mega-bar-justify: flex-start; /* tabs of a row */
   --mega-tab-padding: 0.5rem 1rem;
-  --mega-tab-font-size: 1.05rem;
+  --mega-tab-font-size: 1.10rem; /* level 1 */
   --mega-link-font-size: 1rem; /* levels 2 and 3 */
   --mega-open-duration: 0.22s;    /* unfold of the sheet and width change of its photo */
   --mega-content-duration: 0.12s; /* fade of the content when opening or switching tabs */
@@ -129,6 +128,8 @@
   --ab-docked-elevation: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 1px rgba(16, 24, 40, 0.10), 0 4px 14px rgba(16, 24, 40, 0.06);
   --assistant-bar-radius: 26px; /* concentric with its corner buttons: 18px radius + 8px padding */
   --assistant-btn-radius: var(--radius-pill);
+  /* window size menu (wsm) */
+  --assistant-wsm-text-size: 1rem;
   /* panel */
   --assistant-toolbar-padding: .65rem .75rem;
   --assistant-toolbar-border: 0 none;
@@ -138,7 +139,7 @@
   --assistant-avatar-size: 28px;
   --assistant-avatar-padding: 0;
   --assistant-role-weight: 600;
-  --assistant-role-size: .85em;
+  --assistant-role-size: 1em;
   --assistant-role-color: var(--text-color-secondary);
   --assistant-user-direction: row-reverse;
   --assistant-user-align: flex-end;
@@ -159,7 +160,7 @@
   --assistant-tool-background: var(--assistant-track);
   --assistant-tool-padding: .3rem .6rem;
   --assistant-tool-radius: 6px;
-  --assistant-tool-size: .85em;
+  --assistant-tool-size: 1em;
   --assistant-tool-color: var(--text-color-secondary);
   --assistant-tool-font: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --assistant-error-avatar-background: var(--assistant-error-tint);
@@ -480,23 +481,18 @@ body.page-full .content_assistant
   width: var(--header-icon-glyph-size);
   height: var(--header-icon-glyph-size);
   display: block;
-  stroke-width: 1;
+  stroke-width: 1.3;
 }
 
-/* User initial */
-.header_icon_button .user_initial
+/* user initial, inside the circle of the icon */
+.header_icon .user_initial
 {
-  width: var(--header-initial-size);
-  height: var(--header-initial-size);
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  font-size: calc(var(--header-initial-size) * 0.6);
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1;
+  fill: currentColor;
+  stroke: none;
+  text-anchor: middle;
+  dominant-baseline: central;
 }
 
 .assistant_button .icon_off
@@ -739,10 +735,10 @@ body.asst-off .assistant_button .icon_off
   flex-grow: 1;
 }
 
-/* caret inside the single button */
+/* caret inside the single button: hidden by default */
 .main_menu .menuitem .entry .caret
 {
-  display: flex;
+  display: none;
   align-items: center;
   flex-grow: 0;
   margin-left: 8px;
@@ -1404,6 +1400,11 @@ body.asst-off .assistant_panel
   margin-bottom: var(--menuitem-margin);
 }
 
+:where(.menu-compact) .main_menu .menuitem .entry .caret
+{
+  display: flex;
+}
+
 /* carets, every level: down when closed, up when open */
 :where(.menu-compact) .main_menu ul > li > .menuitem .caret i
 {
@@ -1488,12 +1489,6 @@ body.asst-off .assistant_panel
   border-radius: var(--radius-pill);
 }
 
-/* no caret at any level (in the compact menu it is still needed) */
-.main_menu.mega .entry .caret
-{
-  display: none;
-}
-
 /* open tab. It wins over the hover by specificity, not by order */
 .main_menu.mega > ul > li.drop > .menuitem
 {
@@ -1571,8 +1566,6 @@ body.asst-off .assistant_panel
 {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
   position: absolute;
   top: 100%;
   left: 0;
@@ -1609,34 +1602,24 @@ body.asst-off .assistant_panel
   animation: mega_fade_in var(--mega-content-duration) ease-out;
 }
 
-.mega_section_name
-{
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-color-secondary);
-}
-
-/* "see all" links to the node of the head */
+/* heads: a link to the node (long names end in an ellipsis) */
 .main_menu .mega_see_all
 {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  flex-shrink: 0;
-  white-space: nowrap;
-  font-size: 0.85rem;
-  font-weight: 600;
+  display: flex;
+  min-width: 0;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--primary-color);
   text-decoration: none;
 }
 
-/* only the text is underlined, not the arrow */
+.main_menu .mega_see_all > span
+{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .main_menu .mega_see_all:hover
 {
   color: var(--primary-color);
@@ -1647,11 +1630,6 @@ body.asst-off .assistant_panel
 {
   text-decoration: underline;
   text-underline-offset: 4px;
-}
-
-.mega_see_all i
-{
-  font-size: 0.75rem;
 }
 
 /* panel: column 1, level 2 (the card is .app_header::after) */
@@ -1732,14 +1710,8 @@ body.asst-off .assistant_panel
   font-size: var(--mega-link-font-size);
 }
 
-/* level 2 whose level 3 is shown by hover: pink, only while the mouse is not
-   over another level 2 (there the hover marks it); pinned (click): red */
-.main_menu.mega > ul > li > ul:not(:has(> li > .menuitem:hover)) > li.mega_active:not(.mega_pinned) > .menuitem
-{
-  background-color: var(--menuitem-hover-background) !important;
-}
-
-.main_menu.mega > ul > li > ul > li.mega_pinned > .menuitem
+/* level 2 whose level 3 is open */
+.main_menu.mega > ul > li > ul > li.mega_active > .menuitem
 {
   background-color: var(--menuitem-selected-background) !important;
   --mega-item-color: var(--menuitem-selected-color);
@@ -1752,8 +1724,6 @@ body.asst-off .assistant_panel
 {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
   position: fixed;
   top: calc(100% + var(--mega-head-height));
   left: calc(100% / 3);
@@ -1774,17 +1744,6 @@ body.asst-off .assistant_panel
   right: 1.25rem;
   bottom: 0;
   border-bottom: 1px solid var(--surface-border);
-}
-
-.mega_column_name
-{
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--primary-700);
 }
 
 .main_menu.mega > ul > li > ul > li > ul
@@ -1906,7 +1865,7 @@ body.asst-off .assistant_panel
 .mega_feature_description
 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.4;
 }
 
@@ -2076,7 +2035,7 @@ body.asst-off .assistant_panel
   padding: 2rem 0.5rem;
   border-radius: var(--radius-item);
   background-color: var(--primary-tint);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   text-align: center;
 }
@@ -2236,7 +2195,7 @@ body.asst-off .assistant_panel
   font-size: 0.75rem;
 }
 
-/* THEME PREVIEWS) */
+/* THEME PREVIEWS */
 .theme_preview_nouFloat
 {
   --preview-ground: #f3f4f7;
