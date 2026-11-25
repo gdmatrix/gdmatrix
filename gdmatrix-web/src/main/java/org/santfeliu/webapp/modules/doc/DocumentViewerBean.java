@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -587,6 +588,7 @@ public class DocumentViewerBean extends WebBean implements Serializable
     resultsManager.setColumns(cursor.getMid());
     context.put("resultsManager", resultsManager);
     context.put("editorUser", isEditorUser());
+    context.put("currentDate", new Date());
     return context;
   }
 
