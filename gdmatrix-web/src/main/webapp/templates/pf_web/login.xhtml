@@ -48,13 +48,13 @@
               </h:panelGroup>
               <div class="field ui-fluid">
                 <p:outputLabel value="#{webBundle.outputUsername}" for="@next" />
-                <p:inputText value="#{templateBean.username}" pt:spellcheck="false"
+                <p:inputText id="mega_username" value="#{templateBean.username}" pt:spellcheck="false"
                              widgetVar="usernameInput"
                              oninput="enableUserPassButton()" />
               </div>
               <div class="field ui-fluid">
                 <p:outputLabel value="#{webBundle.outputPassword}" for="@next" />
-                <p:password value="#{templateBean.password}" class="w-full"
+                <p:password id="mega_password" value="#{templateBean.password}" class="w-full"
                             toggleMask="true" redisplay="true" />
               </div>
               <div class="sheet_actions">
