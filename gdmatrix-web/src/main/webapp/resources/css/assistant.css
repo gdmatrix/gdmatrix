@@ -736,7 +736,7 @@ body.asst-full .assistant-bar
   border-radius: var(--border-radius);
   cursor: pointer;
   color: var(--ab-text, var(--text-color));
-  font-size: var(--assistant-wsm-text-size,1rem);
+  font-size: var(--assistant-wsm-text-size, 1rem);
   transition: background-color 0.16s ease, color 0.16s ease;
 }
 

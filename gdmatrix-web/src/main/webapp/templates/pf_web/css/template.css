@@ -4,6 +4,12 @@
   /* Typography */
   --font-size: 14px;
   --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Font sizes (rem) */
+  --font-size-sm: 0.75rem;  /* small */
+  --font-size-base: 1rem;   /* base text */
+  --font-size-md: 1.1rem;   /* medium: titles */
+  --font-size-lg: 1.25rem;  /* large */
+  --font-size-xl: 1.5rem;   /* extra large */
   font-size: var(--font-size);
   font-family: var(--font-family);
 
@@ -87,7 +93,6 @@
   --menuitem-width: 220px;
   --menuitem-padding: 8px 10px;
   --menuitem-margin: 1px;
-  --menuitem-font-size: var(--font-size);
   --menuitem-d1-background: transparent;
   --menuitem-d2-background: var(--surface-overlay);
   --menuitem-d3-background: var(--surface-overlay);
@@ -107,8 +112,6 @@
   --mega-bar-row-gap: 2px;    /* between the two rows of tabs */
   --mega-bar-justify: flex-start; /* tabs of a row */
   --mega-tab-padding: 0.5rem 1rem;
-  --mega-tab-font-size: 1.10rem; /* level 1 */
-  --mega-link-font-size: 1rem; /* levels 2 and 3 */
   --mega-open-duration: 0.22s;    /* unfold of the sheet and width change of its photo */
   --mega-content-duration: 0.12s; /* fade of the content when opening or switching tabs */
 
@@ -132,17 +135,17 @@
   --assistant-bar-radius: 26px; /* concentric with its corner buttons: 18px radius + 8px padding */
   --assistant-btn-radius: var(--radius-pill);
   /* window size menu (wsm) */
-  --assistant-wsm-text-size: 1rem;
+  --assistant-wsm-text-size: var(--font-size-base);
   /* panel */
   --assistant-toolbar-padding: .65rem .75rem;
   --assistant-toolbar-border: 0 none;
-  --assistant-title-size: 1.1em;
+  --assistant-title-size: var(--font-size-md);
   --assistant-list-padding: 0 .5rem;
   /* messages */
   --assistant-avatar-size: 28px;
   --assistant-avatar-padding: 0;
   --assistant-role-weight: 600;
-  --assistant-role-size: 1em;
+  --assistant-role-size: var(--font-size-base);
   --assistant-role-color: var(--text-color-secondary);
   --assistant-user-direction: row-reverse;
   --assistant-user-align: flex-end;
@@ -163,7 +166,7 @@
   --assistant-tool-background: var(--assistant-track);
   --assistant-tool-padding: .3rem .6rem;
   --assistant-tool-radius: 6px;
-  --assistant-tool-size: 1em;
+  --assistant-tool-size: var(--font-size-base);
   --assistant-tool-color: var(--text-color-secondary);
   --assistant-tool-font: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --assistant-error-avatar-background: var(--assistant-error-tint);
@@ -680,7 +683,7 @@ body.asst-off .assistant_button .icon_off
 
 .main_menu ul li .menuitem a
 {
-  font-size: var(--menuitem-font-size);
+  font-size: var(--font-size-base);
   transition: none;
 }
 
@@ -692,7 +695,6 @@ body.asst-off .assistant_button .icon_off
 .main_menu ul ul li .menuitem a
 {
   color: var(--text-color);
-  font-size: var(--menuitem-font-size);
   transition: none;
 }
 
@@ -704,7 +706,6 @@ body.asst-off .assistant_button .icon_off
 .main_menu ul ul ul li .menuitem a
 {
   color: var(--text-color);
-  font-size: var(--menuitem-font-size);
   transition: none;
 }
 
@@ -884,7 +885,7 @@ body.page-full.side-off .side_menu_container
 
 .assistant_panel
 {
-  font-size: var(--font-size);
+  font-size: var(--font-size-base);
   font-family: var(--font-family);
   width: var(--assistant-width);
   min-width: var(--assistant-width);
@@ -1319,7 +1320,7 @@ body.asst-off .assistant_panel
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 0.75rem 0.25rem 1.25rem;
-  font-size: var(--font-size);
+  font-size: var(--font-size-base);
   color: var(--text-color);
 }
 
@@ -1482,7 +1483,7 @@ body.asst-off .assistant_panel
 {
   white-space: nowrap;
   padding: var(--mega-tab-padding);
-  font-size: var(--mega-tab-font-size);
+  font-size: var(--font-size-md);
 }
 
 /* the outline goes outside: inside it would be lost on the selected pill */
@@ -1610,7 +1611,7 @@ body.asst-off .assistant_panel
 {
   display: flex;
   min-width: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 700;
   color: var(--primary-color);
   text-decoration: none;
@@ -1710,7 +1711,7 @@ body.asst-off .assistant_panel
   margin: 0;
   padding: 0.5rem 0.75rem;
   white-space: normal;
-  font-size: var(--mega-link-font-size);
+  font-size: var(--font-size-base);
 }
 
 /* level 2 whose level 3 is open */
@@ -1851,7 +1852,7 @@ body.asst-off .assistant_panel
 
 .mega_feature_section
 {
-  font-size: 0.75rem;
+  font-size: var(--font-size-sm);
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -1860,7 +1861,7 @@ body.asst-off .assistant_panel
 
 .mega_feature_title
 {
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
   font-weight: 700;
   line-height: 1.2;
 }
@@ -1868,7 +1869,7 @@ body.asst-off .assistant_panel
 .mega_feature_description
 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1.4;
 }
 
@@ -1997,14 +1998,14 @@ body.asst-off .assistant_panel
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  font-size: 1.15rem;
+  font-size: var(--font-size-md);
   font-weight: 700;
 }
 
 .sheet_title > i
 {
   color: var(--primary-color);
-  font-size: 1.15rem;
+  font-size: var(--font-size-md);
 }
 
 .sheet_text
@@ -2038,7 +2039,7 @@ body.asst-off .assistant_panel
   padding: 2rem 0.5rem;
   border-radius: var(--radius-item);
   background-color: var(--primary-tint);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   text-align: center;
 }
@@ -2046,7 +2047,7 @@ body.asst-off .assistant_panel
 .login_method > i
 {
   color: var(--primary-color);
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
 }
 
 /* Sheet - user initial */
@@ -2069,7 +2070,7 @@ body.asst-off .assistant_panel
   border-radius: 50%;
   background-color: var(--primary-tint);
   color: var(--primary-color);
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
 }
 
@@ -2083,7 +2084,7 @@ body.asst-off .assistant_panel
 .sheet_title_text
 {
   color: var(--primary-color);
-  font-size: 1.05rem;
+  font-size: var(--font-size-md);
   letter-spacing: -0.02em;
 }
 
@@ -2104,13 +2105,13 @@ body.asst-off .assistant_panel
 
 .font_slider_min
 {
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
 }
 
 .font_slider_max
 {
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
 }
 
@@ -2195,7 +2196,7 @@ body.asst-off .assistant_panel
 {
   content: "\e909"; /* pi-check */
   font-family: "primeicons";
-  font-size: 0.75rem;
+  font-size: var(--font-size-sm);
 }
 
 /* THEME PREVIEWS */
