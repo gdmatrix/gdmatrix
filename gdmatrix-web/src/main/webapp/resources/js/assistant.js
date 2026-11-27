@@ -405,12 +405,12 @@ function closeThreadsPanel()
   return false;
 }
 
+// the threads panel floats over the conversation when the assistant is
+// narrower than 700px (@container in assistant.css): close it after choosing
 function endThreadsPanel()
 {
-  if (700 > window.innerWidth)
-  {
-    closeThreadsPanel();
-  }
+  var container = document.querySelector(".assistant_container");
+  if (container && container.clientWidth < 700) closeThreadsPanel();
 }
 
 function getMessageList()

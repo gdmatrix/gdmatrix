@@ -12,7 +12,10 @@
   --radius-lg: 28px;   /* card radius: panels, footer, drawers (and the header, --header-radius) */
   --radius-item: calc(0.5lh + 9px); /* menu items, links and small cards: one line is a pill, taller ones keep the same corners */
   --radius-pill: 999px; /* pill shape: toolbar, icon buttons, menu tabs */
-  --card-shadow: 0 2px 6px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04), 0 0 0 1px rgba(16, 24, 40, 0.06); /* floating cards: side menu, assistant panel */
+  --card-shadow: 0 2px 6px rgba(16, 24, 40, 0.06),
+        0 1px 2px rgba(16, 24, 40, 0.04),
+        0 0 0 1px rgba(16, 24, 40, 0.06);/*  floating cards: side menu, assistant panel */
+/*  --card-shadow: 0 2px 6px #ccc;*/
   --primary-tint: color-mix(in srgb, var(--primary-color) 7%, transparent); /* light pink: hover, toolbar */
 
   /* Header: floating pill, always centered in the window */
@@ -789,8 +792,8 @@ body.asst-off .assistant_button .icon_off
   }
 }
 
-/* Assistant in full screen: the menu is not shown */
-body.asst-full .side_menu_container
+/* Assistant in full screen (and on): the menu is not shown */
+body.asst-full:not(.asst-off) .side_menu_container
 {
   display: none;
 }
